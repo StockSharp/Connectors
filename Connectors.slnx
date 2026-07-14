@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="Bibox/Bibox.csproj" />
+  <Project Path="Bitalong/Bitalong.csproj" />
+  <Project Path="Bitexbook/Bitexbook.csproj" />
+  <Project Path="BitStamp/BitStamp.csproj" />
+  <Project Path="Bittrex/Bittrex.csproj" />
+  <Project Path="Btce/Btce.csproj" />
+  <Project Path="Coinbase/Coinbase.csproj" />
+  <Project Path="FTX/FTX.csproj" />
+  <Project Path="PrizmBit/PrizmBit.csproj" />
+  <Project Path="Tinkoff/Tinkoff.csproj" />
+  <Project Path="ZB/ZB.csproj" />
+</Solution>
