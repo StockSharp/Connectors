@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors_websocket.props" />
+  <ItemGroup>
+    <Compile Remove="Native\Spot\Model\Symbol.cs\**" />
+    <EmbeddedResource Remove="Native\Spot\Model\Symbol.cs\**" />
+    <None Remove="Native\Spot\Model\Symbol.cs\**" />
+  </ItemGroup>
+</Project>

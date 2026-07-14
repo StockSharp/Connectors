@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <ProjectGuid>{FBC5BE61-E6D9-47DF-9515-900184DDEBA0}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Syndication" Version="$(MsExtensionsVer)" />
+  </ItemGroup>
+</Project>

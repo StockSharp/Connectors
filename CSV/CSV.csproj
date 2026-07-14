@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <ProjectGuid>{63F20E8F-E1F2-4FAD-A8A8-D62F0501C261}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(RepoGitHubPath)Algo.Import\Algo.Import.csproj" />
+  </ItemGroup>
+</Project>

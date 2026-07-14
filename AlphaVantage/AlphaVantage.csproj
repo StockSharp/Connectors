@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <ProjectGuid>{C09745E8-CE51-47DF-8856-E3E3E41EF911}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Ecng.Net.SocketIO" Version="$(EcngVer)" />
+  </ItemGroup>
+</Project>

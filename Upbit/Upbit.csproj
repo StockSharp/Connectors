@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors_websocket.props" />
+  <PropertyGroup>
+    <ProjectGuid>{93E062C7-93E1-4045-83C1-66A922AFD4D6}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JWT" Version="$(JwtVer)" />
+  </ItemGroup>
+</Project>

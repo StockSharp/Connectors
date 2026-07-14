@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <ProjectGuid>{99B84E0C-D035-4BD9-8A42-8232ED6BA3F4}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Ecng.Net" Version="$(EcngVer)" />
+  </ItemGroup>
+</Project>

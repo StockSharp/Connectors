@@ -1,0 +1,4744 @@
+openapi: 3.0.1
+info:
+  title: Account API
+  description: LMAX Group Account API
+  version: 1.4.2
+  x-logo:
+    altText: LMAX Group
+    href: /
+    url: lmax.group.logo.png
+servers:
+- url: https://account-api.london-professional.lmax.com
+- url: https://account-api.london-digital.lmax.com
+- url: https://account-api.newyork-professional.lmax.com
+- url: https://account-api.tokyo-professional.lmax.com
+- url: https://account-api.singapore-professional.lmax.com
+- url: https://account-api.london-demo.lmax.com
+- url: https://account-api.london-uat.lmax.com
+- url: https://account-api.digital-uat.lmax.com
+tags:
+- name: Authentication
+- name: Account Data
+- name: Account Maintenance
+- name: Trading
+- name: Public Data
+- name: Web Sockets
+- name: Tutorials
+- name: Rejection Reasons
+paths:
+  /v1/authenticate:
+    post:
+      tags:
+      - Authentication
+      summary: Authentication Endpoint
+      description: "Authenticate to use private APIs. On successful authentication,\
+        \ a session token is returned that should be used in subsequent private api\
+        \ calls. This endpoint belongs to the [\"authentication\"](#section/Introduction/Rate-Limiting)\
+        \ rate limiting category."
+      operationId: authenticate
+      requestBody:
+        description: Authentication request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthenticationRequest"
+        required: true
+      responses:
+        "200":
+          description: Successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Authenticated"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /v1/logout:
+    post:
+      tags:
+      - Authentication
+      summary: Logout Endpoint
+      description: "Invalidate the token used to call this endpoint. This endpoint\
+        \ belongs to the [\"authentication\"](#section/Introduction/Rate-Limiting)\
+        \ rate limiting category."
+      operationId: logout
+      responses:
+        "204":
+          description: Successfully logged out
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/heartbeat:
+    get:
+      tags:
+      - Authentication
+      summary: Heartbeat
+      description: "Prevent session token from expiry. This endpoint belongs to the\
+        \ [\"authentication\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category."
+      operationId: heartbeat
+      responses:
+        "204":
+          description: Success
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/time:
+    get:
+      tags:
+      - Public Data
+      summary: Current time
+      description: Get current time.
+      operationId: getTime
+      responses:
+        "200":
+          description: Current time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeResponse"
+  /v1/account/instrument-data:
+    get:
+      tags:
+      - Account Data
+      summary: Instrument data
+      description: "Fetch instrument data including funding, commission, margin rates,\
+        \ account position limits. This endpoint belongs to the [\"query\"](#section/Introduction/Rate-Limiting)\
+        \ rate limiting category and requires [\"Account Information\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: getInstrumentData
+      responses:
+        "200":
+          description: Instrument data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstrumentDataResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/order-state:
+    get:
+      tags:
+      - Account Data
+      summary: Order state
+      description: "Fetch an order state from the last seven days. The order can be\
+        \ queried by either URL-encoded 'Order Id' or the combination of URL-encoded\
+        \ 'Instruction Id' and 'Instrument Id'. This endpoint belongs to the [\"Account\"\
+        ](#section/Introduction/Rate-Limiting) rate limiting category and requires\
+        \ [\"Account Information\"](#section/Introduction/API-Key-Scopes) scope."
+      operationId: getOrderState
+      parameters:
+      - name: instruction_id
+        in: query
+        description: "Instruction Id, may contain RFC3986 reserved characters and\
+          \ should be URL encoded."
+        schema:
+          maxLength: 20
+          type: string
+        example: instruction-1254
+      - name: order_id
+        in: query
+        description: "Order Id, may contain RFC3986 reserved characters and should\
+          \ be URL encoded."
+        schema:
+          type: string
+        example: VkZgzAAAAAJUC%2BQB
+      - name: instrument_id
+        in: query
+        description: Instrument Id
+        schema:
+          type: string
+        example: eur-usd
+      responses:
+        "200":
+          description: Order state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderStateResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/working-orders:
+    get:
+      tags:
+      - Account Data
+      summary: Working orders
+      description: |-
+        Fetch all unfilled orders for this account. This endpoint belongs to the ["Account"](#section/Introduction/Rate-Limiting) rate limiting category and requires ["Account Information"](#section/Introduction/API-Key-Scopes) scope.
+
+        This is a ["paginated endpoint"](#tag/Tutorials/Paginated-Results).
+      operationId: getWorkingOrders
+      parameters:
+      - name: page_size
+        in: query
+        description: Maximum number of orders to be included into the response
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 1000
+        example: 100
+      - name: after
+        in: query
+        description: Fetch orders after this cursor (more recent). This parameter
+          is incompatible with `before`
+        schema:
+          type: string
+        example: 34a1941f3bfab96973d5ea3e7ddbccf592d69de1678f64d2803dc80313aa
+      - name: before
+        in: query
+        description: Fetch orders before this cursor (earlier orders). This parameter
+          is incompatible with `after`
+        schema:
+          type: string
+        example: 25a44cbdafca0ad99b966c79e58417faf1dbe1f3fb8c8466fb60e2ff2d02
+      responses:
+        "200":
+          description: Current working orders
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkingOrdersResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/order-positions:
+    get:
+      tags:
+      - Account Data
+      summary: Order positions
+      description: |-
+        Fetch order positions. This endpoint belongs to the ["Account"](#section/Introduction/Rate-Limiting) rate limiting category and requires ["Account Information"](#section/Introduction/API-Key-Scopes) scope.
+
+        This is a ["paginated endpoint"](#tag/Tutorials/Paginated-Results).
+      operationId: getOrderPositions
+      parameters:
+      - name: page_size
+        in: query
+        description: Maximum number of orders to be included into the response
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 1000
+        example: 100
+      - name: after
+        in: query
+        description: Fetch orders after this cursor (more recent). This parameter
+          is incompatible with `before`
+        schema:
+          type: string
+        example: 34a1941f3bfab96973d5ea3e7ddbccf592d69de1678f64d2803dc80313aa
+      - name: before
+        in: query
+        description: Fetch orders before this cursor (earlier orders). This parameter
+          is incompatible with `after`
+        schema:
+          type: string
+        example: 25a44cbdafca0ad99b966c79e58417faf1dbe1f3fb8c8466fb60e2ff2d02
+      responses:
+        "200":
+          description: Order positions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderPositionsResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/positions:
+    get:
+      tags:
+      - Account Data
+      summary: Instrument positions
+      description: "Fetch current open positions aggregated at the instrument level.\
+        \ This endpoint belongs to the [\"Account\"](#section/Introduction/Rate-Limiting)\
+        \ rate limiting category and requires [\"Account Information\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: getInstrumentPositions
+      responses:
+        "200":
+          description: Current open positions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstrumentPositionsResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/wallets:
+    get:
+      tags:
+      - Account Data
+      summary: Wallet balances
+      description: "Fetch account wallet balances. This endpoint belongs to the [\"\
+        Account\"](#section/Introduction/Rate-Limiting) rate limiting category and\
+        \ requires [\"Account Information\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: getWalletBalances
+      responses:
+        "200":
+          description: Current wallet balances
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/WalletBalancesWithoutCollateralizedCurrencyLimitResponse"
+                - $ref: "#/components/schemas/WalletBalancesResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/collateralized-credit:
+    get:
+      tags:
+      - Account Data
+      summary: Collateralized credit
+      description: "Total collateralized credit and how much has been used. Note that\
+        \ not all accounts support collateralized credit. Calling this endpoint for\
+        \ an unsupported account returns a not supported response. This endpoint belongs\
+        \ to the [\"Account\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category and requires [\"Account Information\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: getCollateralizedCredit
+      responses:
+        "200":
+          description: Collateralized credit
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: "#/components/schemas/CollateralizedCreditResponse"
+                - $ref: "#/components/schemas/CollateralizedCreditNotSupportedResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/account-transactions:
+    get:
+      tags:
+      - Account Data
+      summary: Transactions
+      description: |-
+        Fetch account transactions. This endpoint belongs to the ["Query"](#section/Introduction/Rate-Limiting) rate limiting category and requires ["Account Information"](#section/Introduction/API-Key-Scopes) scope.
+
+        This is a ["paginated endpoint"](#tag/Tutorials/Paginated-Results).
+      operationId: getAccountTransactions
+      parameters:
+      - name: start_time
+        in: query
+        schema:
+          type: string
+          format: date-time
+        examples:
+          milliseconds:
+            description: ISO8601 timestamp with millisecond resolution
+            value: 2021-09-11T08:00:00.000Z
+          seconds:
+            description: ISO8601 timestamp with second resolution
+            value: 2021-09-11T08:00:00Z
+      - name: end_time
+        in: query
+        schema:
+          type: string
+          format: date-time
+        examples:
+          milliseconds:
+            description: ISO8601 timestamp with millisecond resolution
+            value: 2021-09-12T08:00:00.000Z
+          seconds:
+            description: ISO8601 timestamp with second resolution
+            value: 2021-09-12T08:00:00Z
+      - name: page_size
+        in: query
+        description: Maximum number of transactions to be included into the response
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 1000
+        example: 100
+      - name: after
+        in: query
+        description: Fetch transactions after this cursor (more recent). This parameter
+          is incompatible with `before`
+        schema:
+          type: string
+        example: 34a1941f3bfab96973d5ea3e7ddbccf592d69de1678f64d2803dc80313aa
+      - name: before
+        in: query
+        description: Fetch transactions before this cursor (earlier orders). This
+          parameter is incompatible with `after`
+        schema:
+          type: string
+        example: 25a44cbdafca0ad99b966c79e58417faf1dbe1f3fb8c8466fb60e2ff2d02
+      - name: transaction_categories
+        in: query
+        description: "Filter transactions by category, allowed values are: <span class=\"\
+          enum\">\"BANK_TRANSFER_CURRENCY_CONVERSION\"</span>, <span class=\"enum\"\
+          >\"BASE_CURRENCY_SWEEP\"</span>, <span class=\"enum\">\"COMMISSION\"</span>,\
+          \ <span class=\"enum\">\"COMMISSION_REVENUE\"</span>, <span class=\"enum\"\
+          >\"DEBIT_CREDIT\"</span>, <span class=\"enum\">\"DELIVERABLE\"</span>, <span\
+          \ class=\"enum\">\"DIVIDEND\"</span>, <span class=\"enum\">\"EXECUTION\"\
+          </span>, <span class=\"enum\">\"FOREIGN_CURRENCY_SWEEP\"</span>, <span class=\"\
+          enum\">\"FUNDING\"</span>, <span class=\"enum\">\"FX_FUNDING\"</span>, <span\
+          \ class=\"enum\">\"MARK_TO_MARKET_PROFIT_LOSS\"</span>"
+        schema:
+          type: string
+        example: "DEBIT_CREDIT,COMMISSION"
+      responses:
+        "200":
+          description: Account transactions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountTransactionResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/trades:
+    get:
+      tags:
+      - Account Data
+      summary: Trade history
+      description: |-
+        Fetch account trades. When requesting before or after trades only one query parameter is allowed (before or after). This endpoint belongs to the ["Query"](#section/Introduction/Rate-Limiting) rate limiting category and requires ["Account Information"](#section/Introduction/API-Key-Scopes) scope.
+
+        This is a ["paginated endpoint"](#tag/Tutorials/Paginated-Results).
+      operationId: getTradeHistory
+      parameters:
+      - name: order_information
+        in: query
+        description: Whether to include order information in the response
+        schema:
+          type: boolean
+          default: false
+        example: true
+      - name: start_time
+        in: query
+        schema:
+          type: string
+          format: date-time
+        examples:
+          milliseconds:
+            description: ISO8601 timestamp with millisecond resolution
+            value: 2021-09-11T08:00:00.000Z
+          seconds:
+            description: ISO8601 timestamp with second resolution
+            value: 2021-09-11T08:00:00Z
+      - name: end_time
+        in: query
+        schema:
+          type: string
+          format: date-time
+        examples:
+          milliseconds:
+            description: ISO8601 timestamp with millisecond resolution
+            value: 2021-09-12T08:00:00.000Z
+          seconds:
+            description: ISO8601 timestamp with second resolution
+            value: 2021-09-12T08:00:00Z
+      - name: page_size
+        in: query
+        description: Maximum number of records to be returned at once
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 1000
+        example: 100
+      - name: after
+        in: query
+        description: Fetch trades after this cursor (more recent). This parameter
+          is incompatible with `before`
+        schema:
+          type: string
+        example: 34a1941f3bfab96973d5ea3e7ddbccf592d69de1678f64d2803dc80313aa
+      - name: before
+        in: query
+        description: Fetch trades before this cursor (earlier trades). This parameter
+          is incompatible with `after`
+        schema:
+          type: string
+        example: 25a44cbdafca0ad99b966c79e58417faf1dbe1f3fb8c8466fb60e2ff2d02
+      responses:
+        "200":
+          description: Successfully fetched trade history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradeHistoryResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/place-order:
+    post:
+      tags:
+      - Trading
+      summary: Place order
+      description: "Place order for this account. This endpoint belongs to the [\"\
+        Trading\"](#section/Introduction/Rate-Limiting) rate limiting category and\
+        \ requires [\"Trading\"](#section/Introduction/API-Key-Scopes) scope."
+      operationId: placeOrder
+      requestBody:
+        description: Place order request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaceOrderRequest"
+        required: true
+      responses:
+        "200":
+          description: Place order response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/PlaceOrderResponse"
+                - $ref: "#/components/schemas/PlaceOrderRejectionResponse"
+        "400":
+          description: Place order bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceOrderBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/cancel-order:
+    post:
+      tags:
+      - Trading
+      summary: Cancel order
+      description: "Cancel order for this account. This endpoint belongs to the [\"\
+        Trading\"](#section/Introduction/Rate-Limiting) rate limiting category and\
+        \ requires [\"Trading\"](#section/Introduction/API-Key-Scopes) scope."
+      operationId: cancelOrder
+      requestBody:
+        description: Cancel order request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelOrderRequest"
+        required: true
+      responses:
+        "200":
+          description: Cancel order response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/CancelOrderResponse"
+                - $ref: "#/components/schemas/CancelOrderRejectionResponse"
+        "400":
+          description: Cancel order bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelOrderBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/cancel-and-replace-order:
+    post:
+      tags:
+      - Trading
+      summary: Cancel and replace order
+      description: "Cancel and replace order for this account. This endpoint belongs\
+        \ to the [\"Trading\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category and requires [\"Trading\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: cancelReplaceOrder
+      requestBody:
+        description: Cancel and replace order request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelAndReplaceOrderRequest"
+        required: true
+      responses:
+        "200":
+          description: Cancel and replace order response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/CancelAndReplaceOrderResponse"
+                - $ref: "#/components/schemas/CancelAndReplaceOrderRejectionResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelAndReplaceOrderBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/cancel-all-orders:
+    post:
+      tags:
+      - Trading
+      summary: Cancel all orders
+      description: "Cancel all orders for this account. This endpoint belongs to the\
+        \ [\"Trading\"](#section/Introduction/Rate-Limiting) rate limiting category\
+        \ and requires [\"Trading\"](#section/Introduction/API-Key-Scopes) scope."
+      operationId: cancelAllOrders
+      requestBody:
+        description: Cancel all order request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelAllOrdersRequest"
+        required: true
+      responses:
+        "200":
+          description: Cancel all orders response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/CancelAllOrdersResponse"
+                - $ref: "#/components/schemas/CancelAllOrdersRejectionResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelAllOrdersBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/close-order:
+    post:
+      tags:
+      - Trading
+      summary: Close order
+      description: |-
+        Close order for this account. This endpoint belongs to the ["Trading"](#section/Introduction/Rate-Limiting) rate limiting category and requires ["Trading"](#section/Introduction/API-Key-Scopes) scope.
+
+        To close an instrument position, do not specify instruction id.
+      operationId: closeOrder
+      requestBody:
+        description: Close order request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CloseOrderRequest"
+        required: true
+      responses:
+        "200":
+          description: Close order response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/CloseOrderResponse"
+                - $ref: "#/components/schemas/CloseOrderRejectionResponse"
+        "400":
+          description: Close order bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CloseOrderBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/take-profit:
+    put:
+      tags:
+      - Trading
+      summary: Amend take profit
+      description: "Amend take profit for an order for this account. This endpoint\
+        \ belongs to the [\"Trading\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category and requires [\"Trading\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: amendTakeProfit
+      requestBody:
+        description: Amend take profit request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmendTakeProfitRequest"
+        required: true
+      responses:
+        "200":
+          description: Amend take profit response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/AmendTakeProfitResponse"
+                - $ref: "#/components/schemas/AmendTakeProfitRejectionResponse"
+        "400":
+          description: Amend take profit bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AmendTakeProfitBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+    post:
+      tags:
+      - Trading
+      summary: Remove take profit
+      description: "Remove take profit for an order for this account. This endpoint\
+        \ belongs to the [\"Trading\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category and requires [\"Trading\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: removeTakeProfit
+      requestBody:
+        description: Remove take profit request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveTakeProfitRequest"
+        required: true
+      responses:
+        "200":
+          description: Remove take profit response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/RemoveTakeProfitResponse"
+                - $ref: "#/components/schemas/RemoveTakeProfitRejectionResponse"
+        "400":
+          description: Remove take profit bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemoveTakeProfitBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/stop-loss:
+    put:
+      tags:
+      - Trading
+      summary: Amend stop loss
+      description: "Amend stop loss for an order for this account. This endpoint belongs\
+        \ to the [\"Trading\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category and requires [\"Trading\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: amendStopLoss
+      requestBody:
+        description: Amend stop loss request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmendStopLossRequest"
+        required: true
+      responses:
+        "200":
+          description: Amend stop loss response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/AmendStopLossResponse"
+                - $ref: "#/components/schemas/AmendStopLossRejectionResponse"
+        "400":
+          description: Amend stop loss bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AmendStopLossBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+    post:
+      tags:
+      - Trading
+      summary: Remove stop loss
+      description: "Remove stop loss for an order for this account. This endpoint\
+        \ belongs to the [\"Trading\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category and requires [\"Trading\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: removeStopLoss
+      requestBody:
+        description: Remove stop loss request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveStopLossRequest"
+        required: true
+      responses:
+        "200":
+          description: Remove stop loss response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/RemoveStopLossResponse"
+                - $ref: "#/components/schemas/RemoveStopLossRejectionResponse"
+        "400":
+          description: Remove stop loss bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemoveStopLossBadRequestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/withdrawal:
+    post:
+      tags:
+      - Account Maintenance
+      summary: Submit withdrawal request
+      description: "Submit a withdrawal request for this account. Withdrawal requests\
+        \ can be submitted to digital venues for blockchain withdrawals. This endpoint\
+        \ belongs to the [\"Account management\"](#section/Introduction/Rate-Limiting)\
+        \ rate limiting category and requires [\"Account maintenance\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: withdrawalRequest
+      requestBody:
+        description: Submit withdrawal request
+        content:
+          application/json:
+            schema:
+              description: Withdrawal request
+              oneOf:
+              - $ref: "#/components/schemas/BlockchainWithdrawalRequest"
+        required: true
+      responses:
+        "202":
+          description: Withdrawal request accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WithdrawalResponse"
+        "400":
+          description: Withdrawal bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WithdrawalBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/withdrawal/{id}:
+    get:
+      tags:
+      - Account Data
+      summary: Get withdrawal request status
+      description: "Get the status of a withdrawal request by request Id. This endpoint\
+        \ belongs to the [\"Query\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category and requires [\"Account Information\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: getWithdrawalRequestStatus
+      parameters:
+      - name: id
+        in: path
+        description: Withdrawal Request ID
+        required: true
+        schema:
+          type: string
+        example: b8d3b51bd5b255857ef1c9164772efc759df2d61e33780c8f1e3593ec9e71cdad0f73851fa1863
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WithdrawalRequestStatusResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/version:
+    get:
+      tags:
+      - Public Data
+      summary: Current version
+      description: Get current API version.
+      operationId: getVersion
+      responses:
+        "200":
+          description: Current Version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionResponse"
+  /v1/account/withdrawals:
+    get:
+      tags:
+      - Account Data
+      summary: List digital blockchain withdrawals
+      description: "Fetches the state of all digital blockchain withdrawal requests\
+        \ that were submitted through either the API or UI. This endpoint belongs\
+        \ to the [\"Query\"](#section/Introduction/Rate-Limiting) rate limiting category\
+        \ and requires [\"Account Information\"](#section/Introduction/API-Key-Scopes)\
+        \ scope. \n\nThis is a [\"paginated endpoint\"](#tag/Tutorials/Paginated-Results)."
+      operationId: listWithdrawalRequests
+      parameters:
+      - name: page_size
+        in: query
+        description: Maximum number of records to be returned at once
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 1000
+        example: 100
+      - name: after
+        in: query
+        description: Fetch withdrawals after this cursor (more recent). This parameter
+          is incompatible with `before`
+        schema:
+          type: string
+        example: 34a1941f3bfab96973d5ea3e7ddbccf592d69de1678f64d2803dc80313aa
+      - name: before
+        in: query
+        description: Fetch withdrawals before this cursor (earlier withdrawals). This
+          parameter is incompatible with `after`
+        schema:
+          type: string
+        example: 25a44cbdafca0ad99b966c79e58417faf1dbe1f3fb8c8466fb60e2ff2d02
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerWithdrawalRequestsResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+components:
+  schemas:
+    AuthenticationRequest:
+      required:
+      - client_key_id
+      - nonce
+      - signature
+      - timestamp
+      type: object
+      properties:
+        client_key_id:
+          type: string
+          description: Api key Id
+        timestamp:
+          type: string
+          description: ISO8601 timestamp with millisecond resolution - should be within
+            30 seconds of the server time to be considered valid
+          format: date-time
+          example: 2021-09-12T08:00:00Z
+        nonce:
+          type: string
+          description: The nonce is a random string and should be unique within a
+            60-second window and is intended to prevent relay attacks.
+        signature:
+          type: string
+          description: The signature for the authentication request
+      description: Authentication Request
+    Authenticated:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Session token to be used when making private api calls
+          example: kERa3hugpPuNV9cYob3IJGclu1FAt9vySrZDiZbGBbyU0SxHXi6_5gByLQ9q_IVjL_4BhXxQxgRL5rjCeHQpwQ
+      description: Successful authentication response
+    ApiError:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: BAD_REQUEST
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    TimeResponse:
+      type: object
+      properties:
+        epoch_millis:
+          type: string
+          description: Epoch milliseconds
+        timestamp:
+          type: string
+          description: ISO8601 timestamp with millisecond resolution
+      description: Time
+    CommodityInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+    CurrencyFutureInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+    CurrencyInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+      - type: object
+        properties:
+          short_swap_points:
+            type: string
+            description: Short swap points
+          long_swap_points:
+            type: string
+            description: Long swap points
+          short_swap_cost:
+            type: string
+            description: Short swap cost represents the cost of funding a short position
+              of Swap cost units between 'value_date_from' and 'value_date_to'
+          long_swap_cost:
+            type: string
+            description: Long swap cost represents the cost of funding a long position
+              of swap cost units between 'value_date_from' and 'value_date_to'
+          swap_cost_units:
+            type: string
+            description: Swap cost units
+          trade_date:
+            type: string
+            description: Trade date that the swap points relate to
+          value_date_from:
+            type: string
+            description: Value Date for trade date
+          value_date_to:
+            type: string
+            description: Value Date for next trade date
+    EquityInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+      - type: object
+        properties:
+          long_financing_rate:
+            type: string
+            description: Long financing rate (adjusted from funding base rate). Non-currencies
+              only
+          short_financing_rate:
+            type: string
+            description: Short financing rate (adjusted from funding base rate). Non-currencies
+              only
+          funding_base_rate:
+            type: string
+            description: Funding base rate
+    IndexInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+      - type: object
+        properties:
+          long_financing_rate:
+            type: string
+            description: Long financing rate (adjusted from funding base rate). Non-currencies
+              only
+          short_financing_rate:
+            type: string
+            description: Short financing rate (adjusted from funding base rate). Non-currencies
+              only
+          funding_base_rate:
+            type: string
+            description: Funding base rate
+          long_financing_premium_rate:
+            type: string
+            description: "Long financing rate: base rate with long financing rate\
+              \ premium. Indicies only."
+          short_financing_premium_rate:
+            type: string
+            description: "Short financing rate: base rate with short financing rate\
+              \ reduction. Indicies only."
+    Instrument:
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        security_id:
+          type: string
+          description: Exchange identifier for the instrument
+          example: "4003"
+        symbol:
+          type: string
+          description: Symbol of the underlying security
+          example: EUR/GBP
+        currency:
+          type: string
+          description: The unit you will pay in when ordering this instrument. The
+            instrument price is measured in units of currency.
+          example: GBP
+        unit_of_measure:
+          type: string
+          description: The unit you will receive if you buy some of this instrument.
+          example: EUR
+        quantity_increment:
+          type: string
+          description: Quantity increment is the smallest amount you can buy or sell.
+            It also specifies the minimum trade quantity.
+          example: "0.1"
+        margin:
+          type: string
+          description: Margin percentage
+        minimum_position_size:
+          type: string
+          description: Minimum position size
+        maximum_position_size:
+          type: string
+          description: Maximum position size
+        trading_days:
+          type: array
+          description: Trading days
+          items:
+            type: string
+            description: Trading days
+            enum:
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+            - SUNDAY
+        open_time:
+          type: string
+          description: Session start time
+        close_time:
+          type: string
+          description: Session end time
+        time_zone:
+          type: string
+          description: Timezone Id
+        minimum_commission:
+          type: string
+          description: Minimum commission
+        aggressive_commission_per_unit_of_measure:
+          type: string
+          description: "Aggressive commission per unit of measure, if commission is\
+            \ calculated per unit"
+        passive_commission_per_unit_of_measure:
+          type: string
+          description: "Passive commission per unit of measure, if commission is calculated\
+            \ per unit"
+        aggressive_commission_rate:
+          type: string
+          description: 'Aggressive commission rate (in basis points). '
+        passive_commission_rate:
+          type: string
+          description: 'Passive commission rate (in basis points). '
+        price_increment:
+          type: string
+          description: Price increment is the smallest fraction of a price that can
+            be specified for an order. Also known as the price 'tick'.
+        minimum_price:
+          type: string
+          description: Minimum price for any order placed on this instrument
+        maximum_price:
+          type: string
+          description: Maximum price for any order placed on this instrument
+        funding_notification_timestamp:
+          type: string
+          description: Timestamp when financing rates were last published
+        underlying_unit_of_measure:
+          type: string
+          description: Underlying unit of measure
+        underlying_unit_of_measure_multiplier:
+          type: number
+          description: Underlying unit of measure multiplier
+        asset_class:
+          type: string
+          description: Asset class of this instrument
+      description: Instrument Data
+      discriminator:
+        propertyName: asset_class
+        mapping:
+          COMMODITY: "#/components/schemas/CommodityInstrument"
+          CURRENCY: "#/components/schemas/CurrencyInstrument"
+          CURRENCY_FUTURE: "#/components/schemas/CurrencyFutureInstrument"
+          EQUITY: "#/components/schemas/EquityInstrument"
+          INDEX: "#/components/schemas/IndexInstrument"
+          NDF: "#/components/schemas/NdfInstrument"
+          RATE: "#/components/schemas/RateInstrument"
+      oneOf:
+      - $ref: "#/components/schemas/CommodityInstrument"
+      - $ref: "#/components/schemas/CurrencyInstrument"
+      - $ref: "#/components/schemas/CurrencyFutureInstrument"
+      - $ref: "#/components/schemas/EquityInstrument"
+      - $ref: "#/components/schemas/IndexInstrument"
+      - $ref: "#/components/schemas/NdfInstrument"
+      - $ref: "#/components/schemas/RateInstrument"
+    InstrumentDataResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        timestamp:
+          type: string
+          description: ISO8601 timestamp with millisecond resolution
+        instruments:
+          type: array
+          description: List of instruments
+          items:
+            $ref: "#/components/schemas/Instrument"
+      description: Instrument data
+    NdfInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+    RateInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+    OrderStateResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+        order_status:
+          type: string
+          description: Order status
+          enum:
+          - NEW
+          - FILLED
+          - PARTIALLY_FILLED
+          - CANCELLED
+          - REJECTED
+        replacement_instruction_id:
+          type: string
+          description: Instrument Id of the replacement order
+      description: Order state response
+    OrderResponse:
+      title: Order
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+        order_type:
+          type: string
+          description: Order type
+          enum:
+          - TRAILING_STOP
+          - LIMIT
+          - SETTLEMENT
+          - REVERSAL
+          - MANUAL
+          - STOP
+          - STOP_LIMIT
+          - MARKET
+          - STOP_LOSS
+          - TAKE_PROFIT
+        replaced_instruction_id:
+          type: string
+          description: Instruction Id of the order replaced
+        parent_order_instruction_id:
+          type: string
+          description: Parent order instruction id
+    WorkingOrdersResponse:
+      type: object
+      properties:
+        before_cursor:
+          type: string
+          description: Cursor identifying the earliest order
+        after_cursor:
+          type: string
+          description: Cursor identifying the latest order
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderResponse"
+      description: Working order response
+    OrderPosition:
+      title: Order Position
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        instruction_id:
+          type: string
+          description: Instruction Id
+        open_quantity:
+          type: string
+          description: The open quantity
+        open_cost:
+          type: string
+          description: Cost of the open position
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+          - ZERO
+        take_profit_instruction_id:
+          type: string
+          description: "An identifier for this request's take profit order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ take profit contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+    OrderPositionsResponse:
+      type: object
+      properties:
+        before_cursor:
+          type: string
+          description: Cursor identifying the earliest order
+        after_cursor:
+          type: string
+          description: Cursor identifying the latest order
+        positions:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderPosition"
+      description: Order position response
+    InstrumentPosition:
+      title: Instrument position
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        timestamp:
+          type: string
+          description: ISO8601 timestamp with millisecond resolution
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        open_quantity:
+          type: string
+          description: The open quantity
+        open_cost:
+          type: string
+          description: Cost of the open position
+        unfilled_buy_quantity:
+          type: string
+          description: The unfilled buy quantity
+        unfilled_buy_cost:
+          type: string
+          description: The unfilled buy cost
+        unfilled_sell_quantity:
+          type: string
+          description: The unfilled sell quantity
+        unfilled_sell_cost:
+          type: string
+          description: The unfilled sell cost
+        currency:
+          type: string
+          description: Currency
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+          - ZERO
+    InstrumentPositionsResponse:
+      type: object
+      properties:
+        positions:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstrumentPosition"
+      description: Instrument position response
+    WalletBalanceWithoutCollateralizedCurrencyLimit:
+      title: Wallet balance
+      type: object
+      properties:
+        currency:
+          type: string
+          description: The currency for the wallet
+        cash:
+          type: string
+          description: The current cash balance
+        credit:
+          type: string
+          description: The current credit balance
+        balance:
+          type: string
+          description: The current total balance
+      description: Wallet balance
+    WalletBalancesWithoutCollateralizedCurrencyLimitResponse:
+      title: Wallet balances
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        timestamp:
+          type: string
+          description: "ISO8601 timestamp with millisecond resolution. The timestamp\
+            \ the account state was last changed. Some of the things which can cause\
+            \ the account state to change include: <ul><li>order/trade processing</li><li>funding</li><li>dividends</li><li>mark\
+            \ to market</li><li>transfers</li></ul>"
+        wallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/WalletBalanceWithoutCollateralizedCurrencyLimit"
+      description: Wallet balances
+    WalletBalance:
+      title: Wallet balance
+      type: object
+      properties:
+        currency:
+          type: string
+          description: The currency for the wallet
+        cash:
+          type: string
+          description: The current cash balance
+        credit:
+          type: string
+          description: The current credit balance
+        balance:
+          type: string
+          description: The current total balance
+        collateralized_credit_limit:
+          type: string
+          description: The collateralized credit limit for the currency. (available
+            when credit mode is collateralized)
+      description: Wallet balance
+    WalletBalancesResponse:
+      title: Wallet balances (with collateralized currency limit)
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        timestamp:
+          type: string
+          description: "ISO8601 timestamp with millisecond resolution. The timestamp\
+            \ the account state was last changed. Some of the things which can cause\
+            \ the account state to change include: <ul><li>order/trade processing</li><li>funding</li><li>dividends</li><li>mark\
+            \ to market</li><li>transfers</li></ul>"
+        wallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/WalletBalance"
+      description: Wallet balances
+    CollateralizedCreditResponse:
+      title: Collateralized credit
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        timestamp:
+          type: string
+          description: "ISO8601 timestamp with millisecond resolution. The timestamp\
+            \ the account state was last changed. Some of the things which can cause\
+            \ the account state to change include: <ul><li>order/trade processing</li><li>funding</li><li>dividends</li><li>mark\
+            \ to market</li><li>transfers</li></ul>"
+        currency:
+          type: string
+          description: Currency
+        cash:
+          type: string
+          description: The cash balance of the account
+        total_collateralized_credit:
+          type: string
+          description: Total collateralized credit.
+        used_collateralized_credit:
+          type: string
+          description: Used collateralized credit.
+      description: Collateralized credit
+    CollateralizedCreditNotSupportedResponse:
+      title: Collateralized credit not supported
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        message:
+          type: string
+          description: Status message
+      description: Collateralized credit
+    AccountTransaction:
+      required:
+      - transaction_category
+      type: object
+      properties:
+        transaction_category:
+          type: string
+          description: Transaction category
+        account_id:
+          type: string
+          description: Account Id
+        account_statement_id:
+          type: string
+          description: Account statement Id
+        amount:
+          type: string
+          description: "Transaction amount.<br>For <span class=\"enum\">\"BANK_TRANSFER_CURRENCY_CONVERSION\"\
+            </span> this is the transfer amount.<br>For <span class=\"enum\">\"COMMISSION\"\
+            </span>, <span class=\"enum\">\"COMMISSION_REVENUE\"</span> this is commission\
+            \ charged/received.<br>For <span class=\"enum\">\"BASE_CURRENCY_SWEEP\"\
+            </span> this is the balance change.<br>For <span class=\"enum\">\"DEBIT_CREDIT\"\
+            </span> this is the amount debited/credited.<br>For <span class=\"enum\"\
+            >\"DELIVERABLE\"</span> this is the cost in the given currency.<br>For\
+            \ <span class=\"enum\">\"DIVIDEND\"</span> this is the dividend payment.<br>For\
+            \ <span class=\"enum\">\"EXECUTION\"</span>, <span class=\"enum\">\"MARK_TO_MARKET_PROFIT_LOSS\"\
+            </span> this is the realised profit.<br>For <span class=\"enum\">\"FUNDING\"\
+            </span>, <span class=\"enum\">\"FX_FUNDING\"</span> this is the funding\
+            \ cost."
+        currency_balance:
+          type: string
+          description: Balance currency
+        currency:
+          type: string
+          description: Currency
+        timestamp:
+          type: string
+          description: ISO8601 timestamp with millisecond resolution
+      description: Account Transaction
+      discriminator:
+        propertyName: transaction_category
+        mapping:
+          DEBIT_CREDIT: "#/components/schemas/DebitCreditTransaction"
+          COMMISSION: "#/components/schemas/Commission"
+          COMMISSION_REVENUE: "#/components/schemas/CommissionRevenue"
+          DELIVERABLE: "#/components/schemas/Deliverable"
+          FX_FUNDING: "#/components/schemas/FxFunding"
+          EXECUTION: "#/components/schemas/Execution"
+          FUNDING: "#/components/schemas/Funding"
+          FOREIGN_CURRENCY_SWEEP: "#/components/schemas/ForeignCurrencySweep"
+          DIVIDEND: "#/components/schemas/Dividend"
+          BANK_TRANSFER_CURRENCY_CONVERSION: "#/components/schemas/BankTransferCurrencyConversion"
+          MARK_TO_MARKET_PROFIT_LOSS: "#/components/schemas/MarkToMarketProfitLoss"
+          BASE_CURRENCY_SWEEP: "#/components/schemas/BaseCurrencySweep"
+      oneOf:
+      - $ref: "#/components/schemas/DebitCreditTransaction"
+      - $ref: "#/components/schemas/Commission"
+      - $ref: "#/components/schemas/CommissionRevenue"
+      - $ref: "#/components/schemas/Deliverable"
+      - $ref: "#/components/schemas/Execution"
+      - $ref: "#/components/schemas/FxFunding"
+      - $ref: "#/components/schemas/Funding"
+      - $ref: "#/components/schemas/ForeignCurrencySweep"
+      - $ref: "#/components/schemas/Dividend"
+      - $ref: "#/components/schemas/BankTransferCurrencyConversion"
+      - $ref: "#/components/schemas/MarkToMarketProfitLoss"
+      - $ref: "#/components/schemas/BaseCurrencySweep"
+    AccountTransactionResponse:
+      type: object
+      properties:
+        before_cursor:
+          type: string
+          description: Cursor identifying the earliest account transaction
+        after_cursor:
+          type: string
+          description: Cursor identifying the latest account transaction
+        status:
+          type: string
+          description: Response status. 'Interrupted' means that resource allocation
+            was exceeded and result set might be incomplete. Clients are allowed to
+            request next page of results.
+          enum:
+          - COMPLETED
+          - INTERRUPTED
+        transactions:
+          type: array
+          description: Each transaction entry can have different fields based on the
+            transaction category
+          items:
+            $ref: "#/components/schemas/AccountTransaction"
+      description: Account transaction response
+    BankTransferCurrencyConversion:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          reference:
+            type: string
+            description: Reference
+          native_currency_code:
+            type: string
+            description: Native currency code
+          native_amount:
+            type: string
+            description: Native amount
+    BaseCurrencySweep:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          trade_date:
+            type: string
+            description: Trade date
+          account_currency_code:
+            type: string
+            description: Account currency code
+          foreign_currency_code:
+            type: string
+            description: Foreign currency code
+          foreign_amount:
+            type: string
+            description: Foreign amount
+          exchange_rate:
+            type: string
+            description: Exchange rate
+    Commission:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          commission_type:
+            type: string
+            description: Commission type
+            enum:
+            - EXECUTION_COMMISSION
+            - SETTLEMENT_COMMISSION
+          instrument_id:
+            type: string
+            description: Instrument identifier
+          trade_date:
+            type: string
+            description: Trade date
+          order_id:
+            type: string
+            description: Order Id
+          quantity:
+            type: string
+            description: "Quantity in base currency or other unit of measure (e.g.\
+              \ barrels, troy oz)"
+          side:
+            type: string
+            description: The side of the order. Bid is a buy. Ask is a sell
+            enum:
+            - BID
+            - ASK
+            - ZERO
+          execution_id:
+            type: string
+            description: Execution Id
+          vwap:
+            type: string
+            description: VWAP (Volume weighted average price)
+          commission_rate:
+            type: string
+            description: Commission rate
+          minimum_commission:
+            type: string
+            description: Minimum commission
+          commission_per_unit_of_measure:
+            type: string
+            description: Commission per unit of measure
+    CommissionRevenue:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          commission_revenue_type:
+            type: string
+            description: Commission revenue type
+            enum:
+            - EXECUTION_COMMISSION_REVENUE
+            - SETTLEMENT_COMMISSION_REVENUE
+          instrument_id:
+            type: string
+            description: Instrument identifier
+          trade_date:
+            type: string
+            description: Trade date
+          order_id:
+            type: string
+            description: Order Id
+          execution_id:
+            type: string
+            description: Execution Id
+          quantity:
+            type: string
+            description: "Quantity in base currency or other unit of measure (e.g.\
+              \ barrels, troy oz)"
+          side:
+            type: string
+            description: The side of the order. Bid is a buy. Ask is a sell
+            enum:
+            - BID
+            - ASK
+            - ZERO
+          vwap:
+            type: string
+            description: VWAP (Volume weighted average price)
+          exchange_commission_rate:
+            type: string
+            description: Exchange Commission rate
+          introducer_commission_rate:
+            type: string
+            description: Introducer commission rate
+          exchange_commission_per_unit_of_measure:
+            type: string
+            description: Exchange Commission per unit of measure
+          introducer_commission_per_unit_of_measure:
+            type: string
+            description: Introducer commission per unit of measure
+          exchange_minimum_commission:
+            type: string
+            description: Exchange Minimum commission
+          introducer_minimum_commission:
+            type: string
+            description: Introducer minimum commission
+    DebitCreditTransaction:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          debit_credit_type:
+            type: string
+            description: Debit/credit type
+            enum:
+            - OPENING_BALANCE
+            - PAYMENT_CARD
+            - PAYMENT_CARD_REFUND
+            - ACCOUNT_ADJUSTMENT
+            - DEMO_FUNDS
+            - DORMANT_ACCOUNT_FEE
+            - WITHDRAWAL
+            - BROKER_ERROR
+            - DEPOSIT
+            - GOODWILL
+            - ACCOUNT_TRANSFER
+            - MARKET_DATA_FEE
+            - MARKET_DATA_FEE_REFUND
+            - SERVICE_FEE
+            - VAT
+            - VAT_REFUND
+            - API_FEE
+            - API_FEE_REFUND
+            - BANK
+            - BILATERAL_SETTLEMENT
+            - DELIVERABLE
+            - SKRILL
+            - NETELLER
+            - DIGITAL
+            - DIGITAL_FEE
+            - DIGITAL_REFUND
+          reference:
+            type: string
+            description: Debit/credit reference (optional)
+    Deliverable:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          instrument_id:
+            type: string
+            description: Instrument identifier
+          order_id:
+            type: string
+            description: Order Id
+          execution_id:
+            type: string
+            description: Execution Id
+          quantity:
+            type: string
+            description: "Quantity in base currency or other unit of measure (e.g.\
+              \ barrels, troy oz)"
+          trade_date:
+            type: string
+            description: Trade date
+          price:
+            type: string
+            description: Price
+          side:
+            type: string
+            description: The side of the order. Bid is a buy. Ask is a sell
+            enum:
+            - BID
+            - ASK
+            - ZERO
+    Dividend:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          instrument_id:
+            type: string
+            description: Instrument identifier
+          trade_date:
+            type: string
+            description: Trade date
+          quantity:
+            type: string
+            description: "Quantity in base currency or other unit of measure (e.g.\
+              \ barrels, troy oz)"
+          dividend_amount:
+            type: string
+            description: Dividend amount
+          side:
+            type: string
+            description: The side of the order. Bid is a buy. Ask is a sell
+            enum:
+            - BID
+            - ASK
+            - ZERO
+    Execution:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          execution_type:
+            type: string
+            description: Execution type
+            enum:
+            - EXECUTION
+            - SETTLEMENT
+          trade_date:
+            type: string
+            description: Trade date
+          instrument_id:
+            type: string
+            description: Instrument identifier
+          execution_id:
+            type: string
+            description: Execution Id
+          quantity_closed:
+            type: string
+            description: How much of the order's open quantity was closed
+          opening_order_id:
+            type: string
+            description: Opening Order Id
+          opening_price:
+            type: string
+            description: Opening Price
+          closing_order_id:
+            type: string
+            description: Closing Order Id
+          closing_price:
+            type: string
+            description: Closing Price
+          side:
+            type: string
+            description: The side of the order. Bid is a buy. Ask is a sell
+            enum:
+            - BID
+            - ASK
+            - ZERO
+    ForeignCurrencySweep:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          trade_date:
+            type: string
+            description: Trade date
+          foreign_currency_code:
+            type: string
+            description: Foreign currency code
+    Funding:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          funding_type:
+            type: string
+            description: Funding type
+            enum:
+            - FUNDING_CHARGES
+            - FUNDING_CORRECTION
+          instrument_id:
+            type: string
+            description: Instrument identifier
+          trade_date:
+            type: string
+            description: Trade date
+          open_quantity:
+            type: string
+            description: The open quantity
+          funding_rate_percentage:
+            type: string
+            description: The funding rate percentage
+          valuation:
+            type: string
+            description: Valuation
+          side:
+            type: string
+            description: The side of the order. Bid is a buy. Ask is a sell
+            enum:
+            - BID
+            - ASK
+            - ZERO
+    FxFunding:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          fx_funding_type:
+            type: string
+            description: FX Funding type
+            enum:
+            - FX_FUNDING_CHARGES
+            - FX_FUNDING_CORRECTION
+          instrument_id:
+            type: string
+            description: Instrument identifier
+          trade_date:
+            type: string
+            description: Trade date
+          open_quantity:
+            type: string
+            description: The open quantity
+          funding_spread:
+            type: string
+            description: The funding spread
+          side:
+            type: string
+            description: The side of the order. Bid is a buy. Ask is a sell
+            enum:
+            - BID
+            - ASK
+            - ZERO
+    MarkToMarketProfitLoss:
+      required:
+      - transaction_category
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AccountTransaction"
+      - type: object
+        properties:
+          instrument_id:
+            type: string
+            description: Instrument identifier
+          trade_date:
+            type: string
+            description: Trade date
+          opening_order_id:
+            type: string
+            description: Opening Order Id
+          open_quantity:
+            type: string
+            description: The open quantity
+          vwap:
+            type: string
+            description: VWAP (Volume weighted average price)
+          closing_price:
+            type: string
+            description: Closing Price
+          side:
+            type: string
+            description: The side of the order. Bid is a buy. Ask is a sell
+            enum:
+            - BID
+            - ASK
+            - ZERO
+    OrderInformation:
+      type: object
+      properties:
+        instruction_id:
+          type: string
+          description: Instruction Id
+        order_placement_timestamp:
+          type: string
+          description: 'Order placement timestamp. '
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        order_type:
+          type: string
+          description: Order type
+          enum:
+          - TRAILING_STOP
+          - LIMIT
+          - SETTLEMENT
+          - REVERSAL
+          - MANUAL
+          - STOP
+          - STOP_LIMIT
+          - MARKET
+          - STOP_LOSS
+          - TAKE_PROFIT
+        order_quantity:
+          type: string
+          description: Order quantity
+        order_status:
+          type: string
+          description: Order status
+          enum:
+          - FILLED
+          - PARTIALLY_FILLED
+      description: Order information
+    Trade:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        execution_id:
+          type: string
+          description: Execution Id
+        timestamp:
+          type: string
+          description: Trade timestamp. ISO8601 timestamp with millisecond resolution
+        price:
+          type: string
+          description: Trade price
+        quantity:
+          type: string
+          description: Trade quantity
+        order_id:
+          type: string
+          description: Order Id
+        side:
+          type: string
+          description: The side of the trade. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+        commission:
+          type: string
+          description: 'Commission charged for this trade. '
+        order_information:
+          $ref: "#/components/schemas/OrderInformation"
+    TradeHistoryResponse:
+      type: object
+      properties:
+        before_cursor:
+          type: string
+          description: Cursor identifying the earliest trade
+        after_cursor:
+          type: string
+          description: Cursor identifying the latest trade
+        trades:
+          type: array
+          items:
+            $ref: "#/components/schemas/Trade"
+      description: Trade history response
+    PlaceOrderRequest:
+      required:
+      - instruction_id
+      - instrument_id
+      - quantity
+      - side
+      - time_in_force
+      - type
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        type:
+          type: string
+          description: Order type
+          enum:
+          - MARKET
+          - LIMIT
+          - STOP
+          - STOP_LIMIT
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        price:
+          type: string
+          description: Limit price. Required for <span class="enum">"LIMIT"</span>
+            and <span class="enum">"STOP_LIMIT"</span> orders
+        stop_price:
+          type: string
+          description: Stop price. Required for <span class="enum">"STOP"</span> and
+            <span class="enum">"STOP_LIMIT"</span> orders
+        trigger_method:
+          type: string
+          description: The method to trigger a <span class="enum">"STOP"</span> or
+            <span class="enum">"STOP_LIMIT"</span> order and stop loss contingent
+            orders.<ul><li><span class="enum">"ONE_TOUCH"</span> <span class="enum">"ASK"</span>
+            orders trigger when the best bid price moves down to the stop_price (or
+            below)</li><li><span class="enum">"ONE_TOUCH"</span> <span class="enum">"BID"</span>
+            orders trigger when the best ask price moves up to the stop_price (or
+            above)</li><li><span class="enum">"BID_OFFER"</span> <span class="enum">"ASK"</span>
+            orders trigger when the best ask price moves down to the stop_price (or
+            below)</li><li><span class="enum">"BID_OFFER"</span> <span class="enum">"BID"</span>
+            orders trigger when the best bid price moves up to the stop_price (or
+            above)</li></ul>
+          enum:
+          - ONE_TOUCH
+          - BID_OFFER
+        instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+        time_in_force:
+          type: string
+          description: "Time in force of the order.<ul><li><span class=\"enum\">\"\
+            FILL_OR_KILL\"</span> The order must totally fill or it is cancelled.\
+            \ Applicable to <span class=\"enum\">\"LIMIT\"</span>, <span class=\"\
+            enum\">\"MARKET\"</span> orders.</li><li><span class=\"enum\">\"IMMEDIATE_OR_CANCEL\"\
+            </span> The order can either totally or partially fill, any remainder\
+            \ is cancelled. Applicable to <span class=\"enum\">\"LIMIT\"</span>, <span\
+            \ class=\"enum\">\"MARKET\"</span> orders.</li><li><span class=\"enum\"\
+            >\"GOOD_FOR_DAY\"</span> The order will try to fill what it can immediately,\
+            \ any remaining will rest on the orderbook. It will be cancelled at the\
+            \ end of the trading day.Applicable to <span class=\"enum\">\"LIMIT\"\
+            </span>, <span class=\"enum\">\"STOP\"</span>, <span class=\"enum\">\"\
+            STOP_LIMIT\"</span> orders.</li><li><span class=\"enum\">\"GOOD_TIL_CANCELLED\"\
+            </span> The order will try to fill what it can immediately, any remaining\
+            \ will rest on the orderbook. It will not cancel at the end of trading\
+            \ day and will be placed the next day (and so on until you cancel it specifically).\
+            \ Applicable to <span class=\"enum\">\"LIMIT\"</span>, <span class=\"\
+            enum\">\"STOP\"</span>, <span class=\"enum\">\"STOP_LIMIT\"</span> orders.</li></ul>"
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+        take_profit_instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request's take profit order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ take profit contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+        stop_loss_instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+      description: Place order request
+    PlaceOrderResponse:
+      type: object
+      properties:
+        order_type:
+          type: string
+          description: Order type
+          enum:
+          - MARKET
+          - LIMIT
+          - STOP
+          - STOP_LIMIT
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+        take_profit_rejection_reason:
+          type: string
+          description: The reason the take profit order was rejected
+          enum:
+          - INSTRUMENT_NOT_FOUND
+          - OTHER
+          - OUTSIDE_ALLOWED_PRICE_RANGE
+          - QUANTITY_NOT_VALID
+        stop_loss_rejection_reason:
+          type: string
+          description: The reason the stop loss order was rejected
+          enum:
+          - INSTRUMENT_NOT_FOUND
+          - OTHER
+          - OUTSIDE_ALLOWED_PRICE_RANGE
+          - QUANTITY_NOT_VALID
+      description: Place order response
+    PlaceOrderRejectionResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ACCESS_TO_INSTRUMENT_DENIED
+          - ACCOUNT_DOES_NOT_EXIST
+          - ACCOUNT_IN_LIQUIDATION
+          - ACCOUNT_SUSPENDED
+          - CANNOT_SETTLE
+          - DUPLICATE_ORDER
+          - INSTRUMENT_NOT_FOUND
+          - INSTRUMENT_NOT_READY
+          - INSTRUMENT_SUSPENDED
+          - INSUFFICIENT_FUNDS
+          - LIQUIDITY_POOL_UNAVAILABLE
+          - MAXIMUM_POSITION_EXCEEDED
+          - OTHER
+          - OUTSIDE_ALLOWED_PRICE_RANGE
+          - PLACE_ORDER_NOT_PERMITTED
+          - PRICE_INVALID
+          - QUANTITY_NOT_VALID
+          - STOP_ORDER_NOT_PERMITTED
+          - TIME_IN_FORCE_INVALID
+          - CONTINGENT_ORDERS_NOT_SUPPORTED
+      description: Place order rejection response
+    PlaceOrderBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUMENT_NOT_FOUND
+          enum:
+          - BAD_REQUEST
+          - INSTRUCTION_ID_INVALID
+          - INSTRUMENT_NOT_FOUND
+          - LIMIT_PRICE_NOT_ALLOWED
+          - LIMIT_ORDER_PRICE_REQUIRED
+          - MARKET_ORDER_PRICE_NOT_ALLOWED
+          - PARSING_ERROR
+          - PRICE_NOT_VALID
+          - PRICE_NOT_A_VALID_INCREMENT
+          - STOP_PRICE_NOT_A_VALID_INCREMENT
+          - PRICE_NOT_A_VALID_NUMBER
+          - PRICE_NOT_A_POSITIVE_NUMBER
+          - QUANTITY_NOT_VALID
+          - QUANTITY_NOT_A_POSITIVE_NUMBER
+          - QUANTITY_NOT_A_VALID_INCREMENT
+          - QUANTITY_NOT_A_VALID_NUMBER
+          - STOP_PRICE_NOT_ALLOWED
+          - STOP_PRICE_NOT_VALID
+          - STOP_PRICE_NOT_A_VALID_NUMBER
+          - STOP_PRICE_NOT_A_POSITIVE_NUMBER
+          - STOP_PRICE_REQUIRED
+          - TIME_IN_FORCE_INVALID
+          - TRIGGER_METHOD_REQUIRED
+          - TRIGGER_METHOD_IS_NOT_ALLOWED
+          - UNEXPECTED_FIELD
+          - INVALID_TAKE_PROFIT_INSTRUCTION
+          - TAKE_PROFIT_INSTRUCTION_ID_INVALID
+          - ORDER_GUARANTEES_A_LOSS
+          - TAKE_PROFIT_OFFSET_PRICE_NOT_A_VALID_INCREMENT
+          - TAKE_PROFIT_OFFSET_PRICE_NOT_VALID
+          - TAKE_PROFIT_OFFSET_PRICE_NOT_A_VALID_NUMBER
+          - INVALID_STOP_LOSS_INSTRUCTION
+          - STOP_LOSS_INSTRUCTION_ID_INVALID
+          - STOP_LOSS_OFFSET_PRICE_NOT_A_VALID_INCREMENT
+          - STOP_LOSS_OFFSET_PRICE_NOT_VALID
+          - STOP_LOSS_OFFSET_PRICE_NOT_A_VALID_NUMBER
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    CancelOrderRequest:
+      required:
+      - cancel_instruction_id
+      - instruction_id
+      - instrument_id
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        cancel_instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+        instruction_id:
+          maxLength: 20
+          type: string
+          description: Instruction Id for the order to cancel
+      description: Cancel order request
+    CancelOrderResponse:
+      type: object
+      properties:
+        cancel_instruction_id:
+          type: string
+          description: Instruction Id
+        order_type:
+          type: string
+          description: Order type
+          enum:
+          - MARKET
+          - LIMIT
+          - STOP
+          - STOP_LIMIT
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+      description: Cancel order response
+    CancelOrderRejectionResponse:
+      type: object
+      properties:
+        cancel_instruction_id:
+          type: string
+          description: Instruction Id
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id for the order to cancel
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ORDER_NOT_FOUND
+          - DUPLICATE_ORDER
+          - ACCOUNT_SUSPENDED
+          - ACCOUNT_DOES_NOT_EXIST
+          - ACCESS_TO_INSTRUMENT_DENIED
+          - ORDER_CANNOT_BE_CANCELLED
+          - CANCEL_ORDER_NOT_PERMITTED
+          - INSTRUMENT_NOT_FOUND
+          - INSTRUMENT_NOT_READY
+          - OTHER
+      description: Cancel order rejection response
+    CancelOrderBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUMENT_NOT_FOUND
+          enum:
+          - BAD_REQUEST
+          - CANCEL_INSTRUCTION_ID_INVALID
+          - INSTRUCTION_ID_INVALID
+          - INSTRUMENT_NOT_FOUND
+          - PARSING_ERROR
+          - UNEXPECTED_FIELD
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    CancelAndReplaceOrderRequest:
+      required:
+      - instruction_id
+      - instrument_id
+      - price
+      - quantity
+      - replacement_instruction_id
+      - side
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        replacement_instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+        instruction_id:
+          maxLength: 20
+          type: string
+          description: Instruction Id for the order to cancel
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        price:
+          type: string
+          description: Limit price. Required for <span class="enum">"LIMIT"</span>
+            and <span class="enum">"STOP_LIMIT"</span> orders
+      description: Cancel and replace order request
+    CancelAndReplaceOrderResponse:
+      type: object
+      properties:
+        order_type:
+          type: string
+          description: Order type
+          enum:
+          - MARKET
+          - LIMIT
+          - STOP
+          - STOP_LIMIT
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+        replaced_instruction_id:
+          type: string
+          description: Instruction Id of the order replaced
+      description: Cancel and replace order response
+    CancelAndReplaceOrderRejectionResponse:
+      type: object
+      properties:
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ACCOUNT_SUSPENDED
+          - ACCOUNT_IN_LIQUIDATION
+          - ACCOUNT_DOES_NOT_EXIST
+          - ACCESS_TO_INSTRUMENT_DENIED
+          - DUPLICATE_ORDER
+          - INCORRECT_SIDE
+          - INSTRUMENT_NOT_READY
+          - INSUFFICIENT_FUNDS
+          - MAXIMUM_POSITION_EXCEEDED
+          - ORDER_NOT_FOUND
+          - OUTSIDE_ALLOWED_PRICE_RANGE
+          - PLACE_ORDER_NOT_PERMITTED
+          - QUANTITY_NOT_VALID
+          - TEMPORARILY_UNAVAILABLE
+          - OTHER
+        account_id:
+          type: string
+          description: Account Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        instruction_id:
+          type: string
+          description: Instruction Id
+      description: Cancel and replace order rejection response
+    CancelAndReplaceOrderBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUMENT_NOT_FOUND
+          enum:
+          - BAD_REQUEST
+          - INSTRUCTION_ID_INVALID
+          - INSTRUMENT_NOT_FOUND
+          - PARSING_ERROR
+          - PRICE_NOT_VALID
+          - PRICE_NOT_A_POSITIVE_NUMBER
+          - PRICE_NOT_A_VALID_INCREMENT
+          - PRICE_NOT_A_VALID_NUMBER
+          - REPLACEMENT_INSTRUCTION_ID_INVALID
+          - QUANTITY_NOT_VALID
+          - QUANTITY_NOT_A_POSITIVE_NUMBER
+          - QUANTITY_NOT_A_VALID_NUMBER
+          - QUANTITY_NOT_A_VALID_INCREMENT
+          - UNEXPECTED_FIELD
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    CancelAllOrdersRequest:
+      required:
+      - cancel_instruction_id
+      type: object
+      properties:
+        cancel_instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+      description: Cancel all orders request
+    CancelAllOrdersResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        cancelled_orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/CancelOrderResponse"
+      description: Cancel all orders response
+    CancelAllOrdersRejectionResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ACCOUNT_SUSPENDED
+          - CANCEL_ALL_ORDER_NOT_PERMITTED
+          - OTHER
+      description: Cancel all orders rejection response
+    CancelAllOrdersBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUMENT_NOT_FOUND
+          enum:
+          - BAD_REQUEST
+          - CANCEL_INSTRUCTION_ID_INVALID
+          - PARSING_ERROR
+          - UNEXPECTED_FIELD
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    CloseOrderRequest:
+      required:
+      - closing_instruction_id
+      - instrument_id
+      - quantity
+      - side
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        closing_instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+        instruction_id:
+          maxLength: 20
+          type: string
+          description: Instruction Id for the order to close
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+      description: Close order request
+    CloseOrderResponse:
+      type: object
+      properties:
+        closed_instruction_id:
+          type: string
+          description: Instruction Id for the order that was closed
+        order_type:
+          type: string
+          description: Order type
+          enum:
+          - MARKET
+          - LIMIT
+          - STOP
+          - STOP_LIMIT
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+      description: Close order rejection response
+    CloseOrderRejectionResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        closed_instruction_id:
+          type: string
+          description: Instruction Id for the order that was closed
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ORDER_NOT_FOUND
+          - NO_OPEN_QUANTITY
+          - DUPLICATE_ORDER
+          - LIQUIDITY_POOL_UNAVAILABLE
+          - ACCOUNT_SUSPENDED
+          - OTHER
+      description: Close order rejection response
+    CloseOrderBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUMENT_NOT_FOUND
+          enum:
+          - BAD_REQUEST
+          - INSTRUCTION_ID_INVALID
+          - CLOSING_INSTRUCTION_ID_INVALID
+          - QUANTITY_NOT_A_VALID_INCREMENT
+          - QUANTITY_NOT_A_VALID_NUMBER
+          - QUANTITY_NOT_VALID
+          - QUANTITY_NOT_A_POSITIVE_NUMBER
+          - INSTRUMENT_NOT_FOUND
+          - PARSING_ERROR
+          - UNEXPECTED_FIELD
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    AmendTakeProfitRequest:
+      required:
+      - instruction_id
+      - instrument_id
+      - take_profit_instruction_id
+      - take_profit_offset
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        instruction_id:
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+        take_profit_instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request's take profit order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ take profit contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+      description: Amend take profit request
+    AmendTakeProfitResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+      description: Amend take profit response
+    AmendTakeProfitRejectionResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ACCESS_TO_INSTRUMENT_DENIED
+          - ACCOUNT_DOES_NOT_EXIST
+          - ACCOUNT_IN_LIQUIDATION
+          - ACCOUNT_SUSPENDED
+          - INSTRUMENT_NOT_FOUND
+          - ORDER_NOT_FOUND
+          - DUPLICATE_ORDER
+          - AMEND_TAKE_PROFIT_NOT_PERMITTED
+          - OTHER
+          - CONTINGENT_ORDERS_NOT_SUPPORTED
+          - ORDER_GUARANTEES_A_LOSS
+          - TAKE_PROFIT_OFFSET_PRICE_NOT_VALID
+          - TAKE_PROFIT_AMEND_FAILED
+          - QUANTITY_NOT_VALID
+          - TAKE_PROFIT_WORSE_THAN_MARKET_PRICE
+      description: Amend take profit rejection response
+    AmendTakeProfitBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUCTION_ID_NOT_SPECIFIED
+          enum:
+          - BAD_REQUEST
+          - INSTRUCTION_ID_INVALID
+          - INSTRUMENT_NOT_FOUND
+          - PARSING_ERROR
+          - UNEXPECTED_FIELD
+          - TAKE_PROFIT_INSTRUCTION_ID_INVALID
+          - ORDER_GUARANTEES_A_LOSS
+          - TAKE_PROFIT_OFFSET_PRICE_NOT_A_VALID_INCREMENT
+          - TAKE_PROFIT_OFFSET_PRICE_NOT_VALID
+          - TAKE_PROFIT_OFFSET_PRICE_NOT_A_VALID_NUMBER
+          - TAKE_PROFIT_OFFSET_REQUIRED
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    RemoveTakeProfitRequest:
+      required:
+      - instruction_id
+      - instrument_id
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        instruction_id:
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+      description: Remove take profit request
+    RemoveTakeProfitResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+      description: Remove take profit response
+    RemoveTakeProfitRejectionResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ACCESS_TO_INSTRUMENT_DENIED
+          - ACCOUNT_DOES_NOT_EXIST
+          - ACCOUNT_IN_LIQUIDATION
+          - ACCOUNT_SUSPENDED
+          - INSTRUMENT_NOT_FOUND
+          - ORDER_NOT_FOUND
+          - DUPLICATE_ORDER
+          - OTHER
+          - CONTINGENT_ORDERS_NOT_SUPPORTED
+          - QUANTITY_NOT_VALID
+          - TAKE_PROFIT_REMOVE_FAILED
+      description: Remove take profit rejection response
+    RemoveTakeProfitBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUCTION_ID_NOT_SPECIFIED
+          enum:
+          - BAD_REQUEST
+          - INSTRUCTION_ID_INVALID
+          - INSTRUMENT_NOT_FOUND
+          - PARSING_ERROR
+          - UNEXPECTED_FIELD
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    RemoveStopLossRequest:
+      required:
+      - instruction_id
+      - instrument_id
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        instruction_id:
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+      description: Remove stop loss request
+    RemoveStopLossResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+      description: Remove stop loss response
+    RemoveStopLossRejectionResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ACCESS_TO_INSTRUMENT_DENIED
+          - ACCOUNT_DOES_NOT_EXIST
+          - ACCOUNT_IN_LIQUIDATION
+          - ACCOUNT_SUSPENDED
+          - INSTRUMENT_NOT_FOUND
+          - ORDER_NOT_FOUND
+          - DUPLICATE_ORDER
+          - OTHER
+          - CONTINGENT_ORDERS_NOT_SUPPORTED
+          - QUANTITY_NOT_VALID
+          - STOP_LOSS_REMOVE_FAILED
+      description: Remove stop loss rejection response
+    RemoveStopLossBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUCTION_ID_NOT_SPECIFIED
+          enum:
+          - BAD_REQUEST
+          - INSTRUCTION_ID_INVALID
+          - INSTRUMENT_NOT_FOUND
+          - PARSING_ERROR
+          - UNEXPECTED_FIELD
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    AmendStopLossRequest:
+      required:
+      - instruction_id
+      - instrument_id
+      - stop_loss_instruction_id
+      - stop_loss_offset
+      - trigger_method
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        instruction_id:
+          type: string
+          description: "An identifier for this request. Use ASCII characters from\
+            \ 33 to 126. Cannot be \"0\". Certain ASCII sequences (for example, “\
+            ${“) may represent heuristic patterns of interest and result in LMAX security\
+            \ systems blocking requests until triage, it is recommended that these\
+            \ be avoided if possible"
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+        stop_loss_instruction_id:
+          maxLength: 20
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+        trigger_method:
+          type: string
+          description: The method to trigger a <span class="enum">"STOP"</span> or
+            <span class="enum">"STOP_LIMIT"</span> order and stop loss contingent
+            orders.<ul><li><span class="enum">"ONE_TOUCH"</span> <span class="enum">"ASK"</span>
+            orders trigger when the best bid price moves down to the stop_price (or
+            below)</li><li><span class="enum">"ONE_TOUCH"</span> <span class="enum">"BID"</span>
+            orders trigger when the best ask price moves up to the stop_price (or
+            above)</li><li><span class="enum">"BID_OFFER"</span> <span class="enum">"ASK"</span>
+            orders trigger when the best ask price moves down to the stop_price (or
+            below)</li><li><span class="enum">"BID_OFFER"</span> <span class="enum">"BID"</span>
+            orders trigger when the best bid price moves up to the stop_price (or
+            above)</li></ul>
+          enum:
+          - ONE_TOUCH
+          - BID_OFFER
+      description: Amend stop loss request
+    AmendStopLossResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        order_id:
+          type: string
+          description: Order Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        limit_price:
+          type: string
+          description: Limit price
+          nullable: true
+        stop_price:
+          type: string
+          description: Stop price
+          nullable: true
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+        unfilled_quantity:
+          type: string
+          description: Unfilled quantity
+        matched_quantity:
+          type: string
+          description: Matched quantity
+        cumulative_matched_quantity:
+          type: string
+          description: Cumulative matched quantity (the sum of previous matched quantities
+            if an order has been cancel and replaced)
+        cancelled_quantity:
+          type: string
+          description: Cancelled quantity
+        matched_cost:
+          type: string
+          description: Matched cost
+        commission:
+          type: string
+          description: Total commission charged for the order.
+        stop_loss_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a stop loss contingent order
+          nullable: true
+        stop_loss_instruction_id:
+          type: string
+          description: "An identifier for this request's stop loss order. Use ASCII\
+            \ characters from 33 to 126. Cannot be \"0\"; required when setting a\
+            \ stop loss contingent order. Note: certain ASCII sequences (for example,\
+            \ “${“) may represent heuristic patterns of interest and result in LMAX\
+            \ security systems blocking requests until triage, it is recommended that\
+            \ these be avoided if possible"
+          nullable: true
+        trailing_stop_loss:
+          type: string
+          description: Trailing stop loss
+          nullable: true
+        take_profit_instruction_id:
+          type: string
+          description: Take profit instruction id
+          nullable: true
+        take_profit_offset:
+          type: string
+          description: Stop offset from contingent order reference price; required
+            when setting a take profit contingent order
+          nullable: true
+        contingent_order_reference_price:
+          type: string
+          description: Contingent order reference price; base-price to apply stop
+            loss and take profit offsets to
+          nullable: true
+        time_in_force:
+          type: string
+          description: Time in force
+          enum:
+          - FILL_OR_KILL
+          - IMMEDIATE_OR_CANCEL
+          - GOOD_FOR_DAY
+          - GOOD_TIL_CANCELLED
+        side:
+          type: string
+          description: The side of the order. Bid is a buy. Ask is a sell
+          enum:
+          - BID
+          - ASK
+      description: Amend stop loss response
+    AmendStopLossRejectionResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        instruction_id:
+          type: string
+          description: Instruction Id
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        rejection_reason:
+          type: string
+          description: The reason the order was rejected
+          enum:
+          - ACCESS_TO_INSTRUMENT_DENIED
+          - ACCOUNT_DOES_NOT_EXIST
+          - ACCOUNT_IN_LIQUIDATION
+          - ACCOUNT_SUSPENDED
+          - INSTRUMENT_NOT_FOUND
+          - ORDER_NOT_FOUND
+          - DUPLICATE_ORDER
+          - AMEND_STOP_LOSS_NOT_PERMITTED
+          - OTHER
+          - CONTINGENT_ORDERS_NOT_SUPPORTED
+          - STOP_LOSS_OFFSET_PRICE_NOT_VALID
+          - STOP_LOSS_AMEND_FAILED
+          - QUANTITY_NOT_VALID
+      description: Amend take profit rejection response
+    AmendStopLossBadRequestResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: INSTRUCTION_ID_NOT_SPECIFIED
+          enum:
+          - BAD_REQUEST
+          - INSTRUCTION_ID_INVALID
+          - INSTRUMENT_NOT_FOUND
+          - PARSING_ERROR
+          - UNEXPECTED_FIELD
+          - STOP_LOSS_INSTRUCTION_ID_INVALID
+          - STOP_LOSS_OFFSET_PRICE_NOT_A_VALID_INCREMENT
+          - STOP_LOSS_OFFSET_PRICE_NOT_VALID
+          - STOP_LOSS_OFFSET_PRICE_NOT_A_VALID_NUMBER
+          - STOP_LOSS_OFFSET_REQUIRED
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    BlockchainWithdrawalRequest:
+      type: object
+      properties:
+        address:
+          maxLength: 255
+          type: string
+          description: Blockchain address
+        amount:
+          maxLength: 22
+          type: string
+          description: Amount
+        currency:
+          maxLength: 8
+          type: string
+          description: Currency
+        client_reference:
+          maxLength: 32
+          type: string
+          description: Client reference id
+        type:
+          type: string
+          description: Withdrawal type
+          enum:
+          - BLOCKCHAIN
+      description: Blockchain withdrawal request
+    WithdrawalResponse:
+      type: object
+      properties:
+        withdrawal_request_id:
+          type: string
+          description: Withdrawal request id
+      description: Withdrawal response
+    WithdrawalBadRequest:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: The reason the withdrawal request was rejected
+          example: ADDRESS_UNVERIFIED
+          enum:
+          - UNKNOWN_ADDRESS
+          - BAD_REQUEST
+          - ACCESS_DENIED
+          - OTHER
+          - INVALID_AMOUNT
+          - NOT_ALLOWED
+          - POSITIVE_NET_DEPOSITS
+          - INSUFFICIENT_FUNDS
+          - FUNDING_DISABLED
+          - ADDRESS_UNVERIFIED
+        error_message:
+          type: string
+          description: Error description
+          example: Withdrawal address must be verified
+      description: Withdrawal bad request response
+    WithdrawalRequestStatusResponse:
+      type: object
+      properties:
+        withdrawal_request_id:
+          type: string
+          description: Withdrawal request id
+        status:
+          type: string
+          description: Withdrawal request status
+          enum:
+          - COMPLETED
+          - APPROVED
+          - PENDING
+          - POSITIVE_NET_DEPOSITS
+          - INSUFFICIENT_FUNDS
+          - FUNDING_DISABLED
+          - ADDRESS_UNVERIFIED
+      description: Withdrawal status response
+    VersionResponse:
+      type: object
+      properties:
+        version:
+          type: string
+          description: Version of the API
+      description: Version
+    CustomerWithdrawalRequestResponse:
+      type: object
+      properties:
+        withdrawal_request_id:
+          type: string
+          description: Withdrawal request id
+        account_id:
+          type: string
+          description: Account Id
+        client_reference:
+          type: string
+          description: Client reference id
+        address:
+          type: string
+          description: Blockchain address
+        asset:
+          type: string
+          description: The asset related to this request
+        blockchain:
+          type: string
+          description: The asset's blockchain
+        amount:
+          type: string
+          description: Amount
+        status:
+          type: string
+          description: Withdrawal request status
+          enum:
+          - REQUEST_RECEIVED
+          - IN_FLIGHT
+          - COMPLETE
+        requested_at:
+          type: string
+          description: Epoch timestamp in milliseconds of when this withdrawal request
+            was created
+        processed_at:
+          type: string
+          description: Epoch timestamp in milliseconds of when this withdrawal request
+            was updated
+        transaction_hash_id:
+          type: string
+          description: Transaction receipt submission signature from blockchain
+        address_label:
+          type: string
+          description: Address label
+      description: Withdrawal request response
+    CustomerWithdrawalRequestsResponse:
+      type: object
+      properties:
+        before_cursor:
+          type: string
+          description: Cursor identifying the earliest trade
+        after_cursor:
+          type: string
+          description: Cursor identifying the latest trade
+        withdrawals:
+          type: array
+          description: The list of withdrawal requests
+          items:
+            $ref: "#/components/schemas/CustomerWithdrawalRequestResponse"
+      description: list of withdrawal request responses
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer

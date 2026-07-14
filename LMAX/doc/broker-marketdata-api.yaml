@@ -1,0 +1,733 @@
+openapi: 3.0.1
+info:
+  title: Broker Market Data API
+  description: LMAX Group Broker Market Data API
+  version: 1.3.1
+  x-logo:
+    altText: LMAX Group
+    href: /
+    url: lmax.group.logo.png
+servers:
+- url: https://market-data-api.london-demo.lmax.com
+- url: https://market-data-api.london-professional.lmax.com
+- url: https://market-data-api.london-digital.lmax.com
+- url: https://market-data-api.newyork-professional.lmax.com
+- url: https://market-data-api.tokyo-professional.lmax.com
+- url: https://market-data-api.singapore-professional.lmax.com
+- url: https://market-data-api.london-uat.lmax.com
+- url: https://market-data-api.digital-uat.lmax.com
+tags:
+- name: Authentication
+  description: Endpoints for authentication
+- name: Market Data
+  description: Endpoints for accessing market data
+- name: Account Data
+  description: Endpoints for accessing account data
+- name: Public Data
+  description: Public API endpoints
+- name: Web Sockets
+- name: Tutorials
+paths:
+  /v1/authenticate:
+    post:
+      tags:
+      - Authentication
+      summary: Authentication Endpoint
+      description: "Authenticate to use private APIs. On successful authentication,\
+        \ a session token is returned that should be used in subsequent private api\
+        \ calls. This endpoint belongs to the [\"authentication\"](#section/Introduction/Rate-Limiting)\
+        \ rate limiting category."
+      operationId: authenticate
+      requestBody:
+        description: Authentication request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthenticationRequest"
+        required: true
+      responses:
+        "200":
+          description: Successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Authenticated"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /v1/logout:
+    post:
+      tags:
+      - Authentication
+      summary: Logout Endpoint
+      description: "Invalidate the token used to call this endpoint. This endpoint\
+        \ belongs to the [\"authentication\"](#section/Introduction/Rate-Limiting)\
+        \ rate limiting category."
+      operationId: logout
+      responses:
+        "204":
+          description: Successfully logged out
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/heartbeat:
+    get:
+      tags:
+      - Authentication
+      summary: Heartbeat
+      description: "Prevent session token from expiry. This endpoint belongs to the\
+        \ [\"authentication\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category."
+      operationId: heartbeat
+      responses:
+        "204":
+          description: Success
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/time:
+    get:
+      tags:
+      - Public Data
+      summary: Current time
+      description: Get current time.
+      operationId: getTime
+      responses:
+        "200":
+          description: Current time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeResponse"
+  /v1/version:
+    get:
+      tags:
+      - Public Data
+      summary: Current version
+      description: Get current API version.
+      operationId: getVersion
+      responses:
+        "200":
+          description: Current Version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionResponse"
+  /v1/marketdata/{instrument_id}:
+    get:
+      tags:
+      - Market Data
+      summary: Current snapshot of the orderbook
+      description: "Get current snapshot of the orderbook. This endpoint belongs to\
+        \ the [\"Market Data\"](#section/Introduction/Rate-Limiting) rate limiting\
+        \ category and requires [\"Market Data\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: getMarketData
+      parameters:
+      - name: instrument_id
+        in: path
+        description: Instrument identifier
+        required: true
+        schema:
+          type: string
+        example: eur-usd
+      - name: depth
+        in: query
+        description: depth of the order book
+        schema:
+          type: string
+        example: 20
+      responses:
+        "200":
+          description: Snapshot of the order book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BidOfferSnapshotResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Instrument not accessible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Instrument not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/account/instrument-data:
+    get:
+      tags:
+      - Account Data
+      summary: Instrument data
+      description: "Fetch instrument data including funding, commission, margin rates,\
+        \ account position limits. This endpoint belongs to the [\"query\"](#section/Introduction/Rate-Limiting)\
+        \ rate limiting category and requires [\"Account Information\"](#section/Introduction/API-Key-Scopes)\
+        \ scope."
+      operationId: getInstrumentData
+      responses:
+        "200":
+          description: Instrument data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstrumentDataResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+  /v1/marketdata/{instrument_id}/historic-closing-prices:
+    get:
+      tags:
+      - Market Data
+      summary: Historic closing prices
+      description: |-
+        Gets the historical closing and settlement prices for an instrument, for a given date range. The maximum allowed date range is 1000 days.
+
+        A start or an end date must be provided. If only the start date is given, then the date range will either be the next 1000 days from the start date, or from the start date till the current date if the resulting end date is in the future. Similarly, if only the end date is provided, then date range will either be the past 1000 days from the end date, or from 1st January 2010 till the end date if the resulting start date is before 2010. As we are only able to provide records from 2010 onwards.
+
+        No prices are calculated for non-trading days. So, if no data is returned for a given date, then it means that date fell on a non-trading day and hence there is no closing price for that day. However, if just the closing date is returned without any prices, it means that for one reason or another, no prices were recorded for that day.
+
+        This endpoint belongs to the ["Query"](#section/Introduction/Rate-Limiting) rate limiting category and requires ["Account Information"](#section/Introduction/API-Key-Scopes) scope.
+      operationId: getHistoricClosingPrices
+      parameters:
+      - name: instrument_id
+        in: path
+        description: Instrument Id
+        required: true
+        schema:
+          type: string
+        example: eur-usd
+      - name: start_date
+        in: query
+        schema:
+          type: string
+          format: date
+        examples:
+          date:
+            description: Start date
+            value: 2021-09-11
+      - name: end_date
+        in: query
+        schema:
+          type: string
+          format: date
+        examples:
+          date:
+            description: Closing date
+            value: 2021-09-15
+      responses:
+        "200":
+          description: Historic closing prices response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistoricClosingPricesResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Instrument not accessible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The service is currently unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - Bearer: []
+components:
+  schemas:
+    AuthenticationRequest:
+      required:
+      - client_key_id
+      - nonce
+      - signature
+      - timestamp
+      type: object
+      properties:
+        client_key_id:
+          type: string
+          description: Api key Id
+        timestamp:
+          type: string
+          description: ISO8601 timestamp with millisecond resolution - should be within
+            30 seconds of the server time to be considered valid
+          format: date-time
+          example: 2021-09-12T08:00:00Z
+        nonce:
+          type: string
+          description: The nonce is a random string and should be unique within a
+            60-second window and is intended to prevent relay attacks.
+        signature:
+          type: string
+          description: The signature for the authentication request
+      description: Authentication Request
+    Authenticated:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Session token to be used when making private api calls
+          example: kERa3hugpPuNV9cYob3IJGclu1FAt9vySrZDiZbGBbyU0SxHXi6_5gByLQ9q_IVjL_4BhXxQxgRL5rjCeHQpwQ
+      description: Successful authentication response
+    ApiError:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Error code
+          example: BAD_REQUEST
+        error_message:
+          type: string
+          description: Error description
+          example: Error message
+      description: API error response
+    TimeResponse:
+      type: object
+      properties:
+        epoch_millis:
+          type: string
+          description: Epoch milliseconds
+        timestamp:
+          type: string
+          description: ISO8601 timestamp with millisecond resolution
+      description: Time
+    VersionResponse:
+      type: object
+      properties:
+        version:
+          type: string
+          description: Version of the API
+      description: Version
+    BidOfferSnapshotResponse:
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        timestamp:
+          type: string
+          description: Last updated time. ISO8601 timestamp with millisecond resolution
+        status:
+          type: string
+          description: Current status of the order book
+          enum:
+          - OPEN
+          - SUSPENDED
+          - CLOSED
+          - SETTLED
+        bids:
+          type: array
+          description: Market data entries - bids
+          items:
+            $ref: "#/components/schemas/MarketDataEntry"
+        asks:
+          type: array
+          description: Market data entries - asks
+          items:
+            $ref: "#/components/schemas/MarketDataEntry"
+      description: Bid/offer snapshot response
+    MarketDataEntry:
+      type: object
+      properties:
+        price:
+          type: string
+          description: Price
+        quantity:
+          type: string
+          description: "Quantity in base currency or other unit of measure (e.g. barrels,\
+            \ troy oz)"
+      description: MarketData
+    CommodityInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+    CurrencyFutureInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+    CurrencyInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+      - type: object
+        properties:
+          short_swap_points:
+            type: string
+            description: Short swap points
+          long_swap_points:
+            type: string
+            description: Long swap points
+          short_swap_cost:
+            type: string
+            description: Short swap cost represents the cost of funding a short position
+              of Swap cost units between 'value_date_from' and 'value_date_to'
+          long_swap_cost:
+            type: string
+            description: Long swap cost represents the cost of funding a long position
+              of swap cost units between 'value_date_from' and 'value_date_to'
+          swap_cost_units:
+            type: string
+            description: Swap cost units
+          trade_date:
+            type: string
+            description: Trade date that the swap points relate to
+          value_date_from:
+            type: string
+            description: Value Date for trade date
+          value_date_to:
+            type: string
+            description: Value Date for next trade date
+    EquityInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+      - type: object
+        properties:
+          long_financing_rate:
+            type: string
+            description: Long financing rate (adjusted from funding base rate). Non-currencies
+              only
+          short_financing_rate:
+            type: string
+            description: Short financing rate (adjusted from funding base rate). Non-currencies
+              only
+          funding_base_rate:
+            type: string
+            description: Funding base rate
+    IndexInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+      - type: object
+        properties:
+          long_financing_rate:
+            type: string
+            description: Long financing rate (adjusted from funding base rate). Non-currencies
+              only
+          short_financing_rate:
+            type: string
+            description: Short financing rate (adjusted from funding base rate). Non-currencies
+              only
+          funding_base_rate:
+            type: string
+            description: Funding base rate
+          long_financing_premium_rate:
+            type: string
+            description: "Long financing rate: base rate with long financing rate\
+              \ premium. Indicies only."
+          short_financing_premium_rate:
+            type: string
+            description: "Short financing rate: base rate with short financing rate\
+              \ reduction. Indicies only."
+    Instrument:
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        security_id:
+          type: string
+          description: Exchange identifier for the instrument
+          example: "4003"
+        symbol:
+          type: string
+          description: Symbol of the underlying security
+          example: EUR/GBP
+        currency:
+          type: string
+          description: The unit you will pay in when ordering this instrument. The
+            instrument price is measured in units of currency.
+          example: GBP
+        unit_of_measure:
+          type: string
+          description: The unit you will receive if you buy some of this instrument.
+          example: EUR
+        quantity_increment:
+          type: string
+          description: Quantity increment is the smallest amount you can buy or sell.
+            It also specifies the minimum trade quantity.
+          example: "0.1"
+        margin:
+          type: string
+          description: Margin percentage
+        minimum_position_size:
+          type: string
+          description: Minimum position size
+        maximum_position_size:
+          type: string
+          description: Maximum position size
+        trading_days:
+          type: array
+          description: Trading days
+          items:
+            type: string
+            description: Trading days
+            enum:
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+            - SUNDAY
+        open_time:
+          type: string
+          description: Session start time
+        close_time:
+          type: string
+          description: Session end time
+        time_zone:
+          type: string
+          description: Timezone Id
+        minimum_commission:
+          type: string
+          description: Minimum commission
+        aggressive_commission_per_unit_of_measure:
+          type: string
+          description: "Aggressive commission per unit of measure, if commission is\
+            \ calculated per unit"
+        passive_commission_per_unit_of_measure:
+          type: string
+          description: "Passive commission per unit of measure, if commission is calculated\
+            \ per unit"
+        aggressive_commission_rate:
+          type: string
+          description: 'Aggressive commission rate (in basis points). '
+        passive_commission_rate:
+          type: string
+          description: 'Passive commission rate (in basis points). '
+        price_increment:
+          type: string
+          description: Price increment is the smallest fraction of a price that can
+            be specified for an order. Also known as the price 'tick'.
+        minimum_price:
+          type: string
+          description: Minimum price for any order placed on this instrument
+        maximum_price:
+          type: string
+          description: Maximum price for any order placed on this instrument
+        funding_notification_timestamp:
+          type: string
+          description: Timestamp when financing rates were last published
+        underlying_unit_of_measure:
+          type: string
+          description: Underlying unit of measure
+        underlying_unit_of_measure_multiplier:
+          type: number
+          description: Underlying unit of measure multiplier
+        asset_class:
+          type: string
+          description: Asset class of this instrument
+      description: Instrument Data
+      discriminator:
+        propertyName: asset_class
+        mapping:
+          COMMODITY: "#/components/schemas/CommodityInstrument"
+          CURRENCY: "#/components/schemas/CurrencyInstrument"
+          CURRENCY_FUTURE: "#/components/schemas/CurrencyFutureInstrument"
+          EQUITY: "#/components/schemas/EquityInstrument"
+          INDEX: "#/components/schemas/IndexInstrument"
+          NDF: "#/components/schemas/NdfInstrument"
+          RATE: "#/components/schemas/RateInstrument"
+      oneOf:
+      - $ref: "#/components/schemas/CommodityInstrument"
+      - $ref: "#/components/schemas/CurrencyInstrument"
+      - $ref: "#/components/schemas/CurrencyFutureInstrument"
+      - $ref: "#/components/schemas/EquityInstrument"
+      - $ref: "#/components/schemas/IndexInstrument"
+      - $ref: "#/components/schemas/NdfInstrument"
+      - $ref: "#/components/schemas/RateInstrument"
+    InstrumentDataResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account Id
+        timestamp:
+          type: string
+          description: ISO8601 timestamp with millisecond resolution
+        instruments:
+          type: array
+          description: List of instruments
+          items:
+            $ref: "#/components/schemas/Instrument"
+      description: Instrument data
+    NdfInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+    RateInstrument:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Instrument"
+    HistoricClosingPrice:
+      type: object
+      properties:
+        closing_date:
+          type: string
+          description: Closing date
+        closing_price:
+          type: string
+          description: Closing Price
+        settlement_price:
+          type: string
+          description: Settlement prices
+      description: Closing prices
+    HistoricClosingPricesResponse:
+      type: object
+      properties:
+        instrument_id:
+          type: string
+          description: Instrument identifier
+        closing_prices:
+          type: array
+          description: Closing prices
+          items:
+            $ref: "#/components/schemas/HistoricClosingPrice"
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
