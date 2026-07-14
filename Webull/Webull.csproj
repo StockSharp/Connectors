@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup><ProjectGuid>{25DCA78E-8F09-41A7-8B83-A5F7DF4DEBD4}</ProjectGuid></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="$(GrpcVer)" />
+  </ItemGroup>
+</Project>

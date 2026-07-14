@@ -32,6 +32,7 @@
     <Project Path="Deribit/Deribit.csproj" />
     <Project Path="Digifinex/Digifinex.csproj" />
     <Project Path="DXtrade/DXtrade.csproj" />
+    <Project Path="ETrade/ETrade.csproj" />
     <Project Path="edgeX/EdgeX.csproj" />
     <Project Path="Exmo/Exmo.csproj" />
     <Project Path="FTX/FTX.csproj" />
@@ -40,6 +41,7 @@
     <Project Path="HitBtc/HitBtc.csproj" />
     <Project Path="Huobi/Huobi.csproj" />
     <Project Path="Hyperliquid/Hyperliquid.csproj" />
+    <Project Path="InteractiveBrokers/InteractiveBrokers.csproj" />
     <Project Path="Kraken/Kraken.csproj" />
     <Project Path="Kucoin/Kucoin.csproj" />
     <Project Path="Latoken/Latoken.csproj" />
@@ -56,9 +58,12 @@
     <Project Path="PolygonIO/PolygonIO.csproj" />
     <Project Path="PrizmBit/PrizmBit.csproj" />
     <Project Path="Rss/Rss.csproj" />
+    <Project Path="Schwab/Schwab.csproj" />
     <Project Path="Tinkoff/Tinkoff.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
+    <Project Path="Tradier/Tradier.csproj" />
     <Project Path="Upbit/Upbit.csproj" />
+    <Project Path="Webull/Webull.csproj" />
     <Project Path="Yobit/Yobit.csproj" />
     <Project Path="Zaif/Zaif.csproj" />
     <Project Path="ZB/ZB.csproj" />
