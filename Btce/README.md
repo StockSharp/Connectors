@@ -23,7 +23,7 @@ This project contains the source code of the **BtceMessageAdapter**, a connector
 
 ## Installation
 
-1. Add the StockSharp connectors to your solution via the [StockSharp NuGet feed](https://stocksharp.com/products/nuget_manual/).
+1. Add the StockSharp connectors to your solution via the [StockSharp NuGet feed](https://stocksharp.com/en/products/nuget_manual/).
 2. Include the `Btce` project or compiled assembly in your application.
 3. Reference `BtceMessageAdapter` from your trading connector.
 
@@ -59,8 +59,8 @@ Withdrawal can be performed by registering an order with a `BtceOrderCondition` 
 
 ## Documentation
 
-StockSharp documentation provides general instructions on working with message adapters: [Creating your own connector](https://doc.stocksharp.com/topics/api/connectors/creating_own_connector.html).
+StockSharp documentation provides general instructions on working with message adapters: [Creating your own connector](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html).
 
 ## Support
 
-Questions and discussion can be posted in the [StockSharp chat](https://t.me/stocksharpchat/361).
+Questions and discussion can be posted in the [StockSharp chat](https://stocksharp.com/en/chat/).

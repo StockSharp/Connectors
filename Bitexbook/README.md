@@ -41,5 +41,5 @@ Once connected you can subscribe to market data or register/cancel orders via th
 
 ## Documentation
 
-Detailed instructions for creating custom connectors and using StockSharp can be found in the [official documentation](https://doc.stocksharp.com/topics/api/connectors/crypto_exchanges/bitexbook.html).
+Detailed instructions for creating custom connectors and using StockSharp can be found in the [official documentation](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/bitexbook.html).
 

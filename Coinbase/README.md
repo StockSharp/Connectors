@@ -38,4 +38,4 @@ Message authentication is done through `Authenticator`, which signs requests usi
 
 The adapter is associated with the trading board code `CNBS`.
 
-For more information see the [Coinbase connector documentation](https://doc.stocksharp.com/topics/api/connectors/crypto_exchanges/coinbase.html).
+For more information see the [Coinbase connector documentation](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/coinbase.html).

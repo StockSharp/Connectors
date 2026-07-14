@@ -47,4 +47,4 @@ connector.SubscribeMarketData(new MarketDataMessage
 
 Trading operations are performed by sending `OrderRegisterMessage` and `OrderCancelMessage` objects.
 
-For more information about StockSharp connectors see the [documentation](https://doc.stocksharp.com/topics/api/connectors/crypto_exchanges/bitstamp.html).
+For more information about StockSharp connectors see the [documentation](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/bitstamp.html).

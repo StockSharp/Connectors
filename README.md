@@ -7,9 +7,9 @@ the existing connectors or contribute your own.
 
 ## Documentation
 
-See the [StockSharp documentation](https://doc.stocksharp.com/topics/api/connectors/creating_own_connector.html)
+See the [StockSharp documentation](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html)
 on how to create your own connector.
 
 ## Support
 
-Questions and support: [chat](https://t.me/stocksharpchat/361).
+Questions and support: [chat](https://stocksharp.com/en/chat/).

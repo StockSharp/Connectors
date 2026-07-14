@@ -43,5 +43,5 @@ Attach the adapter to a `Connector` instance or another component that works wit
 
 ## Documentation
 
-General StockSharp documentation is available at [doc.stocksharp.com](https://doc.stocksharp.com/). The Russian documentation page for the Tinkoff adapter is located [here](https://doc.stocksharp.ru/topics/api/connectors/russia/tinkoff.html).
+General StockSharp documentation is available at [doc.stocksharp.com/en](https://doc.stocksharp.com/en/). The Russian documentation page for the Tinkoff adapter is located [here](https://doc.stocksharp.com/ru/topics/api/connectors/russia/tinkoff.html).
 
