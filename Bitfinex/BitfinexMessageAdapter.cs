@@ -1,9 +1,5 @@
 namespace StockSharp.Bitfinex;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 [OrderCondition(typeof(BitfinexOrderCondition))]
 public partial class BitfinexMessageAdapter
 {
@@ -47,11 +43,6 @@ public partial class BitfinexMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Bitfinex];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Bitfinex);
-#endif
 
 	private void SubscribePusherClient()
 	{
@@ -136,17 +127,6 @@ public partial class BitfinexMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await "Crypto".ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-		{
-			msg = await nameof(Bitfinex).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-
-			if (!msg.IsEmpty())
-				throw new InvalidOperationException(msg);
-		}
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

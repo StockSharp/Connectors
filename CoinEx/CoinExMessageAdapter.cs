@@ -1,9 +1,5 @@
 namespace StockSharp.CoinEx;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class CoinExMessageAdapter
 {
 	private Authenticator _authenticator;
@@ -39,11 +35,6 @@ public partial class CoinExMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.CoinEx, BoardCodes.CoinExFT];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(CoinEx);
-#endif
 
 	private ValueTask NativeAdapterOutMessageAsync(NativeAdapter adapter, Message message, CancellationToken cancellationToken)
 	{
@@ -123,12 +114,6 @@ public partial class CoinExMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(CoinEx).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_spot != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

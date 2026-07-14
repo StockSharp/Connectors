@@ -2,10 +2,6 @@ namespace StockSharp.cTrader;
 
 using Ecng.Configuration;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class cTraderMessageAdapter
 {
 	private readonly ProtoHeartbeatEvent _heartbeatEvent = new();
@@ -54,20 +50,9 @@ public partial class cTraderMessageAdapter
 	/// <inheritdoc />
 	public override bool IsSupportOrderBookIncrements => true;
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(cTrader);
-#endif
-
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage msg, CancellationToken cancellationToken)
 	{
-#if !NO_LICENSE
-		var licMsg = IsDemo ? null : await nameof(cTrader).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!licMsg.IsEmpty())
-			throw new InvalidOperationException(licMsg);
-#endif
-
 		if (_client is not null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 

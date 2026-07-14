@@ -1,9 +1,5 @@
 namespace StockSharp.Poloniex;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class PoloniexMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -37,11 +33,6 @@ partial class PoloniexMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Poloniex];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Poloniex);
-#endif
 
 	private void SubscribePusherClient()
 	{
@@ -150,17 +141,6 @@ partial class PoloniexMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await "Crypto".ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-		{
-			msg = await nameof(Poloniex).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-
-			if (!msg.IsEmpty())
-				throw new InvalidOperationException(msg);
-		}
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

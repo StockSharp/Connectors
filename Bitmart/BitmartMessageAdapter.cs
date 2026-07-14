@@ -1,9 +1,5 @@
 namespace StockSharp.Bitmart;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 [OrderCondition(typeof(BitmartOrderCondition))]
 public partial class BitmartMessageAdapter
 {
@@ -50,11 +46,6 @@ public partial class BitmartMessageAdapter
 	/// <inheritdoc />
 	public override bool IsSupportOrderBookIncrements => true;
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Bitmart);
-#endif
-
 	/// <inheritdoc />
 	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
 	{
@@ -92,12 +83,6 @@ public partial class BitmartMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(Bitmart).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		_authenticator = new(Key, Secret, Memo);
 

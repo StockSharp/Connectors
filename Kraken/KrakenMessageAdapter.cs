@@ -1,9 +1,5 @@
 namespace StockSharp.Kraken;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 [OrderCondition(typeof(KrakenOrderCondition))]
 public partial class KrakenMessageAdapter
 {
@@ -48,11 +44,6 @@ public partial class KrakenMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Kraken];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Kraken);
-#endif
 
 	private void SubscribePusherClient()
 	{
@@ -129,17 +120,6 @@ public partial class KrakenMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = "Crypto".ValidateLicense(component: GetType());
-		if (!msg.IsEmpty())
-		{
-			msg = nameof(Kraken).ValidateLicense(component: GetType());
-
-			if (!msg.IsEmpty())
-				throw new InvalidOperationException(msg);
-		}
-#endif
 
 		if (_spotHttpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

@@ -1,9 +1,5 @@
 namespace StockSharp.Exmo;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class ExmoMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -38,11 +34,6 @@ partial class ExmoMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Exmo];
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Exmo);
-#endif
-
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg, CancellationToken cancellationToken)
 	{
@@ -54,12 +45,6 @@ partial class ExmoMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(Exmo).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

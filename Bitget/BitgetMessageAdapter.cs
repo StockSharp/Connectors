@@ -1,9 +1,5 @@
 namespace StockSharp.Bitget;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class BitgetMessageAdapter
 {
 	private Authenticator _authenticator;
@@ -39,11 +35,6 @@ public partial class BitgetMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards
 		=> [BoardCodes.Bitget, BoardCodes.BitgetFutCoin, BoardCodes.BitgetFutUsdt, BoardCodes.BitgetFutUsdc];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(Bitget);
-#endif
 
 	/// <inheritdoc />
 	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
@@ -102,12 +93,6 @@ public partial class BitgetMessageAdapter
 
 		if (_adapters.Count > 0)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-
-#if !NO_LICENSE
-		var msg = IsDemo ? null : await nameof(Bitget).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		_authenticator = new(this.IsTransactional(), Key, Secret, Passphrase, IsDemo);
 

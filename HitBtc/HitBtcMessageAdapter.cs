@@ -1,9 +1,5 @@
 namespace StockSharp.HitBtc;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class HitBtcMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -40,11 +36,6 @@ partial class HitBtcMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.HitBtc];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(HitBtc);
-#endif
 
 	private void SubscribePusherClient()
 	{
@@ -87,17 +78,6 @@ partial class HitBtcMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await "Crypto".ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-		{
-			msg = await nameof(HitBtc).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-
-			if (!msg.IsEmpty())
-				throw new InvalidOperationException(msg);
-		}
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

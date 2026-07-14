@@ -1,9 +1,5 @@
 namespace StockSharp.Alpaca;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class AlpacaMessageAdapter
 {
 	private RestTradingClient _tradingClient;
@@ -46,11 +42,6 @@ partial class AlpacaMessageAdapter
 	/// All possible time frames.
 	/// </summary>
 	public static IEnumerable<TimeSpan> AllTimeFrames => AlpacaExtensions.TimeFrames.Keys;
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(Alpaca);
-#endif
 
 	private void SubscribeSocketClient(SocketTradingClient client)
 	{
@@ -98,12 +89,6 @@ partial class AlpacaMessageAdapter
 
 		if (Secret.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
-
-#if !NO_LICENSE
-		var licMsg = IsDemo ? null : await nameof(Alpaca).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!licMsg.IsEmpty())
-			throw new InvalidOperationException(licMsg);
-#endif
 
 		if (_tradingClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

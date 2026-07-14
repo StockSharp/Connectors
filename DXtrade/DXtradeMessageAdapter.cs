@@ -1,9 +1,5 @@
 namespace StockSharp.DXtrade;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 [OrderCondition(typeof(DXtradeOrderCondition))]
 public partial class DXtradeMessageAdapter
 {
@@ -37,11 +33,6 @@ public partial class DXtradeMessageAdapter
 
 	/// <inheritdoc />
 	public override bool IsSupportCandlesUpdates(MarketDataMessage subscription) => true;
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(DXtrade);
-#endif
 
 	private void SubscribePusherClient(BaseSocketClient client)
 	{
@@ -137,12 +128,6 @@ public partial class DXtradeMessageAdapter
 			if (Password.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.PasswordNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = IsDemo ? null : await nameof(DXtrade).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

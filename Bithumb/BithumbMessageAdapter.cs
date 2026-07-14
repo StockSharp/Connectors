@@ -1,9 +1,5 @@
 namespace StockSharp.Bithumb;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class BithumbMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -36,11 +32,6 @@ public partial class BithumbMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Bithumb];
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Bithumb);
-#endif
-
 	private void SubscribePusherClient(PusherClient pusherClient)
 	{
 		pusherClient.StateChanged += SendOutConnectionStateAsync;
@@ -70,17 +61,6 @@ public partial class BithumbMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var message = await "Crypto".ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!message.IsEmpty())
-		{
-			message = await nameof(Bithumb).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-
-			if (!message.IsEmpty())
-				throw new InvalidOperationException(message);
-		}
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

@@ -1,9 +1,5 @@
 namespace StockSharp.Coinigy;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class CoinigyMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -33,11 +29,6 @@ public partial class CoinigyMessageAdapter
 	public override bool IsAllDownloadingSupported(DataType dataType)
 			=> dataType == DataType.Securities || dataType == DataType.Transactions || dataType == DataType.PositionChanges || base.IsAllDownloadingSupported(dataType);
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Coinigy);
-#endif
-
 	private void SubscribePusherClient()
 	{
 		_pusherClient.StateChanged += SendOutConnectionStateAsync;
@@ -61,12 +52,6 @@ public partial class CoinigyMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var licenseMsg = await nameof(Coinigy).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!licenseMsg.IsEmpty())
-			throw new InvalidOperationException(licenseMsg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

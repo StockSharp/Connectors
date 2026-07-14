@@ -1,9 +1,5 @@
 namespace StockSharp.BingX;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class BingXMessageAdapter
 {
 	private Authenticator _authenticator;
@@ -39,11 +35,6 @@ public partial class BingXMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards
 		=> [BoardCodes.BingX, BoardCodes.BingXFut];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(BingX);
-#endif
 
 	/// <inheritdoc />
 	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
@@ -99,12 +90,6 @@ public partial class BingXMessageAdapter
 
 		if (_adapters.Count > 0)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-
-#if !NO_LICENSE
-		var msg = IsDemo ? null : await nameof(BingX).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		_authenticator = new(this.IsTransactional(), Key, Secret);
 

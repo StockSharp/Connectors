@@ -1,9 +1,5 @@
 namespace StockSharp.Digifinex;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class DigifinexMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -39,11 +35,6 @@ public partial class DigifinexMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Digifinex];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Digifinex);
-#endif
 
 	private ValueTask OnSubscriptionResult(long id, Exception error, CancellationToken cancellationToken)
 		=> SendSubscriptionReplyAsync(id, cancellationToken, error);
@@ -119,12 +110,6 @@ public partial class DigifinexMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(Digifinex).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

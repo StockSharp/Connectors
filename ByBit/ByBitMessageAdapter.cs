@@ -1,9 +1,5 @@
 namespace StockSharp.ByBit;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 [OrderCondition(typeof(ByBitOrderCondition))]
 public partial class ByBitMessageAdapter
 {
@@ -51,11 +47,6 @@ public partial class ByBitMessageAdapter
 
 	/// <inheritdoc />
 	public override IEnumerable<int> SupportedOrderBookDepths { get; } = [1, 25, 50, 200, 500];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(ByBit);
-#endif
 
 	private void SubscribePusherClient(BaseSocketClient client)
 	{
@@ -184,12 +175,6 @@ public partial class ByBitMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = IsDemo ? null : await nameof(ByBit).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

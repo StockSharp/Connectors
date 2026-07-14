@@ -1,9 +1,5 @@
 namespace StockSharp.CoinCap;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class CoinCapMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -34,22 +30,11 @@ public partial class CoinCapMessageAdapter
 	protected override bool ValidateSecurityId(SecurityId secId)
 		=> _exchanges.ContainsKey(secId.BoardCode) || secId.IsAssociated(BoardCodes.CoinCap);
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(CoinCap);
-#endif
-
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage msg, CancellationToken cancellationToken)
 	{
 		if (Token.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.TokenNotSpecified);
-
-#if !NO_LICENSE
-		var lic = await nameof(CoinCap).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!lic.IsEmpty())
-			throw new InvalidOperationException(lic);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

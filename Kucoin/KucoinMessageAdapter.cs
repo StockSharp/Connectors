@@ -1,9 +1,5 @@
 namespace StockSharp.Kucoin;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class KucoinMessageAdapter
 {
 	private INativeAdapter _spotAdapter;
@@ -41,11 +37,6 @@ public partial class KucoinMessageAdapter
 
 	/// <inheritdoc />
 	public override bool IsSupportCandlesUpdates(MarketDataMessage subscription) => true;
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(Kucoin);
-#endif
 
 	private INativeAdapter GetAdapter(ISecurityIdMessage secIdMsg)
 		=> GetAdapter(secIdMsg.CheckOnNull(nameof(secIdMsg)).SecurityId);
@@ -101,12 +92,6 @@ public partial class KucoinMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = IsDemo ? null : await nameof(Kucoin).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_spotAdapter != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

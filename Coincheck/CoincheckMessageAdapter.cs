@@ -1,9 +1,5 @@
 namespace StockSharp.Coincheck;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class CoincheckMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -38,11 +34,6 @@ public partial class CoincheckMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Coincheck];
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Coincheck);
-#endif
-
 	private void SubscribePusherClient()
 	{
 		_pusherClient.StateChanged += SendOutConnectionStateAsync;
@@ -70,17 +61,6 @@ public partial class CoincheckMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await "Crypto".ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-		{
-			msg = await nameof(Coincheck).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-
-			if (!msg.IsEmpty())
-				throw new InvalidOperationException(msg);
-		}
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

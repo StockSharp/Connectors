@@ -1,9 +1,5 @@
 namespace StockSharp.PolygonIO;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class PolygonIOMessageAdapter
 {
 	private SocketClient _socket;
@@ -32,11 +28,6 @@ public partial class PolygonIOMessageAdapter
 	/// <inheritdoc />
 	public override bool IsSecurityRequired(DataType dataType)
 		=> FlatFilesSections.Any() ? !_flatFilesTypes.Contains(dataType) : base.IsSecurityRequired(dataType);
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => ConnectionType == PolygonIOConnectionTypes.History ? base.FeatureName : nameof(PolygonIO);
-#endif
 
 	private void SubscribeSocket()
 	{
@@ -72,12 +63,6 @@ public partial class PolygonIOMessageAdapter
 			await base.ConnectAsync(connectMsg, cancellationToken);
 			return;
 		}
-
-#if !NO_LICENSE
-		var errorMsg = await nameof(PolygonIO).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!errorMsg.IsEmpty())
-			throw new InvalidOperationException(errorMsg);
-#endif
 
 		_socket = new($"wss://{0}.{Address}/stocks".Put(ConnectionType == PolygonIOConnectionTypes.Delayed ? "delayed" : "socket"), Token, ReConnectionSettings.WorkingTime);
 		SubscribeSocket();

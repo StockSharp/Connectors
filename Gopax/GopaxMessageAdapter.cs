@@ -1,9 +1,5 @@
 namespace StockSharp.Gopax;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class GopaxMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -37,11 +33,6 @@ partial class GopaxMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Gopax];
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Gopax);
-#endif
-
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg, CancellationToken cancellationToken)
 	{
@@ -53,12 +44,6 @@ partial class GopaxMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(Gopax).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

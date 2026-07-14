@@ -1,9 +1,5 @@
 namespace StockSharp.Huobi;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class HuobiMessageAdapter
 {
 	private NativeAdapter _underlying;
@@ -44,11 +40,6 @@ partial class HuobiMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Huobi];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Huobi);
-#endif
 
 	private ValueTask OnUnderlyingNewOutMessage(Message message, CancellationToken cancellationToken)
 		=> SendOutMessageAsync(message, cancellationToken);
@@ -91,12 +82,6 @@ partial class HuobiMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(Huobi).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_underlying is not null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

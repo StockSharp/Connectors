@@ -1,9 +1,5 @@
 namespace StockSharp.Bitbank;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 [OrderCondition(typeof(BitbankOrderCondition))]
 public partial class BitbankMessageAdapter : MessageAdapter
 {
@@ -38,11 +34,6 @@ public partial class BitbankMessageAdapter : MessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Bitbank];
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Bitbank);
-#endif
-
 	private void SubscribePusherClient()
 	{
 		_pusherClient.StateChanged += SendOutConnectionStateAsync;
@@ -72,12 +63,6 @@ public partial class BitbankMessageAdapter : MessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var message = await nameof(Bitbank).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!message.IsEmpty())
-			throw new InvalidOperationException(message);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

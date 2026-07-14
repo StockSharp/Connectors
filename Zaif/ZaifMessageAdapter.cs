@@ -1,9 +1,5 @@
 namespace StockSharp.Zaif;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class ZaifMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -36,11 +32,6 @@ partial class ZaifMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Zaif];
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Zaif);
-#endif
-
 	private void SubscribePusherClient()
 	{
 		_pusherClient.Error += SendOutErrorAsync;
@@ -68,12 +59,6 @@ partial class ZaifMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(Zaif).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

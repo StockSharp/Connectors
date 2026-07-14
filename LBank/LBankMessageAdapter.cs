@@ -1,9 +1,5 @@
 namespace StockSharp.LBank;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class LBankMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -45,11 +41,6 @@ partial class LBankMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.LBank];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(LBank);
-#endif
 
 	private void SubscribePusherClient()
 	{
@@ -128,12 +119,6 @@ partial class LBankMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(LBank).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

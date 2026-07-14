@@ -1,9 +1,5 @@
 namespace StockSharp.Mexc;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class MexcMessageAdapter
 {
 	private Authenticator _authenticator;
@@ -40,11 +36,6 @@ public partial class MexcMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards
 		=> [BoardCodes.Mexc, BoardCodes.MexcFutures];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(Mexc);
-#endif
 
 	/// <inheritdoc />
 	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
@@ -100,12 +91,6 @@ public partial class MexcMessageAdapter
 
 		if (_adapters.Count > 0)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-
-#if !NO_LICENSE
-		var msg = IsDemo ? null : await nameof(Mexc).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		_authenticator = new(this.IsTransactional(), Key, Secret);
 

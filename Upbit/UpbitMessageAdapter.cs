@@ -1,9 +1,5 @@
 namespace StockSharp.Upbit;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class UpbitMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -37,11 +33,6 @@ partial class UpbitMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Upbit];
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Upbit);
-#endif
-
 	private void SubscribePusherClient()
 	{
 		_pusherClient.StateChanged += SendOutConnectionStateAsync;
@@ -71,12 +62,6 @@ partial class UpbitMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(Upbit).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

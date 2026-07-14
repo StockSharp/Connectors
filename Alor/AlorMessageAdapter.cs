@@ -2,10 +2,6 @@ namespace StockSharp.Alor;
 
 using Ecng.Configuration;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 public partial class AlorMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -43,20 +39,9 @@ public partial class AlorMessageAdapter
 	public override bool IsAllDownloadingSupported(DataType dataType)
 		=> dataType == DataType.Securities || dataType == DataType.Transactions || dataType == DataType.PositionChanges || base.IsAllDownloadingSupported(dataType);
 
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(Alor);
-#endif
-
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage msg, CancellationToken cancellationToken)
 	{
-#if !NO_LICENSE
-		var licMsg = IsDemo ? null : await nameof(Alor).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!licMsg.IsEmpty())
-			throw new InvalidOperationException(licMsg);
-#endif
-
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 

@@ -1,9 +1,5 @@
 namespace StockSharp.Yobit;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class YobitMessageAdapter
 {
 	private HttpClient _httpClient;
@@ -38,11 +34,6 @@ partial class YobitMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Yobit];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => nameof(Yobit);
-#endif
 
 	private void SubscribePusherClient()
 	{
@@ -93,12 +84,6 @@ partial class YobitMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = await nameof(Yobit).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

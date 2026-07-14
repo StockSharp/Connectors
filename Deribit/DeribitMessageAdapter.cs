@@ -1,9 +1,5 @@
 namespace StockSharp.Deribit;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 [OrderCondition(typeof(DeribitOrderCondition))]
 public partial class DeribitMessageAdapter
 {
@@ -45,11 +41,6 @@ public partial class DeribitMessageAdapter
 
 	/// <inheritdoc />
 	public override bool IsSupportCandlesUpdates(MarketDataMessage subscription) => true;
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(Deribit);
-#endif
 
 	private void SubscribePusherClient()
 	{
@@ -147,12 +138,6 @@ public partial class DeribitMessageAdapter
 			if (Secret.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
-
-#if !NO_LICENSE
-		var msg = IsDemo ? null : await nameof(Deribit).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);

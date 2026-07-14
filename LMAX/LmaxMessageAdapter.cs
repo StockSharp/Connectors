@@ -1,9 +1,5 @@
 namespace StockSharp.LMAX;
 
-#if !NO_LICENSE
-using StockSharp.Licensing;
-#endif
-
 partial class LmaxMessageAdapter
 {
 	private Authenticator _authenticator;
@@ -32,11 +28,6 @@ partial class LmaxMessageAdapter
 
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.Lmax];
-
-#if !NO_LICENSE
-	/// <inheritdoc />
-	public override string FeatureName => IsDemo ? base.FeatureName : nameof(LMAX);
-#endif
 
 	/// <inheritdoc />
 	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
@@ -85,12 +76,6 @@ partial class LmaxMessageAdapter
 
 		if (Secret.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.PasswordNotSpecified);
-
-#if !NO_LICENSE
-		var msg = IsDemo ? null : await nameof(LMAX).ValidateLicenseAsync(component: GetType(), cancellationToken: cancellationToken);
-		if (!msg.IsEmpty())
-			throw new InvalidOperationException(msg);
-#endif
 
 		_authenticator = new Authenticator(Key, Secret);
 
