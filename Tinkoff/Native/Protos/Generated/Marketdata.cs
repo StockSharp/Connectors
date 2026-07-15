@@ -1075,7 +1075,7 @@ namespace StockSharp.Tinkoff.Native {
 
     private object payload_;
     /// <summary>Enum of possible cases for the "payload" oneof.</summary>
-    internal enum PayloadOneofCase {
+    public enum PayloadOneofCase {
       None = 0,
       SubscribeCandlesRequest = 1,
       SubscribeOrderBookRequest = 2,
@@ -2225,7 +2225,7 @@ namespace StockSharp.Tinkoff.Native {
 
     private object payload_;
     /// <summary>Enum of possible cases for the "payload" oneof.</summary>
-    internal enum PayloadOneofCase {
+    public enum PayloadOneofCase {
       None = 0,
       SubscribeCandlesResponse = 1,
       SubscribeOrderBookResponse = 2,
@@ -12455,7 +12455,7 @@ namespace StockSharp.Tinkoff.Native {
     /// <summary>Container for nested types declared in the GetCandlesRequest message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    internal static partial class Types {
+    public static partial class Types {
       internal enum CandleSource {
         /// <summary>
         ///Все свечи.
@@ -19264,7 +19264,7 @@ namespace StockSharp.Tinkoff.Native {
     /// <summary>Container for nested types declared in the GetTechAnalysisRequest message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    internal static partial class Types {
+    public static partial class Types {
       /// <summary>
       ///Интервал свечи.
       /// </summary>
@@ -20045,7 +20045,7 @@ namespace StockSharp.Tinkoff.Native {
     /// <summary>Container for nested types declared in the GetTechAnalysisResponse message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    internal static partial class Types {
+    public static partial class Types {
       [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
       internal sealed partial class TechAnalysisItem : pb::IMessage<TechAnalysisItem>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE

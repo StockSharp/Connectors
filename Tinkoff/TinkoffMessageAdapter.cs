@@ -10,7 +10,7 @@ public partial class TinkoffMessageAdapter
 	private GrpcChannel _channel;
 	private InvestApiClient _service;
 	private AsyncDuplexStreamingCall<MarketDataRequest, MarketDataResponse> _mdStream;
-	private const string _domainAddr = "invest-public-api.tinkoff.ru";
+	private const string _domainAddr = "invest-public-api.tbank.ru";
 
 	private static readonly TimeSpan _baseDelay = TimeSpan.FromSeconds(1);
 	private static readonly TimeSpan _maxDelay = TimeSpan.FromMinutes(5);

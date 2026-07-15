@@ -1230,7 +1230,7 @@ namespace StockSharp.Tinkoff.Native {
     /// <summary>Container for nested types declared in the PostStopOrderRequest message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    internal static partial class Types {
+    public static partial class Types {
       [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
       internal sealed partial class TrailingData : pb::IMessage<TrailingData>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -1853,7 +1853,7 @@ namespace StockSharp.Tinkoff.Native {
   }
 
   /// <summary>
-  ///Запрос получения списка активных стоп-заявок.
+  ///Запрос получения списка стоп-заявок.
   /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   internal sealed partial class GetStopOrdersRequest : pb::IMessage<GetStopOrdersRequest>
@@ -2187,7 +2187,7 @@ namespace StockSharp.Tinkoff.Native {
   }
 
   /// <summary>
-  ///Список активных стоп-заявок.
+  ///Список стоп-заявок.
   /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   internal sealed partial class GetStopOrdersResponse : pb::IMessage<GetStopOrdersResponse>
@@ -3838,7 +3838,7 @@ namespace StockSharp.Tinkoff.Native {
     /// <summary>Container for nested types declared in the StopOrder message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    internal static partial class Types {
+    public static partial class Types {
       [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
       internal sealed partial class TrailingData : pb::IMessage<TrailingData>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE

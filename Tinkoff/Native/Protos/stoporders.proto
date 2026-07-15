@@ -18,7 +18,7 @@ service StopOrdersService { /* Сервис для работы со стоп-з
   //PostStopOrder — выставить стоп-заявку
   rpc PostStopOrder(PostStopOrderRequest) returns (PostStopOrderResponse);
 
-  //GetStopOrders — получить список активных стоп-заявок по счету
+  //GetStopOrders — получить список стоп-заявок по счету
   rpc GetStopOrders(GetStopOrdersRequest) returns (GetStopOrdersResponse);
 
   //CancelStopOrder — отменить стоп-заявку
@@ -59,7 +59,7 @@ message PostStopOrderResponse {
   ResponseMetadata response_metadata = 254; //Метадата.
 }
 
-//Запрос получения списка активных стоп-заявок.
+//Запрос получения списка стоп-заявок.
 message GetStopOrdersRequest {
   string account_id = 1 [(google.api.field_behavior) = REQUIRED]; //Идентификатор счета клиента.
   StopOrderStatusOption status = 2; //Статус заявок.
@@ -67,7 +67,7 @@ message GetStopOrdersRequest {
   google.protobuf.Timestamp to = 4; //Правая граница.
 }
 
-//Список активных стоп-заявок.
+//Список стоп-заявок.
 message GetStopOrdersResponse {
   repeated StopOrder stop_orders = 1; //Массив стоп-заявок по счету.
 }

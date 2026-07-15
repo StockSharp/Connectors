@@ -16,7 +16,7 @@ import "google/api/field_behavior.proto";
 service OperationsService {/*С помощью методов сервиса можно получить:<br/><br/> **1**. Список операций по счету.<br/> **2**.
                               Портфель по счету.<br/> **3**. Позиции ценных бумаг на счете.<br/> **4**.
                               Доступный остаток для вывода средств.<br/> **5**. Различные отчеты.*/
-  //GetOperations — список операций по счету
+  //Deprecated GetOperations — список операций по счету
   //При работе с методом учитывайте [особенности взаимодействия](/invest/services/operations/operations_problems).
   rpc GetOperations(OperationsRequest) returns (OperationsResponse);
 
@@ -175,6 +175,7 @@ message PortfolioPosition {
   MoneyValue daily_yield = 31;  // Рассчитанная доходность портфеля за день.
   string ticker = 32; //Тикер инструмента.
   string class_code = 33; //Класс-код (секция торгов).
+  optional MoneyValue var_margin_settled = 34; //Вариационная маржа (расчетная).
 }
 
 message VirtualPortfolioPosition {
@@ -372,6 +373,7 @@ enum OperationType {
   OPERATION_TYPE_OTHER = 67; //  Операция по счету;
   OPERATION_TYPE_DFA_REDEMPTION = 68; // погашение ЦФА-токена;
   OPERATION_TYPE_PRIMARY_ORDER =69; //  отмена заявки на первичное размещение по ЦФА;
+  OPERATION_TYPE_FUNDING = 70; //Списание фандинга.
 }
 
 message GetDividendsForeignIssuerRequest {

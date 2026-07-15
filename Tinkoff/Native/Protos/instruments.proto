@@ -67,7 +67,7 @@ service InstrumentsService {/*Методы сервиса предназначе
   //Shares — список акций
   rpc Shares (InstrumentsRequest) returns (SharesResponse);
 
-  //DfaBy — получить цифровой актив по ее идентификатору
+  //DfaBy — получить цифровой актив по его идентификатору
   rpc DfaBy (InstrumentRequest) returns (DfaResponse);
 
   //Dfas — список цифровых активов
@@ -145,6 +145,9 @@ service InstrumentsService {/*Методы сервиса предназначе
 
   //StructuredNotes — список структурных нот
   rpc StructuredNotes(InstrumentsRequest) returns (StructuredNotesResponse);
+
+  //News — получение актуальных новостей
+  rpc News(NewsRequest) returns (NewsResponse);
 }
 
 //Запрос расписания торгов.
@@ -203,6 +206,12 @@ message FilterOptionsRequest {
   optional string basic_asset_uid = 1; //Идентификатор базового актива опциона.  Обязательный параметр.
   optional string basic_asset_position_uid = 2; //Идентификатор позиции базового актива опциона.
   optional string basic_instrument_id = 3; //Идентификатор базового инструмента, принимает значение принимает значения figi, instrument_uid или ticker+"_"+classCode.
+}
+
+//Запрос получения актуальных новостей
+message NewsRequest {
+  optional int64 cursor = 1; //Идентификатор элемента, с которого начать формировать ответ.
+  optional int32 limit = 2; //Лимит количества новостей в ответе. По умолчанию 1000.
 }
 
 //Информация об облигации.
@@ -445,6 +454,43 @@ message StructuredNotesResponse {
   repeated StructuredNote instruments = 1; //Массив структурных нот.
 }
 
+//Данные по актуальным новостям.
+message NewsResponse {
+  bool has_next = 1; //Признак, есть ли еще новости.
+  optional int64 next_cursor = 2; //Следующий курсор.
+  repeated NewsItem items = 3; //Массив новостей.
+}
+
+//Объект новости.
+message NewsItem {
+  int64 id = 1; //Уникальный идентификатор новости.
+  string source = 2; //Источник новости.
+  string title = 3; //Заголовок новости.
+  string content = 4; //Содержание новости.
+  optional string summary = 5; //Обобщенная информация.
+  repeated Table tables = 6; //Табличные данные.
+  repeated NewsInstrument instrument_id = 7; //Инструменты из новости.
+  bool priority = 8; //Флаг, указывающий, важная ли новость.
+  google.protobuf.Timestamp ts = 9;//Время новости.
+}
+
+//Объект табличных данных.
+message Table {
+  string table = 1; //Таблица.
+}
+
+//Объект инструмента из новости.
+message NewsInstrument {
+  NewsInstrumentInfo instrument = 1; //Информация по инструменту.
+}
+
+//Объект информации по инструменту из новости.
+message NewsInstrumentInfo {
+  string instrument_uid = 1; //Уникальный идентификатор инструмента.
+  string ticker = 2; //Тикер инструмента.
+  string class_code = 3; //Класс-код (секция торгов).
+}
+
 //Объект передачи информации об облигации.
 message Bond {
   string figi = 1; //FIGI-идентификатор инструмента.
@@ -509,7 +555,7 @@ message Bond {
   RiskLevel risk_level = 63; //Уровень риска.
   BrandData brand = 64; // Информация о бренде.
   BondType bond_type = 65; // Тип облигации.
-  google.protobuf.Timestamp call_date = 69;  // Дата погашения облигации.
+  google.protobuf.Timestamp call_date = 69;  // Дата оферты.
 
   Quotation dlong_client = 90; //Ставка риска в лонг с учетом текущего уровня риска портфеля клиента. [Подробнее про ставки риска](https://www.tbank.ru/invest/help/brokerage/account/margin/about/#q5).
   Quotation dshort_client = 91; //Ставка риска в шорт с учетом текущего уровня риска портфеля клиента. [Подробнее про ставки риска](https://www.tbank.ru/invest/help/brokerage/account/margin/about/#q5).
@@ -1319,6 +1365,13 @@ message IndicativeResponse {
   string uid = 14; // Уникальный идентификатор инструмента.
   bool buy_available_flag = 404; // Признак доступности для покупки.
   bool sell_available_flag = 405; // Признак доступности для продажи.
+  repeated IndexInstrument index_composition = 406; // Состав индекса.
+}
+
+//Инструмент в составе индекса
+message IndexInstrument {
+  string uid = 1; // Идентификатор инструмента.
+  Quotation weight = 2; // Вес инструмента в составе индекса в %.
 }
 
 //Данные о стране.

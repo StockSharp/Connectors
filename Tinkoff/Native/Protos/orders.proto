@@ -10,6 +10,7 @@ option objc_class_prefix = "TIAPI";
 option php_namespace = "Tinkoff\\Invest\\V1";
 
 import "common.proto";
+import "stoporders.proto";
 import "google/protobuf/timestamp.proto";
 import "google/api/field_behavior.proto";
 
@@ -314,6 +315,7 @@ message OrderStateStreamResponse {
     OrderState order_state = 1; //Информация об исполнении торгового поручения.
     Ping ping = 2; //Проверка активности стрима.
     SubscriptionResponse subscription = 3; //Ответ на запрос на подписку.
+    StopOrderState stop_order_state = 4; //Стоп-ордер.
   }
 
   //Заявка
@@ -346,6 +348,21 @@ message OrderStateStreamResponse {
     google.protobuf.Timestamp completion_time = 35; //Время исполнения заявки.
     string exchange = 36; //Код биржи.
     string instrument_uid = 41; //UID идентификатор инструмента.
+  }
+
+  //Стоп-ордер
+  message StopOrderState {
+    string stop_order_id = 1; //Идентификатор стоп-заявки.
+    string account_id = 2; //Номер счёта.
+    google.protobuf.Timestamp created_at = 3; //Дата создания заявки.
+    OrderDirection direction = 4; //Направление заявки.
+    MoneyValue price = 5; //Цена заявки.
+    MoneyValue stop_price = 6; //Цена активации стоп-заявки.
+    OrderType order_type = 7; //Тип дочерней биржевой заявки.
+    string instrument_uid = 8; //UID идентификатор инструмента.
+    string ticker = 9; //Тикер инструмента.
+    string class_code = 10; //Класс-код.
+    StopOrderStatusOption status = 11; //Состояние заявки.
   }
 
   //Маркер

@@ -108,7 +108,7 @@ namespace StockSharp.Tinkoff.Native {
       }
 
       /// <summary>
-      ///GetStopOrders — получить список активных стоп-заявок по счету
+      ///GetStopOrders — получить список стоп-заявок по счету
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -209,7 +209,7 @@ namespace StockSharp.Tinkoff.Native {
         return CallInvoker.AsyncUnaryCall(__Method_PostStopOrder, null, options, request);
       }
       /// <summary>
-      ///GetStopOrders — получить список активных стоп-заявок по счету
+      ///GetStopOrders — получить список стоп-заявок по счету
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -222,7 +222,7 @@ namespace StockSharp.Tinkoff.Native {
         return GetStopOrders(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      ///GetStopOrders — получить список активных стоп-заявок по счету
+      ///GetStopOrders — получить список стоп-заявок по счету
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -233,7 +233,7 @@ namespace StockSharp.Tinkoff.Native {
         return CallInvoker.BlockingUnaryCall(__Method_GetStopOrders, null, options, request);
       }
       /// <summary>
-      ///GetStopOrders — получить список активных стоп-заявок по счету
+      ///GetStopOrders — получить список стоп-заявок по счету
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -246,7 +246,7 @@ namespace StockSharp.Tinkoff.Native {
         return GetStopOrdersAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      ///GetStopOrders — получить список активных стоп-заявок по счету
+      ///GetStopOrders — получить список стоп-заявок по счету
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>

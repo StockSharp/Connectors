@@ -188,6 +188,10 @@ namespace StockSharp.Tinkoff.Native {
     static readonly grpc::Marshaller<global::StockSharp.Tinkoff.Native.StructuredNoteResponse> __Marshaller_tinkoff_public_invest_api_contract_v1_StructuredNoteResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::StockSharp.Tinkoff.Native.StructuredNoteResponse.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::StockSharp.Tinkoff.Native.StructuredNotesResponse> __Marshaller_tinkoff_public_invest_api_contract_v1_StructuredNotesResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::StockSharp.Tinkoff.Native.StructuredNotesResponse.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::StockSharp.Tinkoff.Native.NewsRequest> __Marshaller_tinkoff_public_invest_api_contract_v1_NewsRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::StockSharp.Tinkoff.Native.NewsRequest.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::StockSharp.Tinkoff.Native.NewsResponse> __Marshaller_tinkoff_public_invest_api_contract_v1_NewsResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::StockSharp.Tinkoff.Native.NewsResponse.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::StockSharp.Tinkoff.Native.TradingSchedulesRequest, global::StockSharp.Tinkoff.Native.TradingSchedulesResponse> __Method_TradingSchedules = new grpc::Method<global::StockSharp.Tinkoff.Native.TradingSchedulesRequest, global::StockSharp.Tinkoff.Native.TradingSchedulesResponse>(
@@ -525,6 +529,14 @@ namespace StockSharp.Tinkoff.Native {
         __Marshaller_tinkoff_public_invest_api_contract_v1_InstrumentsRequest,
         __Marshaller_tinkoff_public_invest_api_contract_v1_StructuredNotesResponse);
 
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::StockSharp.Tinkoff.Native.NewsRequest, global::StockSharp.Tinkoff.Native.NewsResponse> __Method_News = new grpc::Method<global::StockSharp.Tinkoff.Native.NewsRequest, global::StockSharp.Tinkoff.Native.NewsResponse>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "News",
+        __Marshaller_tinkoff_public_invest_api_contract_v1_NewsRequest,
+        __Marshaller_tinkoff_public_invest_api_contract_v1_NewsResponse);
+
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
     {
@@ -729,7 +741,7 @@ namespace StockSharp.Tinkoff.Native {
       }
 
       /// <summary>
-      ///DfaBy — получить цифровой актив по ее идентификатору
+      ///DfaBy — получить цифровой актив по его идентификатору
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -1037,6 +1049,18 @@ namespace StockSharp.Tinkoff.Native {
       /// <returns>The response to send back to the client (wrapped by a task).</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
       public virtual global::System.Threading.Tasks.Task<global::StockSharp.Tinkoff.Native.StructuredNotesResponse> StructuredNotes(global::StockSharp.Tinkoff.Native.InstrumentsRequest request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      /// <summary>
+      ///News — получение актуальных новостей
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>The response to send back to the client (wrapped by a task).</returns>
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::System.Threading.Tasks.Task<global::StockSharp.Tinkoff.Native.NewsResponse> News(global::StockSharp.Tinkoff.Native.NewsRequest request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -1843,7 +1867,7 @@ namespace StockSharp.Tinkoff.Native {
         return CallInvoker.AsyncUnaryCall(__Method_Shares, null, options, request);
       }
       /// <summary>
-      ///DfaBy — получить цифровой актив по ее идентификатору
+      ///DfaBy — получить цифровой актив по его идентификатору
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1856,7 +1880,7 @@ namespace StockSharp.Tinkoff.Native {
         return DfaBy(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      ///DfaBy — получить цифровой актив по ее идентификатору
+      ///DfaBy — получить цифровой актив по его идентификатору
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1867,7 +1891,7 @@ namespace StockSharp.Tinkoff.Native {
         return CallInvoker.BlockingUnaryCall(__Method_DfaBy, null, options, request);
       }
       /// <summary>
-      ///DfaBy — получить цифровой актив по ее идентификатору
+      ///DfaBy — получить цифровой актив по его идентификатору
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1880,7 +1904,7 @@ namespace StockSharp.Tinkoff.Native {
         return DfaByAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      ///DfaBy — получить цифровой актив по ее идентификатору
+      ///DfaBy — получить цифровой актив по его идентификатору
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -3094,6 +3118,54 @@ namespace StockSharp.Tinkoff.Native {
       {
         return CallInvoker.AsyncUnaryCall(__Method_StructuredNotes, null, options, request);
       }
+      /// <summary>
+      ///News — получение актуальных новостей
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The response received from the server.</returns>
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::StockSharp.Tinkoff.Native.NewsResponse News(global::StockSharp.Tinkoff.Native.NewsRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return News(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///News — получение актуальных новостей
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The response received from the server.</returns>
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::StockSharp.Tinkoff.Native.NewsResponse News(global::StockSharp.Tinkoff.Native.NewsRequest request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_News, null, options, request);
+      }
+      /// <summary>
+      ///News — получение актуальных новостей
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::StockSharp.Tinkoff.Native.NewsResponse> NewsAsync(global::StockSharp.Tinkoff.Native.NewsRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return NewsAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///News — получение актуальных новостей
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::StockSharp.Tinkoff.Native.NewsResponse> NewsAsync(global::StockSharp.Tinkoff.Native.NewsRequest request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_News, null, options, request);
+      }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
       protected override InstrumentsServiceClient NewInstance(ClientBaseConfiguration configuration)
@@ -3149,7 +3221,8 @@ namespace StockSharp.Tinkoff.Native {
           .AddMethod(__Method_GetRiskRates, serviceImpl.GetRiskRates)
           .AddMethod(__Method_GetInsiderDeals, serviceImpl.GetInsiderDeals)
           .AddMethod(__Method_StructuredNoteBy, serviceImpl.StructuredNoteBy)
-          .AddMethod(__Method_StructuredNotes, serviceImpl.StructuredNotes).Build();
+          .AddMethod(__Method_StructuredNotes, serviceImpl.StructuredNotes)
+          .AddMethod(__Method_News, serviceImpl.News).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -3201,6 +3274,7 @@ namespace StockSharp.Tinkoff.Native {
       serviceBinder.AddMethod(__Method_GetInsiderDeals, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::StockSharp.Tinkoff.Native.GetInsiderDealsRequest, global::StockSharp.Tinkoff.Native.GetInsiderDealsResponse>(serviceImpl.GetInsiderDeals));
       serviceBinder.AddMethod(__Method_StructuredNoteBy, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::StockSharp.Tinkoff.Native.InstrumentRequest, global::StockSharp.Tinkoff.Native.StructuredNoteResponse>(serviceImpl.StructuredNoteBy));
       serviceBinder.AddMethod(__Method_StructuredNotes, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::StockSharp.Tinkoff.Native.InstrumentsRequest, global::StockSharp.Tinkoff.Native.StructuredNotesResponse>(serviceImpl.StructuredNotes));
+      serviceBinder.AddMethod(__Method_News, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::StockSharp.Tinkoff.Native.NewsRequest, global::StockSharp.Tinkoff.Native.NewsResponse>(serviceImpl.News));
     }
 
   }

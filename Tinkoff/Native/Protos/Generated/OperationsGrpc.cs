@@ -146,7 +146,7 @@ namespace StockSharp.Tinkoff.Native {
     public abstract partial class OperationsServiceBase
     {
       /// <summary>
-      ///GetOperations — список операций по счету
+      ///Deprecated GetOperations — список операций по счету
       ///При работе с методом учитывайте [особенности взаимодействия](/invest/services/operations/operations_problems).
       /// </summary>
       /// <param name="request">The request received from the client.</param>
@@ -261,7 +261,7 @@ namespace StockSharp.Tinkoff.Native {
       }
 
       /// <summary>
-      ///GetOperations — список операций по счету
+      ///Deprecated GetOperations — список операций по счету
       ///При работе с методом учитывайте [особенности взаимодействия](/invest/services/operations/operations_problems).
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -275,7 +275,7 @@ namespace StockSharp.Tinkoff.Native {
         return GetOperations(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      ///GetOperations — список операций по счету
+      ///Deprecated GetOperations — список операций по счету
       ///При работе с методом учитывайте [особенности взаимодействия](/invest/services/operations/operations_problems).
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -287,7 +287,7 @@ namespace StockSharp.Tinkoff.Native {
         return CallInvoker.BlockingUnaryCall(__Method_GetOperations, null, options, request);
       }
       /// <summary>
-      ///GetOperations — список операций по счету
+      ///Deprecated GetOperations — список операций по счету
       ///При работе с методом учитывайте [особенности взаимодействия](/invest/services/operations/operations_problems).
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -301,7 +301,7 @@ namespace StockSharp.Tinkoff.Native {
         return GetOperationsAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      ///GetOperations — список операций по счету
+      ///Deprecated GetOperations — список операций по счету
       ///При работе с методом учитывайте [особенности взаимодействия](/invest/services/operations/operations_problems).
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
