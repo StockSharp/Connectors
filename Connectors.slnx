@@ -62,6 +62,7 @@
     <Project Path="Rss/Rss.csproj" />
     <Project Path="Schwab/Schwab.csproj" />
     <Project Path="Tinkoff/Tinkoff.csproj" />
+    <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
     <Project Path="Tradier/Tradier.csproj" />
     <Project Path="TradeStation/TradeStation.csproj" />
