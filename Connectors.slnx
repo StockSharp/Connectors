@@ -54,6 +54,7 @@
     <Project Path="MoexLchi/MoexLchi.csproj" />
     <Project Path="Moomoo/Moomoo.csproj" />
     <Project Path="NinjaTrader/NinjaTrader.csproj" />
+    <Project Path="Oanda/Oanda.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
