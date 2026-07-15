@@ -57,6 +57,7 @@
     <Project Path="Poloniex/Poloniex.csproj" />
     <Project Path="PolygonIO/PolygonIO.csproj" />
     <Project Path="PrizmBit/PrizmBit.csproj" />
+    <Project Path="Rithmic/Rithmic.csproj" />
     <Project Path="Rss/Rss.csproj" />
     <Project Path="Schwab/Schwab.csproj" />
     <Project Path="Tinkoff/Tinkoff.csproj" />
