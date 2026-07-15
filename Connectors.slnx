@@ -51,6 +51,7 @@
     <Project Path="Mexc/Mexc.csproj" />
     <Project Path="MoexISS/MoexISS.csproj" />
     <Project Path="MoexLchi/MoexLchi.csproj" />
+    <Project Path="Moomoo/Moomoo.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
