@@ -37,6 +37,7 @@
     <Project Path="ETrade/ETrade.csproj" />
     <Project Path="edgeX/EdgeX.csproj" />
     <Project Path="Exmo/Exmo.csproj" />
+    <Project Path="Fyers/Fyers.csproj" />
     <Project Path="FTX/FTX.csproj" />
     <Project Path="GateIO/GateIO.csproj" />
     <Project Path="Gopax/Gopax.csproj" />
