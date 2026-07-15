@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+
+  <PropertyGroup>
+    <ProjectGuid>{7A809541-7154-4726-B777-15C3B6BD1087}</ProjectGuid>
+    <NoWarn>$(NoWarn);CS3001;CS3003</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="NativeBridge\**\*" Pack="true" PackagePath="native-source\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="runtimes\win-x64\native\*.dll" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="runtimes\win-x64\native" />
+    <None Include="runtimes\linux-x64\native\*.so" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="runtimes\linux-x64\native" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.16)
+project(StockSharpXtpNative LANGUAGES CXX)
+
+if(NOT DEFINED XTP_SDK_ROOT)
+  message(FATAL_ERROR "Set XTP_SDK_ROOT to the official XTP SDK directory containing bin/include")
+endif()
+
+add_library(StockSharp.Xtp.Native SHARED xtp_bridge.cpp)
+target_compile_features(StockSharp.Xtp.Native PRIVATE cxx_std_17)
+target_include_directories(StockSharp.Xtp.Native SYSTEM PRIVATE "${XTP_SDK_ROOT}/bin/include")
+
+if(MSVC)
+  target_compile_options(StockSharp.Xtp.Native PRIVATE /W4 /WX)
+else()
+  target_compile_options(StockSharp.Xtp.Native PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+
+if(WIN32)
+  target_link_directories(StockSharp.Xtp.Native PRIVATE "${XTP_SDK_ROOT}/bin/win64/dll")
+  target_link_libraries(StockSharp.Xtp.Native PRIVATE xtpquoteapi xtptraderapi)
+elseif(UNIX AND NOT APPLE)
+  target_link_directories(StockSharp.Xtp.Native PRIVATE "${XTP_SDK_ROOT}/bin/linux_glibc_2.17")
+  target_link_libraries(StockSharp.Xtp.Native PRIVATE xtpquoteapi xtptraderapi)
+  set_target_properties(StockSharp.Xtp.Native PROPERTIES BUILD_RPATH "$ORIGIN")
+else()
+  message(FATAL_ERROR "The packaged XTP SDK supports Windows and Linux")
+endif()
