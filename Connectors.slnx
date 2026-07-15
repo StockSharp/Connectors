@@ -47,6 +47,7 @@
     <Project Path="Latoken/Latoken.csproj" />
     <Project Path="LBank/LBank.csproj" />
     <Project Path="Ligther/Ligther.csproj" />
+    <Project Path="Lime/Lime.csproj" />
     <Project Path="LMAX/LMAX.csproj" />
     <Project Path="Mexc/Mexc.csproj" />
     <Project Path="MoexISS/MoexISS.csproj" />
