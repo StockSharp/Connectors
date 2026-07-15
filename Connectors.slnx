@@ -31,6 +31,7 @@
     <Project Path="CSV/CSV.csproj" />
     <Project Path="cTrader/cTrader.csproj" />
     <Project Path="Deribit/Deribit.csproj" />
+    <Project Path="Dhan/Dhan.csproj" />
     <Project Path="Digifinex/Digifinex.csproj" />
     <Project Path="DXtrade/DXtrade.csproj" />
     <Project Path="ETrade/ETrade.csproj" />
