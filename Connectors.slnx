@@ -62,6 +62,7 @@
     <Project Path="Tinkoff/Tinkoff.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
     <Project Path="Tradier/Tradier.csproj" />
+    <Project Path="Tradovate/Tradovate.csproj" />
     <Project Path="Upbit/Upbit.csproj" />
     <Project Path="Webull/Webull.csproj" />
     <Project Path="Yobit/Yobit.csproj" />
