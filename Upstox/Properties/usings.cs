@@ -1,0 +1,34 @@
+global using global::System;
+global using global::System.Collections.Generic;
+global using global::System.Globalization;
+global using global::System.IO;
+global using global::System.IO.Compression;
+global using global::System.Linq;
+global using global::System.Net.WebSockets;
+global using global::System.Reflection;
+global using global::System.Runtime.Serialization;
+global using global::System.Security;
+global using global::System.Text;
+global using global::System.Threading;
+global using global::System.Threading.Tasks;
+
+global using global::Ecng.Collections;
+global using global::Ecng.Common;
+global using global::Ecng.ComponentModel;
+global using global::Ecng.Logging;
+global using global::Ecng.Net;
+global using global::Ecng.Serialization;
+
+global using global::Google.Protobuf;
+
+global using global::Newtonsoft.Json;
+global using global::Newtonsoft.Json.Converters;
+global using global::Newtonsoft.Json.Serialization;
+
+global using global::RestSharp;
+
+global using global::StockSharp.Localization;
+global using global::StockSharp.Messages;
+global using global::StockSharp.Upstox.Native;
+global using global::StockSharp.Upstox.Native.Model;
+global using global::StockSharp.Upstox.Native.Protocol;
