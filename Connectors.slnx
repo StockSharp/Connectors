@@ -4,6 +4,7 @@
     <Project Path="AlorHistory/AlorHistory.csproj" />
     <Project Path="Alpaca/Alpaca.csproj" />
     <Project Path="AlphaVantage/AlphaVantage.csproj" />
+    <Project Path="AngelOne/AngelOne.csproj" />
     <Project Path="Aster/Aster.csproj" />
     <Project Path="BarChart/BarChart.csproj" />
     <Project Path="Bibox/Bibox.csproj" />
