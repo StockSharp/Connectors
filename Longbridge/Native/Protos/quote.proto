@@ -1,0 +1,235 @@
+// Protocol subset derived from the official longbridge/openapi-protobufs repository.
+syntax = "proto3";
+
+package longbridge.quote.v1;
+option csharp_namespace = "StockSharp.Longbridge.Native.Protos.Quote";
+
+enum Command {
+  UNKNOWN_COMMAND = 0;
+  HEART_BEAT = 1;
+  AUTH = 2;
+  RECONNECT = 3;
+  QuerySecurityStaticInfo = 10;
+  QuerySecurityQuote = 11;
+  QueryDepth = 14;
+  QueryTrade = 17;
+  QueryCandlestick = 19;
+  QueryHistoryCandlestick = 27;
+  Subscribe = 6;
+  Unsubscribe = 7;
+  PushQuoteData = 101;
+  PushDepthData = 102;
+  PushTradeData = 104;
+}
+
+message SecurityRequest { string symbol = 1; }
+message MultiSecurityRequest { repeated string symbol = 1; }
+
+message SecurityStaticInfoResponse { repeated StaticInfo secu_static_info = 1; }
+message StaticInfo {
+  string symbol = 1;
+  string name_cn = 2;
+  string name_en = 3;
+  string name_hk = 4;
+  string listing_date = 5;
+  string exchange = 6;
+  string currency = 7;
+  int32 lot_size = 8;
+  int64 total_shares = 9;
+  int64 circulating_shares = 10;
+  int64 hk_shares = 11;
+  string eps = 12;
+  string eps_ttm = 13;
+  string bps = 14;
+  string dividend_yield = 15;
+  repeated int32 stock_derivatives = 16;
+  string board = 17;
+}
+
+enum TradeStatus {
+  NORMAL = 0;
+  HALTED = 1;
+  DELISTED = 2;
+  FUSE = 3;
+  PREPARE_LIST = 4;
+  CODE_MOVED = 5;
+  TO_BE_OPENED = 6;
+  SPLIT_STOCK_HALTS = 7;
+  EXPIRED = 8;
+  WARRANT_PREPARE_LIST = 9;
+  SUSPEND_TRADE = 10;
+}
+
+enum TradeSession {
+  NORMAL_TRADE = 0;
+  PRE_TRADE = 1;
+  POST_TRADE = 2;
+  OVERNIGHT_TRADE = 3;
+}
+
+message SecurityQuoteResponse { repeated SecurityQuote secu_quote = 1; }
+message SecurityQuote {
+  string symbol = 1;
+  string last_done = 2;
+  string prev_close = 3;
+  string open = 4;
+  string high = 5;
+  string low = 6;
+  int64 timestamp = 7;
+  int64 volume = 8;
+  string turnover = 9;
+  TradeStatus trade_status = 10;
+}
+
+message SecurityDepthResponse {
+  string symbol = 1;
+  repeated Depth ask = 2;
+  repeated Depth bid = 3;
+}
+message Depth {
+  int32 position = 1;
+  string price = 2;
+  int64 volume = 3;
+  int64 order_num = 4;
+}
+
+message SecurityTradeRequest {
+  string symbol = 1;
+  int32 count = 2;
+}
+message SecurityTradeResponse {
+  string symbol = 1;
+  repeated Trade trades = 2;
+}
+message Trade {
+  string price = 1;
+  int64 volume = 2;
+  int64 timestamp = 3;
+  string trade_type = 4;
+  int32 direction = 5;
+  TradeSession trade_session = 6;
+}
+
+enum AdjustType {
+  NO_ADJUST = 0;
+  FORWARD_ADJUST = 1;
+}
+
+enum Period {
+  UNKNOWN_PERIOD = 0;
+  ONE_MINUTE = 1;
+  TWO_MINUTE = 2;
+  THREE_MINUTE = 3;
+  FIVE_MINUTE = 5;
+  TEN_MINUTE = 10;
+  FIFTEEN_MINUTE = 15;
+  TWENTY_MINUTE = 20;
+  THIRTY_MINUTE = 30;
+  FORTY_FIVE_MINUTE = 45;
+  SIXTY_MINUTE = 60;
+  TWO_HOUR = 120;
+  THREE_HOUR = 180;
+  FOUR_HOUR = 240;
+  DAY = 1000;
+  WEEK = 2000;
+  MONTH = 3000;
+  QUARTER = 3500;
+  YEAR = 4000;
+}
+
+message SecurityCandlestickRequest {
+  string symbol = 1;
+  Period period = 2;
+  int32 count = 3;
+  AdjustType adjust_type = 4;
+  int32 trade_session = 5;
+}
+message SecurityCandlestickResponse {
+  string symbol = 1;
+  repeated Candlestick candlesticks = 2;
+}
+message Candlestick {
+  string close = 1;
+  string open = 2;
+  string low = 3;
+  string high = 4;
+  int64 volume = 5;
+  string turnover = 6;
+  int64 timestamp = 7;
+  TradeSession trade_session = 8;
+}
+
+enum HistoryCandlestickQueryType {
+  UNKNOWN_QUERY_TYPE = 0;
+  QUERY_BY_OFFSET = 1;
+  QUERY_BY_DATE = 2;
+}
+enum Direction {
+  BACKWARD = 0;
+  FORWARD = 1;
+}
+message SecurityHistoryCandlestickRequest {
+  message OffsetQuery {
+    Direction direction = 1;
+    string date = 2;
+    string minute = 3;
+    int32 count = 4;
+  }
+  message DateQuery {
+    string start_date = 1;
+    string end_date = 2;
+  }
+  string symbol = 1;
+  Period period = 2;
+  AdjustType adjust_type = 3;
+  HistoryCandlestickQueryType query_type = 4;
+  OffsetQuery offset_request = 5;
+  DateQuery date_request = 6;
+  int32 trade_session = 7;
+}
+
+enum SubType {
+  UNKNOWN_TYPE = 0;
+  QUOTE = 1;
+  DEPTH = 2;
+  BROKERS = 3;
+  TRADE = 4;
+}
+message SubscribeRequest {
+  repeated string symbol = 1;
+  repeated SubType sub_type = 2;
+  bool is_first_push = 3;
+}
+message UnsubscribeRequest {
+  repeated string symbol = 1;
+  repeated SubType sub_type = 2;
+  bool unsub_all = 3;
+}
+message UnsubscribeResponse {}
+
+message PushQuote {
+  string symbol = 1;
+  int64 sequence = 2;
+  string last_done = 3;
+  string open = 4;
+  string high = 5;
+  string low = 6;
+  int64 timestamp = 7;
+  int64 volume = 8;
+  string turnover = 9;
+  TradeStatus trade_status = 10;
+  TradeSession trade_session = 11;
+  int64 current_volume = 12;
+  string current_turnover = 13;
+}
+message PushDepth {
+  string symbol = 1;
+  int64 sequence = 2;
+  repeated Depth ask = 3;
+  repeated Depth bid = 4;
+}
+message PushTrade {
+  string symbol = 1;
+  int64 sequence = 2;
+  repeated Trade trade = 3;
+}
