@@ -20,6 +20,7 @@
     <Project Path="Bitmex/Bitmex.csproj" />
     <Project Path="BitStamp/BitStamp.csproj" />
     <Project Path="Bittrex/Bittrex.csproj" />
+    <Project Path="Bloomberg/Bloomberg.csproj" />
     <Project Path="Breeze/Breeze.csproj" />
     <Project Path="Btce/Btce.csproj" />
     <Project Path="ByBit/ByBit.csproj" />
