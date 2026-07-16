@@ -23,6 +23,7 @@
     <Project Path="Breeze/Breeze.csproj" />
     <Project Path="Btce/Btce.csproj" />
     <Project Path="ByBit/ByBit.csproj" />
+    <Project Path="CapitalCom/CapitalCom.csproj" />
     <Project Path="Cex/Cex.csproj" />
     <Project Path="CQG/CQG.csproj" />
     <Project Path="Coinbase/Coinbase.csproj" />
