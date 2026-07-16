@@ -99,5 +99,6 @@
     <Project Path="Yobit/Yobit.csproj" />
     <Project Path="Zaif/Zaif.csproj" />
     <Project Path="ZB/ZB.csproj" />
+    <Project Path="Zerodha/Zerodha.csproj" />
   </Folder>
 </Solution>
