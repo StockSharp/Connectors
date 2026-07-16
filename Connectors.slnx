@@ -71,6 +71,7 @@
     <Project Path="Rithmic/Rithmic.csproj" />
     <Project Path="Robinhood/Robinhood.csproj" />
     <Project Path="Rss/Rss.csproj" />
+    <Project Path="Saxo/Saxo.csproj" />
     <Project Path="Schwab/Schwab.csproj" />
     <Project Path="Tinkoff/Tinkoff.csproj" />
     <Project Path="TigerBrokers/TigerBrokers.csproj" />
