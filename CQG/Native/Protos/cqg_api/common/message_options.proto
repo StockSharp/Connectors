@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package cqg_api;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.MessageOptions
+{
+  // Defines the request type id for a specific request message,
+  // establishing a mapping between the message type and the type id.
+  uint32 request_type_id = 70100;
+
+  // Establishes a mapping between the report message type and the type id.
+  //
+  // There is a one-to-one relationship between the type id, request type, and report type.
+  uint32 report_type_id = 70101;
+
+  // Specifies the current protocol version for a particular request message.
+  uint32 request_protocol_version = 70103;
+}

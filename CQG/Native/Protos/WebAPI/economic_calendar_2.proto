@@ -1,0 +1,300 @@
+// Calendar events.
+
+syntax = "proto2";
+
+package economic_calendar_2;
+
+import "google/protobuf/timestamp.proto";
+
+// Value related to calendar event.
+message CalendarEventValue
+{
+  // Real (not scaled) value.
+  optional double value = 1;
+
+  // Unit in which the value has been reported.
+  //
+  // Example of values:
+  //
+  // 1. '%': percentages.
+  // 2. 'K': 10^3
+  // 3. 'M': 10^6
+  // 4. 'B': 10^9
+  // 5. 'T': 10^12
+  optional string unit = 2;
+
+  // Full contract symbol in CQG dialect.
+  optional string contract_symbol = 3;
+
+  // Contract ID of instrument associated with this value.
+  //
+  // Note: If an unknown ID is received, the contract metadata can be obtained via
+  // metadata_2.ContractMetadataRequest.
+  //
+  // Source: metadata_2.ContractMetadata.contract_id.
+  optional uint32 contract_id = 4;
+
+  // Proposed bar unit for TimeBarRequest.
+  //
+  // Source: historical_2.BarUnit.
+  optional uint32 time_bar_unit = 5;
+}
+
+// Detail of calendar event.
+message CalendarEventDetail
+{
+  // Provider event detail ID.
+  //
+  // Note: The tuple of {country_id, provider_id, provider_event_category_id, provider_event_detail_id} can be used
+  // for filtering of similar detail of calendar event.
+  optional string provider_event_detail_id = 1;
+
+  // Description.
+  optional string description = 2;
+
+  // Expected value of the event.
+  optional CalendarEventValue expected_value = 3;
+
+  // Actual value of the event.
+  optional CalendarEventValue actual_value = 4;
+
+  // Previous value of the Event.
+  optional CalendarEventValue previous_value = 5;
+
+  // Previous Revised value of the Event.
+  optional CalendarEventValue previous_revised_value = 6;
+}
+
+// Description of calendar event.
+message CalendarEvent
+{
+  // Provider ID.
+  //
+  // Note: Metadata can be obtained via CalendarEventProviderListRequest.
+  //
+  // Source: CalendarEventProvider.id.
+  optional sint32 provider_id = 1;
+
+  // Unique identifier of the calendar event.
+  //
+  // Required: yes.
+  optional string provider_event_id = 2;
+
+  // Time of this event (can be in the future).
+  optional google.protobuf.Timestamp event_utc_timestamp = 3;
+
+  // Note: True means that event_utc_timestamp is an exact time of the event,
+  // False means that only a date of the event is provided.
+  optional bool event_has_time = 4;
+
+  // Period (in a free format) for which the event was published.
+  //
+  // Example: 'Feb', 'Mar 9', 'Mar-May', 'Q1', 'to Nov 30', 'Week Ending', '12/26', '12/7/2025'.
+  optional string period = 5;
+
+  // Description.
+  optional string description = 6;
+
+  // The Venue where the event will occur.
+  optional string venue = 7;
+
+  // A URL link to more information about the event.
+  optional string event_url = 8;
+
+  // The name of the company/organization the event refers to.
+  optional string organization_name = 9;
+
+  // The ticker symbol for the company if it's a company related event.
+  optional string organization_isin = 10;
+
+  // A URL with information about the company/organization.
+  optional string organization_url = 11;
+
+  // Collection of event details.
+  repeated CalendarEventDetail details = 12;
+
+  // Note: True if it's key event.
+  //
+  // Required: yes.
+  optional bool is_key_event = 13;
+
+  // Country ID.
+  //
+  // Note: Metadata can be obtained via metadata_2.CountryListRequest.
+  //
+  // Source: metadata_2.CountryMetadata.country_id.
+  optional sint32 country_id = 14;
+
+  // True means that an actual update is expected when the event occurs.
+  optional bool actual_expected = 15;
+
+  // Provider event category ID.
+  //
+  // Note: The tuple of {country_id, provider_id, provider_event_category_id} can be used for filtering
+  // of similar events.
+  optional string provider_event_category_id = 16;
+}
+
+// Request for calendar events.
+//
+// Prerequisites: All calendar events will be filtered by customer enablements.
+// E.g., 'DJ News Service' enablement will allow calendar events from Dow Jones calendar event provider.
+//
+// Note: The server maintains a limited number of full calendar days (in UTC) of past events. The default is 65 days,
+// the actual limit is returned in the oldest available timestamp of the report.
+// Requested event time range is truncated to the oldest available timestamp.
+//
+// Tips: For subscriptions, new or updated events are delivered if they are within the available range,
+// regardless of the from_ and to_utc_timestamp in the request.
+// To subscribe on new / updated events only (without receiving events for specified time range),
+// you can omit both 'from_utc_timestamp' and 'to_utc_timestamp' in the request.
+//
+// Limits:
+//
+// 1. The request rate is 60 per 60 seconds per session by default.
+// 2. The number of simultaneous requests in processing is 50 per session by default.
+// 3. The number of simultaneous update subscriptions is 1 per connection by default.
+//
+// Responses: CalendarEventListReport.
+message CalendarEventListRequest
+{
+  // Time to start from.
+  //
+  // Note: If not specified, then current time is used.
+  optional google.protobuf.Timestamp from_utc_timestamp = 1;
+
+  // Time to end with.
+  //
+  // Note: If not specified, then current time is used.
+  optional google.protobuf.Timestamp to_utc_timestamp = 2;
+
+  /// Filtering options.
+
+  // Note: If True, skip calendar events without field 'provider_event_category_id'.
+  optional bool skip_events_without_provider_event_category_id = 3;
+
+  // Note: If True, skip calendar events without `details`.
+  optional bool skip_events_without_details = 4;
+}
+
+// Report with calendar events.
+//
+// Requests: CalendarEventListRequest.
+message CalendarEventListReport
+{
+  // List of calendar events.
+  repeated CalendarEvent calendar_events = 1;
+
+  // Oldest available and allowed UTC time.
+  // Always provided in first response, provided in updates only if changed.
+  optional google.protobuf.Timestamp oldest_available_utc_timestamp = 2;
+
+  // Latest available and allowed UTC time.
+  // Always provided in first response, provided in updates only if changed.
+  optional google.protobuf.Timestamp latest_available_utc_timestamp = 3;
+}
+
+// Provider of calendar events.
+message CalendarEventProvider
+{
+  // Provider ID.
+  //
+  // Required: yes.
+  optional sint32 id = 1;
+
+  // Name.
+  //
+  // Required: yes.
+  optional string name = 2;
+
+  // Description.
+  //
+  // Required: yes.
+  optional string description = 3;
+
+  // Calendar event provider is deleted (used for updates).
+  optional bool deleted = 4;
+}
+
+// Request list of calendar event providers.
+//
+// Prerequisites: All calendar event providers will be filtered by customer enablements.
+// E.g. 'DJ News Service' enablement will allow Dow Jones calendar event provider.
+//
+// Limits:
+//
+// 1. The request rate is 5 per 5 seconds per session by default.
+// 2. The number of simultaneous requests in processing is 10 per session by default.
+// 3. The number of simultaneous update subscriptions is 10 per session by default.
+//
+// Responses: CalendarEventProviderListReport.
+message CalendarEventProviderListRequest
+{
+}
+
+// Report with a list of calendar event providers.
+//
+// Requests: CalendarEventProviderListRequest.
+message CalendarEventProviderListReport
+{
+  repeated CalendarEventProvider providers = 1;
+}
+
+// Calendar event type.
+message CalendarEventType
+{
+  // Country ID.
+  //
+  // Note: Metadata can be obtained via CountryListRequest.
+  //
+  // Source: metadata_2.CountryMetadata.country_id.
+  optional sint32 country_id = 1;
+
+  // Provider ID.
+  //
+  // Source: CalendarEventProvider.id.
+  optional sint32 provider_id = 2;
+
+  // Provider event category ID.
+  optional string provider_event_category_id = 3;
+
+  // Provider event detail ID.
+  optional string provider_event_detail_id = 4;
+
+  // Description of an event type category.
+  //
+  // Required: yes.
+  optional string category_description = 5;
+
+  // Description of an event type detail.
+  //
+  // Required: yes.
+  optional string detail_description = 6;
+
+  // Calendar event type is deleted (used for updates).
+  optional bool deleted = 7;
+}
+
+// Request list of calendar event types.
+//
+// Prerequisites: All calendar event types will be filtered by customer enablements.
+// E.g. 'DJ News Service' enablement will allow calendar event types for Dow Jones provider.
+//
+// Limits:
+//
+// 1. The request rate is 5 per 5 seconds per session by default.
+// 2. The number of simultaneous requests in processing is 10 per session by default.
+// 3. The number of simultaneous update subscriptions is 10 per session by default.
+//
+// Responses: CalendarEventTypeListReport.
+message CalendarEventTypeListRequest
+{
+}
+
+// Report with a list of calendar event types.
+//
+// Requests: CalendarEventTypeListRequest.
+message CalendarEventTypeListReport
+{
+  repeated CalendarEventType types = 1;
+}

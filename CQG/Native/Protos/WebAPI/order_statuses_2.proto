@@ -1,0 +1,192 @@
+// Order and transaction statuses enums
+
+syntax = "proto2";
+
+package shared_1;
+
+// Message for holding OrderStatus enum values as a namespace.
+message OrderStatus
+{
+  // Status of the order.
+  enum Status
+  {
+    // Original order is sent to the execution system.
+    IN_TRANSIT = 1;
+
+    // Order is rejected.
+    REJECTED = 2;
+
+    // Order is acknowledged by the execution system and perhaps partially filled.
+    WORKING = 3;
+
+    // Order is expired.
+    EXPIRED = 4;
+
+    // Cancel request is sent to the execution system.
+    IN_CANCEL = 5;
+
+    // Modify request is sent to the execution system.
+    IN_MODIFY = 6;
+
+    // Order is canceled.
+    CANCELLED = 7;
+
+    // Order is completely filled by the execution system.
+    FILLED = 8;
+
+    // Order is waiting submission to the execution system.
+    SUSPENDED = 9;
+
+    // Order may be canceled because a disconnect occurred.
+    DISCONNECTED = 10;
+
+    // Order will be placed at a specified time (waiting execution system to start accepting orders).
+    ACTIVEAT = 11;
+
+    // Cross order is sent to exchange and waiting for approval from exchange and/or counter-parties.
+    APPROVE_REQUIRED = 12;
+
+    // The exchange approved the cross order.
+    // Note that this approval relates only to the sides/participants specified in the order.
+    // Thus, it is not implied that the exchange approved the other sides of the order (counter-parties).
+    APPROVED_BY_EXCHANGE = 13;
+
+    // Cross order is rejected by one of its participants.
+    // Note that if a participant rejects its own side of the cross order, the counter-parties may not receive
+    // any reject messages if exchange does not support this notification.
+    APPROVE_REJECTED = 14;
+
+    // Cross order is completely executed on the exchange; this is the final state of the cross order unless any of
+    // its trades/legs is subsequently broken by the exchange.
+    MATCHED = 15;
+
+    // Cross order/leg is executed on the exchange; this is transit state until all transactions for trades/breaks are
+    // received.
+    PARTIALLY_MATCHED = 16;
+
+    // Cross order was executed on the exchange, but now all its trades/legs have been broken by the exchange.
+    TRADE_BROKEN = 17;
+
+    // Managed order, not sent to any exchange. May be executed via other orders.
+    MANAGED = 18;
+  }
+}
+
+// Message for holding TransactionStatus enum values as a namespace.
+message TransactionStatus
+{
+  // Status of the transaction.
+  enum Status
+  {
+    // Original order is sent to the execution system.
+    IN_TRANSIT = 1;
+
+    // Original order is rejected (exception).
+    REJECTED = 2;
+
+    // Order is acknowledged by the execution system.
+    ACK_PLACE = 3;
+
+    // Order is expired (exception).
+    EXPIRED = 4;
+
+    // Cancel request is sent to the execution system.
+    IN_CANCEL = 5;
+
+    // Cancel is acknowledged by the execution system.
+    ACK_CANCEL = 6;
+
+    // Cancel request is rejected (exception).
+    REJECT_CANCEL = 7;
+
+    // Modify request is sent to the execution system.
+    IN_MODIFY = 8;
+
+    // Modify is acknowledged by the execution system.
+    ACK_MODIFY = 9;
+
+    // Modify request is rejected (exception).
+    REJECT_MODIFY = 10;
+
+    // Fill event is received from the execution system.
+    FILL = 11;
+
+    // Order is suspended (parked).
+    SUSPEND = 12;
+
+    // Referenced fill is corrected.
+    FILL_CORRECT = 13;
+
+    // Referenced fill is canceled (exception).
+    FILL_CANCEL = 14;
+
+    // Referenced fill is busted (exception).
+    FILL_BUST = 15;
+
+    // Acknowledgment that the order will activate at specified time.
+    ACTIVEAT = 16;
+
+    // Order may be canceled because a disconnect occurred (exception).
+    DISCONNECT = 17;
+
+    // Synthetic order was sent to the actual execution system.
+    SYNTHETIC_ACTIVATED = 18;
+
+    // Order status and/ or attributes are updated.
+    UPDATE = 19;
+
+    // Synthetic strategy execution failed, expect 'text_message'
+    // attribute with further details. The client may identify outright orders used
+    // when attempting to execute the synthetic strategy by finding orders in its
+    // book where OrderStatus.origin_order_id == OrderStatus.order_id.
+    SYNTHETIC_FAILED = 20;
+
+    // Synthetic strategy order has at least one overfilled leg, 'synthetic_hang' attribute is populated.
+    SYNTHETIC_OVERFILL = 21;
+
+    // Hanging quantity update for the synthetic strategy order.
+    SYNTHETIC_HANG = 22;
+
+    // Cross order is in OrderStatus.APPROVE_REQUIRED and TransactionStatus.APPROVING state when it is
+    // acknowledged by exchange but waiting for approval from counter-parties.
+    // Note: If the exchange does not support this status, APPROVED_BY_EXCHANGE status is sent instead.
+    APPROVING = 23;
+
+    // Cross order is in OrderStatus.APPROVE_REQUIRED and TransactionStatus.APPROVE_REQUESTED state when
+    // it is waiting for approval from the client (i.e. from the side/participant that received this transaction).
+    APPROVE_REQUESTED = 24;
+
+    // The exchange approved the cross order.
+    // Note that this approval relates only to the sides/participants specified in the order.
+    // Thus, it is not implied that the exchange approved the other sides of the order (counter-parties).
+    APPROVED_BY_EXCHANGE = 25;
+
+    // Cross order is rejected by one of its participants.
+    // Note that if a participant rejects its own side of the cross order, the counter-parties may not receive
+    // any reject messages if exchange does not support this notification.
+    REJECTED_BY_USER = 26;
+
+    // Cross order is executed on exchange.
+    MATCHED = 27;
+
+    // Cross order/leg have been broken by the exchange.
+    TRADE_BROKEN = 28;
+
+    // Previously matched cross order/leg have been amended by the exchange.
+    TRADE_AMENDED = 29;
+
+    // Fills of allocation order are allocated or previous fills allocation is canceled.
+    // See order_2.AllocationRequest for more details.
+    FILLS_ALLOCATION = 30;
+
+    // Indicates that this account has lost access to this order.
+    // Client applications may remove any stored information about this order,
+    // especially order fills, since they no longer relate to this account.
+    ACCESS_REMOVED = 31;
+
+    // Indicates that this account's access to this order has been restored.
+    // Client applications may use this order and its fills again.
+    // An order history may look like: IN_TRANSIT, ACK_PLACE, FILL, ACCESS_REMOVED, FILL, ACCESS_RESTORED.
+    ACCESS_RESTORED = 32;
+  }
+}

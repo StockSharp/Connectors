@@ -1,0 +1,223 @@
+// Entities shared between different protocols.
+//
+syntax = "proto2";
+
+package shared_1;
+
+////------------------------------------------
+//// Entities
+
+// Text with a unique key.
+message Text
+{
+   // Message unique key.
+   optional string key = 1;
+
+   // Message text.
+   optional string text = 2;
+
+   optional string format = 3 [deprecated = true];
+
+   // Optional list of format string parameters ordered according to the format string placeholders.
+   // E.g., for format string "The request is rejected because %1% limit of %2% per %3% seconds is exceeded"
+   // the parameters could be: ["request rate", "1000", "10"].
+   // Note: Float numbers are always defined in decimal format with a dot separator like "23434.34"
+   // and date and time in extended ISO 8601 format as "2016-11-09 15:11:20.323" (time part is optional for
+   // dates, date part is optional for time only, seconds in time part also may not have fractional part).
+   // Client can convert these values to different formats if they need to.
+   repeated string param = 4;
+}
+
+////------------------------------------------
+//// Sign On messages
+
+// Initial message to obtain access.
+message SignOnRequest
+{
+   required string access_key = 1;
+}
+
+// Sign On result.
+message SignOnResult
+{
+   enum ResultCode
+   {
+      /// success codes (0 - 99)
+      SUCCESS = 0;
+
+      //// failure codes (100+)
+      // General failure.
+      FAILURE = 101;
+   }
+
+   // Operation status.
+   // This field is associated with ResultCode enum.
+   required uint32 result_code = 1;
+
+   // Operation details.
+   optional shared_1.Text details = 2;
+}
+
+////------------------------------------------
+//// Entitlement messages
+
+// Request for a list of entitlements of the current user.
+message EntitlementRequest
+{
+   // If true, add cryptographic signature to the responses.
+   optional bool sign_responses = 1;
+}
+
+// Report with a list of entitlements of the current user.
+message EntitlementReport
+{
+   // List of entitlements.
+   repeated Entitlement entitlement = 1;
+
+   // Cryptographic signature.
+   optional bytes signature = 2;
+}
+
+message Entitlement
+{
+   enum EntitlementType
+   {
+       // Feature entitlement.
+       // The code points to a feature number.
+       FEATURE = 8;
+
+       // News entitlement.
+       // The code points to the enabled news feed.
+       NEWS = 10;
+
+       // Dow Jones news entitlement.
+       // The code points to DJ news feed.
+       DJNEWS = 26;
+
+       // Studies.
+       STUDIES = 36;
+
+       // Manage metadata on a security (prefix) level.
+       // The code points to a contributor id.
+       MANAGE_SECURITY_METADATA = 49;
+
+       // Manage metadata on a contract level.
+       // The code points to a contributor id.
+       MANAGE_CONTRACT_METADATA = 50;
+
+       // Manage OTC state.
+       // The code points to a group of OTC services.
+       OTC_MANAGE_TAILS = 51;
+   }
+   // This value is associated with EntitlementType enum.
+   // Ignore Entitlement entry if entitlement_type is not one of EntitlementType
+   required uint32 entitlement_type = 1;
+
+   // The code that depends on the type.
+   required string entitlement_code = 2;
+
+   // Deleted flag is used in updates when entity is removed.
+   optional bool deleted = 3;
+}
+
+////------------------------------------------
+//// Notification destination entities.
+
+// Destination specification.
+// Only one type of destination can be specified.
+message Destination
+{
+   // Optional destination description.
+   optional string description = 1;
+
+   // APN destination (for iOS devices).
+   optional ApplePushNotif apple_push_notif = 2;
+
+   // GCM destination (for Android devices).
+   optional GooglePushNotif google_push_notif = 3;
+
+   // Email destination.
+   optional EmailNotif email_notif = 4;
+
+   // Notification to an email specified in trader's profile.
+   optional EmailFromProfileNotif profile_email_notif = 6;
+
+   // SMS.
+   optional SmsNotif sms_notif = 5;
+
+   // Sms notification to a phone number specified in trader's profile.
+   optional SmsToPhoneFromProfileNotif  profile_sms_notif = 7;
+}
+
+// Push notification for iOS devices.
+message ApplePushNotif
+{
+   // iOS device token
+   required string device_token = 1;
+
+   // APN application ID
+   required string app_id = 2;
+}
+
+// Push notification for Android devices.
+message GooglePushNotif
+{
+   // registration token for Android device and app
+   required string registration_token = 1;
+
+   // GCN sender id
+   required string sender_id = 2;
+}
+
+// Notification property (e.g. order related information for order event rule notifications).
+message NotificationProperty
+{
+   // Property name.
+   required string property_name = 1;
+
+   // Property value.
+   required string property_value = 2;
+}
+
+// Email notification.
+message EmailNotif
+{
+   // List of recipients to send an email to. At least one entry must be present.
+   repeated string recipients = 1;
+}
+
+// Notification to an email specified in trader's profile
+// (to the first email if there are multiple emails in the profile).
+message EmailFromProfileNotif
+{
+}
+
+// Sms notification.
+message SmsNotif
+{
+   // Destination phone number.
+   required string phone_number = 1;
+}
+
+// Sms notification to a phone number specified in trader's profile
+// (to the first phone number if there are multiple in the profile).
+message SmsToPhoneFromProfileNotif
+{
+}
+
+
+////------------------------------------------
+//// Misc reusable messages
+
+// Named value that can be used for custom parameters or properties.
+message NamedValue
+{
+   // Attribute name.
+   required string name = 1;
+
+   // Attribute value.
+   optional string value = 2;
+
+   // An optional "deleted" flag for update operations.
+   optional bool deleted = 3 [default = false];
+}

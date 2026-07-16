@@ -1,0 +1,164 @@
+syntax = "proto3";
+
+package cqg_api;
+
+import "common/shared_1.proto";
+
+// Request to the new CQG data delivery system.
+message Request
+{
+  // Unique ID of the request.
+  //
+  // It should be unique among all sent requests.
+  // Avoid reusing the same ID in subsequent requests.
+  //
+  // Maximum allowed value is 2^52 - 1.
+  uint64 request_id = 1;
+
+  enum Kind
+  {
+    KIND_UNSPECIFIED = 0;
+
+    KIND_GET = 1;
+
+    KIND_ACTION = 2;
+
+    KIND_SUBSCRIBE = 3;
+
+    KIND_DROP = 4;
+  }
+
+  // Request kind.
+  //
+  // A list of supported kinds is documented in the comments of specific request types.
+  Kind request_kind = 2;
+
+  // Request protocol version must be set to the request_protocol_version option of
+  // the corresponding request type.
+  //
+  // This field is required for all requests, except those with KIND_DROP.
+  // Requests with KIND_DROP may omit or include this field; the value is ignored.
+  //
+  // Example: SpecificRequest::descriptor()->options().GetExtension(request_protocol_version)
+  uint32 request_protocol_version = 3;
+
+  // Request type ID must be set to the request_type_id option of the corresponding
+  // request type.
+  //
+  // This field is required for all requests, including those with KIND_DROP.
+  //
+  // Example: SpecificRequest::descriptor()->options().GetExtension(request_type_id)
+  uint32 request_type_id = 4;
+
+  // Serialized request message of the above specified type.
+  //
+  // This field is required for all requests, except those with KIND_DROP.
+  // Requests with KIND_DROP may omit or include this field; the value is ignored.
+  optional bytes serialized_request = 5;
+}
+
+// Report from the new CQG data delivery system.
+message Report
+{
+  // ID(s) of the corresponding request(s).
+  //
+  // In most cases, the request_ids field contains a single ID.
+  // Special cases involving multiple IDs are described in the comments of the
+  // corresponding request types.
+  repeated uint64 request_ids = 1;
+
+  // Report status.
+  //
+  // Main status sequences:
+  //
+  // 1. For requests with KIND_GET and KIND_ACTION:
+  //    - Zero or more STATUS_SNAPSHOT_CHUNK, followed by STATUS_COMPLETED
+  //
+  // 2. For requests with KIND_SUBSCRIBE:
+  //    - STATUS_SUBSCRIBED, without data
+  //    - Zero or more STATUS_SNAPSHOT_CHUNK, followed by STATUS_SNAPSHOT_FINAL (initial snapshot)
+  //    - Zero or more STATUS_UPDATE_CHUNK, followed by STATUS_UPDATE_FINAL (incremental update)
+  //    - Zero or more STATUS_SNAPSHOT_CHUNK, followed by STATUS_SNAPSHOT_FINAL (snapshot after update)
+  //
+  // A snapshot replaces previously received data; an update modifies previously received data.
+  // How update is applied depends on request type, and is documented in the comments for specific request type.
+  //
+  // When a snapshot or update is too large to be sent in a single message, it is split into chunks
+  // sent sequentially. If the client can process incomplete data (e.g., to display it in a dynamic table),
+  // it may process chunks as they arrive. If the client needs complete data (e.g., to calculate summary),
+  // it should collect all chunks and process the full message only after the final chunk with
+  // STATUS_SNAPSHOT_FINAL, STATUS_UPDATE_FINAL, or STATUS_COMPLETED.
+  enum Status
+  {
+    STATUS_UNSPECIFIED = 0;
+
+    // Chunk of a data update; more chunks are expected.
+    STATUS_UPDATE_CHUNK = 1;
+
+    // Last or only chunk of a data update.
+    STATUS_UPDATE_FINAL = 2;
+
+    // Chunk of a data snapshot; more chunks are expected.
+    STATUS_SNAPSHOT_CHUNK = 3;
+
+    // Last or only chunk of a data snapshot.
+    STATUS_SNAPSHOT_FINAL = 4;
+
+    // Final response for non-subscription requests.
+    //
+    // This status includes the last snapshot chunk.
+    STATUS_COMPLETED = 5;
+
+    // Subscription has been accepted (in response to KIND_SUBSCRIBE).
+    //
+    // Reports with this status never include the serialized_report field.
+    STATUS_SUBSCRIBED = 6;
+
+    // Request has been dropped (in response to KIND_DROP).
+    //
+    // Reports with this status never include the serialized_report field.
+    STATUS_DROPPED = 7;
+
+    // Request or subscription has been paused because a service dependency is currently unavailable.
+    //
+    // Depending on request kind and request type, the request may or may not be restored automatically:
+    // * Requests with KIND_GET may fail with STATUS_FAILED (not restored) or may send STATUS_DISCONNECTED
+    //   followed by new responses with STATUS_SNAPSHOT_CHUNK and/or STATUS_COMPLETED.
+    // * Requests with KIND_ACTION are not restored and fail with STATUS_FAILED.
+    // * Subscriptions (requests with KIND_SUBSCRIBE) send STATUS_DISCONNECTED followed by a response with
+    //   STATUS_DROPPED_AVAILABLE_FOR_RESUBSCRIBE (if automatic subscription restore is not possible)
+    //   or new responses with STATUS_SUBSCRIBED, zero or more STATUS_SNAPSHOT_CHUNK, and STATUS_SNAPSHOT_FINAL.
+    //
+    // Reports with this status never include the serialized_report field.
+    STATUS_DISCONNECTED = 8;
+
+    // Server is ready to accept new subscription requests.
+    //
+    // The client may retry the subscription with the same or updated parameters.
+    //
+    // Reports with this status never include the serialized_report field.
+    STATUS_DROPPED_AVAILABLE_FOR_RESUBSCRIBE = 9;
+
+    // The request has failed, with a reason described in the details field.
+    //
+    // Reports with this status typically do not include the serialized_report field.
+    STATUS_FAILED = 100;
+  }
+
+  // Report status.
+  Status status_code = 3;
+
+  // Optional failure details.
+  shared_1.Text details = 4;
+
+  // Report type ID is provided for convenience.
+  //
+  // This field is always set and equal to the request_type_id of the corresponding request.
+  uint32 report_type_id = 5;
+
+  // Serialized report message of the above specified type.
+  //
+  // This field is omitted if the report status changes but there is no data to send to the client.
+  // For example, STATUS_DISCONNECTED. For more information, see the comments for the Status enum values.
+  optional bytes serialized_report = 6;
+}

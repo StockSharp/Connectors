@@ -24,6 +24,7 @@
     <Project Path="Btce/Btce.csproj" />
     <Project Path="ByBit/ByBit.csproj" />
     <Project Path="Cex/Cex.csproj" />
+    <Project Path="CQG/CQG.csproj" />
     <Project Path="Coinbase/Coinbase.csproj" />
     <Project Path="CoinCap/CoinCap.csproj" />
     <Project Path="Coincheck/Coincheck.csproj" />

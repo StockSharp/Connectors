@@ -1,0 +1,27 @@
+// Order side enums
+
+syntax = "proto2";
+
+package order_side_2;
+
+enum OrderSide
+{
+  ORDER_SIDE_UNSPECIFIED = 0;
+
+  // Describes the purchasing side of a trade.
+  ORDER_SIDE_BUY = 1;
+
+  // Describes the selling side of a trade.
+  ORDER_SIDE_SELL = 2;
+}
+
+enum OrderExtendedSide
+{
+  ORDER_EXTENDED_SIDE_UNSPECIFIED = 0;
+
+  // Short sale of asset the seller does not own.
+  ORDER_EXTENDED_SIDE_SELL_SHORT = 1;
+
+  // Short sale exempt from short-sale rules.
+  ORDER_EXTENDED_SIDE_SELL_SHORT_EXEMPT = 2;
+}

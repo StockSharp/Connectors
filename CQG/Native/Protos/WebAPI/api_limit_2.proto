@@ -1,0 +1,423 @@
+// WebAPI limit messages
+
+syntax = "proto2";
+
+package api_limit_2;
+
+import "common/shared_1.proto";
+
+enum ApiLimit
+{
+  // Naming convention:
+  // *_RATE - maximum number of messages of the corresponding type
+  //     per output period. Messages exceeding the limit are rejected.
+  // *_REQUESTS_IN_PROCESSING - maximum number of requests of
+  //     the corresponding type in processing till a snapshot received.
+  //     Messages exceeding the limit are rejected.
+  // *_SUBSCRIPTIONS - maximum number of subscriptions for updates.
+  //     Messages exceeding the limit are rejected.
+  // *_TO_CLOSE_CONNECTION limit violation leads to
+  //     user disconnection from the server.
+
+  // Limit type unspecified and must be ignored.
+  API_LIMIT_UNSPECIFIED = 0;
+
+  // Generic and session limits (1 - 99)
+
+  // Max connection rate from one IP address
+  API_LIMIT_CONNECTION_RATE = 1;
+  // Max concurrent subsessions per user
+  API_LIMIT_CONCURRENT_SUBSESSIONS = 2;
+  // Number of maximum allowed simultaneous connections from single IP address
+  API_LIMIT_CONNECTIONS_PER_IP = 3;
+
+  // Generic message related limits (100-199)
+
+  // Maximum allowed duration (in seconds) of WebSocket unavailability
+  // for outgoing messages.
+  API_LIMIT_SOCKET_UNREADY_PERIOD_TO_CLOSE_CONNECTION = 100;
+
+  // Limit per session
+  API_LIMIT_CLIENT_MESSAGES_RATE = 110;
+
+  // Information request limits (200-599)
+
+  // Limit per session
+  API_LIMIT_INFORMATION_REQUESTS_RATE = 200;
+  // Limit per session
+  API_LIMIT_ACCOUNTS_REQUESTS_RATE = 210;
+  // Limit per session
+  API_LIMIT_SYMBOL_RESOLUTION_REQUESTS_RATE = 220;
+  // Limit per session
+  API_LIMIT_LAST_STATEMENT_BALANCES_RATE = 230;
+  // Limit per session
+  API_LIMIT_CURRENCY_RATES_REQUESTS_RATE = 240;
+  // Limit per session
+  API_LIMIT_CURRENCY_RATE_SOURCES_REQUESTS_RATE = 241;
+
+  // Limit per session
+  API_LIMIT_SESSION_INFORMATION_REQUESTS_IN_PROCESSING = 250;
+  // Limit per session
+  API_LIMIT_SESSION_INFORMATION_SUBSCRIPTIONS = 251;
+
+  // Limit per session
+  API_LIMIT_HISTORICAL_ORDERS_REQUESTS_IN_PROCESSING = 260;
+  // Maximum allowed days back from now for historical orders requests.
+  // Requests exceeding the limit fail.
+  API_LIMIT_HISTORICAL_ORDERS_DAYS = 261;
+
+  // Limit per session
+  API_LIMIT_OPTION_MATURITY_LIST_REQUESTS_IN_PROCESSING = 270;
+  // Limit per session
+  API_LIMIT_OPTION_MATURITY_LIST_SUBSCRIPTIONS = 271;
+
+  // Limit per session
+  API_LIMIT_INSTRUMENT_GROUP_REQUESTS_IN_PROCESSING = 280;
+  // Limit per session
+  API_LIMIT_INSTRUMENT_GROUP_SUBSCRIPTIONS = 281;
+
+  // Limit per session
+  API_LIMIT_AT_THE_MONEY_STRIKE_REQUESTS_IN_PROCESSING = 290;
+  // Limit per session
+  API_LIMIT_AT_THE_MONEY_STRIKE_SUBSCRIPTIONS = 291;
+
+  // Limit per session
+  API_LIMIT_STRATEGY_DEFINITION_REQUESTS_RATE = 300;
+
+  // Limit per session
+  API_LIMIT_SESSION_TIME_RANGE_REQUESTS_IN_PROCESSING = 310;
+
+  // Limit per session
+  API_LIMIT_TRADING_DAY_TIME_RANGE_REQUESTS_IN_PROCESSING = 320;
+
+  // Limit per session
+  API_LIMIT_ORDER_ENTITLEMENT_REQUESTS_IN_PROCESSING = 330;
+
+  // Limit per session
+  API_LIMIT_SYMBOL_CATEGORY_LIST_REQUESTS_IN_PROCESSING = 340;
+  // Limit per session
+  API_LIMIT_SYMBOL_CATEGORY_LIST_SUBSCRIPTIONS = 341;
+
+  // Limit per session
+  API_LIMIT_SYMBOL_CATEGORY_REQUESTS_IN_PROCESSING = 350;
+  // Limit per session
+  API_LIMIT_SYMBOL_CATEGORY_SUBSCRIPTIONS = 351;
+
+  // Limit per session
+  API_LIMIT_SYMBOL_LIST_REQUESTS_IN_PROCESSING = 360;
+  // Limit per session
+  API_LIMIT_SYMBOL_LIST_SUBSCRIPTIONS = 361;
+
+  // Limit per session
+  API_LIMIT_SYMBOL_REQUESTS_RATE = 370;
+  // Limit per session
+  API_LIMIT_SYMBOL_REQUESTS_IN_PROCESSING = 371;
+
+  // Limit per session
+  API_LIMIT_ALGO_STRATEGY_DEFINITION_REQUESTS_IN_PROCESSING = 380;
+
+  // Limit per connection
+  API_LIMIT_API_LIMITS_SUBSCRIPTIONS_AND_REQUESTS_IN_PROCESSING = 390;
+
+  // Limit per session
+  API_LIMIT_CONTRIBUTOR_METADATA_REQUESTS_RATE = 400;
+  // Limit per session
+  API_LIMIT_CONTRIBUTOR_METADATA_REQUESTS_IN_PROCESSING = 401;
+  // Limit per session
+  API_LIMIT_CONTRIBUTOR_METADATA_SUBSCRIPTIONS = 402;
+
+  // Limit per session
+  API_LIMIT_BROKERAGE_TRADING_FEATURE_ENTITLEMENT_REQUESTS_IN_PROCESSING = 410;
+
+  // Limit per session
+  API_LIMIT_ORDER_STATUS_REQUESTS_RATE = 420;
+
+  // Limit per session
+  API_LIMIT_PRODUCT_SEARCH_REQUESTS_RATE = 430;
+  // Limit per session
+  API_LIMIT_PRODUCT_SEARCH_REQUESTS_IN_PROCESSING = 431;
+
+  // Limit per session
+  API_LIMIT_SYMBOL_CATEGORY_LIST_BY_INSTRUMENT_TYPE_REQUESTS_RATE = 440;
+  // Limit per session
+  API_LIMIT_SYMBOL_CATEGORY_LIST_BY_INSTRUMENT_TYPE_REQUESTS_IN_PROCESSING = 441;
+
+  // Limit per session
+  API_LIMIT_MARKET_STATE_METADATA_REQUESTS_RATE = 450;
+  // Limit per session
+  API_LIMIT_MARKET_STATE_METADATA_REQUESTS_IN_PROCESSING = 451;
+  // Limit per session
+  API_LIMIT_MARKET_STATE_METADATA_SUBSCRIPTIONS = 452;
+
+  // Limit per session
+  API_LIMIT_INSTRUMENT_DEFINITION_REQUESTS_RATE = 460;
+
+  // Limit per session
+  API_LIMIT_EXCHANGE_METADATA_REQUESTS_IN_PROCESSING = 470;
+  // Limit per session
+  API_LIMIT_EXCHANGE_METADATA_SUBSCRIPTIONS = 471;
+
+  // Limit per session
+  API_LIMIT_ENTITLEMENT_REQUESTS_SUBSCRIPTIONS = 480;
+
+  // Limit per session
+  API_LIMIT_INSTRUMENT_GROUP_BY_SECURITIES_REQUESTS_RATE = 490;
+  // Limit per session
+  API_LIMIT_INSTRUMENT_GROUP_BY_SECURITIES_REQUESTS_IN_PROCESSING = 491;
+  // Limit per session
+  API_LIMIT_INSTRUMENT_GROUP_BY_SECURITIES_SUBSCRIPTIONS = 492;
+
+  // Limit per session
+  API_LIMIT_INSTRUMENT_GROUP_BY_EXCHANGE_REQUESTS_RATE = 500;
+  // Limit per session
+  API_LIMIT_INSTRUMENT_GROUP_BY_EXCHANGE_REQUESTS_IN_PROCESSING = 501;
+  // Limit per session
+  API_LIMIT_INSTRUMENT_GROUP_BY_EXCHANGE_SUBSCRIPTIONS = 502;
+
+  // Limit per session
+  API_LIMIT_EXCHANGE_SECURITIES_REQUESTS_RATE = 510;
+  // Limit per session
+  API_LIMIT_EXCHANGE_SECURITIES_REQUESTS_IN_PROCESSING = 511;
+  // Limit per session
+  API_LIMIT_EXCHANGE_SECURITIES_SUBSCRIPTIONS = 512;
+
+  // Limit per session
+  API_LIMIT_COUNTRY_LIST_REQUESTS_RATE = 520;
+  // Limit per session
+  API_LIMIT_COUNTRY_LIST_REQUESTS_IN_PROCESSING = 521;
+  // Limit per session
+  API_LIMIT_COUNTRY_LIST_SUBSCRIPTIONS = 522;
+
+  // Limit per session
+  API_LIMIT_CALENDAR_EVENT_LIST_REQUESTS_RATE = 530;
+  // Limit per session
+  API_LIMIT_CALENDAR_EVENT_LIST_REQUESTS_IN_PROCESSING = 531;
+  // Limit per connection
+  API_LIMIT_CALENDAR_EVENT_LIST_SUBSCRIPTIONS = 532;
+
+  // Limit per session
+  API_LIMIT_CALENDAR_EVENT_PROVIDER_LIST_REQUESTS_RATE = 540;
+  // Limit per session
+  API_LIMIT_CALENDAR_EVENT_PROVIDER_LIST_REQUESTS_IN_PROCESSING = 541;
+  // Limit per session
+  API_LIMIT_CALENDAR_EVENT_PROVIDER_LIST_SUBSCRIPTIONS = 542;
+
+  // Limit per session
+  API_LIMIT_CALENDAR_EVENT_TYPE_LIST_REQUESTS_RATE = 550;
+  // Limit per session
+  API_LIMIT_CALENDAR_EVENT_TYPE_LIST_REQUESTS_IN_PROCESSING = 551;
+  // Limit per session
+  API_LIMIT_CALENDAR_EVENT_TYPE_LIST_SUBSCRIPTIONS = 552;
+
+  // Limit per session
+  API_LIMIT_DIALECT_METADATA_REQUESTS_RATE = 560;
+
+  // TradeSubscription (600-699)
+
+  // Maximum account number per trader to process
+  API_LIMIT_TRADE_ROUTING_ACCOUNTS = 600;
+  // Limit per session
+  API_LIMIT_TRADE_SUBSCRIPTIONS = 610;
+  // Maximum accounts to subscribe to
+  API_LIMIT_TRADE_SUBSCRIPTIONS_ACCOUNTS = 611;
+
+  // Order request (700-799)
+
+  // Limit per session
+  API_LIMIT_ORDER_REQUESTS_RATE = 700;
+  // Limit per account per session
+  API_LIMIT_ORDER_REQUESTS_ACCOUNT_RATE = 701;
+  // Maximum number of allocation requests to process per time period
+  API_LIMIT_ALLOCATION_REQUEST_RATE = 702;
+
+  // Market data subscription (800 - 899)
+
+  // Limit per session
+  API_LIMIT_MARKET_DATA_SUBSCRIPTION_RATE = 800;
+  // Limit per session
+  API_LIMIT_MARKET_DATA_SUBSCRIPTIONS = 801;
+
+  // Market data quotes delay threshold (in seconds)
+  // after which user will be disconnected.
+  API_LIMIT_MARKET_DATA_DELAY_TO_CLOSE_CONNECTION = 810;
+
+  // Historical requests (1000-1299)
+
+  // Limit per session
+  API_LIMIT_HISTORICAL_REQUESTS_IN_PROCESSING = 1000;
+  // Limit per session
+  API_LIMIT_HISTORICAL_SUBSCRIPTIONS = 1001;
+
+  // Limit per session
+  API_LIMIT_TIME_AND_SALES_REQUESTS_RATE = 1010;
+  // Limit per session
+  API_LIMIT_TIME_BAR_REQUESTS_RATE = 1020;
+
+  // Per contract and time range, not per connection
+  API_LIMIT_VOLUME_PROFILE_REQUESTS_CONTRACT_AND_RANGE_RATE = 1030;
+
+  // Limit per session
+  API_LIMIT_NON_TIMED_BAR_REQUESTS_RATE = 1040;
+
+  // Rules requests (1200-1299)
+
+  // Limit per session
+  API_LIMIT_RULE_REQUESTS_RATE = 1201;
+
+  // Metadata admin request (1300-1399)
+
+  API_LIMIT_RESERVED1 = 1300;
+  // Limit per session
+  API_LIMIT_PUBLISH_UNPUBLISH_PREVIEW_CONTRACT_REQUESTS_RATE = 1301;
+  // Limit per session
+  API_LIMIT_PUBLISH_UNPUBLISH_PUBLISHED_CONTRACT_REQUESTS_RATE = 1302;
+  // Limit per session
+  API_LIMIT_GET_SECURITY_PARAMETERS_REQUESTS_RATE = 1303;
+  // Limit per session
+  API_LIMIT_SET_SECURITY_PARAMETERS_REQUESTS_RATE = 1304;
+  // Limit per session
+  API_LIMIT_GET_CONTRACT_PARAMETERS_REQUESTS_RATE = 1305;
+
+  // OTC request (1400-1499, 10000-10999)
+
+  // Limit per connection
+  API_LIMIT_OTC_INSTANCES_SUBSCRIPTIONS = 1400;
+
+  // Limit per OTC instance per connection
+  API_LIMIT_HEDGE_BOOKS_SUBSCRIPTIONS = 1410;
+
+  // Limit per session
+  API_LIMIT_HEDGE_BOOK_DETAILS_REQUESTS_RATE = 1420;
+  // Limit per session
+  API_LIMIT_HEDGE_BOOK_DETAILS_REQUESTS_IN_PROCESSING = 1421;
+  // Limit per session
+  API_LIMIT_HEDGE_BOOK_DETAILS_SUBSCRIPTIONS = 1422;
+
+  // Limit per session
+  API_LIMIT_OFFSET_HEDGE_BALANCE_REQUESTS_RATE = 1430;
+
+  // Limit per session
+  API_LIMIT_CHANGE_OTC_STATE_REQUESTS_RATE = 1440;
+
+  // Limit per session
+  API_LIMIT_FILL_CASH_ORDER_REQUESTS_RATE = 1450;
+
+  // Limit per session
+  API_LIMIT_BALANCE_ITEMS_LINKS_REQUESTS_RATE = 1460;
+
+  // Limit per session
+  API_LIMIT_ARCHIVE_HEDGE_BALANCE_DETAILS_REQUESTS_RATE = 1470;
+
+  // Limit per connection
+  API_LIMIT_TAIL_MANAGEMENT_CONFIGURATION_SUBSCRIPTIONS = 1480;
+
+  // Limit per session
+  API_LIMIT_UPDATE_TAIL_MANAGEMENT_CONFIGURATION_REQUESTS_RATE = 1490;
+
+  // Limit per session
+  API_LIMIT_TAIL_MANAGEMENT_CONFIGURATION_METADATA_REQUESTS_RATE = 10000;
+
+  API_LIMIT_RESERVED2 = 10010;
+
+  // RFQ request (1500-1599)
+
+  // Limit per account per session
+  API_LIMIT_RFQ_REQUESTS_ACCOUNT_RATE = 1500;
+
+  // Option calculation request (1600-1699)
+
+  // Limit per session
+  API_LIMIT_OPTION_CALCULATION_REQUESTS_RATE = 1600;
+  // Limit per session
+  API_LIMIT_OPTION_CALCULATION_SUBSCRIPTIONS = 1601;
+  // Limit per session
+  API_LIMIT_OPTION_CALCULATION_STRIKES = 1602;
+
+  // RFQ subscription request (1700-1799)
+
+  API_LIMIT_RFQ_SUBSCRIPTION_REQUESTS_RATE = 1700;
+
+  reserved 1200, 100000 to 109999;
+
+  // Range 110000-299999 is reserved for requests in cqg_api.Request messages.
+  //
+  // A subrange of 10 values is reserved for each request type.
+  // The offset is calculated as: 110000 + request_type_id * 10.
+  //
+  // Limits for each request type will have offsets: 110000 + request_type_id * 10 + N,
+  // where N = [1-10].
+  //
+  // Currently, there are three per-request limits:
+  // 1. Maximum number of requests of the corresponding type per output period.
+  // 2. Maximum number of requests of the corresponding type in processing util a snapshot received.
+  // 3. Maximum number of subscriptions for updates.
+  //
+  // A request exceeding any of the limits will be rejected.
+  //
+  // For example, for cqg_api.rates.ImpliedRateRequest with (request_type_id) = 250:
+  // * API_LIMIT_IMPLIED_RATE_REQUEST_RATE = 112501; // 110000 + 250*10 + 1
+  // * API_LIMIT_IMPLIED_RATE_REQUESTS_IN_PROCESSING = 112502;
+  // * API_LIMIT_IMPLIED_RATE_SUBSCRIPTIONS = 112503;
+  //
+  // If a limit for a request type is not returned, or is returned with status code
+  // API_LIMIT_ENTRY_STATUS_CODE_NOT_FOUND, it indicates that no limit is currently enforced.
+  reserved 110000 to 299999;
+}
+
+// Request limits for the user. Max allowed values are returned.
+//
+// Limits: The number of subscriptions and simultaneous requests in processing is 1 per connection by default.
+//
+// Response: ApiLimitReport.
+message ApiLimitRequest
+{
+  // Limit types to request.
+  // This field is associated with ApiLimit enum type.
+  // If empty, all supported limits will be returned.
+  repeated uint32 limits = 1;
+}
+
+enum ApiLimitEntryStatusCode
+{
+  // Entry not specified and must be ignored.
+  API_LIMIT_ENTRY_STATUS_CODE_UNSPECIFIED = 0;
+
+  // Value is populated.
+  API_LIMIT_ENTRY_STATUS_CODE_SUCCESS = 1;
+
+  // Failure codes (100+)
+
+  // General failure, client should use the default value
+  // (from proto file comments, descriptions, etc.)
+  API_LIMIT_ENTRY_STATUS_CODE_FAILURE = 101;
+
+  // Limit type not found or already deleted (value is not restricted).
+  API_LIMIT_ENTRY_STATUS_CODE_NOT_FOUND = 104;
+}
+
+message ApiLimitEntry
+{
+  // Limit type.
+  // This field is associated with ApiLimit enum type.
+  optional uint32 limit = 1;
+
+  // Result status of the request.
+  // This field is associated with ApiLimitEntryStatusCode enum type.
+  optional uint32 status_code = 2;
+
+  // Limit value.
+  optional uint32 value = 3;
+
+  // Populated if the limit is a rate = value / period_sec.
+  optional uint32 period_sec = 4;
+
+  // Limit description.
+  optional shared_1.Text description = 5;
+}
+
+// Request: ApiLimitRequest.
+message ApiLimitReport
+{
+  // Limit output entries.
+  repeated ApiLimitEntry limit_entries = 1;
+}

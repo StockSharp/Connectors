@@ -1,0 +1,371 @@
+// Metadata administration messages
+
+syntax = "proto2";
+
+package metadata_admin_2;
+
+import "common/shared_1.proto";
+
+// Client metadata messages.
+// Only one metadata operation is allowed.
+//
+// Prerequisites: it requires a special permission, check nested messages.
+//
+// Response: MetadataAdminResult.
+message MetadataAdminRequest
+{
+  // Request identifier.
+  required string request_id = 1;
+
+  // Request security parameters.
+  optional GetSecurityParameters get_security_parameters = 2;
+
+  // Set security level parameters.
+  optional SetSecurityParameters set_security_parameters = 3;
+
+  // Publish a new contract or publish changes of an existing contract.
+  optional PublishContract publish_contract = 5;
+
+  // Remove a previously published contract from public access.
+  optional UnpublishContract unpublish_contract = 6;
+
+  // Get contract level parameters.
+  optional GetContractParameters get_contract_parameters = 7;
+}
+
+// Server metadata messages.
+//
+// Request: MetadataAdminRequest.
+message MetadataAdminResult
+{
+  enum ResultCode
+  {
+    /// success codes (0 - 99)
+
+    RESULT_CODE_SUCCESS = 0;
+
+    /// failure codes (100+)
+
+    // General failure.
+    RESULT_CODE_FAILURE = 101;
+
+    // The request rate limit has been violated.
+    RESULT_CODE_REQUEST_RATE_LIMIT_VIOLATION = 102;
+
+    // The request is timed out. No more statuses are expected for the request.
+    // The modification request can be still in processing, and its result can
+    // be observed later over subscriptions. E.g. PublishContract may lead to
+    // SymbolListRequest update even after obtaining this status.
+    RESULT_CODE_TIMEOUT = 103;
+  }
+
+  // ID of a corresponding request or subscription.
+  required string request_id = 1;
+
+  // Operation status.
+  // This field is associated with ResultCode enum.
+  required uint32 result_code = 2;
+
+  // Operation details.
+  optional shared_1.Text details = 3;
+
+  // Result of security parameters request.
+  optional GetSecurityParametersResult get_security_parameters_result = 4;
+
+  // Result of security parameters update.
+  optional SetSecurityParametersResult set_security_parameters_result = 5;
+
+  // Result of contract publishing.
+  optional PublishContractResult publish_contract_result = 6;
+
+  // Result of contract unpublishing.
+  optional UnpublishContractResult unpublish_contract_result = 7;
+
+  // Result of contract parameters request.
+  optional GetContractParametersResult get_contract_parameters_result = 8;
+}
+
+// Contributor with attached parameters.
+message ContributorParameters
+{
+  // OTC Contributor identifiers.
+  required string contributor_id = 1;
+
+  // List of custom parameters.
+  repeated ContributorParameter parameters = 2;
+}
+
+enum ContributorParameterSource
+{
+  CONTRIBUTOR_PARAMETER_SOURCE_UNSPECIFIED = 0;
+
+  // Origin of a parameter is a contract.
+  CONTRIBUTOR_PARAMETER_SOURCE_CONTRACT = 1;
+
+  // Origin of a parameter is a security.
+  CONTRIBUTOR_PARAMETER_SOURCE_SECURITY = 2;
+}
+
+// Note: While contributor parameter names and values may vary,
+// there is a set of reserved names described in the ContributorParameters.md document.
+message ContributorParameter
+{
+  // Contributor parameter name.
+  required string name = 1;
+
+  // Contributor parameter value.
+  optional string value = 2;
+
+  // An optional "deleted" flag for update operations.
+  optional bool deleted = 3;
+
+  // Contributor parameters are available on contract and security levels.
+  // This field specifies where the value (see ContributorParameter.value
+  // field) came from.
+  // Contract source has a priority over security. Different requests
+  // (which require different entitlements) control value on different
+  // levels.
+  // The field has meaning only in server to client messages.
+  // This field is associated with ContributorParameterSource enum.
+  optional uint32 source = 4;
+}
+
+// Get security level parameters.
+//
+// Prerequisites: client must have permission to manage securities for contributors.
+//
+// Limits: The request rate is 100 requests per 100 seconds per session by default.
+//
+// Response: GetSecurityParametersResult.
+message GetSecurityParameters
+{
+  // Security identifier.
+  //
+  // Source: metadata_2.SecurityMetadata.security_id.
+  required string security_id = 1;
+
+  // OTC Contributor identifiers.
+  //
+  // Source: ContributorParameters.contributor_id, trading_account_2.Account.contributor_ids.
+  repeated string contributor_ids = 2;
+}
+
+// Result of security parameters update.
+//
+// Request: GetSecurityParameters.
+message GetSecurityParametersResult
+{
+  // Security identifier.
+  required string security_id = 1;
+
+  // Security custom parameters.
+  repeated ContributorParameters contributor_parameters = 2;
+}
+
+// Set security level parameters.
+// It may produce update for symbol_browsing_2.SymbolListRequest subscription.
+//
+// Prerequisites: client must have permission to manage securities for contributors.
+//
+// Limits: The request rate is 100 requests per 100 seconds per session by default.
+//
+// Response: SetSecurityParametersResult.
+message SetSecurityParameters
+{
+  // Security identifier.
+  //
+  // Source: metadata_2.SecurityMetadata.security_id.
+  required string security_id = 1;
+
+  // Security custom parameters.
+  // Client includes only parameters that are changed (added, updated or deleted).
+  //
+  // Source: ContributorParameters.contributor_id, trading_account_2.Account.contributor_ids.
+  repeated ContributorParameters contributor_parameters = 2;
+}
+
+// Result of security parameters update.
+//
+// Request: SetSecurityParameters.
+message SetSecurityParametersResult
+{
+  // Security identifier.
+  required string security_id = 1;
+
+  // Security custom parameters after the change.
+  // The full list of parameters as a result of this update.
+  repeated ContributorParameters contributor_parameters = 2;
+}
+
+// Publish a new contract or publish changes of an existing contract.
+// Modification is incremental - only specified fields are modified, if the
+// field is not specified then it is not touched.
+// It may produce update for symbol_browsing_2.SymbolListRequest subscription.
+// Some fields cannot be modified.
+//
+// Prerequisites: client must have permission to manage contracts for contributors.
+//
+// Limits: The limits are shared with UnpublishContract request
+//
+// 1. The request rate is 100 requests per 100 seconds per session by default if PublishContract.preview = false.
+// 2. The request rate is 500 requests per 100 seconds per session by default if PublishContract.preview = true.
+//
+// Response: PublishContractResult.
+message PublishContract
+{
+  // Security identifier for which contract is created. Unmodifiable.
+  //
+  // Source: metadata_2.SecurityMetadata.security_id.
+  optional string security_id = 1;
+
+  // Contract expiration date.
+  // (local exchange date in time format, use date part only).
+  // Unmodifiable.
+  optional sint64 expiration_date = 3;
+
+  // Source contract identifier for double-quoting.
+  optional uint32 source_contract_id = 4;
+
+  // Contract first notice date.
+  // (local exchange date in time format, use date part only).
+  optional sint64 first_notice_date = 5;
+
+  // Contract last delivery date.
+  // (local exchange date in time format, use date part only).
+  optional sint64 last_delivery_date = 6;
+
+  // Contract custom parameters.
+  // Client includes all initial values.
+  repeated ContributorParameters contributor_parameters = 7;
+
+  // Contract description.
+  optional string description = 8;
+
+  // Publish a contract in preview mode. The contract will be visible only to
+  // the current user, until it is published with the flag set to false or
+  // omitted. Preview contracts do not persist between user sessions.
+  optional bool preview = 9;
+
+  // ID of the previously published contract.
+  // Used for overriding contract parameters or final publishing.
+  // Take the value from contract_id of previous PublishContractResult.
+  //
+  // Note: Specifying this parameter leads to modification of the contract with
+  // previous_contract_id. If the contract changes significantly (e.g., preview
+  // flag changes), previous_contract_id may become invalid: notification about
+  // the contract deletion will be sent if there is a subscription on the
+  // contract, and a new contract ID is returned in the response. In this case,
+  // sending multiple requests with the same previous_contract_id before
+  // getting a response will lead to the rejection of subsequent modifications.
+  // It is recommended to send modifications one by one using the contract ID
+  // from the response of the last modification.
+  //
+  // Source: metadata_2.ContractMetadata.contract_id.
+  optional uint32 previous_contract_id = 10;
+
+  // Identifier of the currency contract used for price conversion.
+  // Contract should belong to security specified in SecurityMetadata.currency_rate_instrument_group_name.
+  // Leave this field empty if SecurityMetadata.currency_rate_instrument_group_name is not set.
+  //
+  // Source: metadata_2.ContractMetadata.contract_id.
+  optional uint32 currency_rate_contract_id = 12;
+
+  // Identifier of the currency contract used for hedging conversion.
+  // Contract should belong to security specified in SecurityMetadata.currency_hedge_instrument_group_name.
+  // Leave this field empty if SecurityMetadata.currency_hedge_instrument_group_name is not set.
+  //
+  // Source: metadata_2.ContractMetadata.contract_id.
+  optional uint32 currency_hedge_contract_id = 13;
+
+  // Identifier of the contract used for hedging.
+  // Can be different from source contract only if 'HedgeFirst' contributor parameter is explicitly set to false.
+  // If not set, it is assumed to be the same as source contract.
+  //
+  // Source: metadata_2.ContractMetadata.contract_id.
+  optional uint32 hedge_with_contract_id = 14;
+
+  // Identifiers of fields being cleared.
+  // E.g. To clear first_notice_date field, put 5 in this collection.
+  repeated uint32 cleared_fields = 11;
+
+  reserved 2;
+}
+
+// Result of contract publishing.
+//
+// Request: PublishContract.
+message PublishContractResult
+{
+  // Assigned contract ID for the published contract if successful.
+  // Complete metadata can be requested by ContractMetadataRequest message.
+  optional uint32 contract_id = 1;
+
+  // Symbol ID for the published contract if successful.
+  // Complete metadata can be requested by SymbolRequest message.
+  optional string symbol_id = 2;
+}
+
+// Remove previous published contract from public access.
+// It may produce update for symbol_browsing_2.SymbolListRequest subscription.
+//
+// Prerequisites: client must have permission to manage contracts for contributors.
+//
+// Limits: The limits are shared with PublishContract request
+//
+// 1. The request rate is 100 requests per 100 seconds per session by default if
+// UnpublishContract.contract_id relates to metadata created by PublishContract.preview = false.
+// 2. The request rate is 500 requests per 100 seconds per session by default if
+// UnpublishContract.contract_id relates to metadata created by PublishContract.preview = true.
+//
+// Response: UnpublishContractResult.
+message UnpublishContract
+{
+  // Contract identifier.
+  //
+  // Source: metadata_2.ContractMetadata.contract_id.
+  optional uint32 contract_id = 1;
+
+  // OTC Contributor identifiers which are affected by the action.
+  //
+  // Note: Unused in current version.
+  repeated string contributor_ids = 2;
+}
+
+// Result of contract unpublishing.
+//
+// Request: UnpublishContract.
+message UnpublishContractResult
+{
+}
+
+// Get contract level parameters.
+//
+// Prerequisites: client must have permission to manage contracts for contributors.
+//
+// Limits: The request rate is 100 requests per 100 seconds per session by default.
+//
+// Response: GetContractParametersResult.
+message GetContractParameters
+{
+  // Contract identifier.
+  //
+  // Source: metadata_2.ContractMetadata.contract_id.
+  required uint32 contract_id = 1;
+
+  // OTC Contributor identifiers.
+  //
+  // Source: ContributorParameters.contributor_id, trading_account_2.Account.contributor_ids.
+  repeated string contributor_ids = 2;
+}
+
+// Result of contract parameters request.
+//
+// Request: GetContractParameters.
+message GetContractParametersResult
+{
+  // Contract identifier.
+  required uint32 contract_id = 1;
+
+  // Contract custom parameters.
+  repeated ContributorParameters contributor_parameters = 2;
+}

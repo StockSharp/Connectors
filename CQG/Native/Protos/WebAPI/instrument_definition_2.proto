@@ -1,0 +1,93 @@
+// Instrument definition messages
+
+syntax = "proto2";
+
+package instrument_definition_2;
+
+import "WebAPI/metadata_2.proto";
+import "google/protobuf/timestamp.proto";
+
+// Message describing a user-defined (non-strategy) instrument, e.g., a flex option.
+// Which attributes may be specified, and in what combination, is exchange-specific.
+// Description of usage conventions can be found in document InstrumentDefinitionConventions_WebAPI.md.
+message InstrumentDefinition
+{
+  // Symbol of the underlying contract, in exchange-specific format.
+  //
+  // Required: yes.
+  optional string underlying_contract_symbol = 1;
+
+  // CQG base instrument type.
+  // One of metadata_2.CQGInstrumentType enums.
+  //
+  // Required: yes.
+  optional uint32 cqg_instrument_type = 2;
+
+  // Maturity timestamp.
+  // (local exchange date in timestamp format, use date part only).
+  //
+  // Required: yes.
+  optional google.protobuf.Timestamp maturity_timestamp = 3;
+
+  // Exchange-specific instrument type, if required by exchange.
+  // Allowed type strings depend on exchange convention.
+  optional string exchange_instrument_type = 4;
+
+  // Settlement method, if required by exchange.
+  // One of metadata_2.SettlementMethod enums.
+  optional uint32 settlement_method = 5;
+
+  // Option strike value, for options only.
+  // Value will be passed as-is to exchange.
+  optional double strike = 6;
+
+  // Exercise style, for options only, if required by exchange.
+  // One of metadata_2.ExerciseStyle enums.
+  optional uint32 exercise_style = 7;
+
+  // Pricing convention, if required by exchange.
+  // One of metadata_2.PricingConvention enums.
+  optional uint32 pricing_convention = 8;
+}
+
+// Request to define a non-strategy as a contract.
+//
+// Limits: The request rate is 10000 per 24 hours per session by default.
+//
+// Response: InstrumentDefinitionReport.
+message InstrumentDefinitionRequest
+{
+  // Instrument to define.
+  //
+  // Required: yes.
+  optional InstrumentDefinition instrument_definition = 1;
+
+  // Account ID in the CQG trade routing system.
+  // Some exchanges require an account ID in the process of defining an instrument.
+  // For those exchanges this is a required field.
+  //
+  // Source: trading_account_2.Account.account_id.
+  optional sint32 account_id = 2;
+
+  // Message originator location (i.e. geographic location)
+  // A request exceeding of the size limit (12 symbols) will be rejected.
+  optional string sender_location_id = 3;
+
+  // Message originator identifier (desk, trader etc).
+  // A request exceeding of the size limit (64 symbols) will be rejected.
+  optional string sender_operator_id = 4;
+}
+
+// Report of the contract metadata assigned to the instrument.
+//
+// Request: InstrumentDefinitionRequest.
+message InstrumentDefinitionReport
+{
+  // Assigned instrument metadata.
+  //
+  // Required: yes.
+  optional metadata_2.ContractMetadata contract_metadata = 1;
+
+  // Applied effective value of message originator identifier.
+  optional string operator_id = 2;
+}

@@ -1,0 +1,352 @@
+// Symbol browsing related messages.
+
+syntax = "proto2";
+
+package symbol_browsing_2;
+
+import "WebAPI/metadata_2.proto";
+
+// Symbol structure.
+// It can represent either a product (root symbol), a security,
+// an option maturity or a contract (leaf symbol).
+// Only one of corresponding *_metadata fields can be specified.
+// Each symbol except product ones has a link to its parent
+// (see Symbol.parent_symbol_id field):
+// parent symbol for a security symbol is a product symbol,
+// parent symbol for a contract symbol (non-option) is a security symbol,
+// parent symbol of an option strike contract symbol is an option maturity symbol,
+// parent symbol for an option maturity symbol is a security symbol.
+message Symbol
+{
+  // Symbol Identifier.
+  required string id = 1;
+
+  // Symbol readable name.
+  required string name = 2;
+
+  // Symbol description.
+  required string description = 3;
+
+  // Deprecated and should not be used. Use nested metadata messages.
+  optional string cfi_code = 4 [deprecated = true];
+
+  // True if this symbol has child symbols (false for leafs of the symbol tree).
+  optional bool has_child_symbols = 5;
+
+  // Deleted flag is used in updates when the symbol is either removed (e.g., expired) or
+  // no longer meets request filtering criterias (e.g., SymbolListRequest.category_id filter).
+  //
+  // Note: List of categories in category_id field (see below) may be cleared when symbol is removed.
+  optional bool deleted = 7;
+
+  // Deprecated and should not be used. Use nested metadata messages.
+  optional sint64 expiration_date = 8 [deprecated = true];
+
+  // Deprecated and should not be used. Use nested metadata messages.
+  optional string maturity_month_year = 9 [deprecated = true];
+
+  // Deprecated and should not be used. Use nested metadata messages.
+  optional string instrument_group_name = 10 [deprecated = true];
+
+  // ID (Symbol.id) of the parent symbol (if this is not the root symbol - product).
+  // If this field is empty, product_metadata field is set.
+  //
+  // Source: Symbol.id of another Symbol.
+  optional string parent_symbol_id = 11;
+
+  // List of categories of this symbol, if any.
+  //
+  // See: SymbolCategory, SymbolCategoryRequest.
+  //
+  // Source: SymbolCategory.id.
+  repeated string category_ids = 12;
+
+  // Deprecated and should not be used. Use metadata_2.SecurityMetadata.source_instrument_group_name or
+  // metadata_2.ContractMetadata.source_contract_id instead.
+  optional string source_symbol_id = 13 [deprecated = true];
+
+  // Rank value of the symbol for sorting peer symbols in user interfaces. Higher value means greater priority.
+  optional uint32 rank = 17;
+
+  // Metadata of a product if this symbol describes one (aka Symbol Root Key).
+  // If this field is set, this symbol doesn't have a parent symbol.
+  optional ProductMetadata product_metadata = 14;
+
+  // Metadata of a security if this symbol describes one (aka Symbol Prefix Key).
+  optional metadata_2.SecurityMetadata security_metadata = 15;
+
+  // Metadata of options maturity group if this symbol describes one (aka Option Lead Key).
+  optional metadata_2.OptionMaturityMetadata option_maturity_metadata = 16;
+
+  // Contract metadata if a symbol is a specific contract (leaf of the symbol tree).
+  optional metadata_2.ContractMetadata contract_metadata = 6;
+}
+
+// Symbol category.
+message SymbolCategory
+{
+  // Category identifier.
+  //
+  // Note: This identifier is not guaranteed to be stable, so categories should be
+  // obtained e.g., via SymbolCategoryListRequest or SymbolCategoryListByInstrumentTypeRequest
+  // instead of being saved using this id between sessions.
+  required string id = 1;
+
+  // Category name.
+  required string name = 2;
+
+  // Category description.
+  optional string description = 3;
+
+  // Category parent identifier. Omitted for root categories.
+  //
+  // Source: SymbolCategory.id of another SymbolCategory.
+  optional string parent_id = 4;
+
+  // Indicates whether this category can be used as a filter for getting a list of symbols.
+  required bool can_filter = 5;
+
+  // If the category is an exchange, then this field defines exchange id.
+  //
+  // Source: ExchangeMetadata.exchange_id.
+  optional sint32 exchange_id = 6;
+
+  // If the category is an OTC contributor then this field defines contributor ID.
+  optional string contributor_id = 7;
+
+  // If the category is an Asset Class, then this field defines instrument business type id.
+  // To get a list of all instrument business type id values, send a SymbolCategoryListRequest
+  // with category_id corresponding to Asset Class, then for each id from SymbolCategoryListReport's
+  // symbol_categories field, send SymbolCategoryListRequest with this id as the value of category_id
+  // or send SymbolCategoryListRequest with a big enough depth parameter value (see SymbolCategoryListRequest.depth)
+  // to get all symbol categories.
+  optional uint32 instrument_business_type_id = 9;
+
+  // Deleted flag is used in updates when the category is removed
+  // or does not satisfy request criteria anymore (e.g., parent_id is changed).
+  optional bool deleted = 8;
+}
+
+// Request for a symbol category [sub-]tree for a particular root. Each category can have a list of sub-categories.
+// A list of roots can be requested using an empty list of category IDs.
+//
+// Limits:
+//
+// 1. The number of simultaneous requests in processing is 100 per session by default.
+// 2. The number of simultaneous update subscriptions is 100 per session by default.
+// 3. Only one subscription per category_id per connection for updates.
+//
+// Response: SymbolCategoryListReport.
+message SymbolCategoryListRequest
+{
+  // Category Identifier to request corresponding sub-tree.
+  // Do not specify category ID to get categories from roots.
+  //
+  // Source: SymbolCategory.id.
+  optional string category_id = 1;
+
+  // Optional depth. One level is returned if not specified.
+  optional uint32 depth = 2;
+}
+
+// Report with a symbol category tree for a particular root.
+//
+// Request: SymbolCategoryListRequest.
+message SymbolCategoryListReport
+{
+  // List of categories linked to their parents.
+  repeated SymbolCategory symbol_categories = 1;
+}
+
+// Request for a specific category by ID.
+//
+// Limits:
+//
+// 1. The number of simultaneous requests in processing is 1000 per session by default.
+// 2. The number of simultaneous update subscriptions is 1000 per session by default.
+//
+// Response: SymbolCategoryReport.
+message SymbolCategoryRequest
+{
+  // Category Identifier to request corresponding category.
+  //
+  // Source: SymbolCategory.id.
+  optional string category_id = 1;
+}
+
+// Report with a category.
+//
+// Request: SymbolCategoryRequest.
+message SymbolCategoryReport
+{
+  optional SymbolCategory symbol_category = 1;
+}
+
+// Instrument client type.
+// Values of this type are known to be stable in contrast to symbol category ids
+// and so they can be hard-coded in client code.
+enum InstrumentClientType
+{
+  INSTRUMENT_CLIENT_TYPE_UNKNOWN = 0;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_BUNDLE = 1;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_CONDOR = 2;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_DOUBLE_BUTTERFLY = 3;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_FUTURES_INTER_COMMODITY = 4;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_BUTTERFLY = 5;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_PACK = 6;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_PACK_BUTTERFLY = 7;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_REDUCED_TICK_CALENDAR = 8;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_CALENDAR = 9;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_STRIP = 11;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_REVERSE_CALENDAR = 12;
+  INSTRUMENT_CLIENT_TYPE_SPREAD_MONTH_VS_PACK = 14;
+  INSTRUMENT_CLIENT_TYPE_EVENT_UNDERLYING = 15;
+}
+
+// Request for a list of category symbols matching input instrument client type.
+//
+// Limits:
+//
+// 1. The request rate is 30 per 60 seconds per session by default.
+// 2. The number of simultaneous requests in processing is 5 per session by default.
+//
+// Response: SymbolCategoryListByInstrumentTypeReport.
+message SymbolCategoryListByInstrumentTypeRequest
+{
+  // Instrument client type.
+  // This field is associated with InstrumentClientType enum.
+  // INSTRUMENT_CLIENT_TYPE_UNKNOWN is used if this field is empty.
+  optional uint32 instrument_client_type = 1;
+}
+
+// Report with a list of category symbols matching input instrument client type.
+//
+// Request: SymbolCategoryListByInstrumentTypeRequest.
+message SymbolCategoryListByInstrumentTypeReport
+{
+  repeated SymbolCategory symbol_categories = 1;
+}
+
+// Request for a list of symbols according to a filter.
+// At least one filter field must be specified.
+//
+// Note: Symbols related to option strikes are not returned unless symbol id of
+// corresponding option maturity symbol is specified as a parent_symbol_id in the request.
+//
+// Note: Dialect support in list requests is limited.
+// Behavior may differ from symbol resolution,
+// and dialect-specific fields might be omitted depending on server-side configuration.
+//
+// Limits:
+//
+// 1. The number of simultaneous requests in processing is 150 per session by default.
+// 2. The number of simultaneous update subscriptions is 150 per session by default.
+// 3. Number of symbols in response is limited (default is 10000).
+//
+// Response: SymbolListReport.
+message SymbolListRequest
+{
+  // Optional category filter controlling how multiple
+  // symbol categories are applied in the filter.
+  // Categories within the same tree (having the same root) are applied by "OR" in the category filter
+  // (e.g., two exchanges, either matches). Otherwise categories are applied by "AND" (e.g., exchange and asset).
+  //
+  // See: SymbolCategory, SymbolCategoryListRequest.
+  //
+  // Source: SymbolCategory.id.
+  repeated string category_ids = 1;
+
+  // Number of levels in the symbol tree to return from the top of the symbol tree
+  // (i.e. from product level) or from the parent symbol (if specified).
+  // Symbols from deeper levels are excluded from the results.
+  // One level is returned if the field is omitted.
+  optional uint32 depth = 2;
+
+  // Parent symbol id filter to return only child symbols of this parent.
+  // If this field is specified, depth must be one or omitted.
+  //
+  // Source: Symbol.id.
+  optional string parent_symbol_id = 3;
+}
+
+// Report with a list of found symbols.
+//
+// Request: SymbolListRequest.
+message SymbolListReport
+{
+  // List of symbols.
+  repeated Symbol symbols = 1;
+}
+
+// Request for a specific symbol by ID.
+//
+// Limits:
+//
+// 1. The request rate is 10000 per 24 hours per session by default.
+// 2. The number of simultaneous requests in processing is 150 per session by default.
+//
+// Response: SymbolReport.
+message SymbolRequest
+{
+  // ID of a symbol to request.
+  //
+  // Source: Symbol.id.
+  required string symbol_id = 1;
+
+  // True if deleted symbols should also be reported.
+  // Note that the symbol marked as deleted will be available for 30 days (by default) from its last trading date.
+  optional bool include_deleted = 2;
+}
+
+// Report with a symbol.
+//
+// Request: SymbolRequest.
+message SymbolReport
+{
+  optional Symbol symbol = 1;
+}
+
+// Metadata represents a common product and parent for a set of securities.
+message ProductMetadata
+{
+  optional string product_id = 1;
+}
+
+// Request for a list of product symbols matching a search criteria (see Symbol.product_metadata).
+//
+// Limits:
+//
+// 1. The request rate is 30 per 60 seconds per session by default.
+// 2. The number of simultaneous requests in processing is 5 per session by default.
+//
+// Response: ProductSearchReport.
+message ProductSearchRequest
+{
+  // Term to search matched product symbols on.
+  // Search term needs to be filled and its length must be greater than 3 (by default) if category_id filter is empty.
+  // Searching is done on the text associated to the being searched product symbols.
+  // Matching is supported only by "starts with" pattern.
+  // Multi-word input (whitespace delimited) is applied by "or".
+  // I.e. it matches a symbol if any word from the search term matches.
+  optional string search_term = 1;
+
+  // Optional category filter controlling how multiple symbol categories are applied in the filter.
+  // Categories within the same tree (having the same root) are applied by "OR" in the category filter
+  // (e.g., two exchanges, either matches). Otherwise, categories are applied by "AND" (e.g., exchange and asset).
+  //
+  // See: SymbolCategory, SymbolCategoryListRequest.
+  //
+  // Source: SymbolCategory.id
+  repeated string category_ids = 2;
+
+  reserved 3;
+}
+
+// Report with a list of found product symbols.
+//
+// Request: ProductSearchRequest.
+message ProductSearchReport
+{
+  // List of product symbols.
+  repeated Symbol symbols = 1;
+}
