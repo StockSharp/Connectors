@@ -68,6 +68,7 @@
     <Project Path="LMAX/LMAX.csproj" />
     <Project Path="LsSecurities/LsSecurities.csproj" />
     <Project Path="Mexc/Mexc.csproj" />
+    <Project Path="MiraeSharekhan/MiraeSharekhan.csproj" />
     <Project Path="MoexISS/MoexISS.csproj" />
     <Project Path="MoexLchi/MoexLchi.csproj" />
     <Project Path="Moomoo/Moomoo.csproj" />
