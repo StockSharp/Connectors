@@ -47,6 +47,7 @@
     <Project Path="HitBtc/HitBtc.csproj" />
     <Project Path="Huobi/Huobi.csproj" />
     <Project Path="Hyperliquid/Hyperliquid.csproj" />
+    <Project Path="IG/IG.csproj" />
     <Project Path="InteractiveBrokers/InteractiveBrokers.csproj" />
     <Project Path="KotakNeo/KotakNeo.csproj" />
     <Project Path="Kraken/Kraken.csproj" />
