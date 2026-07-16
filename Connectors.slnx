@@ -45,6 +45,7 @@
     <Project Path="FTX/FTX.csproj" />
     <Project Path="GateIO/GateIO.csproj" />
     <Project Path="Gopax/Gopax.csproj" />
+    <Project Path="Groww/Groww.csproj" />
     <Project Path="HitBtc/HitBtc.csproj" />
     <Project Path="Huobi/Huobi.csproj" />
     <Project Path="Hyperliquid/Hyperliquid.csproj" />

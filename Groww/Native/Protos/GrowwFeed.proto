@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package stocksData.response;
+option csharp_namespace = "StockSharp.Groww.Native.Protobuf.Feed";
+
+enum StockExchangeProto {
+  BSE = 0;
+  NSE = 1;
+  MCX = 2;
+  MCXSX = 3;
+  NCDEX = 4;
+  GLOBAL = 5;
+  US = 6;
+}
+
+enum StockSegmentProto {
+  CASH = 0;
+  FNO = 1;
+  CURRENCY = 2;
+  COMMODITY = 3;
+}
+
+message BookProto {
+  double price = 1;
+  double qty = 2;
+}
+
+message StocksLivePriceProto {
+  double tsInMillis = 1;
+  double open = 2;
+  double high = 3;
+  double low = 4;
+  double close = 5;
+  double volume = 6;
+  double value = 7;
+  double bidQty = 8;
+  double offerQty = 9;
+  double avgPrice = 10;
+  double highPriceRange = 11;
+  double lowPriceRange = 12;
+  double ltp = 13;
+  double openInterest = 14;
+  double lowTradeRange = 15;
+  double highTradeRange = 16;
+}
+
+message StocksLiveIndicesProto {
+  double tsInMillis = 1;
+  double value = 2;
+}
+
+message StocksMarketDepthProto {
+  double tsInMillis = 1;
+  map<int32, BookProto> buyBook = 2;
+  map<int32, BookProto> sellBook = 3;
+}
+
+message StocksSocketResponseProtoDto {
+  string symbol = 1;
+  StockSegmentProto segment = 2;
+  StockExchangeProto exchange = 3;
+  oneof livePoint {
+    StocksLivePriceProto stockLivePrice = 4;
+    StocksMarketDepthProto stocksMarketDepth = 5;
+    StocksLiveIndicesProto stocksLiveIndices = 6;
+  }
+}
+
+message StocksMarketInfoProto {
+  string message = 1;
+}
