@@ -87,6 +87,7 @@
     <Project Path="Rss/Rss.csproj" />
     <Project Path="Saxo/Saxo.csproj" />
     <Project Path="Schwab/Schwab.csproj" />
+    <Project Path="Swissquote/Swissquote.csproj" />
     <Project Path="Tinkoff/Tinkoff.csproj" />
     <Project Path="TigerBrokers/TigerBrokers.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
