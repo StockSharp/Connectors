@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+
+  <PropertyGroup>
+    <ProjectGuid>{A2C3C0A9-295E-4A53-AB66-CB23E985F8A2}</ProjectGuid>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
+    <PackageReference Include="TigerBrokers.OpenAPI" Version="1.2.2" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>
