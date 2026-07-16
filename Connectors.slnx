@@ -51,6 +51,7 @@
     <Project Path="IG/IG.csproj" />
     <Project Path="InteractiveBrokers/InteractiveBrokers.csproj" />
     <Project Path="KoreaInvestment/KoreaInvestment.csproj" />
+    <Project Path="Kiwoom/Kiwoom.csproj" />
     <Project Path="KotakNeo/KotakNeo.csproj" />
     <Project Path="Kraken/Kraken.csproj" />
     <Project Path="Kucoin/Kucoin.csproj" />
