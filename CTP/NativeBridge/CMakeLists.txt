@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.20)
+project(StockSharpCtpNative LANGUAGES CXX)
+
+if(NOT DEFINED CTP_SDK_ROOT)
+	message(FATAL_ERROR "Set CTP_SDK_ROOT to the CTP SDK directory containing the headers and win_x64/linux_x64 folders")
+endif()
+
+add_library(StockSharp.Ctp.Native SHARED ctp_bridge.cpp)
+target_compile_features(StockSharp.Ctp.Native PRIVATE cxx_std_17)
+target_include_directories(StockSharp.Ctp.Native SYSTEM PRIVATE "${CTP_SDK_ROOT}")
+
+if(MSVC)
+	target_compile_options(StockSharp.Ctp.Native PRIVATE /W4 /WX /utf-8)
+else()
+	target_compile_options(StockSharp.Ctp.Native PRIVATE -Wall -Wextra -Wpedantic -Werror -fvisibility=hidden)
+endif()
+
+if(WIN32)
+	target_link_directories(StockSharp.Ctp.Native PRIVATE "${CTP_SDK_ROOT}/win_x64")
+	target_link_libraries(StockSharp.Ctp.Native PRIVATE thostmduserapi_se thosttraderapi_se)
+elseif(UNIX AND NOT APPLE)
+	target_link_directories(StockSharp.Ctp.Native PRIVATE "${CTP_SDK_ROOT}/linux_x64")
+	target_link_libraries(StockSharp.Ctp.Native PRIVATE thostmduserapi_se thosttraderapi_se)
+	set_target_properties(StockSharp.Ctp.Native PROPERTIES BUILD_RPATH "$ORIGIN")
+else()
+	message(FATAL_ERROR "The packaged CTP SDK supports Windows x64 and Linux x64")
+endif()
