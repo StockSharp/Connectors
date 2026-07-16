@@ -68,6 +68,7 @@
     <Project Path="PolygonIO/PolygonIO.csproj" />
     <Project Path="PrizmBit/PrizmBit.csproj" />
     <Project Path="Public/Public.csproj" />
+    <Project Path="Questrade/Questrade.csproj" />
     <Project Path="Rithmic/Rithmic.csproj" />
     <Project Path="Robinhood/Robinhood.csproj" />
     <Project Path="Rss/Rss.csproj" />
