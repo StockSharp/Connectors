@@ -70,6 +70,7 @@
     <Project Path="Lime/Lime.csproj" />
     <Project Path="Longbridge/Longbridge.csproj" />
     <Project Path="LMAX/LMAX.csproj" />
+    <Project Path="LsegRealTime/LsegRealTime.csproj" />
     <Project Path="LsSecurities/LsSecurities.csproj" />
     <Project Path="Mexc/Mexc.csproj" />
     <Project Path="MiraeSharekhan/MiraeSharekhan.csproj" />
