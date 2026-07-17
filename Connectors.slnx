@@ -111,6 +111,7 @@
     <Project Path="TradeOgre/TradeOgre.csproj" />
     <Project Path="Tradier/Tradier.csproj" />
     <Project Path="TradeStation/TradeStation.csproj" />
+    <Project Path="Trading212/Trading212.csproj" />
     <Project Path="TradingTechnologies/TradingTechnologies.csproj" />
     <Project Path="Tradovate/Tradovate.csproj" />
     <Project Path="TradeZero/TradeZero.csproj" />
