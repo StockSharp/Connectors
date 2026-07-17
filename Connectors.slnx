@@ -121,6 +121,7 @@
     <Project Path="TradeZero/TradeZero.csproj" />
     <Project Path="Upstox/Upstox.csproj" />
     <Project Path="Upbit/Upbit.csproj" />
+    <Project Path="Usmart/Usmart.csproj" />
     <Project Path="Webull/Webull.csproj" />
     <Project Path="Xtp/Xtp.csproj" />
     <Project Path="Yobit/Yobit.csproj" />
