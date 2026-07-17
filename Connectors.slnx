@@ -65,6 +65,7 @@
     <Project Path="IG/IG.csproj" />
     <Project Path="InteractiveBrokers/InteractiveBrokers.csproj" />
     <Project Path="IQFeed/IQFeed.csproj" />
+    <Project Path="JpmDataQuery/JpmDataQuery.csproj" />
     <Project Path="KabuStation/KabuStation.csproj" />
     <Project Path="KoreaInvestment/KoreaInvestment.csproj" />
     <Project Path="Kiwoom/Kiwoom.csproj" />
