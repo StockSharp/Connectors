@@ -98,6 +98,7 @@
     <Project Path="Rss/Rss.csproj" />
     <Project Path="Saxo/Saxo.csproj" />
     <Project Path="Schwab/Schwab.csproj" />
+    <Project Path="Shioaji/Shioaji.csproj" />
     <Project Path="Shoonya/Shoonya.csproj" />
     <Project Path="SierraChartDtc/SierraChartDtc.csproj" />
     <Project Path="Swissquote/Swissquote.csproj" />
