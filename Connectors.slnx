@@ -78,6 +78,7 @@
     <Project Path="MoexISS/MoexISS.csproj" />
     <Project Path="MoexLchi/MoexLchi.csproj" />
     <Project Path="Moomoo/Moomoo.csproj" />
+    <Project Path="MotilalOswal/MotilalOswal.csproj" />
     <Project Path="NinjaTrader/NinjaTrader.csproj" />
     <Project Path="Oanda/Oanda.csproj" />
     <Project Path="Okex/Okex.csproj" />
