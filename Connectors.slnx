@@ -126,6 +126,7 @@
     <Project Path="Upbit/Upbit.csproj" />
     <Project Path="Usmart/Usmart.csproj" />
     <Project Path="Webull/Webull.csproj" />
+    <Project Path="XOpenHub/XOpenHub.csproj" />
     <Project Path="Xtp/Xtp.csproj" />
     <Project Path="Yobit/Yobit.csproj" />
     <Project Path="Yuanta/Yuanta.csproj" />
