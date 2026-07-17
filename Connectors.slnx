@@ -99,6 +99,7 @@
     <Project Path="Public/Public.csproj" />
     <Project Path="Qmt/Qmt.csproj" />
     <Project Path="Questrade/Questrade.csproj" />
+    <Project Path="RakutenRss/RakutenRss.csproj" />
     <Project Path="Rithmic/Rithmic.csproj" />
     <Project Path="Robinhood/Robinhood.csproj" />
     <Project Path="Rss/Rss.csproj" />
