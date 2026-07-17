@@ -38,6 +38,7 @@
     <Project Path="cTrader/cTrader.csproj" />
     <Project Path="CTP/Ctp.csproj" />
     <Project Path="Databento/Databento.csproj" />
+    <Project Path="Daishin/Daishin.csproj" />
     <Project Path="Deribit/Deribit.csproj" />
     <Project Path="Dhan/Dhan.csproj" />
     <Project Path="Digifinex/Digifinex.csproj" />
