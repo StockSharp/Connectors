@@ -4,8 +4,4 @@
   <PropertyGroup>
     <ProjectGuid>{D41C19F6-3F7D-4091-8C5E-403FB4DE2F8E}</ProjectGuid>
   </PropertyGroup>
-
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 </Project>
