@@ -117,6 +117,7 @@
     <Project Path="Webull/Webull.csproj" />
     <Project Path="Xtp/Xtp.csproj" />
     <Project Path="Yobit/Yobit.csproj" />
+    <Project Path="Yuanta/Yuanta.csproj" />
     <Project Path="Zaif/Zaif.csproj" />
     <Project Path="ZB/ZB.csproj" />
     <Project Path="Zerodha/Zerodha.csproj" />
