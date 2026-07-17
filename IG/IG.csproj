@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lightstreamer.DotNetStandard.Client" Version="6.2.1" />
+    <PackageReference Include="Lightstreamer.DotNetStandard.Client" Version="$(LightstreamerVer)" />
   </ItemGroup>
 </Project>

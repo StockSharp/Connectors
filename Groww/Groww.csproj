@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVer)" />
-    <PackageReference Include="Grpc.Tools" Version="2.*" PrivateAssets="All" />
-    <PackageReference Include="NATS.Client.Core" Version="3.0.0" />
+    <PackageReference Include="Grpc.Tools" Version="$(GrpcVer)" PrivateAssets="All" />
+    <PackageReference Include="NATS.Client.Core" Version="$(NatsVer)" />
     <Protobuf Include="Native\Protos\*.proto" GrpcServices="None" />
   </ItemGroup>
 </Project>

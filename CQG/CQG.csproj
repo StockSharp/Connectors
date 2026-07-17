@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVer)" />
-    <PackageReference Include="Grpc.Tools" Version="2.*" PrivateAssets="All" />
+    <PackageReference Include="Grpc.Tools" Version="$(GrpcVer)" PrivateAssets="All" />
     <Protobuf Include="Native\Protos\**\*.proto" ProtoRoot="Native\Protos" GrpcServices="None" />
   </ItemGroup>
 </Project>

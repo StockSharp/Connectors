@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
-    <PackageReference Include="TigerBrokers.OpenAPI" Version="1.2.2" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="$(BouncyCastleVer)" />
+    <PackageReference Include="TigerBrokers.OpenAPI" Version="$(TigerBrokersOpenApiVer)" />
   </ItemGroup>
 </Project>
