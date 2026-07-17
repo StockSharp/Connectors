@@ -80,6 +80,7 @@
     <Project Path="LMAX/LMAX.csproj" />
     <Project Path="LsegRealTime/LsegRealTime.csproj" />
     <Project Path="LsSecurities/LsSecurities.csproj" />
+    <Project Path="MatchTrader/MatchTrader.csproj" />
     <Project Path="Mexc/Mexc.csproj" />
     <Project Path="MiraeSharekhan/MiraeSharekhan.csproj" />
     <Project Path="MoexISS/MoexISS.csproj" />
