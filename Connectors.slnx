@@ -46,6 +46,7 @@
     <Project Path="Etoro/Etoro.csproj" />
     <Project Path="edgeX/EdgeX.csproj" />
     <Project Path="Exmo/Exmo.csproj" />
+    <Project Path="FivePaisa/FivePaisa.csproj" />
     <Project Path="Fyers/Fyers.csproj" />
     <Project Path="FTX/FTX.csproj" />
     <Project Path="Fxcm/Fxcm.csproj" />
