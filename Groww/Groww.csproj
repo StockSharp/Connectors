@@ -3,7 +3,6 @@
 
   <PropertyGroup>
     <ProjectGuid>{F0A237AA-8C29-4F7A-B6C1-8C2D5551E721}</ProjectGuid>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>$(NoWarn);CS3001;CS3002;CS3003</NoWarn>
   </PropertyGroup>
 
@@ -12,6 +11,5 @@
     <PackageReference Include="Grpc.Tools" Version="2.*" PrivateAssets="All" />
     <PackageReference Include="NATS.Client.Core" Version="3.0.0" />
     <Protobuf Include="Native\Protos\*.proto" GrpcServices="None" />
-    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

@@ -3,7 +3,6 @@
 
   <PropertyGroup>
     <ProjectGuid>{B40C4665-6320-46C4-B09A-3B283E15275A}</ProjectGuid>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>$(NoWarn);CS3001;CS3003</NoWarn>
   </PropertyGroup>
 
@@ -11,6 +10,5 @@
     <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVer)" />
     <PackageReference Include="Grpc.Tools" Version="2.*" PrivateAssets="All" />
     <Protobuf Include="Native\Protos\*.proto" GrpcServices="None" />
-    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

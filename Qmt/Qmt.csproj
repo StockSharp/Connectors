@@ -3,11 +3,9 @@
 
   <PropertyGroup>
     <ProjectGuid>{4D94A1E2-99A5-4E84-B3D4-F4F54051D45C}</ProjectGuid>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="" />
     <None Include="Gateway\qmt_gateway.py" Pack="true" PackagePath="gateway" />
   </ItemGroup>
 </Project>

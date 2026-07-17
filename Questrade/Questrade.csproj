@@ -3,10 +3,5 @@
 
   <PropertyGroup>
     <ProjectGuid>{3BEAF228-7CB1-4C36-987F-A2EDBBA9C708}</ProjectGuid>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="" />
-  </ItemGroup>
 </Project>

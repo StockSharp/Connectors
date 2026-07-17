@@ -3,11 +3,9 @@
 
   <PropertyGroup>
     <ProjectGuid>{92F12A43-2519-4B6A-9060-CF6D9A9DF07D}</ProjectGuid>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="" />
     <None Include="Bridge\pom.xml" Pack="true" PackagePath="bridge\" />
     <None Include="Bridge\src\**\*.java" Pack="true" PackagePath="bridge\src\" />
   </ItemGroup>

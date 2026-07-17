@@ -3,11 +3,9 @@
 
   <PropertyGroup>
     <ProjectGuid>{F3068408-9764-432E-8FB4-596B308EDB4F}</ProjectGuid>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="" />
     <PackageReference Include="Ecng.IO.Compression" Version="$(EcngVer)" />
   </ItemGroup>
 </Project>

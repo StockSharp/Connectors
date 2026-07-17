@@ -5,9 +5,11 @@
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
     <InformationalVersion>S#.$(MSBuildProjectName)</InformationalVersion>
     <SourceRevisionId>v$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="$(RepoGitHubPath)Messages\Messages.csproj" />
     <ProjectReference Include="$(RepoGitHubPath)Media.Names\Media.Names.csproj" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

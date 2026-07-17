@@ -2,9 +2,5 @@
   <Import Project="..\common_connectors.props" />
   <PropertyGroup>
     <ProjectGuid>{F66DF85D-42C4-4879-A11C-E173B874C924}</ProjectGuid>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="" />
-  </ItemGroup>
 </Project>
