@@ -86,6 +86,7 @@
     <Project Path="MatchTrader/MatchTrader.csproj" />
     <Project Path="Mexc/Mexc.csproj" />
     <Project Path="MiraeSharekhan/MiraeSharekhan.csproj" />
+    <Project Path="Morningstar/Morningstar.csproj" />
     <Project Path="MoexISS/MoexISS.csproj" />
     <Project Path="MoexLchi/MoexLchi.csproj" />
     <Project Path="Moomoo/Moomoo.csproj" />
