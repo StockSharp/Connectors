@@ -73,6 +73,7 @@
     <Project Path="Kucoin/Kucoin.csproj" />
     <Project Path="Latoken/Latoken.csproj" />
     <Project Path="LBank/LBank.csproj" />
+    <Project Path="LemonMarkets/LemonMarkets.csproj" />
     <Project Path="Ligther/Ligther.csproj" />
     <Project Path="Lime/Lime.csproj" />
     <Project Path="Longbridge/Longbridge.csproj" />
