@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+
+  <PropertyGroup>
+    <ProjectGuid>{82A88305-2C02-4174-BA84-A629F54EB5DE}</ProjectGuid>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

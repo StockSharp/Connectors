@@ -92,6 +92,7 @@
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
+    <Project Path="PhillipPoems/PhillipPoems.csproj" />
     <Project Path="Poloniex/Poloniex.csproj" />
     <Project Path="PolygonIO/PolygonIO.csproj" />
     <Project Path="PrizmBit/PrizmBit.csproj" />
