@@ -49,6 +49,7 @@
     <Project Path="Etoro/Etoro.csproj" />
     <Project Path="edgeX/EdgeX.csproj" />
     <Project Path="Exmo/Exmo.csproj" />
+    <Project Path="FactSet/FactSet.csproj" />
     <Project Path="FivePaisa/FivePaisa.csproj" />
     <Project Path="Flattrade/Flattrade.csproj" />
     <Project Path="FubonNeo/FubonNeo.csproj" />
