@@ -51,6 +51,7 @@
     <Project Path="edgeX/EdgeX.csproj" />
     <Project Path="Exmo/Exmo.csproj" />
     <Project Path="FactSet/FactSet.csproj" />
+    <Project Path="Finnhub/Finnhub.csproj" />
     <Project Path="FivePaisa/FivePaisa.csproj" />
     <Project Path="Flattrade/Flattrade.csproj" />
     <Project Path="FubonNeo/FubonNeo.csproj" />
