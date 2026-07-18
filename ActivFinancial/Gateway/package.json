@@ -1,0 +1,13 @@
+{
+  "name": "stocksharp-activ-financial-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Typed StockSharp bridge for the official ACTIV Financial One API client.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@activfinancial/one-api": "1.1.4"
+  }
+}

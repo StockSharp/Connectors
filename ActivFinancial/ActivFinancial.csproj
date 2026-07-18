@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+
+  <PropertyGroup>
+    <ProjectGuid>{62028643-3251-49FD-AE72-A53EEBD9C3BA}</ProjectGuid>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="Gateway\activ_gateway.cjs"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="ActivFinancialGateway\activ_gateway.cjs"
+          Pack="true"
+          PackagePath="gateway\activ_gateway.cjs" />
+    <None Update="Gateway\package.json"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="ActivFinancialGateway\package.json"
+          Pack="true"
+          PackagePath="gateway\package.json" />
+  </ItemGroup>
+</Project>
