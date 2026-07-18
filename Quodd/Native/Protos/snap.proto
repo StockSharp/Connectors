@@ -1,0 +1,60 @@
+// Source: https://developer.quodd.com/docs/snap-grpc-api/
+syntax = "proto3";
+
+option csharp_namespace = "StockSharp.Quodd.Native.Grpc.Snap";
+option go_package = "/pb";
+package snap;
+
+service SnapService {
+  rpc GetSnapsStream (SnapStreamRequest) returns (stream SnapMessage);
+  rpc GetSnaps (SnapsRequest) returns (SnapResponse);
+}
+
+message SnapStreamRequest {
+  repeated string tickers = 1;
+}
+
+message SnapsRequest {
+  repeated string tickers = 1;
+}
+
+message SnapResponse {
+  repeated SnapMessage data = 1;
+  string error = 2;
+}
+
+message SnapMessage {
+  string Ticker = 1;
+  string Currency = 2;
+  string ListingMarket = 3;
+  string Ask = 4;
+  string AskSize = 5;
+  string AskMarket = 6;
+  string Bid = 7;
+  string BidSize = 8;
+  string BidMarket = 9;
+  string Open = 10;
+  string High = 11;
+  string Low = 12;
+  string PreviousClose = 13;
+  string Last = 14;
+  string LastMarket = 15;
+  string LastSize = 16;
+  string LastTimestamp = 17;
+  string QuoteTimestamp = 18;
+  string NumberOfTrades = 19;
+  string TotalVolume = 20;
+  string VWAP = 21;
+  string YearHigh = 22;
+  string YearLow = 23;
+  string TradingStatus = 24;
+  string IsDelayed = 25;
+  string Error = 26;
+  string Change = 27;
+  string ChangePct = 28;
+  string Feed = 29;
+  string UnderlyingTicker = 50;
+  string OptionType = 51;
+  string ExpirationDate = 52;
+  string StrikePrice = 53;
+}

@@ -1,0 +1,41 @@
+// Source: https://developer.quodd.com/docs/ticker-info-grpc-api/
+syntax = "proto3";
+
+option csharp_namespace = "StockSharp.Quodd.Native.Grpc.Info";
+package info;
+
+service TickerInfoService {
+  rpc GetTickerInfo (TickerInfoRequest) returns (TickerInfoResponse);
+}
+
+message TickerInfoRequest {
+  repeated string tickers = 1;
+  repeated string fields = 2;
+}
+
+message TickerInfoResponse {
+  repeated TickerInfoMessage data = 1;
+  repeated ErrorInfoMessage errors = 2;
+}
+
+message TickerInfoMessage {
+  string ticker = 1;
+  string name = 2;
+  uint64 market_cap = 3;
+  double price_to_earnings = 4;
+  uint64 average_thirty_day_volume = 5;
+  double beta = 6;
+  double eps_adj = 7;
+  uint64 shares_outstanding_weighted_adj = 8;
+  double dividend = 9;
+  double dividend_yield = 10;
+  string dividend_ex_date = 11;
+  string description = 12;
+  string sector = 13;
+}
+
+message ErrorInfoMessage {
+  string ticker = 1;
+  string error = 2;
+  string message = 3;
+}

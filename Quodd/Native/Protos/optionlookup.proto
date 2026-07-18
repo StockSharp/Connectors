@@ -1,0 +1,38 @@
+// Source: https://developer.quodd.com/docs/option-lookup-grpc-api/
+syntax = "proto3";
+
+option csharp_namespace = "StockSharp.Quodd.Native.Grpc.Options";
+package optionlookup;
+
+service OptionLookupService {
+  rpc GetOptionTickers (GetOptionTickersRequest) returns (GetOptionTickersResponse);
+  rpc GetOptionExpirations (GetOptionExpirationsRequest) returns (GetOptionExpirationsResponse);
+}
+
+message GetOptionTickersRequest {
+  string underlying_ticker = 1;
+  string option_type = 2;
+  string expiration_date = 3;
+}
+
+message GetOptionTickersResponse {
+  repeated Option options = 1;
+  string error = 2;
+}
+
+message GetOptionExpirationsRequest {
+  string underlying_ticker = 1;
+}
+
+message GetOptionExpirationsResponse {
+  repeated string expirations = 1;
+  string error = 2;
+}
+
+message Option {
+  string ticker = 1;
+  string underlying_ticker = 2;
+  string expiration_date = 3;
+  string option_type = 4;
+  double strike_price = 5;
+}
