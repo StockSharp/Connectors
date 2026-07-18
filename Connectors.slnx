@@ -102,6 +102,7 @@
     <Project Path="NinjaTrader/NinjaTrader.csproj" />
     <Project Path="Oanda/Oanda.csproj" />
     <Project Path="OpenMarkets/OpenMarkets.csproj" />
+    <Project Path="Orats/Orats.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
