@@ -10,6 +10,7 @@
     <Project Path="AngelOne/AngelOne.csproj" />
     <Project Path="Aster/Aster.csproj" />
     <Project Path="BarChart/BarChart.csproj" />
+    <Project Path="Benzinga/Benzinga.csproj" />
     <Project Path="Bibox/Bibox.csproj" />
     <Project Path="Binance/Binance.csproj" />
     <Project Path="BingX/BingX.csproj" />
