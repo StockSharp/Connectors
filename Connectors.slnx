@@ -46,6 +46,7 @@
     <Project Path="DukasCopy/DukasCopy.csproj" />
     <Project Path="DxFeed/DxFeed.csproj" />
     <Project Path="DXtrade/DXtrade.csproj" />
+    <Project Path="EodHistoricalData/EodHistoricalData.csproj" />
     <Project Path="ETrade/ETrade.csproj" />
     <Project Path="Etoro/Etoro.csproj" />
     <Project Path="edgeX/EdgeX.csproj" />
