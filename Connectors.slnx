@@ -142,6 +142,7 @@
     <Project Path="Toobit/Toobit.csproj" />
     <Project Path="CryptoCom/CryptoCom.csproj" />
     <Project Path="WhiteBit/WhiteBit.csproj" />
+    <Project Path="Weex/Weex.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
