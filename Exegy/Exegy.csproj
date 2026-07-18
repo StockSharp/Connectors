@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <ProjectGuid>{DC71AE52-5DBD-415C-B2E2-0753CD109329}</ProjectGuid>
+  </PropertyGroup>
+</Project>
