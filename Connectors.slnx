@@ -149,6 +149,7 @@
     <Project Path="Phemex/Phemex.csproj" />
     <Project Path="Bullish/Bullish.csproj" />
     <Project Path="Ourbit/Ourbit.csproj" />
+    <Project Path="Bitunix/Bitunix.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
