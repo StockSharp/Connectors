@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <ProjectGuid>{91865EB2-8258-49E3-9101-9D7EC21D49AF}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The official packages expose sample/test assemblies as runtime assets.
+         Restore their dependency graph but reference only the two production SDK binaries. -->
+    <PackageReference Include="IntrinioRealTimeClient" Version="$(IntrinioRealtimeVer)"
+      GeneratePathProperty="true" ExcludeAssets="compile;runtime" />
+    <PackageReference Include="Intrinio.SDK" Version="$(IntrinioSdkVer)"
+      GeneratePathProperty="true" ExcludeAssets="compile;runtime" />
+    <PackageReference Include="Intrinio.Collections" Version="$(IntrinioCollectionsVer)" />
+    <PackageReference Include="JsonSubTypes" Version="$(JsonSubTypesVer)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(MsExtensionsVer)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MsExtensionsVer)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftVer)" />
+    <PackageReference Include="Polly" Version="$(PollyVer)" />
+    <PackageReference Include="RestSharp" Version="$(RestSharpVer)" />
+    <PackageReference Include="Serilog" Version="$(SerilogVer)" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogSettingsVer)" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="$(SerilogSinksVer)" />
+    <PackageReference Include="Serilog.Sinks.File" Version="$(SerilogSinksVer)" />
+    <Reference Include="Intrinio.Realtime">
+      <HintPath>$(PkgIntrinioRealTimeClient)\lib\net9.0\Intrinio.Realtime.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Intrinio.SDK">
+      <HintPath>$(PkgIntrinio_SDK)\lib\net8.0\Intrinio.SDK.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

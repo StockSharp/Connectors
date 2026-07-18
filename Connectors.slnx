@@ -66,6 +66,7 @@
     <Project Path="Hyperliquid/Hyperliquid.csproj" />
     <Project Path="IG/IG.csproj" />
     <Project Path="InteractiveBrokers/InteractiveBrokers.csproj" />
+    <Project Path="Intrinio/Intrinio.csproj" />
     <Project Path="IQFeed/IQFeed.csproj" />
     <Project Path="JpmDataQuery/JpmDataQuery.csproj" />
     <Project Path="KabuStation/KabuStation.csproj" />
