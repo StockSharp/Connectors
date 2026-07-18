@@ -114,6 +114,7 @@
     <Project Path="Shoonya/Shoonya.csproj" />
     <Project Path="SierraChartDtc/SierraChartDtc.csproj" />
     <Project Path="SnapTrade/SnapTrade.csproj" />
+    <Project Path="SpGlobal/SpGlobal.csproj" />
     <Project Path="Swissquote/Swissquote.csproj" />
     <Project Path="Tinkoff/Tinkoff.csproj" />
     <Project Path="TigerBrokers/TigerBrokers.csproj" />
