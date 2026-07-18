@@ -132,6 +132,7 @@
     <Project Path="TradingTechnologies/TradingTechnologies.csproj" />
     <Project Path="Tradovate/Tradovate.csproj" />
     <Project Path="TradeZero/TradeZero.csproj" />
+    <Project Path="TwelveData/TwelveData.csproj" />
     <Project Path="Upstox/Upstox.csproj" />
     <Project Path="Upbit/Upbit.csproj" />
     <Project Path="Usmart/Usmart.csproj" />
