@@ -114,6 +114,7 @@
     <Project Path="PrizmBit/PrizmBit.csproj" />
     <Project Path="Public/Public.csproj" />
     <Project Path="Qmt/Qmt.csproj" />
+    <Project Path="QuantFeed/QuantFeed.csproj" />
     <Project Path="Questrade/Questrade.csproj" />
     <Project Path="RakutenRss/RakutenRss.csproj" />
     <Project Path="Rithmic/Rithmic.csproj" />
