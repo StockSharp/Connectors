@@ -144,6 +144,7 @@
     <Project Path="WhiteBit/WhiteBit.csproj" />
     <Project Path="Weex/Weex.csproj" />
     <Project Path="CoinW/CoinW.csproj" />
+    <Project Path="Pionex/Pionex.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
