@@ -147,6 +147,7 @@
     <Project Path="Pionex/Pionex.csproj" />
     <Project Path="Xt/Xt.csproj" />
     <Project Path="Phemex/Phemex.csproj" />
+    <Project Path="Bullish/Bullish.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
