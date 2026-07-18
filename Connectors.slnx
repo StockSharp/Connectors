@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Connectors/">
     <Project Path="AliceBlue/AliceBlue.csproj" />
+    <Project Path="AlgoSeek/AlgoSeek.csproj" />
     <Project Path="Alor/Alor.csproj" />
     <Project Path="AlorHistory/AlorHistory.csproj" />
     <Project Path="Alpaca/Alpaca.csproj" />
