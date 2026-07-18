@@ -27,6 +27,7 @@
     <Project Path="ByBit/ByBit.csproj" />
     <Project Path="CapitalCom/CapitalCom.csproj" />
     <Project Path="CapitalFutures/CapitalFutures.csproj" />
+    <Project Path="CboeDataShop/CboeDataShop.csproj" />
     <Project Path="Cex/Cex.csproj" />
     <Project Path="CQG/CQG.csproj" />
     <Project Path="Coinbase/Coinbase.csproj" />
