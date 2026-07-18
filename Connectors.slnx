@@ -123,6 +123,7 @@
     <Project Path="Swissquote/Swissquote.csproj" />
     <Project Path="Tinkoff/Tinkoff.csproj" />
     <Project Path="TigerBrokers/TigerBrokers.csproj" />
+    <Project Path="Tiingo/Tiingo.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
     <Project Path="Tradier/Tradier.csproj" />
