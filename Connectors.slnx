@@ -152,6 +152,7 @@
     <Project Path="Bitunix/Bitunix.csproj" />
     <Project Path="BloFin/BloFin.csproj" />
     <Project Path="Deepcoin/Deepcoin.csproj" />
+    <Project Path="Bitrue/Bitrue.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
