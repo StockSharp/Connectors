@@ -186,6 +186,7 @@
     <Project Path="Tapbit/Tapbit.csproj" />
     <Project Path="Uniswap/Uniswap.csproj" />
     <Project Path="PancakeSwap/PancakeSwap.csproj" />
+    <Project Path="PumpSwap/PumpSwap.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
