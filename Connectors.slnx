@@ -175,6 +175,7 @@
     <Project Path="CoinJar/CoinJar.csproj" />
     <Project Path="Korbit/Korbit.csproj" />
     <Project Path="PintuPro/PintuPro.csproj" />
+    <Project Path="Indodax/Indodax.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
