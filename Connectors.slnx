@@ -159,6 +159,7 @@
     <Project Path="Bitvavo/Bitvavo.csproj" />
     <Project Path="Gemini/Gemini.csproj" />
     <Project Path="BitpandaFusion/BitpandaFusion.csproj" />
+    <Project Path="HashKey/HashKey.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
