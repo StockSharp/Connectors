@@ -165,6 +165,7 @@
     <Project Path="CoinDCX/CoinDCX.csproj" />
     <Project Path="CoinsPh/CoinsPh.csproj" />
     <Project Path="BitFlyer/BitFlyer.csproj" />
+    <Project Path="Coinone/Coinone.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
