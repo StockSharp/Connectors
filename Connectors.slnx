@@ -179,6 +179,7 @@
     <Project Path="Coinhako/Coinhako.csproj" />
     <Project Path="Foxbit/Foxbit.csproj" />
     <Project Path="Rain/Rain.csproj" />
+    <Project Path="NDAX/NDAX.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
