@@ -170,6 +170,7 @@
     <Project Path="MercadoBitcoin/MercadoBitcoin.csproj" />
     <Project Path="VALR/VALR.csproj" />
     <Project Path="Luno/Luno.csproj" />
+    <Project Path="IndependentReserve/IndependentReserve.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
