@@ -155,6 +155,7 @@
     <Project Path="Bitrue/Bitrue.csproj" />
     <Project Path="WooX/WooX.csproj" />
     <Project Path="Backpack/Backpack.csproj" />
+    <Project Path="BTSE/BTSE.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
