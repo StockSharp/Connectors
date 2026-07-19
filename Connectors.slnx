@@ -184,6 +184,7 @@
     <Project Path="BYDFi/BYDFi.csproj" />
     <Project Path="Zoomex/Zoomex.csproj" />
     <Project Path="Tapbit/Tapbit.csproj" />
+    <Project Path="Uniswap/Uniswap.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
