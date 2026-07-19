@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <ItemGroup>
+    <PackageReference Include="Solana.Rpc" Version="$(SolanaVer)" />
+  </ItemGroup>
+</Project>
