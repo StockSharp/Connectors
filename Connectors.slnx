@@ -181,6 +181,7 @@
     <Project Path="Rain/Rain.csproj" />
     <Project Path="NDAX/NDAX.csproj" />
     <Project Path="OSL/OSL.csproj" />
+    <Project Path="BYDFi/BYDFi.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
