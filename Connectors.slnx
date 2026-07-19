@@ -172,6 +172,7 @@
     <Project Path="Luno/Luno.csproj" />
     <Project Path="IndependentReserve/IndependentReserve.csproj" />
     <Project Path="BTCMarkets/BTCMarkets.csproj" />
+    <Project Path="CoinJar/CoinJar.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
