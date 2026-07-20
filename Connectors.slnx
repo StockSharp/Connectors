@@ -196,6 +196,7 @@
     <Project Path="Curve/Curve.csproj" />
     <Project Path="Jupiter/Jupiter.csproj" />
     <Project Path="THORChain/THORChain.csproj" />
+    <Project Path="SunIo/SunIo.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
