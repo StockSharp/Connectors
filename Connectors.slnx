@@ -194,6 +194,7 @@
     <Project Path="FluidDex/FluidDex.csproj" />
     <Project Path="Raydium/Raydium.csproj" />
     <Project Path="Curve/Curve.csproj" />
+    <Project Path="Jupiter/Jupiter.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
