@@ -208,6 +208,7 @@
     <Project Path="VariationalOmni/VariationalOmni.csproj" />
     <Project Path="StandX/StandX.csproj" />
     <Project Path="GMTrade/GMTrade.csproj" />
+    <Project Path="QFEX/QFEX.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
