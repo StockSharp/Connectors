@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Connectors/">
     <Project Path="ActivFinancial/ActivFinancial.csproj" />
+	<Project Path="Aevo/Aevo.csproj" />
     <Project Path="AliceBlue/AliceBlue.csproj" />
     <Project Path="AlgoSeek/AlgoSeek.csproj" />
     <Project Path="Alor/Alor.csproj" />
