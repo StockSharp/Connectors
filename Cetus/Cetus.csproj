@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);CLS_DISABLE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="$(BouncyCastleVer)" />
+    <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVer)" />
+    <PackageReference Include="Grpc.Net.Client" Version="$(GrpcVer)" />
+    <PackageReference Include="Grpc.Tools" Version="$(GrpcVer)" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="Native\Protos\cetus_sui.proto" GrpcServices="Client" />
+  </ItemGroup>
+</Project>

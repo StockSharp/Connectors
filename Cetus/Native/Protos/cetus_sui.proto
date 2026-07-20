@@ -1,0 +1,401 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Minimal wire-compatible subset of the official Sui Full Node gRPC v2 API.
+
+syntax = "proto3";
+
+package sui.rpc.v2;
+option csharp_namespace = "StockSharp.Cetus.Native.Sui";
+
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+service LedgerService {
+  rpc GetServiceInfo(GetServiceInfoRequest) returns (GetServiceInfoResponse);
+  rpc GetObject(GetObjectRequest) returns (GetObjectResponse);
+  rpc GetTransaction(GetTransactionRequest) returns (GetTransactionResponse);
+  rpc GetEpoch(GetEpochRequest) returns (GetEpochResponse);
+}
+
+service StateService {
+  rpc ListOwnedObjects(ListOwnedObjectsRequest) returns (ListOwnedObjectsResponse);
+  rpc GetCoinInfo(GetCoinInfoRequest) returns (GetCoinInfoResponse);
+  rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+  rpc ListBalances(ListBalancesRequest) returns (ListBalancesResponse);
+}
+
+service TransactionExecutionService {
+  rpc ExecuteTransaction(ExecuteTransactionRequest) returns (ExecuteTransactionResponse);
+  rpc SimulateTransaction(SimulateTransactionRequest) returns (SimulateTransactionResponse);
+}
+
+service SubscriptionService {
+  rpc SubscribeCheckpoints(SubscribeCheckpointsRequest) returns (stream SubscribeCheckpointsResponse);
+}
+
+message Bcs {
+  optional string name = 1;
+  optional bytes value = 2;
+}
+
+message Owner {
+  enum OwnerKind {
+    OWNER_KIND_UNKNOWN = 0;
+    ADDRESS = 1;
+    OBJECT = 2;
+    SHARED = 3;
+    IMMUTABLE = 4;
+    CONSENSUS_ADDRESS = 5;
+  }
+  optional OwnerKind kind = 1;
+  optional string address = 2;
+  optional uint64 version = 3;
+}
+
+message Object {
+  optional Bcs bcs = 1;
+  optional string object_id = 2;
+  optional uint64 version = 3;
+  optional string digest = 4;
+  optional Owner owner = 5;
+  optional string object_type = 6;
+  optional Bcs contents = 8;
+  optional string previous_transaction = 10;
+  optional uint64 storage_rebate = 11;
+  optional uint64 balance = 101;
+}
+
+message GetServiceInfoRequest {}
+
+message GetServiceInfoResponse {
+  optional string chain_id = 1;
+  optional string chain = 2;
+  optional uint64 epoch = 3;
+  optional uint64 checkpoint_height = 4;
+  optional google.protobuf.Timestamp timestamp = 5;
+  optional uint64 lowest_available_checkpoint = 6;
+  optional uint64 lowest_available_checkpoint_objects = 7;
+  optional string server = 8;
+}
+
+message GetObjectRequest {
+  optional string object_id = 1;
+  optional uint64 version = 2;
+  optional google.protobuf.FieldMask read_mask = 3;
+}
+
+message GetObjectResponse {
+  optional Object object = 1;
+}
+
+message GetTransactionRequest {
+  optional string digest = 1;
+  optional google.protobuf.FieldMask read_mask = 2;
+}
+
+message GetTransactionResponse {
+  optional ExecutedTransaction transaction = 1;
+}
+
+message GetEpochRequest {
+  optional uint64 epoch = 1;
+  optional google.protobuf.FieldMask read_mask = 2;
+}
+
+message GetEpochResponse {
+  optional Epoch epoch = 1;
+}
+
+message Epoch {
+  optional uint64 epoch = 1;
+  optional google.protobuf.Timestamp start = 6;
+  optional google.protobuf.Timestamp end = 7;
+  optional uint64 reference_gas_price = 8;
+}
+
+message ListOwnedObjectsRequest {
+  optional string owner = 1;
+  optional uint32 page_size = 2;
+  optional bytes page_token = 3;
+  optional google.protobuf.FieldMask read_mask = 4;
+  optional string object_type = 5;
+}
+
+message ListOwnedObjectsResponse {
+  repeated Object objects = 1;
+  optional bytes next_page_token = 2;
+}
+
+message GetCoinInfoRequest {
+  optional string coin_type = 1;
+}
+
+message GetCoinInfoResponse {
+  optional string coin_type = 1;
+  optional CoinMetadata metadata = 2;
+}
+
+message CoinMetadata {
+  optional string id = 1;
+  optional uint32 decimals = 2;
+  optional string name = 3;
+  optional string symbol = 4;
+  optional string description = 5;
+  optional string icon_url = 6;
+}
+
+message GetBalanceRequest {
+  optional string owner = 1;
+  optional string coin_type = 2;
+}
+
+message GetBalanceResponse {
+  optional Balance balance = 1;
+}
+
+message ListBalancesRequest {
+  optional string owner = 1;
+  optional uint32 page_size = 2;
+  optional bytes page_token = 3;
+}
+
+message ListBalancesResponse {
+  repeated Balance balances = 1;
+  optional bytes next_page_token = 2;
+}
+
+message Balance {
+  optional string coin_type = 1;
+  optional uint64 balance = 3;
+  optional uint64 address_balance = 4;
+  optional uint64 coin_balance = 5;
+}
+
+message Input {
+  enum InputKind {
+    INPUT_KIND_UNKNOWN = 0;
+    PURE = 1;
+    IMMUTABLE_OR_OWNED = 2;
+    SHARED = 3;
+    RECEIVING = 4;
+    FUNDS_WITHDRAWAL = 5;
+  }
+  optional InputKind kind = 1;
+  optional bytes pure = 2;
+  optional string object_id = 3;
+  optional uint64 version = 4;
+  optional string digest = 5;
+  optional bool mutable = 6;
+  enum Mutability {
+    MUTABILITY_UNKNOWN = 0;
+    IMMUTABLE = 1;
+    MUTABLE = 2;
+    NON_EXCLUSIVE_WRITE = 3;
+  }
+  optional Mutability mutability = 7;
+}
+
+message Argument {
+  enum ArgumentKind {
+    ARGUMENT_KIND_UNKNOWN = 0;
+    GAS = 1;
+    INPUT = 2;
+    RESULT = 3;
+  }
+  optional ArgumentKind kind = 1;
+  optional uint32 input = 2;
+  optional uint32 result = 3;
+  optional uint32 subresult = 4;
+}
+
+message Transaction {
+  optional Bcs bcs = 1;
+  optional string digest = 2;
+  optional int32 version = 3;
+  optional TransactionKind kind = 4;
+  optional string sender = 5;
+  optional GasPayment gas_payment = 6;
+  optional TransactionExpiration expiration = 7;
+}
+
+message GasPayment {
+  repeated ObjectReference objects = 1;
+  optional string owner = 2;
+  optional uint64 price = 3;
+  optional uint64 budget = 4;
+}
+
+message ObjectReference {
+  optional string object_id = 1;
+  optional uint64 version = 2;
+  optional string digest = 3;
+}
+
+message TransactionExpiration {
+  enum TransactionExpirationKind {
+    TRANSACTION_EXPIRATION_KIND_UNKNOWN = 0;
+    NONE = 1;
+    EPOCH = 2;
+    VALID_DURING = 3;
+  }
+  optional TransactionExpirationKind kind = 1;
+  optional uint64 epoch = 2;
+}
+
+message TransactionKind {
+  enum Kind {
+    KIND_UNKNOWN = 0;
+    PROGRAMMABLE_TRANSACTION = 1;
+  }
+  optional Kind kind = 1;
+  oneof data {
+    ProgrammableTransaction programmable_transaction = 2;
+  }
+}
+
+message ProgrammableTransaction {
+  repeated Input inputs = 1;
+  repeated Command commands = 2;
+}
+
+message Command {
+  oneof command {
+    MoveCall move_call = 1;
+    MergeCoins merge_coins = 4;
+  }
+}
+
+message MoveCall {
+  optional string package = 1;
+  optional string module = 2;
+  optional string function = 3;
+  repeated string type_arguments = 4;
+  repeated Argument arguments = 5;
+}
+
+message MergeCoins {
+  optional Argument coin = 1;
+  repeated Argument coins_to_merge = 2;
+}
+
+message UserSignature {
+  optional Bcs bcs = 1;
+  optional SignatureScheme scheme = 2;
+}
+
+enum SignatureScheme {
+  ED25519 = 0;
+  SECP256K1 = 1;
+  SECP256R1 = 2;
+  MULTISIG = 3;
+  BLS12381 = 4;
+  ZKLOGIN = 5;
+  PASSKEY = 6;
+}
+
+message ExecuteTransactionRequest {
+  optional Transaction transaction = 1;
+  repeated UserSignature signatures = 2;
+  optional google.protobuf.FieldMask read_mask = 3;
+}
+
+message ExecuteTransactionResponse {
+  optional ExecutedTransaction transaction = 1;
+}
+
+message SimulateTransactionRequest {
+  optional Transaction transaction = 1;
+  optional google.protobuf.FieldMask read_mask = 2;
+  enum TransactionChecks {
+    ENABLED = 0;
+    DISABLED = 1;
+  }
+  optional TransactionChecks checks = 3;
+  optional bool do_gas_selection = 4;
+}
+
+message SimulateTransactionResponse {
+  optional ExecutedTransaction transaction = 1;
+  optional uint64 suggested_gas_price = 3;
+}
+
+message ExecutedTransaction {
+  optional string digest = 1;
+  optional Transaction transaction = 2;
+  optional TransactionEffects effects = 4;
+  optional TransactionEvents events = 5;
+  optional uint64 checkpoint = 6;
+  optional google.protobuf.Timestamp timestamp = 7;
+  repeated BalanceChange balance_changes = 8;
+}
+
+message TransactionEffects {
+  optional Bcs bcs = 1;
+  optional string digest = 2;
+  optional int32 version = 3;
+  optional ExecutionStatus status = 4;
+  optional uint64 epoch = 5;
+  optional GasCostSummary gas_used = 6;
+  optional string transaction_digest = 7;
+  optional string events_digest = 9;
+}
+
+message ExecutionStatus {
+  optional bool success = 1;
+  optional ExecutionError error = 2;
+}
+
+message ExecutionError {
+  optional string description = 1;
+  optional uint64 command = 2;
+}
+
+message GasCostSummary {
+  optional uint64 computation_cost = 1;
+  optional uint64 storage_cost = 2;
+  optional uint64 storage_rebate = 3;
+  optional uint64 non_refundable_storage_fee = 4;
+}
+
+message BalanceChange {
+  optional string address = 1;
+  optional string coin_type = 2;
+  optional string amount = 3;
+}
+
+message TransactionEvents {
+  optional Bcs bcs = 1;
+  optional string digest = 2;
+  repeated Event events = 3;
+}
+
+message Event {
+  optional string package_id = 1;
+  optional string module = 2;
+  optional string sender = 3;
+  optional string event_type = 4;
+  optional Bcs contents = 5;
+}
+
+message SubscribeCheckpointsRequest {
+  optional google.protobuf.FieldMask read_mask = 1;
+}
+
+message SubscribeCheckpointsResponse {
+  optional uint64 cursor = 1;
+  optional Checkpoint checkpoint = 2;
+}
+
+message Checkpoint {
+  optional uint64 sequence_number = 1;
+  optional string digest = 2;
+  optional CheckpointSummary summary = 3;
+  repeated ExecutedTransaction transactions = 6;
+}
+
+message CheckpointSummary {
+  optional uint64 epoch = 3;
+  optional uint64 sequence_number = 4;
+  optional google.protobuf.Timestamp timestamp = 9;
+}
