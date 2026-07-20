@@ -212,6 +212,7 @@
     <Project Path="Pacifica/Pacifica.csproj" />
     <Project Path="Extended/Extended.csproj" />
     <Project Path="Nado/Nado.csproj" />
+    <Project Path="Avantis/Avantis.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
