@@ -68,6 +68,7 @@
     <Project Path="Fyers/Fyers.csproj" />
     <Project Path="FTX/FTX.csproj" />
     <Project Path="Fxcm/Fxcm.csproj" />
+    <Project Path="Gmx/Gmx.csproj" />
     <Project Path="GateIO/GateIO.csproj" />
     <Project Path="Gopax/Gopax.csproj" />
     <Project Path="Groww/Groww.csproj" />
