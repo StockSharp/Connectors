@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors_websocket.props" />
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVer)" />
+    <PackageReference Include="Grpc.Net.Client" Version="$(GrpcVer)" />
+    <PackageReference Include="Nethereum.Signer" Version="$(NethereumSignerVer)" />
+  </ItemGroup>
+</Project>

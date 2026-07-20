@@ -79,6 +79,7 @@
     <Project Path="Huobi/Huobi.csproj" />
     <Project Path="Hyperliquid/Hyperliquid.csproj" />
     <Project Path="IG/IG.csproj" />
+    <Project Path="Injective/Injective.csproj" />
     <Project Path="InteractiveBrokers/InteractiveBrokers.csproj" />
     <Project Path="Intrinio/Intrinio.csproj" />
     <Project Path="IQFeed/IQFeed.csproj" />
