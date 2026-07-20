@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors_websocket.props" />
+
+  <ItemGroup>
+    <None Include="runtimes\win-x64\native\*.dll" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="runtimes\win-x64\native" />
+    <None Include="runtimes\linux-x64\native\*.so" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="runtimes\linux-x64\native" />
+    <None Include="runtimes\linux-arm64\native\*.so" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="runtimes\linux-arm64\native" />
+    <None Include="runtimes\osx-x64\native\*.dylib" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="runtimes\osx-x64\native" />
+    <None Include="runtimes\osx-arm64\native\*.dylib" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="runtimes\osx-arm64\native" />
+    <None Update="Native\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="native-source" />
+  </ItemGroup>
+</Project>
