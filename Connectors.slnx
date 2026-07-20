@@ -205,6 +205,7 @@
     <Project Path="OneInch/OneInch.csproj" />
     <Project Path="Grvt/Grvt.csproj" />
     <Project Path="ApexOmni/ApexOmni.csproj" />
+    <Project Path="VariationalOmni/VariationalOmni.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
