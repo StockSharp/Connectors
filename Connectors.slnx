@@ -190,6 +190,7 @@
     <Project Path="Aerodrome/Aerodrome.csproj" />
     <Project Path="Orca/Orca.csproj" />
     <Project Path="ManifestTrade/ManifestTrade.csproj" />
+    <Project Path="Meteora/Meteora.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
