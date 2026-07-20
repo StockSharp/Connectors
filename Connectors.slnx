@@ -112,6 +112,7 @@
     <Project Path="OpenMarkets/OpenMarkets.csproj" />
     <Project Path="OptionMetrics/OptionMetrics.csproj" />
     <Project Path="Orats/Orats.csproj" />
+    <Project Path="OrderlyNetwork/OrderlyNetwork.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
