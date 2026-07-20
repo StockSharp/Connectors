@@ -48,6 +48,7 @@
     <Project Path="Dhan/Dhan.csproj" />
     <Project Path="Digifinex/Digifinex.csproj" />
     <Project Path="DowJones/DowJones.csproj" />
+    <Project Path="Drift/Drift.csproj" />
     <Project Path="DukasCopy/DukasCopy.csproj" />
     <Project Path="DydxChain/DydxChain.csproj" />
     <Project Path="DxFeed/DxFeed.csproj" />
