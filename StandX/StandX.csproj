@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors_websocket.props" />
+  <ItemGroup>
+    <PackageReference Include="Nethereum.Signer" Version="$(NethereumSignerVer)" />
+    <PackageReference Include="Solana.Rpc" Version="$(SolanaVer)" />
+  </ItemGroup>
+</Project>
