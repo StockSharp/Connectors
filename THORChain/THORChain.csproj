@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVer)" />
+    <PackageReference Include="Nethereum.Signer" Version="$(NethereumSignerVer)" />
+  </ItemGroup>
+</Project>
