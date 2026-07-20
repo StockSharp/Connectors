@@ -201,6 +201,7 @@
     <Project Path="Osmosis/Osmosis.csproj" />
     <Project Path="Cetus/Cetus.csproj" />
     <Project Path="Lfj/Lfj.csproj" />
+    <Project Path="CowProtocol/CowProtocol.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
