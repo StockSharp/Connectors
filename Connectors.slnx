@@ -127,6 +127,7 @@
     <Project Path="Quodd/Quodd.csproj" />
     <Project Path="RakutenRss/RakutenRss.csproj" />
     <Project Path="RavenPack/RavenPack.csproj" />
+    <Project Path="Reya/Reya.csproj" />
     <Project Path="Rithmic/Rithmic.csproj" />
     <Project Path="Robinhood/Robinhood.csproj" />
     <Project Path="Rss/Rss.csproj" />
