@@ -203,6 +203,7 @@
     <Project Path="Lfj/Lfj.csproj" />
     <Project Path="CowProtocol/CowProtocol.csproj" />
     <Project Path="OneInch/OneInch.csproj" />
+    <Project Path="Grvt/Grvt.csproj" />
     <Project Path="TastyTrade/TastyTrade.csproj" />
     <Project Path="ThetaData/ThetaData.csproj" />
     <Project Path="TradeOgre/TradeOgre.csproj" />
