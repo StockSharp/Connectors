@@ -125,6 +125,7 @@
     <Project Path="Polymarket/Polymarket.csproj" />
     <Project Path="Kalshi/Kalshi.csproj" />
     <Project Path="Balancer/Balancer.csproj" />
+    <Project Path="Fireblocks/Fireblocks.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
