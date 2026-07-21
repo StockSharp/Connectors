@@ -121,6 +121,7 @@
     <Project Path="Ostium/Ostium.csproj" />
     <Project Path="SynFutures/SynFutures.csproj" />
     <Project Path="Synthetix/Synthetix.csproj" />
+    <Project Path="GainsNetwork/GainsNetwork.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
