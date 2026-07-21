@@ -131,6 +131,7 @@
     <Project Path="ZeroHash/ZeroHash.csproj" />
     <Project Path="BitGo/BitGo.csproj" />
     <Project Path="Copper/Copper.csproj" />
+    <Project Path="Anchorage/Anchorage.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
