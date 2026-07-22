@@ -143,6 +143,7 @@
     <Project Path="CryptoQuant/CryptoQuant.csproj" />
     <Project Path="Tardis/Tardis.csproj" />
     <Project Path="VeloData/VeloData.csproj" />
+    <Project Path="Pyth/Pyth.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
