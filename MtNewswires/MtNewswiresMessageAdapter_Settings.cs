@@ -9,7 +9,7 @@ namespace StockSharp.MtNewswires;
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.Paid |
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.News)]
-public partial class MtNewswiresMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class MtNewswiresMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

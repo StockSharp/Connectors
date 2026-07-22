@@ -13,7 +13,7 @@ namespace StockSharp.FinancialModelingPrep;
 	MessageAdapterCategories.Commodities | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles |
 	MessageAdapterCategories.News)]
-public partial class FmpMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class FmpMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

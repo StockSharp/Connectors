@@ -17,7 +17,7 @@ using System.ComponentModel.DataAnnotations;
 	MessageAdapterCategories.Options | MessageAdapterCategories.Stock | MessageAdapterCategories.Crypto |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth)]
 [OrderCondition(typeof(MoomooOrderCondition))]
-public partial class MoomooMessageAdapter : MessageAdapter, IDemoAdapter
+public partial class MoomooMessageAdapter : MessageAdapter, IDemoAdapter, IAddressAdapter<EndPoint>
 {
 	/// <summary>
 	/// Default Moomoo OpenD endpoint.

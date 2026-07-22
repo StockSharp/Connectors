@@ -10,7 +10,7 @@ namespace StockSharp.Tiingo;
 	MessageAdapterCategories.Stock | MessageAdapterCategories.FX | MessageAdapterCategories.Crypto |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Ticks |
 	MessageAdapterCategories.Candles | MessageAdapterCategories.News)]
-public partial class TiingoMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class TiingoMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

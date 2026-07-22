@@ -10,7 +10,7 @@ namespace StockSharp.DowJones;
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.News)]
 public partial class DowJonesMessageAdapter : MessageAdapter, ITokenAdapter,
-	ILoginPasswordAdapter
+	ILoginPasswordAdapter, IAddressAdapter<Uri>
 {
 	/// <summary>Authentication scheme.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AuthorizationKey,

@@ -9,7 +9,7 @@ namespace StockSharp.NasdaqCloudDataService;
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Options |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Candles |
 	MessageAdapterCategories.Paid)]
-public partial class NasdaqCloudDataServiceMessageAdapter : MessageAdapter, ILoginPasswordAdapter
+public partial class NasdaqCloudDataServiceMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,

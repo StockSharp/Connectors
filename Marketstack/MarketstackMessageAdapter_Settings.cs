@@ -11,7 +11,7 @@ namespace StockSharp.Marketstack;
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Candles)]
-public partial class MarketstackMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class MarketstackMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

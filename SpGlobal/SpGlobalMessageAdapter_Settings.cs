@@ -9,7 +9,7 @@ namespace StockSharp.SpGlobal;
 	MessageAdapterCategories.Asia | MessageAdapterCategories.History |
 	MessageAdapterCategories.Commodities | MessageAdapterCategories.Futures |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Paid)]
-public partial class SpGlobalMessageAdapter : MessageAdapter, ILoginPasswordAdapter
+public partial class SpGlobalMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,

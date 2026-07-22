@@ -16,7 +16,7 @@ using System.ComponentModel.DataAnnotations;
 	MessageAdapterCategories.Free | MessageAdapterCategories.Transactions | MessageAdapterCategories.Candles |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Level1)]
 [OrderCondition(typeof(RobinhoodOrderCondition))]
-public partial class RobinhoodMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class RobinhoodMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(

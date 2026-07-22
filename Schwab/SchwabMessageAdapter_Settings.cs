@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations;
 	Description = LocalizedStrings.StockConnectorKey,
 	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.RealTime | MessageAdapterCategories.Transactions | MessageAdapterCategories.Candles | MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Stock)]
-public partial class SchwabMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class SchwabMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(

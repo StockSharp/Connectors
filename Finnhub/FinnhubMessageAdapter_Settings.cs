@@ -10,7 +10,7 @@ namespace StockSharp.Finnhub;
 	MessageAdapterCategories.Stock | MessageAdapterCategories.FX | MessageAdapterCategories.Crypto |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Ticks |
 	MessageAdapterCategories.Candles | MessageAdapterCategories.News)]
-public partial class FinnhubMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class FinnhubMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

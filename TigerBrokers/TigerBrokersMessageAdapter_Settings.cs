@@ -13,7 +13,7 @@ namespace StockSharp.TigerBrokers;
 	MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Candles | MessageAdapterCategories.Stock |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options | MessageAdapterCategories.FX)]
 [OrderCondition(typeof(TigerBrokersOrderCondition))]
-public partial class TigerBrokersMessageAdapter : MessageAdapter
+public partial class TigerBrokersMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	/// <summary>Tiger OpenAPI developer identifier.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TigerBrokersTigerIdKey,

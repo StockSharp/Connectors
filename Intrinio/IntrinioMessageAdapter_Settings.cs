@@ -70,7 +70,7 @@ public enum IntrinioOptionProviders
 	MessageAdapterCategories.Options | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles |
 	MessageAdapterCategories.News | MessageAdapterCategories.Paid)]
-public partial class IntrinioMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class IntrinioMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

@@ -11,7 +11,7 @@ namespace StockSharp.Orats;
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Options |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Candles)]
-public partial class OratsMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class OratsMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

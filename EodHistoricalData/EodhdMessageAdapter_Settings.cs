@@ -13,7 +13,7 @@ namespace StockSharp.EodHistoricalData;
 	MessageAdapterCategories.Options | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles |
 	MessageAdapterCategories.News)]
-public partial class EodhdMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class EodhdMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

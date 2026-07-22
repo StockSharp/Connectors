@@ -19,7 +19,7 @@ public enum CboeDataModes
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Options |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Ticks |
 	MessageAdapterCategories.Candles | MessageAdapterCategories.Paid)]
-public partial class CboeDataShopMessageAdapter : MessageAdapter, ILoginPasswordAdapter
+public partial class CboeDataShopMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,

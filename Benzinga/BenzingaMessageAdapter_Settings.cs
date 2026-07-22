@@ -10,7 +10,7 @@ namespace StockSharp.Benzinga;
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Candles | MessageAdapterCategories.News)]
-public partial class BenzingaMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class BenzingaMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

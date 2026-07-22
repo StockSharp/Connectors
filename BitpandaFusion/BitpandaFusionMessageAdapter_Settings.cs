@@ -16,7 +16,7 @@ namespace StockSharp.BitpandaFusion;
 	MessageAdapterCategories.Candles | MessageAdapterCategories.History |
 	MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(BitpandaFusionOrderCondition))]
-public partial class BitpandaFusionMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class BitpandaFusionMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	private static readonly Uri _defaultAddress =
 		new("https://api.fusion.bitpanda.com/");

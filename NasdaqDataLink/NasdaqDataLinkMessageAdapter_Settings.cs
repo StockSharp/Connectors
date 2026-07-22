@@ -11,7 +11,7 @@ namespace StockSharp.NasdaqDataLink;
 	MessageAdapterCategories.Options | MessageAdapterCategories.FX |
 	MessageAdapterCategories.Commodities | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Candles)]
-public partial class NasdaqDataLinkMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class NasdaqDataLinkMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

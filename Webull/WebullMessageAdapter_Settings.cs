@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations;
 	Description = LocalizedStrings.StockConnectorKey,
 	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.RealTime | MessageAdapterCategories.Transactions | MessageAdapterCategories.Ticks | MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Stock)]
-public partial class WebullMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
+public partial class WebullMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter, IDemoAdapter
 {
 	/// <inheritdoc />
 	[BasicSetting]

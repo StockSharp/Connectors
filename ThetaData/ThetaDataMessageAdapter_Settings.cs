@@ -12,7 +12,7 @@ namespace StockSharp.ThetaData;
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Options |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles)]
-public partial class ThetaDataMessageAdapter : MessageAdapter
+public partial class ThetaDataMessageAdapter : MessageAdapter, IAddressAdapter<Uri>
 {
 	/// <summary>Theta Terminal REST API v3 base address.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,

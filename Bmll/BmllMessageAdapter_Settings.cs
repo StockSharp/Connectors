@@ -13,7 +13,7 @@ namespace StockSharp.Bmll;
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.OrderLog)]
 public partial class BmllMessageAdapter : MessageAdapter, ITokenAdapter,
-	ILoginPasswordAdapter
+	ILoginPasswordAdapter, IAddressAdapter<Uri>
 {
 	/// <summary>Authentication scheme.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AuthorizationKey,

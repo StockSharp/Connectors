@@ -10,7 +10,7 @@ namespace StockSharp.TwelveData;
 	MessageAdapterCategories.Stock | MessageAdapterCategories.FX | MessageAdapterCategories.Crypto |
 	MessageAdapterCategories.Commodities | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Candles)]
-public partial class TwelveDataMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class TwelveDataMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,

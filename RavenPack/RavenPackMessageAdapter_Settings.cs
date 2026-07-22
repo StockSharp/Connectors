@@ -9,7 +9,7 @@ namespace StockSharp.RavenPack;
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.Paid |
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.News)]
-public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	private RavenPackProducts _product = RavenPackProducts.Edge;
 	private Uri _address = RavenPackProducts.Edge.GetApiAddress();
