@@ -5,13 +5,20 @@ using System.ComponentModel.DataAnnotations;
 /// <summary>
 /// Upstox-specific order parameters.
 /// </summary>
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UpstoxKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.UpstoxKey)]
 [Serializable]
 [DataContract]
 public class UpstoxOrderCondition : OrderCondition
 {
 	/// <summary>Order product.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ProductKey, Description = LocalizedStrings.ProductKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProductKey,
+		Description = LocalizedStrings.ProductKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	[DataMember]
 	public UpstoxProducts? Product
 	{
@@ -20,7 +27,12 @@ public class UpstoxOrderCondition : OrderCondition
 	}
 
 	/// <summary>Stop trigger price.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey, Description = LocalizedStrings.StopPriceDescKey, GroupName = LocalizedStrings.StopLossKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 1)]
 	[DataMember]
 	public decimal? TriggerPrice
 	{
@@ -29,7 +41,12 @@ public class UpstoxOrderCondition : OrderCondition
 	}
 
 	/// <summary>Disclosed quantity.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VisibleVolumeKey, Description = LocalizedStrings.VisibleVolumeDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VisibleVolumeKey,
+		Description = LocalizedStrings.VisibleVolumeDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	[DataMember]
 	public decimal? DisclosedQuantity
 	{
@@ -38,7 +55,12 @@ public class UpstoxOrderCondition : OrderCondition
 	}
 
 	/// <summary>After-market order.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UpstoxAfterMarketKey, Description = LocalizedStrings.UpstoxAfterMarketDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UpstoxAfterMarketKey,
+		Description = LocalizedStrings.UpstoxAfterMarketDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	[DataMember]
 	public bool IsAfterMarket
 	{
@@ -47,7 +69,12 @@ public class UpstoxOrderCondition : OrderCondition
 	}
 
 	/// <summary>Automatically slice orders above exchange freeze quantity.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UpstoxAutoSliceKey, Description = LocalizedStrings.UpstoxAutoSliceDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UpstoxAutoSliceKey,
+		Description = LocalizedStrings.UpstoxAutoSliceDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 4)]
 	[DataMember]
 	public bool AutoSlice
 	{
@@ -56,7 +83,12 @@ public class UpstoxOrderCondition : OrderCondition
 	}
 
 	/// <summary>Market protection percentage.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UpstoxMarketProtectionKey, Description = LocalizedStrings.UpstoxMarketProtectionDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UpstoxMarketProtectionKey,
+		Description = LocalizedStrings.UpstoxMarketProtectionDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 5)]
 	[DataMember]
 	public decimal? MarketProtection
 	{

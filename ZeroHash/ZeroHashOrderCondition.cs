@@ -3,7 +3,9 @@ namespace StockSharp.ZeroHash;
 /// <summary>Zero Hash-specific CLOB order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ZeroHashKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ZeroHashKey)]
 public sealed class ZeroHashOrderCondition : OrderCondition
 {
 	/// <summary>Optional stop trigger price.</summary>

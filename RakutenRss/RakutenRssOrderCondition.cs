@@ -3,7 +3,9 @@ namespace StockSharp.RakutenRss;
 /// <summary>Additional parameters for MARKETSPEED II RSS orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.RakutenRssKey)]
 public sealed class RakutenRssOrderCondition : OrderCondition
 {
 	private RakutenRssOrderRoutes _route;

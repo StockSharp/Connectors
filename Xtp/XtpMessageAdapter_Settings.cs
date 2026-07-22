@@ -18,48 +18,98 @@ using System.ComponentModel.DataAnnotations;
 public partial class XtpMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey, Description = LocalizedStrings.LoginKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LoginKey,
+		Description = LocalizedStrings.LoginKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string Login { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey, Description = LocalizedStrings.PasswordKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
+		Description = LocalizedStrings.PasswordKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
 
 	/// <summary>XTP client identifier (1-99 for regular accounts).</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientIdKey, Description = LocalizedStrings.XtpClientIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClientIdKey,
+		Description = LocalizedStrings.XtpClientIdDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public byte ClientId { get; set; } = 1;
 
 	/// <summary>Quote service endpoint supplied by the broker.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarketDataKey, Description = LocalizedStrings.XtpQuoteAddressDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataKey,
+		Description = LocalizedStrings.XtpQuoteAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public EndPoint QuoteAddress { get; set; }
 
 	/// <summary>Trader service endpoint supplied by the broker.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TransactionsKey, Description = LocalizedStrings.XtpTraderAddressDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TransactionsKey,
+		Description = LocalizedStrings.XtpTraderAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public EndPoint TransactionAddress { get; set; }
 
 	/// <summary>Transport protocol.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ProtocolKey, Description = LocalizedStrings.ProtocolKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProtocolKey,
+		Description = LocalizedStrings.ProtocolKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public XtpProtocols Protocol { get; set; } = XtpProtocols.Tcp;
 
 	/// <summary>Optional local IP address used to bind the SDK connection.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LocalAddressKey, Description = LocalizedStrings.XtpLocalAddressDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LocalAddressKey,
+		Description = LocalizedStrings.XtpLocalAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string LocalAddress { get; set; }
 
 	/// <summary>Software key assigned by Zhongtai.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SoftwareKeyKey, Description = LocalizedStrings.XtpSoftwareKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SoftwareKeyKey,
+		Description = LocalizedStrings.XtpSoftwareKeyDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public string SoftwareKey { get; set; }
 
 	/// <summary>Client software version reported to XTP.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VersionKey, Description = LocalizedStrings.XtpSoftwareVersionDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VersionKey,
+		Description = LocalizedStrings.XtpSoftwareVersionDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public string SoftwareVersion { get; set; } = "1.0";
 
 	/// <summary>Writable SDK state and log directory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DataDirectoryKey, Description = LocalizedStrings.XtpDataDirectoryDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataDirectoryKey,
+		Description = LocalizedStrings.XtpDataDirectoryDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public string DataPath { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "StockSharp", "Xtp");
 
 	/// <inheritdoc />

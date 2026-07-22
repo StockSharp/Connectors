@@ -3,7 +3,9 @@ namespace StockSharp.Fxcm;
 /// <summary>FXCM order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FxcmKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.FxcmKey)]
 public class FxcmOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>Stop-loss price or distance in pips.</summary>

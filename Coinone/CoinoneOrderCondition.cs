@@ -5,7 +5,9 @@ namespace StockSharp.Coinone;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CoinoneKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.CoinoneKey)]
 public class CoinoneOrderCondition : OrderCondition, IStopLossOrderCondition
 {
     /// <summary>

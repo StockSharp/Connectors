@@ -54,7 +54,9 @@ public enum AlpacaOrderClasses
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AlpacaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.AlpacaKey)]
 public class AlpacaOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>

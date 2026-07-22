@@ -3,7 +3,9 @@ namespace StockSharp.Aevo;
 /// <summary>Aevo-specific order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AevoKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.AevoKey)]
 public class AevoOrderCondition : OrderCondition
 {
 	/// <summary>Whether the order can only reduce an existing position.</summary>

@@ -6,12 +6,14 @@ public enum InjectiveEnvironments
 {
 	/// <summary>Mainnet.</summary>
 	[EnumMember]
-	[Display(Name = "Mainnet")]
+	[Display(
+		Name = "Mainnet")]
 	Mainnet,
 
 	/// <summary>Testnet.</summary>
 	[EnumMember]
-	[Display(Name = "Testnet")]
+	[Display(
+		Name = "Testnet")]
 	Testnet,
 }
 
@@ -53,15 +55,24 @@ public partial class InjectiveMessageAdapter
 	}
 
 	/// <summary>Optional Indexer REST endpoint override.</summary>
-	[Display(Name = "Indexer endpoint", GroupName = "Addresses", Order = 0)]
+	[Display(
+		Name = "Indexer endpoint",
+		GroupName = "Addresses",
+		Order = 0)]
 	public string IndexerEndpoint { get; set; }
 
 	/// <summary>Optional Indexer native gRPC endpoint override.</summary>
-	[Display(Name = "gRPC endpoint", GroupName = "Addresses", Order = 1)]
+	[Display(
+		Name = "gRPC endpoint",
+		GroupName = "Addresses",
+		Order = 1)]
 	public string GrpcEndpoint { get; set; }
 
 	/// <summary>Optional chain LCD endpoint override.</summary>
-	[Display(Name = "Chain endpoint", GroupName = "Addresses", Order = 2)]
+	[Display(
+		Name = "Chain endpoint",
+		GroupName = "Addresses",
+		Order = 2)]
 	public string ChainEndpoint { get; set; }
 
 	/// <summary>Optional Tendermint WebSocket endpoint override.</summary>

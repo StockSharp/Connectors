@@ -9,7 +9,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>Native operation kind.</summary>
 	[DataMember]
-	[Display(Name = "Operation", GroupName = "Anchorage", Order = 0)]
+	[Display(
+		Name = "Operation",
+		GroupName = "Anchorage",
+		Order = 0)]
 	public AnchorageOperations Operation
 	{
 		get => (AnchorageOperations?)Parameters.TryGetValue(nameof(Operation)) ??
@@ -19,7 +22,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Optional native trading order type.</summary>
 	[DataMember]
-	[Display(Name = "Native order type", GroupName = "Anchorage", Order = 1)]
+	[Display(
+		Name = "Native order type",
+		GroupName = "Anchorage",
+		Order = 1)]
 	public AnchorageNativeOrderTypes? NativeOrderType
 	{
 		get => (AnchorageNativeOrderTypes?)Parameters.TryGetValue(
@@ -29,7 +35,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Currency in which trading quantity is specified.</summary>
 	[DataMember]
-	[Display(Name = "Quantity currency", GroupName = "Anchorage", Order = 2)]
+	[Display(
+		Name = "Quantity currency",
+		GroupName = "Anchorage",
+		Order = 2)]
 	public string QuantityCurrency
 	{
 		get => (string)Parameters.TryGetValue(nameof(QuantityCurrency));
@@ -50,7 +59,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Optional UTC expiration for advanced orders.</summary>
 	[DataMember]
-	[Display(Name = "End time", GroupName = "Anchorage", Order = 4)]
+	[Display(
+		Name = "End time",
+		GroupName = "Anchorage",
+		Order = 4)]
 	public DateTime? EndTime
 	{
 		get => (DateTime?)Parameters.TryGetValue(nameof(EndTime));
@@ -120,7 +132,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Existing staking position identifier.</summary>
 	[DataMember]
-	[Display(Name = "Staking position", GroupName = "Staking", Order = 0)]
+	[Display(
+		Name = "Staking position",
+		GroupName = "Staking",
+		Order = 0)]
 	public string StakingPositionId
 	{
 		get => (string)Parameters.TryGetValue(nameof(StakingPositionId));
@@ -129,7 +144,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Staking provider.</summary>
 	[DataMember]
-	[Display(Name = "Staking provider", GroupName = "Staking", Order = 1)]
+	[Display(
+		Name = "Staking provider",
+		GroupName = "Staking",
+		Order = 1)]
 	public AnchorageStakingProviders StakingProvider
 	{
 		get => (AnchorageStakingProviders?)Parameters.TryGetValue(
@@ -139,7 +157,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Provider delegation address.</summary>
 	[DataMember]
-	[Display(Name = "Provider address", GroupName = "Staking", Order = 2)]
+	[Display(
+		Name = "Provider address",
+		GroupName = "Staking",
+		Order = 2)]
 	public string StakingProviderAddress
 	{
 		get => (string)Parameters.TryGetValue(nameof(StakingProviderAddress));
@@ -148,7 +169,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Ethereum validator credential type.</summary>
 	[DataMember]
-	[Display(Name = "Validator type", GroupName = "Staking", Order = 3)]
+	[Display(
+		Name = "Validator type",
+		GroupName = "Staking",
+		Order = 3)]
 	public AnchorageValidatorTypes? ValidatorType
 	{
 		get => (AnchorageValidatorTypes?)Parameters.TryGetValue(
@@ -158,7 +182,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Unstake the complete position.</summary>
 	[DataMember]
-	[Display(Name = "Full amount", GroupName = "Staking", Order = 4)]
+	[Display(
+		Name = "Full amount",
+		GroupName = "Staking",
+		Order = 4)]
 	public bool IsFullAmount
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsFullAmount)) ?? false;

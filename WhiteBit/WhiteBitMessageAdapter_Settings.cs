@@ -11,21 +11,27 @@ public enum WhiteBitSections
     /// Spot markets.
     /// </summary>
     [EnumMember]
-    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SpotKey)]
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SpotKey)]
     Spot,
 
     /// <summary>
     /// Collateral spot markets.
     /// </summary>
     [EnumMember]
-    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey)]
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarginKey)]
     Margin,
 
     /// <summary>
     /// Perpetual futures markets.
     /// </summary>
     [EnumMember]
-    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FuturesKey)]
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.FuturesKey)]
     Futures,
 }
 

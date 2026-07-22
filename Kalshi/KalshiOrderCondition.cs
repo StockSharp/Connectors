@@ -3,7 +3,9 @@ namespace StockSharp.Kalshi;
 /// <summary>Kalshi-specific order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KalshiKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.KalshiKey)]
 public class KalshiOrderCondition : OrderCondition
 {
 	/// <summary>Whether the order may only add liquidity.</summary>

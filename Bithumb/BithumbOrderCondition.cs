@@ -5,7 +5,9 @@ namespace StockSharp.Bithumb;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BithumbKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BithumbKey)]
 public class BithumbOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

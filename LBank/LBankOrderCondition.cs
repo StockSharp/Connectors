@@ -5,7 +5,9 @@ namespace StockSharp.LBank;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LBankKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.LBankKey)]
 public class LBankOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

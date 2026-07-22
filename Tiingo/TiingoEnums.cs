@@ -7,17 +7,20 @@ public enum TiingoMarkets
 {
 	/// <summary>Exchange-listed securities and funds.</summary>
 	[EnumMember]
-	[Display(Name = "Stocks and funds")]
+	[Display(
+		Name = "Stocks and funds")]
 	Stocks,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
-	[Display(Name = "Forex")]
+	[Display(
+		Name = "Forex")]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
-	[Display(Name = "Crypto")]
+	[Display(
+		Name = "Crypto")]
 	Crypto,
 }
 
@@ -28,17 +31,20 @@ public enum TiingoEquityStreamingModes
 {
 	/// <summary>Exchange-compliant Tiingo derived reference prices.</summary>
 	[EnumMember]
-	[Display(Name = "Reference price")]
+	[Display(
+		Name = "Reference price")]
 	ReferencePrice,
 
 	/// <summary>Filtered IEX TOPS quotes and trades; IEX entitlement is required.</summary>
 	[EnumMember]
-	[Display(Name = "IEX TOPS filtered")]
+	[Display(
+		Name = "IEX TOPS filtered")]
 	IexTop,
 
 	/// <summary>Every IEX TOPS update; IEX entitlement is required.</summary>
 	[EnumMember]
-	[Display(Name = "IEX TOPS all")]
+	[Display(
+		Name = "IEX TOPS all")]
 	IexAll,
 }
 
@@ -49,12 +55,14 @@ public enum TiingoPriceAdjustments
 {
 	/// <summary>Use raw exchange prices and volumes.</summary>
 	[EnumMember]
-	[Display(Name = "Raw")]
+	[Display(
+		Name = "Raw")]
 	Raw,
 
 	/// <summary>Use split- and dividend-adjusted prices and volumes.</summary>
 	[EnumMember]
-	[Display(Name = "Adjusted")]
+	[Display(
+		Name = "Adjusted")]
 	Adjusted,
 }
 

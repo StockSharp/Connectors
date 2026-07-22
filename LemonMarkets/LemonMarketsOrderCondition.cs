@@ -3,7 +3,9 @@ namespace StockSharp.LemonMarkets;
 /// <summary>Additional parameters for lemon.markets orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LemonMarketsKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.LemonMarketsKey)]
 public sealed class LemonMarketsOrderCondition : OrderCondition
 {
 	private decimal? _feeAmount;

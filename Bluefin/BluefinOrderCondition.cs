@@ -6,22 +6,26 @@ public enum BluefinSelfTradePreventionTypes
 {
 	/// <summary>Use the account default.</summary>
 	[EnumMember]
-	[Display(Name = "Unspecified")]
+	[Display(
+		Name = "Unspecified")]
 	Unspecified,
 
 	/// <summary>Cancel the taker order.</summary>
 	[EnumMember]
-	[Display(Name = "Cancel taker")]
+	[Display(
+		Name = "Cancel taker")]
 	Taker,
 
 	/// <summary>Cancel the maker order.</summary>
 	[EnumMember]
-	[Display(Name = "Cancel maker")]
+	[Display(
+		Name = "Cancel maker")]
 	Maker,
 
 	/// <summary>Cancel both orders.</summary>
 	[EnumMember]
-	[Display(Name = "Cancel both")]
+	[Display(
+		Name = "Cancel both")]
 	Both,
 }
 

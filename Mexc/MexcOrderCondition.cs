@@ -5,7 +5,9 @@ namespace StockSharp.Mexc;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MexcKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.MexcKey)]
 public class MexcOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

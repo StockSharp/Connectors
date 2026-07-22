@@ -6,17 +6,20 @@ public enum GainsNetworkEnvironments
 {
 	/// <summary>Arbitrum One.</summary>
 	[EnumMember]
-	[Display(Name = "Arbitrum One")]
+	[Display(
+		Name = "Arbitrum One")]
 	Arbitrum,
 
 	/// <summary>Base mainnet.</summary>
 	[EnumMember]
-	[Display(Name = "Base")]
+	[Display(
+		Name = "Base")]
 	Base,
 
 	/// <summary>Polygon PoS.</summary>
 	[EnumMember]
-	[Display(Name = "Polygon")]
+	[Display(
+		Name = "Polygon")]
 	Polygon,
 }
 

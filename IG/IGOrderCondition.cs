@@ -18,7 +18,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Native instrument expiry, for example <c>DFB</c>.</summary>
 	[DataMember]
-	[Display(Name = "Expiry", GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+	[Display(
+		Name = "Expiry",
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	public string Expiry
 	{
 		get => Parameters.TryGetValue(_expiry)?.To<string>().IsEmpty("DFB");
@@ -27,7 +30,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Deal currency ISO code.</summary>
 	[DataMember]
-	[Display(Name = "Currency", GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+	[Display(
+		Name = "Currency",
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	public string CurrencyCode
 	{
 		get => Parameters.TryGetValue(_currencyCode)?.To<string>();
@@ -36,7 +42,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Create an independent position instead of netting.</summary>
 	[DataMember]
-	[Display(Name = "Force open", GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+	[Display(
+		Name = "Force open",
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	public bool ForceOpen
 	{
 		get => Parameters.TryGetValue(_forceOpen)?.To<bool?>() ?? true;
@@ -45,7 +54,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Use a guaranteed stop.</summary>
 	[DataMember]
-	[Display(Name = "Guaranteed stop", GroupName = LocalizedStrings.StopKey, Order = 3)]
+	[Display(
+		Name = "Guaranteed stop",
+		GroupName = LocalizedStrings.StopKey,
+		Order = 3)]
 	public bool GuaranteedStop
 	{
 		get => Parameters.TryGetValue(_guaranteedStop)?.To<bool?>() ?? false;
@@ -54,7 +66,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Absolute stop level.</summary>
 	[DataMember]
-	[Display(Name = "Stop level", GroupName = LocalizedStrings.StopKey, Order = 4)]
+	[Display(
+		Name = "Stop level",
+		GroupName = LocalizedStrings.StopKey,
+		Order = 4)]
 	public decimal? StopLevel
 	{
 		get => Parameters.TryGetValue(_stopLevel)?.To<decimal?>();
@@ -63,7 +78,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Stop distance in instrument points.</summary>
 	[DataMember]
-	[Display(Name = "Stop distance", GroupName = LocalizedStrings.StopKey, Order = 5)]
+	[Display(
+		Name = "Stop distance",
+		GroupName = LocalizedStrings.StopKey,
+		Order = 5)]
 	public decimal? StopDistance
 	{
 		get => Parameters.TryGetValue(_stopDistance)?.To<decimal?>();
@@ -72,7 +90,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Absolute profit-taking level.</summary>
 	[DataMember]
-	[Display(Name = "Limit level", GroupName = LocalizedStrings.LimitKey, Order = 6)]
+	[Display(
+		Name = "Limit level",
+		GroupName = LocalizedStrings.LimitKey,
+		Order = 6)]
 	public decimal? LimitLevel
 	{
 		get => Parameters.TryGetValue(_limitLevel)?.To<decimal?>();
@@ -81,7 +102,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Profit-taking distance in instrument points.</summary>
 	[DataMember]
-	[Display(Name = "Limit distance", GroupName = LocalizedStrings.LimitKey, Order = 7)]
+	[Display(
+		Name = "Limit distance",
+		GroupName = LocalizedStrings.LimitKey,
+		Order = 7)]
 	public decimal? LimitDistance
 	{
 		get => Parameters.TryGetValue(_limitDistance)?.To<decimal?>();
@@ -90,7 +114,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Enable a trailing stop.</summary>
 	[DataMember]
-	[Display(Name = "Trailing stop", GroupName = LocalizedStrings.StopKey, Order = 8)]
+	[Display(
+		Name = "Trailing stop",
+		GroupName = LocalizedStrings.StopKey,
+		Order = 8)]
 	public bool TrailingStop
 	{
 		get => Parameters.TryGetValue(_trailingStop)?.To<bool?>() ?? false;
@@ -99,7 +126,10 @@ public class IgOrderCondition : OrderCondition
 
 	/// <summary>Trailing-stop increment in instrument points.</summary>
 	[DataMember]
-	[Display(Name = "Trailing increment", GroupName = LocalizedStrings.StopKey, Order = 9)]
+	[Display(
+		Name = "Trailing increment",
+		GroupName = LocalizedStrings.StopKey,
+		Order = 9)]
 	public decimal? TrailingStopIncrement
 	{
 		get => Parameters.TryGetValue(_trailingStopIncrement)?.To<decimal?>();

@@ -5,7 +5,9 @@ namespace StockSharp.Poloniex;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PoloniexKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.PoloniexKey)]
 public class PoloniexOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

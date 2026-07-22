@@ -40,12 +40,14 @@ public enum DriftMarginModes
 {
 	/// <summary>Cross margin.</summary>
 	[EnumMember(Value = "cross")]
-	[Display(Name = "Cross")]
+	[Display(
+		Name = "Cross")]
 	Cross,
 
 	/// <summary>Isolated margin.</summary>
 	[EnumMember(Value = "isolated")]
-	[Display(Name = "Isolated")]
+	[Display(
+		Name = "Isolated")]
 	Isolated,
 }
 

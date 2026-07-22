@@ -52,7 +52,9 @@ public enum GrvtTriggerPrices
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GrvtKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.GrvtKey)]
 public class GrvtOrderCondition : OrderCondition
 {
 	/// <summary>

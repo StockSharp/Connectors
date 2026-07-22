@@ -4,11 +4,13 @@ namespace StockSharp.Kaiko;
 public enum KaikoRegions
 {
 	/// <summary>United States region.</summary>
-	[Display(Name = "United States")]
+	[Display(
+		Name = "United States")]
 	Us,
 
 	/// <summary>European Union region.</summary>
-	[Display(Name = "Europe")]
+	[Display(
+		Name = "Europe")]
 	Eu,
 }
 
@@ -17,27 +19,32 @@ public enum KaikoRegions
 public enum KaikoInstrumentClasses
 {
 	/// <summary>All classes when used as a lookup filter.</summary>
-	[Display(Name = "All")]
+	[Display(
+		Name = "All")]
 	[EnumMember(Value = "")]
 	Unknown,
 
 	/// <summary>Spot instrument.</summary>
-	[Display(Name = "Spot")]
+	[Display(
+		Name = "Spot")]
 	[EnumMember(Value = "spot")]
 	Spot,
 
 	/// <summary>Dated future.</summary>
-	[Display(Name = "Future")]
+	[Display(
+		Name = "Future")]
 	[EnumMember(Value = "future")]
 	Future,
 
 	/// <summary>Perpetual future.</summary>
-	[Display(Name = "Perpetual future")]
+	[Display(
+		Name = "Perpetual future")]
 	[EnumMember(Value = "perpetual-future")]
 	PerpetualFuture,
 
 	/// <summary>Option.</summary>
-	[Display(Name = "Option")]
+	[Display(
+		Name = "Option")]
 	[EnumMember(Value = "option")]
 	Option,
 }

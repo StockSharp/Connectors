@@ -3,7 +3,9 @@ namespace StockSharp.Kiwoom;
 /// <summary>Additional parameters for Kiwoom orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KiwoomOrderConditionKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.KiwoomOrderConditionKey)]
 public sealed class KiwoomOrderCondition : OrderCondition
 {
 	private KiwoomMarkets? _market;

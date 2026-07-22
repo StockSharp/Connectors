@@ -18,64 +18,134 @@ using System.ComponentModel.DataAnnotations;
 public partial class CtpMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
 	/// <summary>CTP user identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey, Description = LocalizedStrings.CtpUserIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LoginKey,
+		Description = LocalizedStrings.CtpUserIdDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string Login { get; set; }
 
 	/// <summary>CTP user password.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey, Description = LocalizedStrings.PasswordKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
+		Description = LocalizedStrings.PasswordKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
 
 	/// <summary>Broker identifier issued by the futures broker.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpBrokerIdKey, Description = LocalizedStrings.CtpBrokerIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpBrokerIdKey,
+		Description = LocalizedStrings.CtpBrokerIdDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string BrokerId { get; set; }
 
 	/// <summary>Investor identifier. When empty, <see cref="Login"/> is used.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpInvestorIdKey, Description = LocalizedStrings.CtpInvestorIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpInvestorIdKey,
+		Description = LocalizedStrings.CtpInvestorIdDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string InvestorId { get; set; }
 
 	/// <summary>Market-data front, including the CTP transport scheme and port.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarketDataKey, Description = LocalizedStrings.CtpMarketAddressDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataKey,
+		Description = LocalizedStrings.CtpMarketAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public string MarketDataAddress { get; set; }
 
 	/// <summary>Trader front, including the CTP transport scheme and port.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TransactionsKey, Description = LocalizedStrings.CtpTraderAddressDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TransactionsKey,
+		Description = LocalizedStrings.CtpTraderAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public string TraderAddress { get; set; }
 
 	/// <summary>Application identifier registered with the broker.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AppIdKey, Description = LocalizedStrings.CtpAppIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AppIdKey,
+		Description = LocalizedStrings.CtpAppIdDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string AppId { get; set; }
 
 	/// <summary>Application authentication code registered with the broker.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpAuthCodeKey, Description = LocalizedStrings.CtpAuthCodeDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpAuthCodeKey,
+		Description = LocalizedStrings.CtpAuthCodeDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public SecureString AuthCode { get; set; }
 
 	/// <summary>Client product information reported to the CTP front.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpProductInfoKey, Description = LocalizedStrings.CtpProductInfoDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpProductInfoKey,
+		Description = LocalizedStrings.CtpProductInfoDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public string ProductInfo { get; set; } = "StockSharp";
 
 	/// <summary>Private and public topic recovery mode.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpResumeTypeKey, Description = LocalizedStrings.CtpResumeTypeDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpResumeTypeKey,
+		Description = LocalizedStrings.CtpResumeTypeDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public CtpResumeTypes ResumeType { get; set; } = CtpResumeTypes.Quick;
 
 	/// <summary>Use the production-mode switch of the CTP 6.7.11 API.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpProductionModeKey, Description = LocalizedStrings.CtpProductionModeDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpProductionModeKey,
+		Description = LocalizedStrings.CtpProductionModeDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public bool ProductionMode { get; set; } = true;
 
 	/// <summary>Writable native flow and log directory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DataDirectoryKey, Description = LocalizedStrings.CtpDataDirectoryDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 11)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataDirectoryKey,
+		Description = LocalizedStrings.CtpDataDirectoryDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 11)]
 	public string DataPath { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "StockSharp", "Ctp");
 
 	/// <summary>Minimum delay between broker query requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpQueryIntervalKey, Description = LocalizedStrings.CtpQueryIntervalDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 12)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpQueryIntervalKey,
+		Description = LocalizedStrings.CtpQueryIntervalDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 12)]
 	public TimeSpan QueryInterval { get; set; } = TimeSpan.FromSeconds(1);
 
 	/// <summary>Maximum time allowed for native authentication, login, and settlement confirmation.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TimeOutKey, Description = LocalizedStrings.CtpConnectionTimeoutDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 13)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeOutKey,
+		Description = LocalizedStrings.CtpConnectionTimeoutDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 13)]
 	public TimeSpan ConnectionTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
 	/// <inheritdoc />

@@ -3,7 +3,9 @@ namespace StockSharp.Swissquote;
 /// <summary>Swissquote OpenWealth order condition.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SwissQuoteKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.SwissQuoteKey)]
 public class SwissquoteOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>Stop activation price.</summary>

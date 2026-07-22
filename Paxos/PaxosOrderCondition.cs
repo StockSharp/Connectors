@@ -3,12 +3,17 @@ namespace StockSharp.Paxos;
 /// <summary>Paxos brokerage and custody parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PaxosKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.PaxosKey)]
 public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>Native operation kind.</summary>
 	[DataMember]
-	[Display(Name = "Operation", GroupName = "Paxos", Order = 0)]
+	[Display(
+		Name = "Operation",
+		GroupName = "Paxos",
+		Order = 0)]
 	public PaxosOperations Operation
 	{
 		get => (PaxosOperations?)Parameters.TryGetValue(nameof(Operation)) ??
@@ -30,7 +35,10 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Quote amount required by a market buy.</summary>
 	[DataMember]
-	[Display(Name = "Quote amount", GroupName = "Paxos", Order = 2)]
+	[Display(
+		Name = "Quote amount",
+		GroupName = "Paxos",
+		Order = 2)]
 	public decimal? QuoteAmount
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));
@@ -39,7 +47,10 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Submit a post-only limit order.</summary>
 	[DataMember]
-	[Display(Name = "Post only", GroupName = "Paxos", Order = 3)]
+	[Display(
+		Name = "Post only",
+		GroupName = "Paxos",
+		Order = 3)]
 	public bool IsPostOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsPostOnly)) ?? false;
@@ -48,7 +59,10 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Identity requesting an operation.</summary>
 	[DataMember]
-	[Display(Name = "Identity ID", GroupName = "Paxos", Order = 4)]
+	[Display(
+		Name = "Identity ID",
+		GroupName = "Paxos",
+		Order = 4)]
 	public string IdentityId
 	{
 		get => (string)Parameters.TryGetValue(nameof(IdentityId));
@@ -57,7 +71,10 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Account associated with <see cref="IdentityId"/>.</summary>
 	[DataMember]
-	[Display(Name = "Identity account ID", GroupName = "Paxos", Order = 5)]
+	[Display(
+		Name = "Identity account ID",
+		GroupName = "Paxos",
+		Order = 5)]
 	public string IdentityAccountId
 	{
 		get => (string)Parameters.TryGetValue(nameof(IdentityAccountId));

@@ -6,12 +6,14 @@ public enum OstiumEnvironments
 {
 	/// <summary>Arbitrum One.</summary>
 	[EnumMember]
-	[Display(Name = "Mainnet")]
+	[Display(
+		Name = "Mainnet")]
 	Mainnet,
 
 	/// <summary>Arbitrum Sepolia.</summary>
 	[EnumMember]
-	[Display(Name = "Testnet")]
+	[Display(
+		Name = "Testnet")]
 	Testnet,
 }
 

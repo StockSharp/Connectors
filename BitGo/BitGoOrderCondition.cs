@@ -3,12 +3,17 @@ namespace StockSharp.BitGo;
 /// <summary>BitGo Prime order-specific parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BitGoKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BitGoKey)]
 public sealed class BitGoOrderCondition : OrderCondition
 {
 	/// <summary>Native order type. Leave empty for automatic mapping.</summary>
 	[DataMember]
-	[Display(Name = "Native type", GroupName = "BitGo", Order = 0)]
+	[Display(
+		Name = "Native type",
+		GroupName = "BitGo",
+		Order = 0)]
 	public BitGoOrderTypes? NativeType
 	{
 		get => (BitGoOrderTypes?)Parameters.TryGetValue(nameof(NativeType));
@@ -17,7 +22,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Funding source.</summary>
 	[DataMember]
-	[Display(Name = "Funding type", GroupName = "BitGo", Order = 1)]
+	[Display(
+		Name = "Funding type",
+		GroupName = "BitGo",
+		Order = 1)]
 	public BitGoFundingTypes FundingType
 	{
 		get => (BitGoFundingTypes?)Parameters.TryGetValue(nameof(FundingType)) ??
@@ -39,7 +47,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>TWAP duration.</summary>
 	[DataMember]
-	[Display(Name = "TWAP duration", GroupName = "BitGo", Order = 3)]
+	[Display(
+		Name = "TWAP duration",
+		GroupName = "BitGo",
+		Order = 3)]
 	public TimeSpan? TwapDuration
 	{
 		get => (TimeSpan?)Parameters.TryGetValue(nameof(TwapDuration));
@@ -48,7 +59,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Use time-sliced TWAP execution.</summary>
 	[DataMember]
-	[Display(Name = "Time sliced", GroupName = "BitGo", Order = 4)]
+	[Display(
+		Name = "Time sliced",
+		GroupName = "BitGo",
+		Order = 4)]
 	public bool IsTimeSliced
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsTimeSliced)) ?? false;
@@ -57,7 +71,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>TWAP slice interval.</summary>
 	[DataMember]
-	[Display(Name = "TWAP interval", GroupName = "BitGo", Order = 5)]
+	[Display(
+		Name = "TWAP interval",
+		GroupName = "BitGo",
+		Order = 5)]
 	public TimeSpan? TwapInterval
 	{
 		get => (TimeSpan?)Parameters.TryGetValue(nameof(TwapInterval));
@@ -66,7 +83,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Regular TWAP progression bounds.</summary>
 	[DataMember]
-	[Display(Name = "Bounds control", GroupName = "BitGo", Order = 6)]
+	[Display(
+		Name = "Bounds control",
+		GroupName = "BitGo",
+		Order = 6)]
 	public BitGoBoundsControls BoundsControl
 	{
 		get => (BitGoBoundsControls?)Parameters.TryGetValue(
@@ -76,7 +96,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Steady Pace interval value.</summary>
 	[DataMember]
-	[Display(Name = "Steady Pace interval", GroupName = "BitGo", Order = 7)]
+	[Display(
+		Name = "Steady Pace interval",
+		GroupName = "BitGo",
+		Order = 7)]
 	public int? SteadyPaceInterval
 	{
 		get => (int?)Parameters.TryGetValue(nameof(SteadyPaceInterval));
@@ -85,7 +108,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Steady Pace interval unit.</summary>
 	[DataMember]
-	[Display(Name = "Interval unit", GroupName = "BitGo", Order = 8)]
+	[Display(
+		Name = "Interval unit",
+		GroupName = "BitGo",
+		Order = 8)]
 	public BitGoIntervalUnits IntervalUnit
 	{
 		get => (BitGoIntervalUnits?)Parameters.TryGetValue(nameof(IntervalUnit)) ??
@@ -95,7 +121,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Steady Pace child-order size.</summary>
 	[DataMember]
-	[Display(Name = "Sub-order size", GroupName = "BitGo", Order = 9)]
+	[Display(
+		Name = "Sub-order size",
+		GroupName = "BitGo",
+		Order = 9)]
 	public decimal? SubOrderSize
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(SubOrderSize));
@@ -104,7 +133,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Steady Pace size variance from zero to one.</summary>
 	[DataMember]
-	[Display(Name = "Variance", GroupName = "BitGo", Order = 10)]
+	[Display(
+		Name = "Variance",
+		GroupName = "BitGo",
+		Order = 10)]
 	public decimal? Variance
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(Variance));
@@ -113,7 +145,10 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Optional UTC execution schedule.</summary>
 	[DataMember]
-	[Display(Name = "Scheduled date", GroupName = "BitGo", Order = 11)]
+	[Display(
+		Name = "Scheduled date",
+		GroupName = "BitGo",
+		Order = 11)]
 	public DateTime? ScheduledDate
 	{
 		get => (DateTime?)Parameters.TryGetValue(nameof(ScheduledDate));

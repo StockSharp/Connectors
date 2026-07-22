@@ -4,11 +4,13 @@ namespace StockSharp.CoinMarketCap;
 public enum CoinMarketCapAccessModes
 {
 	/// <summary>Public API without an API key.</summary>
-	[Display(Name = "Keyless")]
+	[Display(
+		Name = "Keyless")]
 	Keyless,
 
 	/// <summary>Authenticated CoinMarketCap Pro API.</summary>
-	[Display(Name = "API key")]
+	[Display(
+		Name = "API key")]
 	ApiKey,
 }
 

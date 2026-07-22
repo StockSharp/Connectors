@@ -6,17 +6,20 @@ public enum CopperEnvironments
 {
 	/// <summary>Production environment.</summary>
 	[EnumMember]
-	[Display(Name = "Production")]
+	[Display(
+		Name = "Production")]
 	Production,
 
 	/// <summary>Demonstration environment.</summary>
 	[EnumMember]
-	[Display(Name = "Demo")]
+	[Display(
+		Name = "Demo")]
 	Demo,
 
 	/// <summary>Testnet environment.</summary>
 	[EnumMember]
-	[Display(Name = "Testnet")]
+	[Display(
+		Name = "Testnet")]
 	Testnet,
 }
 
@@ -26,17 +29,20 @@ public enum CopperDestinationTypes
 {
 	/// <summary>One-time blockchain address.</summary>
 	[EnumMember]
-	[Display(Name = "External address")]
+	[Display(
+		Name = "External address")]
 	ExternalAddress,
 
 	/// <summary>Approved Copper address-book entry.</summary>
 	[EnumMember]
-	[Display(Name = "Address book")]
+	[Display(
+		Name = "Address book")]
 	AddressBook,
 
 	/// <summary>Another Copper or ClearLoop portfolio.</summary>
 	[EnumMember]
-	[Display(Name = "Portfolio")]
+	[Display(
+		Name = "Portfolio")]
 	Portfolio,
 }
 

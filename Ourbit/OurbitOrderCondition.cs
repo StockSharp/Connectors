@@ -5,7 +5,9 @@ namespace StockSharp.Ourbit;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OurbitKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.OurbitKey)]
 public class OurbitOrderCondition : OrderCondition
 {
 	/// <summary>

@@ -49,7 +49,9 @@ public enum ZerodhaOrderVarieties
 /// <summary>Zerodha-specific order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ZerodhaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ZerodhaKey)]
 public class ZerodhaOrderCondition : OrderCondition
 {
 	/// <summary>Margin product. The adapter default is used when empty.</summary>

@@ -5,7 +5,9 @@ using Native;
 /// <summary>Nado order condition.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.NadoKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.NadoKey)]
 public class NadoOrderCondition : OrderCondition
 {
 	/// <summary>Restrict the order to reducing an existing position.</summary>

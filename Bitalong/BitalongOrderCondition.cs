@@ -8,7 +8,9 @@ using System.Runtime.Serialization;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BitalongKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BitalongKey)]
 public class BitalongOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

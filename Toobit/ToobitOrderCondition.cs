@@ -9,14 +9,18 @@ public enum ToobitOrderConditionTypes
 	/// <summary>
 	/// Stop-loss or common stop order.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey)]
 	[EnumMember]
 	StopLoss,
 
 	/// <summary>
 	/// Take-profit order.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey)]
 	[EnumMember]
 	TakeProfit,
 }
@@ -26,7 +30,9 @@ public enum ToobitOrderConditionTypes
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ToobitKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ToobitKey)]
 public class ToobitOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>

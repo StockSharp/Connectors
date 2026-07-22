@@ -19,7 +19,9 @@ public enum DaishinOrderMarkets
 /// <summary>Additional parameters for Daishin stock orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DaishinKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.DaishinKey)]
 public sealed class DaishinOrderCondition : OrderCondition
 {
 	private DaishinOrderMarkets _market;

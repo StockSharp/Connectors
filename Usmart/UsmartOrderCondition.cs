@@ -3,7 +3,9 @@ namespace StockSharp.Usmart;
 /// <summary>Additional parameters for uSMART stock orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.UsmartKey)]
 public sealed class UsmartOrderCondition : OrderCondition
 {
 	private UsmartOrderInstructions _instruction;

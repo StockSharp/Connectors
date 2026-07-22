@@ -6,12 +6,14 @@ public enum PaxosEnvironments
 {
 	/// <summary>Production environment.</summary>
 	[EnumMember]
-	[Display(Name = "Production")]
+	[Display(
+		Name = "Production")]
 	Production,
 
 	/// <summary>Sandbox environment.</summary>
 	[EnumMember]
-	[Display(Name = "Sandbox")]
+	[Display(
+		Name = "Sandbox")]
 	Sandbox,
 }
 

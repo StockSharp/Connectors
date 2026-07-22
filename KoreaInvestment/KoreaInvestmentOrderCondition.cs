@@ -3,7 +3,9 @@ namespace StockSharp.KoreaInvestment;
 /// <summary>Additional parameters for KIS orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentOrderConditionKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.KoreaInvestmentOrderConditionKey)]
 public sealed class KoreaInvestmentOrderCondition : OrderCondition
 {
 	private KoreaInvestmentMarkets? _market;

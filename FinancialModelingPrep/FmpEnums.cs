@@ -7,27 +7,32 @@ public enum FmpMarkets
 {
 	/// <summary>Exchange-listed stocks, ETFs, and funds.</summary>
 	[EnumMember]
-	[Display(Name = "Stocks and funds")]
+	[Display(
+		Name = "Stocks and funds")]
 	Stocks,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
-	[Display(Name = "Forex")]
+	[Display(
+		Name = "Forex")]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
-	[Display(Name = "Crypto")]
+	[Display(
+		Name = "Crypto")]
 	Crypto,
 
 	/// <summary>Market indices.</summary>
 	[EnumMember]
-	[Display(Name = "Indices")]
+	[Display(
+		Name = "Indices")]
 	Indices,
 
 	/// <summary>Commodities.</summary>
 	[EnumMember]
-	[Display(Name = "Commodities")]
+	[Display(
+		Name = "Commodities")]
 	Commodities,
 }
 
@@ -38,17 +43,20 @@ public enum FmpEodAdjustments
 {
 	/// <summary>Provider's full adjusted history.</summary>
 	[EnumMember]
-	[Display(Name = "Adjusted")]
+	[Display(
+		Name = "Adjusted")]
 	Adjusted,
 
 	/// <summary>Prices not adjusted for stock splits.</summary>
 	[EnumMember]
-	[Display(Name = "Non-split adjusted")]
+	[Display(
+		Name = "Non-split adjusted")]
 	NonSplitAdjusted,
 
 	/// <summary>Dividend-adjusted prices.</summary>
 	[EnumMember]
-	[Display(Name = "Dividend adjusted")]
+	[Display(
+		Name = "Dividend adjusted")]
 	DividendAdjusted,
 }
 

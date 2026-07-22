@@ -7,17 +7,20 @@ public enum IvyDbPriceAdjustments
 {
 	/// <summary>Original provider prices.</summary>
 	[EnumMember]
-	[Display(Name = "Raw")]
+	[Display(
+		Name = "Raw")]
 	Raw,
 
 	/// <summary>Prices adjusted for splits and other capital distributions.</summary>
 	[EnumMember]
-	[Display(Name = "Split adjusted")]
+	[Display(
+		Name = "Split adjusted")]
 	SplitAdjusted,
 
 	/// <summary>Prices adjusted with the provider total-return factor.</summary>
 	[EnumMember]
-	[Display(Name = "Total-return adjusted")]
+	[Display(
+		Name = "Total-return adjusted")]
 	TotalReturnAdjusted,
 }
 

@@ -5,7 +5,9 @@ namespace StockSharp.BTSE;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BtseKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BtseKey)]
 public class BTSEOrderCondition : OrderCondition
 {
 	/// <summary>

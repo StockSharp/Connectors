@@ -6,22 +6,26 @@ public enum FireblocksEnvironments
 {
 	/// <summary>US mainnet or testnet workspace.</summary>
 	[EnumMember]
-	[Display(Name = "US")]
+	[Display(
+		Name = "US")]
 	Us,
 
 	/// <summary>EU mainnet or testnet workspace.</summary>
 	[EnumMember]
-	[Display(Name = "EU")]
+	[Display(
+		Name = "EU")]
 	Eu,
 
 	/// <summary>EU2 mainnet or testnet workspace.</summary>
 	[EnumMember]
-	[Display(Name = "EU2")]
+	[Display(
+		Name = "EU2")]
 	Eu2,
 
 	/// <summary>US sandbox workspace.</summary>
 	[EnumMember]
-	[Display(Name = "Sandbox")]
+	[Display(
+		Name = "Sandbox")]
 	Sandbox,
 }
 

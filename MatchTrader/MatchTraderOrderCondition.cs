@@ -4,11 +4,15 @@ namespace StockSharp.MatchTrader;
 public sealed class MatchTraderOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>Absolute stop-loss price.</summary>
-	[Display(Name = "Stop loss", GroupName = LocalizedStrings.GeneralKey)]
+	[Display(
+		Name = "Stop loss",
+		GroupName = LocalizedStrings.GeneralKey)]
 	public decimal? StopLoss { get; set; }
 
 	/// <summary>Absolute take-profit price.</summary>
-	[Display(Name = "Take profit", GroupName = LocalizedStrings.GeneralKey)]
+	[Display(
+		Name = "Take profit",
+		GroupName = LocalizedStrings.GeneralKey)]
 	public decimal? TakeProfit { get; set; }
 
 	/// <summary>Native position identifier used when <see cref="BaseWithdrawOrderCondition.IsWithdraw"/> is enabled.</summary>

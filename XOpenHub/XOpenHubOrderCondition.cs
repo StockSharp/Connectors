@@ -1,7 +1,9 @@
 namespace StockSharp.XOpenHub;
 
 /// <summary>X Open Hub-specific order parameters.</summary>
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.XOpenHubKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.XOpenHubKey)]
 public sealed class XOpenHubOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>Absolute stop-loss price.</summary>

@@ -14,6 +14,7 @@ public enum GmxNetworks
 
 	/// <summary>MegaETH Mainnet.</summary>
 	[EnumMember]
-	[Display(Name = "MegaETH")]
+	[Display(
+		Name = "MegaETH")]
 	MegaEth,
 }

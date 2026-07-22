@@ -5,7 +5,9 @@ namespace StockSharp.BitFlyer;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BitFlyerKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BitFlyerKey)]
 public class BitFlyerOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>

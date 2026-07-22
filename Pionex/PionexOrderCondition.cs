@@ -11,21 +11,27 @@ public enum PionexPositionSides
 	/// One-way mode.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AllKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AllKey)]
 	Both,
 
 	/// <summary>
 	/// Long position.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LongKey)]
 	Long,
 
 	/// <summary>
 	/// Short position.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ShortKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ShortKey)]
 	Short,
 }
 
@@ -40,28 +46,36 @@ public enum PionexOrderPolicies
 	/// Regular limit or market order.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RegularKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RegularKey)]
 	Regular,
 
 	/// <summary>
 	/// Immediate-or-cancel.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ImmediateOrCancelKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ImmediateOrCancelKey)]
 	ImmediateOrCancel,
 
 	/// <summary>
 	/// Fill-or-kill.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FillOrKillKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FillOrKillKey)]
 	FillOrKill,
 
 	/// <summary>
 	/// Post-only.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PostOnlyKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PostOnlyKey)]
 	PostOnly,
 }
 
@@ -70,7 +84,9 @@ public enum PionexOrderPolicies
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PionexKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.PionexKey)]
 public class PionexOrderCondition : OrderCondition
 {
 	/// <summary>

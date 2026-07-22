@@ -1,4 +1,4 @@
-﻿namespace StockSharp.Paradex;
+namespace StockSharp.Paradex;
 
 /// <summary>
 /// Paradex trigger order type.
@@ -9,14 +9,18 @@ public enum ParadexOrderConditionTypes
 	/// <summary>
 	/// Stop-loss.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey)]
 	[EnumMember]
 	StopLoss,
 
 	/// <summary>
 	/// Take-profit.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey)]
 	[EnumMember]
 	TakeProfit,
 }
@@ -26,7 +30,9 @@ public enum ParadexOrderConditionTypes
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ParadexKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ParadexKey)]
 public class ParadexOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>

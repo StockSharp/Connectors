@@ -3,7 +3,9 @@ namespace StockSharp.FalconX;
 /// <summary>FalconX-specific order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FalconXKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.FalconXKey)]
 public sealed class FalconXOrderCondition : OrderCondition
 {
 	/// <summary>Execute the request as a TWAP order over the order WebSocket.</summary>

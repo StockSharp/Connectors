@@ -11,28 +11,36 @@ public enum DeepcoinMarginModes
 	/// Select cash for spot and cross margin for perpetuals.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AutoKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AutoKey)]
 	Auto,
 
 	/// <summary>
 	/// Cash trading.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CashKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CashKey)]
 	Cash,
 
 	/// <summary>
 	/// Cross margin.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DeepcoinCrossMarginKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DeepcoinCrossMarginKey)]
 	Cross,
 
 	/// <summary>
 	/// Isolated margin.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DeepcoinIsolatedMarginKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DeepcoinIsolatedMarginKey)]
 	Isolated,
 }
 
@@ -48,14 +56,18 @@ public enum DeepcoinPositionSides
 	/// Long position.
 	/// </summary>
 	[EnumMember(Value = "long")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LongKey)]
 	Long,
 
 	/// <summary>
 	/// Short position.
 	/// </summary>
 	[EnumMember(Value = "short")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ShortKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ShortKey)]
 	Short,
 }
 
@@ -70,21 +82,27 @@ public enum DeepcoinOrderPolicies
 	/// Regular order.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RegularKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RegularKey)]
 	Regular,
 
 	/// <summary>
 	/// Post-only order.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PostOnlyKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PostOnlyKey)]
 	PostOnly,
 
 	/// <summary>
 	/// Immediate-or-cancel order.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ImmediateOrCancelKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ImmediateOrCancelKey)]
 	ImmediateOrCancel,
 }
 
@@ -93,7 +111,9 @@ public enum DeepcoinOrderPolicies
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DeepcoinKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.DeepcoinKey)]
 public class DeepcoinOrderCondition : OrderCondition
 {
 	/// <summary>

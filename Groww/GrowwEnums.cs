@@ -7,12 +7,16 @@ public enum GrowwProducts
 {
 	/// <summary>Cash and carry.</summary>
 	[EnumMember(Value = "CNC")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DeliveryKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DeliveryKey)]
 	Delivery,
 
 	/// <summary>Margin intraday square-off.</summary>
 	[EnumMember(Value = "MIS")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IntradayKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IntradayKey)]
 	Intraday,
 
 	/// <summary>Normal margin product.</summary>
@@ -21,7 +25,9 @@ public enum GrowwProducts
 
 	/// <summary>Margin trading facility.</summary>
 	[EnumMember(Value = "MTF")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey)]
 	MarginTradingFacility,
 
 	/// <summary>Arbitrage product.</summary>
@@ -34,7 +40,9 @@ public enum GrowwProducts
 
 	/// <summary>Bracket order product.</summary>
 	[EnumMember(Value = "BO")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BracketKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BracketKey)]
 	Bracket,
 }
 

@@ -8,7 +8,9 @@ using System.Runtime.Serialization;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GateIOKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.GateIOKey)]
 public class GateIOOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

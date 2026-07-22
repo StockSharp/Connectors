@@ -5,7 +5,9 @@ using Native;
 /// <summary>Reya order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ReyaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ReyaKey)]
 public class ReyaOrderCondition : OrderCondition
 {
 	/// <summary>Restrict the order to reducing an existing position.</summary>

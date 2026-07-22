@@ -6,11 +6,13 @@ public enum RavenPackProducts
 {
 	/// <summary>Classic RavenPack Analytics product.</summary>
 	[EnumMember]
-	[Display(Name = "RavenPack Analytics")]
+	[Display(
+		Name = "RavenPack Analytics")]
 	Analytics,
 
 	/// <summary>RavenPack Edge product.</summary>
 	[EnumMember]
-	[Display(Name = "RavenPack Edge")]
+	[Display(
+		Name = "RavenPack Edge")]
 	Edge,
 }

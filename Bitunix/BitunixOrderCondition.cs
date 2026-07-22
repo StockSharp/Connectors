@@ -5,7 +5,9 @@ namespace StockSharp.Bitunix;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BitunixKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BitunixKey)]
 public class BitunixOrderCondition : OrderCondition
 {
 	/// <summary>

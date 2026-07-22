@@ -7,12 +7,14 @@ public enum ThetaDataStockVenues
 {
 	/// <summary>Nasdaq Basic BBO and trades.</summary>
 	[EnumMember]
-	[Display(Name = "Nasdaq Basic")]
+	[Display(
+		Name = "Nasdaq Basic")]
 	NasdaqBasic,
 
 	/// <summary>Merged UTP and CTA SIP data.</summary>
 	[EnumMember]
-	[Display(Name = "UTP + CTA")]
+	[Display(
+		Name = "UTP + CTA")]
 	UtpCta,
 }
 

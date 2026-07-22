@@ -15,7 +15,11 @@ public sealed class NinjaTraderOrderCondition : OrderCondition, IStopLossOrderCo
 	/// Stop price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey, Description = LocalizedStrings.StopPriceKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey)]
 	public decimal? StopPrice
 	{
 		get => _stopPrice;

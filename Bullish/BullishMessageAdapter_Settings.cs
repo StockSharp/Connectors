@@ -11,14 +11,18 @@ public enum BullishSections
 	/// Spot markets.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SpotKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SpotKey)]
 	Spot,
 
 	/// <summary>
 	/// Perpetual, dated-future, and option markets.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DerivativesKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DerivativesKey)]
 	Derivatives,
 }
 

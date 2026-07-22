@@ -7,7 +7,11 @@ using System.ComponentModel.DataAnnotations;
 /// </summary>
 [MediaIcon(Media.MediaNames.webull)]
 [Doc("topics/api/connectors/stock_market/webull.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WebullKey, Description = LocalizedStrings.StockConnectorKey, GroupName = LocalizedStrings.AmericaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.WebullKey,
+	Description = LocalizedStrings.StockConnectorKey,
+	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.RealTime | MessageAdapterCategories.Transactions | MessageAdapterCategories.Ticks | MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Stock)]
 public partial class WebullMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
 {

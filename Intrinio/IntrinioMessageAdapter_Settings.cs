@@ -7,32 +7,38 @@ public enum IntrinioEquityProviders
 {
 	/// <summary>Legacy Intrinio real-time IEX feed.</summary>
 	[EnumMember]
-	[Display(Name = "Real-time (IEX legacy)")]
+	[Display(
+		Name = "Real-time (IEX legacy)")]
 	Realtime,
 
 	/// <summary>15-minute delayed consolidated SIP feed.</summary>
 	[EnumMember]
-	[Display(Name = "Delayed SIP")]
+	[Display(
+		Name = "Delayed SIP")]
 	DelayedSip,
 
 	/// <summary>Nasdaq Basic feed.</summary>
 	[EnumMember]
-	[Display(Name = "Nasdaq Basic")]
+	[Display(
+		Name = "Nasdaq Basic")]
 	NasdaqBasic,
 
 	/// <summary>Cboe One feed.</summary>
 	[EnumMember]
-	[Display(Name = "Cboe One")]
+	[Display(
+		Name = "Cboe One")]
 	CboeOne,
 
 	/// <summary>IEX feed.</summary>
 	[EnumMember]
-	[Display(Name = "IEX")]
+	[Display(
+		Name = "IEX")]
 	Iex,
 
 	/// <summary>Intrinio Equities Edge feed.</summary>
 	[EnumMember]
-	[Display(Name = "Equities Edge")]
+	[Display(
+		Name = "Equities Edge")]
 	EquitiesEdge,
 }
 
@@ -43,12 +49,14 @@ public enum IntrinioOptionProviders
 {
 	/// <summary>OPRA feed.</summary>
 	[EnumMember]
-	[Display(Name = "OPRA")]
+	[Display(
+		Name = "OPRA")]
 	Opra,
 
 	/// <summary>Intrinio Options Edge feed.</summary>
 	[EnumMember]
-	[Display(Name = "Options Edge")]
+	[Display(
+		Name = "Options Edge")]
 	OptionsEdge,
 }
 

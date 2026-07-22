@@ -14,7 +14,9 @@ public enum DeribitOrderAdvancedTypes
 	/// Volatility (implied).
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ImpliedVolatilityKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ImpliedVolatilityKey)]
 	ImpliedVolatility,
 
 	/// <summary>
@@ -35,21 +37,27 @@ public enum DeribitOrderTriggers
 	/// Index price.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IndexKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IndexKey)]
 	Index,
 
 	/// <summary>
 	/// Mark price.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarkKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarkKey)]
 	Mark,
 
 	/// <summary>
 	/// By last price.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LastKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LastKey)]
 	Last
 }
 
@@ -58,7 +66,9 @@ public enum DeribitOrderTriggers
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DeribitKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.DeribitKey)]
 public class DeribitOrderCondition : BaseWithdrawOrderCondition, IStopLossOrderCondition
 {
 	/// <summary>

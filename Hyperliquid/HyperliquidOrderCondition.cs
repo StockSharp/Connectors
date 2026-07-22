@@ -9,14 +9,18 @@ public enum HyperliquidOrderConditionTypes
 	/// <summary>
 	/// Stop-loss.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey)]
 	[EnumMember]
 	StopLoss,
 
 	/// <summary>
 	/// Take-profit.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey)]
 	[EnumMember]
 	TakeProfit,
 }
@@ -26,7 +30,9 @@ public enum HyperliquidOrderConditionTypes
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.HyperliquidKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.HyperliquidKey)]
 public class HyperliquidOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>

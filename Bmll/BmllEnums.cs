@@ -4,11 +4,13 @@ namespace StockSharp.Bmll;
 public enum BmllAuthenticationModes
 {
 	/// <summary>Sign the BMLL authentication challenge with an RSA private key.</summary>
-	[Display(Name = "SSH key")]
+	[Display(
+		Name = "SSH key")]
 	SshKey,
 
 	/// <summary>Use a previously issued bearer token.</summary>
-	[Display(Name = "Bearer token")]
+	[Display(
+		Name = "Bearer token")]
 	BearerToken,
 }
 

@@ -5,7 +5,9 @@ namespace StockSharp.Coinigy;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CoinigyKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.CoinigyKey)]
 public class CoinigyOrderCondition : OrderCondition
 {
 	/// <summary>

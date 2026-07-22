@@ -12,14 +12,18 @@ public enum BloFinMarginModes
 	/// Cross margin.
 	/// </summary>
 	[EnumMember(Value = "cross")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BloFinCrossMarginKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BloFinCrossMarginKey)]
 	Cross,
 
 	/// <summary>
 	/// Isolated margin.
 	/// </summary>
 	[EnumMember(Value = "isolated")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BloFinIsolatedMarginKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BloFinIsolatedMarginKey)]
 	Isolated,
 }
 
@@ -35,21 +39,27 @@ public enum BloFinPositionSides
 	/// One-way position mode.
 	/// </summary>
 	[EnumMember(Value = "net")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AllKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AllKey)]
 	Net,
 
 	/// <summary>
 	/// Long position.
 	/// </summary>
 	[EnumMember(Value = "long")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LongKey)]
 	Long,
 
 	/// <summary>
 	/// Short position.
 	/// </summary>
 	[EnumMember(Value = "short")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ShortKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ShortKey)]
 	Short,
 }
 
@@ -64,28 +74,36 @@ public enum BloFinOrderPolicies
 	/// Regular limit or market order.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RegularKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RegularKey)]
 	Regular,
 
 	/// <summary>
 	/// Immediate-or-cancel.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ImmediateOrCancelKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ImmediateOrCancelKey)]
 	ImmediateOrCancel,
 
 	/// <summary>
 	/// Fill-or-kill.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FillOrKillKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FillOrKillKey)]
 	FillOrKill,
 
 	/// <summary>
 	/// Post-only.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PostOnlyKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PostOnlyKey)]
 	PostOnly,
 }
 
@@ -101,21 +119,27 @@ public enum BloFinTriggerPriceTypes
 	/// Last traded price.
 	/// </summary>
 	[EnumMember(Value = "last")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LastTradeKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LastTradeKey)]
 	Last,
 
 	/// <summary>
 	/// Mark price.
 	/// </summary>
 	[EnumMember(Value = "mark")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PriceKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceKey)]
 	Mark,
 
 	/// <summary>
 	/// Index price.
 	/// </summary>
 	[EnumMember(Value = "index")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IndexKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IndexKey)]
 	Index,
 }
 
@@ -124,7 +148,9 @@ public enum BloFinTriggerPriceTypes
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BloFinKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BloFinKey)]
 public class BloFinOrderCondition : OrderCondition
 {
 	/// <summary>

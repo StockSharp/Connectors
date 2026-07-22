@@ -3,7 +3,9 @@ namespace StockSharp.SierraChartDtc;
 /// <summary>DTC order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SierraChartDtcKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.SierraChartDtcKey)]
 public class SierraChartDtcOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>Stop activation price.</summary>

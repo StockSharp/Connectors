@@ -4,19 +4,23 @@ namespace StockSharp.NasdaqCloudDataService.Native.Model;
 public enum NasdaqCloudSources
 {
 	/// <summary>The Nasdaq Stock Market.</summary>
-	[Display(Name = "Nasdaq")]
+	[Display(
+		Name = "Nasdaq")]
 	Nasdaq,
 
 	/// <summary>Nasdaq Texas.</summary>
-	[Display(Name = "Nasdaq Texas")]
+	[Display(
+		Name = "Nasdaq Texas")]
 	Bx,
 
 	/// <summary>Nasdaq PSX.</summary>
-	[Display(Name = "Nasdaq PSX")]
+	[Display(
+		Name = "Nasdaq PSX")]
 	Psx,
 
 	/// <summary>Consolidated quotes and trades.</summary>
-	[Display(Name = "CQT")]
+	[Display(
+		Name = "CQT")]
 	Cqt,
 }
 
@@ -24,11 +28,14 @@ public enum NasdaqCloudSources
 public enum NasdaqCloudOffsets
 {
 	/// <summary>Real-time data.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RealTimeKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RealTimeKey)]
 	Realtime,
 
 	/// <summary>15-minute delayed data.</summary>
-	[Display(Name = "Delayed")]
+	[Display(
+		Name = "Delayed")]
 	Delayed,
 }
 

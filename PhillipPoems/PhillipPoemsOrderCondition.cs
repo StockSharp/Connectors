@@ -20,7 +20,9 @@ public enum PhillipPoemsPaymentModes
 /// <summary>Additional parameters for Phillip POEMS stock orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.PhillipPoemsKey)]
 public sealed class PhillipPoemsOrderCondition : OrderCondition
 {
 	private decimal? _stopPrice;

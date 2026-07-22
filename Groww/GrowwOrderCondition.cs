@@ -1,7 +1,9 @@
 namespace StockSharp.Groww;
 
 /// <summary>Groww-specific order parameters.</summary>
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GrowwKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.GrowwKey)]
 [Serializable]
 [DataContract]
 public class GrowwOrderCondition : OrderCondition

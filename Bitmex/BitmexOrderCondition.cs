@@ -13,28 +13,36 @@ public enum BitmexOrderTypes
 	/// <summary>
 	/// The market order is automatically registered after reaching the stop price.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopOrderTypeKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopOrderTypeKey)]
 	[EnumMember]
 	Stop,
 
 	/// <summary>
 	/// The limit order is automatically registered after reaching the stop price.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLimitKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLimitKey)]
 	[EnumMember]
 	StopLimit,
 
 	/// <summary>
 	/// With the market price when the condition is fulfilled.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarketOnTouchKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketOnTouchKey)]
 	[EnumMember]
 	MarketIfTouched,
 
 	/// <summary>
 	/// With the specified price when the condition is fulfilled.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LimitOnTouchKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LimitOnTouchKey)]
 	[EnumMember]
 	LimitIfTouched,
 }
@@ -140,7 +148,9 @@ public enum BitmexOrderExecInstructions
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BitmexKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BitmexKey)]
 public class BitmexOrderCondition : BaseWithdrawOrderCondition, IStopLossOrderCondition
 {
 	/// <summary>

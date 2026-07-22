@@ -5,7 +5,9 @@ namespace StockSharp.Coincheck;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CoincheckKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.CoincheckKey)]
 public class CoincheckOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

@@ -3,7 +3,9 @@ namespace StockSharp.Trading212;
 /// <summary>Additional parameters for Trading 212 orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.Trading212Key)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.Trading212Key)]
 public sealed class Trading212OrderCondition : OrderCondition
 {
 	private decimal? _stopPrice;

@@ -5,7 +5,9 @@ namespace StockSharp.PrizmBit;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PrizmBitKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.PrizmBitKey)]
 public class PrizmBitOrderCondition : BaseWithdrawOrderCondition, ITakeProfitOrderCondition, IStopLossOrderCondition
 {
 	/// <summary>

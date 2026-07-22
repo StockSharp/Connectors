@@ -5,7 +5,9 @@ namespace StockSharp.ZB;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ZBKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ZBKey)]
 public class ZBOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

@@ -11,14 +11,18 @@ public enum CoinWFuturesMarginModes
 	/// Isolated margin.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CoinWIsolatedMarginKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CoinWIsolatedMarginKey)]
 	Isolated,
 
 	/// <summary>
 	/// Cross margin.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CoinWCrossMarginKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CoinWCrossMarginKey)]
 	Cross,
 }
 
@@ -33,21 +37,27 @@ public enum CoinWFuturesQuantityUnits
 	/// Quote currency amount.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CurrencyKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CurrencyKey)]
 	QuoteCurrency,
 
 	/// <summary>
 	/// Number of contracts.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CountKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CountKey)]
 	Contracts,
 
 	/// <summary>
 	/// Base currency amount.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VolumeKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VolumeKey)]
 	BaseCurrency,
 }
 
@@ -56,7 +66,9 @@ public enum CoinWFuturesQuantityUnits
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CoinWKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.CoinWKey)]
 public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>

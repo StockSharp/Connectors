@@ -3,13 +3,20 @@ namespace StockSharp.Xtp;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>XTP-specific order parameters.</summary>
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.XtpKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.XtpKey)]
 [Serializable]
 [DataContract]
 public class XtpOrderCondition : OrderCondition
 {
 	/// <summary>Native price instruction.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OrderTypeKey, Description = LocalizedStrings.OrderTypeKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderTypeKey,
+		Description = LocalizedStrings.OrderTypeKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	[DataMember]
 	public XtpPriceTypes? PriceType
 	{
@@ -18,7 +25,12 @@ public class XtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Native side instruction for subscriptions, ETF, margin, collateral, and option-combination operations.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SideKey, Description = LocalizedStrings.XtpNativeSideDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SideKey,
+		Description = LocalizedStrings.XtpNativeSideDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	[DataMember]
 	public XtpOrderSides? NativeSide
 	{
@@ -27,7 +39,12 @@ public class XtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Position effect for option orders.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionEffectKey, Description = LocalizedStrings.PositionEffectKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionEffectKey,
+		Description = LocalizedStrings.PositionEffectKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	[DataMember]
 	public XtpPositionEffects PositionEffect
 	{
@@ -36,7 +53,12 @@ public class XtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Business instruction.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BusinessTypeKey, Description = LocalizedStrings.BusinessTypeKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BusinessTypeKey,
+		Description = LocalizedStrings.BusinessTypeKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	[DataMember]
 	public XtpBusinessTypes BusinessType
 	{
@@ -45,7 +67,12 @@ public class XtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Stop price reserved by XTP for compatible order instructions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey, Description = LocalizedStrings.StopPriceDescKey, GroupName = LocalizedStrings.StopLossKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 4)]
 	[DataMember]
 	public decimal? StopPrice
 	{

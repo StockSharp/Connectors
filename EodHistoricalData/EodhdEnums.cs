@@ -7,22 +7,26 @@ public enum EodhdMarkets
 {
 	/// <summary>Exchange-listed securities, funds, indices, and bonds.</summary>
 	[EnumMember]
-	[Display(Name = "Exchange securities")]
+	[Display(
+		Name = "Exchange securities")]
 	Stocks,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
-	[Display(Name = "Forex")]
+	[Display(
+		Name = "Forex")]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
-	[Display(Name = "Crypto")]
+	[Display(
+		Name = "Crypto")]
 	Crypto,
 
 	/// <summary>US equity options.</summary>
 	[EnumMember]
-	[Display(Name = "Options")]
+	[Display(
+		Name = "Options")]
 	Options,
 }
 

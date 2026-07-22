@@ -5,7 +5,9 @@ namespace StockSharp.LATOKEN;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LatokenKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.LatokenKey)]
 public class LatokenOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

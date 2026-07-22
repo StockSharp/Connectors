@@ -5,7 +5,9 @@ namespace StockSharp.GmoCoin;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GmoCoinKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.GmoCoinKey)]
 public class GmoCoinOrderCondition : OrderCondition, IStopLossOrderCondition
 {
     /// <summary>

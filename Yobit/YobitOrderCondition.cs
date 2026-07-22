@@ -5,7 +5,9 @@ namespace StockSharp.Yobit;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.YobitKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.YobitKey)]
 public class YobitOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

@@ -11,14 +11,18 @@ public enum CryptoComSections
 	/// Spot and margin markets.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SpotKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SpotKey)]
 	Spot,
 
 	/// <summary>
 	/// Perpetual and dated derivatives.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DerivativesKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DerivativesKey)]
 	Derivatives,
 }
 

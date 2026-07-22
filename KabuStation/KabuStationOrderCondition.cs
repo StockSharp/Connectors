@@ -1,7 +1,9 @@
 namespace StockSharp.KabuStation;
 
 /// <summary>kabu Station-specific order parameters.</summary>
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KabuStationKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.KabuStationKey)]
 [Serializable]
 [DataContract]
 public class KabuStationOrderCondition : OrderCondition

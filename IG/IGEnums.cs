@@ -4,11 +4,15 @@ namespace StockSharp.IG;
 public enum IgEnvironments
 {
 	/// <summary>Demo environment.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey)]
 	Demo,
 
 	/// <summary>Live environment.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RealKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RealKey)]
 	Live,
 }
 

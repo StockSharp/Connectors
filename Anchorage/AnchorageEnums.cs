@@ -6,12 +6,14 @@ public enum AnchorageEnvironments
 {
 	/// <summary>Production environment.</summary>
 	[EnumMember]
-	[Display(Name = "Production")]
+	[Display(
+		Name = "Production")]
 	Production,
 
 	/// <summary>Staging sandbox environment.</summary>
 	[EnumMember]
-	[Display(Name = "Staging")]
+	[Display(
+		Name = "Staging")]
 	Staging,
 }
 

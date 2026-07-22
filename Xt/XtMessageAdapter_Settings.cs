@@ -11,14 +11,18 @@ public enum XtSections
 	/// Spot market.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SpotKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SpotKey)]
 	Spot,
 
 	/// <summary>
 	/// Perpetual futures market.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FuturesKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FuturesKey)]
 	Futures,
 }
 

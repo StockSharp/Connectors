@@ -8,7 +8,9 @@ using System.Runtime.Serialization;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DXTradeKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.DXTradeKey)]
 public class DXtradeOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>

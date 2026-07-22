@@ -7,12 +7,14 @@ public enum OratsDataModes
 {
 	/// <summary>Approximately 15-minute delayed data.</summary>
 	[EnumMember]
-	[Display(Name = "Delayed")]
+	[Display(
+		Name = "Delayed")]
 	Delayed,
 
 	/// <summary>Live calculated data with less than ten seconds of delay.</summary>
 	[EnumMember]
-	[Display(Name = "Live")]
+	[Display(
+		Name = "Live")]
 	Live,
 }
 
@@ -23,12 +25,14 @@ public enum OratsPriceAdjustments
 {
 	/// <summary>Corporate-action-adjusted fields.</summary>
 	[EnumMember]
-	[Display(Name = "Adjusted")]
+	[Display(
+		Name = "Adjusted")]
 	Adjusted,
 
 	/// <summary>Unadjusted provider fields.</summary>
 	[EnumMember]
-	[Display(Name = "Unadjusted")]
+	[Display(
+		Name = "Unadjusted")]
 	Unadjusted,
 }
 

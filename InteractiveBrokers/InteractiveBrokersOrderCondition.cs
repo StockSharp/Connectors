@@ -6,7 +6,9 @@ using System.ComponentModel.DataAnnotations;
 /// <summary>
 /// <see cref="InteractiveBrokers"/> order condition.
 /// </summary>
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.InteractiveBrokersKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.InteractiveBrokersKey)]
 public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>
@@ -177,7 +179,9 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Not valid for US <see cref="SecurityTypes.Future"/>, US <see cref="SecurityTypes.Option"/>, <see cref="SecurityTypes.Stock"/>.
 		/// </remarks>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarketOnCloseKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.MarketOnCloseKey)]
 		MarketOnClose,
 
 		/// <summary>
@@ -186,7 +190,9 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Not valid for US <see cref="SecurityTypes.Future"/>, <see cref="SecurityTypes.Stock"/>.
 		/// </remarks>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LimitOnCloseKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.LimitOnCloseKey)]
 		LimitOnClose,
 
 		/// <summary>
@@ -195,7 +201,9 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Valid until <see cref="SecurityTypes.Stock"/>.
 		/// </remarks>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AtBestPriceKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AtBestPriceKey)]
 		PeggedToMarket,
 
 		/// <summary>
@@ -204,7 +212,9 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Valid for <see cref="SecurityTypes.Currency"/>, <see cref="SecurityTypes.Future"/>, <see cref="SecurityTypes.Option"/>, <see cref="SecurityTypes.Stock"/>, <see cref="SecurityTypes.Warrant"/>.
 		/// </remarks>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopOrderTypeKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.StopOrderTypeKey)]
 		Stop,
 
 		/// <summary>
@@ -213,7 +223,9 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Valid for <see cref="SecurityTypes.Currency"/>, <see cref="SecurityTypes.Future"/>, <see cref="SecurityTypes.Option"/>, <see cref="SecurityTypes.Stock"/>.
 		/// </remarks>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLimitKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.StopLimitKey)]
 		StopLimit,
 
 		/// <summary>
@@ -222,7 +234,9 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Valid for <see cref="SecurityTypes.Currency"/>, <see cref="SecurityTypes.Future"/>, <see cref="SecurityTypes.Option"/>, <see cref="SecurityTypes.Stock"/>, <see cref="SecurityTypes.Warrant"/>.
 		/// </remarks>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TrailingKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.TrailingKey)]
 		TrailingStop,
 
 		/// <summary>
@@ -231,7 +245,9 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Valid for <see cref="SecurityTypes.Option"/>, <see cref="SecurityTypes.Stock"/>.
 		/// </remarks>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WithOffsetKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.WithOffsetKey)]
 		Relative,
 
 		/// <summary>
@@ -240,7 +256,8 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Valid until <see cref="SecurityTypes.Stock"/>.
 		/// </remarks>
-		[Display(Name = "VWAP")]
+		[Display(
+			Name = "VWAP")]
 		VolumeWeightedAveragePrice,
 
 		/// <summary>
@@ -249,43 +266,57 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <remarks>
 		/// Valid for <see cref="SecurityTypes.Currency"/>, <see cref="SecurityTypes.Future"/>, <see cref="SecurityTypes.Option"/>, <see cref="SecurityTypes.Stock"/>, <see cref="SecurityTypes.Warrant"/>.
 		/// </remarks>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TrailingStopLimitKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.TrailingStopLimitKey)]
 		TrailingStopLimit,
 
 		/// <summary>
 		/// Volatility.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VolatilityKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.VolatilityKey)]
 		Volatility,
 
 		/// <summary>
 		/// It used for delta orders.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.NoneKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.NoneKey)]
 		None,
 
 		/// <summary>
 		/// It used for delta neutral orders types.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ByDefaultKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.ByDefaultKey)]
 		Default,
 
 		/// <summary>
 		/// To be changed on price increment.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VariableKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.VariableKey)]
 		Scale,
 
 		/// <summary>
 		/// With the market price when the condition is fulfilled.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarketOnTouchKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.MarketOnTouchKey)]
 		MarketIfTouched,
 
 		/// <summary>
 		/// With the specified price when the condition is fulfilled.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LimitOnTouchKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.LimitOnTouchKey)]
 		LimitIfTouched,
 
 		/// <summary>
@@ -307,19 +338,25 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// To cancel all remaining blocks.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CancelAllKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.CancelAllKey)]
 		CancelAll = 1,
 
 		/// <summary>
 		/// The remaining orders proportionally to decrease by the size of the block.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ProportionKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.ProportionKey)]
 		ReduceWithBlock = 2,
 
 		/// <summary>
 		/// The remaining orders proportionally to decrease by the size out of the block.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.Proportion2Key)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.Proportion2Key)]
 		ReduceWithNoBlock = 3
 	}
 
@@ -372,43 +409,57 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// For NASDAQ <see cref="SecurityTypes.Stock"/> and US <see cref="SecurityTypes.Option"/> the <see cref="TriggerMethods.DoubleBidAsk"/> condition is used. Otherwise, the <see cref="TriggerMethods.BidAsk"/> condition is used.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ByDefaultKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.ByDefaultKey)]
 		Default = 0,
 
 		/// <summary>
 		/// Double increase or decrease of the current best price before the stop price.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DoubleBidAskKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.DoubleBidAskKey)]
 		DoubleBidAsk = 1,
 
 		/// <summary>
 		/// Increase or decrease of the last trade price before the stop price.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LastKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.LastKey)]
 		Last = 2,
 
 		/// <summary>
 		/// Double increase or decrease of the last trade price before the stop price.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DoubleLastKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.DoubleLastKey)]
 		DoubleLast = 3,
 
 		/// <summary>
 		/// Increase or decrease of the current best price before the stop price.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuoteKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.QuoteKey)]
 		BidAsk = 4,
 
 		/// <summary>
 		/// Increase or decrease of the current best price or the last trade price before the stop price.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AnyKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AnyKey)]
 		LastOrBidAsk = 7,
 
 		/// <summary>
 		/// Increase or decrease of the mid-spread before the stop price.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SpreadKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.SpreadKey)]
 		MidpointMethod = 8
 	}
 
@@ -420,63 +471,81 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// Private trader.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PrivateKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.PrivateKey)]
 		[NativeValue("I")]
 		Individual,
 
 		/// <summary>
 		/// Agency.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AgencyKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AgencyKey)]
 		[NativeValue("A")]
 		Agency,
 
 		/// <summary>
 		/// Agency of other type.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AgentOtherMemberKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AgentOtherMemberKey)]
 		[NativeValue("W")]
 		AgentOtherMember,
 
 		/// <summary>
 		/// Individual PTIA.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IndividualPTIAKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.IndividualPTIAKey)]
 		[NativeValue("J")]
 		IndividualPTIA,
 
 		/// <summary>
 		/// Agency PTIA.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AgencyPTIAKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AgencyPTIAKey)]
 		[NativeValue("U")]
 		AgencyPTIA,
 
 		/// <summary>
 		/// Agency of other type PTIA.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AgentOtherMemberPTIAKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AgentOtherMemberPTIAKey)]
 		[NativeValue("M")]
 		AgentOtherMemberPTIA,
 
 		/// <summary>
 		/// Individual PT.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IndividualPTKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.IndividualPTKey)]
 		[NativeValue("K")]
 		IndividualPT,
 
 		/// <summary>
 		/// Agency PT.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AgencyPTKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AgencyPTKey)]
 		[NativeValue("Y")]
 		AgencyPT,
 
 		/// <summary>
 		/// Agency of other type PT.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AgentOtherMemberPTKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AgentOtherMemberPTKey)]
 		[NativeValue("N")]
 		AgentOtherMemberPT,
 	}
@@ -489,28 +558,36 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// Percentage change.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PercentKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.PercentKey)]
 		[NativeValue("PctChange")]
 		PercentChange,
 
 		/// <summary>
 		/// Using free cash plus borrowed.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.EquityKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.EquityKey)]
 		[NativeValue("AvailableEquity")]
 		AvailableEquity,
 
 		/// <summary>
 		/// Using free cash.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LiquidityKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.LiquidityKey)]
 		[NativeValue("NetLiq")]
 		NetLiquidity,
 
 		/// <summary>
 		/// An equal volume.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VolumeKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.VolumeKey)]
 		[NativeValue("EqualQuantity")]
 		EqualQuantity,
 	}
@@ -578,13 +655,17 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// Client.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.ClientKey)]
 		Customer,
 
 		/// <summary>
 		/// Firm.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FirmKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.FirmKey)]
 		Firm
 	}
 
@@ -596,19 +677,25 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// Match.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MatchKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.MatchKey)]
 		AuctionMatch,
 
 		/// <summary>
 		/// Better.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BetterKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.BetterKey)]
 		AuctionImprovement,
 
 		/// <summary>
 		/// Transparent.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TransparentKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.TransparentKey)]
 		AuctionTransparent
 	}
 
@@ -620,13 +707,17 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// Daily.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DailyKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.DailyKey)]
 		Daily = 1,
 
 		/// <summary>
 		/// Average annual.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AnnualKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.AnnualKey)]
 		Annual = 2
 	}
 
@@ -829,19 +920,25 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// Private trader or not short leg.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.NoneKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.NoneKey)]
 		Unapplicable,
 
 		/// <summary>
 		/// Clearing broker.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClearingKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.ClearingKey)]
 		ClearingBroker,
 
 		/// <summary>
 		/// Other.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OtherKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.OtherKey)]
 		ThirdParty
 	}
 
@@ -1153,25 +1250,33 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// Delta.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DeltaKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.DeltaKey)]
 		Delta,
 
 		/// <summary>
 		/// Beta.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BetaKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.BetaKey)]
 		Beta,
 
 		/// <summary>
 		/// Currency.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CurrencyKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.CurrencyKey)]
 		FX,
 
 		/// <summary>
 		/// Pair.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PairKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.PairKey)]
 		Pair
 	}
 
@@ -1260,21 +1365,27 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// <summary>
 		/// Broker.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BrokerKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.BrokerKey)]
 		[NativeValue("IB")]
 		Broker,
 
 		/// <summary>
 		/// Other.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OtherKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.OtherKey)]
 		[NativeValue("AWAY")]
 		Away,
 
 		/// <summary>
 		/// Post-trading placement.
 		/// </summary>
-		[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PostTradeKey)]
+		[Display(
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.PostTradeKey)]
 		[NativeValue("PTA")]
 		PostTradeAllocation
 	}

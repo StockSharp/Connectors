@@ -5,7 +5,9 @@ namespace StockSharp.Upbit;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UpbitKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.UpbitKey)]
 public class UpbitOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

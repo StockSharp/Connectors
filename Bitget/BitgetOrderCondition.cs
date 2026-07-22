@@ -5,7 +5,9 @@ namespace StockSharp.Bitget;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BitgetKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BitgetKey)]
 public class BitgetOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

@@ -5,7 +5,9 @@ namespace StockSharp.Exmo;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ExmoKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ExmoKey)]
 public class ExmoOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

@@ -5,7 +5,9 @@ namespace StockSharp.Bitrue;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BitrueKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BitrueKey)]
 public class BitrueOrderCondition : OrderCondition
 {
 	/// <summary>

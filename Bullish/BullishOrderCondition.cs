@@ -5,7 +5,9 @@ namespace StockSharp.Bullish;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BullishKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BullishKey)]
 public class BullishOrderCondition : OrderCondition
 {
 	/// <summary>

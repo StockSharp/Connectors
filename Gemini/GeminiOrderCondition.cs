@@ -5,7 +5,9 @@ namespace StockSharp.Gemini;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GeminiKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.GeminiKey)]
 public class GeminiOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>

@@ -150,7 +150,9 @@ public enum ByBitMarketUnits
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ByBitKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ByBitKey)]
 public class ByBitOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>

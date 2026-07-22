@@ -5,7 +5,9 @@ namespace StockSharp.BingX;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BingXKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BingXKey)]
 public class BingXOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

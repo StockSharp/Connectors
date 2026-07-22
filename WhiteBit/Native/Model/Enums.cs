@@ -42,21 +42,27 @@ public enum WhiteBitPositionSides
     /// One-way position mode.
     /// </summary>
     [EnumMember]
-    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AllKey)]
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AllKey)]
     Both,
 
     /// <summary>
     /// Long hedge-mode position.
     /// </summary>
     [EnumMember]
-    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongKey)]
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LongKey)]
     Long,
 
     /// <summary>
     /// Short hedge-mode position.
     /// </summary>
     [EnumMember]
-    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ShortKey)]
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ShortKey)]
     Short,
 }
 

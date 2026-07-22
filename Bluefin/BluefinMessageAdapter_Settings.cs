@@ -6,12 +6,14 @@ public enum BluefinEnvironments
 {
 	/// <summary>Mainnet.</summary>
 	[EnumMember]
-	[Display(Name = "Mainnet")]
+	[Display(
+		Name = "Mainnet")]
 	Mainnet,
 
 	/// <summary>Staging testnet.</summary>
 	[EnumMember]
-	[Display(Name = "Testnet")]
+	[Display(
+		Name = "Testnet")]
 	Testnet,
 }
 

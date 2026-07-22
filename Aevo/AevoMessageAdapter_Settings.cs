@@ -6,12 +6,14 @@ public enum AevoEnvironments
 {
 	/// <summary>Mainnet.</summary>
 	[EnumMember]
-	[Display(Name = "Mainnet")]
+	[Display(
+		Name = "Mainnet")]
 	Mainnet,
 
 	/// <summary>Testnet.</summary>
 	[EnumMember]
-	[Display(Name = "Testnet")]
+	[Display(
+		Name = "Testnet")]
 	Testnet,
 }
 

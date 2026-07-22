@@ -28,7 +28,9 @@ public enum GmxOrderKinds
 /// <summary>GMX order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GmxKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.GmxKey)]
 public class GmxOrderCondition : OrderCondition
 {
 	/// <summary>Advanced order kind.</summary>

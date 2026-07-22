@@ -3,13 +3,20 @@ namespace StockSharp.Ctp;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>CTP-specific order parameters.</summary>
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.CtpKey)]
 [Serializable]
 [DataContract]
 public class CtpOrderCondition : OrderCondition
 {
 	/// <summary>Native price instruction. Leave empty to derive it from the StockSharp order type.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OrderTypeKey, Description = LocalizedStrings.OrderTypeKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderTypeKey,
+		Description = LocalizedStrings.OrderTypeKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	[DataMember]
 	public CtpOrderPriceTypes? PriceType
 	{
@@ -18,7 +25,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Open or close instruction.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionEffectKey, Description = LocalizedStrings.PositionEffectKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionEffectKey,
+		Description = LocalizedStrings.PositionEffectKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	[DataMember]
 	public CtpOffsetFlags Offset
 	{
@@ -27,7 +39,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Speculation, arbitrage, hedge, or market-maker instruction.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpHedgeKey, Description = LocalizedStrings.CtpHedgeDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpHedgeKey,
+		Description = LocalizedStrings.CtpHedgeDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	[DataMember]
 	public CtpHedgeFlags Hedge
 	{
@@ -36,7 +53,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Native time condition.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TimeInForceKey, Description = LocalizedStrings.TimeInForceKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeInForceKey,
+		Description = LocalizedStrings.TimeInForceKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	[DataMember]
 	public CtpTimeConditions? TimeCondition
 	{
@@ -45,7 +67,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Good-till date used with <see cref="CtpTimeConditions.GoodTillDate"/>.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GoodTilDateKey, Description = LocalizedStrings.GoodTilDateKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GoodTilDateKey,
+		Description = LocalizedStrings.GoodTilDateKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 4)]
 	[DataMember]
 	public DateTime? GoodTillDate
 	{
@@ -54,7 +81,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Native volume condition.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VolumeKey, Description = LocalizedStrings.VolumeKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VolumeKey,
+		Description = LocalizedStrings.VolumeKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 5)]
 	[DataMember]
 	public CtpVolumeConditions? VolumeCondition
 	{
@@ -63,7 +95,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Minimum executable volume.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MinVolumeKey, Description = LocalizedStrings.MinVolumeKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.GeneralKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MinVolumeKey,
+		Description = LocalizedStrings.MinVolumeKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 6)]
 	[DataMember]
 	public int? MinimumVolume
 	{
@@ -72,7 +109,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Native contingent trigger.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ConditionKey, Description = LocalizedStrings.ConditionKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.StopLossKey, Order = 7)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ConditionKey,
+		Description = LocalizedStrings.ConditionKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 7)]
 	[DataMember]
 	public CtpContingentConditions? ContingentCondition
 	{
@@ -81,7 +123,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Stop price for a contingent order.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey, Description = LocalizedStrings.StopPriceDescKey, GroupName = LocalizedStrings.StopLossKey, Order = 8)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 8)]
 	[DataMember]
 	public decimal? StopPrice
 	{
@@ -90,7 +137,12 @@ public class CtpOrderCondition : OrderCondition
 	}
 
 	/// <summary>Force-close reason.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CtpForceCloseReasonKey, Description = LocalizedStrings.CtpForceCloseReasonDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 9)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CtpForceCloseReasonKey,
+		Description = LocalizedStrings.CtpForceCloseReasonDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 9)]
 	[DataMember]
 	public CtpForceCloseReasons ForceCloseReason
 	{

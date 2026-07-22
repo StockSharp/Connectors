@@ -6,7 +6,8 @@ public enum BalancerNetworks
 {
 	/// <summary>Ethereum mainnet.</summary>
 	[EnumMember]
-	[Display(Name = "Ethereum")]
+	[Display(
+		Name = "Ethereum")]
 	Ethereum = 1,
 
 	/// <summary>Arbitrum One.</summary>

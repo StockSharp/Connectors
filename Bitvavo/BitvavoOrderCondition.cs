@@ -5,7 +5,9 @@ namespace StockSharp.Bitvavo;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BitvavoKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BitvavoKey)]
 public class BitvavoOrderCondition : OrderCondition, IStopLossOrderCondition,
 	ITakeProfitOrderCondition
 {

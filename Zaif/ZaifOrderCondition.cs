@@ -5,7 +5,9 @@ namespace StockSharp.Zaif;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ZaifKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ZaifKey)]
 public class ZaifOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>

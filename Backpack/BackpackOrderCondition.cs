@@ -5,7 +5,9 @@ namespace StockSharp.Backpack;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BackpackKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BackpackKey)]
 public class BackpackOrderCondition : OrderCondition
 {
 	/// <summary>

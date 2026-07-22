@@ -12,21 +12,27 @@ public enum WeexPositionSides
 	/// Position side is not specified by the exchange.
 	/// </summary>
 	[EnumMember(Value = "UNKNOWN")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WEEXUnknownPositionKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WEEXUnknownPositionKey)]
 	Unknown,
 
 	/// <summary>
 	/// Long position.
 	/// </summary>
 	[EnumMember(Value = "LONG")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LongKey)]
 	Long,
 
 	/// <summary>
 	/// Short position.
 	/// </summary>
 	[EnumMember(Value = "SHORT")]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ShortKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ShortKey)]
 	Short,
 }
 
@@ -41,14 +47,18 @@ public enum WeexOrderConditionTypes
 	/// Stop-loss or ordinary stop order.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey)]
 	StopLoss,
 
 	/// <summary>
 	/// Take-profit order.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey)]
 	TakeProfit,
 }
 
@@ -63,14 +73,18 @@ public enum WeexTriggerPriceTypes
 	/// Last contract price.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LastTradeKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LastTradeKey)]
 	LastPrice,
 
 	/// <summary>
 	/// Mark price.
 	/// </summary>
 	[EnumMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarkKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarkKey)]
 	MarkPrice,
 }
 
@@ -79,7 +93,9 @@ public enum WeexTriggerPriceTypes
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WEEXKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.WEEXKey)]
 public class WeexOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>

@@ -7,17 +7,20 @@ public enum FinnhubMarkets
 {
 	/// <summary>Exchange-listed securities.</summary>
 	[EnumMember]
-	[Display(Name = "Stocks")]
+	[Display(
+		Name = "Stocks")]
 	Stocks,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
-	[Display(Name = "Forex")]
+	[Display(
+		Name = "Forex")]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
-	[Display(Name = "Crypto")]
+	[Display(
+		Name = "Crypto")]
 	Crypto,
 }
 
@@ -28,21 +31,25 @@ public enum FinnhubNewsCategories
 {
 	/// <summary>General financial news.</summary>
 	[EnumMember]
-	[Display(Name = "General")]
+	[Display(
+		Name = "General")]
 	General,
 
 	/// <summary>Foreign-exchange news.</summary>
 	[EnumMember]
-	[Display(Name = "Forex")]
+	[Display(
+		Name = "Forex")]
 	Forex,
 
 	/// <summary>Crypto news.</summary>
 	[EnumMember]
-	[Display(Name = "Crypto")]
+	[Display(
+		Name = "Crypto")]
 	Crypto,
 
 	/// <summary>Merger news.</summary>
 	[EnumMember]
-	[Display(Name = "Mergers")]
+	[Display(
+		Name = "Mergers")]
 	Mergers,
 }

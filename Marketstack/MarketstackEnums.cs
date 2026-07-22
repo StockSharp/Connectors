@@ -7,11 +7,13 @@ public enum MarketstackAdjustments
 {
 	/// <summary>Unadjusted provider fields.</summary>
 	[EnumMember]
-	[Display(Name = "Raw")]
+	[Display(
+		Name = "Raw")]
 	Raw,
 
 	/// <summary>Fields adjusted for corporate actions where supplied.</summary>
 	[EnumMember]
-	[Display(Name = "Adjusted")]
+	[Display(
+		Name = "Adjusted")]
 	Adjusted,
 }

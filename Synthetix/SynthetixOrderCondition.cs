@@ -85,11 +85,13 @@ public enum SynthetixTriggerPriceTypes
 {
 	/// <summary>Mark price.</summary>
 	[EnumMember]
-	[Display(Name = "Mark")]
+	[Display(
+		Name = "Mark")]
 	Mark,
 
 	/// <summary>Last traded price.</summary>
 	[EnumMember]
-	[Display(Name = "Last")]
+	[Display(
+		Name = "Last")]
 	Last,
 }

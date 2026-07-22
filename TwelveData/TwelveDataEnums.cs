@@ -7,27 +7,32 @@ public enum TwelveDataMarkets
 {
 	/// <summary>Exchange-listed stocks.</summary>
 	[EnumMember]
-	[Display(Name = "Stocks")]
+	[Display(
+		Name = "Stocks")]
 	Stocks,
 
 	/// <summary>Exchange-traded funds.</summary>
 	[EnumMember]
-	[Display(Name = "ETFs")]
+	[Display(
+		Name = "ETFs")]
 	Etfs,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
-	[Display(Name = "Forex")]
+	[Display(
+		Name = "Forex")]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
-	[Display(Name = "Crypto")]
+	[Display(
+		Name = "Crypto")]
 	Crypto,
 
 	/// <summary>Physical commodities.</summary>
 	[EnumMember]
-	[Display(Name = "Commodities")]
+	[Display(
+		Name = "Commodities")]
 	Commodities,
 }
 
@@ -38,21 +43,25 @@ public enum TwelveDataAdjustments
 {
 	/// <summary>Adjust for splits and dividends.</summary>
 	[EnumMember]
-	[Display(Name = "All")]
+	[Display(
+		Name = "All")]
 	All,
 
 	/// <summary>Adjust for splits.</summary>
 	[EnumMember]
-	[Display(Name = "Splits")]
+	[Display(
+		Name = "Splits")]
 	Splits,
 
 	/// <summary>Adjust for dividends.</summary>
 	[EnumMember]
-	[Display(Name = "Dividends")]
+	[Display(
+		Name = "Dividends")]
 	Dividends,
 
 	/// <summary>Do not adjust prices.</summary>
 	[EnumMember]
-	[Display(Name = "None")]
+	[Display(
+		Name = "None")]
 	None,
 }

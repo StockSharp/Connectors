@@ -2,7 +2,9 @@ namespace StockSharp.LsSecurities;
 
 /// <summary>LS Securities native cash-equity order options.</summary>
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsSecuritiesOrderConditionKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.LsSecuritiesOrderConditionKey)]
 public sealed class LsSecuritiesOrderCondition : OrderCondition
 {
 	/// <summary>Initializes a new instance of the <see cref="LsSecuritiesOrderCondition"/> class.</summary>

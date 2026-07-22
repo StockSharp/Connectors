@@ -3,7 +3,9 @@ namespace StockSharp.SnapTrade;
 /// <summary>Additional parameters for SnapTrade equity orders.</summary>
 [DataContract]
 [Serializable]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SnapTradeKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.SnapTradeKey)]
 public sealed class SnapTradeOrderCondition : OrderCondition
 {
 	private decimal? _stopPrice;

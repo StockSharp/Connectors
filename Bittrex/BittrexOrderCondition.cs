@@ -5,7 +5,9 @@ namespace StockSharp.Bittrex;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BittrexKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BittrexKey)]
 public class BittrexOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>
