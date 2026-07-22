@@ -16,41 +16,69 @@ namespace StockSharp.Longbridge;
 public partial class LongbridgeMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
 	/// <summary>Longbridge application key or OAuth client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
-		Description = LocalizedStrings.LongbridgeAppKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.LongbridgeAppKeyDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Legacy HMAC application secret. Leave empty for OAuth Bearer authentication.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
-		Description = LocalizedStrings.LongbridgeAppSecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.LongbridgeAppSecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Longbridge access token or OAuth access token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
-		Description = LocalizedStrings.LongbridgeAccessTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
+		Description = LocalizedStrings.LongbridgeAccessTokenDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Portfolio name published to StockSharp.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongbridgePortfolioKey,
-		Description = LocalizedStrings.LongbridgePortfolioDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LongbridgePortfolioKey,
+		Description = LocalizedStrings.LongbridgePortfolioDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string Portfolio { get; set; } = "Longbridge";
 
 	/// <summary>REST API root.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongbridgeApiUrlKey,
-		Description = LocalizedStrings.LongbridgeApiUrlDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LongbridgeApiUrlKey,
+		Description = LocalizedStrings.LongbridgeApiUrlDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public string ApiUrl { get; set; } = "https://openapi.longbridge.com";
 
 	/// <summary>Quote WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongbridgeQuoteUrlKey,
-		Description = LocalizedStrings.LongbridgeQuoteUrlDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LongbridgeQuoteUrlKey,
+		Description = LocalizedStrings.LongbridgeQuoteUrlDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public string QuoteUrl { get; set; } = "wss://openapi-quote.longbridge.com/v2";
 
 	/// <summary>Trade WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongbridgeTradeUrlKey,
-		Description = LocalizedStrings.LongbridgeTradeUrlDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LongbridgeTradeUrlKey,
+		Description = LocalizedStrings.LongbridgeTradeUrlDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string TradeUrl { get; set; } = "wss://openapi-trade.longbridge.com/v2";
 
 	/// <inheritdoc />

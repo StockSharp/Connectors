@@ -35,9 +35,11 @@ public class GmxOrderCondition : OrderCondition
 {
 	/// <summary>Advanced order kind.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TypeKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 0)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 0)]
 	public GmxOrderKinds OrderKind
 	{
 		get => (GmxOrderKinds?)Parameters.TryGetValue(nameof(OrderKind)) ??
@@ -47,9 +49,11 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Conditional-order trigger price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 1)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 1)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -58,8 +62,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Collateral token symbol for an increase or swap.</summary>
 	[DataMember]
-	[Display(Name = "Collateral token",
-		GroupName = LocalizedStrings.TransactionKey, Order = 2)]
+	[Display(
+		Name = "Collateral token",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 2)]
 	public string CollateralToken
 	{
 		get => (string)Parameters.TryGetValue(nameof(CollateralToken));
@@ -68,8 +74,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Collateral amount in token units.</summary>
 	[DataMember]
-	[Display(Name = "Collateral amount",
-		GroupName = LocalizedStrings.TransactionKey, Order = 3)]
+	[Display(
+		Name = "Collateral amount",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 3)]
 	public decimal? CollateralAmount
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(CollateralAmount));
@@ -78,8 +86,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Token received by a decrease or swap.</summary>
 	[DataMember]
-	[Display(Name = "Receive token",
-		GroupName = LocalizedStrings.TransactionKey, Order = 4)]
+	[Display(
+		Name = "Receive token",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 4)]
 	public string ReceiveToken
 	{
 		get => (string)Parameters.TryGetValue(nameof(ReceiveToken));
@@ -88,8 +98,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Take-profit sidecar trigger for an increase.</summary>
 	[DataMember]
-	[Display(Name = "Take-profit price",
-		GroupName = LocalizedStrings.TransactionKey, Order = 5)]
+	[Display(
+		Name = "Take-profit price",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 5)]
 	public decimal? TakeProfitPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TakeProfitPrice));
@@ -98,8 +110,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Stop-loss sidecar trigger for an increase.</summary>
 	[DataMember]
-	[Display(Name = "Stop-loss price",
-		GroupName = LocalizedStrings.TransactionKey, Order = 6)]
+	[Display(
+		Name = "Stop-loss price",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 6)]
 	public decimal? StopLossPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopLossPrice));
@@ -108,8 +122,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Preserve leverage when decreasing a position.</summary>
 	[DataMember]
-	[Display(Name = "Keep leverage",
-		GroupName = LocalizedStrings.TransactionKey, Order = 7)]
+	[Display(
+		Name = "Keep leverage",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 7)]
 	public bool IsKeepLeverage
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsKeepLeverage)) ?? false;
@@ -118,8 +134,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Automatically cancel an unexecutable order.</summary>
 	[DataMember]
-	[Display(Name = "Auto cancel",
-		GroupName = LocalizedStrings.TransactionKey, Order = 8)]
+	[Display(
+		Name = "Auto cancel",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 8)]
 	public bool IsAutoCancel
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsAutoCancel)) ?? true;
@@ -128,9 +146,11 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Per-order slippage in percent.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 9)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 9)]
 	public decimal? Slippage
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(Slippage));
@@ -139,8 +159,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>TWAP duration.</summary>
 	[DataMember]
-	[Display(Name = "TWAP duration",
-		GroupName = LocalizedStrings.TransactionKey, Order = 10)]
+	[Display(
+		Name = "TWAP duration",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 10)]
 	public TimeSpan TwapDuration
 	{
 		get => (TimeSpan?)Parameters.TryGetValue(nameof(TwapDuration)) ??
@@ -150,8 +172,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Number of TWAP parts.</summary>
 	[DataMember]
-	[Display(Name = "TWAP parts",
-		GroupName = LocalizedStrings.TransactionKey, Order = 11)]
+	[Display(
+		Name = "TWAP parts",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 11)]
 	public int TwapParts
 	{
 		get => (int?)Parameters.TryGetValue(nameof(TwapParts)) ?? 2;
@@ -160,8 +184,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Optional gas-payment token symbol.</summary>
 	[DataMember]
-	[Display(Name = "Gas token",
-		GroupName = LocalizedStrings.TransactionKey, Order = 12)]
+	[Display(
+		Name = "Gas token",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 12)]
 	public string GasPaymentToken
 	{
 		get => (string)Parameters.TryGetValue(nameof(GasPaymentToken));
@@ -170,8 +196,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Optional GMX referral code.</summary>
 	[DataMember]
-	[Display(Name = "Referral code",
-		GroupName = LocalizedStrings.TransactionKey, Order = 13)]
+	[Display(
+		Name = "Referral code",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 13)]
 	public string ReferralCode
 	{
 		get => (string)Parameters.TryGetValue(nameof(ReferralCode));
@@ -180,8 +208,10 @@ public class GmxOrderCondition : OrderCondition
 
 	/// <summary>Optional UI-fee receiver address.</summary>
 	[DataMember]
-	[Display(Name = "UI fee receiver",
-		GroupName = LocalizedStrings.TransactionKey, Order = 14)]
+	[Display(
+		Name = "UI fee receiver",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 14)]
 	public string UiFeeReceiver
 	{
 		get => (string)Parameters.TryGetValue(nameof(UiFeeReceiver));

@@ -3,7 +3,8 @@ namespace StockSharp.Pyth;
 /// <summary>The message adapter for Pyth Pro market data.</summary>
 [MediaIcon(Media.MediaNames.pyth)]
 [Doc("topics/api/connectors/crypto_exchanges/pyth.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.PythKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.MarketDataKey)]

@@ -74,7 +74,8 @@ public enum BYDFiPositionSide
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.BYDFiKey)]
 public class BYDFiOrderCondition : OrderCondition
 {
@@ -82,10 +83,12 @@ public class BYDFiOrderCondition : OrderCondition
     /// Trigger price for stop and take-profit orders.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.StopPriceKey,
         Description = LocalizedStrings.StopPriceKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 0)]
     public decimal? TriggerPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -96,10 +99,12 @@ public class BYDFiOrderCondition : OrderCondition
     /// Conditional order kind.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TypeKey,
         Description = LocalizedStrings.TypeKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 1)]
     public BYDFiTriggerKinds TriggerKind
     {
         get => (BYDFiTriggerKinds?)Parameters.TryGetValue(
@@ -111,10 +116,12 @@ public class BYDFiOrderCondition : OrderCondition
     /// Trigger price source.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TypeKey,
         Description = LocalizedStrings.TypeKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 2)]
     public BYDFiTriggerPriceTypes TriggerPriceType
     {
         get => (BYDFiTriggerPriceTypes?)Parameters.TryGetValue(
@@ -127,10 +134,12 @@ public class BYDFiOrderCondition : OrderCondition
     /// Position side for one-way or hedge mode.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PositionKey,
         Description = LocalizedStrings.PositionKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 3)]
     public BYDFiPositionSide PositionSide
     {
         get => (BYDFiPositionSide?)Parameters.TryGetValue(
@@ -142,10 +151,12 @@ public class BYDFiOrderCondition : OrderCondition
     /// Reduce an existing position only.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PosConditionReduceOnlyKey,
         Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 4)]
     public bool IsReduceOnly
     {
         get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;
@@ -156,10 +167,12 @@ public class BYDFiOrderCondition : OrderCondition
     /// Close the whole position when the trigger fires.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.ClosePositionKey,
         Description = LocalizedStrings.ClosePositionKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 5)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 5)]
     public bool IsClosePosition
     {
         get => (bool?)Parameters.TryGetValue(nameof(IsClosePosition)) ??
@@ -171,10 +184,12 @@ public class BYDFiOrderCondition : OrderCondition
     /// Trailing-stop activation price.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PriceKey,
         Description = LocalizedStrings.PriceKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 6)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 6)]
     public decimal? ActivationPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(ActivationPrice));
@@ -185,10 +200,12 @@ public class BYDFiOrderCondition : OrderCondition
     /// Trailing-stop callback rate in percent, from 0.1 to 5.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PercentKey,
         Description = LocalizedStrings.PercentKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 7)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 7)]
     public decimal? CallbackRate
     {
         get => (decimal?)Parameters.TryGetValue(nameof(CallbackRate));

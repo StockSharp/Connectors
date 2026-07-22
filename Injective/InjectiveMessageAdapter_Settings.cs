@@ -20,31 +20,40 @@ public enum InjectiveEnvironments
 public partial class InjectiveMessageAdapter
 {
 	/// <summary>Injective environment.</summary>
-	[Display(Name = "Environment", Description = "Injective API environment.",
-		GroupName = "Connection", Order = 0)]
+	[Display(
+		Name = "Environment",
+		Description = "Injective API environment.",
+		GroupName = "Connection",
+		Order = 0)]
 	[BasicSetting]
 	public InjectiveEnvironments Environment { get; set; }
 
 	/// <summary>Optional Injective wallet address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional secp256k1 private key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private int _subaccountIndex;
 
 	/// <summary>Injective subaccount index.</summary>
-	[Display(Name = "Subaccount", Description =
-		"Injective subaccount index between zero and 255.",
-		GroupName = "Connection", Order = 3)]
+	[Display(
+		Name = "Subaccount",
+		Description = "Injective subaccount index between zero and 255.",
+		GroupName = "Connection",
+		Order = 3)]
 	public int SubaccountIndex
 	{
 		get => _subaccountIndex;
@@ -76,16 +85,20 @@ public partial class InjectiveMessageAdapter
 	public string ChainEndpoint { get; set; }
 
 	/// <summary>Optional Tendermint WebSocket endpoint override.</summary>
-	[Display(Name = "Chain WebSocket endpoint", GroupName = "Addresses",
+	[Display(
+		Name = "Chain WebSocket endpoint",
+		GroupName = "Addresses",
 		Order = 3)]
 	public string ChainSocketEndpoint { get; set; }
 
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum history records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 4)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 4)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -98,9 +111,11 @@ public partial class InjectiveMessageAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum published order-book depth.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -113,9 +128,11 @@ public partial class InjectiveMessageAdapter
 	private decimal _marketOrderSlippage = 0.5m;
 
 	/// <summary>Market-order protection price deviation, in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 6)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 6)]
 	public decimal MarketOrderSlippage
 	{
 		get => _marketOrderSlippage;
@@ -128,7 +145,9 @@ public partial class InjectiveMessageAdapter
 	private long _gasLimit = 400_000;
 
 	/// <summary>Transaction gas limit.</summary>
-	[Display(Name = "Gas limit", GroupName = LocalizedStrings.TransactionKey,
+	[Display(
+		Name = "Gas limit",
+		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public long GasLimit
 	{
@@ -142,7 +161,9 @@ public partial class InjectiveMessageAdapter
 	private string _feeAmount = "64000000000000";
 
 	/// <summary>Transaction fee amount in the smallest fee-denom units.</summary>
-	[Display(Name = "Fee amount", GroupName = LocalizedStrings.TransactionKey,
+	[Display(
+		Name = "Fee amount",
+		GroupName = LocalizedStrings.TransactionKey,
 		Order = 8)]
 	public string FeeAmount
 	{
@@ -159,15 +180,19 @@ public partial class InjectiveMessageAdapter
 	}
 
 	/// <summary>Transaction fee denomination.</summary>
-	[Display(Name = "Fee denom", GroupName = LocalizedStrings.TransactionKey,
+	[Display(
+		Name = "Fee denom",
+		GroupName = LocalizedStrings.TransactionKey,
 		Order = 9)]
 	public string FeeDenom { get; set; } = "inj";
 
 	private long _blockLifetime = 50;
 
 	/// <summary>Default good-till-block lifetime for limit orders.</summary>
-	[Display(Name = "Block lifetime",
-		GroupName = LocalizedStrings.TransactionKey, Order = 10)]
+	[Display(
+		Name = "Block lifetime",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 10)]
 	public long BlockLifetime
 	{
 		get => _blockLifetime;

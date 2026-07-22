@@ -29,50 +29,71 @@ public enum CapitalFuturesEnvironments
 public partial class CapitalFuturesMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
 	/// <summary>Path to the official Capital API interop assembly or extracted C# package.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PathKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PathKey,
 		Description = LocalizedStrings.CapitalFuturesSdkPathDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string SdkPath { get; set; }
 
 	/// <summary>Capital Futures login identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LoginKey,
 		Description = LocalizedStrings.LoginDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string Login { get; set; }
 
 	/// <summary>Capital Futures electronic trading password.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.PasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
 
 	/// <summary>Optional domestic futures account.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.CapitalFuturesAccountDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string Account { get; set; }
 
 	/// <summary>Official Capital API environment.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalFuturesEnvironmentKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalFuturesEnvironmentKey,
 		Description = LocalizedStrings.CapitalFuturesEnvironmentDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public CapitalFuturesEnvironments Environment { get; set; } = CapitalFuturesEnvironments.Production;
 
 	/// <summary>Whether order, account, reply, and portfolio services are initialized.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalFuturesTradingEnabledKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalFuturesTradingEnabledKey,
 		Description = LocalizedStrings.CapitalFuturesTradingEnabledDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public bool IsTradingEnabled { get; set; } = true;
 
 	/// <summary>Optional official SDK log directory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LogDirectoryKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LogDirectoryKey,
 		Description = LocalizedStrings.CapitalFuturesLogPathDescKey,
-		GroupName = LocalizedStrings.LoggingKey, Order = 6)]
+		GroupName = LocalizedStrings.LoggingKey,
+		Order = 6)]
 	public string LogPath { get; set; }
 
 	/// <inheritdoc />

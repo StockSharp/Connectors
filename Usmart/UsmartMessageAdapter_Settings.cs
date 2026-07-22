@@ -3,7 +3,9 @@ namespace StockSharp.Usmart;
 /// <summary>The message adapter for the official uSMART OpenAPI.</summary>
 [MediaIcon(Media.MediaNames.usmart)]
 [Doc("topics/api/connectors/stock_market/usmart.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartKey,
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.UsmartKey,
 	Description = LocalizedStrings.StockConnectorKey,
 	GroupName = LocalizedStrings.SingaporeExchangeKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Asia | MessageAdapterCategories.Stock |
@@ -15,49 +17,70 @@ namespace StockSharp.Usmart;
 public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, ITokenAdapter
 {
 	/// <summary>Authentication token issued by uSMART.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.UsmartAccessTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Channel identifier assigned by uSMART.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartChannelKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsmartChannelKey,
 		Description = LocalizedStrings.UsmartChannelDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string ChannelId { get; set; }
 
 	/// <summary>PEM-encoded RSA private key assigned to the channel.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartPrivateKeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsmartPrivateKeyKey,
 		Description = LocalizedStrings.UsmartPrivateKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Fund account represented as the StockSharp portfolio.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartFundAccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsmartFundAccountKey,
 		Description = LocalizedStrings.UsmartFundAccountDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string FundAccount { get; set; }
 
 	/// <summary>Already-encrypted optional trading password.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartTradePasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsmartTradePasswordKey,
 		Description = LocalizedStrings.UsmartTradePasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public SecureString EncryptedTradePassword { get; set; }
 
 	/// <summary>Use the official UAT endpoints.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.UsmartDemoDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public bool IsDemo { get; set; }
 
 	/// <summary>Default native quote market.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartMarketKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsmartMarketKey,
 		Description = LocalizedStrings.UsmartMarketDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string DefaultMarket { get; set; } = "hk";
 
 	/// <inheritdoc />

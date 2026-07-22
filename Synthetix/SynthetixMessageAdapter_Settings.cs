@@ -3,51 +3,65 @@ namespace StockSharp.Synthetix;
 public partial class SynthetixMessageAdapter
 {
 	/// <summary>Synthetix subaccount identifier.</summary>
-	[Display(Name = "Subaccount ID", Description =
-		"Synthetix trading subaccount identifier.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		Name = "Subaccount ID",
+		Description = "Synthetix trading subaccount identifier.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string SubAccountId { get; set; }
 
 	/// <summary>EVM private key used for EIP-712 authentication.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Optional public REST endpoint override.</summary>
-	[Display(Name = "Info REST endpoint", Description =
-		"Optional Synthetix public REST endpoint override.",
-		GroupName = "Addresses", Order = 0)]
+	[Display(
+		Name = "Info REST endpoint",
+		Description = "Optional Synthetix public REST endpoint override.",
+		GroupName = "Addresses",
+		Order = 0)]
 	public string InfoEndpoint { get; set; }
 
 	/// <summary>Optional authenticated REST endpoint override.</summary>
-	[Display(Name = "Trade REST endpoint", Description =
-		"Optional Synthetix authenticated REST endpoint override.",
-		GroupName = "Addresses", Order = 1)]
+	[Display(
+		Name = "Trade REST endpoint",
+		Description = "Optional Synthetix authenticated REST endpoint override.",
+		GroupName = "Addresses",
+		Order = 1)]
 	public string TradeEndpoint { get; set; }
 
 	/// <summary>Optional public WebSocket endpoint override.</summary>
-	[Display(Name = "Info WebSocket endpoint", Description =
-		"Optional Synthetix public WebSocket endpoint override.",
-		GroupName = "Addresses", Order = 2)]
+	[Display(
+		Name = "Info WebSocket endpoint",
+		Description = "Optional Synthetix public WebSocket endpoint override.",
+		GroupName = "Addresses",
+		Order = 2)]
 	public string InfoSocketEndpoint { get; set; }
 
 	/// <summary>Optional authenticated WebSocket endpoint override.</summary>
-	[Display(Name = "Trade WebSocket endpoint", Description =
-		"Optional Synthetix authenticated WebSocket endpoint override.",
-		GroupName = "Addresses", Order = 3)]
+	[Display(
+		Name = "Trade WebSocket endpoint",
+		Description = "Optional Synthetix authenticated WebSocket endpoint override.",
+		GroupName = "Addresses",
+		Order = 3)]
 	public string TradeSocketEndpoint { get; set; }
 
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Private REST reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -60,10 +74,12 @@ public partial class SynthetixMessageAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum history records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -76,10 +92,12 @@ public partial class SynthetixMessageAdapter
 	private int _marketDepth = 50;
 
 	/// <summary>Maximum published live order-book depth.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int MarketDepth
 	{
 		get => _marketDepth;

@@ -23,10 +23,12 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Stop trigger price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceKey,
-		GroupName = "Paxos", Order = 1)]
+		GroupName = "Paxos",
+		Order = 1)]
 	public decimal? StopPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopPrice));
@@ -83,8 +85,10 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Profile receiving trade settlement or transferred assets.</summary>
 	[DataMember]
-	[Display(Name = "Destination profile",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 0)]
+	[Display(
+		Name = "Destination profile",
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 0)]
 	public string DestinationProfileId
 	{
 		get => (string)Parameters.TryGetValue(nameof(DestinationProfileId));
@@ -93,8 +97,10 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>External crypto destination address.</summary>
 	[DataMember]
-	[Display(Name = "Destination address",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 1)]
+	[Display(
+		Name = "Destination address",
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 1)]
 	public string DestinationAddress
 	{
 		get => (string)Parameters.TryGetValue(nameof(DestinationAddress));
@@ -103,8 +109,10 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Crypto withdrawal network.</summary>
 	[DataMember]
-	[Display(Name = "Crypto network",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 2)]
+	[Display(
+		Name = "Crypto network",
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 2)]
 	public PaxosCryptoNetworks CryptoNetwork
 	{
 		get => (PaxosCryptoNetworks?)Parameters.TryGetValue(
@@ -114,8 +122,10 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Destination asset for a stablecoin conversion.</summary>
 	[DataMember]
-	[Display(Name = "Destination asset",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 3)]
+	[Display(
+		Name = "Destination asset",
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 3)]
 	public string DestinationAsset
 	{
 		get => (string)Parameters.TryGetValue(nameof(DestinationAsset));
@@ -124,7 +134,9 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Optional blockchain memo.</summary>
 	[DataMember]
-	[Display(Name = "Memo", GroupName = LocalizedStrings.WithdrawKey,
+	[Display(
+		Name = "Memo",
+		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 4)]
 	public string Memo
 	{

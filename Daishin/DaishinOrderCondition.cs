@@ -28,9 +28,12 @@ public sealed class DaishinOrderCondition : OrderCondition
 
 	/// <summary>Explicit KRX or NXT order route.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DaishinMarketKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DaishinMarketKey,
 		Description = LocalizedStrings.DaishinMarketDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	public DaishinOrderMarkets Market
 	{
 		get => _market;

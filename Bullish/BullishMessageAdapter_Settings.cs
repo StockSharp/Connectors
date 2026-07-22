@@ -51,30 +51,46 @@ public partial class BullishMessageAdapter : MessageAdapter, IKeySecretAdapter
 	public static IEnumerable<TimeSpan> AllTimeFrames => [.. BullishExtensions.TimeFrames.Keys];
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
-		Description = LocalizedStrings.KeyKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
-		Description = LocalizedStrings.SecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.SecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>
 	/// Preferred Bullish trading account identifier. The primary account is used when empty.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccountKey,
-		Description = LocalizedStrings.AccountKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
+		Description = LocalizedStrings.AccountKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string TradingAccountId { get; set; }
 
 	/// <summary>
 	/// Optional Bullish rate-limit token assigned to institutional clients.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccessTokenKey,
-		Description = LocalizedStrings.AccessTokenKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccessTokenKey,
+		Description = LocalizedStrings.AccessTokenKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString RateLimitToken { get; set; }
 
@@ -83,8 +99,12 @@ public partial class BullishMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// <summary>
 	/// Enabled market sections.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SectionsKey,
-		Description = LocalizedStrings.SectionsDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SectionsKey,
+		Description = LocalizedStrings.SectionsDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	[ItemsSource(typeof(BullishSections))]
 	public IEnumerable<BullishSections> Sections
@@ -103,16 +123,24 @@ public partial class BullishMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// <summary>
 	/// REST API host.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
-		Description = LocalizedStrings.AddressKey, GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.AddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>
 	/// WebSocket API host.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WebSocketKey,
-		Description = LocalizedStrings.WsEndpointKey, GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string WsEndpoint { get; set; } = _defaultWsEndpoint;
 

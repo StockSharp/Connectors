@@ -28,18 +28,24 @@ public partial class BitpandaFusionMessageAdapter : MessageAdapter, ITokenAdapte
 		=> BitpandaFusionExtensions.TimeFrames;
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>
 	/// Fusion REST API endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public Uri Address { get; set; } = _defaultAddress;
 

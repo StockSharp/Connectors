@@ -17,38 +17,62 @@ namespace StockSharp.KoreaInvestment;
 public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
 	/// <summary>Application key issued by KIS Developers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
-		Description = LocalizedStrings.KoreaInvestmentAppKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KoreaInvestmentAppKeyDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Application secret issued by KIS Developers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
-		Description = LocalizedStrings.KoreaInvestmentAppSecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.KoreaInvestmentAppSecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>First eight digits of the KIS account number.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentAccountKey,
-		Description = LocalizedStrings.KoreaInvestmentAccountDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KoreaInvestmentAccountKey,
+		Description = LocalizedStrings.KoreaInvestmentAccountDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string AccountNumber { get; set; }
 
 	/// <summary>Two-digit account product code.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentProductCodeKey,
-		Description = LocalizedStrings.KoreaInvestmentProductCodeDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KoreaInvestmentProductCodeKey,
+		Description = LocalizedStrings.KoreaInvestmentProductCodeDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string ProductCode { get; set; } = "01";
 
 	/// <summary>KIS Developers HTS ID used by execution-notice WebSocket channels.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentHtsIdKey,
-		Description = LocalizedStrings.KoreaInvestmentHtsIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KoreaInvestmentHtsIdKey,
+		Description = LocalizedStrings.KoreaInvestmentHtsIdDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public string HtsId { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
-		Description = LocalizedStrings.DemoTradingConnectKey, GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey,
+		Description = LocalizedStrings.DemoTradingConnectKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 

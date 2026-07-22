@@ -10,8 +10,12 @@ public class SierraChartDtcOrderCondition : OrderCondition, IStopLossOrderCondit
 {
 	/// <summary>Stop activation price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
-		Description = LocalizedStrings.StopPriceDescKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? StopPrice
 	{
 		get => Parameters.TryGetValue(nameof(StopPrice))?.To<decimal?>();

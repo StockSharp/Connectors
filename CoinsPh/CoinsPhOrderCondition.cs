@@ -39,9 +39,12 @@ public sealed class CoinsPhOrderCondition : BaseWithdrawOrderCondition
 	/// Conditional order type.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopTypeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopTypeKey,
 		Description = LocalizedStrings.StopTypeDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public CoinsPhConditionalOrderTypes Type
 	{
 		get => (CoinsPhConditionalOrderTypes?)Parameters.TryGetValue(nameof(Type)) ??
@@ -53,9 +56,12 @@ public sealed class CoinsPhOrderCondition : BaseWithdrawOrderCondition
 	/// Trigger price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public decimal? StopPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopPrice));
@@ -66,9 +72,12 @@ public sealed class CoinsPhOrderCondition : BaseWithdrawOrderCondition
 	/// Quote-currency amount used instead of base quantity for market orders.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AmountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
 		Description = LocalizedStrings.AmountKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public decimal? QuoteAmount
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));

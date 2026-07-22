@@ -3,7 +3,8 @@ namespace StockSharp.CoinMetrics;
 /// <summary>The message adapter for Coin Metrics API v4.</summary>
 [MediaIcon(Media.MediaNames.coinmetrics)]
 [Doc("topics/api/connectors/crypto_exchanges/coin_metrics.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CoinMetricsKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

@@ -3,7 +3,8 @@ namespace StockSharp.Ostium;
 /// <summary>The message adapter for Ostium perpetual markets on Arbitrum.</summary>
 [MediaIcon(Media.MediaNames.ostium)]
 [Doc("topics/api/connectors/crypto_exchanges/ostium.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.OstiumKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -20,56 +21,73 @@ public partial class OstiumMessageAdapter : MessageAdapter
 		"wss://builder.ostium.io/v1/prices/stream";
 
 	/// <summary>Ostium deployment environment.</summary>
-	[Display(Name = "Environment", Description = "Ostium network environment.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		Name = "Environment",
+		Description = "Ostium network environment.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public OstiumEnvironments Environment { get; set; }
 
 	/// <summary>Optional JSON-RPC endpoint override.</summary>
-	[Display(Name = "JSON-RPC", Description =
-		"Optional Arbitrum JSON-RPC endpoint override.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+	[Display(
+		Name = "JSON-RPC",
+		Description = "Optional Arbitrum JSON-RPC endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string RpcEndpoint { get; set; }
 
 	/// <summary>Official Ostium Builder API endpoint.</summary>
-	[Display(Name = "Builder API",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+	[Display(
+		Name = "Builder API",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string BuilderEndpoint { get; set; } = _defaultBuilderEndpoint;
 
 	/// <summary>Official Ostium price-stream endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = "Official Ostium realtime price stream.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string PriceStreamEndpoint { get; set; } =
 		_defaultPriceStreamEndpoint;
 
 	/// <summary>Optional Ostium subgraph endpoint override.</summary>
-	[Display(Name = "Subgraph", Description =
-		"Optional official Ostium subgraph endpoint override.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+	[Display(
+		Name = "Subgraph",
+		Description = "Optional official Ostium subgraph endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	public string SubgraphEndpoint { get; set; }
 
 	/// <summary>Optional EVM wallet for read-only account access.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional EVM private key used to sign transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private decimal _defaultLeverage = 10m;
 
 	/// <summary>Leverage used when no Ostium condition is supplied.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 7)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 7)]
 	public decimal DefaultLeverage
 	{
 		get => _defaultLeverage;
@@ -82,8 +100,10 @@ public partial class OstiumMessageAdapter : MessageAdapter
 	private int _slippageBps = 25;
 
 	/// <summary>Maximum execution slippage in basis points.</summary>
-	[Display(Name = "Slippage (bps)",
-		GroupName = LocalizedStrings.TransactionKey, Order = 8)]
+	[Display(
+		Name = "Slippage (bps)",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 8)]
 	public int SlippageBps
 	{
 		get => _slippageBps;
@@ -94,15 +114,19 @@ public partial class OstiumMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Automatically approve USDC when allowance is insufficient.</summary>
-	[Display(Name = "Auto approve USDC",
-		GroupName = LocalizedStrings.TransactionKey, Order = 9)]
+	[Display(
+		Name = "Auto approve USDC",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 9)]
 	public bool IsAutoApprove { get; set; } = true;
 
 	private decimal _approvalAmount = 100000m;
 
 	/// <summary>USDC allowance requested by automatic approval.</summary>
-	[Display(Name = "USDC approval",
-		GroupName = LocalizedStrings.TransactionKey, Order = 10)]
+	[Display(
+		Name = "USDC approval",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 10)]
 	public decimal ApprovalAmount
 	{
 		get => _approvalAmount;
@@ -115,8 +139,10 @@ public partial class OstiumMessageAdapter : MessageAdapter
 	private TimeSpan _transactionTimeout = TimeSpan.FromMinutes(2);
 
 	/// <summary>Maximum time to wait for an Arbitrum transaction receipt.</summary>
-	[Display(Name = "Transaction timeout",
-		GroupName = LocalizedStrings.TransactionKey, Order = 11)]
+	[Display(
+		Name = "Transaction timeout",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 11)]
 	public TimeSpan TransactionTimeout
 	{
 		get => _transactionTimeout;
@@ -130,8 +156,10 @@ public partial class OstiumMessageAdapter : MessageAdapter
 	private TimeSpan _accountRefreshInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Polling interval for Ostium account data.</summary>
-	[Display(Name = "Account refresh",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 12)]
+	[Display(
+		Name = "Account refresh",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 12)]
 	public TimeSpan AccountRefreshInterval
 	{
 		get => _accountRefreshInterval;
@@ -145,9 +173,11 @@ public partial class OstiumMessageAdapter : MessageAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum account or candle records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 13)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 13)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

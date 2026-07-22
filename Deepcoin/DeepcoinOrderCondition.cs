@@ -120,8 +120,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Trading margin mode.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey,
-		Description = LocalizedStrings.MarginKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey,
+		Description = LocalizedStrings.MarginKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public DeepcoinMarginModes MarginMode
 	{
 		get => (DeepcoinMarginModes?)Parameters.TryGetValue(nameof(MarginMode)) ?? DeepcoinMarginModes.Auto;
@@ -132,8 +136,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Perpetual position side.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
-		Description = LocalizedStrings.PositionKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public DeepcoinPositionSides PositionSide
 	{
 		get => (DeepcoinPositionSides?)Parameters.TryGetValue(nameof(PositionSide)) ?? DeepcoinPositionSides.Long;
@@ -144,8 +152,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Use split-position mode instead of merged-position mode.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SplitKey,
-		Description = LocalizedStrings.SplitKey, GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SplitKey,
+		Description = LocalizedStrings.SplitKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public bool IsSplitPosition
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsSplitPosition)) ?? false;
@@ -156,8 +168,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Order execution policy.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OrderTypeKey,
-		Description = LocalizedStrings.OrderTypeKey, GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderTypeKey,
+		Description = LocalizedStrings.OrderTypeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public DeepcoinOrderPolicies Policy
 	{
 		get => (DeepcoinOrderPolicies?)Parameters.TryGetValue(nameof(Policy)) ?? DeepcoinOrderPolicies.Regular;
@@ -168,8 +184,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Perpetual leverage to set before submitting the order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LeverageKey,
-		Description = LocalizedStrings.LeverageKey, GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LeverageKey,
+		Description = LocalizedStrings.LeverageKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
 	public int? Leverage
 	{
 		get => (int?)Parameters.TryGetValue(nameof(Leverage));
@@ -180,9 +200,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Reduce an existing position only.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PosConditionReduceOnlyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 5)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 5)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;
@@ -193,8 +216,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Position ID required when closing a split perpetual position.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
-		Description = LocalizedStrings.PositionKey, GroupName = LocalizedStrings.ParametersKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 6)]
 	public string ClosePositionId
 	{
 		get => (string)Parameters.TryGetValue(nameof(ClosePositionId));
@@ -205,8 +232,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Use quote-currency volume for spot market orders instead of base-currency volume.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuoteVolumeKey,
-		Description = LocalizedStrings.QuoteVolumeKey, GroupName = LocalizedStrings.ParametersKey, Order = 7)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuoteVolumeKey,
+		Description = LocalizedStrings.QuoteVolumeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 7)]
 	public bool IsQuoteVolume
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsQuoteVolume)) ?? false;
@@ -217,8 +248,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Attached take-profit trigger price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey,
-		Description = LocalizedStrings.TakeProfitKey, GroupName = LocalizedStrings.ParametersKey, Order = 8)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
+		Description = LocalizedStrings.TakeProfitKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 8)]
 	public decimal? TakeProfitTriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TakeProfitTriggerPrice));
@@ -229,8 +264,12 @@ public class DeepcoinOrderCondition : OrderCondition
 	/// Attached stop-loss trigger price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey,
-		Description = LocalizedStrings.StopLossKey, GroupName = LocalizedStrings.ParametersKey, Order = 9)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey,
+		Description = LocalizedStrings.StopLossKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 9)]
 	public decimal? StopLossTriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopLossTriggerPrice));

@@ -3,15 +3,18 @@ namespace StockSharp.Fireblocks;
 /// <summary>Fireblocks transfer parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.FireblocksKey)]
 public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>Destination peer type.</summary>
 	[DataMember]
-	[Display(Name = "Destination type",
+	[Display(
+		Name = "Destination type",
 		Description = "Fireblocks destination peer type.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 0)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 0)]
 	public FireblocksPeerTypes DestinationType
 	{
 		get => (FireblocksPeerTypes?)Parameters.TryGetValue(
@@ -23,9 +26,11 @@ public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 	/// Destination object identifier. Not used for a one-time address.
 	/// </summary>
 	[DataMember]
-	[Display(Name = "Destination ID",
+	[Display(
+		Name = "Destination ID",
 		Description = "Fireblocks destination object identifier.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 1)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 1)]
 	public string DestinationId
 	{
 		get => (string)Parameters.TryGetValue(nameof(DestinationId));
@@ -34,9 +39,11 @@ public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Network fee level.</summary>
 	[DataMember]
-	[Display(Name = "Fee level",
+	[Display(
+		Name = "Fee level",
 		Description = "Fireblocks network fee level.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 2)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 2)]
 	public FireblocksFeeLevels FeeLevel
 	{
 		get => (FireblocksFeeLevels?)Parameters.TryGetValue(nameof(FeeLevel)) ??
@@ -46,9 +53,11 @@ public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Whether the network fee is deducted from the amount.</summary>
 	[DataMember]
-	[Display(Name = "Gross amount",
+	[Display(
+		Name = "Gross amount",
 		Description = "Deduct the network fee from the requested amount.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 3)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 3)]
 	public bool IsGrossAmount
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsGrossAmount)) ?? false;
@@ -57,10 +66,12 @@ public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Workspace note not published on-chain.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CommentKey,
 		Description = LocalizedStrings.CommentKey,
-		GroupName = LocalizedStrings.WithdrawKey, Order = 4)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 4)]
 	public string Note
 	{
 		get => (string)Parameters.TryGetValue(nameof(Note));

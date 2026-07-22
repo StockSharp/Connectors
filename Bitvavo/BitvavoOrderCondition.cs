@@ -15,9 +15,12 @@ public class BitvavoOrderCondition : OrderCondition, IStopLossOrderCondition,
 	/// Trigger activation price. A null value creates a regular order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TriggerKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerKey,
 		Description = LocalizedStrings.TriggerFieldKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -28,9 +31,12 @@ public class BitvavoOrderCondition : OrderCondition, IStopLossOrderCondition,
 	/// Use a take-profit trigger instead of stop-loss.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
 		Description = LocalizedStrings.TakeProfitKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public bool IsTakeProfit
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsTakeProfit)) ?? false;

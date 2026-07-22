@@ -3,7 +3,8 @@ namespace StockSharp.Injective;
 /// <summary>The message adapter for Injective spot and derivative markets.</summary>
 [MediaIcon(Media.MediaNames.injective)]
 [Doc("topics/api/connectors/crypto_exchanges/injective.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.InjectiveKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

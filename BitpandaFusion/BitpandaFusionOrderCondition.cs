@@ -5,7 +5,8 @@ namespace StockSharp.BitpandaFusion;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.BitpandaFusionKey)]
 public class BitpandaFusionOrderCondition : OrderCondition, IStopLossOrderCondition
 {
@@ -13,9 +14,12 @@ public class BitpandaFusionOrderCondition : OrderCondition, IStopLossOrderCondit
 	/// Trigger activation price. A null value creates a regular order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TriggerKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerKey,
 		Description = LocalizedStrings.TriggerFieldKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));

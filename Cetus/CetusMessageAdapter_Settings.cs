@@ -3,7 +3,8 @@ namespace StockSharp.Cetus;
 /// <summary>The message adapter for Cetus CLMM on Sui.</summary>
 [MediaIcon(Media.MediaNames.cetus)]
 [Doc("topics/api/connectors/crypto_exchanges/cetus.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CetusKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -23,53 +24,65 @@ public partial class CetusMessageAdapter : MessageAdapter
 		"|SUI-USDC";
 
 	/// <summary>Optional public Sui wallet address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional Sui Ed25519 key used to sign swaps locally.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Sui Full Node gRPC v2 endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string GrpcEndpoint { get; set; } = _defaultGrpcEndpoint;
 
 	/// <summary>Official Cetus Router API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string RouterEndpoint { get; set; } = _defaultRouterEndpoint;
 
 	/// <summary>
 	/// Semicolon-separated pool|base coin|quote coin|security-code entries.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public string Pools { get; set; } = _defaultPools;
 
 	private decimal _probeVolume = 1m;
 
 	/// <summary>Base-token amount used for executable Level1 probes.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public decimal ProbeVolume
 	{
 		get => _probeVolume;
@@ -82,10 +95,12 @@ public partial class CetusMessageAdapter : MessageAdapter
 	private decimal _slippageTolerance = 0.5m;
 
 	/// <summary>Default swap slippage tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public decimal SlippageTolerance
 	{
 		get => _slippageTolerance;
@@ -100,10 +115,12 @@ public partial class CetusMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Polling interval for quotes and private snapshots.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;

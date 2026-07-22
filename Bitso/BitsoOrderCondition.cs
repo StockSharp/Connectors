@@ -11,7 +11,9 @@ public sealed class BitsoOrderCondition : BaseWithdrawOrderCondition
 	/// Stop trigger price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
 		GroupName = LocalizedStrings.GeneralKey)]
 	public decimal? StopPrice
@@ -24,7 +26,9 @@ public sealed class BitsoOrderCondition : BaseWithdrawOrderCondition
 	/// Maximum market-order slippage in percent.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SlippageKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageSizeKey,
 		GroupName = LocalizedStrings.GeneralKey)]
 	public decimal? SlippageTolerance

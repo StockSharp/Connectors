@@ -35,22 +35,31 @@ public enum DaishinStockMarkets
 public partial class DaishinMessageAdapter : MessageAdapter
 {
 	/// <summary>Optional preferred CYBOS Plus account number.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.DaishinAccountDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	public string Account { get; set; }
 
 	/// <summary>Stock quote market.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DaishinMarketKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DaishinMarketKey,
 		Description = LocalizedStrings.DaishinMarketDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public DaishinStockMarkets Market { get; set; } = DaishinStockMarkets.Consolidated;
 
 	/// <summary>Whether trading and account services are initialized.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DaishinTradingEnabledKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DaishinTradingEnabledKey,
 		Description = LocalizedStrings.DaishinTradingEnabledDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public bool IsTradingEnabled { get; set; } = true;
 

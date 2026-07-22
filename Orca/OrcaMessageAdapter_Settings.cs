@@ -3,7 +3,8 @@ namespace StockSharp.Orca;
 /// <summary>The message adapter for Orca Whirlpools.</summary>
 [MediaIcon(Media.MediaNames.orca)]
 [Doc("topics/api/connectors/crypto_exchanges/orca.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.OrcaKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -22,49 +23,61 @@ public partial class OrcaMessageAdapter : MessageAdapter
 		OrcaExtensions.TimeFrames;
 
 	/// <summary>Solana cluster.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.BoardKey,
 		Description = LocalizedStrings.BoardKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public OrcaClusters Cluster { get; set; } = OrcaClusters.Mainnet;
 
 	/// <summary>HTTP Solana JSON-RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RpcEndpoint { get; set; }
 
 	/// <summary>Solana WebSocket endpoint used for transaction logs.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string StreamingEndpoint { get; set; }
 
 	/// <summary>Official Orca public API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string ApiEndpoint { get; set; } = _defaultApiEndpoint;
 
 	/// <summary>Optional public Solana wallet address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional base58 Solana private key used for swaps.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
@@ -72,19 +85,23 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	/// Semicolon-separated <c>pool|base symbol|quote symbol</c> definitions.
 	/// Symbol overrides are optional.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string Pools { get; set; }
 
 	private int _maximumDiscoveredPools = 20;
 
 	/// <summary>Maximum top-volume pools loaded from the official API.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int MaximumDiscoveredPools
 	{
 		get => _maximumDiscoveredPools;
@@ -97,10 +114,12 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	private decimal _probeVolume = 1m;
 
 	/// <summary>Base-token amount used for executable quote probes.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public decimal ProbeVolume
 	{
 		get => _probeVolume;
@@ -113,10 +132,12 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	private decimal _slippageTolerance = 0.5m;
 
 	/// <summary>Swap slippage tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public decimal SlippageTolerance
 	{
 		get => _slippageTolerance;
@@ -131,10 +152,12 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Polling interval for state, history, and receipts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -147,10 +170,12 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	private int _maximumHistoryTransactions = 100;
 
 	/// <summary>Maximum pool transactions fetched per history request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public int MaximumHistoryTransactions
 	{
 		get => _maximumHistoryTransactions;
@@ -163,10 +188,12 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	private int _computeUnitLimit = 350_000;
 
 	/// <summary>Compute-unit limit attached to swap transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LimitKey,
 		Description = LocalizedStrings.LimitKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public int ComputeUnitLimit
 	{
 		get => _computeUnitLimit;
@@ -182,10 +209,12 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	/// Priority fee in micro-lamports per compute unit. Zero selects the
 	/// current RPC median.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CommissionKey,
 		Description = LocalizedStrings.CommissionKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public long ComputeUnitPrice
 	{
 		get => _computeUnitPrice;

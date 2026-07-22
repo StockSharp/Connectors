@@ -10,9 +10,11 @@ public partial class GmxMessageAdapter
 		GmxNetworks.Arbitrum.DefaultCollateral();
 
 	/// <summary>GMX production network.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.BoardKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public GmxNetworks Network
 	{
@@ -36,10 +38,12 @@ public partial class GmxMessageAdapter
 	}
 
 	/// <summary>Primary official GMX API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string ApiEndpoint
 	{
@@ -48,9 +52,11 @@ public partial class GmxMessageAdapter
 	}
 
 	/// <summary>Secondary official GMX API peer.</summary>
-	[Display(Name = "Secondary API",
+	[Display(
+		Name = "Secondary API",
 		Description = "Independent official GMX API peer used for safe reads.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string SecondaryApiEndpoint
 	{
 		get => _secondaryApiEndpoint;
@@ -58,25 +64,31 @@ public partial class GmxMessageAdapter
 	}
 
 	/// <summary>Optional EVM wallet for read-only account data.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional EVM private key for express-order signing.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private decimal _defaultLeverage = 5m;
 
 	/// <summary>Leverage used to derive collateral when it is not supplied.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 5)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 5)]
 	public decimal DefaultLeverage
 	{
 		get => _defaultLeverage;
@@ -89,9 +101,11 @@ public partial class GmxMessageAdapter
 	private decimal _slippage = 0.3m;
 
 	/// <summary>Default order slippage in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 6)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 6)]
 	public decimal Slippage
 	{
 		get => _slippage;
@@ -102,8 +116,10 @@ public partial class GmxMessageAdapter
 	}
 
 	/// <summary>Default position collateral token.</summary>
-	[Display(Name = "Collateral token",
-		GroupName = LocalizedStrings.TransactionKey, Order = 7)]
+	[Display(
+		Name = "Collateral token",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 7)]
 	public string DefaultCollateralToken
 	{
 		get => _defaultCollateralToken;
@@ -113,9 +129,11 @@ public partial class GmxMessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(2);
 
 	/// <summary>Polling interval for current API snapshots.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -129,9 +147,11 @@ public partial class GmxMessageAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum rows requested for one history subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 9)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 9)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

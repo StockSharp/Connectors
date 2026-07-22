@@ -157,8 +157,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Margin mode.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey,
-		Description = LocalizedStrings.MarginKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey,
+		Description = LocalizedStrings.MarginKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public BloFinMarginModes MarginMode
 	{
 		get => (BloFinMarginModes?)Parameters.TryGetValue(nameof(MarginMode)) ?? BloFinMarginModes.Cross;
@@ -169,8 +173,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Position side.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
-		Description = LocalizedStrings.PositionKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public BloFinPositionSides PositionSide
 	{
 		get => (BloFinPositionSides?)Parameters.TryGetValue(nameof(PositionSide)) ?? BloFinPositionSides.Net;
@@ -181,8 +189,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Order execution policy.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OrderTypeKey,
-		Description = LocalizedStrings.OrderTypeKey, GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderTypeKey,
+		Description = LocalizedStrings.OrderTypeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public BloFinOrderPolicies Policy
 	{
 		get => (BloFinOrderPolicies?)Parameters.TryGetValue(nameof(Policy)) ?? BloFinOrderPolicies.Regular;
@@ -193,8 +205,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Leverage to set before the order is submitted. A null value keeps the exchange setting.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LeverageKey,
-		Description = LocalizedStrings.LeverageKey, GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LeverageKey,
+		Description = LocalizedStrings.LeverageKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public decimal? Leverage
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(Leverage));
@@ -205,9 +221,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Reduce an existing position only.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PosConditionReduceOnlyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;
@@ -218,8 +237,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Take-profit trigger price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey,
-		Description = LocalizedStrings.TakeProfitKey, GroupName = LocalizedStrings.ParametersKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
+		Description = LocalizedStrings.TakeProfitKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 5)]
 	public decimal? TakeProfitTriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TakeProfitTriggerPrice));
@@ -230,8 +253,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Take-profit order price. Use -1 for a market order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PriceKey,
-		Description = LocalizedStrings.PriceKey, GroupName = LocalizedStrings.ParametersKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceKey,
+		Description = LocalizedStrings.PriceKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 6)]
 	public decimal? TakeProfitOrderPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TakeProfitOrderPrice));
@@ -242,8 +269,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Stop-loss trigger price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey,
-		Description = LocalizedStrings.StopLossKey, GroupName = LocalizedStrings.ParametersKey, Order = 7)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey,
+		Description = LocalizedStrings.StopLossKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 7)]
 	public decimal? StopLossTriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopLossTriggerPrice));
@@ -254,8 +285,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Stop-loss order price. Use -1 for a market order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PriceKey,
-		Description = LocalizedStrings.PriceKey, GroupName = LocalizedStrings.ParametersKey, Order = 8)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceKey,
+		Description = LocalizedStrings.PriceKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 8)]
 	public decimal? StopLossOrderPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopLossOrderPrice));
@@ -266,8 +301,12 @@ public class BloFinOrderCondition : OrderCondition
 	/// Trigger price source for attached take-profit and stop-loss orders.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TypeKey,
-		Description = LocalizedStrings.TypeKey, GroupName = LocalizedStrings.ParametersKey, Order = 9)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TypeKey,
+		Description = LocalizedStrings.TypeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 9)]
 	public BloFinTriggerPriceTypes TriggerPriceType
 	{
 		get => (BloFinTriggerPriceTypes?)Parameters.TryGetValue(nameof(TriggerPriceType)) ?? BloFinTriggerPriceTypes.Last;

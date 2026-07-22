@@ -3,7 +3,8 @@ namespace StockSharp.Polymarket;
 /// <summary>The message adapter for Polymarket CLOB.</summary>
 [MediaIcon(Media.MediaNames.polymarket)]
 [Doc("topics/api/connectors/crypto_exchanges/polymarket.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.PolymarketKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

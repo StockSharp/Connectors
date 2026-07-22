@@ -5,7 +5,8 @@ namespace StockSharp.Luno;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.LunoKey)]
 public class LunoOrderCondition : OrderCondition, IStopLossOrderCondition
 {
@@ -13,10 +14,12 @@ public class LunoOrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Price that activates a stop-limit order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TriggerKey,
 		Description = LocalizedStrings.TriggerFieldKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -27,10 +30,12 @@ public class LunoOrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Whether the stop-limit order is intended to take profit.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TakeProfitKey,
 		Description = LocalizedStrings.TakeProfitKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public bool IsTakeProfit
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsTakeProfit)) ?? false;
@@ -41,10 +46,12 @@ public class LunoOrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Counter-currency amount used by a market buy order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AmountKey,
 		Description = LocalizedStrings.AmountKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public decimal? QuoteAmount
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));

@@ -3,7 +3,8 @@ namespace StockSharp.Fireblocks;
 /// <summary>The message adapter for Fireblocks custody workspaces.</summary>
 [MediaIcon(Media.MediaNames.fireblocks)]
 [Doc("topics/api/connectors/crypto_exchanges/fireblocks.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.FireblocksKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -17,9 +18,11 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	private string _apiEndpoint = FireblocksEnvironments.Us.GetApiEndpoint();
 
 	/// <summary>Fireblocks workspace cloud environment.</summary>
-	[Display(Name = "Environment",
+	[Display(
+		Name = "Environment",
 		Description = "Fireblocks workspace cloud environment.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public FireblocksEnvironments Environment
 	{
@@ -34,26 +37,32 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Fireblocks API user ID.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string ApiKey { get; set; }
 
 	/// <summary>PEM-encoded Fireblocks API private key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Fireblocks REST API root ending in /v1.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	[BasicSetting]
 	public string ApiEndpoint
 	{
@@ -64,10 +73,12 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Private-state reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -81,9 +92,11 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	private int _vaultPageSize = 500;
 
 	/// <summary>Vault accounts requested per API page.</summary>
-	[Display(Name = "Vault page size",
+	[Display(
+		Name = "Vault page size",
 		Description = "Vault accounts requested per Fireblocks API page.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int VaultPageSize
 	{
 		get => _vaultPageSize;
@@ -96,9 +109,11 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	private int _maximumVaultAccounts = 5000;
 
 	/// <summary>Maximum vault accounts loaded from the workspace.</summary>
-	[Display(Name = "Maximum vault accounts",
+	[Display(
+		Name = "Maximum vault accounts",
 		Description = "Maximum vault accounts loaded from the workspace.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public int MaximumVaultAccounts
 	{
 		get => _maximumVaultAccounts;
@@ -111,9 +126,11 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	private int _securityLookupLimit = 5000;
 
 	/// <summary>Maximum assets returned by an unbounded lookup.</summary>
-	[Display(Name = "Security lookup limit",
+	[Display(
+		Name = "Security lookup limit",
 		Description = "Maximum Fireblocks assets returned by one lookup.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public int SecurityLookupLimit
 	{
 		get => _securityLookupLimit;
@@ -126,10 +143,12 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	private int _historyLimit = 500;
 
 	/// <summary>Maximum transactions requested from the history endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

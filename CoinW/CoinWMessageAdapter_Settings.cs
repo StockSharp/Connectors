@@ -103,48 +103,72 @@ public partial class CoinWMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// <summary>
 	/// Spot REST API endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
-		Description = LocalizedStrings.AddressKey, GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.AddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string SpotRestEndpoint { get; set; } = _defaultSpotRestEndpoint;
 
 	/// <summary>
 	/// Futures REST API endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
-		Description = LocalizedStrings.AddressKey, GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.AddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string FuturesRestEndpoint { get; set; } = _defaultFuturesRestEndpoint;
 
 	/// <summary>
 	/// Spot public WebSocket endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WebSocketKey,
-		Description = LocalizedStrings.WsEndpointKey, GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string SpotPublicWsEndpoint { get; set; } = _defaultSpotPublicWsEndpoint;
 
 	/// <summary>
 	/// Spot private WebSocket endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WebSocketKey,
-		Description = LocalizedStrings.WsEndpointKey, GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string SpotPrivateWsEndpoint { get; set; } = _defaultSpotPrivateWsEndpoint;
 
 	/// <summary>
 	/// Futures public WebSocket endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WebSocketKey,
-		Description = LocalizedStrings.WsEndpointKey, GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 2)]
 	[BasicSetting]
 	public string FuturesPublicWsEndpoint { get; set; } = _defaultFuturesPublicWsEndpoint;
 
 	/// <summary>
 	/// Futures private WebSocket endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WebSocketKey,
-		Description = LocalizedStrings.WsEndpointKey, GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 3)]
 	[BasicSetting]
 	public string FuturesPrivateWsEndpoint { get; set; } = _defaultFuturesPrivateWsEndpoint;
 

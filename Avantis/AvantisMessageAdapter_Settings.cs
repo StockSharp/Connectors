@@ -27,65 +27,83 @@ public partial class AvantisMessageAdapter : MessageAdapter
 		"wss://hermes.pyth.network/ws";
 
 	/// <summary>Base Mainnet JSON-RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
 
 	/// <summary>Official Avantis pair-metadata endpoint.</summary>
-	[Display(Name = "Market metadata",
+	[Display(
+		Name = "Market metadata",
 		Description = "Official Avantis pair and risk metadata endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string MarketDataEndpoint { get; set; } =
 		_defaultMarketDataEndpoint;
 
 	/// <summary>Official Avantis account API endpoint.</summary>
-	[Display(Name = "Core API",
+	[Display(
+		Name = "Core API",
 		Description = "Official Avantis account-data endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string CoreApiEndpoint { get; set; } = _defaultCoreApiEndpoint;
 
 	/// <summary>Official Avantis price-update-data endpoint.</summary>
-	[Display(Name = "Feed V3",
+	[Display(
+		Name = "Feed V3",
 		Description = "Official Avantis oracle price endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string FeedEndpoint { get; set; } = _defaultFeedEndpoint;
 
 	/// <summary>Pyth Lazer realtime SSE endpoint used by Avantis.</summary>
-	[Display(Name = "Pyth Lazer",
+	[Display(
+		Name = "Pyth Lazer",
 		Description = "Realtime Pyth Lazer SSE endpoint used by Avantis.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	public string LazerEndpoint { get; set; } = _defaultLazerEndpoint;
 
 	/// <summary>Pyth Hermes WebSocket fallback endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = "Pyth Hermes fallback for pairs without Lazer.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 5)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
 	public string HermesEndpoint { get; set; } = _defaultHermesEndpoint;
 
 	/// <summary>Optional EVM wallet for read-only account access.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional EVM private key used to sign Base transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private decimal _defaultLeverage = 10m;
 
 	/// <summary>Leverage used when no Avantis condition is supplied.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 8)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 8)]
 	public decimal DefaultLeverage
 	{
 		get => _defaultLeverage;
@@ -98,9 +116,11 @@ public partial class AvantisMessageAdapter : MessageAdapter
 	private decimal _slippage = 1m;
 
 	/// <summary>Maximum opening-price slippage in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 9)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 9)]
 	public decimal Slippage
 	{
 		get => _slippage;
@@ -113,8 +133,10 @@ public partial class AvantisMessageAdapter : MessageAdapter
 	private decimal _executionFee = 0.00035m;
 
 	/// <summary>Default keeper execution fee in ETH.</summary>
-	[Display(Name = "Execution fee",
-		GroupName = LocalizedStrings.TransactionKey, Order = 10)]
+	[Display(
+		Name = "Execution fee",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 10)]
 	public decimal ExecutionFee
 	{
 		get => _executionFee;
@@ -125,15 +147,19 @@ public partial class AvantisMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Automatically approve USDC when allowance is insufficient.</summary>
-	[Display(Name = "Auto approve USDC",
-		GroupName = LocalizedStrings.TransactionKey, Order = 11)]
+	[Display(
+		Name = "Auto approve USDC",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 11)]
 	public bool IsAutoApprove { get; set; } = true;
 
 	private decimal _approvalAmount = 100000m;
 
 	/// <summary>USDC allowance requested by automatic approval.</summary>
-	[Display(Name = "USDC approval",
-		GroupName = LocalizedStrings.TransactionKey, Order = 12)]
+	[Display(
+		Name = "USDC approval",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 12)]
 	public decimal ApprovalAmount
 	{
 		get => _approvalAmount;
@@ -146,8 +172,10 @@ public partial class AvantisMessageAdapter : MessageAdapter
 	private TimeSpan _transactionTimeout = TimeSpan.FromMinutes(2);
 
 	/// <summary>Maximum time to wait for a Base transaction receipt.</summary>
-	[Display(Name = "Transaction timeout",
-		GroupName = LocalizedStrings.TransactionKey, Order = 13)]
+	[Display(
+		Name = "Transaction timeout",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 13)]
 	public TimeSpan TransactionTimeout
 	{
 		get => _transactionTimeout;
@@ -161,8 +189,10 @@ public partial class AvantisMessageAdapter : MessageAdapter
 	private TimeSpan _accountRefreshInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Polling interval for official Avantis account data.</summary>
-	[Display(Name = "Account refresh",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 14)]
+	[Display(
+		Name = "Account refresh",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 14)]
 	public TimeSpan AccountRefreshInterval
 	{
 		get => _accountRefreshInterval;

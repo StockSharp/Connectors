@@ -29,55 +29,79 @@ public enum YuantaEnvironments
 public partial class YuantaMessageAdapter : MessageAdapter
 {
 	/// <summary>Path to the official Yuanta SPARK SDK assembly or extracted SDK directory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PathKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PathKey,
 		Description = LocalizedStrings.YuantaSdkPathDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string SdkPath { get; set; }
 
 	/// <summary>Yuanta securities or futures account.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.YuantaAccountDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string Account { get; set; }
 
 	/// <summary>Yuanta electronic trading password.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.PasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
 
 	/// <summary>PFX certificate path used by the SDK on Linux and macOS.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CertificateKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CertificateKey,
 		Description = LocalizedStrings.YuantaCertificatePathDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string CertificatePath { get; set; }
 
 	/// <summary>PFX certificate password.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.YuantaCertificatePasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public SecureString CertificatePassword { get; set; }
 
 	/// <summary>Official Yuanta environment.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.YuantaEnvironmentKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.YuantaEnvironmentKey,
 		Description = LocalizedStrings.YuantaEnvironmentDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public YuantaEnvironments Environment { get; set; } = YuantaEnvironments.Production;
 
 	/// <summary>Optional official SDK log directory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LogDirectoryKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LogDirectoryKey,
 		Description = LocalizedStrings.YuantaLogPathDescKey,
-		GroupName = LocalizedStrings.LoggingKey, Order = 6)]
+		GroupName = LocalizedStrings.LoggingKey,
+		Order = 6)]
 	public string LogPath { get; set; }
 
 	/// <summary>Maximum connection restoration attempts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.YuantaReconnectAttemptsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.YuantaReconnectAttemptsKey,
 		Description = LocalizedStrings.YuantaReconnectAttemptsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <inheritdoc />

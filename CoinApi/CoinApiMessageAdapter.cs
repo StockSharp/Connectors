@@ -3,7 +3,8 @@ namespace StockSharp.CoinApi;
 /// <summary>The message adapter for CoinAPI Market Data REST and WebSocket APIs.</summary>
 [MediaIcon(Media.MediaNames.coinapi)]
 [Doc("topics/api/connectors/crypto_exchanges/coinapi.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CoinApiKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

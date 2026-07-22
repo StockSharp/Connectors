@@ -21,10 +21,12 @@ public partial class VariationalOmniMessageAdapter : MessageAdapter
 	/// <summary>
 	/// Public Variational Omni REST endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string Endpoint { get; set; } = _defaultEndpoint;
 
@@ -33,10 +35,12 @@ public partial class VariationalOmniMessageAdapter : MessageAdapter
 	/// <summary>
 	/// Interval between public market-statistics refreshes.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalDataUpdatesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public TimeSpan PollingInterval
 	{

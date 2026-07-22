@@ -5,7 +5,8 @@ namespace StockSharp.Drift;
 /// </summary>
 [MediaIcon(Media.MediaNames.drift)]
 [Doc("topics/api/connectors/crypto_exchanges/drift.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.DriftKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

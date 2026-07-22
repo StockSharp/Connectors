@@ -5,57 +5,71 @@ public partial class ZeroHashMessageAdapter : IKeySecretAdapter, IPassphraseAdap
 	private const string _defaultApiEndpoint = "https://api.zerohash.com/";
 
 	/// <summary>Zero Hash API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Base64-encoded Zero Hash API secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Zero Hash API passphrase.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PassphraseKey,
 		Description = LocalizedStrings.PasswordKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Passphrase { get; set; }
 
 	/// <summary>Fully-qualified Zero Hash CLOB account.</summary>
-	[Display(Name = "Account",
+	[Display(
+		Name = "Account",
 		Description = "Fully-qualified CLOB account used for orders and balances.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string Account { get; set; }
 
 	/// <summary>Fully-qualified Zero Hash CLOB user.</summary>
-	[Display(Name = "User",
+	[Display(
+		Name = "User",
 		Description = "Case-sensitive fully-qualified CLOB user.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public string User { get; set; }
 
 	/// <summary>Zero Hash REST and HTTP-stream API root.</summary>
-	[Display(Name = "API endpoint",
+	[Display(
+		Name = "API endpoint",
 		Description = "Zero Hash REST and CLOB HTTP-stream API root.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 5)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
 	[BasicSetting]
 	public string ApiEndpoint { get; set; } = _defaultApiEndpoint;
 
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Private-state reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -69,10 +83,12 @@ public partial class ZeroHashMessageAdapter : IKeySecretAdapter, IPassphraseAdap
 	private int _historyLimit = 100;
 
 	/// <summary>Maximum orders and executions returned per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

@@ -22,51 +22,63 @@ public partial class PacificaMessageAdapter : MessageAdapter
 		"wss://ws.pacifica.fi/ws";
 
 	/// <summary>Official REST endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Official WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string WebSocketEndpoint { get; set; } =
 		_defaultWebSocketEndpoint;
 
 	/// <summary>Optional main Pacifica account address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional base58 Solana keypair used for signing.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Optional API agent wallet derived from the signing key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PacificaAgentWalletKey,
 		Description = LocalizedStrings.PacificaAgentWalletDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public string AgentWallet { get; set; }
 
 	private TimeSpan _signatureExpiryWindow = TimeSpan.FromSeconds(5);
 
 	/// <summary>Lifetime of signed trading requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PacificaExpiryWindowKey,
 		Description = LocalizedStrings.PacificaExpiryWindowDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public TimeSpan SignatureExpiryWindow
 	{
 		get => _signatureExpiryWindow;
@@ -81,10 +93,12 @@ public partial class PacificaMessageAdapter : MessageAdapter
 	private decimal _marketOrderSlippage = 0.5m;
 
 	/// <summary>Default market-order slippage tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 6)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 6)]
 	public decimal MarketOrderSlippage
 	{
 		get => _marketOrderSlippage;
@@ -97,9 +111,11 @@ public partial class PacificaMessageAdapter : MessageAdapter
 	private int _marketDepth = 10;
 
 	/// <summary>Maximum order-book levels sent to StockSharp.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.MarketDepthKey, Order = 7)]
+		GroupName = LocalizedStrings.MarketDepthKey,
+		Order = 7)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -112,9 +128,11 @@ public partial class PacificaMessageAdapter : MessageAdapter
 	private int _historyLimit = 4000;
 
 	/// <summary>Maximum rows requested from history endpoints.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 8)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 8)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

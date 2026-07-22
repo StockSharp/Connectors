@@ -3,7 +3,8 @@ namespace StockSharp.Synthetix;
 /// <summary>The message adapter for Synthetix perpetual futures.</summary>
 [MediaIcon(Media.MediaNames.synthetix)]
 [Doc("topics/api/connectors/crypto_exchanges/synthetix.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.SynthetixKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

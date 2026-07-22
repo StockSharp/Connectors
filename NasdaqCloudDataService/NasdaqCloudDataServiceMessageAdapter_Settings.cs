@@ -3,8 +3,11 @@ namespace StockSharp.NasdaqCloudDataService;
 /// <summary>The message adapter for Nasdaq Cloud Data Service REST API.</summary>
 [MediaIcon(Media.MediaNames.nasdaq)]
 [Doc("topics/api/connectors/stock_market/nasdaq_cloud_data_service.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.NasdaqCloudDataServiceKey,
-	Description = LocalizedStrings.MarketDataConnectorKey, GroupName = LocalizedStrings.AmericaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.NasdaqCloudDataServiceKey,
+	Description = LocalizedStrings.MarketDataConnectorKey,
+	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Options |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Candles |
@@ -12,44 +15,62 @@ namespace StockSharp.NasdaqCloudDataService;
 public partial class NasdaqCloudDataServiceMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LoginKey,
 		Description = LocalizedStrings.LoginKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string Login { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.SecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
 
 	/// <summary>Customer-specific API base address supplied during onboarding.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.AddressKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public Uri Address { get; set; }
 
 	/// <summary>Equity market data source.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SourceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SourceKey,
 		Description = LocalizedStrings.SourceKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 3)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 3)]
 	[BasicSetting]
 	public NasdaqCloudSources Source { get; set; } = NasdaqCloudSources.Nasdaq;
 
 	/// <summary>Real-time or delayed market data.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ModeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ModeKey,
 		Description = LocalizedStrings.ModeKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 4)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 4)]
 	[BasicSetting]
 	public NasdaqCloudOffsets Offset { get; set; } = NasdaqCloudOffsets.Delayed;
 
 	/// <summary>Request optional Nasdaq Options Greeks and Implied Volatility data.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GreeksKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GreeksKey,
 		Description = LocalizedStrings.GreeksKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 5)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 5)]
 	public bool IsOptionGreeksEnabled { get; set; }
 
 	/// <inheritdoc />

@@ -16,39 +16,67 @@ namespace StockSharp.Saxo;
 public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
 	/// <summary>OAuth access token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
-		Description = LocalizedStrings.SaxoAccessTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
+		Description = LocalizedStrings.SaxoAccessTokenDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>OAuth refresh token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoRefreshTokenKey,
-		Description = LocalizedStrings.SaxoRefreshTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SaxoRefreshTokenKey,
+		Description = LocalizedStrings.SaxoRefreshTokenDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	public SecureString RefreshToken { get; set; }
 
 	/// <summary>OAuth application key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
-		Description = LocalizedStrings.SaxoClientIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.SaxoClientIdDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public SecureString Key { get; set; }
 
 	/// <summary>OAuth application secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
-		Description = LocalizedStrings.SaxoClientSecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.SaxoClientSecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public SecureString Secret { get; set; }
 
 	/// <summary>OAuth redirect URI registered for the application.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoRedirectUriKey,
-		Description = LocalizedStrings.SaxoRedirectUriDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SaxoRedirectUriKey,
+		Description = LocalizedStrings.SaxoRedirectUriDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public string RedirectUri { get; set; }
 
 	/// <summary>Optional default account key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoAccountKeyKey,
-		Description = LocalizedStrings.SaxoAccountKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SaxoAccountKeyKey,
+		Description = LocalizedStrings.SaxoAccountKeyDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public string AccountKey { get; set; }
 
 	/// <summary>Saxo environment.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoEnvironmentKey,
-		Description = LocalizedStrings.SaxoEnvironmentDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SaxoEnvironmentKey,
+		Description = LocalizedStrings.SaxoEnvironmentDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	[BasicSetting]
 	public SaxoEnvironments Environment { get; set; } = SaxoEnvironments.Simulation;
 

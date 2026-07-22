@@ -17,20 +17,32 @@ namespace StockSharp.Etoro;
 public partial class EtoroMessageAdapter : MessageAdapter, IDemoAdapter
 {
 	/// <summary>Public API key created in eToro Trading settings.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.EtoroApiKeyKey,
-		Description = LocalizedStrings.EtoroApiKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EtoroApiKeyKey,
+		Description = LocalizedStrings.EtoroApiKeyDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString PublicApiKey { get; set; }
 
 	/// <summary>User-specific key created in eToro Trading settings.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.EtoroUserKeyKey,
-		Description = LocalizedStrings.EtoroUserKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EtoroUserKeyKey,
+		Description = LocalizedStrings.EtoroUserKeyDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString UserKey { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
-		Description = LocalizedStrings.DemoTradingConnectKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey,
+		Description = LocalizedStrings.DemoTradingConnectKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 

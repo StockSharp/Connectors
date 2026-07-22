@@ -15,8 +15,12 @@ public sealed class KoreaInvestmentOrderCondition : OrderCondition
 
 	/// <summary>Explicit KIS market. When omitted, the connector derives it from the security board.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentMarketKey,
-		Description = LocalizedStrings.KoreaInvestmentMarketDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KoreaInvestmentMarketKey,
+		Description = LocalizedStrings.KoreaInvestmentMarketDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	public KoreaInvestmentMarkets? Market
 	{
 		get => _market;
@@ -29,8 +33,12 @@ public sealed class KoreaInvestmentOrderCondition : OrderCondition
 
 	/// <summary>Native order division.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentOrderDivisionKey,
-		Description = LocalizedStrings.KoreaInvestmentOrderDivisionDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KoreaInvestmentOrderDivisionKey,
+		Description = LocalizedStrings.KoreaInvestmentOrderDivisionDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	public KoreaInvestmentOrderDivisions Division
 	{
 		get => _division;
@@ -43,8 +51,12 @@ public sealed class KoreaInvestmentOrderCondition : OrderCondition
 
 	/// <summary>Time in force.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TimeInForceKey,
-		Description = LocalizedStrings.KoreaInvestmentTimeInForceDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeInForceKey,
+		Description = LocalizedStrings.KoreaInvestmentTimeInForceDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	public KoreaInvestmentTimeInForces TimeInForce
 	{
 		get => _timeInForce;
@@ -57,8 +69,12 @@ public sealed class KoreaInvestmentOrderCondition : OrderCondition
 
 	/// <summary>Use the KRX derivatives night session.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentNightSessionKey,
-		Description = LocalizedStrings.KoreaInvestmentNightSessionDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KoreaInvestmentNightSessionKey,
+		Description = LocalizedStrings.KoreaInvestmentNightSessionDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	public bool IsNight
 	{
 		get => _isNight;

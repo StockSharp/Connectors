@@ -3,7 +3,8 @@ namespace StockSharp.FalconX;
 /// <summary>The message adapter for FalconX institutional trading.</summary>
 [MediaIcon(Media.MediaNames.falconx)]
 [Doc("topics/api/connectors/crypto_exchanges/falconx.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.FalconXKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

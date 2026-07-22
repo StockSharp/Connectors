@@ -3,7 +3,8 @@ namespace StockSharp.Balancer;
 /// <summary>The message adapter for Balancer V2 and V3 pools.</summary>
 [MediaIcon(Media.MediaNames.balancer)]
 [Doc("topics/api/connectors/crypto_exchanges/balancer.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.BalancerKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -26,9 +27,11 @@ public partial class BalancerMessageAdapter : MessageAdapter
 		BalancerExtensions.TimeFrames;
 
 	/// <summary>Balancer production network.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.BoardKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public BalancerNetworks Network
 	{
@@ -46,26 +49,32 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Public wallet address used for balances.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional private key used for local transaction signing.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>EVM HTTP JSON-RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	[BasicSetting]
 	public string RpcEndpoint
 	{
@@ -74,10 +83,12 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>EVM WebSocket JSON-RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	[BasicSetting]
 	public string WebSocketEndpoint
 	{
@@ -86,29 +97,35 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Official Balancer GraphQL API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 5)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
 	public string ApiEndpoint { get; set; } = _defaultApiEndpoint;
 
 	/// <summary>
 	/// Optional semicolon-separated definitions using
 	/// pool or pool|base-token|quote-token|security-code format.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string Pools { get; set; }
 
 	private int _maximumDiscoveredPools = 10;
 
 	/// <summary>Maximum number of high-TVL pools discovered automatically.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public int MaximumDiscoveredPools
 	{
 		get => _maximumDiscoveredPools;
@@ -121,10 +138,12 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	private decimal _minimumPoolTvl = 100_000m;
 
 	/// <summary>Minimum pool TVL in USD for automatic discovery.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PriceKey,
 		Description = LocalizedStrings.PriceKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public decimal MinimumPoolTvl
 	{
 		get => _minimumPoolTvl;
@@ -137,10 +156,12 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	private int _historyMaximum = 1_000;
 
 	/// <summary>Maximum historical swaps requested per query.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public int HistoryMaximum
 	{
 		get => _historyMaximum;
@@ -153,10 +174,12 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	private decimal _probeVolume = 1m;
 
 	/// <summary>Base-token amount used for executable Level1 probes.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public decimal ProbeVolume
 	{
 		get => _probeVolume;
@@ -169,10 +192,12 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	private decimal _slippageTolerance = 0.5m;
 
 	/// <summary>Swap slippage tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 11)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 11)]
 	public decimal SlippageTolerance
 	{
 		get => _slippageTolerance;
@@ -187,10 +212,12 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Fallback polling interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 12)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 12)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -203,10 +230,12 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	private TimeSpan _receiptTimeout = TimeSpan.FromMinutes(3);
 
 	/// <summary>Transaction receipt wait timeout.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.ConnectionTimeoutKey,
 		Description = LocalizedStrings.ConnectionTimeoutKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 13)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 13)]
 	public TimeSpan ReceiptTimeout
 	{
 		get => _receiptTimeout;

@@ -3,7 +3,8 @@ namespace StockSharp.CoinGecko;
 /// <summary>The message adapter for CoinGecko REST and WebSocket APIs.</summary>
 [MediaIcon(Media.MediaNames.coingecko)]
 [Doc("topics/api/connectors/crypto_exchanges/coingecko.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CoinGeckoKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

@@ -6,15 +6,19 @@ public partial class KaikoMessageAdapter
 	private string _marketEndpoint = KaikoRegions.Us.GetMarketEndpoint();
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.TokenKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Kaiko REST API region.</summary>
-	[Display(Name = "Region", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Region",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
 	public KaikoRegions Region
@@ -30,15 +34,19 @@ public partial class KaikoMessageAdapter
 	}
 
 	/// <summary>Kaiko public reference data API root.</summary>
-	[Display(Name = "Reference endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+	[Display(
+		Name = "Reference endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	[BasicSetting]
 	public string ReferenceEndpoint { get; set; } =
 		"https://reference-data-api.kaiko.io";
 
 	/// <summary>Kaiko regional market data API root.</summary>
-	[Display(Name = "Market endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+	[Display(
+		Name = "Market endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	[BasicSetting]
 	public string MarketEndpoint
 	{
@@ -47,37 +55,47 @@ public partial class KaikoMessageAdapter
 	}
 
 	/// <summary>Kaiko production gRPC Stream endpoint.</summary>
-	[Display(Name = "Stream endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+	[Display(
+		Name = "Stream endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	[BasicSetting]
 	public string StreamEndpoint { get; set; } =
 		"https://gateway-v0-grpc.kaiko.ovh";
 
 	/// <summary>Optional exchange code used to narrow reference lookups.</summary>
-	[Display(Name = "Exchange filter",
+	[Display(
+		Name = "Exchange filter",
 		Description = "Optional Kaiko exchange code, for example cbse.",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 0)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 0)]
 	public string ExchangeFilter { get; set; }
 
 	/// <summary>Optional instrument class used to narrow reference lookups.</summary>
-	[Display(Name = "Instrument class",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 1)]
+	[Display(
+		Name = "Instrument class",
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 1)]
 	public KaikoInstrumentClasses InstrumentClassFilter { get; set; }
 
 	/// <summary>Use the Kaiko production gRPC Stream for live data.</summary>
-	[Display(Name = "Streaming",
+	[Display(
+		Name = "Streaming",
 		Description = "Use Kaiko Stream for live trades, top of book, and OHLCV.",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 2)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 2)]
 	[BasicSetting]
 	public bool IsStreamingEnabled { get; set; } = true;
 
 	private TimeSpan _requestInterval = TimeSpan.FromMilliseconds(250);
 
 	/// <summary>Minimum delay between REST requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public TimeSpan RequestInterval
 	{
 		get => _requestInterval;
@@ -91,7 +109,9 @@ public partial class KaikoMessageAdapter
 	private int _maximumItems = 25000;
 
 	/// <summary>Maximum number of reference instruments returned.</summary>
-	[Display(Name = "Maximum items", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Maximum items",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public int MaximumItems
 	{
@@ -105,10 +125,12 @@ public partial class KaikoMessageAdapter
 	private int _historyLimit = 100000;
 
 	/// <summary>Maximum historical rows returned per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

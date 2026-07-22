@@ -41,42 +41,52 @@ public partial class StandXMessageAdapter : MessageAdapter
 		"wss://perps.standx.com/ws-api/v1";
 
 	/// <summary>Public and private REST endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Wallet authentication endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string AuthEndpoint { get; set; } = _defaultAuthEndpoint;
 
 	/// <summary>Market and account WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string MarketSocketEndpoint { get; set; } =
 		_defaultMarketSocketEndpoint;
 
 	/// <summary>Signed order-entry WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TransactionsKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string OrderSocketEndpoint { get; set; } =
 		_defaultOrderSocketEndpoint;
 
 	private StandXChains _chain;
 
 	/// <summary>Wallet chain used for private access.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.ModeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public StandXChains Chain
 	{
@@ -88,25 +98,31 @@ public partial class StandXMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Optional wallet address. It is validated against the key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>BSC hex key or Solana base58 64-byte keypair.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private TimeSpan _tokenLifetime = TimeSpan.FromDays(7);
 
 	/// <summary>Lifetime requested for the StandX JWT.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TimeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public TimeSpan TokenLifetime
 	{
 		get => _tokenLifetime;
@@ -119,9 +135,11 @@ public partial class StandXMessageAdapter : MessageAdapter
 	private int _marketDepth = 50;
 
 	/// <summary>Maximum order-book levels sent to StockSharp.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.MarketDepthKey, Order = 8)]
+		GroupName = LocalizedStrings.MarketDepthKey,
+		Order = 8)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -134,10 +152,12 @@ public partial class StandXMessageAdapter : MessageAdapter
 	private TimeSpan _candlePollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>REST polling interval for current candle updates.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalDataUpdatesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public TimeSpan CandlePollingInterval
 	{
 		get => _candlePollingInterval;

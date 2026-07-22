@@ -6,8 +6,11 @@ using System.Security.Authentication;
 /// <summary>The message adapter for Sierra Chart and other DTC Protocol servers.</summary>
 [MediaIcon(Media.MediaNames.sierrachartdtc)]
 [Doc("topics/api/connectors/common/sierra_chart_dtc.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SierraChartDtcKey,
-	Description = LocalizedStrings.StockConnectorKey, GroupName = LocalizedStrings.OtherKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.SierraChartDtcKey,
+	Description = LocalizedStrings.StockConnectorKey,
+	GroupName = LocalizedStrings.OtherKey)]
 [MessageAdapterCategory(MessageAdapterCategories.RealTime | MessageAdapterCategories.Free |
 	MessageAdapterCategories.History | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Ticks |
@@ -26,72 +29,105 @@ public partial class SierraChartDtcMessageAdapter : MessageAdapter,
 	public static readonly EndPoint DefaultHistoryAddress = new IPEndPoint(IPAddress.Loopback, 11098);
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.SierraChartDtcAddressDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public EndPoint Address { get; set; } = DefaultAddress;
 
 	/// <summary>Endpoint used for historical price requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SierraChartDtcHistoryAddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SierraChartDtcHistoryAddressKey,
 		Description = LocalizedStrings.SierraChartDtcHistoryAddressDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public EndPoint HistoryAddress { get; set; } = DefaultHistoryAddress;
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LoginKey,
 		Description = LocalizedStrings.LoginDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public string Login { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.PasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public SecureString Password { get; set; }
 
 	/// <summary>Default DTC trade account.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PortfolioKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PortfolioKey,
 		Description = LocalizedStrings.SierraChartDtcTradeAccountDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public string TradeAccount { get; set; }
 
 	/// <summary>Requested server-side interval for aggregated market-data updates.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SierraChartDtcTransmissionIntervalKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SierraChartDtcTransmissionIntervalKey,
 		Description = LocalizedStrings.SierraChartDtcTransmissionIntervalDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public TimeSpan MarketDataTransmissionInterval { get; set; }
 
 	/// <summary>Number of order-book levels requested from the DTC server.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DepthKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DepthKey,
 		Description = LocalizedStrings.SierraChartDtcDepthLevelsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public int MarketDepthLevels { get; set; } = 20;
 
 	/// <summary>TLS protocol used by the market-data and trading connection.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ProtocolKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProtocolKey,
 		Description = LocalizedStrings.SslProtocolKey,
-		GroupName = LocalizedStrings.SslKey, Order = 100)]
+		GroupName = LocalizedStrings.SslKey,
+		Order = 100)]
 	public SslProtocols SslProtocol { get; set; }
 
 	/// <summary>TLS protocol used by historical connections.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SierraChartDtcHistorySslProtocolKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SierraChartDtcHistorySslProtocolKey,
 		Description = LocalizedStrings.SslProtocolKey,
-		GroupName = LocalizedStrings.SslKey, Order = 101)]
+		GroupName = LocalizedStrings.SslKey,
+		Order = 101)]
 	public SslProtocols HistorySslProtocol { get; set; }
 
 	/// <summary>Whether remote TLS certificates must pass platform validation.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ValidateRemoteCertificatesKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ValidateRemoteCertificatesKey,
 		Description = LocalizedStrings.ValidateRemoteCertificatesDescKey,
-		GroupName = LocalizedStrings.SslKey, Order = 102)]
+		GroupName = LocalizedStrings.SslKey,
+		Order = 102)]
 	public bool IsCertificateValidation { get; set; } = true;
 
 	/// <summary>Optional TLS server name. The endpoint host is used when empty.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TargetHostKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TargetHostKey,
 		Description = LocalizedStrings.TargetHostDescKey,
-		GroupName = LocalizedStrings.SslKey, Order = 103)]
+		GroupName = LocalizedStrings.SslKey,
+		Order = 103)]
 	public string TargetHost { get; set; }
 
 	/// <inheritdoc />

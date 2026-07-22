@@ -14,8 +14,12 @@ public class OurbitOrderCondition : OrderCondition
 	/// Futures leverage.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LeverageKey,
-		Description = LocalizedStrings.LeverageKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LeverageKey,
+		Description = LocalizedStrings.LeverageKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public int Leverage
 	{
 		get => (int?)Parameters.TryGetValue(nameof(Leverage)) ?? 20;
@@ -26,8 +30,12 @@ public class OurbitOrderCondition : OrderCondition
 	/// Futures margin mode.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey,
-		Description = LocalizedStrings.MarginKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey,
+		Description = LocalizedStrings.MarginKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public MarginModes MarginMode
 	{
 		get => (MarginModes?)Parameters.TryGetValue(nameof(MarginMode)) ?? MarginModes.Cross;
@@ -38,9 +46,12 @@ public class OurbitOrderCondition : OrderCondition
 	/// Reduce an existing futures position only.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PosConditionReduceOnlyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;

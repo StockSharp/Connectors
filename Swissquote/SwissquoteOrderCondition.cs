@@ -10,8 +10,12 @@ public class SwissquoteOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>Stop activation price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
-		Description = LocalizedStrings.StopPriceDescKey, GroupName = LocalizedStrings.StopLossKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 0)]
 	public decimal? StopPrice
 	{
 		get => Parameters.TryGetValue(nameof(StopPrice))?.To<decimal?>();
@@ -20,9 +24,12 @@ public class SwissquoteOrderCondition : OrderCondition, IStopLossOrderCondition
 
 	/// <summary>Instrument identifier override sent to OpenWealth.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecurityIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecurityIdKey,
 		Description = LocalizedStrings.SecurityIdKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	public string InstrumentIdentification
 	{
 		get => Parameters.TryGetValue(nameof(InstrumentIdentification))?.ToString();
@@ -31,9 +38,12 @@ public class SwissquoteOrderCondition : OrderCondition, IStopLossOrderCondition
 
 	/// <summary>Instrument identifier type.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TypeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TypeKey,
 		Description = LocalizedStrings.TypeKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	public SwissquoteInstrumentIdentificationTypes InstrumentIdentificationType
 	{
 		get => Parameters.TryGetValue(nameof(InstrumentIdentificationType))?.To<SwissquoteInstrumentIdentificationTypes>()
@@ -43,9 +53,12 @@ public class SwissquoteOrderCondition : OrderCondition, IStopLossOrderCondition
 
 	/// <summary>ISO 10383 Market Identifier Code.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarketKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketKey,
 		Description = LocalizedStrings.MarketKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	public string MarketIdentificationCode
 	{
 		get => Parameters.TryGetValue(nameof(MarketIdentificationCode))?.ToString();
@@ -54,9 +67,12 @@ public class SwissquoteOrderCondition : OrderCondition, IStopLossOrderCondition
 
 	/// <summary>Instrument/listing currency.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CurrencyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CurrencyKey,
 		Description = LocalizedStrings.CurrencyDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 4)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 4)]
 	public string Currency
 	{
 		get => Parameters.TryGetValue(nameof(Currency))?.ToString();
@@ -65,9 +81,12 @@ public class SwissquoteOrderCondition : OrderCondition, IStopLossOrderCondition
 
 	/// <summary>Cash account currency. Leave empty for digital assets.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PortfolioCurrencyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PortfolioCurrencyKey,
 		Description = LocalizedStrings.CurrencyDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 5)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 5)]
 	public string CashAccountCurrency
 	{
 		get => Parameters.TryGetValue(nameof(CashAccountCurrency))?.ToString();
@@ -76,9 +95,12 @@ public class SwissquoteOrderCondition : OrderCondition, IStopLossOrderCondition
 
 	/// <summary>Quantity representation.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VolumeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 6)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 6)]
 	public SwissquoteQuantityTypes QuantityType
 	{
 		get => Parameters.TryGetValue(nameof(QuantityType))?.To<SwissquoteQuantityTypes>()

@@ -1,4 +1,4 @@
-﻿namespace StockSharp.Btce;
+namespace StockSharp.Btce;
 
 using System.ComponentModel.DataAnnotations;
 using System.Security;
@@ -27,21 +27,21 @@ public partial class BtceMessageAdapter : MessageAdapter, IKeySecretAdapter, IAd
 
 	/// <inheritdoc />
 	[Display(
-			ResourceType = typeof(LocalizedStrings),
-			Name = LocalizedStrings.KeyKey,
-			Description = LocalizedStrings.KeyKey + LocalizedStrings.Dot,
-			GroupName = LocalizedStrings.ConnectionKey,
-			Order = 0)]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <inheritdoc />
 	[Display(
-			ResourceType = typeof(LocalizedStrings),
-			Name = LocalizedStrings.SecretKey,
-			Description = LocalizedStrings.SecretDescKey,
-			GroupName = LocalizedStrings.ConnectionKey,
-			Order = 1)]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.SecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 

@@ -26,7 +26,8 @@ public enum OneInchChains
 /// <summary>The message adapter for the 1inch Classic Swap API.</summary>
 [MediaIcon(Media.MediaNames.one_inch)]
 [Doc("topics/api/connectors/crypto_exchanges/one_inch.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.OneInchKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -40,50 +41,62 @@ public partial class OneInchMessageAdapter : MessageAdapter
 		"https://api.1inch.com/swap/v6.1";
 
 	/// <summary>1inch Business Portal API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString ApiKey { get; set; }
 
 	/// <summary>Production network.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.BoardKey,
 		Description = LocalizedStrings.BoardKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public OneInchChains Chain { get; set; } = OneInchChains.Ethereum;
 
 	/// <summary>Public wallet address used for quotes and balances.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional private key used to sign swaps and approvals.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>1inch Classic Swap API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string ApiEndpoint { get; set; } = _defaultApiEndpoint;
 
 	/// <summary>Optional custom EVM HTTP JSON-RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string RpcEndpoint { get; set; }
 
@@ -92,19 +105,23 @@ public partial class OneInchMessageAdapter : MessageAdapter
 	/// base-token|quote-token|security-code format. The security code is
 	/// optional.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public string Markets { get; set; }
 
 	private decimal _probeVolume = 0.01m;
 
 	/// <summary>Base-token amount used for executable quote probes.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public decimal ProbeVolume
 	{
 		get => _probeVolume;
@@ -117,10 +134,12 @@ public partial class OneInchMessageAdapter : MessageAdapter
 	private decimal _slippageTolerance = 0.5m;
 
 	/// <summary>Maximum swap slippage in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public decimal SlippageTolerance
 	{
 		get => _slippageTolerance;
@@ -135,10 +154,12 @@ public partial class OneInchMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Polling interval for quotes, balances, and receipts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -151,10 +172,12 @@ public partial class OneInchMessageAdapter : MessageAdapter
 	private TimeSpan _receiptTimeout = TimeSpan.FromMinutes(3);
 
 	/// <summary>Maximum time to wait for approvals to be mined.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TimeKey,
 		Description = LocalizedStrings.TimeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public TimeSpan ReceiptTimeout
 	{
 		get => _receiptTimeout;
@@ -166,10 +189,12 @@ public partial class OneInchMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Automatically approve the 1inch router when required.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AutoKey,
 		Description = LocalizedStrings.AutoKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public bool IsAutoApprove { get; set; } = true;
 
 	/// <inheritdoc />

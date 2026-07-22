@@ -29,64 +29,80 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 	private const string _defaultRpcEndpoint = "https://rpc-1.gmtrade.xyz/";
 
 	/// <summary>Keeper GraphQL HTTP endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string KeeperEndpoint { get; set; } = _defaultKeeperEndpoint;
 
 	/// <summary>Keeper GraphQL WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string KeeperSocketEndpoint { get; set; } =
 		_defaultKeeperSocketEndpoint;
 
 	/// <summary>Candle GraphQL HTTP endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string CandleEndpoint { get; set; } = _defaultCandleEndpoint;
 
 	/// <summary>Candle GraphQL WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string CandleSocketEndpoint { get; set; } =
 		_defaultCandleSocketEndpoint;
 
 	/// <summary>Official Subsquid GraphQL endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.HistoryKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	public string IndexerEndpoint { get; set; } = _defaultIndexerEndpoint;
 
 	/// <summary>Solana JSON-RPC endpoint used for wallet balances.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 5)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
 	public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
 
 	/// <summary>Optional read-only Solana wallet address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	private TimeSpan _tradePollingInterval = TimeSpan.FromSeconds(2);
 
 	/// <summary>Official indexer polling interval for new trades.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalDataUpdatesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public TimeSpan TradePollingInterval
 	{
 		get => _tradePollingInterval;
@@ -99,10 +115,12 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 	private TimeSpan _balancePollingInterval = TimeSpan.FromSeconds(15);
 
 	/// <summary>Solana wallet-balance polling interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalDataUpdatesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public TimeSpan BalancePollingInterval
 	{
 		get => _balancePollingInterval;
@@ -115,9 +133,11 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 	private int _historyLimit = 5000;
 
 	/// <summary>Maximum number of rows requested per history query.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 9)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 9)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

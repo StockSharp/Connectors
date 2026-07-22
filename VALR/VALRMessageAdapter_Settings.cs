@@ -31,18 +31,22 @@ public partial class VALRMessageAdapter : MessageAdapter, IKeySecretAdapter
 		VALRExtensions.TimeFrames;
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
@@ -50,30 +54,36 @@ public partial class VALRMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// Optional subaccount identifier. Required for a primary-account key to
 	/// access margin or futures subaccounts.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.AccountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string SubAccountId { get; set; }
 
 	/// <summary>
 	/// REST API endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>
 	/// Trade WebSocket endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.WsEndpointKey,
-		GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string TradeWebSocketEndpoint { get; set; } =
 		_defaultTradeWebSocketEndpoint;
@@ -81,10 +91,12 @@ public partial class VALRMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// <summary>
 	/// Account WebSocket endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.WsEndpointKey,
-		GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string AccountWebSocketEndpoint { get; set; } =
 		_defaultAccountWebSocketEndpoint;

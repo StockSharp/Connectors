@@ -12,8 +12,11 @@ public sealed class BloombergOrderCondition : OrderCondition, IStopLossOrderCond
 
 	/// <inheritdoc />
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
-		Description = LocalizedStrings.StopPriceDescKey, GroupName = LocalizedStrings.GeneralKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.GeneralKey)]
 	public decimal? StopPrice
 	{
 		get => _stopPrice;

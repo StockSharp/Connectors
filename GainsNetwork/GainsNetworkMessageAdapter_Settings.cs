@@ -10,64 +10,82 @@ public partial class GainsNetworkMessageAdapter
 		"wss://backend-pricing.eu.gains.trade/v4";
 
 	/// <summary>Gains Network deployment.</summary>
-	[Display(Name = "Environment", Description =
-		"Gains Network deployment environment.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		Name = "Environment",
+		Description = "Gains Network deployment environment.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public GainsNetworkEnvironments Environment { get; set; } =
 		GainsNetworkEnvironments.Arbitrum;
 
 	/// <summary>Optional JSON-RPC endpoint override.</summary>
-	[Display(Name = "JSON-RPC endpoint", Description =
-		"Optional network JSON-RPC endpoint override.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+	[Display(
+		Name = "JSON-RPC endpoint",
+		Description = "Optional network JSON-RPC endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	public string RpcEndpoint { get; set; }
 
 	/// <summary>Optional chain backend endpoint override.</summary>
-	[Display(Name = "Backend endpoint", Description =
-		"Optional chain-specific Gains backend endpoint override.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+	[Display(
+		Name = "Backend endpoint",
+		Description = "Optional chain-specific Gains backend endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string BackendEndpoint { get; set; }
 
 	/// <summary>Global history backend endpoint.</summary>
-	[Display(Name = "Global endpoint", Description =
-		"Gains cross-chain history backend endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+	[Display(
+		Name = "Global endpoint",
+		Description = "Gains cross-chain history backend endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string GlobalEndpoint { get; set; } = _defaultGlobalEndpoint;
 
 	/// <summary>Pricing REST endpoint.</summary>
-	[Display(Name = "Pricing endpoint", Description =
-		"Gains current OHLC snapshot endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+	[Display(
+		Name = "Pricing endpoint",
+		Description = "Gains current OHLC snapshot endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string PricingEndpoint { get; set; } = _defaultPricingEndpoint;
 
 	/// <summary>Live price WebSocket endpoint.</summary>
-	[Display(Name = "Price WebSocket", Description =
-		"Gains live mark and index price stream.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+	[Display(
+		Name = "Price WebSocket",
+		Description = "Gains live mark and index price stream.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	public string PriceSocketEndpoint { get; set; } =
 		_defaultPriceSocketEndpoint;
 
 	/// <summary>EVM wallet for read-only account access.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional EVM private key used to sign transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private string _defaultCollateral = "USDC";
 
 	/// <summary>Default collateral token.</summary>
-	[Display(Name = "Collateral", Description =
-		"Default collateral token for new positions.",
-		GroupName = LocalizedStrings.TransactionKey, Order = 3)]
+	[Display(
+		Name = "Collateral",
+		Description = "Default collateral token for new positions.",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 3)]
 	public string DefaultCollateral
 	{
 		get => _defaultCollateral;
@@ -78,9 +96,11 @@ public partial class GainsNetworkMessageAdapter
 	private decimal _defaultLeverage = 10m;
 
 	/// <summary>Default position leverage.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 4)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 4)]
 	public decimal DefaultLeverage
 	{
 		get => _defaultLeverage;
@@ -93,9 +113,11 @@ public partial class GainsNetworkMessageAdapter
 	private decimal _slippagePercentage = 1m;
 
 	/// <summary>Maximum execution slippage, in percent.</summary>
-	[Display(Name = "Slippage (%)", Description =
-		"Maximum execution slippage in percentage points.",
-		GroupName = LocalizedStrings.TransactionKey, Order = 5)]
+	[Display(
+		Name = "Slippage (%)",
+		Description = "Maximum execution slippage in percentage points.",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 5)]
 	public decimal SlippagePercentage
 	{
 		get => _slippagePercentage;
@@ -106,22 +128,28 @@ public partial class GainsNetworkMessageAdapter
 	}
 
 	/// <summary>Optional Gains referral address.</summary>
-	[Display(Name = "Referrer", Description =
-		"Optional EVM referral address included with new trades.",
-		GroupName = LocalizedStrings.TransactionKey, Order = 6)]
+	[Display(
+		Name = "Referrer",
+		Description = "Optional EVM referral address included with new trades.",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 6)]
 	public string ReferrerAddress { get; set; }
 
 	/// <summary>Automatically approve collateral when allowance is low.</summary>
-	[Display(Name = "Auto approve", Description =
-		"Automatically approve the Gains diamond to spend collateral.",
-		GroupName = LocalizedStrings.TransactionKey, Order = 7)]
+	[Display(
+		Name = "Auto approve",
+		Description = "Automatically approve the Gains diamond to spend collateral.",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 7)]
 	public bool IsAutoApprove { get; set; } = true;
 
 	private decimal _approvalAmount = 1_000_000m;
 
 	/// <summary>Collateral allowance requested by automatic approval.</summary>
-	[Display(Name = "Approval amount",
-		GroupName = LocalizedStrings.TransactionKey, Order = 8)]
+	[Display(
+		Name = "Approval amount",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 8)]
 	public decimal ApprovalAmount
 	{
 		get => _approvalAmount;
@@ -134,8 +162,10 @@ public partial class GainsNetworkMessageAdapter
 	private TimeSpan _transactionTimeout = TimeSpan.FromMinutes(2);
 
 	/// <summary>Maximum transaction receipt wait time.</summary>
-	[Display(Name = "Transaction timeout",
-		GroupName = LocalizedStrings.TransactionKey, Order = 9)]
+	[Display(
+		Name = "Transaction timeout",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 9)]
 	public TimeSpan TransactionTimeout
 	{
 		get => _transactionTimeout;
@@ -149,8 +179,10 @@ public partial class GainsNetworkMessageAdapter
 	private TimeSpan _accountRefreshInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Private account reconciliation interval.</summary>
-	[Display(Name = "Account refresh",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+	[Display(
+		Name = "Account refresh",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public TimeSpan AccountRefreshInterval
 	{
 		get => _accountRefreshInterval;
@@ -164,9 +196,11 @@ public partial class GainsNetworkMessageAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum history records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 11)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 11)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

@@ -14,8 +14,12 @@ public class BullishOrderCondition : OrderCondition
 	/// Trigger price for a stop-limit order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
-		Description = LocalizedStrings.StopPriceKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? StopPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopPrice));
@@ -26,8 +30,12 @@ public class BullishOrderCondition : OrderCondition
 	/// Allow the exchange to borrow assets for this order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IsMarginKey,
-		Description = LocalizedStrings.IsMarginKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IsMarginKey,
+		Description = LocalizedStrings.IsMarginKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public bool IsBorrowAllowed
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsBorrowAllowed)) ?? false;
@@ -38,8 +46,12 @@ public class BullishOrderCondition : OrderCondition
 	/// Apply Bullish market-maker protection to an option order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PosProtectionKey,
-		Description = LocalizedStrings.PosProtectionKey, GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PosProtectionKey,
+		Description = LocalizedStrings.PosProtectionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public bool IsMarketMakerProtection
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsMarketMakerProtection)) ?? false;
@@ -50,8 +62,12 @@ public class BullishOrderCondition : OrderCondition
 	/// Submit the order to an auction using good-till-crossing time in force.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ExtendedOrderTypeKey,
-		Description = LocalizedStrings.ExtendedOrderTypeDescKey, GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExtendedOrderTypeKey,
+		Description = LocalizedStrings.ExtendedOrderTypeDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public bool IsAuction
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsAuction)) ?? false;

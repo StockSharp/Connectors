@@ -3,18 +3,23 @@ namespace StockSharp.Tardis;
 public partial class TardisMessageAdapter
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.TokenKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	private string _exchange = "binance";
 
 	/// <summary>Tardis exchange identifier.</summary>
-	[Display(Name = "Exchange", Description = "Tardis exchange ID.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		Name = "Exchange",
+		Description = "Tardis exchange ID.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string Exchange
 	{
@@ -23,30 +28,38 @@ public partial class TardisMessageAdapter
 	}
 
 	/// <summary>Tardis cloud REST API v1 root.</summary>
-	[Display(Name = "REST endpoint", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "REST endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	[BasicSetting]
 	public string ApiEndpoint { get; set; } = "https://api.tardis.dev/v1/";
 
 	/// <summary>Local Tardis Machine HTTP root.</summary>
-	[Display(Name = "Machine HTTP endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+	[Display(
+		Name = "Machine HTTP endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string MachineHttpEndpoint { get; set; } = "http://localhost:8000/";
 
 	/// <summary>Local Tardis Machine WebSocket root.</summary>
-	[Display(Name = "Machine WebSocket endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+	[Display(
+		Name = "Machine WebSocket endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	[BasicSetting]
 	public string MachineSocketEndpoint { get; set; } = "ws://localhost:8001/";
 
 	private TimeSpan _requestInterval = TimeSpan.FromMilliseconds(100);
 
 	/// <summary>Minimum delay between cloud REST requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public TimeSpan RequestInterval
 	{
 		get => _requestInterval;
@@ -60,9 +73,11 @@ public partial class TardisMessageAdapter
 	private TimeSpan _streamTimeout = TimeSpan.FromSeconds(30);
 
 	/// <summary>Underlying exchange stream inactivity timeout.</summary>
-	[Display(Name = "Stream timeout",
+	[Display(
+		Name = "Stream timeout",
 		Description = "Tardis Machine exchange-stream inactivity timeout.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public TimeSpan StreamTimeout
 	{
 		get => _streamTimeout;
@@ -76,7 +91,9 @@ public partial class TardisMessageAdapter
 	private int _maximumItems = 25000;
 
 	/// <summary>Maximum number of instruments returned by a lookup.</summary>
-	[Display(Name = "Maximum items", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Maximum items",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public int MaximumItems
 	{
@@ -90,10 +107,12 @@ public partial class TardisMessageAdapter
 	private int _historyLimit = 100000;
 
 	/// <summary>Maximum number of replay messages per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -106,9 +125,11 @@ public partial class TardisMessageAdapter
 	private TimeSpan _historyLookback = TimeSpan.FromDays(1);
 
 	/// <summary>Default replay range when no start time is specified.</summary>
-	[Display(Name = "History lookback",
+	[Display(
+		Name = "History lookback",
 		Description = "Default replay range when history has no start time.",
-		GroupName = LocalizedStrings.HistoryKey, Order = 1)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 1)]
 	public TimeSpan HistoryLookback
 	{
 		get => _historyLookback;
@@ -122,9 +143,11 @@ public partial class TardisMessageAdapter
 	private TimeSpan _maximumReplaySpan = TimeSpan.FromDays(7);
 
 	/// <summary>Maximum time span accepted by one replay subscription.</summary>
-	[Display(Name = "Maximum replay span",
+	[Display(
+		Name = "Maximum replay span",
 		Description = "Maximum range accepted by one normalized replay.",
-		GroupName = LocalizedStrings.HistoryKey, Order = 2)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 2)]
 	public TimeSpan MaximumReplaySpan
 	{
 		get => _maximumReplaySpan;

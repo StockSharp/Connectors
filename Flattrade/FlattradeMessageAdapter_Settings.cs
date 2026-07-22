@@ -17,36 +17,51 @@ namespace StockSharp.Flattrade;
 public partial class FlattradeMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	/// <summary>Flattrade user identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UserIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UserIdKey,
 		Description = LocalizedStrings.FlattradeUserIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string UserId { get; set; }
 
 	/// <summary>Trading account identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.FlattradeAccountIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string AccountId { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.FlattradeSessionTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Default order product.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FlattradeDefaultProductKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FlattradeDefaultProductKey,
 		Description = LocalizedStrings.FlattradeDefaultProductDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	public FlattradeProducts DefaultProduct { get; set; } = FlattradeProducts.Delivery;
 
 	/// <summary>Maximum number of streaming reconnect attempts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FlattradeReconnectAttemptsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FlattradeReconnectAttemptsKey,
 		Description = LocalizedStrings.FlattradeReconnectAttemptsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <inheritdoc />

@@ -3,62 +3,80 @@ namespace StockSharp.Drift;
 public partial class DriftMessageAdapter
 {
 	/// <summary>Optional public Solana authority wallet address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional base58 Solana keypair used for transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Optional Drift subaccount public key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.AccountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string AccountAddress { get; set; }
 
 	/// <summary>Current hosted Data API endpoint.</summary>
-	[Display(Name = "Data API", Description = "Drift Data API endpoint.",
-		GroupName = "Addresses", Order = 0)]
+	[Display(
+		Name = "Data API",
+		Description = "Drift Data API endpoint.",
+		GroupName = "Addresses",
+		Order = 0)]
 	public string DataApiEndpoint { get; set; } =
 		"https://data.velocity.exchange";
 
 	/// <summary>Current hosted Data API WebSocket endpoint.</summary>
-	[Display(Name = "Data WebSocket",
+	[Display(
+		Name = "Data WebSocket",
 		Description = "Drift Data API WebSocket endpoint.",
-		GroupName = "Addresses", Order = 1)]
+		GroupName = "Addresses",
+		Order = 1)]
 	public string DataSocketEndpoint { get; set; } =
 		"wss://data.velocity.exchange/ws";
 
 	/// <summary>Current hosted DLOB endpoint.</summary>
-	[Display(Name = "DLOB API", Description = "Drift DLOB REST endpoint.",
-		GroupName = "Addresses", Order = 2)]
+	[Display(
+		Name = "DLOB API",
+		Description = "Drift DLOB REST endpoint.",
+		GroupName = "Addresses",
+		Order = 2)]
 	public string DlobEndpoint { get; set; } =
 		"https://dlob.velocity.exchange";
 
 	/// <summary>Current hosted DLOB WebSocket endpoint.</summary>
-	[Display(Name = "DLOB WebSocket",
+	[Display(
+		Name = "DLOB WebSocket",
 		Description = "Drift DLOB WebSocket endpoint.",
-		GroupName = "Addresses", Order = 3)]
+		GroupName = "Addresses",
+		Order = 3)]
 	public string DlobSocketEndpoint { get; set; } =
 		"wss://dlob.velocity.exchange/ws";
 
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Polling interval for account state.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -71,10 +89,12 @@ public partial class DriftMessageAdapter
 	private int _historyLimit = 100;
 
 	/// <summary>Maximum number of historical records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -87,10 +107,12 @@ public partial class DriftMessageAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum DLOB depth.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -101,10 +123,12 @@ public partial class DriftMessageAdapter
 	}
 
 	/// <summary>Whether prepared transactions are simulated by the API.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.EnableSimulatorKey,
 		Description = LocalizedStrings.EnableSimulatorKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public bool IsSimulationEnabled { get; set; } = true;
 
 	/// <inheritdoc />

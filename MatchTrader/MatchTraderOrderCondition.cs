@@ -16,7 +16,9 @@ public sealed class MatchTraderOrderCondition : BaseWithdrawOrderCondition
 	public decimal? TakeProfit { get; set; }
 
 	/// <summary>Native position identifier used when <see cref="BaseWithdrawOrderCondition.IsWithdraw"/> is enabled.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
 		GroupName = LocalizedStrings.GeneralKey)]
 	public string PositionId { get; set; }
 }

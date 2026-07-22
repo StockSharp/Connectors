@@ -6,7 +6,8 @@ using StockSharp.Paxos.Native.Model;
 /// <summary>The message adapter for Paxos brokerage and custody APIs.</summary>
 [MediaIcon(Media.MediaNames.paxos)]
 [Doc("topics/api/connectors/crypto_exchanges/paxos.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.PaxosKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

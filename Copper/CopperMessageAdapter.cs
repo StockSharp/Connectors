@@ -3,7 +3,8 @@ namespace StockSharp.Copper;
 /// <summary>The message adapter for Copper custody and ClearLoop.</summary>
 [MediaIcon(Media.MediaNames.copper)]
 [Doc("topics/api/connectors/crypto_exchanges/copper.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CopperKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

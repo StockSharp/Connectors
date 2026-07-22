@@ -3,7 +3,8 @@ namespace StockSharp.Anchorage;
 /// <summary>The message adapter for Anchorage Digital.</summary>
 [MediaIcon(Media.MediaNames.anchorage)]
 [Doc("topics/api/connectors/crypto_exchanges/anchorage.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.AnchorageKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

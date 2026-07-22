@@ -8,46 +8,58 @@ public partial class ReyaMessageAdapter
 		"0xfc8c96be87da63cecddbf54abfa7b13ee8044739";
 
 	/// <summary>Owner wallet used for account queries and streams.</summary>
-	[Display(Name = "Owner wallet",
+	[Display(
+		Name = "Owner wallet",
 		Description = "Reya account owner EVM wallet address.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional Reya account ID override.</summary>
-	[Display(Name = "Reya account ID",
+	[Display(
+		Name = "Reya account ID",
 		Description = "Optional account ID; discovered from the owner wallet when empty.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string AccountId { get; set; }
 
 	/// <summary>EVM signer private key used for trading.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>REST API v2 endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>WebSocket API v2 endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.WsEndpointKey,
-		GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	private long _chainId = 1729;
 
 	/// <summary>Reya EVM chain identifier.</summary>
-	[Display(Name = "Chain ID", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Chain ID",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public long ChainId
 	{
@@ -59,15 +71,19 @@ public partial class ReyaMessageAdapter
 	}
 
 	/// <summary>Orders Gateway verifying contract.</summary>
-	[Display(Name = "Orders Gateway",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		Name = "Orders Gateway",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public string OrdersGatewayAddress { get; set; } = _defaultGatewayAddress;
 
 	private long _exchangeId = 2;
 
 	/// <summary>Reya DEX exchange identifier.</summary>
-	[Display(Name = "Exchange ID",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+	[Display(
+		Name = "Exchange ID",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public long ExchangeId
 	{
 		get => _exchangeId;
@@ -80,8 +96,10 @@ public partial class ReyaMessageAdapter
 	private string _poolAccountId = "2";
 
 	/// <summary>Reya perpetual pool counterparty account ID.</summary>
-	[Display(Name = "Pool account ID",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+	[Display(
+		Name = "Pool account ID",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string PoolAccountId
 	{
 		get => _poolAccountId;
@@ -98,9 +116,11 @@ public partial class ReyaMessageAdapter
 	private decimal _marketOrderSlippage = 1m;
 
 	/// <summary>Market-order protection in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 0)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 0)]
 	public decimal MarketOrderSlippage
 	{
 		get => _marketOrderSlippage;
@@ -113,9 +133,11 @@ public partial class ReyaMessageAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum order-book levels sent to StockSharp.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.MarketDepthKey, Order = 0)]
+		GroupName = LocalizedStrings.MarketDepthKey,
+		Order = 0)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -128,9 +150,11 @@ public partial class ReyaMessageAdapter
 	private int _historyLimit = 100;
 
 	/// <summary>Maximum execution rows requested from history endpoints.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

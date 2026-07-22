@@ -3,8 +3,11 @@ namespace StockSharp.Marquee;
 /// <summary>The message adapter for Goldman Sachs Marquee APIs.</summary>
 [MediaIcon(Media.MediaNames.goldmansachs)]
 [Doc("topics/api/connectors/stock_market/marquee.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarqueeKey,
-	Description = LocalizedStrings.MarketDataConnectorKey, GroupName = LocalizedStrings.AmericaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.MarqueeKey,
+	Description = LocalizedStrings.MarketDataConnectorKey,
+	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Futures |
 	MessageAdapterCategories.Options | MessageAdapterCategories.FX |
@@ -13,23 +16,32 @@ namespace StockSharp.Marquee;
 public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
 	/// <summary>OAuth application client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>OAuth application client secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.DemoModeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 

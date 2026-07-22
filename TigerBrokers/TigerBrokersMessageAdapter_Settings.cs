@@ -16,37 +16,61 @@ namespace StockSharp.TigerBrokers;
 public partial class TigerBrokersMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	/// <summary>Tiger OpenAPI developer identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TigerBrokersTigerIdKey,
-		Description = LocalizedStrings.TigerBrokersTigerIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TigerBrokersTigerIdKey,
+		Description = LocalizedStrings.TigerBrokersTigerIdDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string TigerId { get; set; }
 
 	/// <summary>Default live or paper account identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TigerBrokersAccountKey,
-		Description = LocalizedStrings.TigerBrokersAccountDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TigerBrokersAccountKey,
+		Description = LocalizedStrings.TigerBrokersAccountDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string Account { get; set; }
 
 	/// <summary>Broker entity that issued the API credentials.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TigerBrokersLicenseKey,
-		Description = LocalizedStrings.TigerBrokersLicenseDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TigerBrokersLicenseKey,
+		Description = LocalizedStrings.TigerBrokersLicenseDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public TigerLicenses License { get; set; } = TigerLicenses.Singapore;
 
 	/// <summary>PKCS#8 RSA private key issued by Tiger OpenAPI.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TigerBrokersPrivateKeyKey,
-		Description = LocalizedStrings.TigerBrokersPrivateKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TigerBrokersPrivateKeyKey,
+		Description = LocalizedStrings.TigerBrokersPrivateKeyDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Optional token required by supported license entities, including TBHK.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TigerBrokersTokenKey,
-		Description = LocalizedStrings.TigerBrokersTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TigerBrokersTokenKey,
+		Description = LocalizedStrings.TigerBrokersTokenDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public SecureString Token { get; set; }
 
 	/// <summary>Whether the SDK should acquire the account's quote permission on connect.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TigerBrokersAutoGrabPermissionKey,
-		Description = LocalizedStrings.TigerBrokersAutoGrabPermissionDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TigerBrokersAutoGrabPermissionKey,
+		Description = LocalizedStrings.TigerBrokersAutoGrabPermissionDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public bool AutoGrabPermission { get; set; } = true;
 
 	/// <inheritdoc />

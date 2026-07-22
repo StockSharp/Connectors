@@ -16,35 +16,50 @@ namespace StockSharp.Zerodha;
 public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter, IKeySecretAdapter
 {
 	/// <summary>Kite Connect application API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.ZerodhaApiKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Kite Connect application API secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.ZerodhaApiSecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	public SecureString Secret { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.ZerodhaAccessTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Short-lived request token returned by the Kite login redirect.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ZerodhaRequestTokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ZerodhaRequestTokenKey,
 		Description = LocalizedStrings.ZerodhaRequestTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public SecureString RequestToken { get; set; }
 
 	/// <summary>Default order product.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ZerodhaDefaultProductKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ZerodhaDefaultProductKey,
 		Description = LocalizedStrings.ZerodhaDefaultProductDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public ZerodhaProducts DefaultProduct { get; set; } = ZerodhaProducts.Intraday;
 
 	/// <inheritdoc />

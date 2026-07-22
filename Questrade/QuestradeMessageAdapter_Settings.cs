@@ -15,25 +15,41 @@ namespace StockSharp.Questrade;
 public partial class QuestradeMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	/// <summary>OAuth access token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
-		Description = LocalizedStrings.QuestradeAccessTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
+		Description = LocalizedStrings.QuestradeAccessTokenDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>OAuth refresh token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuestradeRefreshTokenKey,
-		Description = LocalizedStrings.QuestradeRefreshTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuestradeRefreshTokenKey,
+		Description = LocalizedStrings.QuestradeRefreshTokenDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString RefreshToken { get; set; }
 
 	/// <summary>API server returned by Questrade during token redemption.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuestradeApiServerKey,
-		Description = LocalizedStrings.QuestradeApiServerDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuestradeApiServerKey,
+		Description = LocalizedStrings.QuestradeApiServerDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public string ApiServer { get; set; }
 
 	/// <summary>Optional account number.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuestradeAccountKey,
-		Description = LocalizedStrings.QuestradeAccountDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuestradeAccountKey,
+		Description = LocalizedStrings.QuestradeAccountDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string Account { get; set; }
 
 	/// <inheritdoc />

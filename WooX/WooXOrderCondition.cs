@@ -121,8 +121,12 @@ public class WooXOrderCondition : OrderCondition
 	/// Futures margin mode.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey,
-		Description = LocalizedStrings.MarginKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey,
+		Description = LocalizedStrings.MarginKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public WooXMarginModes MarginMode
 	{
 		get => (WooXMarginModes?)Parameters.TryGetValue(nameof(MarginMode)) ?? WooXMarginModes.Cross;
@@ -133,8 +137,12 @@ public class WooXOrderCondition : OrderCondition
 	/// Futures position side. Use <see cref="WooXPositionSides.Both"/> for one-way mode.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
-		Description = LocalizedStrings.PositionKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public WooXPositionSides PositionSide
 	{
 		get => (WooXPositionSides?)Parameters.TryGetValue(nameof(PositionSide)) ?? WooXPositionSides.Both;
@@ -145,8 +153,12 @@ public class WooXOrderCondition : OrderCondition
 	/// Order execution policy.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OrderTypeKey,
-		Description = LocalizedStrings.OrderTypeKey, GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderTypeKey,
+		Description = LocalizedStrings.OrderTypeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public WooXOrderPolicies Policy
 	{
 		get => (WooXOrderPolicies?)Parameters.TryGetValue(nameof(Policy)) ?? WooXOrderPolicies.Regular;
@@ -157,8 +169,12 @@ public class WooXOrderCondition : OrderCondition
 	/// Leverage to set before a perpetual order. A null value preserves the exchange setting.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LeverageKey,
-		Description = LocalizedStrings.LeverageKey, GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LeverageKey,
+		Description = LocalizedStrings.LeverageKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public int? Leverage
 	{
 		get => (int?)Parameters.TryGetValue(nameof(Leverage));
@@ -169,9 +185,12 @@ public class WooXOrderCondition : OrderCondition
 	/// Reduce an existing perpetual position only.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PosConditionReduceOnlyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;
@@ -182,8 +201,12 @@ public class WooXOrderCondition : OrderCondition
 	/// Interpret market-order volume as quote-currency amount.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CurrencyKey,
-		Description = LocalizedStrings.CurrencyKey, GroupName = LocalizedStrings.ParametersKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CurrencyKey,
+		Description = LocalizedStrings.CurrencyKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 5)]
 	public bool IsQuoteVolume
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsQuoteVolume)) ?? false;

@@ -3,8 +3,11 @@ namespace StockSharp.Databento;
 /// <summary>The message adapter for Databento market data.</summary>
 [MediaIcon(Media.MediaNames.databento)]
 [Doc("topics/api/connectors/stock_market/databento.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DatabentoKey,
-	Description = LocalizedStrings.MarketDataConnectorKey, GroupName = LocalizedStrings.MarketDataKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.DatabentoKey,
+	Description = LocalizedStrings.MarketDataConnectorKey,
+	GroupName = LocalizedStrings.MarketDataKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.Europe |
 	MessageAdapterCategories.Asia | MessageAdapterCategories.RealTime | MessageAdapterCategories.History |
 	MessageAdapterCategories.Paid | MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
@@ -18,16 +21,22 @@ public partial class DatabentoMessageAdapter : MessageAdapter
 	private string _historicalAddress = "https://hist.databento.com/v0/timeseries.get_range";
 
 	/// <summary>Databento API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.DatabentoKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Databento dataset code.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DatabentoDatasetKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DatabentoDatasetKey,
 		Description = LocalizedStrings.DatabentoDatasetDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string Dataset
 	{
@@ -36,9 +45,12 @@ public partial class DatabentoMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Optional live gateway override. Empty derives the official gateway from <see cref="Dataset"/>.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DatabentoLiveAddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DatabentoLiveAddressKey,
 		Description = LocalizedStrings.DatabentoLiveAddressDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public string LiveAddress
 	{
 		get => _liveAddress;
@@ -46,9 +58,12 @@ public partial class DatabentoMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Historical timeseries endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DatabentoHistoricalAddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DatabentoHistoricalAddressKey,
 		Description = LocalizedStrings.DatabentoHistoricalAddressDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string HistoricalAddress
 	{
 		get => _historicalAddress;
@@ -56,9 +71,12 @@ public partial class DatabentoMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Input symbology used for subscriptions and history requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DatabentoSymbologyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DatabentoSymbologyKey,
 		Description = LocalizedStrings.DatabentoSymbologyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public DatabentoSymbologyTypes Symbology { get; set; } = DatabentoSymbologyTypes.RawSymbol;
 

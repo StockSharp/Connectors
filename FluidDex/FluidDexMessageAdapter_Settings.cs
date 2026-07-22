@@ -20,7 +20,8 @@ public enum FluidDexChains
 /// <summary>The message adapter for Fluid DEX T1 pools.</summary>
 [MediaIcon(Media.MediaNames.fluid_dex)]
 [Doc("topics/api/connectors/crypto_exchanges/fluid_dex.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.FluidDexKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -41,57 +42,71 @@ public partial class FluidDexMessageAdapter : MessageAdapter
 		FluidDexExtensions.TimeFrames;
 
 	/// <summary>Fluid DEX deployment chain.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.BoardKey,
 		Description = LocalizedStrings.BoardKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public FluidDexChains Chain { get; set; } = FluidDexChains.Ethereum;
 
 	/// <summary>Public wallet address used for balances.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional private key used to sign on-chain transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>HTTP JSON-RPC endpoint for the selected chain.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RpcEndpoint { get; set; }
 
 	/// <summary>WebSocket JSON-RPC endpoint for real-time swap logs.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; }
 
 	/// <summary>Official Fluid DEX factory contract.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.AddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string FactoryAddress { get; set; } = _defaultFactoryAddress;
 
 	/// <summary>Official Fluid DEX reserves resolver contract.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.AddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string ResolverAddress { get; set; } = _defaultResolverAddress;
 
 	/// <summary>
@@ -99,19 +114,23 @@ public partial class FluidDexMessageAdapter : MessageAdapter
 	/// <c>pool|base token|quote token|security code</c> format.
 	/// Empty value enables factory discovery.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string Pools { get; set; }
 
 	private int _maximumDiscoveredPools = 200;
 
 	/// <summary>Maximum number of pools loaded from the factory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int MaximumDiscoveredPools
 	{
 		get => _maximumDiscoveredPools;
@@ -124,10 +143,12 @@ public partial class FluidDexMessageAdapter : MessageAdapter
 	private int _historyBlockRange = 5_000;
 
 	/// <summary>Maximum block range requested by one log query.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int HistoryBlockRange
 	{
 		get => _historyBlockRange;
@@ -140,10 +161,12 @@ public partial class FluidDexMessageAdapter : MessageAdapter
 	private int _historyBlockCount = 250_000;
 
 	/// <summary>Recent blocks searched when history has no start time.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public int HistoryBlockCount
 	{
 		get => _historyBlockCount;
@@ -156,10 +179,12 @@ public partial class FluidDexMessageAdapter : MessageAdapter
 	private decimal _probeVolume = 1m;
 
 	/// <summary>Base-token amount used for executable quote probes.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public decimal ProbeVolume
 	{
 		get => _probeVolume;
@@ -172,10 +197,12 @@ public partial class FluidDexMessageAdapter : MessageAdapter
 	private int _depthLevelCount = 10;
 
 	/// <summary>Number of executable quote levels per side.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public int DepthLevelCount
 	{
 		get => _depthLevelCount;
@@ -188,10 +215,12 @@ public partial class FluidDexMessageAdapter : MessageAdapter
 	private decimal _slippageTolerance = 0.5m;
 
 	/// <summary>Swap slippage tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public decimal SlippageTolerance
 	{
 		get => _slippageTolerance;
@@ -206,10 +235,12 @@ public partial class FluidDexMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Fallback polling interval for quotes, logs, and receipts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;

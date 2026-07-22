@@ -3,8 +3,11 @@ namespace StockSharp.MiraeSharekhan;
 /// <summary>The message adapter for Mirae Asset Sharekhan Trading API.</summary>
 [MediaIcon(Media.MediaNames.sharekhan)]
 [Doc("topics/api/connectors/stock_market/mirae_asset_sharekhan.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MiraeSharekhanKey,
-	Description = LocalizedStrings.StockConnectorKey, GroupName = LocalizedStrings.IndiaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.MiraeSharekhanKey,
+	Description = LocalizedStrings.StockConnectorKey,
+	GroupName = LocalizedStrings.IndiaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Asia | MessageAdapterCategories.Free |
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.Transactions |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
@@ -15,36 +18,51 @@ namespace StockSharp.MiraeSharekhan;
 public partial class MiraeSharekhanMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	/// <summary>Trading API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MiraeSharekhanApiKeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MiraeSharekhanApiKeyKey,
 		Description = LocalizedStrings.MiraeSharekhanApiKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string ApiKey { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccessTokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccessTokenKey,
 		Description = LocalizedStrings.MiraeSharekhanAccessTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Optional vendor key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MiraeSharekhanVendorKeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MiraeSharekhanVendorKeyKey,
 		Description = LocalizedStrings.MiraeSharekhanVendorKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public string VendorKey { get; set; }
 
 	/// <summary>Trading customer identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MiraeSharekhanCustomerIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MiraeSharekhanCustomerIdKey,
 		Description = LocalizedStrings.MiraeSharekhanCustomerIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string CustomerId { get; set; }
 
 	/// <summary>Default order product.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MiraeSharekhanDefaultProductKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MiraeSharekhanDefaultProductKey,
 		Description = LocalizedStrings.MiraeSharekhanDefaultProductDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public MiraeSharekhanProducts DefaultProduct { get; set; } = MiraeSharekhanProducts.Investment;
 
 	/// <inheritdoc />

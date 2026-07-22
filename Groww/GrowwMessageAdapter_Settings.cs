@@ -16,37 +16,52 @@ namespace StockSharp.Groww;
 public partial class GrowwMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
 	/// <summary>Daily access token generated in Groww settings.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.GrowwAccessTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Groww API key or TOTP token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.GrowwApiKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Groww API secret used by the approval flow.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.GrowwApiSecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Base32 secret used by the TOTP flow.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GrowwTotpSecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GrowwTotpSecretKey,
 		Description = LocalizedStrings.GrowwTotpSecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString TotpSecret { get; set; }
 
 	/// <summary>Default order product.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ProductKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProductKey,
 		Description = LocalizedStrings.ProductKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 4)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 4)]
 	public GrowwProducts DefaultProduct { get; set; } = GrowwProducts.Delivery;
 
 	/// <inheritdoc />

@@ -7,9 +7,11 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 		CopperEnvironments.Production.GetApiEndpoint();
 
 	/// <summary>Copper Platform environment.</summary>
-	[Display(Name = "Environment",
+	[Display(
+		Name = "Environment",
 		Description = "Copper Platform environment.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public CopperEnvironments Environment
 	{
@@ -24,26 +26,32 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <summary>Copper API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Copper HMAC API secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Copper Platform REST root ending in /platform.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	[BasicSetting]
 	public string ApiEndpoint
 	{
@@ -54,10 +62,12 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Private-state reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -71,9 +81,11 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 	private int _pageSize = 1000;
 
 	/// <summary>Maximum objects requested per REST page.</summary>
-	[Display(Name = "Page size",
+	[Display(
+		Name = "Page size",
 		Description = "Maximum objects requested per Copper REST page.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int PageSize
 	{
 		get => _pageSize;
@@ -86,9 +98,11 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 	private int _maximumItems = 10000;
 
 	/// <summary>Maximum portfolios or wallets loaded from Copper.</summary>
-	[Display(Name = "Maximum items",
+	[Display(
+		Name = "Maximum items",
 		Description = "Maximum portfolios or wallets loaded from Copper.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public int MaximumItems
 	{
 		get => _maximumItems;
@@ -101,10 +115,12 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum orders loaded for a history subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

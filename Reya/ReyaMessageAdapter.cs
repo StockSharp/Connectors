@@ -3,7 +3,8 @@ namespace StockSharp.Reya;
 /// <summary>The message adapter for Reya DEX spot and perpetual markets.</summary>
 [MediaIcon(Media.MediaNames.reya)]
 [Doc("topics/api/connectors/crypto_exchanges/reya.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.ReyaKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

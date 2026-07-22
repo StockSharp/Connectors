@@ -30,69 +30,99 @@ public enum FubonNeoRealtimeModes
 public partial class FubonNeoMessageAdapter : MessageAdapter
 {
 	/// <summary>Path to the official SDK assembly or extracted nupkg directory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PathKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PathKey,
 		Description = LocalizedStrings.FubonNeoSdkPathDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string SdkPath { get; set; }
 
 	/// <summary>Fubon personal identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FubonNeoPersonalIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FubonNeoPersonalIdKey,
 		Description = LocalizedStrings.FubonNeoPersonalIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string PersonalId { get; set; }
 
 	/// <summary>Fubon trading password.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.PasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
 
 	/// <summary>Fubon Neo API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.FubonNeoApiKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString ApiKey { get; set; }
 
 	/// <summary>Use API-key authentication.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FubonNeoApiKeyLoginKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FubonNeoApiKeyLoginKey,
 		Description = LocalizedStrings.FubonNeoApiKeyLoginDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public bool IsApiKeyLogin { get; set; }
 
 	/// <summary>Electronic trading certificate path.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CertificateKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CertificateKey,
 		Description = LocalizedStrings.FubonNeoCertPathDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public string CertificatePath { get; set; }
 
 	/// <summary>Electronic trading certificate password.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.FubonNeoCertPasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public SecureString CertificatePassword { get; set; }
 
 	/// <summary>Optional service URL supplied by Fubon for non-production environments.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.FubonNeoEnvironmentUrlDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public string EnvironmentUrl { get; set; }
 
 	/// <summary>Market-data mode.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ModeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ModeKey,
 		Description = LocalizedStrings.FubonNeoRealtimeModeDescKey,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 8)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 8)]
 	public FubonNeoRealtimeModes RealtimeMode { get; set; } = FubonNeoRealtimeModes.Normal;
 
 	/// <summary>Maximum number of WebSocket reconnect attempts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FubonNeoReconnectAttemptsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FubonNeoReconnectAttemptsKey,
 		Description = LocalizedStrings.FubonNeoReconnectAttemptsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <inheritdoc />

@@ -15,8 +15,12 @@ public sealed class KiwoomOrderCondition : OrderCondition
 
 	/// <summary>Explicit market. When omitted, the connector derives it from the security board.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KiwoomMarketKey,
-		Description = LocalizedStrings.KiwoomMarketDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KiwoomMarketKey,
+		Description = LocalizedStrings.KiwoomMarketDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	public KiwoomMarkets? Market
 	{
 		get => _market;
@@ -29,8 +33,12 @@ public sealed class KiwoomOrderCondition : OrderCondition
 
 	/// <summary>Native order division.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KiwoomOrderDivisionKey,
-		Description = LocalizedStrings.KiwoomOrderDivisionDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KiwoomOrderDivisionKey,
+		Description = LocalizedStrings.KiwoomOrderDivisionDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	public KiwoomOrderDivisions Division
 	{
 		get => _division;
@@ -43,8 +51,12 @@ public sealed class KiwoomOrderCondition : OrderCondition
 
 	/// <summary>Time in force for domestic orders.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TimeInForceKey,
-		Description = LocalizedStrings.KiwoomTimeInForceDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeInForceKey,
+		Description = LocalizedStrings.KiwoomTimeInForceDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	public KiwoomTimeInForces TimeInForce
 	{
 		get => _timeInForce;
@@ -57,8 +69,12 @@ public sealed class KiwoomOrderCondition : OrderCondition
 
 	/// <summary>Stop price for stop and stop-limit orders.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KiwoomStopPriceKey,
-		Description = LocalizedStrings.KiwoomStopPriceDescKey, GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KiwoomStopPriceKey,
+		Description = LocalizedStrings.KiwoomStopPriceDescKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	public decimal? StopPrice
 	{
 		get => _stopPrice;

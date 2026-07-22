@@ -3,45 +3,57 @@ namespace StockSharp.VeloData;
 public partial class VeloDataMessageAdapter
 {
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
         Description = LocalizedStrings.TokenKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 0)]
     [BasicSetting]
     public SecureString Token { get; set; }
 
     /// <summary>Velo Data market-data REST API v1 root.</summary>
-    [Display(Name = "REST endpoint", GroupName = LocalizedStrings.AddressesKey,
+    [Display(
+        Name = "REST endpoint",
+        GroupName = LocalizedStrings.AddressesKey,
         Order = 0)]
     [BasicSetting]
     public string ApiEndpoint { get; set; } = "https://api.velo.xyz/api/v1/";
 
     /// <summary>Velo Data news REST API root.</summary>
-    [Display(Name = "News REST endpoint",
-        GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+    [Display(
+        Name = "News REST endpoint",
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 1)]
     [BasicSetting]
     public string NewsEndpoint { get; set; } = "https://api.velo.xyz/api/n/";
 
     /// <summary>Velo Data news WebSocket endpoint.</summary>
-    [Display(Name = "News WebSocket endpoint",
-        GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+    [Display(
+        Name = "News WebSocket endpoint",
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 2)]
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } =
         "wss://api.velo.xyz/api/w/connect";
 
     /// <summary>Whether delisted futures and spot products are loaded.</summary>
-    [Display(Name = "Include delisted",
+    [Display(
+        Name = "Include delisted",
         Description = "Load delisted futures and spot products in addition to active products.",
-        GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 1)]
     public bool IsIncludeDelisted { get; set; }
 
     private TimeSpan _requestInterval = TimeSpan.FromMilliseconds(250);
 
     /// <summary>Minimum delay between REST requests.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.IntervalKey,
         Description = LocalizedStrings.IntervalKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 2)]
     public TimeSpan RequestInterval
     {
         get => _requestInterval;
@@ -55,7 +67,9 @@ public partial class VeloDataMessageAdapter
     private int _maximumItems = 25000;
 
     /// <summary>Maximum number of instruments returned by a lookup.</summary>
-    [Display(Name = "Maximum items", GroupName = LocalizedStrings.ConnectionKey,
+    [Display(
+        Name = "Maximum items",
+        GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public int MaximumItems
     {
@@ -69,10 +83,12 @@ public partial class VeloDataMessageAdapter
     private int _historyLimit = 100000;
 
     /// <summary>Maximum number of historical records per subscription.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.CountKey,
         Description = LocalizedStrings.CountKey,
-        GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+        GroupName = LocalizedStrings.HistoryKey,
+        Order = 0)]
     public int HistoryLimit
     {
         get => _historyLimit;
@@ -85,9 +101,11 @@ public partial class VeloDataMessageAdapter
     private TimeSpan _historyLookback = TimeSpan.FromDays(365);
 
     /// <summary>Default range when a request has no start time.</summary>
-    [Display(Name = "History lookback",
+    [Display(
+        Name = "History lookback",
         Description = "Default range used when history has no start time.",
-        GroupName = LocalizedStrings.HistoryKey, Order = 1)]
+        GroupName = LocalizedStrings.HistoryKey,
+        Order = 1)]
     public TimeSpan HistoryLookback
     {
         get => _historyLookback;

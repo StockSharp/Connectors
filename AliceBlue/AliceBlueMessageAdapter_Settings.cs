@@ -17,41 +17,59 @@ namespace StockSharp.AliceBlue;
 public partial class AliceBlueMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	/// <summary>Alice Blue user identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UserIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UserIdKey,
 		Description = LocalizedStrings.AliceBlueUserIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string UserId { get; set; }
 
 	/// <summary>Alice Blue trading client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientCodeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClientCodeKey,
 		Description = LocalizedStrings.AliceBlueClientIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	public string ClientId { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.AliceBlueSessionTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Stable application device identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AliceBlueDeviceIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AliceBlueDeviceIdKey,
 		Description = LocalizedStrings.AliceBlueDeviceIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string DeviceId { get; set; } = Guid.NewGuid().ToString("N");
 
 	/// <summary>Default order product.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AliceBlueDefaultProductKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AliceBlueDefaultProductKey,
 		Description = LocalizedStrings.AliceBlueDefaultProductDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 4)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 4)]
 	public AliceBlueProducts DefaultProduct { get; set; } = AliceBlueProducts.LongTerm;
 
 	/// <summary>Maximum number of streaming reconnect attempts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AliceBlueReconnectAttemptsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AliceBlueReconnectAttemptsKey,
 		Description = LocalizedStrings.AliceBlueReconnectAttemptsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <inheritdoc />

@@ -93,8 +93,12 @@ public class PionexOrderCondition : OrderCondition
 	/// Quote-currency amount for a spot market buy.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AmountKey,
-		Description = LocalizedStrings.AmountKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
+		Description = LocalizedStrings.AmountKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? QuoteAmount
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));
@@ -105,8 +109,12 @@ public class PionexOrderCondition : OrderCondition
 	/// Futures position side.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
-		Description = LocalizedStrings.PositionKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public PionexPositionSides PositionSide
 	{
 		get => (PionexPositionSides?)Parameters.TryGetValue(nameof(PositionSide)) ?? PionexPositionSides.Both;
@@ -117,8 +125,12 @@ public class PionexOrderCondition : OrderCondition
 	/// Futures execution policy.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OrderTypeKey,
-		Description = LocalizedStrings.OrderTypeKey, GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderTypeKey,
+		Description = LocalizedStrings.OrderTypeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public PionexOrderPolicies Policy
 	{
 		get => (PionexOrderPolicies?)Parameters.TryGetValue(nameof(Policy)) ?? PionexOrderPolicies.Regular;
@@ -129,9 +141,12 @@ public class PionexOrderCondition : OrderCondition
 	/// Reduce an existing futures position only.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PosConditionReduceOnlyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;

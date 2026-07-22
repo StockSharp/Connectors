@@ -17,7 +17,9 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 		PaxosEnvironments.Production.GetSocketEndpoint();
 
 	/// <summary>Paxos API environment.</summary>
-	[Display(Name = "Environment", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Environment",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
 	public PaxosEnvironments Environment
@@ -49,20 +51,26 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	public SecureString Key { get; set; }
 
 	/// <summary>Paxos OAuth Client Secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Space-delimited OAuth scopes.</summary>
-	[Display(Name = "OAuth scopes", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "OAuth scopes",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public string Scopes { get; set; } = _defaultScopes;
 
 	/// <summary>Paxos REST API root ending in /v2.</summary>
-	[Display(Name = "REST endpoint", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "REST endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	[BasicSetting]
 	public string ApiEndpoint
@@ -72,7 +80,9 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <summary>Paxos OAuth token endpoint.</summary>
-	[Display(Name = "OAuth endpoint", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "OAuth endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	[BasicSetting]
 	public string OAuthEndpoint
@@ -82,8 +92,10 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <summary>Paxos public WebSocket root.</summary>
-	[Display(Name = "WebSocket endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 6)]
+	[Display(
+		Name = "WebSocket endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
 	[BasicSetting]
 	public string SocketEndpoint
 	{
@@ -94,10 +106,12 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Private-state reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -111,7 +125,9 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	private int _pageSize = 100;
 
 	/// <summary>REST page size.</summary>
-	[Display(Name = "Page size", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Page size",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 8)]
 	public int PageSize
 	{
@@ -125,8 +141,10 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	private int _maximumItems = 10000;
 
 	/// <summary>Maximum reference-data items loaded.</summary>
-	[Display(Name = "Maximum items",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+	[Display(
+		Name = "Maximum items",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public int MaximumItems
 	{
 		get => _maximumItems;
@@ -139,10 +157,12 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum history items per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -155,10 +175,12 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum published order-book levels.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 0)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 0)]
 	public int MarketDepth
 	{
 		get => _marketDepth;

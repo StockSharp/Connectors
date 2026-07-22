@@ -3,7 +3,9 @@ namespace StockSharp.ActivFinancial;
 /// <summary>The message adapter for ACTIV Financial One API market data.</summary>
 [MediaIcon(Media.MediaNames.activfinancial)]
 [Doc("topics/api/connectors/stock_market/activ_financial.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ActivFinancialKey,
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ActivFinancialKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Paid |
@@ -14,70 +16,92 @@ namespace StockSharp.ActivFinancial;
 public partial class ActivFinancialMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LoginKey,
 		Description = LocalizedStrings.LoginDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string Login { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.SecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
 
 	/// <summary>One API gateway host assigned by ACTIV Financial.</summary>
-	[Display(Name = "One API host",
+	[Display(
+		Name = "One API host",
 		Description = "ACTIV One API gateway host assigned to the account.",
-		GroupName = "Connection", Order = 2)]
+		GroupName = "Connection",
+		Order = 2)]
 	[BasicSetting]
 	public string Host { get; set; } = "aop-ny4-replay.activfinancial.com";
 
 	/// <summary>ACTIV data source.</summary>
-	[Display(Name = "Data source",
+	[Display(
+		Name = "Data source",
 		Description = "Entitled ACTIV One API data source.",
-		GroupName = "Market data", Order = 3)]
+		GroupName = "Market data",
+		Order = 3)]
 	[BasicSetting]
 	public ActivDataSources DataSource { get; set; } = ActivDataSources.Activ;
 
 	/// <summary>Symbol namespace used for canonical requests.</summary>
-	[Display(Name = "Symbology",
+	[Display(
+		Name = "Symbology",
 		Description = "Symbol namespace used for canonical One API requests.",
-		GroupName = "Market data", Order = 4)]
+		GroupName = "Market data",
+		Order = 4)]
 	public ActivSymbologies Symbology { get; set; } = ActivSymbologies.Native;
 
 	/// <summary>Node.js executable path.</summary>
-	[Display(Name = "Node.js path",
+	[Display(
+		Name = "Node.js path",
 		Description = "Path or command name of the Node.js executable.",
-		GroupName = "Gateway", Order = 5)]
+		GroupName = "Gateway",
+		Order = 5)]
 	[BasicSetting]
 	public string NodePath { get; set; } = "node";
 
 	/// <summary>Directory containing the typed gateway and its installed npm dependencies.</summary>
-	[Display(Name = "Gateway directory",
+	[Display(
+		Name = "Gateway directory",
 		Description = "Directory containing activ_gateway.cjs, package.json, and node_modules.",
-		GroupName = "Gateway", Order = 6)]
+		GroupName = "Gateway",
+		Order = 6)]
 	[BasicSetting]
 	public string GatewayDirectory { get; set; } =
 		Path.Combine(AppContext.BaseDirectory, "ActivFinancialGateway");
 
 	/// <summary>Fallback time zone for records whose topic has no Olson time-zone field.</summary>
-	[Display(Name = "Fallback time zone",
+	[Display(
+		Name = "Fallback time zone",
 		Description = "IANA or system time-zone identifier used only when ACTIV omits topic time-zone metadata.",
-		GroupName = "Market data", Order = 7)]
+		GroupName = "Market data",
+		Order = 7)]
 	public string FallbackTimeZoneId { get; set; } = "UTC";
 
 	/// <summary>Maximum records returned by a lookup with no smaller requested count.</summary>
-	[Display(Name = "Lookup limit",
+	[Display(
+		Name = "Lookup limit",
 		Description = "Maximum number of query-snapshot records returned by one security lookup.",
-		GroupName = "Limits", Order = 8)]
+		GroupName = "Limits",
+		Order = 8)]
 	public int MaxLookupResults { get; set; } = 1000;
 
 	/// <summary>Maximum records returned by one TSS history request.</summary>
-	[Display(Name = "History limit",
+	[Display(
+		Name = "History limit",
 		Description = "Maximum number of tick or candle records returned by one TSS request.",
-		GroupName = "Limits", Order = 9)]
+		GroupName = "Limits",
+		Order = 9)]
 	public int MaxHistoryResults { get; set; } = 10000;
 
 	/// <inheritdoc />

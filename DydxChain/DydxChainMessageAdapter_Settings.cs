@@ -10,45 +10,57 @@ public partial class DydxChainMessageAdapter
 		"https://dydx-ops-rpc.kingnodes.com:443";
 
 	/// <summary>Official dYdX Indexer REST endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string IndexerEndpoint { get; set; } = _defaultIndexerEndpoint;
 
 	/// <summary>Official dYdX Indexer WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>dYdX Chain CometBFT RPC endpoint.</summary>
-	[Display(Name = "Validator RPC",
+	[Display(
+		Name = "Validator RPC",
 		Description = "dYdX Chain CometBFT JSON-RPC endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string ValidatorEndpoint { get; set; } = _defaultValidatorEndpoint;
 
 	/// <summary>Optional dYdX wallet address for account data.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional secp256k1 private key for direct transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private int _subaccountNumber;
 
 	/// <summary>dYdX subaccount number.</summary>
-	[Display(Name = "Subaccount",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+	[Display(
+		Name = "Subaccount",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int SubaccountNumber
 	{
 		get => _subaccountNumber;
@@ -61,9 +73,11 @@ public partial class DydxChainMessageAdapter
 	private decimal _marketOrderSlippage = 0.5m;
 
 	/// <summary>Market-order limit-price deviation from the oracle.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 6)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 6)]
 	public decimal MarketOrderSlippage
 	{
 		get => _marketOrderSlippage;
@@ -76,8 +90,10 @@ public partial class DydxChainMessageAdapter
 	private int _shortTermBlockWindow = 15;
 
 	/// <summary>Short-term order lifetime in blocks.</summary>
-	[Display(Name = "Block lifetime",
-		GroupName = LocalizedStrings.TransactionKey, Order = 7)]
+	[Display(
+		Name = "Block lifetime",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 7)]
 	public int ShortTermBlockWindow
 	{
 		get => _shortTermBlockWindow;
@@ -90,8 +106,10 @@ public partial class DydxChainMessageAdapter
 	private TimeSpan _statefulOrderLifetime = TimeSpan.FromDays(28);
 
 	/// <summary>Default lifetime for long-term and conditional orders.</summary>
-	[Display(Name = "Stateful lifetime",
-		GroupName = LocalizedStrings.TransactionKey, Order = 8)]
+	[Display(
+		Name = "Stateful lifetime",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 8)]
 	public TimeSpan StatefulOrderLifetime
 	{
 		get => _statefulOrderLifetime;
@@ -105,8 +123,10 @@ public partial class DydxChainMessageAdapter
 	private long _gasLimit = 1_000_000;
 
 	/// <summary>Gas limit used for zero-fee dYdX transactions.</summary>
-	[Display(Name = "Gas limit",
-		GroupName = LocalizedStrings.TransactionKey, Order = 9)]
+	[Display(
+		Name = "Gas limit",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 9)]
 	public long GasLimit
 	{
 		get => _gasLimit;
@@ -119,9 +139,11 @@ public partial class DydxChainMessageAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum number of rows requested from Indexer history.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 10)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 10)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

@@ -5,7 +5,8 @@ namespace StockSharp.IndependentReserve;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.IndependentReserveKey)]
 public class IndependentReserveOrderCondition : OrderCondition
 {
@@ -13,10 +14,12 @@ public class IndependentReserveOrderCondition : OrderCondition
 	/// Whether market-order volume is denominated in the quote currency.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CurrencyKey,
 		Description = LocalizedStrings.CurrencyKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public bool IsVolumeInQuoteCurrency
 	{
 		get => (bool?)Parameters.TryGetValue(
@@ -28,10 +31,12 @@ public class IndependentReserveOrderCondition : OrderCondition
 	/// Maximum allowed market movement, in percent.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public decimal? AllowedSlippagePercent
 	{
 		get => (decimal?)Parameters.TryGetValue(

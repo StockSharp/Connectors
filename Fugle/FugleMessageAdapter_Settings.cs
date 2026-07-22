@@ -15,16 +15,22 @@ namespace StockSharp.Fugle;
 public partial class FugleMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.FugleApiKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Maximum number of streaming reconnect attempts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FugleReconnectAttemptsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FugleReconnectAttemptsKey,
 		Description = LocalizedStrings.FugleReconnectAttemptsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <inheritdoc />

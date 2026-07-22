@@ -3,7 +3,9 @@ namespace StockSharp.RavenPack;
 /// <summary>The message adapter for RavenPack news analytics APIs.</summary>
 [MediaIcon(Media.MediaNames.ravenpack)]
 [Doc("topics/api/connectors/stock_market/ravenpack.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RavenPackKey,
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.RavenPackKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.Paid |
@@ -16,15 +18,21 @@ public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IA
 	private Uri _feedAddress = RavenPackProducts.Edge.GetFeedAddress();
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.TokenKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>RavenPack product selected for the dataset.</summary>
-	[Display(Name = "Product", Description = "RavenPack product selected for the dataset.",
-		GroupName = "Connection", Order = 1)]
+	[Display(
+		Name = "Product",
+		Description = "RavenPack product selected for the dataset.",
+		GroupName = "Connection",
+		Order = 1)]
 	[BasicSetting]
 	public RavenPackProducts Product
 	{
@@ -44,16 +52,21 @@ public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IA
 	}
 
 	/// <summary>Identifier of a RavenPack granular dataset.</summary>
-	[Display(Name = "Dataset ID",
+	[Display(
+		Name = "Dataset ID",
 		Description = "Identifier of a RavenPack granular dataset used for history and the feed.",
-		GroupName = "Connection", Order = 2)]
+		GroupName = "Connection",
+		Order = 2)]
 	[BasicSetting]
 	public string DatasetId { get; set; }
 
 	/// <summary>RavenPack REST API base address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public Uri Address
 	{
@@ -62,9 +75,11 @@ public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IA
 	}
 
 	/// <summary>RavenPack real-time JSON-lines feed base address.</summary>
-	[Display(Name = "Feed address",
+	[Display(
+		Name = "Feed address",
 		Description = "RavenPack real-time JSON-lines feed base address.",
-		GroupName = "Connection", Order = 4)]
+		GroupName = "Connection",
+		Order = 4)]
 	[BasicSetting]
 	public Uri FeedAddress
 	{
@@ -73,21 +88,27 @@ public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IA
 	}
 
 	/// <summary>Maximum records emitted by one historical query.</summary>
-	[Display(Name = "History limit",
+	[Display(
+		Name = "History limit",
 		Description = "Maximum records emitted by one synchronous JSON query (up to 10000).",
-		GroupName = "Limits", Order = 5)]
+		GroupName = "Limits",
+		Order = 5)]
 	public int MaxRecords { get; set; } = 10000;
 
 	/// <summary>Lookback used for a history-only request without a start time.</summary>
-	[Display(Name = "Default history lookback",
+	[Display(
+		Name = "Default history lookback",
 		Description = "Lookback used for a history-only request without a start time.",
-		GroupName = "History", Order = 6)]
+		GroupName = "History",
+		Order = 6)]
 	public TimeSpan DefaultHistoryLookback { get; set; } = TimeSpan.FromDays(1);
 
 	/// <summary>Resolve licensed story URLs through the Document API.</summary>
-	[Display(Name = "Resolve document URLs",
+	[Display(
+		Name = "Resolve document URLs",
 		Description = "Resolve each licensed story URL through the Document API.",
-		GroupName = "News", Order = 7)]
+		GroupName = "News",
+		Order = 7)]
 	public bool IsResolveDocumentUrls { get; set; }
 
 	/// <inheritdoc />

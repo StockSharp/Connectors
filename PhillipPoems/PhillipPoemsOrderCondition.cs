@@ -33,9 +33,12 @@ public sealed class PhillipPoemsOrderCondition : OrderCondition
 
 	/// <summary>Trigger price for SLO and LIT orders.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	public decimal? StopPrice
 	{
 		get => _stopPrice;
@@ -48,9 +51,12 @@ public sealed class PhillipPoemsOrderCondition : OrderCondition
 
 	/// <summary>Order funding source.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsPaymentKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PhillipPoemsPaymentKey,
 		Description = LocalizedStrings.PhillipPoemsPaymentDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	public PhillipPoemsPaymentModes PaymentMode
 	{
 		get => _paymentMode;
@@ -63,9 +69,12 @@ public sealed class PhillipPoemsOrderCondition : OrderCondition
 
 	/// <summary>ISO 4217 settlement currency overriding the connector default.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsCurrencyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PhillipPoemsCurrencyKey,
 		Description = LocalizedStrings.PhillipPoemsCurrencyDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	public string SettlementCurrency
 	{
 		get => _settlementCurrency;
@@ -78,9 +87,12 @@ public sealed class PhillipPoemsOrderCondition : OrderCondition
 
 	/// <summary>Use LIT instead of SLO for a conditional order.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsLimitIfTouchedKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PhillipPoemsLimitIfTouchedKey,
 		Description = LocalizedStrings.PhillipPoemsLimitIfTouchedDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	public bool IsLimitIfTouched
 	{
 		get => _isLimitIfTouched;
@@ -93,9 +105,12 @@ public sealed class PhillipPoemsOrderCondition : OrderCondition
 
 	/// <summary>Use the native short-sell action.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsShortSaleKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PhillipPoemsShortSaleKey,
 		Description = LocalizedStrings.PhillipPoemsShortSaleDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 4)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 4)]
 	public bool IsShortSale
 	{
 		get => _isShortSale;

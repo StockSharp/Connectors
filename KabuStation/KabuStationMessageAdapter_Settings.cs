@@ -16,29 +16,41 @@ namespace StockSharp.KabuStation;
 public partial class KabuStationMessageAdapter : MessageAdapter, IDemoAdapter
 {
 	/// <summary>API password configured in kabu Station.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.KabuStationPasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString ApiPassword { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.DemoTradingConnectKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
 	/// <summary>Default account type used for orders.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.KabuStationAccountTypeDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	public KabuStationAccountTypes DefaultAccountType { get; set; } = KabuStationAccountTypes.Specified;
 
 	/// <summary>Default route for Tokyo-listed stock orders.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ExchangeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeKey,
 		Description = LocalizedStrings.KabuStationOrderExchangeDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	public KabuStationExchanges DefaultStockOrderExchange { get; set; } = KabuStationExchanges.Sor;
 
 	/// <inheritdoc />

@@ -3,15 +3,18 @@ namespace StockSharp.Ostium;
 /// <summary>Ostium-specific order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.OstiumKey)]
 public class OstiumOrderCondition : OrderCondition
 {
 	/// <summary>Position leverage.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 0)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 0)]
 	public decimal Leverage
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(Leverage)) ?? 10m;
@@ -23,8 +26,10 @@ public class OstiumOrderCondition : OrderCondition
 
 	/// <summary>Optional take-profit price. Zero disables take profit.</summary>
 	[DataMember]
-	[Display(Name = "Take profit",
-		GroupName = LocalizedStrings.TransactionKey, Order = 1)]
+	[Display(
+		Name = "Take profit",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 1)]
 	public decimal TakeProfitPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TakeProfitPrice)) ?? 0m;
@@ -35,8 +40,10 @@ public class OstiumOrderCondition : OrderCondition
 
 	/// <summary>Optional stop-loss price. Zero disables stop loss.</summary>
 	[DataMember]
-	[Display(Name = "Stop loss",
-		GroupName = LocalizedStrings.TransactionKey, Order = 2)]
+	[Display(
+		Name = "Stop loss",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 2)]
 	public decimal StopLossPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopLossPrice)) ?? 0m;
@@ -47,8 +54,10 @@ public class OstiumOrderCondition : OrderCondition
 
 	/// <summary>Use a stop trigger instead of a regular limit order.</summary>
 	[DataMember]
-	[Display(Name = "Stop order",
-		GroupName = LocalizedStrings.TransactionKey, Order = 3)]
+	[Display(
+		Name = "Stop order",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 3)]
 	public bool IsStopOrder
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsStopOrder)) ?? false;
@@ -57,8 +66,10 @@ public class OstiumOrderCondition : OrderCondition
 
 	/// <summary>Restrict the trade to the protocol day-trading session.</summary>
 	[DataMember]
-	[Display(Name = "Day trade",
-		GroupName = LocalizedStrings.TransactionKey, Order = 4)]
+	[Display(
+		Name = "Day trade",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 4)]
 	public bool IsDayTrade
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsDayTrade)) ?? false;
@@ -67,8 +78,10 @@ public class OstiumOrderCondition : OrderCondition
 
 	/// <summary>Close an existing position instead of opening a trade.</summary>
 	[DataMember]
-	[Display(Name = "Close position",
-		GroupName = LocalizedStrings.TransactionKey, Order = 5)]
+	[Display(
+		Name = "Close position",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 5)]
 	public bool IsClosePosition
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsClosePosition)) ?? false;
@@ -77,8 +90,10 @@ public class OstiumOrderCondition : OrderCondition
 
 	/// <summary>Per-pair Ostium position index used for closing.</summary>
 	[DataMember]
-	[Display(Name = "Position index",
-		GroupName = LocalizedStrings.TransactionKey, Order = 6)]
+	[Display(
+		Name = "Position index",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 6)]
 	public int? PositionIndex
 	{
 		get => (int?)Parameters.TryGetValue(nameof(PositionIndex));
@@ -87,8 +102,10 @@ public class OstiumOrderCondition : OrderCondition
 
 	/// <summary>Percentage of the position to close.</summary>
 	[DataMember]
-	[Display(Name = "Close percentage",
-		GroupName = LocalizedStrings.TransactionKey, Order = 7)]
+	[Display(
+		Name = "Close percentage",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 7)]
 	public decimal? ClosePercentage
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(ClosePercentage));

@@ -23,9 +23,12 @@ public partial class BloombergMessageAdapter : MessageAdapter
 	private string _emsxService = "//blp/emapisvc";
 
 	/// <summary>Bloomberg BLPAPI service endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ServerKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ServerKey,
 		Description = LocalizedStrings.ServerDescriptionKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public EndPoint ServerAddress
 	{
@@ -34,23 +37,32 @@ public partial class BloombergMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Path to Bloomberglp.Blpapi.dll or its containing directory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PathKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PathKey,
 		Description = LocalizedStrings.PathDllDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string SdkPath { get; set; }
 
 	/// <summary>Enable the Bloomberg EMSX execution service.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TransactionsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TransactionsKey,
 		Description = LocalizedStrings.TransactionsKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public bool IsEmsxEnabled { get; set; }
 
 	/// <summary>Bloomberg EMSX service name.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ServiceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ServiceKey,
 		Description = LocalizedStrings.ServiceKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string EmsxService
 	{
 		get => _emsxService;
@@ -58,9 +70,12 @@ public partial class BloombergMessageAdapter : MessageAdapter
 	}
 
 	/// <summary>Default EMSX broker destination.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BrokerKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BrokerKey,
 		Description = LocalizedStrings.BrokerKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public string Broker { get; set; }
 
 	/// <inheritdoc />

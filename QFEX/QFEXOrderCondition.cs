@@ -3,16 +3,19 @@ namespace StockSharp.QFEX;
 /// <summary>QFEX order condition.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.QFEXKey)]
 public class QFEXOrderCondition : OrderCondition
 {
 	/// <summary>Restrict the order to reducing an existing position.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public bool IsReduceOnly
 	{
 		get => Parameters.TryGetValue(nameof(IsReduceOnly), out var value) &&

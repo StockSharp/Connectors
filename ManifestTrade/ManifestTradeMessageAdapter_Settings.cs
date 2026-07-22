@@ -3,7 +3,8 @@ namespace StockSharp.ManifestTrade;
 /// <summary>The message adapter for Manifest Trade.</summary>
 [MediaIcon(Media.MediaNames.manifest_trade)]
 [Doc("topics/api/connectors/crypto_exchanges/manifest_trade.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.ManifestTradeKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -22,50 +23,62 @@ public partial class ManifestTradeMessageAdapter : MessageAdapter
 		ManifestTradeExtensions.TimeFrames;
 
 	/// <summary>Solana cluster.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.BoardKey,
 		Description = LocalizedStrings.BoardKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public ManifestTradeClusters Cluster { get; set; } =
 		ManifestTradeClusters.Mainnet;
 
 	/// <summary>HTTP Solana JSON-RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RpcEndpoint { get; set; }
 
 	/// <summary>Solana WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string StreamingEndpoint { get; set; }
 
 	/// <summary>Manifest Trade public market-discovery endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string StatsEndpoint { get; set; } = _defaultStatsEndpoint;
 
 	/// <summary>Optional public Solana wallet address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional base58 Solana private key used for trading.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
@@ -73,19 +86,23 @@ public partial class ManifestTradeMessageAdapter : MessageAdapter
 	/// Semicolon-separated <c>market|base symbol|quote symbol</c> entries.
 	/// Symbol overrides are optional.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string Markets { get; set; }
 
 	private int _maximumDiscoveredMarkets = 20;
 
 	/// <summary>Maximum top-volume markets loaded from the stats API.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int MaximumDiscoveredMarkets
 	{
 		get => _maximumDiscoveredMarkets;
@@ -98,10 +115,12 @@ public partial class ManifestTradeMessageAdapter : MessageAdapter
 	private int _marketDepth = 50;
 
 	/// <summary>Maximum number of bid and ask levels published.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
 		Description = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -114,10 +133,12 @@ public partial class ManifestTradeMessageAdapter : MessageAdapter
 	private decimal _slippageTolerance = 0.5m;
 
 	/// <summary>Market-order slippage tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public decimal SlippageTolerance
 	{
 		get => _slippageTolerance;
@@ -132,10 +153,12 @@ public partial class ManifestTradeMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Polling fallback interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -148,10 +171,12 @@ public partial class ManifestTradeMessageAdapter : MessageAdapter
 	private int _maximumHistoryTransactions = 200;
 
 	/// <summary>Maximum transactions inspected per history request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public int MaximumHistoryTransactions
 	{
 		get => _maximumHistoryTransactions;
@@ -164,10 +189,12 @@ public partial class ManifestTradeMessageAdapter : MessageAdapter
 	private int _computeUnitLimit = 400_000;
 
 	/// <summary>Compute-unit limit attached to transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LimitKey,
 		Description = LocalizedStrings.LimitKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public int ComputeUnitLimit
 	{
 		get => _computeUnitLimit;
@@ -180,10 +207,12 @@ public partial class ManifestTradeMessageAdapter : MessageAdapter
 	private long _computeUnitPrice;
 
 	/// <summary>Priority fee in micro-lamports; zero selects RPC median.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CommissionKey,
 		Description = LocalizedStrings.CommissionKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public long ComputeUnitPrice
 	{
 		get => _computeUnitPrice;

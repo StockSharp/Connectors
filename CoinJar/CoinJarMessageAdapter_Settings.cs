@@ -32,40 +32,48 @@ public partial class CoinJarMessageAdapter : MessageAdapter, ITokenAdapter
         CoinJarExtensions.TimeFrames;
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
         Description = LocalizedStrings.TokenKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 0)]
     [BasicSetting]
     public SecureString Token { get; set; }
 
     /// <summary>
     /// Trading REST API endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string TradingEndpoint { get; set; } = _defaultTradingEndpoint;
 
     /// <summary>
     /// Public market-data REST API endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.MarketDataKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 1)]
     [BasicSetting]
     public string DataEndpoint { get; set; } = _defaultDataEndpoint;
 
     /// <summary>
     /// WebSocket API endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.WebSocketKey,
         Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.WebSocketAddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 

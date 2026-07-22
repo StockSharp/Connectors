@@ -3,8 +3,11 @@ namespace StockSharp.LsSecurities;
 /// <summary>The message adapter for the LS Securities Open API.</summary>
 [MediaIcon(Media.MediaNames.lssecurities)]
 [Doc("topics/api/connectors/stock_market/ls_securities.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsSecuritiesKey,
-	Description = LocalizedStrings.StockConnectorKey, GroupName = LocalizedStrings.KoreaExchangeKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.LsSecuritiesKey,
+	Description = LocalizedStrings.StockConnectorKey,
+	GroupName = LocalizedStrings.KoreaExchangeKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Asia | MessageAdapterCategories.Free |
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.Transactions |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
@@ -14,30 +17,42 @@ namespace StockSharp.LsSecurities;
 public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
 	/// <summary>Application key issued by LS Securities.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.LsSecuritiesAppKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Application secret issued by LS Securities.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.LsSecuritiesAppSecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Optional account label used as the StockSharp portfolio name.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsSecuritiesAccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LsSecuritiesAccountKey,
 		Description = LocalizedStrings.LsSecuritiesAccountDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string Account { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.DemoTradingConnectKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 

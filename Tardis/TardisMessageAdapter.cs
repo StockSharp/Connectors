@@ -3,7 +3,8 @@ namespace StockSharp.Tardis;
 /// <summary>The message adapter for Tardis.dev and Tardis Machine.</summary>
 [MediaIcon(Media.MediaNames.tardis)]
 [Doc("topics/api/connectors/crypto_exchanges/tardis.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.TardisKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

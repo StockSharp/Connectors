@@ -3,7 +3,8 @@ namespace StockSharp.GainsNetwork;
 /// <summary>The message adapter for Gains Network gTrade.</summary>
 [MediaIcon(Media.MediaNames.gainsnetwork)]
 [Doc("topics/api/connectors/crypto_exchanges/gains_network.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.GainsNetworkKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

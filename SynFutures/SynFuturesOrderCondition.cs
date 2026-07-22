@@ -3,15 +3,18 @@ namespace StockSharp.SynFutures;
 /// <summary>SynFutures-specific order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.SynFuturesKey)]
 public class SynFuturesOrderCondition : OrderCondition
 {
 	/// <summary>Target position leverage.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 0)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 0)]
 	public decimal Leverage
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(Leverage)) ?? 10m;
@@ -27,9 +30,11 @@ public class SynFuturesOrderCondition : OrderCondition
 	/// reductions and closes.
 	/// </summary>
 	[DataMember]
-	[Display(Name = "Margin", Description =
-		"Optional explicit quote margin transferred with the order.",
-		GroupName = LocalizedStrings.TransactionKey, Order = 1)]
+	[Display(
+		Name = "Margin",
+		Description = "Optional explicit quote margin transferred with the order.",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 1)]
 	public decimal? Margin
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(Margin));

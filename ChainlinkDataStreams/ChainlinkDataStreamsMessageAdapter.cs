@@ -3,7 +3,8 @@ namespace StockSharp.ChainlinkDataStreams;
 /// <summary>The message adapter for Chainlink Data Streams.</summary>
 [MediaIcon(Media.MediaNames.chainlinkdatastreams)]
 [Doc("topics/api/connectors/crypto_exchanges/chainlink_data_streams.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.ChainlinkDataStreamsKey,
     Description = LocalizedStrings.MarketDataConnectorKey,
     GroupName = LocalizedStrings.MarketDataKey)]

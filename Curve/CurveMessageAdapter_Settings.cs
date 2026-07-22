@@ -5,7 +5,8 @@ namespace StockSharp.Curve;
 /// </summary>
 [MediaIcon(Media.MediaNames.curve)]
 [Doc("topics/api/connectors/crypto_exchanges/curve.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CurveKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -30,57 +31,71 @@ public partial class CurveMessageAdapter : MessageAdapter
 		CurveExtensions.TimeFrames;
 
 	/// <summary>Public wallet address used for balances.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional private key used to sign transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Ethereum HTTP JSON-RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
 
 	/// <summary>Ethereum WebSocket JSON-RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } =
 		_defaultWebSocketEndpoint;
 
 	/// <summary>Official Curve pools API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string ApiEndpoint { get; set; } = _defaultApiEndpoint;
 
 	/// <summary>Official Curve Prices API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string PricesEndpoint { get; set; } = _defaultPricesEndpoint;
 
 	/// <summary>Curve Router NG contract address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.AddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	public string RouterAddress { get; set; } =
 		CurveExtensions.DefaultRouterAddress;
 
@@ -88,19 +103,23 @@ public partial class CurveMessageAdapter : MessageAdapter
 	/// Optional semicolon-separated pool definitions. Each item uses
 	/// pool or pool|base-token|quote-token|security-code format.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public string Pools { get; set; }
 
 	private int _maximumDiscoveredPools = 10;
 
 	/// <summary>Maximum number of high-TVL pools discovered automatically.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public int MaximumDiscoveredPools
 	{
 		get => _maximumDiscoveredPools;
@@ -113,10 +132,12 @@ public partial class CurveMessageAdapter : MessageAdapter
 	private decimal _minimumPoolTvl = 100_000m;
 
 	/// <summary>Minimum pool TVL in USD for automatic discovery.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PriceKey,
 		Description = LocalizedStrings.PriceKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public decimal MinimumPoolTvl
 	{
 		get => _minimumPoolTvl;
@@ -129,10 +150,12 @@ public partial class CurveMessageAdapter : MessageAdapter
 	private int _historyMaximum = 1_000;
 
 	/// <summary>Maximum trades requested from Curve Prices per query.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int HistoryMaximum
 	{
 		get => _historyMaximum;
@@ -145,10 +168,12 @@ public partial class CurveMessageAdapter : MessageAdapter
 	private decimal _probeVolume = 1m;
 
 	/// <summary>Base-token amount used for Level1 quote probes.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public decimal ProbeVolume
 	{
 		get => _probeVolume;
@@ -161,10 +186,12 @@ public partial class CurveMessageAdapter : MessageAdapter
 	private decimal _slippageTolerance = 0.5m;
 
 	/// <summary>Swap slippage tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public decimal SlippageTolerance
 	{
 		get => _slippageTolerance;
@@ -179,10 +206,12 @@ public partial class CurveMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Fallback polling interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -195,10 +224,12 @@ public partial class CurveMessageAdapter : MessageAdapter
 	private TimeSpan _receiptTimeout = TimeSpan.FromMinutes(3);
 
 	/// <summary>Transaction receipt wait timeout.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.ConnectionTimeoutKey,
 		Description = LocalizedStrings.ConnectionTimeoutKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public TimeSpan ReceiptTimeout
 	{
 		get => _receiptTimeout;

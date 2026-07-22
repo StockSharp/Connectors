@@ -35,10 +35,12 @@ public sealed class BitGoOrderCondition : OrderCondition
 
 	/// <summary>Stop trigger price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceKey,
-		GroupName = "BitGo", Order = 2)]
+		GroupName = "BitGo",
+		Order = 2)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));

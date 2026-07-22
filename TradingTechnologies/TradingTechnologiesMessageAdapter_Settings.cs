@@ -37,48 +37,69 @@ public enum TradingTechnologiesEnvironments
 public partial class TradingTechnologiesMessageAdapter : MessageAdapter
 {
 	/// <summary>Path to tt-net-api.dll or its containing directory.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PathKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PathKey,
 		Description = LocalizedStrings.TradingTechnologiesSdkPathDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string SdkPath { get; set; }
 
 	/// <summary>Combined TT application key and secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TradingTechnologiesAppSecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingTechnologiesAppSecretKey,
 		Description = LocalizedStrings.TradingTechnologiesAppSecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString AppSecretKey { get; set; }
 
 	/// <summary>TT service environment.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TradingTechnologiesEnvironmentKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingTechnologiesEnvironmentKey,
 		Description = LocalizedStrings.TradingTechnologiesEnvironmentDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public TradingTechnologiesEnvironments Environment { get; set; } = TradingTechnologiesEnvironments.ProdSim;
 
 	/// <summary>SDK initialization timeout in milliseconds.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TradingTechnologiesTimeoutKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingTechnologiesTimeoutKey,
 		Description = LocalizedStrings.TradingTechnologiesTimeoutDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public int InitializationTimeout { get; set; } = 5000;
 
 	/// <summary>Maximum number of aggregated book levels.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TradingTechnologiesDepthKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingTechnologiesDepthKey,
 		Description = LocalizedStrings.TradingTechnologiesDepthDescKey,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 4)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 4)]
 	public int MarketDepth { get; set; } = 20;
 
 	/// <summary>Use the TT binary protocol.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TradingTechnologiesBinaryProtocolKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingTechnologiesBinaryProtocolKey,
 		Description = LocalizedStrings.TradingTechnologiesBinaryProtocolDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public bool IsBinaryProtocol { get; set; } = true;
 
 	/// <summary>Enable TT options market data.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TradingTechnologiesOptionsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingTechnologiesOptionsKey,
 		Description = LocalizedStrings.TradingTechnologiesOptionsDescKey,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 6)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 6)]
 	public bool IsOptionsEnabled { get; set; } = true;
 
 	/// <inheritdoc />

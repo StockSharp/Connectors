@@ -3,7 +3,8 @@ namespace StockSharp.Amberdata;
 /// <summary>The message adapter for Amberdata spot market data APIs.</summary>
 [MediaIcon(Media.MediaNames.amberdata)]
 [Doc("topics/api/connectors/crypto_exchanges/amberdata.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.AmberdataKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

@@ -20,62 +20,79 @@ public enum AevoEnvironments
 public partial class AevoMessageAdapter : IKeySecretAdapter
 {
 	/// <summary>Aevo environment.</summary>
-	[Display(Name = "Environment", Description = "Aevo API environment.",
-		GroupName = "Connection", Order = 0)]
+	[Display(
+		Name = "Environment",
+		Description = "Aevo API environment.",
+		GroupName = "Connection",
+		Order = 0)]
 	[BasicSetting]
 	public AevoEnvironments Environment { get; set; }
 
 	/// <summary>API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>API secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Aevo account wallet address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Private EVM signing key registered with Aevo.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public SecureString SigningKey { get; set; }
 
 	/// <summary>Optional REST endpoint override.</summary>
-	[Display(Name = "REST endpoint", Description =
-		"Optional Aevo REST endpoint override.", GroupName = "Addresses",
+	[Display(
+		Name = "REST endpoint",
+		Description = "Optional Aevo REST endpoint override.",
+		GroupName = "Addresses",
 		Order = 0)]
 	public string RestEndpoint { get; set; }
 
 	/// <summary>Optional WebSocket endpoint override.</summary>
-	[Display(Name = "WebSocket endpoint", Description =
-		"Optional Aevo WebSocket endpoint override.", GroupName = "Addresses",
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Optional Aevo WebSocket endpoint override.",
+		GroupName = "Addresses",
 		Order = 1)]
 	public string SocketEndpoint { get; set; }
 
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Private REST polling interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -88,10 +105,12 @@ public partial class AevoMessageAdapter : IKeySecretAdapter
 	private int _historyLimit = 50;
 
 	/// <summary>Maximum history records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -104,10 +123,12 @@ public partial class AevoMessageAdapter : IKeySecretAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum published order-book depth.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public int MarketDepth
 	{
 		get => _marketDepth;

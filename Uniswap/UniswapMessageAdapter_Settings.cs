@@ -75,7 +75,8 @@ public enum UniswapRouterVersions
 /// </summary>
 [MediaIcon(Media.MediaNames.uniswap)]
 [Doc("topics/api/connectors/crypto_exchanges/uniswap.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.UniswapKey,
     Description = LocalizedStrings.CryptoConnectorKey,
     GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -106,93 +107,115 @@ public partial class UniswapMessageAdapter : MessageAdapter, ITokenAdapter
         UniswapExtensions.TimeFrames;
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
         Description = LocalizedStrings.TokenKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 0)]
     [BasicSetting]
     public SecureString Token { get; set; }
 
     /// <summary>Optional The Graph gateway API key.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.KeyKey,
         Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 1)]
     [BasicSetting]
     public SecureString GraphApiKey { get; set; }
 
     /// <summary>Public wallet address used for quote simulation and balances.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.WalletAddressKey,
         Description = LocalizedStrings.WalletAddressKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 2)]
     [BasicSetting]
     public string WalletAddress { get; set; }
 
     /// <summary>Optional private key used to sign on-chain transactions.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PrivateKey,
         Description = LocalizedStrings.PrivateKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 3)]
     [BasicSetting]
     public SecureString PrivateKey { get; set; }
 
     /// <summary>EVM chain.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.BoardKey,
         Description = LocalizedStrings.BoardKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 4)]
     [BasicSetting]
     public UniswapChains Chain { get; set; } = UniswapChains.Ethereum;
 
     /// <summary>Universal Router version used for quote and swap requests.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.VersionKey,
         Description = LocalizedStrings.VersionKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 5)]
     [BasicSetting]
     public UniswapRouterVersions RouterVersion { get; set; } =
         UniswapRouterVersions.Version2_0;
 
     /// <summary>HTTP JSON-RPC endpoint for the selected chain.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string RpcEndpoint { get; set; }
 
     /// <summary>Uniswap Trading API endpoint.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 1)]
     [BasicSetting]
     public string TradingEndpoint { get; set; } = _defaultTradingEndpoint;
 
     /// <summary>The Graph subgraph deployment identifier.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.IdKey,
         Description = LocalizedStrings.IdKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 2)]
     public string SubgraphId { get; set; } = _defaultV3SubgraphId;
 
     /// <summary>
     /// Semicolon-separated <c>pool|base token|quote token</c> definitions.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecuritiesKey,
         Description = LocalizedStrings.SecuritiesKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 6)]
     public string Markets { get; set; } = _defaultMarkets;
 
     private int _maximumDiscoveredPools = 100;
 
     /// <summary>Maximum number of top v3 pools discovered through The Graph.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.CountKey,
         Description = LocalizedStrings.CountKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 7)]
     public int MaximumDiscoveredPools
     {
         get => _maximumDiscoveredPools;
@@ -205,10 +228,12 @@ public partial class UniswapMessageAdapter : MessageAdapter, ITokenAdapter
     private decimal _probeVolume = 1m;
 
     /// <summary>Base-token amount used for bid and ask quote probes.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.VolumeKey,
         Description = LocalizedStrings.VolumeKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 8)]
     public decimal ProbeVolume
     {
         get => _probeVolume;
@@ -221,10 +246,12 @@ public partial class UniswapMessageAdapter : MessageAdapter, ITokenAdapter
     private decimal _slippageTolerance = 0.5m;
 
     /// <summary>Swap slippage tolerance in percent.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SlippageKey,
         Description = LocalizedStrings.SlippageKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 9)]
     public decimal SlippageTolerance
     {
         get => _slippageTolerance;
@@ -239,10 +266,12 @@ public partial class UniswapMessageAdapter : MessageAdapter, ITokenAdapter
     private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
     /// <summary>Polling interval for quotes, subgraph data and receipts.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.IntervalKey,
         Description = LocalizedStrings.IntervalKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 10)]
     public TimeSpan PollingInterval
     {
         get => _pollingInterval;

@@ -3,7 +3,8 @@ namespace StockSharp.Bluefin;
 /// <summary>The message adapter for Bluefin Pro.</summary>
 [MediaIcon(Media.MediaNames.bluefin)]
 [Doc("topics/api/connectors/crypto_exchanges/bluefin.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.BluefinKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

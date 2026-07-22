@@ -5,7 +5,8 @@ namespace StockSharp.Lfj;
 /// </summary>
 [MediaIcon(Media.MediaNames.lfj)]
 [Doc("topics/api/connectors/crypto_exchanges/lfj.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.LfjKey,
     Description = LocalizedStrings.CryptoConnectorKey,
     GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -30,34 +31,42 @@ public partial class LfjMessageAdapter : MessageAdapter
         LfjExtensions.TimeFrames;
 
     /// <summary>Public wallet address used for balances.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.WalletAddressKey,
         Description = LocalizedStrings.WalletAddressKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 0)]
     [BasicSetting]
     public string WalletAddress { get; set; }
 
     /// <summary>Optional private key used to sign on-chain transactions.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PrivateKey,
         Description = LocalizedStrings.PrivateKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 1)]
     [BasicSetting]
     public SecureString PrivateKey { get; set; }
 
     /// <summary>Avalanche C-Chain HTTP JSON-RPC endpoint.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
 
     /// <summary>Avalanche C-Chain WebSocket JSON-RPC endpoint.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 1)]
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } =
         _defaultWebSocketEndpoint;
@@ -66,19 +75,23 @@ public partial class LfjMessageAdapter : MessageAdapter
     /// Semicolon-separated pool definitions. Each item is a pool address and
     /// may include base address, quote address, and security code.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecuritiesKey,
         Description = LocalizedStrings.SecuritiesKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 2)]
     public string Pools { get; set; } = _defaultPools;
 
     private int _historyBlockRange = 2_000;
 
     /// <summary>Maximum block range requested by one log query.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.CountKey,
         Description = LocalizedStrings.CountKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 3)]
     public int HistoryBlockRange
     {
         get => _historyBlockRange;
@@ -93,10 +106,12 @@ public partial class LfjMessageAdapter : MessageAdapter
     /// <summary>
     /// Number of recent blocks searched when history has no start time.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.CountKey,
         Description = LocalizedStrings.CountKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 4)]
     public int HistoryBlockCount
     {
         get => _historyBlockCount;
@@ -109,10 +124,12 @@ public partial class LfjMessageAdapter : MessageAdapter
     private decimal _probeVolume = 1m;
 
     /// <summary>Base-token amount used for bid and ask quote probes.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.VolumeKey,
         Description = LocalizedStrings.VolumeKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 5)]
     public decimal ProbeVolume
     {
         get => _probeVolume;
@@ -125,10 +142,12 @@ public partial class LfjMessageAdapter : MessageAdapter
     private decimal _slippageTolerance = 0.5m;
 
     /// <summary>Swap slippage tolerance in percent.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SlippageKey,
         Description = LocalizedStrings.SlippageKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 6)]
     public decimal SlippageTolerance
     {
         get => _slippageTolerance;
@@ -143,10 +162,12 @@ public partial class LfjMessageAdapter : MessageAdapter
     private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
     /// <summary>Fallback polling interval for quotes, logs, and receipts.</summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.IntervalKey,
         Description = LocalizedStrings.IntervalKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 7)]
     public TimeSpan PollingInterval
     {
         get => _pollingInterval;

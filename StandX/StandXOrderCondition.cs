@@ -21,7 +21,8 @@ public enum StandXMarginModes
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.StandXKey)]
 public class StandXOrderCondition : OrderCondition
 {
@@ -41,9 +42,11 @@ public class StandXOrderCondition : OrderCondition
 	/// Leverage. When omitted, StandX uses the existing position setting.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public int? Leverage
 	{
 		get => Parameters.TryGetValue(nameof(Leverage), out var value)
@@ -56,10 +59,12 @@ public class StandXOrderCondition : OrderCondition
 	/// Restrict the order to reducing an existing position.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public bool IsReduceOnly
 	{
 		get => Parameters.TryGetValue(nameof(IsReduceOnly), out var value) &&

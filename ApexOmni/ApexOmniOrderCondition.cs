@@ -45,7 +45,8 @@ public enum ApexOmniTriggerPrices
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.ApexOmniKey)]
 public class ApexOmniOrderCondition : OrderCondition
 {
@@ -75,10 +76,12 @@ public class ApexOmniOrderCondition : OrderCondition
 	/// Trigger activation price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? ActivationPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(ActivationPrice));
@@ -99,10 +102,12 @@ public class ApexOmniOrderCondition : OrderCondition
 	/// Restrict the order to reducing an existing position.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;

@@ -21,55 +21,69 @@ public partial class QFEXMessageAdapter : MessageAdapter, IKeySecretAdapter
 	private const string _defaultTradeSocketEndpoint = "wss://trade.qfex.com/";
 
 	/// <summary>Official REST endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Public market-data WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string MarketSocketEndpoint { get; set; } =
 		_defaultMarketSocketEndpoint;
 
 	/// <summary>Authenticated order-entry WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TransactionsKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string TradeSocketEndpoint { get; set; } = _defaultTradeSocketEndpoint;
 
 	/// <summary>Optional QFEX public API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Optional QFEX API secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Optional QFEX subaccount UUID.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AccountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public string AccountId { get; set; }
 
 	private int _marketDepth = 20;
 
 	/// <summary>Maximum order-book levels sent to StockSharp.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.MarketDepthKey, Order = 6)]
+		GroupName = LocalizedStrings.MarketDepthKey,
+		Order = 6)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -82,9 +96,11 @@ public partial class QFEXMessageAdapter : MessageAdapter, IKeySecretAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum rows requested from QFEX history endpoints.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 7)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 7)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

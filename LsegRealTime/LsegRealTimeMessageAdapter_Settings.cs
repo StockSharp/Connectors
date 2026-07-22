@@ -28,16 +28,22 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	private string _discoveryUrl = "https://api.refinitiv.com/streaming/pricing/v1/";
 
 	/// <summary>Authentication flow used by the LSEG environment.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsegAuthenticationModeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LsegAuthenticationModeKey,
 		Description = LocalizedStrings.LsegAuthenticationModeDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public LsegAuthenticationModes AuthenticationMode { get; set; }
 
 	/// <summary>Primary WebSocket endpoint. Empty uses the environment default or service discovery.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.LsegAddressDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string Address
 	{
@@ -46,9 +52,12 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <summary>Secondary WebSocket endpoint for hot standby.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BackupServerKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BackupServerKey,
 		Description = LocalizedStrings.LsegStandbyAddressDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public string StandbyAddress
 	{
 		get => _standbyAddress;
@@ -56,43 +65,61 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <summary>Connect to two LSEG hot-standby endpoints and fail over between them.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsegHotStandbyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LsegHotStandbyKey,
 		Description = LocalizedStrings.LsegHotStandbyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public bool IsHotStandby { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LoginKey,
 		Description = LocalizedStrings.LsegLoginDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public string Login { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PasswordKey,
 		Description = LocalizedStrings.LsegPasswordDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
 
 	/// <summary>LSEG OAuth client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.LsegClientIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>LSEG OAuth v2 client secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.LsegSecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>LSEG application identifier sent in Login messages.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsegApplicationIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LsegApplicationIdKey,
 		Description = LocalizedStrings.LsegApplicationIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public string ApplicationId
 	{
 		get => _applicationId;
@@ -100,9 +127,12 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <summary>LSEG source-directory service name.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ServiceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ServiceKey,
 		Description = LocalizedStrings.LsegServiceDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public string Service
 	{
 		get => _service;
@@ -110,9 +140,12 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <summary>Preferred LSEG service-discovery region.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RegionKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RegionKey,
 		Description = LocalizedStrings.LsegRegionDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public string Region
 	{
 		get => _region;
@@ -120,9 +153,12 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <summary>DACS position. Empty derives the local IPv4 address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
 		Description = LocalizedStrings.LsegPositionDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 11)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 11)]
 	public string Position
 	{
 		get => _position;
@@ -130,9 +166,12 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <summary>LSEG OAuth scope.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsegScopeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LsegScopeKey,
 		Description = LocalizedStrings.LsegScopeDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 12)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 12)]
 	public string Scope
 	{
 		get => _scope;
@@ -140,9 +179,12 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <summary>Optional OAuth endpoint override.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsegAuthUrlKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LsegAuthUrlKey,
 		Description = LocalizedStrings.LsegAuthUrlDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 13)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 13)]
 	public string AuthUrl
 	{
 		get => _authUrl;
@@ -150,9 +192,12 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <summary>LSEG WebSocket service-discovery endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LsegDiscoveryUrlKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LsegDiscoveryUrlKey,
 		Description = LocalizedStrings.LsegDiscoveryUrlDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 14)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 14)]
 	public string DiscoveryUrl
 	{
 		get => _discoveryUrl;

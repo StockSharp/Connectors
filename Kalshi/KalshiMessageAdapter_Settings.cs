@@ -12,35 +12,43 @@ public partial class KalshiMessageAdapter
 		"wss://external-api-ws.demo.kalshi.co/trade-api/ws/v2";
 
 	/// <summary>Kalshi API key ID.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string ApiKey { get; set; }
 
 	/// <summary>PEM-encoded RSA private key used to sign API requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.DemoModeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
 	private int _subaccount;
 
 	/// <summary>Kalshi subaccount number, zero for the primary account.</summary>
-	[Display(Name = "Subaccount",
+	[Display(
+		Name = "Subaccount",
 		Description = "Kalshi subaccount number (0-63).",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public int Subaccount
 	{
@@ -54,10 +62,12 @@ public partial class KalshiMessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Private account reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -71,10 +81,12 @@ public partial class KalshiMessageAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum private or public history records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -87,9 +99,11 @@ public partial class KalshiMessageAdapter
 	private int _securityLookupLimit = 10000;
 
 	/// <summary>Maximum markets returned by an unbounded security lookup.</summary>
-	[Display(Name = "Security lookup limit",
+	[Display(
+		Name = "Security lookup limit",
 		Description = "Maximum open Kalshi markets returned by one lookup.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int SecurityLookupLimit
 	{
 		get => _securityLookupLimit;
@@ -102,10 +116,12 @@ public partial class KalshiMessageAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum published order-book depth.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public int MarketDepth
 	{
 		get => _marketDepth;

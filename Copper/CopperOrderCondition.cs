@@ -3,15 +3,18 @@ namespace StockSharp.Copper;
 /// <summary>Copper withdrawal and portfolio-transfer parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CopperKey)]
 public sealed class CopperOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>Destination kind.</summary>
 	[DataMember]
-	[Display(Name = "Destination type",
+	[Display(
+		Name = "Destination type",
 		Description = "Copper withdrawal destination type.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 0)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 0)]
 	public CopperDestinationTypes DestinationType
 	{
 		get => (CopperDestinationTypes?)Parameters.TryGetValue(
@@ -21,9 +24,11 @@ public sealed class CopperOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Address-book or destination portfolio identifier.</summary>
 	[DataMember]
-	[Display(Name = "Destination ID",
+	[Display(
+		Name = "Destination ID",
 		Description = "Copper address-book or destination portfolio ID.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 1)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 1)]
 	public string DestinationId
 	{
 		get => (string)Parameters.TryGetValue(nameof(DestinationId));
@@ -32,9 +37,11 @@ public sealed class CopperOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Blockchain network or main currency.</summary>
 	[DataMember]
-	[Display(Name = "Main currency",
+	[Display(
+		Name = "Main currency",
 		Description = "Copper main currency identifying the blockchain network.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 2)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 2)]
 	public string MainCurrency
 	{
 		get => (string)Parameters.TryGetValue(nameof(MainCurrency));
@@ -43,9 +50,11 @@ public sealed class CopperOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Optional network fee level.</summary>
 	[DataMember]
-	[Display(Name = "Fee level",
+	[Display(
+		Name = "Fee level",
 		Description = "Copper network fee level.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 3)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 3)]
 	public CopperFeeLevels? FeeLevel
 	{
 		get => (CopperFeeLevels?)Parameters.TryGetValue(nameof(FeeLevel));
@@ -54,9 +63,11 @@ public sealed class CopperOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Whether the fee is deducted from the withdrawal amount.</summary>
 	[DataMember]
-	[Display(Name = "Include fee",
+	[Display(
+		Name = "Include fee",
 		Description = "Deduct the network fee from the withdrawal amount.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 4)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 4)]
 	public bool IsFeeIncluded
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsFeeIncluded)) ?? false;
@@ -65,9 +76,11 @@ public sealed class CopperOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Destination memo or tag.</summary>
 	[DataMember]
-	[Display(Name = "Memo",
+	[Display(
+		Name = "Memo",
 		Description = "Destination memo or tag.",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 5)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 5)]
 	public string Memo
 	{
 		get => (string)Parameters.TryGetValue(nameof(Memo));
@@ -76,10 +89,12 @@ public sealed class CopperOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Operator-visible transfer description.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DescriptionKey,
 		Description = LocalizedStrings.DescriptionKey,
-		GroupName = LocalizedStrings.WithdrawKey, Order = 6)]
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 6)]
 	public string Description
 	{
 		get => (string)Parameters.TryGetValue(nameof(Description));

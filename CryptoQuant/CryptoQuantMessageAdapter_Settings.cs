@@ -3,15 +3,19 @@ namespace StockSharp.CryptoQuant;
 public partial class CryptoQuantMessageAdapter
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.TokenKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>CryptoQuant REST API v1 root.</summary>
-	[Display(Name = "REST endpoint", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "REST endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
 	public string ApiEndpoint { get; set; } = "https://api.cryptoquant.com/v1/";
@@ -19,9 +23,11 @@ public partial class CryptoQuantMessageAdapter
 	private TimeSpan _priceTimeFrame = TimeSpan.FromMinutes(1);
 
 	/// <summary>Window used for Level 1 closing-price history.</summary>
-	[Display(Name = "Price window",
+	[Display(
+		Name = "Price window",
 		Description = "CryptoQuant window used for Level 1 close values.",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 0)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 0)]
 	[BasicSetting]
 	public TimeSpan PriceTimeFrame
 	{
@@ -36,10 +42,12 @@ public partial class CryptoQuantMessageAdapter
 	private TimeSpan _requestInterval = TimeSpan.FromSeconds(1);
 
 	/// <summary>Minimum delay between REST requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public TimeSpan RequestInterval
 	{
 		get => _requestInterval;
@@ -53,7 +61,9 @@ public partial class CryptoQuantMessageAdapter
 	private int _maximumItems = 25000;
 
 	/// <summary>Maximum number of instruments returned by a lookup.</summary>
-	[Display(Name = "Maximum items", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Maximum items",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public int MaximumItems
 	{
@@ -67,10 +77,12 @@ public partial class CryptoQuantMessageAdapter
 	private int _historyLimit = 10000;
 
 	/// <summary>Maximum number of historical records per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -83,9 +95,11 @@ public partial class CryptoQuantMessageAdapter
 	private TimeSpan _historyLookback = TimeSpan.FromDays(365);
 
 	/// <summary>Default range when a request has no start time.</summary>
-	[Display(Name = "History lookback",
+	[Display(
+		Name = "History lookback",
 		Description = "Default range used when history has no start time.",
-		GroupName = LocalizedStrings.HistoryKey, Order = 1)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 1)]
 	public TimeSpan HistoryLookback
 	{
 		get => _historyLookback;

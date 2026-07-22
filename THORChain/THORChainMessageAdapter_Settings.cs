@@ -3,7 +3,8 @@ namespace StockSharp.THORChain;
 /// <summary>The message adapter for THORChain native swaps.</summary>
 [MediaIcon(Media.MediaNames.thorchain)]
 [Doc("topics/api/connectors/crypto_exchanges/thorchain.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.THORChainKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -24,60 +25,74 @@ public partial class THORChainMessageAdapter : MessageAdapter
 		THORChainExtensions.TimeFrames;
 
 	/// <summary>Public THORChain wallet address used for balances.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional hexadecimal key used to sign native transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Official Midgard API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string MidgardEndpoint { get; set; } = _defaultMidgardEndpoint;
 
 	/// <summary>THORNode REST endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string ThornodeEndpoint { get; set; } = _defaultThornodeEndpoint;
 
 	/// <summary>Client identifier sent to public infrastructure providers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IdKey,
 		Description = LocalizedStrings.IdKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public string ClientId { get; set; } = "stocksharp.connector";
 
 	/// <summary>
 	/// Optional semicolon-separated asset or asset|security-code entries.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public string Markets { get; set; }
 
 	private int _maximumDiscoveredMarkets = 20;
 
 	/// <summary>Maximum number of liquid pools discovered automatically.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int MaximumDiscoveredMarkets
 	{
 		get => _maximumDiscoveredMarkets;
@@ -90,10 +105,12 @@ public partial class THORChainMessageAdapter : MessageAdapter
 	private decimal _minimumLiquidityUsd = 100_000m;
 
 	/// <summary>Minimum USD liquidity for automatic pool discovery.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PriceKey,
 		Description = LocalizedStrings.PriceKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public decimal MinimumLiquidityUsd
 	{
 		get => _minimumLiquidityUsd;
@@ -106,10 +123,12 @@ public partial class THORChainMessageAdapter : MessageAdapter
 	private decimal _probeVolume = 25m;
 
 	/// <summary>RUNE amount used for executable Level1 quotes.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public decimal ProbeVolume
 	{
 		get => _probeVolume;
@@ -122,10 +141,12 @@ public partial class THORChainMessageAdapter : MessageAdapter
 	private decimal _slippageTolerance = 1m;
 
 	/// <summary>Default liquidity tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public decimal SlippageTolerance
 	{
 		get => _slippageTolerance;
@@ -139,10 +160,12 @@ public partial class THORChainMessageAdapter : MessageAdapter
 	private int _historyMaximum = 1_000;
 
 	/// <summary>Maximum Midgard actions loaded for one history request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public int HistoryMaximum
 	{
 		get => _historyMaximum;
@@ -155,10 +178,12 @@ public partial class THORChainMessageAdapter : MessageAdapter
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Polling interval for public and private state.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;

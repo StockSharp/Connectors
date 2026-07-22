@@ -20,64 +20,83 @@ public enum BluefinEnvironments
 public partial class BluefinMessageAdapter
 {
 	/// <summary>Bluefin environment.</summary>
-	[Display(Name = "Environment", Description = "Bluefin API environment.",
-		GroupName = "Connection", Order = 0)]
+	[Display(
+		Name = "Environment",
+		Description = "Bluefin API environment.",
+		GroupName = "Connection",
+		Order = 0)]
 	[BasicSetting]
 	public BluefinEnvironments Environment { get; set; }
 
 	/// <summary>Optional Sui account address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional Sui Ed25519 private key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Optional exchange REST endpoint override.</summary>
-	[Display(Name = "Exchange endpoint", Description =
-		"Optional Bluefin exchange and account-data REST endpoint override.",
-		GroupName = "Addresses", Order = 0)]
+	[Display(
+		Name = "Exchange endpoint",
+		Description = "Optional Bluefin exchange and account-data REST endpoint override.",
+		GroupName = "Addresses",
+		Order = 0)]
 	public string ExchangeEndpoint { get; set; }
 
 	/// <summary>Optional trading REST endpoint override.</summary>
-	[Display(Name = "Trade endpoint", Description =
-		"Optional Bluefin trading REST endpoint override.",
-		GroupName = "Addresses", Order = 1)]
+	[Display(
+		Name = "Trade endpoint",
+		Description = "Optional Bluefin trading REST endpoint override.",
+		GroupName = "Addresses",
+		Order = 1)]
 	public string TradeEndpoint { get; set; }
 
 	/// <summary>Optional authentication REST endpoint override.</summary>
-	[Display(Name = "Authentication endpoint", Description =
-		"Optional Bluefin authentication REST endpoint override.",
-		GroupName = "Addresses", Order = 2)]
+	[Display(
+		Name = "Authentication endpoint",
+		Description = "Optional Bluefin authentication REST endpoint override.",
+		GroupName = "Addresses",
+		Order = 2)]
 	public string AuthEndpoint { get; set; }
 
 	/// <summary>Optional market WebSocket endpoint override.</summary>
-	[Display(Name = "Market WebSocket endpoint", Description =
-		"Optional Bluefin market WebSocket endpoint override.",
-		GroupName = "Addresses", Order = 3)]
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Optional Bluefin market WebSocket endpoint override.",
+		GroupName = "Addresses",
+		Order = 3)]
 	public string MarketSocketEndpoint { get; set; }
 
 	/// <summary>Optional account WebSocket endpoint override.</summary>
-	[Display(Name = "Account WebSocket endpoint", Description =
-		"Optional Bluefin account WebSocket endpoint override.",
-		GroupName = "Addresses", Order = 4)]
+	[Display(
+		Name = "Account WebSocket endpoint",
+		Description = "Optional Bluefin account WebSocket endpoint override.",
+		GroupName = "Addresses",
+		Order = 4)]
 	public string AccountSocketEndpoint { get; set; }
 
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Private REST fallback polling interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -90,10 +109,12 @@ public partial class BluefinMessageAdapter
 	private int _historyLimit = 500;
 
 	/// <summary>Maximum history records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -106,10 +127,12 @@ public partial class BluefinMessageAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum published order-book depth.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -122,9 +145,11 @@ public partial class BluefinMessageAdapter
 	private TimeSpan _orderExpiry = TimeSpan.FromDays(30);
 
 	/// <summary>Default order expiry when no expiry is supplied.</summary>
-	[Display(Name = "Order expiry", Description =
-		"Default lifetime for signed Bluefin orders.",
-		GroupName = "Connection", Order = 6)]
+	[Display(
+		Name = "Order expiry",
+		Description = "Default lifetime for signed Bluefin orders.",
+		GroupName = "Connection",
+		Order = 6)]
 	public TimeSpan OrderExpiry
 	{
 		get => _orderExpiry;

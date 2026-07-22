@@ -32,7 +32,8 @@ public enum TapbitSections
 /// </summary>
 [MediaIcon(Media.MediaNames.tapbit)]
 [Doc("topics/api/connectors/crypto_exchanges/tapbit.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.TapbitKey,
     Description = LocalizedStrings.CryptoConnectorKey,
     GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -58,18 +59,22 @@ public partial class TapbitMessageAdapter : MessageAdapter, IKeySecretAdapter
         TapbitExtensions.TimeFrames;
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.KeyKey,
         Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecretKey,
         Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
@@ -78,10 +83,12 @@ public partial class TapbitMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// <summary>
     /// Enabled Tapbit market sections.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TypeKey,
         Description = LocalizedStrings.TypeKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 2)]
     [BasicSetting]
     public TapbitSections Sections
     {
@@ -100,10 +107,12 @@ public partial class TapbitMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// <summary>
     /// REST polling interval for public trades, candles, and private state.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.IntervalKey,
         Description = LocalizedStrings.IntervalKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 3)]
     public TimeSpan PollingInterval
     {
         get => _pollingInterval;
@@ -119,20 +128,24 @@ public partial class TapbitMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// <summary>
     /// Spot V2 REST endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string SpotRestEndpoint { get; set; } = _defaultSpotRestEndpoint;
 
     /// <summary>
     /// USDT perpetual REST endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 1)]
     [BasicSetting]
     public string FuturesRestEndpoint { get; set; } =
         _defaultFuturesRestEndpoint;
@@ -140,10 +153,12 @@ public partial class TapbitMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// <summary>
     /// Public WebSocket endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.WebSocketKey,
         Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.WebSocketAddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } =
         _defaultWebSocketEndpoint;

@@ -14,10 +14,12 @@ public class KorbitOrderCondition : OrderCondition
     /// Quote-currency amount for a market or best-price buy order.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AmountKey,
         Description = LocalizedStrings.AmountKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 0)]
     public decimal? QuoteAmount
     {
         get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));
@@ -28,10 +30,12 @@ public class KorbitOrderCondition : OrderCondition
     /// Use Korbit's best bid/offer order type.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AtBestPriceKey,
         Description = LocalizedStrings.AtBestPriceKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 1)]
     public bool IsBest
     {
         get => (bool?)Parameters.TryGetValue(nameof(IsBest)) == true;
@@ -42,10 +46,12 @@ public class KorbitOrderCondition : OrderCondition
     /// Price level used by a best bid/offer order, from 1 through 5.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.DepthKey,
         Description = LocalizedStrings.DepthKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 2)]
     public int? BestLevel
     {
         get => (int?)Parameters.TryGetValue(nameof(BestLevel));
@@ -56,10 +62,12 @@ public class KorbitOrderCondition : OrderCondition
     /// Enable Korbit price protection for taker execution.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PriceKey,
         Description = LocalizedStrings.PriceKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 3)]
     public bool IsPriceProtection
     {
         get => (bool?)Parameters.TryGetValue(nameof(IsPriceProtection)) == true;
@@ -70,10 +78,12 @@ public class KorbitOrderCondition : OrderCondition
     /// Price-protection threshold in percent, from 1 through 100.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.ErrorPercentKey,
         Description = LocalizedStrings.ErrorPercentKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 4)]
     public int? PriceProtectionPercent
     {
         get => (int?)Parameters.TryGetValue(nameof(PriceProtectionPercent));

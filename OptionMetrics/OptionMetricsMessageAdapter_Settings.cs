@@ -3,7 +3,9 @@ namespace StockSharp.OptionMetrics;
 /// <summary>The message adapter for OptionMetrics IvyDB US files.</summary>
 [MediaIcon(Media.MediaNames.optionmetrics)]
 [Doc("topics/api/connectors/stock_market/optionmetrics.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OptionMetricsKey,
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.OptionMetricsKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.Paid |
@@ -13,41 +15,54 @@ namespace StockSharp.OptionMetrics;
 public partial class OptionMetricsMessageAdapter : MessageAdapter
 {
 	/// <summary>Directory containing licensed IvyDB US text files or ZIP archives.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DataDirectoryKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataDirectoryKey,
 		Description = LocalizedStrings.DataDirectoryKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string DataDirectory { get; set; }
 
 	/// <summary>Price adjustment used for underlying-security history.</summary>
-	[Display(Name = "Price adjustment",
+	[Display(
+		Name = "Price adjustment",
 		Description = "Select raw, split-adjusted, or total-return-adjusted underlying prices.",
-		GroupName = "Market data", Order = 1)]
+		GroupName = "Market data",
+		Order = 1)]
 	public IvyDbPriceAdjustments PriceAdjustment { get; set; } =
 		IvyDbPriceAdjustments.SplitAdjusted;
 
 	/// <summary>Time zone used to interpret IvyDB US trade dates.</summary>
-	[Display(Name = "Market time zone",
+	[Display(
+		Name = "Market time zone",
 		Description = "System time-zone identifier for US Eastern market dates.",
-		GroupName = "Market data", Order = 2)]
+		GroupName = "Market data",
+		Order = 2)]
 	public string MarketTimeZoneId { get; set; } = "America/New_York";
 
 	/// <summary>Start of the daily underlying-security candle session.</summary>
-	[Display(Name = "Session start",
+	[Display(
+		Name = "Session start",
 		Description = "Open time assigned to daily underlying-security candles.",
-		GroupName = "Market data", Order = 3)]
+		GroupName = "Market data",
+		Order = 3)]
 	public TimeSpan SessionStart { get; set; } = new(9, 30, 0);
 
 	/// <summary>Time assigned to daily option observations.</summary>
-	[Display(Name = "Option snapshot time",
+	[Display(
+		Name = "Option snapshot time",
 		Description = "US Eastern time assigned to IvyDB end-of-day option observations.",
-		GroupName = "Market data", Order = 4)]
+		GroupName = "Market data",
+		Order = 4)]
 	public TimeSpan OptionSnapshotTime { get; set; } = new(15, 59, 0);
 
 	/// <summary>End of the daily underlying-security candle session.</summary>
-	[Display(Name = "Session end",
+	[Display(
+		Name = "Session end",
 		Description = "Close time assigned to daily underlying-security observations.",
-		GroupName = "Market data", Order = 5)]
+		GroupName = "Market data",
+		Order = 5)]
 	public TimeSpan SessionEnd { get; set; } = new(16, 0, 0);
 
 	/// <inheritdoc />

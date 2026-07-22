@@ -17,93 +17,135 @@ namespace StockSharp.MotilalOswal;
 public partial class MotilalOswalMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter, IDemoAdapter
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.MotilalOswalApiKeyDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.MotilalOswalApiSecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalAuthTokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalAuthTokenKey,
 		Description = LocalizedStrings.MotilalOswalAuthTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Access token returned by the MO API access-token endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalAccessTokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalAccessTokenKey,
 		Description = LocalizedStrings.MotilalOswalAccessTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString AccessToken { get; set; }
 
 	/// <summary>Trading account client code.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientCodeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClientCodeKey,
 		Description = LocalizedStrings.MotilalOswalClientCodeDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public string ClientCode { get; set; }
 
 	/// <summary>Local IPv4 address included in API headers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalLocalIpKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalLocalIpKey,
 		Description = LocalizedStrings.MotilalOswalLocalIpDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public string LocalIp { get; set; } = "127.0.0.1";
 
 	/// <summary>Public IPv4 address included in API headers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalPublicIpKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalPublicIpKey,
 		Description = LocalizedStrings.MotilalOswalPublicIpDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string PublicIp { get; set; } = "127.0.0.1";
 
 	/// <summary>MAC address included in API headers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalMacAddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalMacAddressKey,
 		Description = LocalizedStrings.MotilalOswalMacAddressDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public string MacAddress { get; set; } = "00:00:00:00:00:00";
 
 	/// <summary>Client code or vendor short name included in API headers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalVendorInfoKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalVendorInfoKey,
 		Description = LocalizedStrings.MotilalOswalVendorInfoDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public string VendorInfo { get; set; }
 
 	/// <summary>Stable identifier of this application installation.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalInstalledAppIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalInstalledAppIdKey,
 		Description = LocalizedStrings.MotilalOswalInstalledAppIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public string InstalledAppId { get; set; } = Guid.NewGuid().ToString("D");
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.DemoTradingConnectKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
 	/// <summary>Default order product.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalDefaultProductKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalDefaultProductKey,
 		Description = LocalizedStrings.MotilalOswalDefaultProductDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 11)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 11)]
 	public MotilalOswalProducts DefaultProduct { get; set; } = MotilalOswalProducts.Normal;
 
 	/// <summary>Exchange-registered algorithm identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalAlgoIdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalAlgoIdKey,
 		Description = LocalizedStrings.MotilalOswalAlgoIdDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 12)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 12)]
 	public string AlgoId { get; set; }
 
 	/// <summary>Maximum number of streaming reconnect attempts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MotilalOswalReconnectAttemptsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MotilalOswalReconnectAttemptsKey,
 		Description = LocalizedStrings.MotilalOswalReconnectAttemptsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 13)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 13)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <inheritdoc />

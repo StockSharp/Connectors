@@ -15,9 +15,12 @@ public sealed class SnapTradeOrderCondition : OrderCondition
 
 	/// <summary>Stop trigger price for stop and stop-limit orders.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	public decimal? StopPrice
 	{
 		get => _stopPrice;
@@ -30,9 +33,12 @@ public sealed class SnapTradeOrderCondition : OrderCondition
 
 	/// <summary>Cash amount for a fractional market order, mutually exclusive with unit volume.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SnapTradeNotionalValueKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SnapTradeNotionalValueKey,
 		Description = LocalizedStrings.SnapTradeNotionalValueDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	public decimal? NotionalValue
 	{
 		get => _notionalValue;
@@ -45,9 +51,12 @@ public sealed class SnapTradeOrderCondition : OrderCondition
 
 	/// <summary>Route a supported limit order to the extended-hours session.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SnapTradeExtendedHoursKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SnapTradeExtendedHoursKey,
 		Description = LocalizedStrings.SnapTradeExtendedHoursDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	public bool IsExtendedHours
 	{
 		get => _isExtendedHours;
@@ -60,9 +69,12 @@ public sealed class SnapTradeOrderCondition : OrderCondition
 
 	/// <summary>Use GTC instead of the default day duration.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SnapTradeGoodTillCanceledKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SnapTradeGoodTillCanceledKey,
 		Description = LocalizedStrings.SnapTradeGoodTillCanceledDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	public bool IsGoodTillCanceled
 	{
 		get => _isGoodTillCanceled;

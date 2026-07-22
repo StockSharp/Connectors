@@ -1,4 +1,4 @@
-﻿namespace StockSharp.Huobi;
+namespace StockSharp.Huobi;
 
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
@@ -17,8 +17,7 @@ public enum HuobiSections
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SpotKey,
-		Description = LocalizedStrings.SpotSectionKey
-	)]
+		Description = LocalizedStrings.SpotSectionKey)]
 	Spot,
 
 	/// <summary>
@@ -28,8 +27,7 @@ public enum HuobiSections
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.FuturesKey,
-		Description = LocalizedStrings.FuturesSectionKey
-	)]
+		Description = LocalizedStrings.FuturesSectionKey)]
 	Futures,
 
 	/// <summary>
@@ -39,8 +37,7 @@ public enum HuobiSections
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.UsdtKey,
-		Description = LocalizedStrings.UsdtSectionKey
-	)]
+		Description = LocalizedStrings.UsdtSectionKey)]
 	Usdt,
 
 	///// <summary>

@@ -4,8 +4,11 @@ namespace StockSharp.RakutenRss;
 [SupportedOSPlatform("windows")]
 [MediaIcon(Media.MediaNames.rakuten_rss)]
 [Doc("topics/api/connectors/stock_market/rakuten_rss.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssKey,
-	Description = LocalizedStrings.StockConnectorKey, GroupName = LocalizedStrings.JapanKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.RakutenRssKey,
+	Description = LocalizedStrings.StockConnectorKey,
+	GroupName = LocalizedStrings.JapanKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Asia | MessageAdapterCategories.Stock |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options |
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.Level1 |
@@ -15,22 +18,31 @@ namespace StockSharp.RakutenRss;
 public partial class RakutenRssMessageAdapter : MessageAdapter
 {
 	/// <summary>Portfolio name exposed to StockSharp.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PortfolioKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PortfolioKey,
 		Description = LocalizedStrings.RakutenRssPortfolioDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string PortfolioName { get; set; } = "Rakuten";
 
 	/// <summary>Show the private Excel automation window.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssExcelVisibleKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssExcelVisibleKey,
 		Description = LocalizedStrings.RakutenRssExcelVisibleDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	public bool IsExcelVisible { get; set; }
 
 	/// <summary>Maximum rows read from account and execution tables.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssMaxRowsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssMaxRowsKey,
 		Description = LocalizedStrings.RakutenRssMaxRowsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public int MaxTableRows { get; set; } = 1000;
 
 	/// <inheritdoc />

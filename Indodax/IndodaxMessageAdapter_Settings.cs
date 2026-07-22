@@ -5,7 +5,8 @@ namespace StockSharp.Indodax;
 /// </summary>
 [MediaIcon(Media.MediaNames.indodax)]
 [Doc("topics/api/connectors/crypto_exchanges/indodax.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.IndodaxKey,
     Description = LocalizedStrings.CryptoConnectorKey,
     GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -25,48 +26,58 @@ public partial class IndodaxMessageAdapter : MessageAdapter, IKeySecretAdapter
         "wss://pws.indodax.com/ws/?cf_ws_frame_ping_pong=true";
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.KeyKey,
         Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecretKey,
         Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
     /// <summary>
     /// Public REST and TAPI endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
     /// <summary>
     /// Trade API v2 history endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.HistoryKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 1)]
     [BasicSetting]
     public string HistoryEndpoint { get; set; } = _defaultHistoryEndpoint;
 
     /// <summary>
     /// Market Data WebSocket endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.MarketDataKey,
         Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.WebSocketAddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string MarketDataWebSocketEndpoint { get; set; } =
         _defaultMarketDataWebSocketEndpoint;
@@ -74,10 +85,12 @@ public partial class IndodaxMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// <summary>
     /// Private WebSocket endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PrivateKey,
         Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 1)]
+        GroupName = LocalizedStrings.WebSocketAddressesKey,
+        Order = 1)]
     [BasicSetting]
     public string PrivateWebSocketEndpoint { get; set; } =
         _defaultPrivateWebSocketEndpoint;

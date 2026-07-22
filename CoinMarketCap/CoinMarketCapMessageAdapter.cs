@@ -3,7 +3,8 @@ namespace StockSharp.CoinMarketCap;
 /// <summary>The message adapter for CoinMarketCap REST and WebSocket APIs.</summary>
 [MediaIcon(Media.MediaNames.coinmarketcap)]
 [Doc("topics/api/connectors/crypto_exchanges/coinmarketcap.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CoinMarketCapKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

@@ -3,7 +3,8 @@ namespace StockSharp.Aevo;
 /// <summary>The message adapter for Aevo.</summary>
 [MediaIcon(Media.MediaNames.aevo)]
 [Doc("topics/api/connectors/crypto_exchanges/aevo.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.AevoKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

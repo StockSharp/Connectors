@@ -22,7 +22,8 @@ public enum PacificaTriggerPriceTypes
 /// <summary>Pacifica order condition.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.PacificaKey)]
 public class PacificaOrderCondition : OrderCondition
 {

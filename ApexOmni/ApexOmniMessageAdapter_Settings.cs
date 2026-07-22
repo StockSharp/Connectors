@@ -46,38 +46,46 @@ public partial class ApexOmniMessageAdapter : MessageAdapter,
 		[.. ApexOmniExtensions.TimeFrames.Keys];
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>
 	/// API-key passphrase.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PassphraseKey,
 		Description = LocalizedStrings.PasswordKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Passphrase { get; set; }
 
 	/// <summary>
 	/// Hex-encoded zkLink signing seed obtained during ApeX onboarding.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.ApexOmniSeedKey,
 		Description = LocalizedStrings.ApexOmniSeedDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString Seeds { get; set; }
 
@@ -86,10 +94,12 @@ public partial class ApexOmniMessageAdapter : MessageAdapter,
 	/// <summary>
 	/// ApeX Omni environment.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.ModeKey,
 		Description = LocalizedStrings.ModeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public ApexOmniEnvironments Environment
 	{
@@ -124,30 +134,36 @@ public partial class ApexOmniMessageAdapter : MessageAdapter,
 	/// <summary>
 	/// REST endpoint host.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.AddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _productionRest;
 
 	/// <summary>
 	/// WebSocket endpoint host.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.WsEndpointKey,
-		GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _productionWs;
 
 	/// <summary>
 	/// Public order-book depth (25 or 200 levels).
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
 		Description = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.WebSocketKey, Order = 1)]
+		GroupName = LocalizedStrings.WebSocketKey,
+		Order = 1)]
 	[BasicSetting]
 	public int MarketDepth { get; set; } = 200;
 

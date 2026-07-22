@@ -61,28 +61,34 @@ public partial class GrvtMessageAdapter : MessageAdapter, IKeySecretAdapter,
 		[.. GrvtExtensions.TimeFrames.Keys];
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>
 	/// GRVT trading subaccount identifier.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.AccountKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string SubAccountId { get; set; }
 
@@ -91,10 +97,12 @@ public partial class GrvtMessageAdapter : MessageAdapter, IKeySecretAdapter,
 	/// <summary>
 	/// GRVT environment.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.ModeKey,
 		Description = LocalizedStrings.ModeKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public GrvtEnvironments Environment
 	{
@@ -134,40 +142,48 @@ public partial class GrvtMessageAdapter : MessageAdapter, IKeySecretAdapter,
 	/// <summary>
 	/// Authentication endpoint host.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.AddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string EdgeEndpoint { get; set; } = _productionEdge;
 
 	/// <summary>
 	/// Market data REST endpoint host.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDataKey,
 		Description = LocalizedStrings.MarketDataKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string MarketDataEndpoint { get; set; } = _productionMarket;
 
 	/// <summary>
 	/// Trading REST endpoint host.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TransactionsKey,
 		Description = LocalizedStrings.TransactionsKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	[BasicSetting]
 	public string TradingEndpoint { get; set; } = _productionTrading;
 
 	/// <summary>
 	/// Market data WebSocket endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDataKey,
 		Description = LocalizedStrings.WsEndpointKey,
-		GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string MarketWebSocketEndpoint { get; set; } =
 		_productionMarketWs;
@@ -175,10 +191,12 @@ public partial class GrvtMessageAdapter : MessageAdapter, IKeySecretAdapter,
 	/// <summary>
 	/// Trading WebSocket endpoint.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TransactionsKey,
 		Description = LocalizedStrings.WsEndpointKey,
-		GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 1)]
 	[BasicSetting]
 	public string TradingWebSocketEndpoint { get; set; } =
 		_productionTradingWs;
@@ -186,20 +204,24 @@ public partial class GrvtMessageAdapter : MessageAdapter, IKeySecretAdapter,
 	/// <summary>
 	/// Snapshot publication interval in milliseconds.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.WebSocketKey, Order = 2)]
+		GroupName = LocalizedStrings.WebSocketKey,
+		Order = 2)]
 	[BasicSetting]
 	public int SnapshotInterval { get; set; } = 500;
 
 	/// <summary>
 	/// Default order-book depth.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
 		Description = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.WebSocketKey, Order = 3)]
+		GroupName = LocalizedStrings.WebSocketKey,
+		Order = 3)]
 	[BasicSetting]
 	public int MarketDepth { get; set; } = 50;
 

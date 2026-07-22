@@ -102,8 +102,12 @@ public class WeexOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 	/// Conditional order kind.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopTypeKey,
-		Description = LocalizedStrings.StopTypeDescKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopTypeKey,
+		Description = LocalizedStrings.StopTypeDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public WeexOrderConditionTypes Type
 	{
 		get => (WeexOrderConditionTypes?)Parameters.TryGetValue(nameof(Type)) ?? WeexOrderConditionTypes.StopLoss;
@@ -114,8 +118,12 @@ public class WeexOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 	/// Trigger price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
-		Description = LocalizedStrings.StopPriceDescKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public decimal? ActivationPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(ActivationPrice));
@@ -126,8 +134,12 @@ public class WeexOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 	/// Limit price used after activation. A null value selects market execution.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClosingPriceKey,
-		Description = LocalizedStrings.ClosingPriceKey, GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClosingPriceKey,
+		Description = LocalizedStrings.ClosingPriceKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public decimal? ClosePositionPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(ClosePositionPrice));
@@ -138,8 +150,12 @@ public class WeexOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 	/// Futures position side. When omitted, it is inferred from order side and position effect.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
-		Description = LocalizedStrings.PositionKey, GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public WeexPositionSides? PositionSide
 	{
 		get => (WeexPositionSides?)Parameters.TryGetValue(nameof(PositionSide));
@@ -150,8 +166,12 @@ public class WeexOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 	/// Trigger price source.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PriceTypeKey,
-		Description = LocalizedStrings.PriceTypeKey, GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceTypeKey,
+		Description = LocalizedStrings.PriceTypeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
 	public WeexTriggerPriceTypes TriggerPriceType
 	{
 		get => (WeexTriggerPriceTypes?)Parameters.TryGetValue(nameof(TriggerPriceType)) ?? WeexTriggerPriceTypes.LastPrice;
@@ -162,8 +182,12 @@ public class WeexOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 	/// Optional take-profit trigger attached to an ordinary futures order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey,
-		Description = LocalizedStrings.TakeProfitKey, GroupName = LocalizedStrings.ParametersKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
+		Description = LocalizedStrings.TakeProfitKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 5)]
 	public decimal? TakeProfitPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TakeProfitPrice));
@@ -174,8 +198,12 @@ public class WeexOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 	/// Optional stop-loss trigger attached to an ordinary futures order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey,
-		Description = LocalizedStrings.StopLossKey, GroupName = LocalizedStrings.ParametersKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey,
+		Description = LocalizedStrings.StopLossKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 6)]
 	public decimal? StopLossPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopLossPrice));

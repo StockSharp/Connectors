@@ -5,7 +5,8 @@ namespace StockSharp.Rain;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.RainKey)]
 public class RainOrderCondition : OrderCondition
 {
@@ -13,10 +14,12 @@ public class RainOrderCondition : OrderCondition
     /// Quote-currency amount used for a market buy.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AmountKey,
         Description = LocalizedStrings.AmountKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 0)]
     public decimal? QuoteAmount
     {
         get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));

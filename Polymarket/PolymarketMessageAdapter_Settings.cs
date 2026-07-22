@@ -11,43 +11,55 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 		"wss://ws-subscriptions-clob.polymarket.com/ws/user";
 
 	/// <summary>Polymarket CLOB REST endpoint.</summary>
-	[Display(Name = "CLOB endpoint", Description =
-		"Polymarket CLOB REST endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+	[Display(
+		Name = "CLOB endpoint",
+		Description = "Polymarket CLOB REST endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	public string ClobEndpoint { get; set; } = _defaultClobEndpoint;
 
 	/// <summary>Polymarket Data API endpoint.</summary>
-	[Display(Name = "Data endpoint", Description =
-		"Polymarket positions Data API endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+	[Display(
+		Name = "Data endpoint",
+		Description = "Polymarket positions Data API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string DataEndpoint { get; set; } = _defaultDataEndpoint;
 
 	/// <summary>Polymarket market WebSocket endpoint.</summary>
-	[Display(Name = "Market WebSocket", Description =
-		"Polymarket public market WebSocket endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+	[Display(
+		Name = "Market WebSocket",
+		Description = "Polymarket public market WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string MarketSocketEndpoint { get; set; } =
 		_defaultMarketSocketEndpoint;
 
 	/// <summary>Polymarket user WebSocket endpoint.</summary>
-	[Display(Name = "User WebSocket", Description =
-		"Polymarket authenticated user WebSocket endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+	[Display(
+		Name = "User WebSocket",
+		Description = "Polymarket authenticated user WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string UserSocketEndpoint { get; set; } = _defaultUserSocketEndpoint;
 
 	/// <summary>Polymarket CLOB API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Polymarket CLOB API secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
@@ -62,47 +74,59 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 	public SecureString Passphrase { get; set; }
 
 	/// <summary>EOA address used to authenticate API requests.</summary>
-	[Display(Name = "Signer address", Description =
-		"EOA address associated with the API credentials.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+	[Display(
+		Name = "Signer address",
+		Description = "EOA address associated with the API credentials.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string SignerAddress { get; set; }
 
 	/// <summary>Wallet holding collateral and conditional tokens.</summary>
-	[Display(Name = "Funder address", Description =
-		"Polymarket proxy, Safe or deposit wallet holding funds.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+	[Display(
+		Name = "Funder address",
+		Description = "Polymarket proxy, Safe or deposit wallet holding funds.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public string FunderAddress { get; set; }
 
 	/// <summary>EOA private key used to sign orders.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	/// <summary>Polymarket wallet signature type.</summary>
-	[Display(Name = "Signature type", Description =
-		"Polymarket wallet and order signature type.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+	[Display(
+		Name = "Signature type",
+		Description = "Polymarket wallet and order signature type.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	[BasicSetting]
 	public PolymarketSignatureTypes SignatureType { get; set; }
 
 	/// <summary>Optional registered Polymarket builder code.</summary>
-	[Display(Name = "Builder code", Description =
-		"Optional registered bytes32 builder code.",
-		GroupName = LocalizedStrings.TransactionKey, Order = 0)]
+	[Display(
+		Name = "Builder code",
+		Description = "Optional registered bytes32 builder code.",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 0)]
 	public string BuilderCode { get; set; }
 
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>Private account reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -117,10 +141,12 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum private history records per request.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -133,10 +159,12 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum published order-book depth.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public int MarketDepth
 	{
 		get => _marketDepth;

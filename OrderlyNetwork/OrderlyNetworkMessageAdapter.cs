@@ -3,7 +3,8 @@ namespace StockSharp.OrderlyNetwork;
 /// <summary>The message adapter for Orderly Network perpetual markets.</summary>
 [MediaIcon(Media.MediaNames.orderly_network)]
 [Doc("topics/api/connectors/crypto_exchanges/orderly_network.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.OrderlyNetworkKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

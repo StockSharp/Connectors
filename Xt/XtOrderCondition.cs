@@ -93,8 +93,12 @@ public class XtOrderCondition : OrderCondition
 	/// Quote-currency amount for a spot market buy.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AmountKey,
-		Description = LocalizedStrings.AmountKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
+		Description = LocalizedStrings.AmountKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? QuoteAmount
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));
@@ -105,8 +109,12 @@ public class XtOrderCondition : OrderCondition
 	/// Futures position side.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
-		Description = LocalizedStrings.PositionKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public XtPositionSides PositionSide
 	{
 		get => (XtPositionSides?)Parameters.TryGetValue(nameof(PositionSide)) ?? XtPositionSides.Both;
@@ -117,8 +125,12 @@ public class XtOrderCondition : OrderCondition
 	/// Order execution policy.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OrderTypeKey,
-		Description = LocalizedStrings.OrderTypeKey, GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderTypeKey,
+		Description = LocalizedStrings.OrderTypeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public XtOrderPolicies Policy
 	{
 		get => (XtOrderPolicies?)Parameters.TryGetValue(nameof(Policy)) ?? XtOrderPolicies.Regular;

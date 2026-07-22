@@ -5,7 +5,8 @@ namespace StockSharp.PintuPro;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.PintuProKey)]
 public class PintuProOrderCondition : OrderCondition
 {
@@ -13,10 +14,12 @@ public class PintuProOrderCondition : OrderCondition
     /// Quote-currency amount to spend for a market buy order.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AmountKey,
         Description = LocalizedStrings.AmountKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 0)]
     public decimal? QuoteAmount
     {
         get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));

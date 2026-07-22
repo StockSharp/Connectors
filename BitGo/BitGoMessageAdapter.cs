@@ -3,7 +3,8 @@ namespace StockSharp.BitGo;
 /// <summary>The message adapter for BitGo Prime trading.</summary>
 [MediaIcon(Media.MediaNames.bitgo)]
 [Doc("topics/api/connectors/crypto_exchanges/bitgo.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.BitGoKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

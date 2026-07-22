@@ -28,60 +28,76 @@ public partial class NadoMessageAdapter : MessageAdapter
 		"wss://gateway.prod.nado.xyz/v1/subscribe";
 
 	/// <summary>Official gateway v1 endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string GatewayEndpoint { get; set; } = _defaultGatewayEndpoint;
 
 	/// <summary>Official gateway v2 endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = "Gateway V2",
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string GatewayV2Endpoint { get; set; } = _defaultGatewayV2Endpoint;
 
 	/// <summary>Official archive indexer v1 endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.HistoryKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	public string ArchiveEndpoint { get; set; } = _defaultArchiveEndpoint;
 
 	/// <summary>Official archive indexer v2 endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = "Archive V2",
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	public string ArchiveV2Endpoint { get; set; } = _defaultArchiveV2Endpoint;
 
 	/// <summary>Official subscription WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>Optional EVM wallet address for read-only account access.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional EVM private key used to sign orders.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private string _subaccountName = "default";
 
 	/// <summary>Nado subaccount name encoded into bytes12.</summary>
-	[Display(Name = "Subaccount",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+	[Display(
+		Name = "Subaccount",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public string SubaccountName
 	{
 		get => _subaccountName;
@@ -98,9 +114,11 @@ public partial class NadoMessageAdapter : MessageAdapter
 	private TimeSpan _orderExpiry = TimeSpan.FromHours(1);
 
 	/// <summary>Lifetime of a newly submitted order.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.ExpirationKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 8)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 8)]
 	public TimeSpan OrderExpiry
 	{
 		get => _orderExpiry;
@@ -114,9 +132,11 @@ public partial class NadoMessageAdapter : MessageAdapter
 	private decimal _marketOrderSlippage = 0.75m;
 
 	/// <summary>Market-order protection in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 9)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 9)]
 	public decimal MarketOrderSlippage
 	{
 		get => _marketOrderSlippage;
@@ -129,9 +149,11 @@ public partial class NadoMessageAdapter : MessageAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum order-book levels sent to StockSharp.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.MarketDepthKey, Order = 10)]
+		GroupName = LocalizedStrings.MarketDepthKey,
+		Order = 10)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -144,9 +166,11 @@ public partial class NadoMessageAdapter : MessageAdapter
 	private int _historyLimit = 500;
 
 	/// <summary>Maximum rows requested from history endpoints.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 11)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 11)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

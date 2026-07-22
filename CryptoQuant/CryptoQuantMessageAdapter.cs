@@ -3,7 +3,8 @@ namespace StockSharp.CryptoQuant;
 /// <summary>The message adapter for CryptoQuant digital-asset data API.</summary>
 [MediaIcon(Media.MediaNames.cryptoquant)]
 [Doc("topics/api/connectors/crypto_exchanges/cryptoquant.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CryptoQuantKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

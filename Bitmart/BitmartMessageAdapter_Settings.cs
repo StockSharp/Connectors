@@ -1,4 +1,4 @@
-﻿namespace StockSharp.Bitmart;
+namespace StockSharp.Bitmart;
 
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
@@ -20,8 +20,7 @@ public enum BitmartSections
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SpotKey,
-		Description = LocalizedStrings.SpotSectionKey
-	)]
+		Description = LocalizedStrings.SpotSectionKey)]
 	Spot,
 
 	/// <summary>
@@ -31,8 +30,7 @@ public enum BitmartSections
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.FuturesKey,
-		Description = LocalizedStrings.FuturesSectionKey
-	)]
+		Description = LocalizedStrings.FuturesSectionKey)]
 	Futures,
 }
 

@@ -6,7 +6,9 @@ public partial class CoinGeckoMessageAdapter
 	private string _apiEndpoint = CoinGeckoApiTiers.Demo.GetApiEndpoint();
 
 	/// <summary>CoinGecko API tier.</summary>
-	[Display(Name = "API tier", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "API tier",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
 	public CoinGeckoApiTiers Tier
@@ -22,15 +24,19 @@ public partial class CoinGeckoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.TokenKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>CoinGecko REST API root ending in /api/v3.</summary>
-	[Display(Name = "REST endpoint", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "REST endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
 	public string ApiEndpoint
@@ -40,38 +46,48 @@ public partial class CoinGeckoMessageAdapter
 	}
 
 	/// <summary>CoinGecko Pro WebSocket endpoint.</summary>
-	[Display(Name = "WebSocket endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+	[Display(
+		Name = "WebSocket endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	[BasicSetting]
 	public string SocketEndpoint { get; set; } = "wss://stream.coingecko.com/v1";
 
 	/// <summary>Default quote currency for aggregated coins.</summary>
-	[Display(Name = "Quote currency",
+	[Display(
+		Name = "Quote currency",
 		Description = "CoinGecko supported quote-currency ID.",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 0)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 0)]
 	[BasicSetting]
 	public string QuoteCurrency { get; set; } = "usd";
 
 	/// <summary>Optional GeckoTerminal network filter for pool lookup.</summary>
-	[Display(Name = "On-chain network",
+	[Display(
+		Name = "On-chain network",
 		Description = "Optional GeckoTerminal network ID used for pool search.",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 1)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 1)]
 	public string OnchainNetwork { get; set; }
 
 	/// <summary>Use the paid CoinGecko WebSocket for live subscriptions.</summary>
-	[Display(Name = "Streaming",
+	[Display(
+		Name = "Streaming",
 		Description = "Use CoinGecko Pro WebSocket (Analyst plan or above).",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 2)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 2)]
 	[BasicSetting]
 	public bool IsStreamingEnabled { get; set; } = true;
 
 	private TimeSpan _requestInterval = TimeSpan.FromSeconds(2);
 
 	/// <summary>Minimum delay between REST requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public TimeSpan RequestInterval
 	{
 		get => _requestInterval;
@@ -85,7 +101,9 @@ public partial class CoinGeckoMessageAdapter
 	private int _maximumItems = 25000;
 
 	/// <summary>Maximum number of securities returned by a lookup.</summary>
-	[Display(Name = "Maximum items", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Maximum items",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public int MaximumItems
 	{
@@ -99,8 +117,10 @@ public partial class CoinGeckoMessageAdapter
 	private int _poolSearchPages = 3;
 
 	/// <summary>Maximum number of 20-item on-chain search pages.</summary>
-	[Display(Name = "Pool search pages",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+	[Display(
+		Name = "Pool search pages",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public int PoolSearchPages
 	{
 		get => _poolSearchPages;
@@ -113,10 +133,12 @@ public partial class CoinGeckoMessageAdapter
 	private int _historyLimit = 10000;
 
 	/// <summary>Maximum history items per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

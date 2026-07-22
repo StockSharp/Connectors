@@ -3,7 +3,8 @@ namespace StockSharp.Gmx;
 /// <summary>The message adapter for GMX V2 markets.</summary>
 [MediaIcon(Media.MediaNames.gmx)]
 [Doc("topics/api/connectors/crypto_exchanges/gmx.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.GmxKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

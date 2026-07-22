@@ -3,46 +3,58 @@ namespace StockSharp.Amberdata;
 public partial class AmberdataMessageAdapter
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.TokenKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Amberdata Market Data REST API root.</summary>
-	[Display(Name = "REST endpoint", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "REST endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
 	public string ApiEndpoint { get; set; } =
 		"https://api.amberdata.com/markets/";
 
 	/// <summary>Amberdata spot WebSocket endpoint.</summary>
-	[Display(Name = "WebSocket endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+	[Display(
+		Name = "WebSocket endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	[BasicSetting]
 	public string SocketEndpoint { get; set; } =
 		"wss://ws.amberdata.com/spot";
 
 	/// <summary>Optional exchange identifier filter.</summary>
-	[Display(Name = "Exchange filter",
+	[Display(
+		Name = "Exchange filter",
 		Description = "Optional Amberdata exchange identifier filter.",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 0)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 0)]
 	public string ExchangeFilter { get; set; }
 
 	/// <summary>Whether delisted instruments are included in security lookup.</summary>
-	[Display(Name = "Include inactive",
+	[Display(
+		Name = "Include inactive",
 		Description = "Include inactive and delisted spot instruments.",
-		GroupName = LocalizedStrings.MarketDataKey, Order = 1)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 1)]
 	public bool IsInactiveIncluded { get; set; }
 
 	private TimeSpan _requestInterval = TimeSpan.FromMilliseconds(70);
 
 	/// <summary>Minimum delay between REST requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public TimeSpan RequestInterval
 	{
 		get => _requestInterval;
@@ -56,7 +68,9 @@ public partial class AmberdataMessageAdapter
 	private int _maximumItems = 25000;
 
 	/// <summary>Maximum number of securities returned by one lookup.</summary>
-	[Display(Name = "Maximum items", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Maximum items",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public int MaximumItems
 	{
@@ -70,10 +84,12 @@ public partial class AmberdataMessageAdapter
 	private int _historyLimit = 10000;
 
 	/// <summary>Maximum number of historical records per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -86,10 +102,12 @@ public partial class AmberdataMessageAdapter
 	private int _marketDepth = 50;
 
 	/// <summary>Default and maximum order-book depth.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 2)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 2)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -102,9 +120,11 @@ public partial class AmberdataMessageAdapter
 	private TimeSpan _historyLookback = TimeSpan.FromDays(1);
 
 	/// <summary>Default range when a historical request has no start time.</summary>
-	[Display(Name = "History lookback",
+	[Display(
+		Name = "History lookback",
 		Description = "Default range used when history has no start time.",
-		GroupName = LocalizedStrings.HistoryKey, Order = 1)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 1)]
 	public TimeSpan HistoryLookback
 	{
 		get => _historyLookback;

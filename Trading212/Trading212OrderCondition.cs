@@ -13,9 +13,12 @@ public sealed class Trading212OrderCondition : OrderCondition
 
 	/// <summary>Trigger price for stop and stop-limit orders.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	public decimal? StopPrice
 	{
 		get => _stopPrice;
@@ -28,9 +31,12 @@ public sealed class Trading212OrderCondition : OrderCondition
 
 	/// <summary>Whether a market order may execute during supported extended hours.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.Trading212ExtendedHoursKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.Trading212ExtendedHoursKey,
 		Description = LocalizedStrings.Trading212ExtendedHoursDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	public bool IsExtendedHours
 	{
 		get => _isExtendedHours;

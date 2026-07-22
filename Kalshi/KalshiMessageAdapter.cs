@@ -3,7 +3,8 @@ namespace StockSharp.Kalshi;
 /// <summary>The message adapter for Kalshi event contracts.</summary>
 [MediaIcon(Media.MediaNames.kalshi)]
 [Doc("topics/api/connectors/stock_market/kalshi.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.KalshiKey,
 	Description = LocalizedStrings.StockConnectorKey,
 	GroupName = LocalizedStrings.AmericaKey)]

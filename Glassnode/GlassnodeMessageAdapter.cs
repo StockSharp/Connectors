@@ -3,7 +3,8 @@ namespace StockSharp.Glassnode;
 /// <summary>The message adapter for Glassnode digital-asset data API.</summary>
 [MediaIcon(Media.MediaNames.glassnode)]
 [Doc("topics/api/connectors/crypto_exchanges/glassnode.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.GlassnodeKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

@@ -9,50 +9,62 @@ public partial class OrderlyNetworkMessageAdapter
 		"wss://ws-private-evm.orderly.org/v2/ws/private/stream";
 
 	/// <summary>Orderly account identifier.</summary>
-	[Display(Name = "Orderly account ID",
+	[Display(
+		Name = "Orderly account ID",
 		Description = "Registered Orderly account identifier.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string AccountId { get; set; }
 
 	/// <summary>Base58-encoded ED25519 Orderly secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>REST API endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Public market-data WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.WsEndpointKey,
-		GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string PublicWebSocketEndpoint { get; set; } =
 		_defaultPublicWebSocketEndpoint;
 
 	/// <summary>Private account-data WebSocket endpoint.</summary>
-	[Display(Name = "Private WebSocket",
+	[Display(
+		Name = "Private WebSocket",
 		Description = "Orderly private WebSocket endpoint.",
-		GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 1)]
 	public string PrivateWebSocketEndpoint { get; set; } =
 		_defaultPrivateWebSocketEndpoint;
 
 	private int _historyLimit = 500;
 
 	/// <summary>Maximum rows requested from a history endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

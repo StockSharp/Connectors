@@ -31,48 +31,58 @@ public partial class KorbitMessageAdapter : MessageAdapter, IKeySecretAdapter
         KorbitExtensions.TimeFrames;
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.KeyKey,
         Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecretKey,
         Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
     /// <summary>
     /// Account sequence number. The main account is <c>1</c>.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AccountKey,
         Description = LocalizedStrings.AccountKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 2)]
     [BasicSetting]
     public int AccountSequence { get; set; } = 1;
 
     /// <summary>
     /// REST API endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
     /// <summary>
     /// Public WebSocket endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.WebSocketKey,
         Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.WebSocketAddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string PublicWebSocketEndpoint { get; set; } =
         _defaultPublicWebSocketEndpoint;
@@ -80,10 +90,12 @@ public partial class KorbitMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// <summary>
     /// Private WebSocket endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.WebSocketKey,
         Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 1)]
+        GroupName = LocalizedStrings.WebSocketAddressesKey,
+        Order = 1)]
     [BasicSetting]
     public string PrivateWebSocketEndpoint { get; set; } =
         _defaultPrivateWebSocketEndpoint;

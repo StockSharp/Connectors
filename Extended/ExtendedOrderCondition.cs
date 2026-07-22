@@ -5,7 +5,8 @@ using Native;
 /// <summary>Extended order condition.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.ExtendedKey)]
 public class ExtendedOrderCondition : OrderCondition
 {

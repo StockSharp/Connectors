@@ -14,9 +14,12 @@ public class BackpackOrderCondition : OrderCondition
 	/// Reduce an existing futures position only.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PosConditionReduceOnlyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;
@@ -27,9 +30,12 @@ public class BackpackOrderCondition : OrderCondition
 	/// Interpret market-order volume as quote-currency quantity.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuoteVolumeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuoteVolumeKey,
 		Description = LocalizedStrings.QuoteVolumeKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public bool IsQuoteVolume
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsQuoteVolume)) ?? false;

@@ -3,7 +3,8 @@ namespace StockSharp.VeloData;
 /// <summary>The message adapter for Velo Data market analytics and news.</summary>
 [MediaIcon(Media.MediaNames.velodata)]
 [Doc("topics/api/connectors/crypto_exchanges/velo_data.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.VeloDataKey,
     Description = LocalizedStrings.MarketDataConnectorKey,
     GroupName = LocalizedStrings.CryptocurrencyKey)]

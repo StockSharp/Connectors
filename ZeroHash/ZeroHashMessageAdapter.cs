@@ -3,7 +3,8 @@ namespace StockSharp.ZeroHash;
 /// <summary>The message adapter for the Zero Hash central limit order book.</summary>
 [MediaIcon(Media.MediaNames.zerohash)]
 [Doc("topics/api/connectors/crypto_exchanges/zerohash.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.ZeroHashKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

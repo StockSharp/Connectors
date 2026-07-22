@@ -10,9 +10,11 @@ public sealed class FalconXOrderCondition : OrderCondition
 {
 	/// <summary>Execute the request as a TWAP order over the order WebSocket.</summary>
 	[DataMember]
-	[Display(Name = "TWAP",
+	[Display(
+		Name = "TWAP",
 		Description = "Execute the order as a FalconX TWAP order.",
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public bool IsTwap
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsTwap)) ?? false;
@@ -21,9 +23,11 @@ public sealed class FalconXOrderCondition : OrderCondition
 
 	/// <summary>Total TWAP execution duration.</summary>
 	[DataMember]
-	[Display(Name = "TWAP duration",
+	[Display(
+		Name = "TWAP duration",
 		Description = "Total duration over which FalconX executes the TWAP order.",
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public TimeSpan TwapDuration
 	{
 		get => (TimeSpan?)Parameters.TryGetValue(nameof(TwapDuration)) ??
@@ -33,9 +37,11 @@ public sealed class FalconXOrderCondition : OrderCondition
 
 	/// <summary>Optional number of TWAP child transactions.</summary>
 	[DataMember]
-	[Display(Name = "TWAP transactions",
+	[Display(
+		Name = "TWAP transactions",
 		Description = "Optional number of child transactions in the TWAP schedule.",
-		GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public int? TwapTransactionsCount
 	{
 		get => (int?)Parameters.TryGetValue(nameof(TwapTransactionsCount));
@@ -44,9 +50,11 @@ public sealed class FalconXOrderCondition : OrderCondition
 
 	/// <summary>Optional REST FOK limit-order slippage in basis points.</summary>
 	[DataMember]
-	[Display(Name = "Slippage (bps)",
+	[Display(
+		Name = "Slippage (bps)",
 		Description = "Optional FalconX REST limit-order slippage in basis points.",
-		GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public decimal? SlippageBps
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(SlippageBps));

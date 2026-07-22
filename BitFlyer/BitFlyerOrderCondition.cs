@@ -14,9 +14,12 @@ public class BitFlyerOrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Stop activation price.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TriggerKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerKey,
 		Description = LocalizedStrings.TriggerFieldKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -27,10 +30,12 @@ public class BitFlyerOrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Positive price distance for a trailing-stop order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TrailingDeltaKey,
 		Description = LocalizedStrings.TrailingDeltaKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public int? TrailingOffset
 	{
 		get => (int?)Parameters.TryGetValue(nameof(TrailingOffset));

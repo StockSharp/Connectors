@@ -75,8 +75,12 @@ public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITak
 	/// Position leverage.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LeverageKey,
-		Description = LocalizedStrings.LeverageKey, GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LeverageKey,
+		Description = LocalizedStrings.LeverageKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public int Leverage
 	{
 		get => (int?)Parameters.TryGetValue(nameof(Leverage)) ?? 1;
@@ -87,8 +91,12 @@ public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITak
 	/// Position margin mode.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey,
-		Description = LocalizedStrings.MarginKey, GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey,
+		Description = LocalizedStrings.MarginKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public CoinWFuturesMarginModes MarginMode
 	{
 		get => (CoinWFuturesMarginModes?)Parameters.TryGetValue(nameof(MarginMode)) ?? CoinWFuturesMarginModes.Isolated;
@@ -99,8 +107,12 @@ public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITak
 	/// Unit used for the order quantity.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.VolumeKey,
-		Description = LocalizedStrings.VolumeKey, GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VolumeKey,
+		Description = LocalizedStrings.VolumeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public CoinWFuturesQuantityUnits QuantityUnit
 	{
 		get => (CoinWFuturesQuantityUnits?)Parameters.TryGetValue(nameof(QuantityUnit)) ?? CoinWFuturesQuantityUnits.BaseCurrency;
@@ -111,8 +123,12 @@ public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITak
 	/// Existing position identifier used by the dedicated close-position endpoint.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
-		Description = LocalizedStrings.PositionKey, GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public string PositionId
 	{
 		get => (string)Parameters.TryGetValue(nameof(PositionId));
@@ -123,8 +139,12 @@ public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITak
 	/// Fraction of the position to close, from greater than 0 through 1.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PercentKey,
-		Description = LocalizedStrings.PercentKey, GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PercentKey,
+		Description = LocalizedStrings.PercentKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
 	public decimal? CloseRate
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(CloseRate));
@@ -135,8 +155,12 @@ public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITak
 	/// Trigger price for a planned order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
-		Description = LocalizedStrings.StopPriceDescKey, GroupName = LocalizedStrings.ParametersKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 5)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -147,8 +171,12 @@ public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITak
 	/// Optional take-profit price attached to a futures order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey,
-		Description = LocalizedStrings.TakeProfitKey, GroupName = LocalizedStrings.ParametersKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
+		Description = LocalizedStrings.TakeProfitKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 6)]
 	public decimal? TakeProfitPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TakeProfitPrice));
@@ -159,8 +187,12 @@ public class CoinWOrderCondition : OrderCondition, IStopLossOrderCondition, ITak
 	/// Optional stop-loss price attached to a futures order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey,
-		Description = LocalizedStrings.StopLossKey, GroupName = LocalizedStrings.ParametersKey, Order = 7)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey,
+		Description = LocalizedStrings.StopLossKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 7)]
 	public decimal? StopLossPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopLossPrice));

@@ -3,7 +3,8 @@ namespace StockSharp.Anchorage;
 /// <summary>Anchorage trading, transfer, and staking parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.AnchorageKey)]
 public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 {
@@ -47,10 +48,12 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Stop or take-profit trigger price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceKey,
-		GroupName = "Anchorage", Order = 3)]
+		GroupName = "Anchorage",
+		Order = 3)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -71,7 +74,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Explicit source wallet ID for custody operations.</summary>
 	[DataMember]
-	[Display(Name = "Source wallet", GroupName = LocalizedStrings.WithdrawKey,
+	[Display(
+		Name = "Source wallet",
+		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 0)]
 	public string SourceWalletId
 	{
@@ -81,8 +86,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Destination resource kind.</summary>
 	[DataMember]
-	[Display(Name = "Destination type",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 1)]
+	[Display(
+		Name = "Destination type",
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 1)]
 	public AnchorageResourceTypes DestinationType
 	{
 		get => (AnchorageResourceTypes?)Parameters.TryGetValue(
@@ -92,8 +99,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Destination resource identifier.</summary>
 	[DataMember]
-	[Display(Name = "Destination ID",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 2)]
+	[Display(
+		Name = "Destination ID",
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 2)]
 	public string DestinationId
 	{
 		get => (string)Parameters.TryGetValue(nameof(DestinationId));
@@ -102,7 +111,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Transfer memo.</summary>
 	[DataMember]
-	[Display(Name = "Memo", GroupName = LocalizedStrings.WithdrawKey,
+	[Display(
+		Name = "Memo",
+		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 3)]
 	public string Memo
 	{
@@ -112,7 +123,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Deduct a same-asset network fee from the amount.</summary>
 	[DataMember]
-	[Display(Name = "Deduct fee", GroupName = LocalizedStrings.WithdrawKey,
+	[Display(
+		Name = "Deduct fee",
+		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 4)]
 	public bool IsFeeDeducted
 	{
@@ -122,8 +135,10 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 
 	/// <summary>Use the Anchorage gas station when available.</summary>
 	[DataMember]
-	[Display(Name = "Use gas station",
-		GroupName = LocalizedStrings.WithdrawKey, Order = 5)]
+	[Display(
+		Name = "Use gas station",
+		GroupName = LocalizedStrings.WithdrawKey,
+		Order = 5)]
 	public bool IsGasStationUsed
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsGasStationUsed)) ?? false;

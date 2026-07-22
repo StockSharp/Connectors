@@ -93,7 +93,8 @@ public enum ZoomexSpotMarketUnits
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.ZoomexKey)]
 public class ZoomexOrderCondition : OrderCondition
 {
@@ -101,10 +102,12 @@ public class ZoomexOrderCondition : OrderCondition
     /// Conditional order trigger price.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.StopPriceKey,
         Description = LocalizedStrings.StopPriceKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 0)]
     public decimal? TriggerPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -115,10 +118,12 @@ public class ZoomexOrderCondition : OrderCondition
     /// Trigger direction.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SideKey,
         Description = LocalizedStrings.SideKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 1)]
     public ZoomexTriggerDirections TriggerDirection
     {
         get => (ZoomexTriggerDirections?)Parameters.TryGetValue(
@@ -130,10 +135,12 @@ public class ZoomexOrderCondition : OrderCondition
     /// Trigger price source.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TypeKey,
         Description = LocalizedStrings.TypeKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 2)]
     public ZoomexTriggerPriceTypes TriggerPriceType
     {
         get => (ZoomexTriggerPriceTypes?)Parameters.TryGetValue(
@@ -145,10 +152,12 @@ public class ZoomexOrderCondition : OrderCondition
     /// Position index for one-way or hedge mode.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PositionKey,
         Description = LocalizedStrings.PositionKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 3)]
     public ZoomexPositionIndexes PositionIndex
     {
         get => (ZoomexPositionIndexes?)Parameters.TryGetValue(
@@ -160,10 +169,12 @@ public class ZoomexOrderCondition : OrderCondition
     /// Reduce an existing futures position only.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PosConditionReduceOnlyKey,
         Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 4)]
     public bool IsReduceOnly
     {
         get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;
@@ -174,10 +185,12 @@ public class ZoomexOrderCondition : OrderCondition
     /// Close the position when the trigger fires.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.ClosePositionKey,
         Description = LocalizedStrings.ClosePositionKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 5)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 5)]
     public bool IsCloseOnTrigger
     {
         get => (bool?)Parameters.TryGetValue(nameof(IsCloseOnTrigger)) ??
@@ -189,10 +202,12 @@ public class ZoomexOrderCondition : OrderCondition
     /// Quantity unit for a Spot market order.
     /// </summary>
     [DataMember]
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.VolumeKey,
         Description = LocalizedStrings.VolumeKey,
-        GroupName = LocalizedStrings.ParametersKey, Order = 6)]
+        GroupName = LocalizedStrings.ParametersKey,
+        Order = 6)]
     public ZoomexSpotMarketUnits MarketUnit
     {
         get => (ZoomexSpotMarketUnits?)Parameters.TryGetValue(

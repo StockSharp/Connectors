@@ -9,7 +9,9 @@ public partial class AnchorageMessageAdapter
 		AnchorageEnvironments.Production.GetSocketEndpoint();
 
 	/// <summary>Anchorage API environment.</summary>
-	[Display(Name = "Environment", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Environment",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
 	public AnchorageEnvironments Environment
@@ -28,23 +30,29 @@ public partial class AnchorageMessageAdapter
 	}
 
 	/// <summary>Anchorage API access key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString ApiKey { get; set; }
 
 	/// <summary>Hexadecimal 32-byte Ed25519 signing seed.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString SigningKey { get; set; }
 
 	/// <summary>Anchorage REST API root ending in /v2.</summary>
-	[Display(Name = "REST endpoint", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "REST endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	[BasicSetting]
 	public string ApiEndpoint
@@ -54,8 +62,10 @@ public partial class AnchorageMessageAdapter
 	}
 
 	/// <summary>Anchorage trading WebSocket endpoint.</summary>
-	[Display(Name = "WebSocket endpoint",
-		GroupName = LocalizedStrings.AddressesKey, Order = 4)]
+	[Display(
+		Name = "WebSocket endpoint",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
 	[BasicSetting]
 	public string SocketEndpoint
 	{
@@ -64,23 +74,29 @@ public partial class AnchorageMessageAdapter
 	}
 
 	/// <summary>Optional account ID or exact name for scoped market data.</summary>
-	[Display(Name = "Market data account",
+	[Display(
+		Name = "Market data account",
 		Description = "Optional trading account ID or exact name for customer-specific market data.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public string MarketDataAccount { get; set; }
 
 	/// <summary>Optional RIA subaccount ID for scoped market data.</summary>
-	[Display(Name = "Market data subaccount",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+	[Display(
+		Name = "Market data subaccount",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string MarketDataSubaccount { get; set; }
 
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Private-state reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -94,8 +110,10 @@ public partial class AnchorageMessageAdapter
 	private TimeSpan _marketPollingInterval = TimeSpan.FromSeconds(2);
 
 	/// <summary>REST market-data interval when no signing key is configured.</summary>
-	[Display(Name = "Market polling interval",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+	[Display(
+		Name = "Market polling interval",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public TimeSpan MarketPollingInterval
 	{
 		get => _marketPollingInterval;
@@ -109,7 +127,9 @@ public partial class AnchorageMessageAdapter
 	private int _pageSize = 100;
 
 	/// <summary>REST page size.</summary>
-	[Display(Name = "Page size", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		Name = "Page size",
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 9)]
 	public int PageSize
 	{
@@ -123,8 +143,10 @@ public partial class AnchorageMessageAdapter
 	private int _maximumItems = 10000;
 
 	/// <summary>Maximum reference-data items loaded.</summary>
-	[Display(Name = "Maximum items",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+	[Display(
+		Name = "Maximum items",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public int MaximumItems
 	{
 		get => _maximumItems;
@@ -137,10 +159,12 @@ public partial class AnchorageMessageAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum history items per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -153,10 +177,12 @@ public partial class AnchorageMessageAdapter
 	private int _marketDepth = 50;
 
 	/// <summary>Maximum order-book levels published.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.MarketDepthKey,
 		Description = LocalizedStrings.MarketDepthKey,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 0)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 0)]
 	public int MarketDepth
 	{
 		get => _marketDepth;

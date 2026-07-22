@@ -9,9 +9,12 @@ namespace StockSharp.Groww;
 public class GrowwOrderCondition : OrderCondition
 {
 	/// <summary>Order product.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ProductKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProductKey,
 		Description = LocalizedStrings.ProductKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	[DataMember]
 	public GrowwProducts? Product
 	{
@@ -20,9 +23,12 @@ public class GrowwOrderCondition : OrderCondition
 	}
 
 	/// <summary>Stop trigger price.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
-		GroupName = LocalizedStrings.StopLossKey, Order = 1)]
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 1)]
 	[DataMember]
 	public decimal? TriggerPrice
 	{
@@ -31,9 +37,12 @@ public class GrowwOrderCondition : OrderCondition
 	}
 
 	/// <summary>Native order validity.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TimeInForceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeInForceKey,
 		Description = LocalizedStrings.TimeInForceKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	[DataMember]
 	public GrowwValidities? Validity
 	{

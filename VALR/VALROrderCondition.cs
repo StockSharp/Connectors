@@ -5,7 +5,8 @@ namespace StockSharp.VALR;
 /// </summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.ValrKey)]
 public class VALROrderCondition : OrderCondition, IStopLossOrderCondition
 {
@@ -13,10 +14,12 @@ public class VALROrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Price that activates a stop-loss or take-profit limit order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TriggerKey,
 		Description = LocalizedStrings.TriggerFieldKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -27,10 +30,12 @@ public class VALROrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Whether the conditional order is a take-profit order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TakeProfitKey,
 		Description = LocalizedStrings.TakeProfitKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public bool IsTakeProfit
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsTakeProfit)) ?? false;
@@ -41,10 +46,12 @@ public class VALROrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Allow VALR to borrow funds for a spot margin order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IsMarginKey,
 		Description = LocalizedStrings.IsMarginKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public bool IsMargin
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsMargin)) ?? false;
@@ -55,10 +62,12 @@ public class VALROrderCondition : OrderCondition, IStopLossOrderCondition
 	/// Restrict a perpetual order to reducing an existing position.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;
@@ -70,10 +79,12 @@ public class VALROrderCondition : OrderCondition, IStopLossOrderCondition
 	/// <see cref="OrderRegisterMessage.Volume"/> is sent as base amount.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AmountKey,
 		Description = LocalizedStrings.AmountKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
 	public decimal? QuoteAmount
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));

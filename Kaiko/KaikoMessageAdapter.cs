@@ -3,7 +3,8 @@ namespace StockSharp.Kaiko;
 /// <summary>The message adapter for Kaiko REST and Stream APIs.</summary>
 [MediaIcon(Media.MediaNames.kaiko)]
 [Doc("topics/api/connectors/crypto_exchanges/kaiko.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.KaikoKey,
 	Description = LocalizedStrings.MarketDataConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]

@@ -11,7 +11,9 @@ public sealed class BitkubOrderCondition : BaseWithdrawOrderCondition
 	/// Quote-currency amount to spend for a market buy order.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AmountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
 		Description = LocalizedStrings.AmountKey,
 		GroupName = LocalizedStrings.ParametersKey)]
 	public decimal? QuoteAmount
@@ -24,7 +26,9 @@ public sealed class BitkubOrderCondition : BaseWithdrawOrderCondition
 	/// Stop trigger price reported for externally created stop-limit orders.
 	/// </summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
 		GroupName = LocalizedStrings.ParametersKey)]
 	public decimal? StopPrice

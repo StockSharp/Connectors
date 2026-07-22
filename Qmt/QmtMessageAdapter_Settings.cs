@@ -15,36 +15,51 @@ namespace StockSharp.Qmt;
 public partial class QmtMessageAdapter : MessageAdapter
 {
 	/// <summary>Host of the separately started XtQuant gateway.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QmtGatewayHostKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QmtGatewayHostKey,
 		Description = LocalizedStrings.QmtGatewayHostDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string GatewayHost { get; set; } = "127.0.0.1";
 
 	/// <summary>TCP port of the separately started XtQuant gateway.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QmtGatewayPortKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QmtGatewayPortKey,
 		Description = LocalizedStrings.QmtGatewayPortDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public int GatewayPort { get; set; } = 58630;
 
 	/// <summary>Shared secret configured in the local XtQuant gateway.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QmtGatewayTokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QmtGatewayTokenKey,
 		Description = LocalizedStrings.QmtGatewayTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString GatewayToken { get; set; }
 
 	/// <summary>Maximum number of consecutive gateway reconnect attempts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QmtReconnectAttemptsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QmtReconnectAttemptsKey,
 		Description = LocalizedStrings.QmtReconnectAttemptsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <summary>Maximum time to wait for a gateway response, in seconds.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QmtRequestTimeoutKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QmtRequestTimeoutKey,
 		Description = LocalizedStrings.QmtRequestTimeoutDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public int RequestTimeout { get; set; } = 30;
 
 	/// <inheritdoc />

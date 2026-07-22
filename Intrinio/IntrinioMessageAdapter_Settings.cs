@@ -63,8 +63,11 @@ public enum IntrinioOptionProviders
 /// <summary>The message adapter for Intrinio REST and real-time WebSocket APIs.</summary>
 [MediaIcon(Media.MediaNames.intrinio)]
 [Doc("topics/api/connectors/stock_market/intrinio.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IntrinioKey,
-	Description = LocalizedStrings.MarketDataConnectorKey, GroupName = LocalizedStrings.AmericaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.IntrinioKey,
+	Description = LocalizedStrings.MarketDataConnectorKey,
+	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.RealTime |
 	MessageAdapterCategories.History | MessageAdapterCategories.Stock |
 	MessageAdapterCategories.Options | MessageAdapterCategories.Level1 |
@@ -73,63 +76,93 @@ public enum IntrinioOptionProviders
 public partial class IntrinioMessageAdapter : MessageAdapter, ITokenAdapter, IAddressAdapter<Uri>
 {
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.TokenKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Intrinio REST API base address.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public Uri Address { get; set; } = new("https://api-v2.intrinio.com/");
 
 	/// <summary>Equities real-time feed.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SourceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SourceKey,
 		Description = LocalizedStrings.SourceKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 2)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 2)]
 	[BasicSetting]
 	public IntrinioEquityProviders EquityProvider { get; set; } = IntrinioEquityProviders.DelayedSip;
 
 	/// <summary>Options real-time feed.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SourceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SourceKey,
 		Description = LocalizedStrings.OptionsKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 3)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 3)]
 	[BasicSetting]
 	public IntrinioOptionProviders OptionProvider { get; set; } = IntrinioOptionProviders.Opra;
 
 	/// <summary>Force the options REST and WebSocket feeds into 15-minute delayed mode.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DelayKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DelayKey,
 		Description = LocalizedStrings.DelayKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.MarketDataKey, Order = 4)]
+		GroupName = LocalizedStrings.MarketDataKey,
+		Order = 4)]
 	[BasicSetting]
 	public bool IsDelayedOptions { get; set; }
 
 	/// <summary>Use split- and dividend-adjusted equity end-of-day prices.</summary>
-	[Display(Name = "Adjusted prices", Description = "Use adjusted equity end-of-day prices.",
-		GroupName = "Market data", Order = 5)]
+	[Display(
+		Name = "Adjusted prices",
+		Description = "Use adjusted equity end-of-day prices.",
+		GroupName = "Market data",
+		Order = 5)]
 	public bool IsAdjusted { get; set; }
 
 	/// <summary>Number of official SDK decoder threads for equities.</summary>
-	[Display(Name = "Equity threads", Description = "Equity decoder worker count.",
-		GroupName = "Connection", Order = 6)]
+	[Display(
+		Name = "Equity threads",
+		Description = "Equity decoder worker count.",
+		GroupName = "Connection",
+		Order = 6)]
 	public int EquityThreads { get; set; } = 4;
 
 	/// <summary>Number of official SDK decoder threads for options.</summary>
-	[Display(Name = "Option threads", Description = "Option decoder worker count.",
-		GroupName = "Connection", Order = 7)]
+	[Display(
+		Name = "Option threads",
+		Description = "Option decoder worker count.",
+		GroupName = "Connection",
+		Order = 7)]
 	public int OptionThreads { get; set; } = 4;
 
 	/// <summary>Official SDK equities input buffer size.</summary>
-	[Display(Name = "Equity buffer", Description = "Equity SDK input buffer size.",
-		GroupName = "Connection", Order = 8)]
+	[Display(
+		Name = "Equity buffer",
+		Description = "Equity SDK input buffer size.",
+		GroupName = "Connection",
+		Order = 8)]
 	public int EquityBufferSize { get; set; } = 4096;
 
 	/// <summary>Official SDK options input buffer size.</summary>
-	[Display(Name = "Option buffer", Description = "Option SDK input buffer size.",
-		GroupName = "Connection", Order = 9)]
+	[Display(
+		Name = "Option buffer",
+		Description = "Option SDK input buffer size.",
+		GroupName = "Connection",
+		Order = 9)]
 	public int OptionBufferSize { get; set; } = 4096;
 
 	/// <inheritdoc />

@@ -3,8 +3,11 @@ namespace StockSharp.OpenMarkets;
 /// <summary>The message adapter for the official OpenMarkets APIs.</summary>
 [MediaIcon(Media.MediaNames.openmarkets)]
 [Doc("topics/api/connectors/stock_market/openmarkets.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsKey,
-	Description = LocalizedStrings.StockConnectorKey, GroupName = LocalizedStrings.AustraliaKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.OpenMarketsKey,
+	Description = LocalizedStrings.StockConnectorKey,
+	GroupName = LocalizedStrings.AustraliaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Asia | MessageAdapterCategories.Stock |
 	MessageAdapterCategories.RealTime | MessageAdapterCategories.Paid |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Ticks |
@@ -15,72 +18,105 @@ public partial class OpenMarketsMessageAdapter : MessageAdapter, IKeySecretAdapt
 	private TimeSpan _depthPollingInterval = TimeSpan.FromSeconds(2);
 
 	/// <summary>OAuth client identifier issued by OpenMarkets.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.OpenMarketsClientIdDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>OAuth client secret issued by OpenMarkets.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.OpenMarketsClientSecretDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
 	/// <summary>Order-account code. Empty means all accessible accounts.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsAccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsAccountKey,
 		Description = LocalizedStrings.OpenMarketsAccountDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public string AccountCode { get; set; }
 
 	/// <summary>Use OpenMarkets test and stage services.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsTestKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsTestKey,
 		Description = LocalizedStrings.OpenMarketsTestDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public bool IsTest { get; set; }
 
 	/// <summary>Market-data source used by REST identifiers and SignalR subscriptions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsDataSourceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsDataSourceKey,
 		Description = LocalizedStrings.OpenMarketsDataSourceDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public string DataSource { get; set; } = OpenMarketsExtensions.DefaultDataSource;
 
 	/// <summary>Exchange used when a security identifier has no board code.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsExchangeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsExchangeKey,
 		Description = LocalizedStrings.OpenMarketsExchangeDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public string DefaultExchange { get; set; } = OpenMarketsExtensions.DefaultExchange;
 
 	/// <summary>Order destination used for new orders.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsDestinationKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsDestinationKey,
 		Description = LocalizedStrings.OpenMarketsDestinationDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
 	public string DefaultDestination { get; set; } = OpenMarketsExtensions.DefaultExchange;
 
 	/// <summary>Client or person who requested the order.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsOrderGiverKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsOrderGiverKey,
 		Description = LocalizedStrings.OpenMarketsOrderGiverDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 7)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
 	public string OrderGiver { get; set; }
 
 	/// <summary>Advisor or representative who received the order.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsOrderTakerKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsOrderTakerKey,
 		Description = LocalizedStrings.OpenMarketsOrderTakerDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
 	public string OrderTaker { get; set; }
 
 	/// <summary>Fallback native-price multiplier when security metadata does not provide one.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsPriceMultiplierKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsPriceMultiplierKey,
 		Description = LocalizedStrings.OpenMarketsPriceMultiplierDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public decimal DefaultPriceMultiplier { get; set; } = 0.01m;
 
 	/// <summary>Polling interval for REST market-depth snapshots.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsDepthPollingKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpenMarketsDepthPollingKey,
 		Description = LocalizedStrings.OpenMarketsDepthPollingDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 10)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 10)]
 	public TimeSpan DepthPollingInterval
 	{
 		get => _depthPollingInterval;

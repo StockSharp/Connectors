@@ -1,4 +1,4 @@
-﻿namespace StockSharp.BarChart;
+namespace StockSharp.BarChart;
 
 using System;
 using System.Collections.Generic;
@@ -46,11 +46,11 @@ public partial class BarChartMessageAdapter : HistoricalMessageAdapter, ITokenAd
 
 	/// <inheritdoc />
 	[Display(
-			ResourceType = typeof(LocalizedStrings),
-			Name = LocalizedStrings.KeyKey,
-			Description = LocalizedStrings.KeyKey + LocalizedStrings.Dot,
-			GroupName = LocalizedStrings.ConnectionKey,
-			Order = 1)]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 

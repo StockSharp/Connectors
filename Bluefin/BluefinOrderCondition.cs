@@ -32,17 +32,20 @@ public enum BluefinSelfTradePreventionTypes
 /// <summary>Bluefin-specific order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.BluefinKey)]
 public class BluefinOrderCondition : OrderCondition,
 	IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>Whether the order can only reduce an existing position.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PosConditionReduceOnlyKey,
 		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public bool IsReduceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;
@@ -51,9 +54,11 @@ public class BluefinOrderCondition : OrderCondition,
 
 	/// <summary>Whether the order uses isolated margin.</summary>
 	[DataMember]
-	[Display(Name = "Isolated margin",
+	[Display(
+		Name = "Isolated margin",
 		Description = "Place the order in isolated-margin mode.",
-		GroupName = "Parameters", Order = 1)]
+		GroupName = "Parameters",
+		Order = 1)]
 	public bool IsIsolated
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsIsolated)) ?? false;
@@ -62,10 +67,12 @@ public class BluefinOrderCondition : OrderCondition,
 
 	/// <summary>Requested leverage.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
 		Description = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public decimal? Leverage
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(Leverage));
@@ -74,10 +81,12 @@ public class BluefinOrderCondition : OrderCondition,
 
 	/// <summary>Stop or take-profit activation price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public decimal? TriggerPrice
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -86,10 +95,12 @@ public class BluefinOrderCondition : OrderCondition,
 
 	/// <summary>Whether the trigger is a take-profit trigger.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TakeProfitKey,
 		Description = LocalizedStrings.TakeProfitKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
 	public bool IsTakeProfit
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsTakeProfit)) ?? false;
@@ -98,9 +109,11 @@ public class BluefinOrderCondition : OrderCondition,
 
 	/// <summary>Self-trade prevention mode.</summary>
 	[DataMember]
-	[Display(Name = "Self-trade prevention",
+	[Display(
+		Name = "Self-trade prevention",
 		Description = "Action taken when an order would self-trade.",
-		GroupName = "Parameters", Order = 5)]
+		GroupName = "Parameters",
+		Order = 5)]
 	public BluefinSelfTradePreventionTypes SelfTradePrevention
 	{
 		get => (BluefinSelfTradePreventionTypes?)Parameters.TryGetValue(

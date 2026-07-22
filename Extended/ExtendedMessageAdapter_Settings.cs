@@ -22,42 +22,52 @@ public partial class ExtendedMessageAdapter : MessageAdapter
 		"wss://api.starknet.extended.exchange/stream.extended.exchange/v2/rpc";
 
 	/// <summary>Official REST endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Official WebSocket RPC endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
 		Description = LocalizedStrings.ServerAddressKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>Optional Extended API key for account access.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KeyKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Key { get; set; }
 
 	/// <summary>Optional Stark private key used to sign trading orders.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private TimeSpan _orderExpiry = TimeSpan.FromHours(1);
 
 	/// <summary>Lifetime of a newly submitted order.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.ExpirationKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 4)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 4)]
 	public TimeSpan OrderExpiry
 	{
 		get => _orderExpiry;
@@ -71,9 +81,11 @@ public partial class ExtendedMessageAdapter : MessageAdapter
 	private decimal _marketOrderSlippage = 0.75m;
 
 	/// <summary>Market-order slippage tolerance in percent.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 5)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 5)]
 	public decimal MarketOrderSlippage
 	{
 		get => _marketOrderSlippage;
@@ -86,9 +98,11 @@ public partial class ExtendedMessageAdapter : MessageAdapter
 	private int _marketDepth = 100;
 
 	/// <summary>Maximum order-book levels sent to StockSharp.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DepthKey,
-		GroupName = LocalizedStrings.MarketDepthKey, Order = 6)]
+		GroupName = LocalizedStrings.MarketDepthKey,
+		Order = 6)]
 	public int MarketDepth
 	{
 		get => _marketDepth;
@@ -101,9 +115,11 @@ public partial class ExtendedMessageAdapter : MessageAdapter
 	private int _historyLimit = 1000;
 
 	/// <summary>Maximum rows requested from history endpoints.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 7)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 7)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;

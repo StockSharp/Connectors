@@ -9,9 +9,12 @@ namespace StockSharp.KabuStation;
 public class KabuStationOrderCondition : OrderCondition
 {
 	/// <summary>Exchange route used to submit the order.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ExchangeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeKey,
 		Description = LocalizedStrings.KabuStationOrderExchangeDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	[DataMember]
 	public KabuStationExchanges? Exchange
 	{
@@ -20,9 +23,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Account type.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccountKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
 		Description = LocalizedStrings.KabuStationAccountTypeDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	[DataMember]
 	public KabuStationAccountTypes? AccountType
 	{
@@ -31,9 +37,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Cash or margin transaction mode.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey,
 		Description = LocalizedStrings.MarginKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	[DataMember]
 	public KabuStationCashMargins? CashMargin
 	{
@@ -42,9 +51,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Margin transaction type.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TypeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TypeKey,
 		Description = LocalizedStrings.MarginKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	[DataMember]
 	public KabuStationMarginTradeTypes? MarginTradeType
 	{
@@ -53,9 +65,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Derivative trade mode.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PositionKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
 		Description = LocalizedStrings.PositionKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 4)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 4)]
 	[DataMember]
 	public KabuStationDerivativeTradeTypes? DerivativeTradeType
 	{
@@ -64,9 +79,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Native derivative time in force.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TimeInForceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeInForceKey,
 		Description = LocalizedStrings.TimeInForceKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 5)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 5)]
 	[DataMember]
 	public KabuStationTimeInForces? NativeTimeInForce
 	{
@@ -75,9 +93,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Specific position ID to close.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IdKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IdKey,
 		Description = LocalizedStrings.KabuStationClosePositionIdDescKey,
-		GroupName = LocalizedStrings.PositionKey, Order = 6)]
+		GroupName = LocalizedStrings.PositionKey,
+		Order = 6)]
 	[DataMember]
 	public string ClosePositionId
 	{
@@ -86,9 +107,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Stop trigger price.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopPriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceDescKey,
-		GroupName = LocalizedStrings.StopLossKey, Order = 7)]
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 7)]
 	[DataMember]
 	public decimal? StopPrice
 	{
@@ -97,9 +121,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Limit price used after the stop is triggered. Zero sends a market order.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PriceKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceKey,
 		Description = LocalizedStrings.KabuStationStopLimitPriceDescKey,
-		GroupName = LocalizedStrings.StopLossKey, Order = 8)]
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 8)]
 	[DataMember]
 	public decimal? StopLimitPrice
 	{
@@ -108,9 +135,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Stop trigger comparison.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DirectionKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DirectionKey,
 		Description = LocalizedStrings.KabuStationTriggerDirectionDescKey,
-		GroupName = LocalizedStrings.StopLossKey, Order = 9)]
+		GroupName = LocalizedStrings.StopLossKey,
+		Order = 9)]
 	[DataMember]
 	public KabuStationTriggerComparisons? TriggerComparison
 	{
@@ -119,9 +149,12 @@ public class KabuStationOrderCondition : OrderCondition
 	}
 
 	/// <summary>Calendar expiration date represented as a UTC date.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ExpiryDateKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExpiryDateKey,
 		Description = LocalizedStrings.ExpiryDateKey + LocalizedStrings.Dot,
-		GroupName = LocalizedStrings.GeneralKey, Order = 10)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 10)]
 	[DataMember]
 	public DateTime? ExpireDate
 	{

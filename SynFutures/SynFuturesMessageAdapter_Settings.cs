@@ -3,7 +3,8 @@ namespace StockSharp.SynFutures;
 /// <summary>The message adapter for SynFutures V3 perpetual markets on Base.</summary>
 [MediaIcon(Media.MediaNames.synfutures)]
 [Doc("topics/api/connectors/crypto_exchanges/synfutures.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.SynFuturesKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -22,41 +23,53 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	private const string _defaultRpcEndpoint = "https://mainnet.base.org";
 
 	/// <summary>Official SynFutures Base API endpoint.</summary>
-	[Display(Name = "REST API", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "REST API",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string ApiEndpoint { get; set; } = _defaultApiEndpoint;
 
 	/// <summary>Official SynFutures Base WebSocket endpoint.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
-		GroupName = LocalizedStrings.AddressesKey, Order = 1)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>Base JSON-RPC endpoint.</summary>
-	[Display(Name = "JSON-RPC", GroupName = LocalizedStrings.AddressesKey,
+	[Display(
+		Name = "JSON-RPC",
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
 
 	/// <summary>Optional EVM wallet for read-only account access.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
 	/// <summary>Optional EVM private key used to sign transactions.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	[BasicSetting]
 	public SecureString PrivateKey { get; set; }
 
 	private decimal _defaultLeverage = 10m;
 
 	/// <summary>Leverage used when no SynFutures condition is supplied.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.LeverageKey,
-		GroupName = LocalizedStrings.TransactionKey, Order = 5)]
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 5)]
 	public decimal DefaultLeverage
 	{
 		get => _defaultLeverage;
@@ -69,8 +82,10 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	private int _slippageBps = 25;
 
 	/// <summary>Maximum market-order slippage in basis points.</summary>
-	[Display(Name = "Slippage (bps)",
-		GroupName = LocalizedStrings.TransactionKey, Order = 6)]
+	[Display(
+		Name = "Slippage (bps)",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 6)]
 	public int SlippageBps
 	{
 		get => _slippageBps;
@@ -83,8 +98,10 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	private TimeSpan _orderDeadline = TimeSpan.FromMinutes(10);
 
 	/// <summary>On-chain order deadline offset.</summary>
-	[Display(Name = "Order deadline",
-		GroupName = LocalizedStrings.TransactionKey, Order = 7)]
+	[Display(
+		Name = "Order deadline",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 7)]
 	public TimeSpan OrderDeadline
 	{
 		get => _orderDeadline;
@@ -98,8 +115,10 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	private TimeSpan _transactionTimeout = TimeSpan.FromMinutes(2);
 
 	/// <summary>Maximum time to wait for a Base transaction receipt.</summary>
-	[Display(Name = "Transaction timeout",
-		GroupName = LocalizedStrings.TransactionKey, Order = 8)]
+	[Display(
+		Name = "Transaction timeout",
+		GroupName = LocalizedStrings.TransactionKey,
+		Order = 8)]
 	public TimeSpan TransactionTimeout
 	{
 		get => _transactionTimeout;
@@ -113,8 +132,10 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	private TimeSpan _accountRefreshInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Fallback polling interval for account data.</summary>
-	[Display(Name = "Account refresh",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 9)]
+	[Display(
+		Name = "Account refresh",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
 	public TimeSpan AccountRefreshInterval
 	{
 		get => _accountRefreshInterval;
@@ -128,9 +149,11 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	private int _historyLimit = 100;
 
 	/// <summary>Maximum records requested per history call.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 10)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 10)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -143,7 +166,9 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	private int _marketDepth = 50;
 
 	/// <summary>Maximum order-book rows sent per side.</summary>
-	[Display(Name = "Market depth", GroupName = LocalizedStrings.MarketDepthKey,
+	[Display(
+		Name = "Market depth",
+		GroupName = LocalizedStrings.MarketDepthKey,
 		Order = 11)]
 	public int MarketDepth
 	{

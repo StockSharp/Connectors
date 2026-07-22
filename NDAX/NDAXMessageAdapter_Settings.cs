@@ -5,7 +5,8 @@ namespace StockSharp.NDAX;
 /// </summary>
 [MediaIcon(Media.MediaNames.ndax)]
 [Doc("topics/api/connectors/crypto_exchanges/ndax.html")]
-[Display(ResourceType = typeof(LocalizedStrings),
+[Display(
+    ResourceType = typeof(LocalizedStrings),
     Name = LocalizedStrings.NDAXKey,
     Description = LocalizedStrings.CryptoConnectorKey,
     GroupName = LocalizedStrings.CryptocurrencyKey)]
@@ -28,28 +29,34 @@ public partial class NDAXMessageAdapter : MessageAdapter, IKeySecretAdapter
         NDAXExtensions.TimeFrames;
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.KeyKey,
         Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecretKey,
         Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
     /// <summary>
     /// NDAX user identifier used to sign private WebSocket requests.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.UserIdKey,
         Description = LocalizedStrings.UserIdKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 2)]
     [BasicSetting]
     public long UserId { get; set; }
 
@@ -57,40 +64,48 @@ public partial class NDAXMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// Trading account identifier. Zero selects the authenticated user's
     /// default account.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AccountKey,
         Description = LocalizedStrings.AccountKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 3)]
     [BasicSetting]
     public long AccountId { get; set; }
 
     /// <summary>
     /// Order management system identifier.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.IdentifierKey,
         Description = LocalizedStrings.IdentifierKey,
-        GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+        GroupName = LocalizedStrings.ConnectionKey,
+        Order = 4)]
     [BasicSetting]
     public int OmsId { get; set; } = 1;
 
     /// <summary>
     /// REST API endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
         Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
     /// <summary>
     /// WebSocket API endpoint.
     /// </summary>
-    [Display(ResourceType = typeof(LocalizedStrings),
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.WebSocketKey,
         Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey, Order = 0)]
+        GroupName = LocalizedStrings.WebSocketAddressesKey,
+        Order = 0)]
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } =
         _defaultWebSocketEndpoint;

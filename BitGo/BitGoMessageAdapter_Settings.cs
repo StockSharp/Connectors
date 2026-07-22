@@ -7,41 +7,51 @@ public partial class BitGoMessageAdapter
 		"wss://app.bitgo.com/api/prime/trading/v1/ws";
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.TokenKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Go account identifier or exact account name.</summary>
-	[Display(Name = "Account",
+	[Display(
+		Name = "Account",
 		Description = "Go account ID or exact name. Optional when only one account is available.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public string Account { get; set; }
 
 	/// <summary>BitGo REST API or BitGo Express root.</summary>
-	[Display(Name = "REST endpoint",
+	[Display(
+		Name = "REST endpoint",
 		Description = "BitGo REST API or BitGo Express root.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 2)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
 	[BasicSetting]
 	public string ApiEndpoint { get; set; } = _defaultApiEndpoint;
 
 	/// <summary>BitGo Prime WebSocket endpoint.</summary>
-	[Display(Name = "WebSocket endpoint",
+	[Display(
+		Name = "WebSocket endpoint",
 		Description = "BitGo Prime trading WebSocket endpoint.",
-		GroupName = LocalizedStrings.AddressesKey, Order = 3)]
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
 	[BasicSetting]
 	public string SocketEndpoint { get; set; } = _defaultSocketEndpoint;
 
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Private-state reconciliation interval.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -55,10 +65,12 @@ public partial class BitGoMessageAdapter
 	private int _historyLimit = 500;
 
 	/// <summary>Maximum orders and fills returned per subscription.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings),
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
-		GroupName = LocalizedStrings.HistoryKey, Order = 0)]
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -69,9 +81,11 @@ public partial class BitGoMessageAdapter
 	}
 
 	/// <summary>Include unsettled funds in the API's available balance.</summary>
-	[Display(Name = "Include unsettled",
+	[Display(
+		Name = "Include unsettled",
 		Description = "Include unsettled funds in the API available balance calculation.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
 	public bool IsIncludeUnsettledInAvailable { get; set; }
 
 	/// <inheritdoc />

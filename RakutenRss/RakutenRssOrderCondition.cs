@@ -21,9 +21,12 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Native order route.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssRouteKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssRouteKey,
 		Description = LocalizedStrings.RakutenRssRouteDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 0)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 0)]
 	public RakutenRssOrderRoutes Route
 	{
 		get => _route;
@@ -32,9 +35,12 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Equity execution condition.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssExecutionKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssExecutionKey,
 		Description = LocalizedStrings.RakutenRssExecutionDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 1)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 1)]
 	public RakutenRssExecutionConditions Execution
 	{
 		get => _execution;
@@ -43,8 +49,11 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Native account classification.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccountKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 2)]
 	public RakutenRssAccountTypes AccountType
 	{
 		get => _accountType;
@@ -53,8 +62,11 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Native margin classification.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssMarginKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssMarginKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 3)]
 	public RakutenRssMarginTypes MarginType
 	{
 		get => _marginType;
@@ -63,9 +75,12 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Use Smart Order Routing.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssSorKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssSorKey,
 		Description = LocalizedStrings.RakutenRssSorDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 4)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 4)]
 	public bool UseSor
 	{
 		get => _useSor;
@@ -74,8 +89,11 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Optional native validity date.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssValidTillKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssValidTillKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 5)]
 	public DateTime? ValidTill
 	{
 		get => _validTill;
@@ -84,8 +102,11 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Derivative fill quantity condition.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TimeInForceKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeInForceKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 6)]
 	public RakutenRssFillConditions FillCondition
 	{
 		get => _fillCondition;
@@ -94,9 +115,12 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Derivative validity condition.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssDerivativeTimeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssDerivativeTimeKey,
 		Description = LocalizedStrings.RakutenRssDerivativeTimeDescKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 7)]
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 7)]
 	public RakutenRssDerivativeTimeConditions DerivativeTime
 	{
 		get => _derivativeTime;
@@ -105,8 +129,11 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Opening date required when closing a margin or derivative position.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssOpenDateKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 8)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssOpenDateKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 8)]
 	public DateTime? OpenDate
 	{
 		get => _openDate;
@@ -115,8 +142,11 @@ public sealed class RakutenRssOrderCondition : OrderCondition
 
 	/// <summary>Opening price required when closing a margin or derivative position.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RakutenRssOpenPriceKey,
-		GroupName = LocalizedStrings.GeneralKey, Order = 9)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RakutenRssOpenPriceKey,
+		GroupName = LocalizedStrings.GeneralKey,
+		Order = 9)]
 	public decimal? OpenPrice
 	{
 		get => _openPrice;

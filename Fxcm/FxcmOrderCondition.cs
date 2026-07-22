@@ -10,9 +10,12 @@ public class FxcmOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 {
 	/// <summary>Stop-loss price or distance in pips.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey,
 		Description = LocalizedStrings.FxcmStopLossDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
 	public decimal? StopLoss
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(StopLoss));
@@ -21,9 +24,12 @@ public class FxcmOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 
 	/// <summary>Take-profit price or distance in pips.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
 		Description = LocalizedStrings.FxcmTakeProfitDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public decimal? TakeProfit
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TakeProfit));
@@ -32,9 +38,12 @@ public class FxcmOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 
 	/// <summary>Trailing-stop step.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TrailingDeltaKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TrailingDeltaKey,
 		Description = LocalizedStrings.FxcmTrailingStepDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public decimal? TrailingStep
 	{
 		get => (decimal?)Parameters.TryGetValue(nameof(TrailingStep));
@@ -43,9 +52,12 @@ public class FxcmOrderCondition : OrderCondition, IStopLossOrderCondition, ITake
 
 	/// <summary>Whether stop and limit values are expressed as pip distances.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FxcmInPipsKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FxcmInPipsKey,
 		Description = LocalizedStrings.FxcmInPipsDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public bool IsInPips
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsInPips)) ?? false;

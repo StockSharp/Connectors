@@ -16,8 +16,11 @@ public class CapitalComOrderCondition : OrderCondition
 
 	/// <summary>Whether the stop loss is guaranteed.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComGuaranteedStopKey,
-		GroupName = LocalizedStrings.StopKey, Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalComGuaranteedStopKey,
+		GroupName = LocalizedStrings.StopKey,
+		Order = 0)]
 	public bool IsGuaranteedStop
 	{
 		get => Parameters.TryGetValue(_isGuaranteedStop)?.To<bool?>() ?? false;
@@ -26,8 +29,11 @@ public class CapitalComOrderCondition : OrderCondition
 
 	/// <summary>Whether the stop loss trails the market.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComTrailingStopKey,
-		GroupName = LocalizedStrings.StopKey, Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalComTrailingStopKey,
+		GroupName = LocalizedStrings.StopKey,
+		Order = 1)]
 	public bool IsTrailingStop
 	{
 		get => Parameters.TryGetValue(_isTrailingStop)?.To<bool?>() ?? false;
@@ -36,8 +42,11 @@ public class CapitalComOrderCondition : OrderCondition
 
 	/// <summary>Absolute stop-loss level.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComStopLevelKey,
-		GroupName = LocalizedStrings.StopKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalComStopLevelKey,
+		GroupName = LocalizedStrings.StopKey,
+		Order = 2)]
 	public decimal? StopLevel
 	{
 		get => Parameters.TryGetValue(_stopLevel)?.To<decimal?>();
@@ -46,8 +55,11 @@ public class CapitalComOrderCondition : OrderCondition
 
 	/// <summary>Stop-loss distance in instrument points.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComStopDistanceKey,
-		GroupName = LocalizedStrings.StopKey, Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalComStopDistanceKey,
+		GroupName = LocalizedStrings.StopKey,
+		Order = 3)]
 	public decimal? StopDistance
 	{
 		get => Parameters.TryGetValue(_stopDistance)?.To<decimal?>();
@@ -56,8 +68,11 @@ public class CapitalComOrderCondition : OrderCondition
 
 	/// <summary>Maximum loss amount.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComStopAmountKey,
-		GroupName = LocalizedStrings.StopKey, Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalComStopAmountKey,
+		GroupName = LocalizedStrings.StopKey,
+		Order = 4)]
 	public decimal? StopAmount
 	{
 		get => Parameters.TryGetValue(_stopAmount)?.To<decimal?>();
@@ -66,8 +81,11 @@ public class CapitalComOrderCondition : OrderCondition
 
 	/// <summary>Absolute take-profit level.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComProfitLevelKey,
-		GroupName = LocalizedStrings.TakeProfitKey, Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalComProfitLevelKey,
+		GroupName = LocalizedStrings.TakeProfitKey,
+		Order = 5)]
 	public decimal? ProfitLevel
 	{
 		get => Parameters.TryGetValue(_profitLevel)?.To<decimal?>();
@@ -76,8 +94,11 @@ public class CapitalComOrderCondition : OrderCondition
 
 	/// <summary>Take-profit distance in instrument points.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComProfitDistanceKey,
-		GroupName = LocalizedStrings.TakeProfitKey, Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalComProfitDistanceKey,
+		GroupName = LocalizedStrings.TakeProfitKey,
+		Order = 6)]
 	public decimal? ProfitDistance
 	{
 		get => Parameters.TryGetValue(_profitDistance)?.To<decimal?>();
@@ -86,8 +107,11 @@ public class CapitalComOrderCondition : OrderCondition
 
 	/// <summary>Target profit amount.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComProfitAmountKey,
-		GroupName = LocalizedStrings.TakeProfitKey, Order = 7)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CapitalComProfitAmountKey,
+		GroupName = LocalizedStrings.TakeProfitKey,
+		Order = 7)]
 	public decimal? ProfitAmount
 	{
 		get => Parameters.TryGetValue(_profitAmount)?.To<decimal?>();

@@ -24,9 +24,12 @@ public partial class DxFeedMessageAdapter : MessageAdapter, ITokenAdapter, IAddr
 	private string _marketDepthSources = "NTV";
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AddressKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.DxFeedAddressDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
 	[BasicSetting]
 	public string Address
 	{
@@ -35,16 +38,22 @@ public partial class DxFeedMessageAdapter : MessageAdapter, ITokenAdapter, IAddr
 	}
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.DxFeedTokenDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
 	/// <summary>Requested server-side aggregation period.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DxFeedAggregationPeriodKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DxFeedAggregationPeriodKey,
 		Description = LocalizedStrings.DxFeedAggregationPeriodDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	public TimeSpan AggregationPeriod
 	{
 		get => _aggregationPeriod;
@@ -57,9 +66,12 @@ public partial class DxFeedMessageAdapter : MessageAdapter, ITokenAdapter, IAddr
 	}
 
 	/// <summary>Maximum number of DOM levels requested from dxLink.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DepthKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DepthKey,
 		Description = LocalizedStrings.DxFeedDepthLevelsDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
 	public int MarketDepthLevels
 	{
 		get => _marketDepthLevels;
@@ -69,9 +81,12 @@ public partial class DxFeedMessageAdapter : MessageAdapter, ITokenAdapter, IAddr
 	}
 
 	/// <summary>Comma-separated dxFeed order sources used by the DOM service.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DxFeedDepthSourcesKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DxFeedDepthSourcesKey,
 		Description = LocalizedStrings.DxFeedDepthSourcesDescKey,
-		GroupName = LocalizedStrings.ConnectionKey, Order = 4)]
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
 	public string MarketDepthSources
 	{
 		get => _marketDepthSources;
