@@ -140,6 +140,7 @@
     <Project Path="Amberdata/Amberdata.csproj" />
     <Project Path="CoinMetrics/CoinMetrics.csproj" />
     <Project Path="Glassnode/Glassnode.csproj" />
+    <Project Path="CryptoQuant/CryptoQuant.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
