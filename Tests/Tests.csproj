@@ -2,5 +2,6 @@
   <Import Project="..\..\StockSharp (GitHub)\common_target_tests.props" />
   <ItemGroup>
     <ProjectReference Include="..\Deriv\Deriv.csproj" />
+    <ProjectReference Include="..\StocksTrader\StocksTrader.csproj" />
   </ItemGroup>
 </Project>
