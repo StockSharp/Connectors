@@ -30,6 +30,6 @@ var adapter = new ETradeMessageAdapter(new IncrementalIdGenerator())
 
 ## Documentation
 
-- [StockSharp E*TRADE connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/etrade.html)
+- [StockSharp E*TRADE connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/e_trade.html)
 - [Official E*TRADE getting started guide](https://developer.etrade.com/getting-started)
 - [E*TRADE OAuth and sandbox guide](https://developer.etrade.com/getting-started/developer-guides)

@@ -25,8 +25,12 @@ using DataType = StockSharp.Messages.DataType;
 /// The message adapter for E*TRADE API.
 /// </summary>
 [MediaIcon(Media.MediaNames.etrade)]
-[Doc("topics/api/connectors/stock_market/etrade.html")]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ETradeKey, Description = LocalizedStrings.StockConnectorKey, GroupName = LocalizedStrings.AmericaKey)]
+[Doc("topics/api/connectors/stock_market/e_trade.html")]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ETradeKey,
+	Description = LocalizedStrings.StockConnectorKey,
+	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.Transactions | MessageAdapterCategories.Level1 | MessageAdapterCategories.Stock)]
 public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
 {
