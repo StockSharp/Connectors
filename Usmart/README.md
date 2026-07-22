@@ -14,8 +14,6 @@ This connector integrates StockSharp with the official uSMART Securities OpenAPI
 - Regular, pre-market, post-market, and dark-pool U.S. trading sessions where permitted.
 - Current-day orders, individual execution records, assets, and positions.
 
-Every request, response, and WebSocket message uses a typed DTO. The connector does not use untyped JSON containers, dynamic objects, or dictionary-shaped protocol payloads.
-
 ## Configuration
 
 - `Token` - token obtained through the uSMART OpenAPI login or onboarding flow.

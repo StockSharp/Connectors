@@ -15,8 +15,6 @@ This connector integrates StockSharp with EOD Historical Data (EODHD) through th
 - Historical financial news with optional symbol and date filters, count limits, pagination, UTC normalization, and duplicate-link removal.
 - Explicit handling of provider limits, authentication failures, entitlement errors, and malformed column-oriented tick responses.
 
-Every REST request, REST response, option Marketplace resource, and WebSocket message is represented by a concrete typed DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
-
 ## Configuration
 
 - `Token` is the API token from the EODHD user dashboard.
@@ -39,7 +37,7 @@ The historical tick endpoint is documented for US stocks and returns parallel ar
 
 EODHD end-of-day responses contain raw OHLC and a separate adjusted close. The connector emits coherent raw OHLC candles. It intentionally does not combine adjusted close with unadjusted open, high, and low values.
 
-US option contracts and EOD option analytics are separate Marketplace products. Option lookup is performed only for an explicit option, underlying, or exact-contract request; the connector does not attempt to download the entire option universe. The typed non-compact JSON representation is requested explicitly.
+US option contracts and EOD option analytics are separate Marketplace products. Option lookup is performed only for an explicit option, underlying, or exact-contract request; the connector does not attempt to download the entire option universe. The non-compact JSON representation is requested explicitly.
 
 EODHD also publishes extensive fundamentals and specialized analytics. StockSharp's normalized message model used by this connector has no direct fundamentals transport, so those raw datasets are not forced into unrelated market-data messages.
 

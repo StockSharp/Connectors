@@ -9,10 +9,8 @@ This connector integrates StockSharp with the current ThetaData v3 REST API and 
 - Top-of-book market depth snapshots, history, and realtime updates for stocks and options.
 - Genuine historical and realtime stock and option trade ticks; index values are kept as Level1 prices and are not mislabeled as exchange trades.
 - Historical OHLC candles at 10, 100, and 500 milliseconds; 1, 5, 10, 15, and 30 seconds; 1, 5, 10, 15, and 30 minutes; 1 hour; and end of day.
-- One shared, lazily opened WebSocket connection, typed subscribe and unsubscribe acknowledgements, bounded frames, reconnect handling, and subscription restoration.
-- Per-day intraday requests, configurable market sessions, US Eastern timestamp interpretation, UTC output, bounded retry handling, and typed API errors.
-
-Every REST response and WebSocket request or event used by the connector is represented by a concrete typed DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
+- One shared, lazily opened WebSocket connection, subscribe and unsubscribe acknowledgements, bounded frames, reconnect handling, and subscription restoration.
+- Per-day intraday requests, configurable market sessions, US Eastern timestamp interpretation, UTC output, bounded retry handling, and API errors.
 
 ## Requirements and configuration
 

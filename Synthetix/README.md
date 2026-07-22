@@ -37,9 +37,6 @@ subaccount creation, collateral transfers, and TWAP orders are intentionally
 outside the connector. Fill-or-kill orders are not exposed because the API
 does not provide that time-in-force mode.
 
-All wire messages use concrete DTOs. The implementation does not use dynamic
-JSON trees, anonymous protocol objects, or protocol dictionaries.
-
 Official resources:
 
 - [Synthetix developer documentation](https://developers.synthetix.io/)

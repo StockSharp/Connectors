@@ -19,11 +19,7 @@ exchange-qualified pair such as `B-BTC_USDT`. StockSharp security identifiers
 use the trading symbol; the qualified pair is retained internally for public
 market-data subscriptions.
 
-The streaming transport implements the current Engine.IO 4 WebSocket handshake,
-ping/pong frames, namespace connection, and channel restoration after reconnect.
-Every REST and Socket.IO payload is represented by a concrete DTO. CoinDCX's
-price-keyed order-book objects are read by a streaming converter into typed
-price/volume levels without dynamic JSON trees or protocol dictionaries.
+The streaming transport implements the current Engine.IO 4 WebSocket handshake, ping/pong frames, namespace connection, and channel restoration after reconnect.
 
 API credentials are optional for public market data and required for portfolio
 and transaction operations. Private REST requests sign the exact compact JSON

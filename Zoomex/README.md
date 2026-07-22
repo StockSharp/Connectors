@@ -34,11 +34,6 @@ the V3 private WebSocket stream. The retired V3 public stream is not used.
 Historical order and execution requests are split into the API's documented
 seven-day windows and bounded to its two-year retention period.
 
-Every REST and WebSocket payload is represented by a concrete DTO, including
-the heterogeneous authentication argument array. The transport does not use
-dynamic JSON trees, anonymous protocol objects, protocol dictionaries, or
-untyped object arrays.
-
 Official resources:
 
 - [Zoomex API introduction](https://zoomexglobal.github.io/docs/v3/intro)

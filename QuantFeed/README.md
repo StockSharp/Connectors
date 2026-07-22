@@ -7,11 +7,9 @@ This connector reads entitled QuantHouse Historical On-Demand (HOD) CSV deliveri
 - Security lookup from QuantHouse reference files and market-data rows.
 - Tick trades from event-style or wide Last Trade fields.
 - Level1 bid, ask, last trade, trading status, daily OHLC, volume, and open interest.
-- Level2 Market By Level snapshots reconstructed from typed side/level/action events.
+- Level2 Market By Level snapshots reconstructed from side/level/action events.
 - Market, server, and capture timestamps, with market time used first and all emitted times normalized to UTC.
 - Plain `.csv`, gzip-compressed `.csv.gz`, and CSV/CSV.GZ entries inside `.zip` deliveries.
-
-Every recognized source record is converted to a concrete reference or market-data DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
 
 ## Configuration
 
@@ -19,7 +17,7 @@ Set `DataDirectory` to the root of one entitled HOD delivery. Nested directories
 
 `DefaultTimeZoneId` defaults to `UTC` and is applied only when a timestamp has no explicit offset. ISO timestamps and Unix seconds, milliseconds, microseconds, and nanoseconds are accepted. For each event, timestamp precedence is market, server, capture, then generic event timestamp. File-name dates are used only to avoid opening files outside a requested range, with a one-day boundary allowance for global time zones; row timestamps remain authoritative.
 
-QuantHouse exports can select different FeedOS fields. The typed header mapper recognizes common FeedOS/HOD names for:
+QuantHouse exports can select different FeedOS fields. The header mapper recognizes common FeedOS/HOD names for:
 
 - `FeedOSInstrumentCode`, local symbol, MIC, instrument name/type, currency, ISIN, expiry, strike, call/put, tick size, and multiplier;
 - market/server/capture timestamps, event type, side, level, update action, price, quantity, order count, and sequence;

@@ -17,7 +17,7 @@ This connector integrates StockSharp with the current OpenMarkets Australia APIs
 - Market and limit order entry, amendment, and cancellation through OMS v4.
 - Day, dated, Fill-and-Kill, and Fill-or-Kill lifetime mapping.
 
-All JSON bodies, OAuth values, REST responses, and SignalR messages are represented by typed DTOs. No untyped JSON object model is used. Safe reads may retry transient transport failures, HTTP 429, and server failures. Create, amend, and cancel operations are never automatically retried.
+Safe reads may retry transient transport failures, HTTP 429, and server failures. Create, amend, and cancel operations are never automatically retried.
 
 ## Configuration
 

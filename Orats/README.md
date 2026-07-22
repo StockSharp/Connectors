@@ -9,9 +9,7 @@ This connector integrates StockSharp with the current ORATS Data API. ORATS is a
 - Current and historical option BBO, volume, open interest, theoretical value, implied volatility, delta, gamma, vega, and the unambiguous call-side theta and rho fields.
 - Top-of-book market-depth snapshots for stocks and options, plus historical option BBO observations.
 - Historical stock Level1 observations and genuine one-day OHLC candles from `hist/dailies`, with adjusted or unadjusted provider fields.
-- OCC-compatible option identifiers, bounded JSON responses, typed API errors, `Retry-After` handling, and retries for HTTP 429 and transient server failures.
-
-Every ORATS JSON response used by the connector is represented by a concrete typed DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
+- OCC-compatible option identifiers, bounded JSON responses, API errors, `Retry-After` handling, and retries for HTTP 429 and transient server failures.
 
 ## Requirements and configuration
 

@@ -48,11 +48,6 @@ configured pool. The public node and Router API do not provide a bounded,
 indexed Cetus trade archive, so historical ticks and candles are deliberately
 not advertised.
 
-Every Router payload is represented by a concrete DTO, and every Sui payload
-uses generated protobuf messages. The transport does not use dynamic JSON
-trees, anonymous protocol objects, protocol dictionaries or untyped object
-arrays.
-
 ## Official documentation
 
 - [Cetus developer documentation](https://cetus-1.gitbook.io/cetus-developer-docs)

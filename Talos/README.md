@@ -47,10 +47,6 @@ be added from the client's current Talos specification rather than inferred.
 The adapter does not claim REST or WebSocket support because those schemas and
 endpoints are available only in the authenticated Talos knowledge base.
 
-FIX payloads are encoded and decoded as typed protocol messages. The connector
-does not use dynamic JSON, JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays.
-
 ## Official resources
 
 - [Talos](https://www.talos.com/)

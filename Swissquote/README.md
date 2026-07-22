@@ -1,8 +1,6 @@
 # StockSharp Swissquote connector
 
-StockSharp adapter for Swissquote's professional OpenWealth Trading and Custody REST
-APIs. The implementation uses the current public OpenAPI contracts and typed protocol
-DTOs for every request and response.
+StockSharp adapter for Swissquote's professional OpenWealth Trading and Custody REST APIs.
 
 ## Credentials and setup
 

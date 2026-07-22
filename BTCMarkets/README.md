@@ -19,10 +19,6 @@ API credentials are optional for public market data. Trading and account data
 require an API key and its Base64-encoded private key. Grant only the account
 permissions needed by the application.
 
-Every REST and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects, or
-protocol dictionaries.
-
 Official documentation:
 
 - [BTC Markets API documentation](https://docs.btcmarkets.net/)

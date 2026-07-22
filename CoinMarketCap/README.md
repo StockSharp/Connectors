@@ -57,11 +57,7 @@ CoinMarketCap also offers separate on-chain DEX endpoints and WebSocket
 channels; those pool-specific feeds are outside this aggregated-asset
 connector's scope.
 
-Every REST and WebSocket payload used by the connector has a concrete DTO.
-The provider's currency-keyed OHLCV object is decoded by a typed streaming
-converter; no dynamic JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays are used. API timestamps are normalized
-to UTC `DateTime` values.
+API timestamps are normalized to UTC `DateTime` values.
 
 ## Official documentation
 

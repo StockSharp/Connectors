@@ -5,11 +5,6 @@ the current official REST API and unified WebSocket endpoint. Public reference
 and market-data operations do not require credentials. Account data, private
 streams, and trading require an ED25519 API key pair created in Backpack.
 
-Every REST request, response, WebSocket command, event, keyed balance object,
-and positional price level is represented by a concrete DTO. The protocol
-layer contains no dynamic JSON trees, anonymous request bodies, protocol
-dictionaries, or untyped arrays.
-
 ## Supported functionality
 
 - crypto spot and tokenized-equity instruments on `BoardCodes.Backpack`

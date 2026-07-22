@@ -28,10 +28,6 @@ Korbit uses price-dependent tick sizes. The connector loads and validates the
 exact policy before placing each symbol's first limit order. Security metadata
 exposes the smallest published tick as its baseline price step.
 
-Every REST and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects, or
-protocol dictionaries.
-
 Official documentation:
 
 - [Korbit Open API documentation](https://apidocs.korbit.co.kr/)

@@ -11,7 +11,7 @@ This connector automates the official Rakuten Securities MARKETSPEED II RSS Exce
 - Cash equity, margin open/close, and futures/options open/close orders.
 - Order amendment and cancellation.
 - Equity and derivatives order lists, executions, cash and margin positions, derivatives positions, buying power, and margin information.
-- A dedicated STA automation thread; no `dynamic`, `JObject`, `JArray`, `JToken`, or dictionary-shaped protocol messages.
+- A dedicated STA automation thread.
 
 ## Requirements and configuration
 
@@ -27,7 +27,7 @@ The connector creates a private, unsaved workbook and closes the Excel instance 
 
 MARKETSPEED II RSS has no complete instrument-master enumeration function. Security lookup therefore requires an explicit code. Equity codes use the `.T`, `.JAX`, or `.JNX` suffix; nine-character Osaka futures/options codes use board `OSE`.
 
-The add-in pushes data into Excel cells. The connector reads those live cells on its heartbeat and emits messages only when the typed value snapshot changes. This preserves the official realtime source without inventing a WebSocket or polling Rakuten's website.
+The add-in pushes data into Excel cells. The connector reads those live cells on its heartbeat and emits messages only when the value snapshot changes. This preserves the official realtime source without inventing a WebSocket or polling Rakuten's website.
 
 Execution lists do not expose the originating order number. Executions are therefore published with stable signatures derived from their documented fields but without a fabricated order link. Margin and derivative closing orders require the opening date and opening price in `RakutenRssOrderCondition`, matching the native RSS functions.
 

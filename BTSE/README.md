@@ -6,11 +6,6 @@ families. Public reference and market-data operations do not require
 credentials. Portfolio data, private streams, and trading require a BTSE API
 key with the corresponding permissions.
 
-Every REST request, response, WebSocket command, event, positional candle, and
-positional price level is represented by a concrete DTO. The protocol layer
-contains no dynamic JSON trees, anonymous request bodies, protocol
-dictionaries, or untyped arrays.
-
 ## Supported functionality
 
 - spot instruments on `BoardCodes.Btse` (`BTSE`) and futures/perpetual

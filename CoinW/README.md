@@ -1,10 +1,6 @@
 # CoinW connector for StockSharp
 
-The connector integrates CoinW Spot and perpetual Futures REST APIs with the
-official public and authenticated WebSocket services. Every protocol request,
-response, command, and event is represented by a concrete DTO; the connector
-does not use dynamic JSON trees, protocol dictionaries, anonymous wire bodies,
-or untyped arrays.
+The connector integrates CoinW Spot and perpetual Futures REST APIs with the official public and authenticated WebSocket services.
 
 ## Supported functionality
 

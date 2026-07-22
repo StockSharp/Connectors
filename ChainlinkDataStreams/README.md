@@ -44,9 +44,7 @@ Data Streams SDK, versions 1 through 13:
 - tokenized assets (v10), RWA Advanced (v11), projected NAV (v12), and
   best-price reports (v13).
 
-The outer signed-report ABI envelope and the version-specific inner ABI body
-are decoded directly into concrete model properties. Feed identity, exact body
-length, integer width, timestamp resolution, wrapper timestamps, market-status
+Feed identity, exact body length, integer width, timestamp resolution, wrapper timestamps, market-status
 range, and signed `int192` range are checked. Price and decimal-volume values
 use the Chainlink 18-decimal scale and are range-checked before conversion to
 `decimal`.
@@ -68,10 +66,7 @@ values stop the security state. Onchain verification fees, extra multi-value
 slots, AUM, corporate-action multipliers, and tokenized reference values are
 validated but are not relabeled as unrelated StockSharp fields.
 
-All JSON responses and WebSocket messages use concrete DTOs. There are no
-dynamic JSON trees, protocol dictionaries, anonymous protocol objects, or
-untyped object arrays. Response sizes and UTF-8 are validated, all timestamps
-become UTC `DateTime`, and API credentials are redacted from errors.
+Response sizes and UTF-8 are validated, all timestamps become UTC `DateTime`, and API credentials are redacted from errors.
 
 ## Official documentation
 

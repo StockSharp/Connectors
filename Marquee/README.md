@@ -13,8 +13,6 @@ This connector provides native .NET access to the published Goldman Sachs Develo
 - Automatic discovery of the dataset supplying each requested field through the measures-availability endpoint.
 - Merging of fields when Goldman Sachs serves OHLCV measures from different entitled datasets.
 
-Every OAuth request, asset query, availability response, dataset query, and market-data row has a dedicated DTO. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionary-shaped protocol models.
-
 ## Configuration
 
 - `Key` - application identifier created in the Goldman Sachs Developer application portal.
@@ -25,7 +23,7 @@ The connector requests the default read-only GS Quant scopes: `read_content`, `r
 
 ## Data model and limitations
 
-Marquee datasets are entitlement-driven. The connector first requests `/data/measures/{assetId}/availability`, chooses the highest-ranked provider for each field, and then queries the selected dataset. A single candle can therefore combine typed rows from several Goldman Sachs datasets while retaining the native daily values.
+Marquee datasets are entitlement-driven. The connector first requests `/data/measures/{assetId}/availability`, chooses the highest-ranked provider for each field, and then queries the selected dataset.
 
 The published generic data contract does not define a streaming WebSocket or a universal brokerage order lifecycle. Consequently, Level 1 is exposed as a completed REST snapshot, candles are historical end-of-day data, and the connector does not advertise fabricated streaming or transaction support. Goldman Sachs may expose additional execution services to an institution under separate onboarding documentation; those client-specific contracts are outside this connector.
 

@@ -46,10 +46,6 @@ this connector. Transactions submitted outside the current adapter session
 remain available as market-data events but are not reconstructed as
 StockSharp orders.
 
-Every JSON-RPC and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [Pump.fun public documentation](https://github.com/pump-fun/pump-public-docs)

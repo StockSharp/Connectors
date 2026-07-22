@@ -5,11 +5,6 @@ spot market. Public instruments and market data work without credentials.
 Balances, orders, replacements, cancellations, and user fills require a Bitso
 API key and secret with the corresponding permissions.
 
-Every REST request, REST response, WebSocket subscription, acknowledgment,
-channel envelope, order-book entry, order, fill, and balance is represented by
-a concrete DTO. The protocol layer contains no untyped JSON trees, anonymous
-protocol payloads, protocol dictionaries, or untyped protocol arrays.
-
 ## Supported functionality
 
 - all books from `GET /available_books` on `BoardCodes.Bitso` (`BITSO`), with

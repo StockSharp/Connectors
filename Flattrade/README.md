@@ -11,8 +11,6 @@ This directory contains the Flattrade Pi API connector for the [StockSharp](http
 - Official NSE, NFO, CDS, MCX, BSE, and BFO scrip-master CSV files.
 - One-minute through four-hour intraday candles and daily candles exposed by Pi.
 
-All REST payloads, REST responses, WebSocket commands, and WebSocket events use typed DTOs. The connector does not construct protocol messages with `JObject`, `JArray`, `JToken`, `dynamic`, anonymous protocol objects, or protocol dictionaries.
-
 ## Authentication
 
 Configure the Flattrade user ID, optional account ID, and current `jKey` access token. When account ID is empty, user ID is used. Generate the token through Flattrade's browser authorization and request-code exchange; the token normally lasts for the trading day and is cleared during the broker's morning maintenance window. The connector deliberately does not store the API secret, trading password, PAN, or date of birth.

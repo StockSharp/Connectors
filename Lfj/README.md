@@ -46,10 +46,6 @@ synthesize market depth. Transactions submitted outside the current adapter
 session remain visible as market-data events but are not reconstructed as
 StockSharp orders.
 
-Every HTTP JSON-RPC and WebSocket payload is represented by a concrete DTO.
-The transport does not use dynamic JSON trees, anonymous protocol objects, or
-protocol dictionaries.
-
 Official resources:
 
 - [LFJ developer documentation](https://developers.lfj.gg/)

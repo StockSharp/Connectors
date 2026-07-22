@@ -78,11 +78,7 @@ outside CoinGecko's API SLA and charges credits per response. The adapter
 surfaces entitlement failures and does not silently replace a requested live
 stream with polling.
 
-Every HTTP and WebSocket payload is represented by a concrete DTO. JSON arrays
-used by CoinGecko OHLC endpoints are parsed by typed converters; the connector
-does not use dynamic JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays. All API times are normalized to UTC
-`DateTime` values.
+All API times are normalized to UTC `DateTime` values.
 
 When displaying CoinGecko or GeckoTerminal data, follow the provider's
 attribution requirements.

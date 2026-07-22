@@ -12,9 +12,8 @@ Supported features:
   optional bitmap-extension accounts;
 - executable Level1 quotes and actual market depth reconstructed from current
   initialized bins, including DLMM base and variable fees;
-- historical swaps decoded from the program's typed Event CPI data;
-- realtime swaps through Solana `logsSubscribe`, followed by typed
-  `getTransaction` event decoding, with polling as a fallback;
+- historical swaps decoded from the program's Event CPI data;
+- realtime swaps through Solana `logsSubscribe`, followed by `getTransaction` event decoding, with polling as a fallback;
 - official historical OHLCV on mainnet and on-chain swap aggregation on
   devnet;
 - native SOL and discovered SPL-token wallet balances;
@@ -45,10 +44,6 @@ protocol surfaces and are not represented as trading orders here. Conditional
 orders are not supported. Token-2022 pools remain available for public market
 data, but direct trading is rejected for mints with extensions because those
 transfers can require protocol-specific remaining accounts.
-
-Every REST, JSON-RPC, and WebSocket payload is represented by a concrete DTO.
-The transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
 
 Official resources:
 

@@ -12,8 +12,6 @@ This connector reads the official Nasdaq Data Link time-series API at `https://d
 - Optional mapping overrides for scalar value, OHLC, volume, and open-interest columns.
 - Ascending range requests, latest-value requests, count-limited history, UTC date normalization, rate-limit handling, and retries for transient server errors.
 
-Dataset metadata, search pages, errors, observations, and heterogeneous row values use dedicated protocol DTOs. The array-shaped observation format is parsed by a typed streaming converter. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionary-shaped protocol models.
-
 ## Configuration
 
 - `Token` is the Nasdaq Data Link API key. The connector sends it through the official `X-Api-Token` HTTP header.
@@ -27,7 +25,7 @@ Use securities returned by lookup whenever possible. The connector board is `NAS
 
 ## Data semantics and limitations
 
-Nasdaq Data Link time-series datasets are heterogeneous. A scalar observation is emitted as `ClosePrice`; it is not presented as a last trade. Recognized native Open, High, Low, Close, Volume, and Open Interest columns are mapped to their corresponding Level1 fields. Text and boolean values remain represented in the typed protocol row but are not coerced into market prices.
+Nasdaq Data Link time-series datasets are heterogeneous. A scalar observation is emitted as `ClosePrice`; it is not presented as a last trade. Recognized native Open, High, Low, Close, Volume, and Open Interest columns are mapped to their corresponding Level1 fields.
 
 Candles are advertised only at one day. They are emitted only when the dataset's native frequency is daily and all four native OHLC columns exist and contain values. The API's `collapse` option selects a period's last observation and is therefore not used to manufacture weekly or monthly OHLC candles. Intraday bars, ticks, order books, and trades are not synthesized.
 

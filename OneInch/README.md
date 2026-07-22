@@ -39,9 +39,6 @@ synthesize trades, candles, depth, history, or socket events. Order-status
 queries cover swaps submitted during the current connector session because
 Classic Swap is a transaction builder rather than an account order store.
 
-All REST and JSON-RPC payloads use concrete DTOs. The transport does not use
-dynamic JSON trees, anonymous protocol objects, or protocol dictionaries.
-
 Official resources:
 
 - [1inch Business Portal documentation](https://business.1inch.com/portal/documentation/)

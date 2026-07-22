@@ -4,9 +4,6 @@ The connector integrates Toobit's current REST API and official public and priva
 WebSocket streams with the StockSharp message model. Spot and USDT-margined futures
 are exposed as separate boards while sharing one adapter configuration.
 
-All wire requests and responses are concrete DTOs. The implementation does not use
-dynamic JSON trees, protocol dictionaries, anonymous wire bodies, or untyped arrays.
-
 ## Supported functionality
 
 - spot instruments on `BoardCodes.Toobit` (`TOOBT`);

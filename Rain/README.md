@@ -17,7 +17,7 @@ Supported features:
 - closed-order history, individual order lookup, embedded account trades, limit
   and market orders, individual cancellation, and cancellation of locally
   tracked open orders;
-- bounded retry of safe reads, rate-conscious requests, typed API errors, and an
+- bounded retry of safe reads, rate-conscious requests, API errors, and an
   8 MiB response safety limit.
 
 Public market data does not require credentials. Private operations require an
@@ -31,10 +31,6 @@ Rain currently exposes its production interface through Rain Pro but does not
 publish a standalone public API reference. This implementation follows the
 current production contracts used by Rain Pro. Endpoint overrides are available
 for credentials assigned to a different Rain environment.
-
-Every REST and WebSocket payload is represented by a concrete DTO. The transport
-does not use dynamic JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays.
 
 Official resources:
 

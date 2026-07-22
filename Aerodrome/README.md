@@ -49,10 +49,6 @@ does not synthesize depth. Transactions submitted outside the current
 adapter session remain available as market-data events but are not
 reconstructed as StockSharp orders.
 
-Every HTTP JSON-RPC and WebSocket payload is represented by a concrete DTO.
-The transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [Aerodrome documentation](https://aerodrome.finance/docs)

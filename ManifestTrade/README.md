@@ -48,10 +48,6 @@ extension-specific remaining accounts that the Manifest core instruction does
 not define. Rejecting those transactions avoids signing an incomplete or
 unsafe account list.
 
-All stats, JSON-RPC, and WebSocket payloads use concrete DTOs. The transport
-does not use dynamic JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [Manifest Trade](https://www.manifest.trade/)

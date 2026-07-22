@@ -15,7 +15,7 @@ This connector integrates the public QUODD Developer Platform directly. Current 
 - Automatic stream reconstruction when the ticker set changes and automatic reconnect after transport failure or QUODD's documented 30-minute inactive-stream termination.
 - Rate-limit and transient gRPC retry handling with a capped backoff and a longer cool-off after the configured retry cycle.
 
-The checked-in Snap, Ticker Info and Option Lookup contracts are the concrete `.proto` files published by QUODD, with only C# namespace options added for package isolation. Authentication responses and errors use dedicated DTOs. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, protocol dictionaries or `object[]`.
+The checked-in Snap, Ticker Info and Option Lookup contracts are the concrete `.proto` files published by QUODD, with only C# namespace options added for package isolation.
 
 ## Configuration
 

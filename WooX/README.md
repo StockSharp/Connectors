@@ -6,11 +6,6 @@ historical market data work without API credentials. Private account data and
 trading require an API key, API secret, and the application ID shown in the
 WOO X console.
 
-All REST requests and responses, WebSocket commands, events, keyed balance
-objects, keyed position objects, and positional price levels are converted to
-concrete DTOs. The protocol layer contains no dynamic JSON trees, anonymous
-request bodies, protocol dictionaries, or untyped arrays.
-
 ## Supported functionality
 
 - spot instruments on `BoardCodes.WooX` (`WOOX`) and perpetual instruments on

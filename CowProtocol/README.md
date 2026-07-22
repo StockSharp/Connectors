@@ -41,9 +41,6 @@ The Order Book API does not provide a public WebSocket stream. The connector
 therefore polls official REST order state and overlapping Settlement log
 ranges; it does not synthesize trades, depth, or socket events.
 
-All REST and JSON-RPC payloads use concrete DTOs. The transport does not use
-dynamic JSON trees, anonymous protocol objects, or protocol dictionaries.
-
 Official resources:
 
 - [CoW Protocol documentation](https://docs.cow.fi/)

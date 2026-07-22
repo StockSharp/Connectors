@@ -26,11 +26,6 @@ The public documentation currently publishes the UAT REST and WebSocket hosts,
 so those are the connector defaults. Both endpoint settings are configurable
 and can be replaced with the production hosts enabled for the account.
 
-Every REST and WebSocket payload is represented by a concrete DTO. Even the
-array-based book levels and currency-keyed balance object are decoded by typed
-converters; the transport does not use dynamic JSON trees, anonymous protocol
-objects, or protocol dictionaries.
-
 Official resources:
 
 - [Pintu Pro API documentation](https://docs.pintu.pro/)

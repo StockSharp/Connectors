@@ -37,10 +37,6 @@ client-order ID, replace operation, or private execution stream. The connector
 therefore rejects unsupported order types and polls the documented REST order
 state instead of inventing protocol fields.
 
-Every REST and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [Tapbit Open API documentation](https://www.tapbit.com/openapi-docs/)

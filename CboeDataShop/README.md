@@ -11,12 +11,10 @@ This connector provides native .NET access to the official Cboe LiveVol All Acce
 - Current and historical underlying Level1 snapshots: NBBO, last trade, daily OHLCV, midpoint, and normalized 30-day implied volatility.
 - Current and historical option Level1 snapshots: NBBO, midpoint, last trade, daily OHLCV, trade count, open interest, theoretical price, implied volatility, and Greeks.
 - Native daily OHLCV candles for entitled equities and options. Option candles retain open interest.
-- Historical underlying and option time-and-sales, including exchange/condition metadata in typed protocol DTOs.
+- Historical underlying and option time-and-sales, including exchange/condition metadata.
 - Sequence-number pagination up to the API's 10,000-record page limit. Canceled trades and cancellation messages are excluded from StockSharp tick output.
 - Official Cboe trading-day calendar for date-range requests.
 - Retry handling for rate limits and transient server failures.
-
-Authentication, errors, symbols, trading days, quote requests, underlying snapshots, option chains, option analytics, and both time-and-sales record types use dedicated DTOs. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionary-shaped protocol models.
 
 ## Configuration
 

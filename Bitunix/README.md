@@ -5,17 +5,13 @@ through the exchange's official OpenAPI. Public market data works without
 credentials; portfolios, orders, fills, positions, and trading require an API
 key and secret.
 
-All REST requests, responses, WebSocket commands, and WebSocket events use
-concrete DTOs. The protocol layer contains no dynamic JSON trees, anonymous
-request bodies, or untyped protocol collections.
-
 ## Supported functionality
 
 - spot instruments on `BoardCodes.Bitunix` (`BTUNX`);
 - perpetual futures on `BoardCodes.BitunixFutures` (`BTUXF`);
 - security lookup with price step, volume step, minimum volume, and futures
   leverage metadata;
-- spot Level1, L2 order books, and candles through typed REST polling;
+- spot Level1, L2 order books, and candles through REST polling;
 - futures Level1, L2 order books, live trades, and candles through REST and the
   official public WebSocket;
 - spot balances and futures balances and positions;

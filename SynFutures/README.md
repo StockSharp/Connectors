@@ -42,9 +42,6 @@ The connector deliberately does not move user tokens or issue unlimited token
 approvals automatically. If collateral is insufficient, deposit it through
 the SynFutures application before sending an order.
 
-All wire messages use concrete DTOs. The implementation does not use dynamic
-JSON trees, anonymous protocol objects, or protocol dictionaries.
-
 Official resources:
 
 - [SynFutures documentation](https://docs.synfutures.com/)

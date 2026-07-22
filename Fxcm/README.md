@@ -17,8 +17,6 @@ The connector integrates StockSharp with FXCM's published [REST and Socket.IO AP
 - Full close of an open FXCM trade when its trade id is passed to order cancellation.
 - Current orders, closed-position history and native order/open-position/closed-position table updates.
 
-Every REST form, query, response and Socket.IO payload used by the connector has a dedicated DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous protocol payloads or protocol dictionaries.
-
 ## Configuration
 
 1. Create a persistent access token in Trading Station Web as described in the FXCM API documentation.

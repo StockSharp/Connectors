@@ -1,6 +1,6 @@
 # Dow Jones connector for StockSharp
 
-This connector integrates the current Dow Jones Newswires Real-Time API and the related Content API. Every request and response uses concrete DTOs; the implementation contains no `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or untyped protocol payloads.
+This connector integrates the current Dow Jones Newswires Real-Time API and the related Content API.
 
 ## Supported functionality
 

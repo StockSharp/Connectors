@@ -73,10 +73,7 @@ The current official SUN.io protocol matrix documents spot AMMs, routing,
 stablecoin modules, mining, and governance, but no perpetual trading API.
 Accordingly, this connector does not advertise or emulate perpetuals.
 
-Every JSON request and response uses concrete DTOs. No dynamic JSON trees,
-anonymous protocol objects, or protocol dictionaries are used. TRON addresses
-are verified with Base58Check; Solidity parameters and transaction signatures
-are produced locally.
+TRON addresses are verified with Base58Check; Solidity parameters and transaction signatures are produced locally.
 
 ## Official documentation
 

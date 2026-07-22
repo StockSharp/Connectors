@@ -6,10 +6,6 @@ and market-data operations do not require credentials. Account data, private
 streams, and trading require an API key with the corresponding Bitvavo
 permissions.
 
-Every REST request, response, WebSocket command, event, price level, and candle
-is represented by a concrete DTO. The protocol layer contains no dynamic JSON
-trees, anonymous request bodies, protocol dictionaries, or untyped arrays.
-
 ## Supported functionality
 
 - crypto spot instruments on `BoardCodes.Bitvavo` (`BITVAVO`), including

@@ -13,8 +13,6 @@ The connector integrates StockSharp with the official [eToro Public API](https:/
 - Order snapshots, closed-trade history and private WebSocket order/execution updates.
 - Automatic WebSocket authentication, reconnect and subscription restoration.
 
-All REST request bodies, responses and WebSocket messages are represented by typed DTOs. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic` or protocol dictionaries.
-
 ## Configuration
 
 1. Verify the eToro account and open **Settings > Trading > API Key Management**.

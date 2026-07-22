@@ -74,10 +74,6 @@ Historical requests use the bounded API event feed and return at most
 during the current adapter session because an AMM swap does not create a
 persistent exchange order.
 
-Every HTTP, JSON-RPC, and WebSocket payload is represented by a concrete DTO.
-The connector does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 ## Official documentation
 
 - [Balancer developer documentation](https://docs.balancer.fi/)

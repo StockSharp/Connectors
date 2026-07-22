@@ -40,10 +40,6 @@ candles use the official realtime WebSocket streams. Changing the active
 WebSocket subscription set reconnects the URL-based combined stream, as
 required by the production service.
 
-Every REST and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [BYDFi API introduction](https://developers.bydfi.com/en/intro)

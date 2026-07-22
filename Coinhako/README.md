@@ -12,7 +12,7 @@ Supported features:
 - RFQ market orders and limit orders, client order IDs, GTC and GTD expiry,
   individual cancellation, and filtered group cancellation;
 - current and historical order lookup with live status polling;
-- ECDSA secp256k1 request signing, typed error handling, bounded retries for
+- ECDSA secp256k1 request signing, error handling, bounded retries for
   safe reads, and lost-placement/cancellation-response reconciliation.
 
 Public spot prices do not require credentials. Account and trading operations
@@ -27,10 +27,6 @@ endpoint for Level1 and does not advertise unsupported market-depth, tick, or
 candle capabilities. The API also reports completed orders but no individual
 execution records; the adapter emits one deterministic completion execution for
 a completed order and clearly identifies it by the order ID.
-
-Every request and response payload is represented by a concrete DTO. The
-transport does not use loose JSON trees, anonymous protocol objects, or protocol
-dictionaries.
 
 Official resources:
 

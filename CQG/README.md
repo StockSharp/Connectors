@@ -1,6 +1,6 @@
 # StockSharp CQG Web API connector
 
-This connector integrates StockSharp with CQG Web API 2.296. Authentication, contract metadata, realtime and historical market data, trading, orders, fills, accounts, positions, and account summaries all use typed Google Protobuf messages over CQG's single secure binary WebSocket connection.
+This connector integrates StockSharp with CQG Web API 2.296. Authentication, contract metadata, realtime and historical market data, trading, orders, fills, accounts, positions, and account summaries all use Google Protobuf messages over CQG's single secure binary WebSocket connection.
 
 ## Configuration
 
@@ -25,11 +25,11 @@ Credentials, session tokens, and account identifiers are sensitive and must not 
 - order registration, replacement, cancellation, state updates, fills, and transaction recovery through CQG trade subscriptions;
 - authorized-account discovery, realtime positions, current balances, purchasing power, margin, and realized/unrealized P&L.
 
-CQG contract IDs are valid only within one logged-on session. The connector retains native symbols, discards every contract ID after a reconnect, resolves each active symbol again, and only then restores market-data and candle subscriptions. Order, position, and account streams are restored through a new typed trade subscription.
+CQG contract IDs are valid only within one logged-on session. The connector retains native symbols, discards every contract ID after a reconnect, resolves each active symbol again, and only then restores market-data and candle subscriptions. Order, position, and account streams are restored through a new trade subscription.
 
 ## Wire protocol and recovery
 
-CQG sends and accepts top-level `ClientMsg` and `ServerMsg` Protobuf payloads in binary WebSocket frames. The connector responds to CQG's server-driven `Ping` with a typed `Pong`, supports fragmented frames, imposes a 32 MB frame safety limit, reconnects with bounded exponential backoff, performs a fresh logon, and restores active subscriptions. It does not synthesize streaming with HTTP polling.
+CQG sends and accepts top-level `ClientMsg` and `ServerMsg` Protobuf payloads in binary WebSocket frames. The connector responds to CQG's server-driven `Ping` with a `Pong`, supports fragmented frames, imposes a 32 MB frame safety limit, reconnects with bounded exponential backoff, performs a fresh logon, and restores active subscriptions. It does not synthesize streaming with HTTP polling.
 
 The package vendors the complete 27-file protocol archive currently published by CQG for the demo API. `WebAPI/webapi_2.proto` declares protocol version 2.296, last changed 26 June 2026; the official downloadable archive used here was generated 13 July 2026. Keeping the full schema set avoids partial or hand-written wire models and permits binary-compatible server additions to remain as Protobuf unknown fields.
 

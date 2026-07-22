@@ -14,8 +14,6 @@ This connector integrates StockSharp with the official [KIS Developers Open API]
 - Encrypted private WebSocket notices, automatic heartbeat handling, reconnect and subscription restoration.
 - Production and KIS simulation environments.
 
-Every REST request, response and WebSocket message is represented by a typed DTO. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic` or protocol dictionaries.
-
 ## Configuration
 
 1. Open a KIS securities account and register an application in the KIS Developers portal.

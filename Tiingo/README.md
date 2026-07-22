@@ -14,8 +14,6 @@ This connector integrates StockSharp with Tiingo's official REST and WebSocket A
 - Raw or split- and dividend-adjusted equity end-of-day candles, extended-hours and gap-fill controls for IEX intraday candles, chunked history requests, UTC normalization, and duplicate-boundary removal.
 - Historical financial news with ticker, date, count, and pagination filters.
 
-Every REST request, REST response, and WebSocket message is represented by a concrete typed DTO. Tiingo's heterogeneous compact streaming arrays are decoded by a typed streaming converter without `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
-
 ## Configuration
 
 - `Token` is the API token shown in the Tiingo account dashboard.

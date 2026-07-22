@@ -1,10 +1,6 @@
 # WEEX connector for StockSharp
 
-The connector integrates the current WEEX V3 Spot and USDT perpetual Futures
-REST APIs with the official public and authenticated WebSocket services. Every
-wire request, response, subscription, and event is represented by a concrete
-DTO; the implementation does not use dynamic JSON trees, protocol dictionaries,
-anonymous wire bodies, or untyped arrays.
+The connector integrates the current WEEX V3 Spot and USDT perpetual Futures REST APIs with the official public and authenticated WebSocket services.
 
 ## Supported functionality
 

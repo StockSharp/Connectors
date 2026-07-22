@@ -1,6 +1,6 @@
 # StockSharp Longbridge OpenAPI connector
 
-This connector integrates StockSharp with Longbridge OpenAPI. Trading and account snapshots use the typed REST API. Realtime quotes, depth, trades, and private order updates use Longbridge's two persistent binary WebSocket channels with typed Protobuf payloads.
+This connector integrates StockSharp with Longbridge OpenAPI. Trading and account snapshots use the REST API. Realtime quotes, depth, trades, and private order updates use Longbridge's two persistent binary WebSocket channels with Protobuf payloads.
 
 ## Configuration
 

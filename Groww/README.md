@@ -1,6 +1,6 @@
 # StockSharp Groww Trading API connector
 
-This connector integrates StockSharp with the official [Groww Trading API](https://groww.in/trade-api/docs). It uses typed REST DTOs for reference data, history, portfolios and trading, plus Groww's NATS-over-WebSocket feed with the broker's protobuf messages for realtime data and private updates.
+This connector integrates StockSharp with the official [Groww Trading API](https://groww.in/trade-api/docs). It uses the official REST API plus Groww's NATS-over-WebSocket feed with the broker's protobuf messages for realtime data and private updates.
 
 ## Supported functionality
 
@@ -13,7 +13,7 @@ This connector integrates StockSharp with the official [Groww Trading API](https
 - Access-token, API-key/secret approval and API-key/TOTP authentication flows. TOTP codes are generated locally from the configured Base32 secret.
 - Automatic NATS reconnect and restoration of active NATS subscriptions.
 
-Every JSON request and response is represented by a typed DTO. Realtime frames use generated classes from Groww's official protobuf descriptors. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic` or protocol dictionaries.
+Realtime frames use generated classes from Groww's official protobuf descriptors.
 
 ## Configuration
 

@@ -6,11 +6,6 @@ every endpoint, including reference and market data. The key needs the `Read`
 scope for market data, balances, account information, orders, and trade history,
 and the `Trade` scope for order entry and cancellation.
 
-Every request, query filter, response, error, order-book level, candle, order,
-trade, and pagination cursor is represented by a concrete DTO. The protocol
-layer contains no dynamic JSON trees, anonymous protocol bodies, protocol
-dictionaries, or untyped arrays.
-
 ## Supported functionality
 
 - active Fusion pairs on `BoardCodes.BitpandaFusion` (`BPFUSION`), including

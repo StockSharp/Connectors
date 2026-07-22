@@ -15,8 +15,6 @@ This connector provides native .NET access to the published Morningstar Direct W
 - Native daily OHLCV candles and optional output-currency conversion supported by Morningstar.
 - Retry handling for rate limits and transient server failures.
 
-Authentication, universe queries, pagination metadata, investment records, identifiers, reference fields, time-series queries, daily observations, warning metadata, and error responses all use dedicated DTOs. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionary-shaped protocol models.
-
 ## Configuration
 
 - `Login` and `Password` are the Direct Web Services account credentials supplied during Morningstar onboarding.

@@ -62,7 +62,7 @@ those operations. Order history is wallet-specific; Jupiter does not expose a
 public market-wide execution history for every aggregate route.
 
 The Perps API remains a developing interface. This connector follows the
-typed `/v2` contract used by the official Jupiter CLI and keeps its endpoint
+`/v2` contract used by the official Jupiter CLI and keeps its endpoint
 configurable so deployments can follow compatible endpoint migrations.
 
 ## Official documentation

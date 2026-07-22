@@ -4,7 +4,7 @@ The connector integrates StockSharp with the current ICICI Direct Breeze API for
 
 ## Features
 
-- typed REST v1 authentication using the Breeze API key, secret key, daily API session, timestamp, and SHA-256 checksum;
+- REST v1 authentication using the Breeze API key, secret key, daily API session, timestamp, and SHA-256 checksum;
 - official NSE and NFO security master with equities, futures, and options;
 - live Level 1, trades, and five-level order books over the Breeze Socket.IO market feed;
 - historical candles for 1 second, 1 minute, 5 minutes, 30 minutes, and 1 day;

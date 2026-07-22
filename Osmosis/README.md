@@ -51,10 +51,6 @@ stable archive service, so historical ticks and candles are deliberately not
 advertised. Indexed history can be added separately through a provider with
 an explicit archive contract.
 
-Every HTTP and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries or untyped object arrays.
-
 ## Official documentation
 
 - [Osmosis documentation](https://docs.osmosis.zone/)

@@ -61,10 +61,6 @@ indices match the selected pair. Order-status history covers transactions
 submitted during the current adapter session because a Curve swap does not
 create a persistent exchange order.
 
-Every HTTP, JSON-RPC, and WebSocket payload is represented by a concrete DTO.
-The connector does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 ## Official documentation
 
 - [Curve developer documentation](https://docs.curve.finance/)

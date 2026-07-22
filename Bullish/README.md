@@ -6,11 +6,6 @@ data, portfolios, positions, orders, and fills. The current multi-market
 WebSocket services provide L2 order books, anonymous trades, ticks, and private
 account events.
 
-Every request, response, command, event, and positional WebSocket array is
-represented by a concrete DTO. The protocol implementation does not use
-dynamic JSON trees, protocol dictionaries, anonymous request bodies, or
-untyped arrays.
-
 ## Supported functionality
 
 - spot markets on `BoardCodes.Bullish` (`BULL`);

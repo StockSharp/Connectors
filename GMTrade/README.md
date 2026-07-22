@@ -29,10 +29,7 @@ the complete order builder is provided by GMTrade's Rust and JavaScript SDKs.
 The connector never forwards a private key and does not pretend that the
 keeper GraphQL mutation is an order-entry API.
 
-`WalletAddress` is optional. With no wallet configured, all public market
-data remains available. All protocol payloads use concrete DTOs; the protocol
-layer contains no dynamic JSON trees, anonymous protocol payloads, or
-protocol dictionaries.
+`WalletAddress` is optional. With no wallet configured, all public market data remains available.
 
 Official resources:
 

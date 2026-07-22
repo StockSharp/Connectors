@@ -11,7 +11,7 @@ This directory contains the Angel One SmartAPI connector for the [StockSharp](ht
 - The official instrument master for NSE, NFO, BSE, BFO, MCX, NCDEX/NCO, and CDS instruments.
 - Historical candles at 1, 3, 5, 10, 15, and 30 minutes, one hour, and one day. Long ranges are split according to the documented maximum days per request.
 
-All REST payloads, WebSocket commands, and responses use typed DTOs. Market-data packets are decoded directly from the documented little-endian binary layout.
+Market-data packets are decoded directly from the documented little-endian binary layout.
 
 ## Authentication
 

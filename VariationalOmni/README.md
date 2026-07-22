@@ -20,9 +20,6 @@ or market depth. The notional quote curve is not converted into a synthetic
 order book. Variational notes that quote values may be cached for up to ten
 minutes; every update retains the source quote timestamp.
 
-All JSON is deserialized into concrete DTOs. The protocol layer contains no
-dynamic JSON trees, anonymous protocol payloads, or protocol dictionaries.
-
 Official resources:
 
 - [Variational Omni API documentation](https://docs.variational.io/technical-documentation/api)

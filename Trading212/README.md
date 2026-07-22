@@ -13,7 +13,7 @@ This connector integrates StockSharp with the official Trading 212 Public API v0
 - Cancellation of pending orders and automatic lifecycle polling for orders submitted through the adapter.
 - Per-endpoint pacing for the published API limits and rate-limit-aware retry of safe GET requests.
 
-All JSON request and response payloads are represented by typed DTOs. Trading POST requests are never retried automatically because Trading 212 documents the order endpoints as non-idempotent.
+Trading POST requests are never retried automatically because Trading 212 documents the order endpoints as non-idempotent.
 
 ## Configuration
 

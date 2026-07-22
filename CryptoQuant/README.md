@@ -46,13 +46,7 @@ downloads. `HistoryLimit` caps records per subscription, while
 Explicit long ranges are bounded before download so one request cannot silently
 exceed the configured record cap.
 
-CryptoQuant responses are normalized to UTC, sorted chronologically, and
-deduplicated by opening time before StockSharp messages are emitted. Positive
-OHLC values and candle consistency are validated. A missing API volume remains
-zero in the StockSharp candle instead of being inferred from another metric.
-Every consumed REST response has a concrete DTO; no dynamic JSON trees,
-protocol dictionaries, anonymous protocol objects, or untyped object arrays are
-used.
+CryptoQuant responses are normalized to UTC, sorted chronologically, and deduplicated by opening time before StockSharp messages are emitted. Positive OHLC values and candle consistency are validated. A missing API volume remains zero in the StockSharp candle instead of being inferred from another metric.
 
 ## Official documentation
 

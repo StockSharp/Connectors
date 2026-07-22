@@ -34,10 +34,6 @@ does not synthesize market-depth levels. Transactions submitted outside the
 current adapter session cannot be reconstructed as StockSharp orders from a
 receipt alone and are not presented as such.
 
-Every REST, GraphQL, and JSON-RPC payload is represented by a concrete DTO.
-The transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [Uniswap Trading API getting started](https://developers.uniswap.org/docs/trading/swapping-api/getting-started)

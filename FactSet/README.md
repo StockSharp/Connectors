@@ -14,8 +14,6 @@ This connector provides native .NET access to the published FactSet Prices API. 
 - Latest and historical fixed-income bid, mid, and ask observations for supported corporate, government, agency, and municipal bonds.
 - Retry handling for rate limits and transient server failures.
 
-Every credential file, OpenID response, JWT header and payload, token form, reference query, price query, response, error, security reference, equity price, and fixed-income price has a dedicated DTO. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionary-shaped protocol models.
-
 ## Configuration
 
 Choose one authentication mode:

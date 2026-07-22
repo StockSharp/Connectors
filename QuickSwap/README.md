@@ -56,10 +56,6 @@ connector does not invent depth or synthetic trades. On-chain transactions
 are irreversible, and transactions submitted outside the current adapter
 session cannot be reconstructed as StockSharp orders from a receipt alone.
 
-Every GraphQL and JSON-RPC payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 ## Official documentation
 
 - [QuickSwap documentation](https://docs.quickswap.exchange/)

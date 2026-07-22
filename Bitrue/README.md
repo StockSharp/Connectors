@@ -5,11 +5,7 @@ through the exchange's official REST and WebSocket APIs. Public market data
 works without credentials. Trading, balances, positions, orders, and fills
 require an API key and secret.
 
-The spot and futures APIs are separate protocols. The connector applies each
-API's native authentication, endpoints, symbols, listen keys, payloads, and
-stream channels. All requests, responses, commands, events, and positional
-price levels use concrete DTOs; the protocol layer contains no dynamic JSON
-trees, protocol dictionaries, anonymous bodies, or untyped arrays.
+The spot and futures APIs are separate protocols. The connector applies each API's native authentication, endpoints, symbols, listen keys, payloads, and stream channels.
 
 ## Supported functionality
 

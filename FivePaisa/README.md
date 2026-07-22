@@ -10,8 +10,6 @@ This directory contains the 5paisa Xstream connector for the [StockSharp](https:
 - Historical candles at 1, 5, 10, 15, 30, and 60 minutes and one day. Requests are split into the documented six-month windows. Xstream does not expose a realtime candle channel, so candle subscriptions must be history-only.
 - Portfolio snapshots from margin, net-position, and holding endpoints, refreshed every 30 seconds while a live portfolio subscription is active.
 
-All REST bodies, REST responses, WebSocket commands, market updates, depth updates, order confirmations, and candle rows use typed DTOs. Candle arrays are decoded by a dedicated typed JSON converter; the connector does not construct protocol payloads with `JObject`, `JArray`, dynamic objects, or protocol dictionaries.
-
 ## Authentication
 
 Configure the app key, demat client code, and a current bearer access token issued through the 5paisa Xstream developer portal. The access token is normally valid for one trading day and must be renewed outside the connector. The connector does not store account credentials or perform the interactive login flow.

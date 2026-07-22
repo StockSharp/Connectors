@@ -15,8 +15,6 @@ The connector integrates StockSharp with the official [Zerodha Kite Connect 3 AP
 - Order modification and cancellation.
 - Current-day order and trade snapshots plus native real-time order postbacks over WebSocket.
 
-Every REST form, query, JSON response and WebSocket JSON request/update used by the connector has a dedicated DTO. Binary quote frames are decoded into typed tick and depth models. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous protocol payloads or protocol dictionaries.
-
 ## Authentication
 
 1. Create a Kite Connect application and set `Key`.
@@ -39,7 +37,7 @@ Kite does not provide a native live-candle stream. Candle subscriptions return R
 - Use the connected Zerodha user id as `PortfolioName`; an empty portfolio name selects it automatically.
 - Kite quantities are whole units. The connector rejects fractional order volume instead of rounding it silently.
 - Order history in Kite is transient and covers the current trading day. Real-time updates come from WebSocket order postbacks.
-- Kite WebSocket has no native holdings, positions or funds stream. While a live portfolio subscription exists, the connector refreshes the typed REST snapshot every 15 seconds; no portfolio polling runs without that subscription.
+- Kite WebSocket has no native holdings, positions or funds stream. While a live portfolio subscription exists, the connector refreshes the REST snapshot every 15 seconds; no portfolio polling runs without that subscription.
 - Successful order placement only acknowledges receipt by Kite. The WebSocket postback or order snapshot determines final exchange state and fills.
 - Product availability, order varieties and market permissions depend on the Zerodha account and exchange segment.
 

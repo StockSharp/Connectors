@@ -2,8 +2,7 @@
 
 The connector integrates StockSharp directly with Databento's official Raw Live
 API and Historical API. It has no dependency on the Databento Python, C++, or
-Rust clients: control messages and DBN records are represented by native, typed
-C# protocol models.
+Rust clients.
 
 ## Supported data
 

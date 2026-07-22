@@ -34,12 +34,8 @@ whole position; partial position changes are intentionally not synthesized.
 Gains does not expose a central-limit order book or a public trade tape through
 these APIs. The `/charts` endpoint is a current OHLC snapshot, not historical
 OHLCV storage, so the connector does not advertise market depth, public ticks,
-or historical candles. Live prices use the documented v4 typed frame and also
+or historical candles. Live prices use the documented v4 frame and also
 accept the legacy flat-array frame currently returned by some pricing nodes.
-
-All REST, WebSocket, JSON-RPC, and ABI-related wire messages use concrete DTOs.
-The implementation does not use dynamic JSON trees, anonymous protocol
-objects, or protocol dictionaries.
 
 Official resources:
 

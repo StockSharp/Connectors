@@ -1,7 +1,7 @@
 # StockSharp Injective connector
 
 The connector integrates StockSharp with Injective spot and derivative
-markets. It uses the current Exchange v2 transaction messages, typed REST
+markets. It uses the current Exchange v2 transaction messages, REST
 models, native Indexer gRPC streams and the Tendermint WebSocket interface.
 
 ## Supported operations
@@ -58,9 +58,6 @@ independently for a compatible gateway or local infrastructure.
   under its chain denom without guessing a token symbol.
 - Direct transactions use the configured gas and fee instead of automatic gas
   simulation.
-
-All protocol requests, responses and stream messages use concrete DTOs. The
-connector does not use dynamic JSON trees or protocol dictionaries.
 
 ## Documentation
 

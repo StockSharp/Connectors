@@ -8,8 +8,7 @@ used, so the connector does not submit or manage orders.
 ## Access and configuration
 
 A CoinAPI API key is required. REST sends it only in the `X-CoinAPI-Key`
-header. WebSocket authentication uses the same header and the typed
-`apikey` field in subscription commands; the key is never placed in a URL.
+header. WebSocket authentication uses the same header and the `apikey` field in subscription commands; the key is never placed in a URL.
 
 `ApiEndpoint` defaults to the GeoDNS REST root at `rest.coinapi.io`, while
 `SocketEndpoint` defaults to the secure WebSocket V1 root at
@@ -17,10 +16,7 @@ header. WebSocket authentication uses the same header and the typed
 controlled gateways. The connector accepts HTTPS for REST and WSS for the
 stream and rejects endpoint query strings and fragments.
 
-CoinAPI publishes a very large global instrument catalog. `ExchangeFilter`
-and `AssetFilter` narrow discovery on the server. `MaximumItems` caps a lookup
-at 100,000 instruments. The response is parsed as a stream of concrete symbol
-DTOs and stops at the cap instead of materializing the entire global JSON array.
+CoinAPI publishes a very large global instrument catalog. `ExchangeFilter` and `AssetFilter` narrow discovery on the server. `MaximumItems` caps a lookup at 100,000 instruments, and parsing stops at that cap without buffering the rest of the catalog.
 
 Each StockSharp security uses CoinAPI's canonical `symbol_id` as both its
 security code and native identity. A canonical ID such as
@@ -46,21 +42,12 @@ The connector supports:
 - historical OHLCV for every fixed CoinAPI period from 1 second through 10
   days, and live OHLCV through 1 day.
 
-Historical trades, quotes, books, and OHLCV are requested in ascending time
-order with explicit `time_start`, `time_end`, and `limit`. Live subscriptions
-share one WebSocket connection. Exact-symbol filters end with `$`, preventing
-CoinAPI's prefix matching from subscribing to similarly named instruments.
-The client uses typed `hello`, `subscribe`, and `unsubscribe` DTOs, restores
-all active scopes after reconnect, and enables CoinAPI heartbeat messages.
+Historical trades, quotes, books, and OHLCV are requested in ascending time order with explicit `time_start`, `time_end`, and `limit`. Live subscriptions share one WebSocket connection. Exact-symbol filters end with `$`, preventing CoinAPI's prefix matching from subscribing to similarly named instruments. Active scopes are restored after reconnect, and CoinAPI heartbeat messages are enabled.
 
 CoinAPI book5/book20/book50 messages are complete bounded snapshots, so they
 are emitted with `SnapshotComplete` state. Streamed OHLCV updates remain active
 until the period end is reached and are then emitted as finished candles. All
 REST and WebSocket timestamps are converted to UTC `DateTime` values.
-
-Every protocol payload has a concrete DTO. The implementation does not use
-dynamic JSON trees, anonymous protocol objects, protocol dictionaries, or
-untyped object arrays.
 
 ## Official documentation
 

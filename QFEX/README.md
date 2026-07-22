@@ -20,11 +20,7 @@ together to enable account data and order entry. `AccountId` is optional and
 selects a QFEX subaccount for both REST and WebSocket requests. Secrets are
 used only to compute HMAC-SHA256 signatures and are never transmitted.
 
-QFEX publishes complete pulsed order-book snapshots rather than incremental
-updates, so the connector advertises snapshot depth. The API does not expose
-public historical trades; tick subscriptions are therefore live-only. All
-wire payloads use concrete DTOs without dynamic JSON trees, anonymous protocol
-objects, or protocol dictionaries.
+QFEX publishes complete pulsed order-book snapshots rather than incremental updates, so the connector advertises snapshot depth. The API does not expose public historical trades; tick subscriptions are therefore live-only.
 
 Official resources:
 

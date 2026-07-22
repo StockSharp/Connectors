@@ -14,7 +14,7 @@ This connector integrates StockSharp with TradeLocker Public API v1.5. It connec
 - Optional absolute stop-loss, take-profit, and strategy identifier fields.
 - Rate-limit retry for safe requests and sequential polling workloads.
 
-All JSON request and response bodies are represented by typed DTOs. TradeLocker's account, order, and position tables use columns published by `/trade/config`; the connector reads those rows as a JSON token stream directly into typed models and does not use a JSON DOM, `dynamic`, or dictionary-shaped protocol models.
+TradeLocker's account, order, and position tables use the columns published by `/trade/config`.
 
 ## Configuration
 

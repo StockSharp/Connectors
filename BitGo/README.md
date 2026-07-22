@@ -51,11 +51,7 @@ signing, staking, settlement webhooks, and administrative APIs are outside
 this trading adapter. They remain available through the broader BitGo API and
 BitGo Express.
 
-All protocol requests and responses use explicit DTOs. The order-book tuple
-converter reads the documented `[price, size]` wire format directly; JSON
-trees, dynamic payloads, anonymous protocol objects, protocol dictionaries,
-and untyped object arrays are not used. API timestamps are normalized to UTC
-`DateTime` values.
+API timestamps are normalized to UTC `DateTime` values.
 
 ## Official resources
 

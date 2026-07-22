@@ -5,12 +5,6 @@ perpetual futures. Public reference and market data work without credentials.
 Account, order, fill, balance, and position access requires an API key and
 secret with the corresponding read or trade permissions.
 
-Every request, response, WebSocket subscription, event envelope, order-book
-level, candle, balance, order, fill, and position is represented by a concrete
-DTO. Array-shaped price levels and candles use dedicated typed JSON converters.
-The protocol layer contains no dynamic JSON trees, anonymous protocol bodies,
-protocol dictionaries, or untyped protocol arrays.
-
 ## Supported functionality
 
 - spot instruments on `BoardCodes.HashKey` (`HASHKEY`) and perpetual contracts
@@ -35,12 +29,7 @@ protocol dictionaries, or untyped protocol arrays.
 - documented query and order rate limits, server-time synchronization, and
   retries for safe reads only. Trading writes are never retried automatically.
 
-HashKey represents a futures market order as a `LIMIT` request whose
-`priceType` is `MARKET`; the connector performs that protocol mapping without
-presenting it as a limit order to StockSharp. Futures quantities are validated
-as integer contract counts. HashKey public depth v2 messages contain complete
-books, so the connector emits snapshot-complete books and does not advertise
-incremental order-book support.
+HashKey represents a futures market order as a `LIMIT` request whose `priceType` is `MARKET`; the connector performs that protocol mapping without presenting it as a limit order to StockSharp. Futures quantities are validated as integer contract counts. HashKey public depth v2 messages contain complete books, so the connector emits snapshot-complete books and does not advertise incremental order-book support.
 
 ## Configuration
 

@@ -1,6 +1,6 @@
 # Benzinga connector for StockSharp
 
-This connector integrates the currently documented Benzinga REST APIs and the official real-time News WebSocket. It uses concrete request and response DTOs throughout; the symbol-keyed delayed-quote response is read by a typed streaming JSON converter without `JObject`, `JArray`, `JToken`, `dynamic`, or protocol dictionaries.
+This connector integrates the currently documented Benzinga REST APIs and the official real-time News WebSocket.
 
 ## Supported functionality
 

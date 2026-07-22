@@ -19,7 +19,7 @@ services:
 At connection time the adapter loads the active futures, spot, and options
 catalogues. `IsIncludeDelisted` additionally loads delisted futures and spot
 products. The Velo exchange, product, market kind, coin, and first available
-timestamp are preserved in a typed native security identity, so identical
+timestamp are preserved in a native security identity, so identical
 symbols from different venues cannot collide.
 
 ## Market data
@@ -55,11 +55,6 @@ source link map directly to `NewsMessage`. Edit events retain their identifier;
 delete events are ignored because StockSharp news messages have no exact delete
 operation. Server heartbeat and lifecycle signals are handled by the transport,
 which reconnects according to the adapter reconnection settings.
-
-Every JSON payload uses a concrete DTO. CSV rows are converted immediately into
-typed catalogue or market-row DTOs; the connector contains no dynamic JSON
-trees, protocol dictionaries, anonymous protocol objects, or untyped object
-arrays.
 
 ## Official documentation
 

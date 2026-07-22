@@ -16,8 +16,6 @@ This connector integrates StockSharp with the official Singapore POEMS API Gatew
 - Quantity amendment and order withdrawal through the documented stock endpoints.
 - Cash, CPF, and SRS payment modes plus explicit settlement currency.
 
-Every request and response is represented by a typed DTO. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, or dictionary-shaped wire payloads.
-
 ## Configuration
 
 - `Key` and `Secret` - OAuth application credentials registered with POEMS. They are required for automatic token refresh.

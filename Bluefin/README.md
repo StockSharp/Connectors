@@ -1,8 +1,6 @@
 # StockSharp Bluefin connector
 
-The connector integrates StockSharp with the current Bluefin Pro perpetuals
-API on Sui. It uses the official REST and WebSocket interfaces and represents
-all protocol payloads with typed models.
+The connector integrates StockSharp with the current Bluefin Pro REST and WebSocket APIs for perpetuals on Sui.
 
 ## Supported operations
 

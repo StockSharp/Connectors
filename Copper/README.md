@@ -71,10 +71,6 @@ eligibility, and account permissions remain authoritative. A successfully
 submitted order can remain pending or require an action before it reaches a
 terminal state.
 
-Every HTTP payload is represented by a concrete DTO. The connector does not use
-dynamic JSON trees, anonymous protocol objects, protocol dictionaries, or
-untyped object arrays.
-
 ## Official documentation
 
 - [Copper Developer Portal](https://developer.copper.co/)

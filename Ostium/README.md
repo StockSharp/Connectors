@@ -38,9 +38,6 @@ The OHLC endpoint does not publish volume; candle volume is therefore zero.
 Unrealized position PnL is calculated from the current oracle mid and base
 position size and excludes projected rollover charges.
 
-All wire messages use concrete DTOs. The connector does not use dynamic JSON
-trees, anonymous protocol payloads, or protocol dictionaries.
-
 Official resources:
 
 - [Ostium documentation](https://docs.ostium.com/)

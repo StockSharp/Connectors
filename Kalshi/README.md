@@ -37,10 +37,6 @@ fixed-point contract units with 0.01-contract granularity. Prices are validated
 against each market's current `price_ranges` rather than the deprecated global
 cent tick.
 
-All protocol payloads are represented by concrete DTO classes, including the
-two-element price-level wire format. No JSON object tree or protocol map is
-used.
-
 Official resources:
 
 - [Kalshi API documentation](https://docs.kalshi.com/)

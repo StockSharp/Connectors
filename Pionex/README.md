@@ -1,11 +1,6 @@
 # Pionex connector for StockSharp
 
-The connector integrates the current Pionex Trade API and invite-only Futures
-Beta API with their official public and authenticated WebSocket services. Every
-wire request, response, subscription, event, positional order-book level, and
-authentication argument list is represented by a concrete DTO. The connector
-does not use dynamic JSON trees, protocol dictionaries, anonymous request
-bodies, or untyped arrays.
+The connector integrates the current Pionex Trade API and invite-only Futures Beta API with their official public and authenticated WebSocket services.
 
 ## Supported functionality
 

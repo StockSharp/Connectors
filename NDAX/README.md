@@ -27,11 +27,6 @@ default account returned by authentication. NDAX currently limits clients to
 50 REST requests per minute and 10 WebSocket subscriptions per connection;
 the connector enforces both constraints.
 
-Every REST and WebSocket payload is represented by a concrete DTO, including
-the numeric-array market-data formats and the outer AlphaPoint frame. The
-transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [NDAX API reference](https://apidoc.ndax.io/)

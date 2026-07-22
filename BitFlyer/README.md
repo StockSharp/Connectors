@@ -21,11 +21,7 @@ advertise candle history or realtime candles. Public market data works without
 credentials. Portfolio, transaction, and private realtime operations require an
 API key with the corresponding permissions.
 
-REST signatures use HMAC-SHA256 over the exact timestamp, HTTP method, request
-path (including query), and serialized request body. WebSocket authentication
-uses a fresh timestamp and nonce, and all active subscriptions are restored after
-reconnect. Every REST and WebSocket payload is represented by a concrete DTO;
-the transport does not use dynamic JSON trees or protocol dictionaries.
+REST signatures use HMAC-SHA256 over the exact timestamp, HTTP method, request path (including query), and serialized request body. WebSocket authentication uses a fresh timestamp and nonce, and all active subscriptions are restored after reconnect.
 
 Official documentation:
 

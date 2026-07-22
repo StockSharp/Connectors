@@ -22,10 +22,7 @@ base58-encoded 64-byte Solana keypair used for trading. When an API agent key
 is used, configure the main account in WalletAddress and the derived public
 key in AgentWallet.
 
-Pacifica symbols are case-sensitive, so the connector preserves the exact
-symbol spelling returned by the exchange. All wire payloads use concrete DTOs
-without dynamic JSON trees, anonymous protocol objects, or protocol
-dictionaries.
+Pacifica symbols are case-sensitive, so the connector preserves the exact symbol spelling returned by the exchange.
 
 Official resources:
 

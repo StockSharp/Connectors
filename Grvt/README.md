@@ -24,11 +24,7 @@ empty when the API-key login response identifies a trading account. Endpoint
 properties default to the official hosts and switch together when
 `Environment` changes.
 
-The connector uses the snapshot variants of the ticker and order-book streams.
-It checks stream sequence numbers, ignores duplicates, and reports gaps instead
-of inventing missing data. All protocol payloads use concrete DTOs; the
-transport contains no dynamic JSON trees, anonymous protocol payloads, or
-protocol dictionaries.
+The connector uses the snapshot variants of the ticker and order-book streams. It checks stream sequence numbers, ignores duplicates, and reports gaps instead of inventing missing data.
 
 Official resources:
 

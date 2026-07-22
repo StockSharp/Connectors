@@ -4,10 +4,6 @@ The connector integrates the current Crypto.com Exchange REST API with the offic
 public market-data and authenticated user WebSocket streams. Spot, perpetual-swap,
 and dated-futures instruments are exposed through the StockSharp message model.
 
-Every protocol request and response uses a concrete DTO. The implementation does
-not use dynamic JSON trees, protocol dictionaries, anonymous wire bodies, or
-untyped arrays.
-
 ## Supported functionality
 
 - spot instruments on `BoardCodes.CryptoCom` (`CRCOM`);

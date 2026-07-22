@@ -43,10 +43,7 @@ public trades or candles through these APIs, so those data types are not
 advertised. Custody, transfers, derivatives, allocations, and undocumented
 client-specific algorithms are outside this adapter.
 
-All JSON request and response bodies use explicit protocol DTOs. The connector
-does not use dynamic JSON, JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays. FalconX timestamps are normalized to
-UTC `DateTime` values.
+FalconX timestamps are normalized to UTC `DateTime` values.
 
 ## Official resources
 

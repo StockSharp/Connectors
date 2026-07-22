@@ -4,11 +4,6 @@ The connector integrates the current WhiteBIT REST API with the official public
 and authenticated WebSocket streams. It exposes spot, collateral spot, perpetual
 futures, and region-available TradFi futures through the StockSharp message model.
 
-Every wire request and response is represented by a concrete DTO. Positional
-WebSocket payloads and JSON objects keyed by market or asset are decoded by typed
-streaming converters; the implementation does not use dynamic JSON trees,
-protocol dictionaries, anonymous wire bodies, or untyped arrays.
-
 ## Supported functionality
 
 - spot instruments on `BoardCodes.WhiteBit` (`WBIT`);

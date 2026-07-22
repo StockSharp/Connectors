@@ -11,8 +11,8 @@ This connector integrates StockSharp with the official Capital Futures / Capital
 - ROD, IOC, and FOK instructions; limit, market, and market-with-protection prices; open, close, and automatic position effects; day-trade and T-session pre-order flags.
 - Price modification, quantity reduction, and cancellation by the official 13-character order sequence.
 - Realtime order and fill processing through the official `SKReplyLib.OnNewData` callback.
-- Domestic futures equity and open-position queries through `GetFutureRights`, `GetOpenInterest`, and the typed 2.13.58 JSON callback.
-- A dedicated STA thread and Windows message pump for COM callbacks. Reflection and raw COM values are isolated inside the SDK bridge; StockSharp-facing protocol data uses typed models.
+- Domestic futures equity and open-position queries through `GetFutureRights`, `GetOpenInterest`, and the 2.13.58 JSON callback.
+- A dedicated STA thread and Windows message pump for COM callbacks.
 
 ## Requirements
 

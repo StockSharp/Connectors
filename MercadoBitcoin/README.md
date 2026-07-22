@@ -22,11 +22,7 @@ Public market data works without credentials. Private operations require an API
 client ID and secret. `AccountId` may be left empty when the API key owns one
 account; for multiple accounts it selects the default account for trading.
 
-Mercado Bitcoin currently documents only public WebSocket channels. Private
-account and order updates are therefore refreshed through the official REST API
-instead of an undocumented stream. Every REST and WebSocket payload is
-represented by a concrete DTO; the transport does not use dynamic JSON trees or
-protocol dictionaries.
+Mercado Bitcoin currently documents only public WebSocket channels. Private account and order updates are therefore refreshed through the official REST API instead of an undocumented stream.
 
 Official documentation:
 

@@ -1,9 +1,6 @@
 # StockSharp Sierra Chart DTC connector
 
-StockSharp adapter for the open Data and Trading Communications (DTC) Protocol and
-the DTC server built into Sierra Chart. The connector uses protocol version 8 with
-the official binary encoding with variable-length strings over TCP. All protocol
-messages are represented by typed models.
+StockSharp adapter for the open Data and Trading Communications (DTC) Protocol and the DTC server built into Sierra Chart. The connector uses protocol version 8 with the official binary encoding with variable-length strings over TCP.
 
 ## Connection setup
 

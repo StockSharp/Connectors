@@ -20,11 +20,7 @@ or transient server status codes use bounded retries and honor `Retry-After` or
 `x-rate-limit-reset` when supplied. Response bodies are size-limited and API
 keys are redacted from surfaced transport errors.
 
-At connection time the adapter loads `/metadata/assets`. Every security keeps
-the canonical Glassnode asset ID in its native identity and is represented as
-`asset/USD` on the `GLASSNODE` board. Lookup can match the ID, symbol, name,
-default network, or semantic tags. Asset type and token-chain metadata are read
-through concrete DTOs; external IDs are not used as unstable security keys.
+At connection time the adapter loads `/metadata/assets`. Every security keeps the canonical Glassnode asset ID in its native identity and is represented as `asset/USD` on the `GLASSNODE` board. Lookup can match the ID, symbol, name, default network, or semantic tags.
 
 ## Market data
 
@@ -47,12 +43,7 @@ values, and candle consistency before emitting finished candles. Glassnode's
 API has no generic volume field for the composite OHLC metric, so the adapter
 does not invent candle volume.
 
-Glassnode exposes many on-chain, derivatives, ETF, and other analytical
-metrics whose values may be scalars, objects, or arrays. They are not coerced
-into unrelated StockSharp price fields. This connector deliberately maps only
-the standard price series with an exact StockSharp representation. Every
-response it does consume has a concrete DTO; no dynamic JSON trees, anonymous
-protocol objects, protocol dictionaries, or untyped object arrays are used.
+Glassnode exposes many on-chain, derivatives, ETF, and other analytical metrics whose values may be scalars, objects, or arrays. They are not coerced into unrelated StockSharp price fields. This connector deliberately maps only the standard price series with an exact StockSharp representation.
 
 ## Official documentation
 

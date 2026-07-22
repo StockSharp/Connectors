@@ -19,9 +19,6 @@ key returned by Extended for the active account. The connector reads the
 account vault and public Stark key from the authenticated account endpoint and
 validates the private key before enabling order entry.
 
-All wire messages use concrete DTOs. The connector does not use dynamic JSON
-trees, anonymous protocol payloads, or protocol dictionaries.
-
 Official resources:
 
 - [Extended API documentation](https://api.docs.extended.exchange/)

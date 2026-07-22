@@ -15,8 +15,6 @@ This connector integrates StockSharp with Finnhub's official REST API v1 and rea
 - Company news by stock symbol and general, forex, crypto, or merger market-news categories.
 - Rate-limit and transient-server retries, UTC timestamp validation, bounded WebSocket frames, reconnect, and automatic subscription restoration.
 
-Every REST request, REST response, and WebSocket message is represented by a concrete typed DTO. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or protocol dictionaries.
-
 ## Configuration
 
 - `Token` is the API key from the Finnhub dashboard.

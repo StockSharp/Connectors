@@ -54,10 +54,7 @@ documented CLOB REST API, so this adapter reports replace requests as
 unsupported. Custody, deposits, withdrawals, settlement webhooks, RFQ trades,
 and FIX sessions are outside this connector.
 
-All JSON requests and responses use explicit protocol DTOs. Dynamic JSON,
-JSON trees, anonymous protocol objects, protocol dictionaries, and untyped
-object arrays are not used. Nanosecond API timestamps are normalized to UTC
-`DateTime` values.
+Nanosecond API timestamps are normalized to UTC `DateTime` values.
 
 ## Official resources
 

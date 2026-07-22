@@ -14,7 +14,7 @@ This connector integrates StockSharp with the current SnapTrade API. SnapTrade i
 - Extended-hours limit orders, notional market orders, cancellation, and replacement where supported by the brokerage.
 - Broker quote retrieval as REST-polled StockSharp Level 1 data.
 
-All request and response bodies use typed DTOs. Safe reads and the symbol-search request retry transient transport errors, HTTP 429, and server failures. Trading, cancel, and replace requests are never automatically retried because SnapTrade does not guarantee idempotency across every connected brokerage.
+Safe reads and the symbol-search request retry transient transport errors, HTTP 429, and server failures. Trading, cancel, and replace requests are never automatically retried because SnapTrade does not guarantee idempotency across every connected brokerage.
 
 ## Configuration
 

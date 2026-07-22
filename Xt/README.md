@@ -1,12 +1,6 @@
 # XT.COM connector for StockSharp
 
-The connector integrates the current XT.COM Spot and USDT-M Futures Open APIs,
-including their official public and authenticated WebSocket services. Spot and
-futures use separate REST hosts, signing rules, stream commands, and private
-session tokens; the implementation keeps those protocols isolated. Every wire
-request, response, event, subscription, and positional order-book level is
-represented by a concrete DTO. It does not use dynamic JSON trees, protocol
-dictionaries, anonymous request bodies, or untyped arrays.
+The connector integrates the current XT.COM Spot and USDT-M Futures Open APIs, including their official public and authenticated WebSocket services. Spot and futures use separate REST hosts, signing rules, stream commands, and private session tokens; the implementation keeps those protocols isolated.
 
 ## Supported functionality
 

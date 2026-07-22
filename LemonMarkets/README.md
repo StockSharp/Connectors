@@ -13,7 +13,7 @@ This connector integrates StockSharp with the current lemon.markets Brokerage AP
 - Efficient order and trade lifecycle polling through the official events endpoint.
 - Sandbox and production Brokerage API environments.
 
-All JSON request and response bodies use typed DTOs. Safe GET requests and idempotent order creation can be retried after transient transport, HTTP 429, and server failures. Confirmation and cancellation requests are not automatically retried because the public documentation does not declare those operations idempotent.
+Safe GET requests and idempotent order creation can be retried after transient transport, HTTP 429, and server failures. Confirmation and cancellation requests are not automatically retried because the public documentation does not declare those operations idempotent.
 
 ## Configuration
 

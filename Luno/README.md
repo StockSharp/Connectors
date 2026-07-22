@@ -24,10 +24,6 @@ and secret as the first message on both documented WebSocket streams. Without
 credentials, use history-only subscriptions; with credentials, realtime
 market and account streams are enabled automatically.
 
-Every REST and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects, or
-protocol dictionaries.
-
 Official documentation:
 
 - [Luno API documentation](https://www.luno.com/en/developers/api)

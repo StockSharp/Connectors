@@ -42,10 +42,6 @@ transfer-hook boundary and prevents transactions with incomplete remaining
 accounts. Orca is an AMM and has no discrete exchange order book, so the
 connector publishes executable quote probes instead of synthetic depth.
 
-Every REST, JSON-RPC, and WebSocket payload is represented by a concrete DTO.
-The transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [Orca developer documentation](https://dev.orca.so/)

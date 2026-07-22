@@ -12,8 +12,6 @@ This connector integrates StockSharp with the official [kabu Station API](https:
 - Automatic token renewal after a `401`, WebSocket reconnection and restoration of registrations owned by the adapter.
 - Production and validation environments through the official ports `18080` and `18081`.
 
-All REST requests, REST responses and PUSH messages use typed DTOs. The protocol implementation does not use `JObject`, `JArray`, `JToken`, `dynamic` or dictionaries in place of wire models.
-
 ## Configuration
 
 1. Open an account with Mitsubishi UFJ eSmart Securities and enable kabu Station API in the member site.

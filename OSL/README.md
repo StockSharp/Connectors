@@ -30,12 +30,6 @@ order channels on the v2 WebSocket endpoints. Its documented realtime kline
 channel remains on the `/openapi/v1/ws` endpoint, so the connector keeps that
 official stream separate instead of emulating candles by polling REST.
 
-Every REST and WebSocket payload is represented by a concrete DTO, including
-book-level arrays, candle arrays, fee variants, command envelopes, login
-messages, and subscription messages. The transport does not use dynamic JSON
-trees, anonymous protocol objects, protocol dictionaries, or untyped object
-arrays.
-
 Official resources:
 
 - [OSL Global API overview](https://docs.glb.osl.com/reference/overview-osl-global-api)

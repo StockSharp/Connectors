@@ -11,7 +11,7 @@ This connector integrates StockSharp with the official Daishin Securities CYBOS 
 - Realtime order and fill notifications through `Dscbo1.CpConclusion` and `Dscbo1.CpFConclusion`.
 - Open-order, cash/equity, and position queries for the available stock and derivatives products.
 - Native request throttling through `CpUtil.CpCybos.GetLimitRemainCount` and `LimitRequestRemainTime`, plus enforcement of the official 400-subscription realtime ceiling.
-- A dedicated STA thread and Windows message pump for COM callbacks. Raw COM values remain inside the bridge; all StockSharp-facing protocol data uses typed models.
+- A dedicated STA thread and Windows message pump for COM callbacks.
 
 ## Requirements
 

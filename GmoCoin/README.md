@@ -24,10 +24,7 @@ Supported features:
 Public market data works without credentials. Private operations require an API
 key and secret with the corresponding trading and account permissions.
 
-Private REST requests use GMO Coin's HMAC-SHA256 signature over the UTC
-millisecond timestamp, HTTP method, API path, and exact typed JSON request body.
-The connector represents every REST and WebSocket payload with a concrete DTO;
-it does not use dynamic JSON trees or protocol dictionaries.
+Private REST requests use GMO Coin's HMAC-SHA256 signature over the UTC millisecond timestamp, HTTP method, API path, and exact serialized request body.
 
 GMO Coin exposes historical candles through REST but does not publish a candle
 WebSocket channel. Candle subscriptions are therefore history-only.

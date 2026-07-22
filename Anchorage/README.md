@@ -74,10 +74,7 @@ Anchorage webhooks are inbound HTTPS callbacks. Hosting, authenticating, and
 operating a public webhook receiver is outside a desktop message adapter, so
 the connector uses the trading WebSocket plus REST reconciliation instead.
 
-Every HTTP and WebSocket payload is represented by a concrete DTO. The
-connector does not use dynamic JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays. All API times are normalized to UTC
-`DateTime` values.
+All API times are normalized to UTC `DateTime` values.
 
 ## Official resources
 

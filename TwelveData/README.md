@@ -13,8 +13,6 @@ This connector integrates StockSharp with Twelve Data's official REST API and re
 - Native 1, 5, 15, 30, and 45-minute candles; 1, 2, 4, and 8-hour candles; and daily, weekly, and monthly candles.
 - Historical pagination at the documented 5,000-value REST limit, duplicate-boundary removal, exchange-time-zone conversion for end-of-day bars, transient retry handling, bounded WebSocket frames, reconnect, heartbeat, and automatic subscription restoration.
 
-Every REST request, REST response, and WebSocket message is represented by a concrete typed DTO. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or protocol dictionaries.
-
 ## Configuration
 
 - `Token` is the API key from the Twelve Data dashboard.

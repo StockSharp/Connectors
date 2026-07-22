@@ -11,9 +11,7 @@ This connector integrates StockSharp with the current Marketstack REST API v2. I
 - Historical intraday candles at 1, 5, 10, 15, and 30 minutes and 1 hour through `/intraday`.
 - Raw or corporate-action-adjusted OHLC values. If Marketstack omits a complete adjusted OHLC set for an observation, the connector uses the complete raw set rather than mixing adjusted and raw prices.
 - Optional pre-market and post-market intraday data through the documented `after_hours` parameter.
-- Full offset pagination, UTC normalization, duplicate-bar removal, bounded retry handling for rate limits and transient server failures, and typed API errors.
-
-Every Marketstack request and response used by the connector is represented by a concrete typed DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
+- Full offset pagination, UTC normalization, duplicate-bar removal, bounded retry handling for rate limits and transient server failures, and API errors.
 
 ## Configuration
 

@@ -13,7 +13,6 @@ This connector integrates StockSharp with the official Fubon Neo C# SDK for Taiw
 - Securities and futures/options order registration, price/quantity modification, cancellation, current orders, and fills.
 - Native order and fill callbacks from the official SDK.
 - Stock balances/positions and futures/options margin, equity, and positions.
-- Typed JSON transport models; reflection and native SDK objects are isolated inside the SDK bridge.
 
 ## Requirements
 

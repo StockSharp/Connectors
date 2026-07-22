@@ -20,9 +20,6 @@ subaccount data because Nado account streams and queries use the public bytes32
 subaccount identifier. Trading additionally requires the corresponding EVM
 `PrivateKey`. The default subaccount name is `default`.
 
-All wire messages use concrete DTOs. The connector does not use dynamic JSON
-trees, anonymous protocol payloads, or protocol dictionaries.
-
 Official resources:
 
 - [Nado API documentation](https://docs.nado.xyz/developer-resources/api)

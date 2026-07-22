@@ -1,6 +1,6 @@
 # ACTIV Financial connector for StockSharp
 
-This connector uses the official ACTIV Financial AtlasFeed Web One API client. ACTIV publishes One API as the `@activfinancial/one-api` JavaScript/WASM package rather than a public .NET library or a documented wire protocol. The connector therefore starts a local typed Node.js bridge and never invents or reverse-engineers the private gateway protocol.
+This connector uses the official ACTIV Financial AtlasFeed Web One API client. ACTIV publishes One API as the `@activfinancial/one-api` JavaScript/WASM package rather than a public .NET library or a documented wire protocol. The connector therefore starts a local Node.js bridge and never invents or reverse-engineers the private gateway protocol.
 
 ## Supported functionality
 
@@ -12,8 +12,6 @@ This connector uses the official ACTIV Financial AtlasFeed Web One API client. A
 - TSS daily and weekly candles.
 - ACTIV real-time, delayed, low-latency, feed-handler, and entitled TREP data sources.
 - Native, ACTIV, and TREP symbologies.
-
-The C# protocol boundary consists only of concrete request, response, record, timestamp, and error DTOs. It does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
 
 ## Gateway setup
 

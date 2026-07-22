@@ -43,10 +43,6 @@ not synthesize market-depth levels. Transactions submitted outside the current
 adapter session cannot be reconstructed as StockSharp orders from a receipt
 alone and are not presented as such.
 
-Every GraphQL and JSON-RPC payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [PancakeSwap developer documentation](https://developer.pancakeswap.finance/)

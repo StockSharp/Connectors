@@ -16,8 +16,6 @@ This connector provides native .NET access to the official Nasdaq Cloud Data Ser
 - Native equity bars for the precisions and ranges published by Nasdaq: 1, 5, 10, 15, and 30 minutes; 1 day; 1 week; and 1 month where supported by the selected source and range.
 - Retry handling for rate limits and transient server failures. Individually unlicensed snapshot components can be skipped while other entitled Level1 components are preserved.
 
-Authentication, reference data, equity data, index/ETP data, options, errors, and bars use dedicated protocol DTOs. The symbol-keyed version 2 bars response and the historically inconsistent single-object/array option-contract response use typed streaming converters. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionary-shaped protocol models.
-
 ## Configuration
 
 - `Login` is the `client_id` supplied by Nasdaq.

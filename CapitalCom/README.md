@@ -16,9 +16,7 @@ The connector integrates StockSharp with the official [Capital.com Public API](h
 - Market positions and working limit/stop orders.
 - Protective stop-loss and take-profit parameters by level, distance or amount, including guaranteed and trailing stops where the account and instrument permit them.
 - Order amendments, working-order cancellation and full position close.
-- Typed order confirmations and account activity history.
-
-Every REST and WebSocket request and response used by the connector has a dedicated DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous protocol payloads or protocol dictionaries.
+- order confirmations and account activity history.
 
 ## Configuration
 
@@ -37,7 +35,7 @@ The public quote stream contains bid, offer and their quantities. It does not co
 
 REST candles include bid and ask OHLC values; the connector exposes their midpoint. The WebSocket OHLC protocol identifies the price side in `priceType`; the connector uses the vendor's bid-side `classic` bar so that one native update produces one StockSharp candle.
 
-Capital.com does not expose a private account/order WebSocket destination in the public protocol. When a live order-status or portfolio subscription is requested, the connector refreshes the corresponding typed REST snapshots at bounded intervals. No polling runs for those data types without an active subscription.
+Capital.com does not expose a private account/order WebSocket destination in the public protocol. When a live order-status or portfolio subscription is requested, the connector refreshes the corresponding REST snapshots at bounded intervals. No polling runs for those data types without an active subscription.
 
 ## Limits and access
 

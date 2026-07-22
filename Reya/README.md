@@ -8,11 +8,6 @@ execution monitoring. EIP-712 signed trading additionally requires a signer
 private key and a Reya account ID; the owner and signer wallets may differ when
 Reya delegation is configured.
 
-Every REST request, response, WebSocket command, event, order-book level, and
-candle series is represented by a concrete DTO. The protocol layer contains no
-generic JSON trees, anonymous request bodies, protocol dictionaries, or dynamic
-payloads.
-
 ## Supported functionality
 
 - spot and perpetual security lookup with official price and quantity rules;

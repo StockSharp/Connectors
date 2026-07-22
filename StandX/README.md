@@ -23,12 +23,7 @@ Solana keypair. `WalletAddress` is optional; when supplied, it is checked
 against the private key before authentication. Without a private key the
 adapter stays in public market-data mode.
 
-StandX provides live order, account, price, depth, and trade streams. Candles
-are retrieved from the official REST history endpoint and current candle
-updates are polled at the configured interval. Safe GET requests use bounded
-retry and backoff; trading writes are sent once over the signed order stream.
-All protocol payloads use concrete DTOs. The protocol layer contains no dynamic
-JSON trees, anonymous protocol payloads, or protocol dictionaries.
+StandX provides live order, account, price, depth, and trade streams. Candles are retrieved from the official REST history endpoint and current candle updates are polled at the configured interval. Safe GET requests use bounded retry and backoff; trading writes are sent once over the signed order stream.
 
 Official resources:
 

@@ -26,10 +26,6 @@ Order and fill histories use the dedicated Trade API v2 endpoints. The legacy
 `tradeHistory` and `orderHistory` TAPI methods are not used because Indodax
 decommissioned them on April 7, 2026.
 
-Every REST and WebSocket payload is represented by a concrete DTO. Array-based
-book and trade records and currency-keyed account maps are decoded by typed
-converters; the transport does not use loose JSON protocol structures.
-
 Official resources:
 
 - [Indodax API documentation](https://github.com/btcid/indodax-official-api-docs)

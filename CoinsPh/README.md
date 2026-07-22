@@ -23,10 +23,6 @@ of a base quantity for market orders. Coins.ph requires this field for
 market-trigger buy orders. Conditional orders also use `StopPrice` and `Type` to
 select stop-loss or take-profit behavior.
 
-Every REST and WebSocket payload is represented by a concrete DTO. Array-shaped
-depth levels and candles are parsed directly into typed records without dynamic
-JSON trees or protocol dictionaries.
-
 API credentials are optional for public market data and required for portfolio
 and transaction operations. Signed requests use HMAC-SHA256 over the exact query
 string and the `X-COINS-APIKEY` header.

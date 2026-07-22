@@ -30,11 +30,6 @@ Market orders are submitted as short-term IOC orders with a configurable oracle
 price protection limit. Stateful and conditional orders use UTC expiration
 timestamps; short-term orders use the current chain height.
 
-All REST and WebSocket messages use concrete DTOs. Keyed objects returned by the
-Indexer are decoded by streaming converters into typed arrays. The connector
-does not use dynamic JSON trees, anonymous protocol payloads, or protocol
-dictionaries.
-
 Official resources:
 
 - [dYdX documentation](https://docs.dydx.xyz/)

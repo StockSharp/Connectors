@@ -12,7 +12,6 @@ This connector integrates StockSharp with the official Yuanta SPARK C# SDK for T
 - Securities and domestic futures/options order registration, price/quantity modification, and cancellation.
 - Official realtime order/fill reports plus current order, trade, stock-position, futures-position, bank-balance, and futures-equity queries.
 - Automatic reconnect with restoration of active market-data subscriptions.
-- Reflection is isolated inside the SDK bridge; StockSharp-facing protocol data uses typed models.
 
 ## Requirements
 

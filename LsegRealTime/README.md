@@ -12,7 +12,6 @@ The connector integrates StockSharp with the official LSEG Real-Time WebSocket A
 - Exact RIC lookup through a non-streaming `MarketPrice` snapshot.
 - Streaming Level 1 and ticks through `MarketPrice`.
 - Streaming incremental and multipart snapshot order books through `MarketByPrice`.
-- Typed request, response and streaming DTOs throughout the wire layer.
 
 ## Configuration
 

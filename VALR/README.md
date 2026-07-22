@@ -28,10 +28,6 @@ and account streams are enabled automatically. Set `SubAccountId` when a
 primary-account key should act on a margin- or futures-enabled subaccount. A
 key created directly on that subaccount does not need this setting.
 
-Every REST and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects, or
-protocol dictionaries.
-
 Official documentation:
 
 - [VALR API documentation](https://docs.valr.com/)

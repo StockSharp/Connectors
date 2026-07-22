@@ -9,7 +9,7 @@ This directory contains the Motilal Oswal MO API connector for the [StockSharp](
 - The official JSON order WebSocket for realtime account-wide order and trade updates. Live and UAT endpoints are selected with `IsDemo`.
 - Portfolio snapshots from margin, position, and holding endpoints, refreshed every 30 seconds while a live portfolio subscription is active.
 
-All REST bodies, REST responses, WebSocket commands, and WebSocket events use typed DTOs. Binary market messages are decoded directly from the official 30-byte packet layout. The connector does not construct protocol messages with `JObject`, `JArray`, dynamic objects, anonymous objects, or protocol dictionaries.
+Binary market messages are decoded directly from the official 30-byte packet layout.
 
 MO API does not document historical ticks, historical order books, or a historical candle query. Its EOD endpoint provides the current exchange snapshot rather than a requested historical interval, so the connector intentionally does not advertise historical market data.
 

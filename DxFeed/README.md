@@ -17,9 +17,7 @@ does not start an external process.
 - automatic dxLink authorization, keepalive, reconnect, channel reopening, and
   subscription restoration.
 
-All dxLink requests and responses are represented by typed DTOs. The connector
-requests the `FULL` wire format so field names remain explicit and rejects a
-server configuration that switches the feed to the compact array format.
+The connector requests the `FULL` wire format so field names remain explicit and rejects a server configuration that switches the feed to the compact array format.
 
 ## Connection
 

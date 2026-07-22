@@ -7,11 +7,6 @@ registered account ID in the public WebSocket URL, so live market data requires
 an account ID even when no private key is configured. Account data and trading
 also require the base58-encoded ED25519 Orderly secret.
 
-Every REST request, response, WebSocket command, event, keyed balance object,
-and positional price level is represented by a concrete DTO. The protocol layer
-contains no generic JSON trees, anonymous request bodies, protocol dictionaries,
-or untyped JSON arrays.
-
 ## Supported functionality
 
 - perpetual security lookup with official price, volume, minimum-quantity, and

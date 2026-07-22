@@ -5,7 +5,7 @@ This connector integrates StockSharp with Financial Modeling Prep (FMP) through 
 ## Supported functionality
 
 - API-key authentication through the documented `apikey` HTTP header, keeping the credential out of request URLs.
-- Security lookup through symbol and name search, the typed stock screener, and dedicated forex, cryptocurrency, index, and commodity lists.
+- Security lookup through symbol and name search, the stock screener, and dedicated forex, cryptocurrency, index, and commodity lists.
 - Native identifiers that preserve the FMP market family, exact symbol, and exchange code.
 - REST Level1 snapshots for every supported market family.
 - Genuine WebSocket top-of-book and trade updates for entitled US equities, forex, and cryptocurrencies, using the provider's separate endpoints.
@@ -14,8 +14,6 @@ This connector integrates StockSharp with Financial Modeling Prep (FMP) through 
 - Adjusted, non-split-adjusted, and dividend-adjusted daily stock histories; the documented `nonadjusted` option is also applied to intraday stock data when selected.
 - Latest and symbol-filtered stock, forex, and crypto news with date filters, pagination, count limits, UTC normalization, and duplicate-link removal.
 - Lazy WebSocket connections, bounded frames, reconnect with subscription restoration, and explicit propagation of authentication, entitlement, rate-limit, and protocol failures.
-
-Every REST request, REST response, and WebSocket message is represented by a concrete typed DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
 
 ## Configuration
 
@@ -32,7 +30,7 @@ Use securities returned by lookup whenever possible. StockSharp's `Native` ident
 
 Endpoint availability, delay, history depth, exchange coverage, and request allowance depend on the FMP subscription. A successful API key does not imply entitlement to every REST dataset or WebSocket product. HTTP 401/403, rate-limit responses, and server failures are returned to StockSharp instead of being treated as empty data.
 
-FMP currently presents the detailed company, forex, and crypto WebSocket protocol pages as legacy documentation, while still advertising WebSocket datasets and publishing the three endpoints. The connector implements exactly the documented typed `login`, `subscribe`, and `unsubscribe` messages and `T` trade, `Q` quote, and `B` trade-break event semantics. It does not replace unavailable streaming access with REST polling. The stock stream is documented for US equities; known non-US exchange identifiers therefore finish after the REST Level1 snapshot.
+FMP currently presents the detailed company, forex, and crypto WebSocket protocol pages as legacy documentation, while still advertising WebSocket datasets and publishing the three endpoints. The connector implements exactly the documented `login`, `subscribe`, and `unsubscribe` messages and `T` trade, `Q` quote, and `B` trade-break event semantics. It does not replace unavailable streaming access with REST polling. The stock stream is documented for US equities; known non-US exchange identifiers therefore finish after the REST Level1 snapshot.
 
 The REST API does not expose a normalized historical tick-trade endpoint, so historical tick subscriptions are rejected. Forex realtime events are exposed as Level1 data only; the connector does not claim forex tick trades even though the shared WebSocket schema can contain trade-shaped fields.
 

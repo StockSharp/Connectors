@@ -29,7 +29,7 @@ live channels are also configured on Tardis Machine, as documented upstream.
 
 The connector supports:
 
-- security lookup from the typed Tardis instrument metadata API;
+- security lookup from the Tardis instrument metadata API;
 - tick-by-tick trades from normalized `trade` messages;
 - L2 snapshots and incremental changes from `book_change` messages;
 - best bid/ask plus derivative last, index, mark, and open-interest values as
@@ -53,13 +53,7 @@ parsed as UTC; the exchange timestamp is preferred. Order-book zero amounts are
 preserved only for incremental removals. Trade bars are validated against the
 requested interval before finished StockSharp candles are emitted.
 
-Funding rates and predicted funding rates have no exact StockSharp Level 1
-field and are therefore not mislabeled as another metric. Raw exchange-native
-feeds, downloadable CSV datasets, liquidations, and option-summary greeks are
-also left out because this adapter consumes the documented normalized types
-with exact StockSharp equivalents. Every JSON request and response uses a
-concrete DTO; there are no dynamic JSON trees, protocol dictionaries, anonymous
-protocol objects, or untyped object arrays.
+Funding rates and predicted funding rates have no exact StockSharp Level 1 field and are therefore not mislabeled as another metric. Raw exchange-native feeds, downloadable CSV datasets, liquidations, and option-summary greeks are also left out because this adapter consumes the documented normalized types with exact StockSharp equivalents.
 
 ## Official documentation
 

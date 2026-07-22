@@ -12,8 +12,6 @@ This connector reads licensed OptionMetrics IvyDB US end-of-day delivery files. 
 - Genuine one-day underlying OHLC candles. A negative close is a provider midpoint and is never mislabeled as a trade or candle close.
 - Raw, split-adjusted, or total-return-adjusted underlying prices using the cumulative factors supplied by IvyDB.
 
-The reader uses concrete typed records for every supported table. It does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
-
 ## Files and configuration
 
 Set `DataDirectory` to a directory containing expanded `.txt` files, `.zip` archives, or both. Subdirectories are scanned without following reparse points. ZIP entries are streamed directly and are never extracted. If the same table date exists both as a text file and inside an archive, the expanded text file takes precedence.
@@ -25,7 +23,7 @@ The connector recognizes standard daily names with an optional `D` delivery mark
 - `IVYSECPR.yyyymmddD.txt` — Security Price.
 - `IVYOPPRC.yyyymmddD.txt` — Option Price and analytics.
 
-The stable leading columns documented by OptionMetrics are parsed and additional columns appended by newer IvyDB releases are left available for future typed mappings. Malformed data is rejected with the table, source file, and line number. The reader does not silently discard corrupt rows.
+The stable leading columns documented by OptionMetrics are parsed and additional columns appended by newer IvyDB releases are left available for future mappings. Malformed data is rejected with the table, source file, and line number. The reader does not silently discard corrupt rows.
 
 `MarketTimeZoneId` defaults to `America/New_York` and falls back to the Windows identifier `Eastern Standard Time`. `SessionStart` and `SessionEnd` place daily underlying data into a US market session. `OptionSnapshotTime` defaults to 15:59 Eastern, the documented quote time used from July 30, 2009 onward; change it when processing an older delivery whose reference manual specifies a different time.
 

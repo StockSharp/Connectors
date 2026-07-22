@@ -15,8 +15,6 @@ This connector integrates StockSharp with the official [Kiwoom REST API](https:/
 - Automatic OAuth renewal, PING handling, reconnect and restoration of all active subscriptions.
 - Production and the official domestic mock environment.
 
-Every REST request, response and WebSocket frame used by the connector is represented by a typed DTO. Numeric realtime FIDs are mapped to typed properties; the connector does not use `JObject`, `JArray`, `JToken`, `dynamic` or protocol dictionaries.
-
 ## Configuration
 
 1. Open a Kiwoom securities account and register an application in the Kiwoom REST API portal.

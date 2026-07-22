@@ -54,7 +54,7 @@ libraries from different versions.
 
 The package contains Windows x64 and Linux x64 runtime layouts. To rebuild the
 bridge, set `CTP_SDK_ROOT` to a CTP SDK directory containing the four API headers
-and `win_x64` or `linux_x64`, then run CMake. The bridge exports a small typed C
+and `win_x64` or `linux_x64`, then run CMake. The bridge exports a small C
 ABI, converts GB18030 text to UTF-8, and keeps CTP C++ structures out of managed
 code.
 

@@ -1,7 +1,7 @@
 # QMT Connector for StockSharp
 
 This connector integrates StockSharp with the official XtQuant API supplied with
-MiniQMT. XtQuant is a local Python API, so the package includes a small, typed TCP
+MiniQMT. XtQuant is a local Python API, so the package includes a small, TCP
 gateway in `Gateway/qmt_gateway.py`. The adapter does not embed Python, start
 MiniQMT, or manage the broker installation.
 
@@ -31,10 +31,7 @@ than one XtQuantTrader process is running. `--quote-port` can select an explicit
 MiniQMT quote port. The `--sectors` option controls the XtQuant sectors used by
 security lookup.
 
-The gateway uses a versioned, four-byte length-prefixed UTF-8 JSON protocol with
-fixed DTOs. It authenticates every connection with the shared secret, forwards
-official XtQuant callbacks, shares identical native market subscriptions, and
-restores them after a MiniQMT reconnect.
+The gateway uses a versioned, four-byte length-prefixed UTF-8 JSON protocol. It authenticates every connection with the shared secret, forwards official XtQuant callbacks, shares identical native market subscriptions, and restores them after a MiniQMT reconnect.
 
 ## Configuration
 

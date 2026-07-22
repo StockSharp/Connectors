@@ -13,8 +13,6 @@ This connector provides native .NET access to the current S&P Global Energy (for
 - Configurable bate filtering (`c` by default), assessment-date ranges, corrections metadata, previous-value metadata, and percentage changes.
 - Rate-limit and transient-server retry handling.
 
-Authentication, search queries, pagination metadata, symbol records, assessment groups, individual assessment values, changes, and errors all use dedicated DTOs. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionary-shaped protocol models.
-
 ## Configuration
 
 - `Login` and `Password` are the S&P Global Energy API credentials issued to the user or organization.
@@ -26,7 +24,7 @@ Use a security returned by lookup whenever possible. The seven-character Platts 
 
 ## Data model and limitations
 
-An assessment is a published commodity valuation, not an exchange trade. The native `value` field is therefore exposed as `ClosePrice`, never as a fabricated last trade. The API's `deltaPercent` is exposed as the StockSharp Level1 `Change` field. Assessment date is used as server time; correction/publication metadata remains available in the typed protocol model.
+An assessment is a published commodity valuation, not an exchange trade. The native `value` field is therefore exposed as `ClosePrice`, never as a fabricated last trade. The API's `deltaPercent` is exposed as the StockSharp Level1 `Change` field.
 
 Historical assessments are scalar values grouped by symbol and bate. They are not OHLCV bars, so this connector does not advertise candles. The published Market Data API is request/response HTTPS and does not provide a WebSocket order book or brokerage operations; consequently the connector does not advertise ticks, market depth, live streaming, orders, portfolios, positions, or executions.
 

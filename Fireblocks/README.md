@@ -65,10 +65,6 @@ by the Fireblocks workspace. A successful API submission may consequently stay
 pending, be blocked, be rejected, or fail. The connector publishes those
 native lifecycle changes without treating submission as settlement.
 
-Every HTTP payload is represented by a concrete DTO. The connector does not use
-dynamic JSON trees, anonymous protocol objects, protocol dictionaries, or
-untyped object arrays.
-
 ## Official documentation
 
 - [Fireblocks developer documentation](https://developers.fireblocks.com/)

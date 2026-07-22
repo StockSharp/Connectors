@@ -55,11 +55,7 @@ StockSharp. Depths up to 100 use the bounded stream; larger requested depths
 use `full_book` and are trimmed to the subscription limit locally. Other live
 streams disable initial backfill to avoid replaying the last historical row.
 
-Coin Metrics timestamps carry nanosecond text precision. They are validated as
-UTC and deterministically truncated to the 100-nanosecond precision supported
-by `DateTime`. Every protocol response has a concrete DTO; the implementation
-does not use dynamic JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays.
+Coin Metrics timestamps carry nanosecond text precision. They are validated as UTC and deterministically truncated to the 100-nanosecond precision supported by `DateTime`.
 
 ## Official documentation
 

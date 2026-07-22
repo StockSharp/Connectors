@@ -11,8 +11,6 @@ This directory contains the FYERS API v3 connector for the [StockSharp](https://
 - The order WebSocket at `wss://socket.fyers.in/trade/v3` for realtime order, trade, and position updates.
 - Historical candles at 1, 2, 3, 5, 10, 15, 20, 30, 60, 120, and 240 minutes, plus daily candles. Long ranges are split into API-sized request windows.
 
-REST bodies, WebSocket commands, JSON responses, and Protobuf messages use typed DTOs. The connector does not construct protocol payloads with JSON trees or dictionaries.
-
 ## Authentication and current trading rules
 
 Configure the App ID in `ClientId` and a current access token in `Token`. FYERS API access is free for FYERS clients. Availability of individual exchanges and the TBT depth stream depends on the permissions and market-data entitlements of the account.

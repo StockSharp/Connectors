@@ -1,6 +1,6 @@
 # Zhongtai XTP Connector for StockSharp
 
-This directory contains the Zhongtai Securities XTP connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It integrates the official native XTP SDK through a small typed C ABI bridge; no Python process, JSON payload, or dynamic DTO is involved.
+This directory contains the Zhongtai Securities XTP connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It integrates the official native XTP SDK through a small C ABI bridge.
 
 ## Features
 

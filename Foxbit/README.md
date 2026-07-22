@@ -18,7 +18,7 @@ Supported features:
 - limit, market, quote-amount instant, stop-market, and stop-limit orders;
 - GTC, IOC, FOK, post-only, slippage tolerance, self-trade prevention, individual
   cancellation, and native filtered bulk cancellation;
-- server-clock synchronization, bounded retry of safe reads, typed API errors,
+- server-clock synchronization, bounded retry of safe reads, API errors,
   and lost-placement reconciliation by numeric client order ID.
 
 API credentials are optional for public market data. Trading and account data
@@ -32,10 +32,6 @@ Foxbit's published WebSocket sample lists a `candles-60` channel, but the curren
 public endpoint does not acknowledge that subscription. The adapter therefore
 builds live candles from the supported `trades` channel and uses REST v3 for
 authoritative candle history.
-
-Every REST and WebSocket payload is represented by a concrete DTO. The transport
-does not use dynamic JSON trees, anonymous protocol objects, protocol
-dictionaries, or untyped object arrays.
 
 Official resources:
 

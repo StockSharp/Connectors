@@ -20,13 +20,7 @@ all three connections active, resubscribes after reconnects, and deduplicates
 identical feed updates by feed timestamp and values. A live subscription is
 terminated only when all three routers exhaust their reconnection attempts.
 
-At connection time the adapter loads `/symbols`. `IsEntitledOnly` defaults to
-true and requests only feeds available to the configured token.
-`IsIncludeInactive` can additionally expose inactive and coming-soon metadata;
-stable feeds are the default. Feed ID, full Pyth symbol, asset and instrument
-types, quote currency, exponent, expiry, state, minimum publisher count,
-minimum channel, and reference identifiers are parsed into concrete DTOs. The
-feed ID is preserved as the native StockSharp security identity.
+At connection time the adapter loads `/symbols`. `IsEntitledOnly` defaults to true and requests only feeds available to the configured token. `IsIncludeInactive` can additionally expose inactive and coming-soon metadata; stable feeds are the default. The feed ID is preserved as the native StockSharp security identity.
 
 ## Market data
 
@@ -47,7 +41,7 @@ unrelated StockSharp fields.
 Historical Level 1 requests use exact one-minute aggregate closes. Historical
 candles use the TradingView-compatible history API at 1, 2, 5, 15, and 30
 minutes; 1, 2, 4, 6, and 12 hours; and 1 day or 1 week. Responses are validated
-as aligned typed arrays and split into bounded requests. The current unfinished
+as aligned arrays and split into bounded requests. The current unfinished
 bar is not emitted as a finished candle. `HistoryLimit`, `HistoryLookback`, and
 `MaximumBarsPerRequest` bound downloads.
 
@@ -56,11 +50,7 @@ channel is too fast for a feed, the connector automatically selects that
 feed's slower minimum channel. The supported production values are real-time,
 50 ms, 200 ms, and 1000 ms.
 
-All JSON requests and responses use concrete DTOs and semantic protocol values
-use enums. There are no dynamic JSON trees, protocol dictionaries, anonymous
-protocol objects, or untyped object arrays. Response and WebSocket message
-sizes are bounded, WebSocket UTF-8 is strict, timestamps become UTC `DateTime`,
-and API credentials are redacted from errors.
+Response and WebSocket message sizes are bounded, WebSocket UTF-8 is strict, timestamps become UTC `DateTime`, and API credentials are redacted from errors.
 
 ## Official documentation
 

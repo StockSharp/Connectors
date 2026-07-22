@@ -33,8 +33,6 @@ Tiger OpenAPI does not expose the same feeds or candle intervals for every asset
 
 The official SDK owns a single persistent push client per process. The connector therefore rejects a second simultaneous Tiger push connection in the same process. The SDK handles transport reconnects; after each connection acknowledgement the connector restores every active market-data subscription and the account subjects for orders, executions, positions, and assets.
 
-The connector uses typed SDK models and Protobuf callback objects throughout. It does not parse protocol messages through `dynamic`, untyped JSON objects, or dictionaries.
-
 Tiger controls realtime quote permissions and subscription capacity per account, market-data package, and broker entity. `AutoGrabPermission` can acquire an available permission, but it cannot create an entitlement. REST and trading rate limits are enforced by Tiger and may vary by endpoint or account, so applications must honor current API errors and broker policy.
 
 ## Official references

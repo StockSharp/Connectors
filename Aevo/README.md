@@ -1,8 +1,6 @@
 # StockSharp Aevo connector
 
-The connector integrates StockSharp with Aevo's options, perpetuals and spot
-API. It uses the official REST and WebSocket interfaces and keeps all protocol
-payloads in typed models.
+The connector integrates StockSharp with Aevo's official REST and WebSocket APIs for options, perpetuals and spot markets.
 
 ## Supported operations
 

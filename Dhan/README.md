@@ -5,12 +5,11 @@ This directory contains the DhanHQ API v2 connector for the [StockSharp](https:/
 ## Protocol coverage
 
 - DhanHQ v2 REST endpoints for orders, trades, Forever/GTT orders, funds, positions, holdings, historical candles, and the official detailed instrument master.
-- The live market WebSocket at `wss://api-feed.dhan.co` with typed JSON subscription commands and direct decoding of the documented little-endian ticker, quote, OI, previous-close, and full binary packets.
 - Five-level depth from the normal full packet. Requests with `MaxDepth` up to 20 or 200 use the separate official full-depth WebSocket endpoints and require the corresponding Dhan data entitlement.
 - The dedicated order-update WebSocket at `wss://api-order-update.dhan.co` for realtime updates to all account orders.
 - Intraday candles at 1, 5, 15, 25, and 60 minutes, plus daily candles. Intraday ranges are split into the documented 90-day request windows.
 
-REST bodies, WebSocket commands, and JSON responses use typed DTOs. Market-data and full-depth packets are decoded directly from their documented binary layouts.
+Market-data and full-depth packets are decoded directly from their documented binary layouts.
 
 One normal market-feed connection accepts up to 5,000 instruments. The extended-depth feeds are limited to NSE equity and derivatives: up to 50 instruments for 20-level depth and one instrument for 200-level depth per connection. The connector enforces these limits before sending a subscription.
 

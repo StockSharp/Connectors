@@ -5,10 +5,6 @@ official V2 REST and WebSocket APIs. Public market data works without
 credentials. Trading, balances, positions, orders, and fills require an API
 key, secret, and passphrase.
 
-All REST requests and responses, WebSocket commands, events, and positional
-arrays use concrete DTOs. The protocol layer contains no dynamic JSON trees,
-anonymous request bodies, protocol dictionaries, or untyped arrays.
-
 ## Supported functionality
 
 - spot and perpetual instruments on `BoardCodes.Deepcoin` (`DEEP`);

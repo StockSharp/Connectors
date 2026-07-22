@@ -10,8 +10,6 @@ This directory contains the Alice Blue ANT API v2 connector for the [StockSharp]
 - The separate official order-status WebSocket for realtime order and fill updates.
 - Official one-minute and daily historical candles for the exchange segments supported by the Alice Blue history service.
 
-All REST bodies, REST responses, WebSocket commands, and WebSocket events use typed DTOs. The connector does not construct protocol messages with JObject, JArray, JToken, dynamic objects, anonymous objects, or protocol dictionaries.
-
 ## Authentication
 
 Configure the Alice Blue user ID and the current userSession bearer token returned by the official authorization flow. ClientId defaults to the client ID returned by the profile endpoint and then to UserId when left empty. The connector does not store the authorization code, application secret, account password, or TOTP seed.

@@ -1,6 +1,6 @@
 # RavenPack connector for StockSharp
 
-This connector integrates the RavenPack Analytics and RavenPack Edge dataset APIs. It follows the official API clients: synchronous history is requested from the dataset JSON endpoint and live analytics are consumed from RavenPack's persistent HTTP JSON-lines feed. Every protocol payload is represented by a concrete DTO; no dynamic JSON tree or protocol dictionary is used.
+This connector integrates the RavenPack Analytics and RavenPack Edge dataset APIs. It follows the official API clients: synchronous history is requested from the dataset JSON endpoint and live analytics are consumed from RavenPack's persistent HTTP JSON-lines feed.
 
 ## Supported functionality
 
@@ -32,7 +32,7 @@ RavenPack delivers one analytics record per detected entity/event, not a consoli
 
 Historical requests override the selected dataset to granular frequency and request the documented fields needed by the selected product. RavenPack limits synchronous granular JSON responses to 10,000 records, so `MaxRecords` cannot exceed 10,000. A history-only request without `From` uses `DefaultHistoryLookback`.
 
-Ticker-filtered history uses a typed `rp_entity_id` filter. The live feed is shared by all StockSharp subscriptions and records are filtered locally by the mapped RavenPack entity ID. Empty and wildcard security lookups return no records because RavenPack's entity-mapping endpoint is an exact mapping service, not a browsable security master.
+Ticker-filtered history uses a `rp_entity_id` filter. The live feed is shared by all StockSharp subscriptions and records are filtered locally by the mapped RavenPack entity ID. Empty and wildcard security lookups return no records because RavenPack's entity-mapping endpoint is an exact mapping service, not a browsable security master.
 
 `IsResolveDocumentUrls` is off by default because URL resolution requires an additional licensed REST call per analytics record. When enabled, unavailable or unlicensed URLs do not suppress the underlying news analytics message.
 

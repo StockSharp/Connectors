@@ -13,10 +13,10 @@ The connector integrates StockSharp with the official [IG REST Trading API](http
 - Real-time chart ticks and 1-second, 1-minute, 5-minute and 1-hour candles.
 - Accounts, balances, margin state and open positions.
 - OTC market positions, working limit/stop orders, amendments, cancellations and position closes.
-- Typed, paged account activity and fill history.
+- Paged account activity and fill history.
 - Real-time confirmations, open-position updates and working-order updates through the account trade stream.
 
-The streaming implementation uses the official `Lightstreamer.DotNetStandard.Client` package and forces secure WebSocket streaming. It does not emulate streaming with REST polling. All IG request, response and streaming JSON data is converted directly to typed DTOs.
+The streaming implementation uses the official `Lightstreamer.DotNetStandard.Client` package and forces secure WebSocket streaming. It does not emulate streaming with REST polling.
 
 ## Configuration
 

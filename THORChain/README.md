@@ -67,10 +67,6 @@ swap can still be quoted and observed, but it is not submitted by this
 connector. Broadcast swaps are irreversible and cannot be cancelled or
 replaced.
 
-Every JSON request and response uses concrete DTOs. Cosmos and THORChain
-messages are encoded from their concrete protobuf fields; no dynamic JSON
-trees, anonymous protocol objects, or protocol dictionaries are used.
-
 ## Official documentation
 
 - [THORChain developer documentation](https://dev.thorchain.org/)

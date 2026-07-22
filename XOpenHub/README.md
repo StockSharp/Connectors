@@ -17,8 +17,6 @@ This connector integrates StockSharp with the current X Open Hub xAPI 2.5 protoc
 - Stop loss, take profit, trailing offset, expiration, and custom comments.
 - Automatic restoration of streaming subscriptions after a reconnect.
 
-Every command, response, symbol, candle, tick, balance, order, and stream envelope has a dedicated DTO. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous protocol objects, or dictionary-shaped wire models.
-
 ## Connection model
 
 xAPI uses two independent persistent WebSocket connections:

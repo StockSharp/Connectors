@@ -27,9 +27,6 @@ The effective position value is the collateral multiplied by the leverage in
 public trade tape, or candle-history API, so the connector does not synthesize
 those data types.
 
-All wire messages use concrete DTOs. The connector does not use dynamic JSON
-trees, anonymous protocol payloads, or protocol dictionaries.
-
 Official resources:
 
 - [Avantis documentation](https://docs.avantisfi.com/)

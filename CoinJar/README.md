@@ -24,10 +24,6 @@ CoinJar uses price-dependent tick and minimum trade sizes. StockSharp security
 metadata exposes the currency subunit as the baseline step, while every order
 is validated against the exact exchange price level before it is submitted.
 
-Every REST and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects, or
-protocol dictionaries.
-
 Official documentation:
 
 - [CoinJar Exchange API documentation](https://docs.exchange.coinjar.com/)

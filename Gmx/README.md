@@ -6,10 +6,6 @@ history work without credentials. A wallet address enables balance, position,
 order, and execution monitoring. Express trading additionally requires the
 matching wallet private key.
 
-Every request and response is represented by a concrete DTO. The protocol
-layer contains no generic JSON trees, anonymous request bodies, protocol
-dictionaries, or dynamic payloads.
-
 ## Supported functionality
 
 - perpetual and spot-swap security lookup with official token precision and

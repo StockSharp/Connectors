@@ -23,11 +23,7 @@ Public market data works without credentials. Private operations require a
 Coinone access token and secret with the required permissions and an allowed
 source IP. The `QuoteCurrency` setting defaults to `KRW`.
 
-Private REST requests sign the Base64 representation of the exact typed JSON
-request with HMAC-SHA512. Private WebSocket authentication uses the same scheme
-with a fresh UUID nonce and UTC millisecond timestamp. Every REST and WebSocket
-payload is represented by a concrete DTO; the transport does not use dynamic
-JSON trees or protocol dictionaries.
+Private WebSocket authentication uses the same scheme with a fresh UUID nonce and UTC millisecond timestamp.
 
 Coinone publishes monthly candles through REST, but does not list that interval
 for the CHART WebSocket channel. It is therefore available as a history-only

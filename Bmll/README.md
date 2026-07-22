@@ -5,10 +5,6 @@ data. It authenticates either with the RSA private key registered in BMLL Data L
 with an already issued bearer token, submits asynchronous dataset queries, polls their
 status, and streams the returned gzip JSON-lines file into StockSharp messages.
 
-Every API request and response uses a concrete DTO. The implementation does not use
-dynamic JSON trees, protocol dictionaries, anonymous wire objects, or full-result
-buffering.
-
 ## Supported functionality
 
 - historical trades as `DataType.Ticks`;

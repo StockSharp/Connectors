@@ -12,8 +12,6 @@ This connector provides native .NET access to the published J.P. Morgan DATAQUER
 - Retry handling for rate limits and transient server failures.
 - Historical and latest-value output as StockSharp Level1 messages.
 
-Every OAuth request, instrument query, time-series query, response page, error envelope, instrument, attribute, pagination link, and tuple-form data point has a dedicated DTO. Tuple arrays are decoded by a streaming converter. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionary-shaped protocol models.
-
 ## Configuration
 
 - `Key` - client identifier issued during J.P. Morgan DataQuery onboarding.

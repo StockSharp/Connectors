@@ -9,8 +9,6 @@ This directory contains the Shoonya API connector for the [StockSharp](https://g
 - NSE, BSE, NFO, BFO, CDS, and MCX security masters downloaded from the official daily ZIP files.
 - Market, limit, stop-limit, stop-market, delivery, intraday, normal, cover, bracket, DAY, and IOC orders.
 
-All REST bodies, REST responses, WebSocket commands, and WebSocket events use typed DTOs. The connector does not construct protocol messages with JObject, JArray, JToken, dynamic objects, anonymous objects, or protocol dictionaries.
-
 ## Authentication
 
 Configure the Shoonya user ID and the current susertoken returned by the official login flow. AccountId normally equals the user ID and defaults to it when left empty. The connector deliberately accepts an already-issued session token and does not store the account password, vendor secret, or TOTP seed.

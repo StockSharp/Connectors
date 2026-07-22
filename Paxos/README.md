@@ -95,10 +95,7 @@ Orchestrations, but remains modeled for existing customers whose credentials
 carry the conversion scopes. Webhook hosting and the newer orchestration rule
 engine are outside this desktop adapter.
 
-Every HTTP and WebSocket payload is represented by a concrete DTO. The
-connector does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays. All parsed API times are
-normalized to UTC `DateTime` values.
+All parsed API times are normalized to UTC `DateTime` values.
 
 ## Official documentation
 

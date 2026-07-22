@@ -17,8 +17,6 @@ This connector provides native .NET access to Intrinio's official REST API v2 an
 - Historical company news globally or filtered by a security ticker.
 - Pagination guards, rate-limit and transient-server retries, UTC normalization, and separate `INTRINIO` and `INTRINIOOPT` StockSharp boards.
 
-Every REST request, REST response, and streaming callback is represented by a concrete typed model. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous wire objects, or dictionaries as protocol models.
-
 ## Configuration
 
 - `Token` is the Intrinio production API key shown in the Intrinio account portal. REST API v2 sends it through the officially documented `api_key` query parameter. Error messages deliberately remove the query string so the key is not logged.

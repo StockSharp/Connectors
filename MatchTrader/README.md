@@ -13,8 +13,6 @@ This connector integrates StockSharp with the current Match-Trader Platform API 
 - Absolute stop-loss and take-profit fields.
 - Retry of safe reads after reauthentication, throttling, or transient server failures. Order submissions and cancellations are never automatically replayed.
 
-Every request, response, quote, candle, order, and account structure uses a typed DTO. The connector does not use `JObject`, `JArray`, `JToken`, `dynamic`, or dictionary-shaped wire models.
-
 ## Configuration
 
 - `Address` - the broker's Match-Trader white-label origin, including `https://`.

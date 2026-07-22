@@ -59,10 +59,6 @@ candle open time and emits streamed intervals as finished candles. All REST
 millisecond timestamps and protobuf timestamps are normalized to UTC
 `DateTime` values.
 
-Every REST payload has a concrete DTO, while live messages use Kaiko's
-generated protobuf contracts directly. No dynamic JSON trees, anonymous
-protocol objects, protocol dictionaries, or untyped object arrays are used.
-
 ## Official documentation
 
 - [Kaiko Developer Hub](https://docs.kaiko.com/)

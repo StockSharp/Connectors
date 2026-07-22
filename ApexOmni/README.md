@@ -29,11 +29,6 @@ validated before a signer is created. Public order-book deltas are applied only
 after a snapshot and sequence gaps force a fresh subscription. Trading writes
 are never retried automatically.
 
-Every REST request, response, WebSocket command, event, positional price level,
-and keyed candle payload is represented by a concrete DTO or streaming JSON
-converter. The protocol layer contains no dynamic JSON trees, anonymous
-protocol payloads, or protocol dictionaries.
-
 Official resources:
 
 - [ApeX Omni API documentation](https://api-docs.pro.apex.exchange/)

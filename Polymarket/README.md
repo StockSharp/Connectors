@@ -40,9 +40,6 @@ volume and zero ticks. The public CLOB API does not expose a historical trade
 tape, so tick subscriptions are realtime only. Position data comes from the Data
 API and may lag on-chain settlement briefly.
 
-All REST and WebSocket payloads use concrete DTOs. The implementation does not
-use dynamic JSON trees, anonymous protocol bodies, or protocol dictionaries.
-
 Official resources:
 
 - [Polymarket developer documentation](https://docs.polymarket.com/)

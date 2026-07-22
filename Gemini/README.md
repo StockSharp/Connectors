@@ -7,10 +7,6 @@ secret with the corresponding account roles. Realtime account streams and
 WebSocket order entry require an account-scoped key whose name starts with
 `account-`.
 
-Every REST request, response, WebSocket command, event, price level, and candle
-is represented by a concrete DTO. The protocol layer contains no dynamic JSON
-trees, anonymous request bodies, protocol dictionaries, or untyped arrays.
-
 ## Supported functionality
 
 - spot and perpetual instruments on `BoardCodes.Gemini` (`GEMINI`), including

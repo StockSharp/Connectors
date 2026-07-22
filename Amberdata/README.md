@@ -44,13 +44,7 @@ Historical trades, tickers, and OHLCV are downloaded in chunks no longer than
 documented 18-month window. Every request has explicit UTC start and end
 timestamps, and results are emitted in chronological order.
 
-Live subscriptions share one reconnecting WebSocket connection. The client
-uses typed JSON-RPC subscribe and unsubscribe DTOs, validates returned
-subscription identifiers, and restores active streams after reconnect. Trade
-rows and book levels are positional arrays in Amberdata's wire protocol; they
-are parsed by dedicated typed converters that validate field count and value
-types. The implementation does not use dynamic JSON trees, anonymous protocol
-objects, protocol dictionaries, or untyped object arrays.
+Live subscriptions share one reconnecting WebSocket connection. Returned subscription identifiers are validated, and active streams are restored after reconnect.
 
 Amberdata order streams publish complete side snapshots. The connector keeps
 the latest bid and ask sides together and emits a complete StockSharp depth

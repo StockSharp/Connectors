@@ -12,8 +12,6 @@ This connector reads licensed AlgoSeek historical delivery files for US equities
 - Equity Trade Only one-minute candles and Standard Daily OHLC candles.
 - Options TAQ one-minute trade candles and closing NBBO observations.
 
-Every supported schema is parsed into a concrete typed row. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, protocol dictionaries, or `object[]`.
-
 ## Files and configuration
 
 Set `DataDirectory` to the root of one licensed AlgoSeek delivery. The connector recognizes:
@@ -32,13 +30,13 @@ AlgoSeek normally organizes tick and minute data as one file per symbol or optio
 
 The connector is finite historical market data only. It has no live subscription, transaction, portfolio, or account functionality. Point separate adapter instances at separate AlgoSeek products when the same market/date range exists in multiple licensed datasets; otherwise overlapping TAQ and Trade Only files will correctly expose both provider event streams.
 
-Equity TAQ contains venue BBO and separate NBBO rows. `IsNationalBestQuotesOnly` defaults to `true`, so Level1 and depth use only the consolidated rows. When disabled, NBBO duplicates are ignored and the adapter calculates the best price from typed per-venue quote state. Trade rows are preserved as published, including both exchange and `TRADE NB` events where present; consumers can use the provider conditions when selecting a research universe.
+Equity TAQ contains venue BBO and separate NBBO rows. `IsNationalBestQuotesOnly` defaults to `true`, so Level1 and depth use only the consolidated rows. When disabled, NBBO duplicates are ignored and the adapter calculates the best price from per-venue quote state. Trade rows are preserved as published, including both exchange and `TRADE NB` events where present; consumers can use the provider conditions when selecting a research universe.
 
 Options use a generated display code because TANQ identifies a contract with the tuple ticker, expiration, call/put, and strike rather than an OCC-formatted contract symbol. Always subscribe with a security returned by lookup. Futures expiry dates are not synthesized from a one-digit ticker year code; the provider ticker and Security ID remain authoritative.
 
 AlgoSeek futures flag `8` denotes a calculated price rather than a real execution, so those rows are excluded from StockSharp ticks. Equity and option trade cancellations are emitted as cancellation executions instead of being silently converted into new trades. Nanosecond equity/futures timestamps are truncated only beyond the 100-nanosecond precision supported by `DateTime`.
 
-The current typed schemas cover Equity TAQ/Trade Only, Options TANQ/Open Interest, Futures/Future Options TAQ, Equity Trade Only Minute Bars, Options TAQ Minute Bars, and Standard Equity Daily OHLC. Other AlgoSeek products such as full depth, analytics, adjustment factors, security masters, continuous futures, and custom SQL exports have distinct documented schemas and are not guessed into these message types.
+The current schemas cover Equity TAQ/Trade Only, Options TANQ/Open Interest, Futures/Future Options TAQ, Equity Trade Only Minute Bars, Options TAQ Minute Bars, and Standard Equity Daily OHLC. Other AlgoSeek products such as full depth, analytics, adjustment factors, security masters, continuous futures, and custom SQL exports have distinct documented schemas and are not guessed into these message types.
 
 ## Official documentation
 

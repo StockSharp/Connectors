@@ -5,10 +5,6 @@ the official Open API. REST is used for reference data, snapshots, history,
 portfolio state, and trading. The official WebSocket service supplies public
 market data and authenticated account, order, fill, and position updates.
 
-Every request, response, subscription, event, and positional array is represented
-by a concrete DTO. The protocol implementation does not use dynamic JSON trees,
-protocol dictionaries, anonymous request bodies, or untyped arrays.
-
 ## Supported functionality
 
 - spot instruments on `BoardCodes.Phemex` (`PHMEX`);

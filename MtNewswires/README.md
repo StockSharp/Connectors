@@ -14,7 +14,6 @@ a common wire schema.
 - primary ticker and ISIN mapping to `SecurityId`;
 - configurable viaNexus data source and dataset identifiers;
 - bounded retries for rate limits and transient server failures;
-- typed request and response models only.
 
 The MT Newswires Global dataset documentation marks its Streaming API as unavailable,
 so the adapter polls the documented REST endpoint and uses an overlap window plus

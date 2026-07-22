@@ -14,8 +14,6 @@ This connector integrates StockSharp with the official [LS Securities Open API](
 - Private order receipt, fill, replacement, cancellation and rejection events through `SC0`–`SC4`.
 - WebSocket reconnect with restoration of market-data and private subscriptions.
 
-Every REST request, response and WebSocket frame used by the connector is represented by a typed DTO. The implementation does not use `JObject`, `JArray`, `JToken`, `dynamic`, anonymous protocol payloads or dictionaries in place of wire models.
-
 ## Configuration
 
 1. Open an LS Securities account and register for both XingAPI and Open API on the LS Securities website.

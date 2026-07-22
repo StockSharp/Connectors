@@ -4,13 +4,11 @@ This directory contains the current Fugle Market Data API v1.0 connector for the
 
 ## Protocol coverage
 
-- Typed REST access to current Taiwan stock and index lists and to TAIFEX futures/options lists.
+- REST access to current Taiwan stock and index lists and to TAIFEX futures/options lists.
 - Current stock and futures/options WebSocket endpoints with API-key authentication, heartbeat handling, reconnect, and subscription recovery.
 - Realtime trades, one-minute candles, five-level books, aggregate Level1 data, and index values.
 - Stock historical candles at 1/3/5/10/15/30/60-minute, daily, weekly, and monthly intervals.
 - Current-session futures/options candles at the intervals published by the beta Fugle futures/options API.
-
-All requests, responses, commands, acknowledgements, and stream events use typed DTOs. The connector does not construct protocol messages with `JObject`, `JArray`, `JToken`, `dynamic`, anonymous protocol objects, or protocol dictionaries.
 
 ## Authentication and plan limits
 

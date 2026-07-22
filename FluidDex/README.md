@@ -51,10 +51,6 @@ derived only from confirmed on-chain `Swap` events. Transactions submitted
 outside the current adapter session are visible as market-data events but are
 not reconstructed as StockSharp orders.
 
-Every HTTP JSON-RPC and WebSocket payload is represented by a concrete DTO.
-The transport does not use dynamic JSON trees, anonymous protocol objects,
-protocol dictionaries, or untyped object arrays.
-
 Official resources:
 
 - [Fluid technical documentation](https://docs.fluid.instadapp.io/)

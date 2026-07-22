@@ -10,7 +10,6 @@ This connector integrates StockSharp with the official Bloomberg BLPAPI .NET SDK
 - Daily, weekly, and monthly history through `HistoricalDataRequest`.
 - EMSX order registration and routing, modification, and route cancellation.
 - Live EMSX order, route, and fill updates.
-- Typed transport models; Bloomberg `Element` objects remain isolated inside the SDK transport layer.
 
 ## Requirements
 

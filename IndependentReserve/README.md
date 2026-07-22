@@ -26,10 +26,6 @@ Private requests use the API's timestamp-expiry authentication mode to avoid
 cross-thread nonce races. Independent Reserve requires an API key restricted
 to at least one IP address when this mode is used.
 
-Every REST and WebSocket payload is represented by a concrete DTO. The
-transport does not use dynamic JSON trees, anonymous protocol objects, or
-protocol dictionaries.
-
 Official documentation:
 
 - [Independent Reserve API documentation](https://www.independentreserve.com/features/api)

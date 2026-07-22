@@ -1,6 +1,6 @@
 # StockSharp Saxo OpenAPI connector
 
-This connector integrates StockSharp with the official Saxo OpenAPI. Reference data, historical market data, portfolio snapshots, and trading use the REST API. Realtime prices, market depth, candles, balances, positions, and order activities use Saxo's binary-framed WebSocket stream with typed JSON payloads.
+This connector integrates StockSharp with the official Saxo OpenAPI. Reference data, historical market data, portfolio snapshots, and trading use the REST API. Realtime prices, market depth, candles, balances, positions, and order activity use Saxo's binary-framed WebSocket stream.
 
 ## Configuration
 
@@ -27,7 +27,7 @@ Saxo Chart v3 expresses horizons in minutes. The connector exposes every current
 
 ## Streaming and limits
 
-The WebSocket client decodes Saxo's binary message envelope (message identifier, reference identifier, payload format, and payload length) and deserializes only typed DTOs. Protocol payloads are not parsed through `dynamic`, untyped JSON objects, anonymous objects, or dictionaries.
+The WebSocket client decodes Saxo's binary message envelope: message identifier, reference identifier, payload format, and payload length.
 
 Realtime updates may contain only changed fields. The connector preserves the last subscription snapshot when applying incremental depth, candle, balance, and net-position updates. Active market-data and portfolio subscriptions are restored after transport reconnection. Info-price subscriptions use Saxo's one-second minimum refresh rate. Saxo generally permits one primary realtime streaming session per user and applies endpoint-specific request and subscription rate limits; applications must honor current API responses and account entitlements.
 
