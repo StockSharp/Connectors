@@ -137,6 +137,7 @@
     <Project Path="CoinMarketCap/CoinMarketCap.csproj" />
     <Project Path="Kaiko/Kaiko.csproj" />
     <Project Path="CoinApi/CoinApi.csproj" />
+    <Project Path="Amberdata/Amberdata.csproj" />
     <Project Path="Okex/Okex.csproj" />
     <Project Path="OkexHistory/OkexHistory.csproj" />
     <Project Path="Paradex/Paradex.csproj" />
