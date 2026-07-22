@@ -1,28 +1,36 @@
-namespace StockSharp.DukasCopy;
+namespace StockSharp.DukasCopyLive;
 
 /// <summary>Dukascopy JForex order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DukasCopyKey)]
-public class DukasCopyOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.DukasCopyLiveKey)]
+public class DukasCopyLiveOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>Optional native command. Auto maps the StockSharp side and order type.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OrderTypeKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderTypeKey,
 		Description = LocalizedStrings.OrderConditionDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 0)]
-	public DukasCopyOrderCommands NativeCommand
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
+	public DukasCopyLiveOrderCommands NativeCommand
 	{
-		get => Parameters.TryGetValue(nameof(NativeCommand))?.To<DukasCopyOrderCommands?>() ??
-			DukasCopyOrderCommands.Auto;
+		get => Parameters.TryGetValue(nameof(NativeCommand))?.To<DukasCopyLiveOrderCommands?>() ??
+			DukasCopyLiveOrderCommands.Auto;
 		set => Parameters[nameof(NativeCommand)] = value;
 	}
 
 	/// <summary>Maximum slippage in pips. A negative value uses the JForex default.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SlippageKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageSizeKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 1)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
 	public decimal? Slippage
 	{
 		get => Parameters.TryGetValue(nameof(Slippage))?.To<decimal?>();
@@ -31,9 +39,12 @@ public class DukasCopyOrderCondition : OrderCondition, IStopLossOrderCondition, 
 
 	/// <summary>Stop-loss price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StopLossKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey,
 		Description = LocalizedStrings.StopPriceDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 2)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
 	public decimal? StopLoss
 	{
 		get => Parameters.TryGetValue(nameof(StopLoss))?.To<decimal?>();
@@ -42,9 +53,12 @@ public class DukasCopyOrderCondition : OrderCondition, IStopLossOrderCondition, 
 
 	/// <summary>Take-profit price.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TakeProfitKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
 		Description = LocalizedStrings.TakeProfitDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 3)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
 	public decimal? TakeProfit
 	{
 		get => Parameters.TryGetValue(nameof(TakeProfit))?.To<decimal?>();
@@ -53,9 +67,12 @@ public class DukasCopyOrderCondition : OrderCondition, IStopLossOrderCondition, 
 
 	/// <summary>Order comment stored by JForex.</summary>
 	[DataMember]
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CommentKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CommentKey,
 		Description = LocalizedStrings.OrderConditionDescKey,
-		GroupName = LocalizedStrings.ParametersKey, Order = 4)]
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
 	public string Comment
 	{
 		get => Parameters.TryGetValue(nameof(Comment))?.To<string>();

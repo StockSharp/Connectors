@@ -1,6 +1,6 @@
-namespace StockSharp.DukasCopy;
+namespace StockSharp.DukasCopyLive;
 
-internal static class DukasCopyExtensions
+internal static class DukasCopyLiveExtensions
 {
 	public const string BoardCode = BoardCodes.DukasCopy;
 
@@ -61,10 +61,10 @@ internal static class DukasCopyExtensions
 	public static CurrencyTypes? ToCurrency(this string value)
 		=> Enum.TryParse<CurrencyTypes>(value, true, out var currency) ? currency : null;
 
-	public static string ToNative(this DukasCopyOrderCommands command, Sides side, OrderTypes orderType)
+	public static string ToNative(this DukasCopyLiveOrderCommands command, Sides side, OrderTypes orderType)
 		=> command switch
 		{
-			DukasCopyOrderCommands.Auto => (side, orderType) switch
+			DukasCopyLiveOrderCommands.Auto => (side, orderType) switch
 			{
 				(Sides.Buy, OrderTypes.Market) => "BUY",
 				(Sides.Sell, OrderTypes.Market) => "SELL",
@@ -74,12 +74,12 @@ internal static class DukasCopyExtensions
 				(Sides.Sell, OrderTypes.Conditional) => "SELLSTOP",
 				_ => throw new NotSupportedException($"JForex does not support StockSharp order type '{orderType}'."),
 			},
-			DukasCopyOrderCommands.BuyLimitByBid => "BUYLIMIT_BYBID",
-			DukasCopyOrderCommands.SellLimitByAsk => "SELLLIMIT_BYASK",
-			DukasCopyOrderCommands.BuyStopByBid => "BUYSTOP_BYBID",
-			DukasCopyOrderCommands.SellStopByAsk => "SELLSTOP_BYASK",
-			DukasCopyOrderCommands.PlaceBid => "PLACE_BID",
-			DukasCopyOrderCommands.PlaceOffer => "PLACE_OFFER",
+			DukasCopyLiveOrderCommands.BuyLimitByBid => "BUYLIMIT_BYBID",
+			DukasCopyLiveOrderCommands.SellLimitByAsk => "SELLLIMIT_BYASK",
+			DukasCopyLiveOrderCommands.BuyStopByBid => "BUYSTOP_BYBID",
+			DukasCopyLiveOrderCommands.SellStopByAsk => "SELLSTOP_BYASK",
+			DukasCopyLiveOrderCommands.PlaceBid => "PLACE_BID",
+			DukasCopyLiveOrderCommands.PlaceOffer => "PLACE_OFFER",
 			_ => throw new ArgumentOutOfRangeException(nameof(command), command, null),
 		};
 

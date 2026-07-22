@@ -1,6 +1,6 @@
-namespace StockSharp.DukasCopy;
+namespace StockSharp.DukasCopyLive;
 
-public partial class DukasCopyMessageAdapter
+public partial class DukasCopyLiveMessageAdapter
 {
 	private sealed class MarketSubscription
 	{
@@ -19,20 +19,20 @@ public partial class DukasCopyMessageAdapter
 		public OrderTypes OrderType { get; set; }
 		public decimal Price { get; set; }
 		public decimal Volume { get; set; }
-		public DukasCopyOrderCondition Condition { get; set; }
+		public DukasCopyLiveOrderCondition Condition { get; set; }
 	}
 
-	private DukasCopyBridgeClient _client;
+	private DukasCopyLiveBridgeClient _client;
 	private readonly CachedSynchronizedDictionary<long, MarketSubscription> _marketSubscriptions = [];
 	private readonly SynchronizedDictionary<string, OrderTracker> _orders = new(StringComparer.OrdinalIgnoreCase);
 	private readonly SynchronizedDictionary<string, decimal> _filledAmounts = new(StringComparer.OrdinalIgnoreCase);
-	private readonly SynchronizedDictionary<string, DukasCopyOrder> _positionOrders = new(StringComparer.OrdinalIgnoreCase);
+	private readonly SynchronizedDictionary<string, DukasCopyLiveOrder> _positionOrders = new(StringComparer.OrdinalIgnoreCase);
 	private long _orderStatusSubscriptionId;
 	private long _portfolioSubscriptionId;
 	private string _portfolioName;
 
-	/// <summary>Initializes a new instance of the <see cref="DukasCopyMessageAdapter"/> class.</summary>
-	public DukasCopyMessageAdapter(IdGenerator transactionIdGenerator)
+	/// <summary>Initializes a new instance of the <see cref="DukasCopyLiveMessageAdapter"/> class.</summary>
+	public DukasCopyLiveMessageAdapter(IdGenerator transactionIdGenerator)
 		: base(transactionIdGenerator)
 	{
 		HeartbeatInterval = TimeSpan.FromSeconds(15);
@@ -43,7 +43,7 @@ public partial class DukasCopyMessageAdapter
 		this.AddSupportedMarketDataType(DataType.Ticks);
 		this.AddSupportedMarketDataType(DataType.Level1);
 		this.AddSupportedMarketDataType(DataType.MarketDepth);
-		this.AddSupportedCandleTimeFrames(DukasCopyExtensions.TimeFrames.Keys);
+		this.AddSupportedCandleTimeFrames(DukasCopyLiveExtensions.TimeFrames.Keys);
 	}
 
 	/// <inheritdoc />
@@ -62,7 +62,7 @@ public partial class DukasCopyMessageAdapter
 	public override bool IsSupportExecutionsPnL => true;
 
 	/// <inheritdoc />
-	public override string[] AssociatedBoards { get; } = [DukasCopyExtensions.BoardCode];
+	public override string[] AssociatedBoards { get; } = [DukasCopyLiveExtensions.BoardCode];
 
 	/// <inheritdoc />
 	public override IEnumerable<Level1Fields> CandlesBuildFrom { get; } =
@@ -75,7 +75,7 @@ public partial class DukasCopyMessageAdapter
 		if (_client != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		var userName = UserName.ThrowIfEmpty(nameof(UserName));
+		var userName = Login.ThrowIfEmpty(nameof(Login));
 		var password = Password?.UnSecure().ThrowIfEmpty(nameof(Password));
 		_client = new(BridgePort, BridgeJarPath);
 		_client.TickReceived += ProcessTick;
@@ -123,7 +123,7 @@ public partial class DukasCopyMessageAdapter
 		await base.ResetAsync(resetMsg, cancellationToken);
 	}
 
-	private DukasCopyBridgeClient GetClient()
+	private DukasCopyLiveBridgeClient GetClient()
 		=> _client ?? throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
 	private async ValueTask AddMarketSubscription(MarketDataMessage mdMsg, DataType dataType,

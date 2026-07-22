@@ -1,11 +1,11 @@
-namespace StockSharp.DukasCopy.Native;
+namespace StockSharp.DukasCopyLive.Native;
 
-internal sealed class DukasCopyBridgeClient : Disposable
+internal sealed class DukasCopyLiveBridgeClient : Disposable
 {
 	private const int _maxMessageLength = 16 * 1024 * 1024;
 	private readonly int _port;
 	private readonly string _bridgeJarPath;
-	private readonly ConcurrentDictionary<long, TaskCompletionSource<DukasCopyBridgeMessage>> _pending = new();
+	private readonly ConcurrentDictionary<long, TaskCompletionSource<DukasCopyLiveBridgeMessage>> _pending = new();
 	private readonly SemaphoreSlim _writeLock = new(1, 1);
 	private TcpClient _tcpClient;
 	private StreamReader _reader;
@@ -15,7 +15,7 @@ internal sealed class DukasCopyBridgeClient : Disposable
 	private Process _bridgeProcess;
 	private long _requestId;
 
-	public DukasCopyBridgeClient(int port, string bridgeJarPath)
+	public DukasCopyLiveBridgeClient(int port, string bridgeJarPath)
 	{
 		if (port is <= IPEndPoint.MinPort or > IPEndPoint.MaxPort)
 			throw new ArgumentOutOfRangeException(nameof(port), port, LocalizedStrings.InvalidValue);
@@ -24,10 +24,10 @@ internal sealed class DukasCopyBridgeClient : Disposable
 		_bridgeJarPath = bridgeJarPath;
 	}
 
-	public event Func<DukasCopyTick, CancellationToken, ValueTask> TickReceived;
-	public event Func<DukasCopyBar, CancellationToken, ValueTask> BarReceived;
-	public event Func<DukasCopyOrder, CancellationToken, ValueTask> OrderReceived;
-	public event Func<DukasCopyAccount, CancellationToken, ValueTask> AccountReceived;
+	public event Func<DukasCopyLiveTick, CancellationToken, ValueTask> TickReceived;
+	public event Func<DukasCopyLiveBar, CancellationToken, ValueTask> BarReceived;
+	public event Func<DukasCopyLiveOrder, CancellationToken, ValueTask> OrderReceived;
+	public event Func<DukasCopyLiveAccount, CancellationToken, ValueTask> AccountReceived;
 	public event Func<Exception, CancellationToken, ValueTask> Error;
 
 	public async Task Connect(string userName, string password, bool isDemo,
@@ -63,7 +63,7 @@ internal sealed class DukasCopyBridgeClient : Disposable
 
 		await Request(new()
 		{
-			Command = DukasCopyBridgeCommands.Connect,
+			Command = DukasCopyLiveBridgeCommands.Connect,
 			UserName = userName,
 			Password = password,
 			IsDemo = isDemo,
@@ -77,7 +77,7 @@ internal sealed class DukasCopyBridgeClient : Disposable
 
 		try
 		{
-			await Request(new() { Command = DukasCopyBridgeCommands.Disconnect }, cancellationToken);
+			await Request(new() { Command = DukasCopyLiveBridgeCommands.Disconnect }, cancellationToken);
 		}
 		catch (Exception ex) when (ex is IOException or SocketException or ObjectDisposedException)
 		{
@@ -88,39 +88,39 @@ internal sealed class DukasCopyBridgeClient : Disposable
 		}
 	}
 
-	public async Task<DukasCopyInstrument[]> GetInstruments(CancellationToken cancellationToken)
-		=> (await Request(new() { Command = DukasCopyBridgeCommands.Instruments }, cancellationToken)).Instruments ?? [];
+	public async Task<DukasCopyLiveInstrument[]> GetInstruments(CancellationToken cancellationToken)
+		=> (await Request(new() { Command = DukasCopyLiveBridgeCommands.Instruments }, cancellationToken)).Instruments ?? [];
 
 	public Task Subscribe(IEnumerable<string> symbols, CancellationToken cancellationToken)
 		=> Request(new()
 		{
-			Command = DukasCopyBridgeCommands.Subscribe,
+			Command = DukasCopyLiveBridgeCommands.Subscribe,
 			Symbols = NormalizeSymbols(symbols),
 		}, cancellationToken);
 
 	public Task Unsubscribe(IEnumerable<string> symbols, CancellationToken cancellationToken)
 		=> Request(new()
 		{
-			Command = DukasCopyBridgeCommands.Unsubscribe,
+			Command = DukasCopyLiveBridgeCommands.Unsubscribe,
 			Symbols = NormalizeSymbols(symbols),
 		}, cancellationToken);
 
-	public async Task<DukasCopyTick[]> GetTicks(string symbol, DateTime from, DateTime to, int count,
+	public async Task<DukasCopyLiveTick[]> GetTicks(string symbol, DateTime from, DateTime to, int count,
 		CancellationToken cancellationToken)
 		=> (await Request(new()
 		{
-			Command = DukasCopyBridgeCommands.HistoryTicks,
+			Command = DukasCopyLiveBridgeCommands.HistoryTicks,
 			Symbol = symbol,
 			From = new DateTimeOffset(from.ToUniversalTime()).ToUnixTimeMilliseconds(),
 			To = new DateTimeOffset(to.ToUniversalTime()).ToUnixTimeMilliseconds(),
 			Count = count,
 		}, cancellationToken)).Ticks ?? [];
 
-	public async Task<DukasCopyBar[]> GetBars(string symbol, string period, DateTime from, DateTime to,
+	public async Task<DukasCopyLiveBar[]> GetBars(string symbol, string period, DateTime from, DateTime to,
 		int count, CancellationToken cancellationToken)
 		=> (await Request(new()
 		{
-			Command = DukasCopyBridgeCommands.HistoryBars,
+			Command = DukasCopyLiveBridgeCommands.HistoryBars,
 			Symbol = symbol,
 			Period = period,
 			From = new DateTimeOffset(from.ToUniversalTime()).ToUnixTimeMilliseconds(),
@@ -128,30 +128,30 @@ internal sealed class DukasCopyBridgeClient : Disposable
 			Count = count,
 		}, cancellationToken)).Bars ?? [];
 
-	public async Task<DukasCopyOrder> PlaceOrder(DukasCopyBridgeRequest request,
+	public async Task<DukasCopyLiveOrder> PlaceOrder(DukasCopyLiveBridgeRequest request,
 		CancellationToken cancellationToken)
 	{
-		request.Command = DukasCopyBridgeCommands.PlaceOrder;
+		request.Command = DukasCopyLiveBridgeCommands.PlaceOrder;
 		return (await Request(request, cancellationToken)).Order ??
 			throw new InvalidOperationException("Dukascopy returned no order after placement.");
 	}
 
-	public async Task<DukasCopyOrder> ReplaceOrder(DukasCopyBridgeRequest request,
+	public async Task<DukasCopyLiveOrder> ReplaceOrder(DukasCopyLiveBridgeRequest request,
 		CancellationToken cancellationToken)
 	{
-		request.Command = DukasCopyBridgeCommands.ReplaceOrder;
+		request.Command = DukasCopyLiveBridgeCommands.ReplaceOrder;
 		return (await Request(request, cancellationToken)).Order ??
 			throw new InvalidOperationException("Dukascopy returned no order after replacement.");
 	}
 
 	public Task CancelOrder(string orderId, CancellationToken cancellationToken)
-		=> Request(new() { Command = DukasCopyBridgeCommands.CancelOrder, OrderId = orderId }, cancellationToken);
+		=> Request(new() { Command = DukasCopyLiveBridgeCommands.CancelOrder, OrderId = orderId }, cancellationToken);
 
-	public async Task<DukasCopyOrder[]> GetOrders(CancellationToken cancellationToken)
-		=> (await Request(new() { Command = DukasCopyBridgeCommands.Orders }, cancellationToken)).Orders ?? [];
+	public async Task<DukasCopyLiveOrder[]> GetOrders(CancellationToken cancellationToken)
+		=> (await Request(new() { Command = DukasCopyLiveBridgeCommands.Orders }, cancellationToken)).Orders ?? [];
 
-	public async Task<DukasCopyAccount> GetAccount(CancellationToken cancellationToken)
-		=> (await Request(new() { Command = DukasCopyBridgeCommands.Account }, cancellationToken)).Account;
+	public async Task<DukasCopyLiveAccount> GetAccount(CancellationToken cancellationToken)
+		=> (await Request(new() { Command = DukasCopyLiveBridgeCommands.Account }, cancellationToken)).Account;
 
 	private static string[] NormalizeSymbols(IEnumerable<string> symbols)
 		=> symbols?.Where(s => !s.IsEmpty()).Select(s => s.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray() ?? [];
@@ -183,14 +183,14 @@ internal sealed class DukasCopyBridgeClient : Disposable
 		_bridgeProcess.BeginErrorReadLine();
 	}
 
-	private async Task<DukasCopyBridgeMessage> Request(DukasCopyBridgeRequest request,
+	private async Task<DukasCopyLiveBridgeMessage> Request(DukasCopyLiveBridgeRequest request,
 		CancellationToken cancellationToken)
 	{
 		if (_writer == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
 		request.RequestId = Interlocked.Increment(ref _requestId);
-		var completion = new TaskCompletionSource<DukasCopyBridgeMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
+		var completion = new TaskCompletionSource<DukasCopyLiveBridgeMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
 		if (!_pending.TryAdd(request.RequestId, completion))
 			throw new InvalidOperationException($"Duplicate bridge request id {request.RequestId}.");
 
@@ -233,7 +233,7 @@ internal sealed class DukasCopyBridgeClient : Disposable
 				if (line.Length > _maxMessageLength)
 					throw new InvalidDataException("Dukascopy bridge message exceeded the 16 MiB limit.");
 
-				var message = JsonConvert.DeserializeObject<DukasCopyBridgeMessage>(line) ??
+				var message = JsonConvert.DeserializeObject<DukasCopyLiveBridgeMessage>(line) ??
 					throw new InvalidDataException("Dukascopy bridge returned an empty JSON message.");
 				await Dispatch(message, cancellationToken);
 			}
@@ -249,27 +249,27 @@ internal sealed class DukasCopyBridgeClient : Disposable
 		}
 	}
 
-	private async ValueTask Dispatch(DukasCopyBridgeMessage message, CancellationToken cancellationToken)
+	private async ValueTask Dispatch(DukasCopyLiveBridgeMessage message, CancellationToken cancellationToken)
 	{
 		switch (message.Kind)
 		{
-			case DukasCopyBridgeKinds.Response:
+			case DukasCopyLiveBridgeKinds.Response:
 				if (_pending.TryGetValue(message.RequestId, out var completion))
 					completion.TrySetResult(message);
 				break;
-			case DukasCopyBridgeKinds.Tick when message.Tick != null && TickReceived != null:
+			case DukasCopyLiveBridgeKinds.Tick when message.Tick != null && TickReceived != null:
 				await TickReceived(message.Tick, cancellationToken);
 				break;
-			case DukasCopyBridgeKinds.Bar when message.Bar != null && BarReceived != null:
+			case DukasCopyLiveBridgeKinds.Bar when message.Bar != null && BarReceived != null:
 				await BarReceived(message.Bar, cancellationToken);
 				break;
-			case DukasCopyBridgeKinds.Order when message.Order != null && OrderReceived != null:
+			case DukasCopyLiveBridgeKinds.Order when message.Order != null && OrderReceived != null:
 				await OrderReceived(message.Order, cancellationToken);
 				break;
-			case DukasCopyBridgeKinds.Account when message.Account != null && AccountReceived != null:
+			case DukasCopyLiveBridgeKinds.Account when message.Account != null && AccountReceived != null:
 				await AccountReceived(message.Account, cancellationToken);
 				break;
-			case DukasCopyBridgeKinds.Error when Error != null:
+			case DukasCopyLiveBridgeKinds.Error when Error != null:
 				await Error(new IOException(message.Error.IsEmpty("Dukascopy bridge reported an error.")),
 					cancellationToken);
 				break;

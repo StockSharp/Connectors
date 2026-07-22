@@ -1,6 +1,6 @@
-namespace StockSharp.DukasCopy;
+namespace StockSharp.DukasCopyLive;
 
-public partial class DukasCopyMessageAdapter
+public partial class DukasCopyLiveMessageAdapter
 {
 	/// <inheritdoc />
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg,
@@ -116,7 +116,7 @@ public partial class DukasCopyMessageAdapter
 		await AddMarketSubscription(mdMsg, mdMsg.DataType2, timeFrame, cancellationToken);
 	}
 
-	private async ValueTask ProcessTick(DukasCopyTick tick, CancellationToken cancellationToken)
+	private async ValueTask ProcessTick(DukasCopyLiveTick tick, CancellationToken cancellationToken)
 	{
 		if (tick?.Symbol.IsEmpty() != false)
 			return;
@@ -132,7 +132,7 @@ public partial class DukasCopyMessageAdapter
 		}
 	}
 
-	private async ValueTask ProcessBar(DukasCopyBar bar, CancellationToken cancellationToken)
+	private async ValueTask ProcessBar(DukasCopyLiveBar bar, CancellationToken cancellationToken)
 	{
 		if (bar?.Symbol.IsEmpty() != false)
 			return;
@@ -151,7 +151,7 @@ public partial class DukasCopyMessageAdapter
 	}
 
 	private ValueTask SendTick(long originalTransactionId, SecurityId securityId, DataType dataType,
-		DukasCopyTick tick, CancellationToken cancellationToken)
+		DukasCopyLiveTick tick, CancellationToken cancellationToken)
 	{
 		var time = tick.Time.ToUtc();
 		if (dataType == DataType.Level1)
@@ -188,7 +188,7 @@ public partial class DukasCopyMessageAdapter
 			OriginalTransactionId = originalTransactionId,
 			SecurityId = securityId,
 			TradeStringId = $"{tick.Symbol}:{tick.Time}:{tick.Bid}:{tick.Ask}",
-			TradePrice = DukasCopyExtensions.Mid(tick.Bid, tick.Ask),
+			TradePrice = DukasCopyLiveExtensions.Mid(tick.Bid, tick.Ask),
 			TradeVolume = tick.BidVolume + tick.AskVolume,
 			ServerTime = time,
 		}, cancellationToken);
@@ -207,7 +207,7 @@ public partial class DukasCopyMessageAdapter
 	}
 
 	private ValueTask SendBar(long originalTransactionId, SecurityId securityId, TimeSpan timeFrame,
-		DataType dataType, DukasCopyBar bar, CancellationToken cancellationToken)
+		DataType dataType, DukasCopyLiveBar bar, CancellationToken cancellationToken)
 		=> SendOutMessageAsync(new TimeFrameCandleMessage
 		{
 			OriginalTransactionId = originalTransactionId,
@@ -215,10 +215,10 @@ public partial class DukasCopyMessageAdapter
 			DataType = dataType,
 			OpenTime = bar.Time.ToUtc(),
 			CloseTime = bar.Time.ToUtc() + timeFrame,
-			OpenPrice = DukasCopyExtensions.Mid(bar.BidOpen, bar.AskOpen),
-			HighPrice = DukasCopyExtensions.Mid(bar.BidHigh, bar.AskHigh),
-			LowPrice = DukasCopyExtensions.Mid(bar.BidLow, bar.AskLow),
-			ClosePrice = DukasCopyExtensions.Mid(bar.BidClose, bar.AskClose),
+			OpenPrice = DukasCopyLiveExtensions.Mid(bar.BidOpen, bar.AskOpen),
+			HighPrice = DukasCopyLiveExtensions.Mid(bar.BidHigh, bar.AskHigh),
+			LowPrice = DukasCopyLiveExtensions.Mid(bar.BidLow, bar.AskLow),
+			ClosePrice = DukasCopyLiveExtensions.Mid(bar.BidClose, bar.AskClose),
 			TotalVolume = bar.BidVolume + bar.AskVolume,
 			State = CandleStates.Finished,
 		}, cancellationToken);

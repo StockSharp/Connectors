@@ -1,6 +1,6 @@
-namespace StockSharp.DukasCopy;
+namespace StockSharp.DukasCopyLive;
 
-public partial class DukasCopyMessageAdapter
+public partial class DukasCopyLiveMessageAdapter
 {
 	/// <inheritdoc />
 	protected override async ValueTask RegisterOrderAsync(OrderRegisterMessage regMsg,
@@ -16,7 +16,7 @@ public partial class DukasCopyMessageAdapter
 		if (orderType != OrderTypes.Market && regMsg.Price <= 0)
 			throw new InvalidOperationException("JForex pending orders require a positive price.");
 
-		var condition = regMsg.Condition as DukasCopyOrderCondition ?? new();
+		var condition = regMsg.Condition as DukasCopyLiveOrderCondition ?? new();
 		var nativeCommand = condition.NativeCommand.ToNative(regMsg.Side, orderType);
 		var isMarket = nativeCommand is "BUY" or "SELL";
 		var result = await GetClient().PlaceOrder(new()
@@ -63,7 +63,7 @@ public partial class DukasCopyMessageAdapter
 				"JForex replacement amount must be positive.");
 
 		_orders.TryGetValue(orderId, out var tracker);
-		var condition = replaceMsg.Condition as DukasCopyOrderCondition ?? tracker?.Condition ?? new();
+		var condition = replaceMsg.Condition as DukasCopyLiveOrderCondition ?? tracker?.Condition ?? new();
 		var order = await GetClient().ReplaceOrder(new()
 		{
 			OrderId = orderId,
@@ -157,10 +157,10 @@ public partial class DukasCopyMessageAdapter
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
-	private ValueTask ProcessOrderUpdate(DukasCopyOrder order, CancellationToken cancellationToken)
+	private ValueTask ProcessOrderUpdate(DukasCopyLiveOrder order, CancellationToken cancellationToken)
 		=> order == null ? default : ProcessOrderUpdateCore(order, cancellationToken);
 
-	private async ValueTask ProcessOrderUpdateCore(DukasCopyOrder order,
+	private async ValueTask ProcessOrderUpdateCore(DukasCopyLiveOrder order,
 		CancellationToken cancellationToken)
 	{
 		if (_orderStatusSubscriptionId != 0 || _orders.ContainsKey(order.Id))
@@ -179,7 +179,7 @@ public partial class DukasCopyMessageAdapter
 		}
 	}
 
-	private async ValueTask SendOrder(DukasCopyOrder order, long lookupTransactionId,
+	private async ValueTask SendOrder(DukasCopyLiveOrder order, long lookupTransactionId,
 		CancellationToken cancellationToken)
 	{
 		if (order?.Id.IsEmpty() != false)
@@ -198,7 +198,7 @@ public partial class DukasCopyMessageAdapter
 		var volume = order.RequestedAmount > 0 ? order.RequestedAmount :
 			order.Amount > 0 ? order.Amount : tracker?.Volume ?? 0;
 		var filled = Math.Max(0, order.FilledAmount);
-		var condition = tracker?.Condition ?? new DukasCopyOrderCondition
+		var condition = tracker?.Condition ?? new DukasCopyLiveOrderCondition
 		{
 			StopLoss = order.StopLossPrice > 0 ? order.StopLossPrice : null,
 			TakeProfit = order.TakeProfitPrice > 0 ? order.TakeProfitPrice : null,
@@ -250,13 +250,13 @@ public partial class DukasCopyMessageAdapter
 		}
 	}
 
-	private ValueTask ProcessAccountUpdate(DukasCopyAccount account,
+	private ValueTask ProcessAccountUpdate(DukasCopyLiveAccount account,
 		CancellationToken cancellationToken)
 		=> account == null || _portfolioSubscriptionId == 0
 			? default
 			: SendAccount(account, _portfolioSubscriptionId, false, cancellationToken);
 
-	private async ValueTask SendAccount(DukasCopyAccount account, long originalTransactionId,
+	private async ValueTask SendAccount(DukasCopyLiveAccount account, long originalTransactionId,
 		bool sendPortfolio, CancellationToken cancellationToken)
 	{
 		var portfolio = account.AccountId.IsEmpty(account.UserName).IsEmpty("DUKASCOPY");
@@ -267,7 +267,7 @@ public partial class DukasCopyMessageAdapter
 			{
 				OriginalTransactionId = originalTransactionId,
 				PortfolioName = portfolio,
-				BoardCode = DukasCopyExtensions.BoardCode,
+				BoardCode = DukasCopyLiveExtensions.BoardCode,
 				Currency = account.Currency.ToCurrency(),
 			}, cancellationToken);
 		}
@@ -285,7 +285,7 @@ public partial class DukasCopyMessageAdapter
 		.Add(PositionChangeTypes.CurrentPrice, account.UseOfLeverage), cancellationToken);
 	}
 
-	private ValueTask SendPosition(string symbol, IEnumerable<DukasCopyOrder> orders, long originalTransactionId,
+	private ValueTask SendPosition(string symbol, IEnumerable<DukasCopyLiveOrder> orders, long originalTransactionId,
 		CancellationToken cancellationToken)
 	{
 		var items = orders?.Where(order => order != null).ToArray() ?? [];
