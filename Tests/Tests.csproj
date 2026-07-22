@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\StockSharp (GitHub)\common_target_tests.props" />
+</Project>

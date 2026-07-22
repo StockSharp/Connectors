@@ -271,4 +271,7 @@
     <Project Path="ZB/ZB.csproj" />
     <Project Path="Zerodha/Zerodha.csproj" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Tests.csproj" />
+  </Folder>
 </Solution>
