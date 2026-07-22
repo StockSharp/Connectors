@@ -15,7 +15,7 @@ public partial class FalconXMessageAdapter
 			cancellationToken);
 		try
 		{
-			_authenticator = new(ApiKey, Secret, Passphrase);
+			_authenticator = new(Key?.UnSecure(), Secret, Passphrase);
 			_restClient = new(ApiEndpoint, _authenticator)
 			{
 				Parent = this,

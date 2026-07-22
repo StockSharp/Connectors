@@ -1,6 +1,6 @@
 namespace StockSharp.Polymarket;
 
-public partial class PolymarketMessageAdapter
+public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAdapter
 {
 	private const string _defaultClobEndpoint = "https://clob.polymarket.com";
 	private const string _defaultDataEndpoint =
@@ -41,7 +41,7 @@ public partial class PolymarketMessageAdapter
 		Description = LocalizedStrings.KeyKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Polymarket CLOB API secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -49,12 +49,15 @@ public partial class PolymarketMessageAdapter
 		Description = LocalizedStrings.SecretKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString ApiSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Polymarket CLOB API passphrase.</summary>
-	[Display(Name = "Passphrase", Description =
-		"Polymarket CLOB API passphrase.",
-		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PassphraseKey,
+		Description = LocalizedStrings.PassphraseKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
 	[BasicSetting]
 	public SecureString Passphrase { get; set; }
 
@@ -152,8 +155,8 @@ public partial class PolymarketMessageAdapter
 			.Set(nameof(DataEndpoint), DataEndpoint)
 			.Set(nameof(MarketSocketEndpoint), MarketSocketEndpoint)
 			.Set(nameof(UserSocketEndpoint), UserSocketEndpoint)
-			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(ApiSecret), ApiSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(Passphrase), Passphrase)
 			.Set(nameof(SignerAddress), SignerAddress)
 			.Set(nameof(FunderAddress), FunderAddress)
@@ -175,8 +178,8 @@ public partial class PolymarketMessageAdapter
 			MarketSocketEndpoint);
 		UserSocketEndpoint = storage.GetValue(nameof(UserSocketEndpoint),
 			UserSocketEndpoint);
-		ApiKey = storage.GetValue<string>(nameof(ApiKey));
-		ApiSecret = storage.GetValue<SecureString>(nameof(ApiSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Passphrase = storage.GetValue<SecureString>(nameof(Passphrase));
 		SignerAddress = storage.GetValue<string>(nameof(SignerAddress));
 		FunderAddress = storage.GetValue<string>(nameof(FunderAddress));
@@ -197,8 +200,8 @@ public partial class PolymarketMessageAdapter
 			DataEndpoint = DataEndpoint,
 			MarketSocketEndpoint = MarketSocketEndpoint,
 			UserSocketEndpoint = UserSocketEndpoint,
-			ApiKey = ApiKey,
-			ApiSecret = ApiSecret,
+			Key = Key,
+			Secret = Secret,
 			Passphrase = Passphrase,
 			SignerAddress = SignerAddress,
 			FunderAddress = FunderAddress,
@@ -212,7 +215,7 @@ public partial class PolymarketMessageAdapter
 
 	/// <inheritdoc />
 	public override string ToString()
-		=> base.ToString() + (ApiKey.IsEmpty()
+		=> base.ToString() + (Key.IsEmpty()
 			? ": Public"
 			: PrivateKey.IsEmpty() ? ": Read-only" : ": Trading");
 }

@@ -91,8 +91,8 @@ public partial class CqgMessageAdapter
 	{
 		if (_client != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		var token = AccessToken?.UnSecure();
-		if (token.IsEmpty() && (UserName.IsEmpty() || Password?.UnSecure().IsEmpty() != false))
+		var token = Token?.UnSecure();
+		if (token.IsEmpty() && (Login.IsEmpty() || Password?.UnSecure().IsEmpty() != false))
 			throw new InvalidOperationException("CQG username and password or an access token are required.");
 		var logon = new Logon
 		{
@@ -107,7 +107,7 @@ public partial class CqgMessageAdapter
 			logon.AccessToken = token;
 		else
 		{
-			logon.UserName = UserName;
+			logon.UserName = Login;
 			logon.Password = Password.UnSecure();
 			logon.OneTimePassword = OneTimePassword?.UnSecure() ?? string.Empty;
 			logon.PrivateLabel = PrivateLabel.ThrowIfEmpty(nameof(PrivateLabel));

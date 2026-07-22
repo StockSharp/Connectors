@@ -21,7 +21,7 @@ The streaming implementation uses the official `Lightstreamer.DotNetStandard.Cli
 ## Configuration
 
 1. Create an API key in **My IG > Settings > API keys**.
-2. Set `ApiKey`, `UserName` and `Password` on `IgMessageAdapter`.
+2. Set `ApiKey`, `Login` and `Password` on `IgMessageAdapter`.
 3. Select `Demo` or `Live` in `Environment`.
 4. Optionally set `AccountId`; otherwise the preferred/current account is used.
 5. Enable `EncryptPassword` when the account's region requires encrypted-password login.

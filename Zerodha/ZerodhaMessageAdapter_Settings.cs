@@ -13,23 +13,23 @@ namespace StockSharp.Zerodha;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Stock |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options | MessageAdapterCategories.FX)]
 [OrderCondition(typeof(ZerodhaOrderCondition))]
-public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter
+public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter, IKeySecretAdapter
 {
 	/// <summary>Kite Connect application API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ZerodhaApiKeyKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.ZerodhaApiKeyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Kite Connect application API secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ZerodhaApiSecretKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.ZerodhaApiSecretDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
-	public SecureString ApiSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <inheritdoc />
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AccessTokenKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.ZerodhaAccessTokenDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
@@ -52,8 +52,8 @@ public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(ApiSecret), ApiSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(Token), Token)
 			.Set(nameof(RequestToken), RequestToken)
 			.Set(nameof(DefaultProduct), DefaultProduct);
@@ -63,8 +63,8 @@ public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ApiKey = storage.GetValue<string>(nameof(ApiKey));
-		ApiSecret = storage.GetValue<SecureString>(nameof(ApiSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		RequestToken = storage.GetValue<SecureString>(nameof(RequestToken));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);

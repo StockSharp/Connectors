@@ -13,28 +13,28 @@ namespace StockSharp.Groww;
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Futures | MessageAdapterCategories.Options)]
 [OrderCondition(typeof(GrowwOrderCondition))]
-public partial class GrowwMessageAdapter : MessageAdapter
+public partial class GrowwMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
 	/// <summary>Daily access token generated in Groww settings.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.GrowwAccessTokenDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public SecureString AccessToken { get; set; }
+	public SecureString Token { get; set; }
 
 	/// <summary>Groww API key or TOTP token.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.GrowwApiKeyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Groww API secret used by the approval flow.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.GrowwApiSecretDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
-	public SecureString ApiSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Base32 secret used by the TOTP flow.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GrowwTotpSecretKey,
@@ -54,9 +54,9 @@ public partial class GrowwMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(AccessToken), AccessToken)
-			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(ApiSecret), ApiSecret)
+			.Set(nameof(Token), Token)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(TotpSecret), TotpSecret)
 			.Set(nameof(DefaultProduct), DefaultProduct);
 	}
@@ -65,9 +65,9 @@ public partial class GrowwMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		AccessToken = storage.GetValue<SecureString>(nameof(AccessToken));
-		ApiKey = storage.GetValue<SecureString>(nameof(ApiKey));
-		ApiSecret = storage.GetValue<SecureString>(nameof(ApiSecret));
+		Token = storage.GetValue<SecureString>(nameof(Token));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		TotpSecret = storage.GetValue<SecureString>(nameof(TotpSecret));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
 	}

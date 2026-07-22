@@ -10,21 +10,21 @@ namespace StockSharp.Marquee;
 	MessageAdapterCategories.Options | MessageAdapterCategories.FX |
 	MessageAdapterCategories.Candles | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Paid)]
-public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter
+public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
 	/// <summary>OAuth application client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientIdKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>OAuth application client secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString ClientSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
@@ -38,8 +38,8 @@ public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ClientId), ClientId)
-			.Set(nameof(ClientSecret), ClientSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(IsDemo), IsDemo);
 	}
 
@@ -47,8 +47,8 @@ public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ClientId = storage.GetValue<string>(nameof(ClientId));
-		ClientSecret = storage.GetValue<SecureString>(nameof(ClientSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 	}
 }

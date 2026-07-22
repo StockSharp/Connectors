@@ -47,7 +47,7 @@ public partial class BreezeMessageAdapter
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(ApiKey, SecretKey, ApiSession) { Parent = this };
+		_restClient = new(Key?.UnSecure(), Secret, ApiSession) { Parent = this };
 		var customer = await _restClient.Authenticate(cancellationToken);
 		_portfolioName = customer.UserId.IsEmpty() ? _restClient.SocketUser : customer.UserId;
 

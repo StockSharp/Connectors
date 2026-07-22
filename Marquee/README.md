@@ -17,8 +17,8 @@ Every OAuth request, asset query, availability response, dataset query, and mark
 
 ## Configuration
 
-- `ClientId` - application identifier created in the Goldman Sachs Developer application portal.
-- `ClientSecret` - corresponding OAuth application secret.
+- `Key` - application identifier created in the Goldman Sachs Developer application portal.
+- `Secret` - corresponding OAuth application secret.
 - `IsDemo` - uses the official QA environment when enabled and production when disabled.
 
 The connector requests the default read-only GS Quant scopes: `read_content`, `read_product_data`, `read_financial_data`, and `read_user_profile`. The application still receives only the datasets and identifiers enabled by its Goldman Sachs entitlements.

@@ -4,8 +4,8 @@ This connector integrates StockSharp with the official Saxo OpenAPI. Reference d
 
 ## Configuration
 
-- `AccessToken` is the OAuth access token issued for the OpenAPI application.
-- `RefreshToken`, `ClientId`, `ClientSecret`, and `RedirectUri` enable automatic access-token renewal. They must belong to the same registered application and OAuth session.
+- `Token` is the OAuth access token issued for the OpenAPI application.
+- `RefreshToken`, `Key`, `Secret`, and `RedirectUri` enable automatic access-token renewal. They must belong to the same registered application and OAuth session.
 - `AccountKey` selects the default trading account. When empty, the connector uses the first account returned by Saxo.
 - `Environment` selects the simulation or live REST, streaming, token, and reauthorization endpoints.
 

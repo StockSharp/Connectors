@@ -16,7 +16,7 @@ using StockSharp.Paxos.Native.Model;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles)]
 [OrderCondition(typeof(PaxosOrderCondition))]
-public partial class PaxosMessageAdapter : MessageAdapter
+public partial class PaxosMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private enum NativeOperationKinds
 	{

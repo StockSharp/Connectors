@@ -18,8 +18,8 @@ Lime Trader does not provide a public market-data WebSocket. Quote subscriptions
 
 - `Login` — Lime user name.
 - `Password` — Lime password.
-- `ClientId` — OAuth client identifier issued for the application.
-- `ClientSecret` — OAuth client secret issued for the application.
+- `Key` — OAuth client identifier issued for the application.
+- `Secret` — OAuth client secret issued for the application.
 
 API access, real-time data, options trading, and order routes depend on the permissions and market-data entitlements assigned to the Lime account.
 

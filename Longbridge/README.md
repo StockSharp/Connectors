@@ -4,9 +4,9 @@ This connector integrates StockSharp with Longbridge OpenAPI. Trading and accoun
 
 ## Configuration
 
-- `AppKey` is the Longbridge application key. In OAuth mode it is the OAuth client identifier.
-- `AccessToken` is the legacy application access token or an OAuth access token.
-- `AppSecret` enables legacy HMAC-SHA256 request signing. Leave it empty when `AccessToken` is an OAuth Bearer token.
+- `Key` is the Longbridge application key. In OAuth mode it is the OAuth client identifier.
+- `Token` is the legacy application access token or an OAuth access token.
+- `Secret` enables legacy HMAC-SHA256 request signing. Leave it empty when `Token` is an OAuth Bearer token.
 - `Portfolio` is the name exposed to StockSharp for the token's trading account.
 - `ApiUrl`, `QuoteUrl`, and `TradeUrl` default to the global production endpoints. Accounts hosted on the mainland-China environment can use the corresponding `.longbridge.cn` endpoints.
 

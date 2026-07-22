@@ -1,6 +1,6 @@
 namespace StockSharp.ZeroHash;
 
-public partial class ZeroHashMessageAdapter
+public partial class ZeroHashMessageAdapter : IKeySecretAdapter, IPassphraseAdapter
 {
 	private const string _defaultApiEndpoint = "https://api.zerohash.com/";
 
@@ -10,7 +10,7 @@ public partial class ZeroHashMessageAdapter
 		Description = LocalizedStrings.KeyKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Base64-encoded Zero Hash API secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -22,7 +22,7 @@ public partial class ZeroHashMessageAdapter
 
 	/// <summary>Zero Hash API passphrase.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.PasswordKey,
+		Name = LocalizedStrings.PassphraseKey,
 		Description = LocalizedStrings.PasswordKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
@@ -87,7 +87,7 @@ public partial class ZeroHashMessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ApiKey), ApiKey)
+			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(Passphrase), Passphrase)
 			.Set(nameof(Account), Account)
@@ -101,7 +101,7 @@ public partial class ZeroHashMessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ApiKey = storage.GetValue<string>(nameof(ApiKey));
+		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Passphrase = storage.GetValue<SecureString>(nameof(Passphrase));
 		Account = storage.GetValue<string>(nameof(Account));
@@ -115,7 +115,7 @@ public partial class ZeroHashMessageAdapter
 	public override IMessageAdapter Clone()
 		=> new ZeroHashMessageAdapter(TransactionIdGenerator)
 		{
-			ApiKey = ApiKey,
+			Key = Key,
 			Secret = Secret,
 			Passphrase = Passphrase,
 			Account = Account,

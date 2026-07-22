@@ -17,8 +17,8 @@ All JSON request and response payloads are represented by typed DTOs. Trading PO
 
 ## Configuration
 
-- `ApiKey` — the key generated in Trading 212 account settings.
-- `ApiSecret` — the secret paired with that key. Authentication uses HTTP Basic with `key:secret`.
+- `Key` — the key generated in Trading 212 account settings.
+- `Secret` — the secret paired with that key. Authentication uses HTTP Basic with `key:secret`.
 - `IsDemo` — selects `https://demo.trading212.com`; clear it to use `https://live.trading212.com`.
 - `PollingInterval` — polling period for balances, positions, pending orders, and fills. Values below 10 seconds are clamped to 10 seconds because order history is limited to six requests per minute.
 

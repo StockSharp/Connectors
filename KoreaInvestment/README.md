@@ -19,7 +19,7 @@ Every REST request, response and WebSocket message is represented by a typed DTO
 ## Configuration
 
 1. Open a KIS securities account and register an application in the KIS Developers portal.
-2. Set `AppKey` and `AppSecret` to the credentials issued for that application.
+2. Set `Key` and `Secret` to the credentials issued for that application.
 3. Set `AccountNumber` to the first eight digits of the account and `ProductCode` to the final two digits, normally `01` for securities or `03` for domestic derivatives.
 4. Set `HtsId` when realtime order and execution notices are required.
 5. Set `IsDemo` to use the official simulation REST and WebSocket services. Keep production and simulation credentials and accounts separate.

@@ -31,13 +31,13 @@ public partial class MarqueeMessageAdapter
 	{
 		if (_client != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		if (ClientId.IsEmpty())
+		if (Key.IsEmpty())
 			throw new InvalidOperationException(
-				$"{LocalizedStrings.ClientId}: {LocalizedStrings.InvalidValue}.");
-		if (ClientSecret.IsEmpty())
+				$"{LocalizedStrings.Key}: {LocalizedStrings.InvalidValue}.");
+		if (Secret.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 
-		var client = new MarqueeClient(ClientId, ClientSecret.UnSecure(), IsDemo) { Parent = this };
+		var client = new MarqueeClient(Key?.UnSecure(), Secret.UnSecure(), IsDemo) { Parent = this };
 		_client = client;
 		try
 		{

@@ -16,7 +16,7 @@ This directory contains the NinjaTrader connector for the [StockSharp](https://g
 
 - `Login` — NinjaTrader user name.
 - `Password` — NinjaTrader password.
-- `ClientId` — API key client identifier (`cid`).
+- `Key` — API key client identifier (`cid`).
 - `Secret` — API key secret (`sec`).
 - `AppId` and `AppVersion` — registered application identity.
 - `DeviceId` — stable device identifier registered for API access.

@@ -12,7 +12,7 @@ namespace StockSharp.Polymarket;
 	MessageAdapterCategories.Free | MessageAdapterCategories.Transactions |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Ticks)]
-public partial class PolymarketMessageAdapter : MessageAdapter
+public partial class PolymarketMessageAdapter : MessageAdapter, IKeySecretAdapter, IPassphraseAdapter
 {
 	private sealed class PolymarketOrderSubscription
 	{

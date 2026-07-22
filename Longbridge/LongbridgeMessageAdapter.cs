@@ -51,7 +51,7 @@ public partial class LongbridgeMessageAdapter
 	{
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		_restClient = new(AppKey, AppSecret?.UnSecure(), AccessToken?.UnSecure(), ApiUrl) { Parent = this };
+		_restClient = new(Key?.UnSecure(), Secret?.UnSecure(), Token?.UnSecure(), ApiUrl) { Parent = this };
 		_quoteSocket = CreateSocket(QuoteUrl);
 		_tradeSocket = CreateSocket(TradeUrl);
 		_quoteSocket.PushReceived += ProcessQuotePacket;

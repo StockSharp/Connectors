@@ -12,7 +12,7 @@ This directory contains the E*TRADE Developer Platform connector for the [StockS
 ## Configuration
 
 - `Key` and `Secret` — OAuth consumer credentials.
-- `AccessToken` and `AccessSecret` — authorized user-session credentials.
+- `Token` and `AccessSecret` — authorized user-session credentials.
 - `IsDemo` — enables the sandbox API host.
 
 ## Usage
@@ -22,7 +22,7 @@ var adapter = new ETradeMessageAdapter(new IncrementalIdGenerator())
 {
     Key = "YOUR_CONSUMER_KEY".ToSecureString(),
     Secret = "YOUR_CONSUMER_SECRET".ToSecureString(),
-    AccessToken = "YOUR_ACCESS_TOKEN".ToSecureString(),
+    Token = "YOUR_ACCESS_TOKEN".ToSecureString(),
     AccessSecret = "YOUR_ACCESS_SECRET".ToSecureString(),
     IsDemo = true,
 };

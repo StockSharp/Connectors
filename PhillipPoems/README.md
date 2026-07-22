@@ -20,9 +20,9 @@ Every request and response is represented by a typed DTO. The connector does not
 
 ## Configuration
 
-- `ClientId` and `ClientSecret` - OAuth application credentials registered with POEMS. They are required for automatic token refresh.
+- `Key` and `Secret` - OAuth application credentials registered with POEMS. They are required for automatic token refresh.
 - `ApiKey` - the `X-Api-Key` issued for the POEMS application.
-- `AccessToken` - bearer token obtained through the authorization-code flow.
+- `Token` - bearer token obtained through the authorization-code flow.
 - `RefreshToken` - optional refresh token used to renew the access token without another browser login.
 - `AccountNo` - POEMS account number and StockSharp portfolio name. It must match the OAuth session.
 - `AccountType` - native stock account type used by portfolio endpoints; the default is `V`.

@@ -15,7 +15,7 @@ This directory contains the Tradovate connector for the [StockSharp](https://git
 
 - `Login` — Tradovate user name.
 - `Password` — Tradovate password.
-- `ClientId` — API key client identifier (`cid`).
+- `Key` — API key client identifier (`cid`).
 - `Secret` — API key secret (`sec`).
 - `AppId` and `AppVersion` — application identity registered with Tradovate.
 - `DeviceId` — stable device identifier registered for API access.

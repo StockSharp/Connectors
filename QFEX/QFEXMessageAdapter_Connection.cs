@@ -21,9 +21,10 @@ public partial class QFEXMessageAdapter
 		ClearState();
 		await SendOutConnectionStateAsync(ConnectionStates.Connecting,
 			cancellationToken);
+		var key = Key?.UnSecure();
 		try
 		{
-			_restClient = new(RestEndpoint, Key, Secret, AccountId)
+			_restClient = new(RestEndpoint, key, Secret, AccountId)
 			{
 				Parent = this,
 			};
@@ -42,9 +43,9 @@ public partial class QFEXMessageAdapter
 
 			if (RestClient.IsCredentialsAvailable)
 			{
-				_portfolioName = CreatePortfolioName(Key,
+				_portfolioName = CreatePortfolioName(key,
 					RestClient.AccountId);
-				_tradeSocket = new(TradeSocketEndpoint, Key, Secret, AccountId,
+				_tradeSocket = new(TradeSocketEndpoint, key, Secret, AccountId,
 					ReConnectionSettings.WorkingTime,
 					ReConnectionSettings.ReAttemptCount)
 				{

@@ -5,8 +5,8 @@ This connector integrates StockSharp with CQG Web API 2.296. Authentication, con
 ## Configuration
 
 - `Endpoint` defaults to CQG's official simulated environment at `wss://demoapi.cqg.com:443`. Obtain production endpoints from CQG API support.
-- `UserName`, `Password`, and optional `OneTimePassword` enable CQG credential authentication.
-- `AccessToken` enables token authentication and is mutually exclusive with username/password credentials.
+- `Login`, `Password`, and optional `OneTimePassword` enable CQG credential authentication.
+- `Token` enables token authentication and is mutually exclusive with username/password credentials.
 - `PrivateLabel` and `ClientId` identify the approved firm and application. The public demo values are `WebAPITest`; production identifiers are assigned by CQG.
 - `ClientVersion` is reported during logon.
 - `Portfolio` optionally selects an authorized CQG brokerage account by account number, account name, or numeric account ID. It is required for order entry when more than one account is authorized.

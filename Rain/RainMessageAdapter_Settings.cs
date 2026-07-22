@@ -15,7 +15,7 @@ namespace StockSharp.Rain;
     MessageAdapterCategories.Level1 | MessageAdapterCategories.History |
     MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(RainOrderCondition))]
-public partial class RainMessageAdapter : MessageAdapter, IKeySecretAdapter
+public partial class RainMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
     private const string _defaultRestEndpoint = "https://api-bhr.rain.com";
     private const string _defaultWebSocketEndpoint =
@@ -47,11 +47,11 @@ public partial class RainMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// Rain account access token.
     /// </summary>
     [Display(ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AccessTokenKey,
+        Name = LocalizedStrings.TokenKey,
         Description = LocalizedStrings.AccessTokenKey,
         GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
     [BasicSetting]
-    public SecureString AccessToken { get; set; }
+    public SecureString Token { get; set; }
 
     /// <summary>
     /// REST API endpoint.
@@ -81,7 +81,7 @@ public partial class RainMessageAdapter : MessageAdapter, IKeySecretAdapter
         storage
             .Set(nameof(Key), Key)
             .Set(nameof(Secret), Secret)
-            .Set(nameof(AccessToken), AccessToken)
+            .Set(nameof(Token), Token)
             .Set(nameof(RestEndpoint), RestEndpoint)
             .Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
     }
@@ -92,7 +92,7 @@ public partial class RainMessageAdapter : MessageAdapter, IKeySecretAdapter
         base.Load(storage);
         Key = storage.GetValue<SecureString>(nameof(Key));
         Secret = storage.GetValue<SecureString>(nameof(Secret));
-        AccessToken = storage.GetValue<SecureString>(nameof(AccessToken));
+        Token = storage.GetValue<SecureString>(nameof(Token));
         RestEndpoint = NormalizeEndpoint(storage.GetValue(nameof(RestEndpoint),
             RestEndpoint), _defaultRestEndpoint, "https");
         WebSocketEndpoint = NormalizeEndpoint(storage.GetValue(

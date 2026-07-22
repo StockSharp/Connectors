@@ -16,8 +16,8 @@ Every OAuth request, instrument query, time-series query, response page, error e
 
 ## Configuration
 
-- `ClientId` - client identifier issued during J.P. Morgan DataQuery onboarding.
-- `ClientSecret` - corresponding OAuth client secret.
+- `Key` - client identifier issued during J.P. Morgan DataQuery onboarding.
+- `Secret` - corresponding OAuth client secret.
 - `GroupId` - an entitled DataQuery group, for example `FI_GO_BO_EA`.
 - `Attribute` - a time-series attribute available in that group, for example `MIDPRC`.
 - `ValueField` - the StockSharp Level1 field that receives the selected attribute. The default maps `MIDPRC` to `SpreadMiddle`; select another field only when its meaning matches the chosen DataQuery attribute.

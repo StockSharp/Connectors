@@ -32,7 +32,7 @@ public enum ApexOmniEnvironments
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(ApexOmniOrderCondition))]
 public partial class ApexOmniMessageAdapter : MessageAdapter,
-	IKeySecretAdapter, IDemoAdapter
+	IKeySecretAdapter, IDemoAdapter, IPassphraseAdapter
 {
 	private const string _productionRest = "https://omni.apex.exchange";
 	private const string _testnetRest = "https://testnet.omni.apex.exchange";
@@ -65,7 +65,7 @@ public partial class ApexOmniMessageAdapter : MessageAdapter,
 	/// API-key passphrase.
 	/// </summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.PasswordKey,
+		Name = LocalizedStrings.PassphraseKey,
 		Description = LocalizedStrings.PasswordKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]

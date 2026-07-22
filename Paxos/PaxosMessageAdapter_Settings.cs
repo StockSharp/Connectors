@@ -1,6 +1,6 @@
 namespace StockSharp.Paxos;
 
-public partial class PaxosMessageAdapter
+public partial class PaxosMessageAdapter : IKeySecretAdapter
 {
 	private const string _defaultScopes =
 		"funding:read_profile exchange:read_order exchange:write_order " +
@@ -39,10 +39,14 @@ public partial class PaxosMessageAdapter
 	}
 
 	/// <summary>Paxos OAuth Client ID.</summary>
-	[Display(Name = "Client ID", GroupName = LocalizedStrings.ConnectionKey,
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
-	public SecureString ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Paxos OAuth Client Secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -50,7 +54,7 @@ public partial class PaxosMessageAdapter
 		Description = LocalizedStrings.SecretKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
-	public SecureString ClientSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Space-delimited OAuth scopes.</summary>
 	[Display(Name = "OAuth scopes", GroupName = LocalizedStrings.ConnectionKey,
@@ -170,8 +174,8 @@ public partial class PaxosMessageAdapter
 		base.Save(storage);
 		storage
 			.Set(nameof(Environment), Environment)
-			.Set(nameof(ClientId), ClientId)
-			.Set(nameof(ClientSecret), ClientSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(Scopes), Scopes)
 			.Set(nameof(ApiEndpoint), ApiEndpoint)
 			.Set(nameof(OAuthEndpoint), OAuthEndpoint)
@@ -188,8 +192,8 @@ public partial class PaxosMessageAdapter
 	{
 		base.Load(storage);
 		Environment = storage.GetValue(nameof(Environment), Environment);
-		ClientId = storage.GetValue<SecureString>(nameof(ClientId));
-		ClientSecret = storage.GetValue<SecureString>(nameof(ClientSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Scopes = storage.GetValue(nameof(Scopes), Scopes);
 		ApiEndpoint = storage.GetValue(nameof(ApiEndpoint), ApiEndpoint);
 		OAuthEndpoint = storage.GetValue(nameof(OAuthEndpoint), OAuthEndpoint);
@@ -207,8 +211,8 @@ public partial class PaxosMessageAdapter
 		=> new PaxosMessageAdapter(TransactionIdGenerator)
 		{
 			Environment = Environment,
-			ClientId = ClientId,
-			ClientSecret = ClientSecret,
+			Key = Key,
+			Secret = Secret,
 			Scopes = Scopes,
 			ApiEndpoint = ApiEndpoint,
 			OAuthEndpoint = OAuthEndpoint,

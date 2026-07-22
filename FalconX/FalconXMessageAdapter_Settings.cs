@@ -1,6 +1,6 @@
 namespace StockSharp.FalconX;
 
-public partial class FalconXMessageAdapter
+public partial class FalconXMessageAdapter : IKeySecretAdapter, IPassphraseAdapter
 {
 	private const string _defaultApiEndpoint = "https://api.falconx.io/";
 	private const string _defaultPriceSocketEndpoint =
@@ -14,7 +14,7 @@ public partial class FalconXMessageAdapter
 		Description = LocalizedStrings.KeyKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Base64-encoded FalconX API secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -26,7 +26,7 @@ public partial class FalconXMessageAdapter
 
 	/// <summary>FalconX API passphrase.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.PasswordKey,
+		Name = LocalizedStrings.PassphraseKey,
 		Description = LocalizedStrings.PasswordKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
@@ -112,7 +112,7 @@ public partial class FalconXMessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ApiKey), ApiKey)
+			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(Passphrase), Passphrase)
 			.Set(nameof(ApiEndpoint), ApiEndpoint)
@@ -127,7 +127,7 @@ public partial class FalconXMessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ApiKey = storage.GetValue<string>(nameof(ApiKey));
+		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Passphrase = storage.GetValue<SecureString>(nameof(Passphrase));
 		ApiEndpoint = storage.GetValue(nameof(ApiEndpoint), ApiEndpoint);
@@ -145,7 +145,7 @@ public partial class FalconXMessageAdapter
 	public override IMessageAdapter Clone()
 		=> new FalconXMessageAdapter(TransactionIdGenerator)
 		{
-			ApiKey = ApiKey,
+			Key = Key,
 			Secret = Secret,
 			Passphrase = Passphrase,
 			ApiEndpoint = ApiEndpoint,
@@ -158,5 +158,5 @@ public partial class FalconXMessageAdapter
 
 	/// <inheritdoc />
 	public override string ToString()
-		=> base.ToString() + (ApiKey.IsEmpty() ? ": Unconfigured" : ": Live");
+		=> base.ToString() + (Key.IsEmpty() ? ": Unconfigured" : ": Live");
 }

@@ -18,7 +18,7 @@ Every request, response, and WebSocket message uses a typed DTO. The connector d
 
 ## Configuration
 
-- `AccessToken` - token obtained through the uSMART OpenAPI login or onboarding flow.
+- `Token` - token obtained through the uSMART OpenAPI login or onboarding flow.
 - `ChannelId` - channel identifier assigned by uSMART after approval.
 - `PrivateKey` - PEM-encoded channel RSA private key used for request signatures.
 - `FundAccount` - account number exposed as the StockSharp portfolio name.

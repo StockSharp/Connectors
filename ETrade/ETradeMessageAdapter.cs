@@ -32,7 +32,7 @@ using DataType = StockSharp.Messages.DataType;
 	Description = LocalizedStrings.StockConnectorKey,
 	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.Transactions | MessageAdapterCategories.Level1 | MessageAdapterCategories.Stock)]
-public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
+public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter, ITokenAdapter
 {
 	private HttpClient _client;
 
@@ -57,7 +57,7 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	/// OAuth access token.
 	/// </summary>
 	[BasicSetting]
-	public SecureString AccessToken { get; set; }
+	public SecureString Token { get; set; }
 	/// <summary>
 	/// OAuth access token secret.
 	/// </summary>
@@ -72,7 +72,7 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage message, CancellationToken cancellationToken)
 	{
-		if (Key.IsEmpty() || Secret.IsEmpty() || AccessToken.IsEmpty() || AccessSecret.IsEmpty())
+		if (Key.IsEmpty() || Secret.IsEmpty() || Token.IsEmpty() || AccessSecret.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.TokenNotSpecified);
 		_client = new() { BaseAddress = BaseAddress };
 		await base.ConnectAsync(message, cancellationToken);
@@ -90,7 +90,7 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	{
 		var uri = new Uri(BaseAddress, path);
 		using var request = new HttpRequestMessage(method, uri);
-		request.Headers.TryAddWithoutValidation("Authorization", ETradeSigner.CreateHeader(method.Method, uri, Key.UnSecure(), Secret.UnSecure(), AccessToken.UnSecure(), AccessSecret.UnSecure()));
+		request.Headers.TryAddWithoutValidation("Authorization", ETradeSigner.CreateHeader(method.Method, uri, Key.UnSecure(), Secret.UnSecure(), Token.UnSecure(), AccessSecret.UnSecure()));
 		if (body is not null)
 			request.Content = new StringContent(body.ToString(Formatting.None), Encoding.UTF8, "application/json");
 		using var response = await _client.SendAsync(request, cancellationToken);
@@ -125,7 +125,7 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage) { base.Save(storage); storage.Set(nameof(Key), Key).Set(nameof(Secret), Secret).Set(nameof(AccessToken), AccessToken).Set(nameof(AccessSecret), AccessSecret).Set(nameof(IsDemo), IsDemo); }
+	public override void Save(SettingsStorage storage) { base.Save(storage); storage.Set(nameof(Key), Key).Set(nameof(Secret), Secret).Set(nameof(Token), Token).Set(nameof(AccessSecret), AccessSecret).Set(nameof(IsDemo), IsDemo); }
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage) { base.Load(storage); Key = storage.GetValue<SecureString>(nameof(Key)); Secret = storage.GetValue<SecureString>(nameof(Secret)); AccessToken = storage.GetValue<SecureString>(nameof(AccessToken)); AccessSecret = storage.GetValue<SecureString>(nameof(AccessSecret)); IsDemo = storage.GetValue<bool>(nameof(IsDemo)); }
+	public override void Load(SettingsStorage storage) { base.Load(storage); Key = storage.GetValue<SecureString>(nameof(Key)); Secret = storage.GetValue<SecureString>(nameof(Secret)); Token = storage.GetValue<SecureString>(nameof(Token)); AccessSecret = storage.GetValue<SecureString>(nameof(AccessSecret)); IsDemo = storage.GetValue<bool>(nameof(IsDemo)); }
 }

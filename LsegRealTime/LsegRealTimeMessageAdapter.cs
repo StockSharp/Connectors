@@ -49,7 +49,7 @@ public partial class LsegRealTimeMessageAdapter
 			IsHotStandby = IsHotStandby,
 			Login = Login,
 			Password = Password,
-			ClientId = ClientId,
+			ClientId = Key?.UnSecure(),
 			Secret = Secret,
 			ApplicationId = ApplicationId,
 			Position = Position,

@@ -21,7 +21,7 @@ All JSON bodies, OAuth values, REST responses, and SignalR messages are represen
 
 ## Configuration
 
-- `ClientId` and `ClientSecret` - OAuth credentials issued by OpenMarkets.
+- `Key` and `Secret` - OAuth credentials issued by OpenMarkets.
 - `AccountCode` - optional order-account restriction. Leave it empty to expose every account available to the API client. Orders must identify a portfolio when several accounts are exposed.
 - `IsTest` - use stage identity plus the test OMS, market-data, and streaming services.
 - `DataSource` - IRESS market-data source used in `security.exchange@datasource` identifiers and stream subscriptions. The default is `TM`.

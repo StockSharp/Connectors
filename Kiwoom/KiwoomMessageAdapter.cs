@@ -85,8 +85,8 @@ public partial class KiwoomMessageAdapter
 	{
 		if (_rest != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		var appKey = AppKey?.UnSecure().ThrowIfEmpty(nameof(AppKey));
-		var appSecret = AppSecret?.UnSecure().ThrowIfEmpty(nameof(AppSecret));
+		var appKey = Key?.UnSecure().ThrowIfEmpty(nameof(Key));
+		var appSecret = Secret?.UnSecure().ThrowIfEmpty(nameof(Secret));
 		var attempts = Math.Max(1, ReConnectionSettings.ReAttemptCount);
 		_rest = new(appKey, appSecret, IsDemo, attempts) { Parent = this };
 

@@ -11,7 +11,7 @@ public partial class RainMessageAdapter
                 LocalizedStrings.NotDisconnectPrevTime);
 
         ClearState();
-        _restClient = new(RestEndpoint, Key, Secret, AccessToken)
+        _restClient = new(RestEndpoint, Key, Secret, Token)
         {
             Parent = this,
         };

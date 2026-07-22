@@ -43,12 +43,12 @@ public partial class SaxoMessageAdapter
 	{
 		if (_client != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		var accessToken = AccessToken?.UnSecure();
+		var accessToken = Token?.UnSecure();
 		var refreshToken = RefreshToken?.UnSecure();
 		if (accessToken.IsEmpty() && refreshToken.IsEmpty())
-			throw new InvalidOperationException("Saxo AccessToken or RefreshToken is required.");
+			throw new InvalidOperationException("Saxo Token or RefreshToken is required.");
 
-		_client = new(Environment, accessToken, refreshToken, ClientId, ClientSecret?.UnSecure(), RedirectUri,
+		_client = new(Environment, accessToken, refreshToken, Key?.UnSecure(), Secret?.UnSecure(), RedirectUri,
 			Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 		_client.PriceReceived += OnPriceReceived;
 		_client.CandleReceived += OnCandleReceived;

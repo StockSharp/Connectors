@@ -20,7 +20,7 @@ Every REST request, response and WebSocket frame used by the connector is repres
 
 1. Open an LS Securities account and register for both XingAPI and Open API on the LS Securities website.
 2. Create separate production or simulation application credentials as required by LS Securities.
-3. Set `AppKey` and `AppSecret` to the issued credentials.
+3. Set `Key` and `Secret` to the issued credentials.
 4. Set `IsDemo` for the simulation WebSocket endpoint. LS routes REST requests to production or simulation according to the credentials.
 5. Optionally set `Account` to the portfolio label that StockSharp should expose. Application credentials are issued per account, so the account number is not included in order payloads.
 

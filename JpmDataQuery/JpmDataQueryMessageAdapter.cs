@@ -29,10 +29,10 @@ public partial class JpmDataQueryMessageAdapter
 	{
 		if (_client != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		if (ClientId.IsEmpty())
+		if (Key.IsEmpty())
 			throw new InvalidOperationException(
-				$"{LocalizedStrings.ClientId}: {LocalizedStrings.InvalidValue}.");
-		if (ClientSecret.IsEmpty())
+				$"{LocalizedStrings.Key}: {LocalizedStrings.InvalidValue}.");
+		if (Secret.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		if (GroupId.IsEmpty())
 			throw new InvalidOperationException(
@@ -41,7 +41,7 @@ public partial class JpmDataQueryMessageAdapter
 			throw new InvalidOperationException(
 				$"{LocalizedStrings.Field}: {LocalizedStrings.InvalidValue}.");
 
-		var client = new JpmDataQueryClient(ClientId, ClientSecret.UnSecure()) { Parent = this };
+		var client = new JpmDataQueryClient(Key?.UnSecure(), Secret.UnSecure()) { Parent = this };
 		_client = client;
 		try
 		{

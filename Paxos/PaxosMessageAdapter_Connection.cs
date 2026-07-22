@@ -17,7 +17,7 @@ public partial class PaxosMessageAdapter
 			cancellationToken);
 		try
 		{
-			_restClient = new(ApiEndpoint, OAuthEndpoint, ClientId, ClientSecret,
+			_restClient = new(ApiEndpoint, OAuthEndpoint, Key, Secret,
 				Scopes)
 			{
 				Parent = this,

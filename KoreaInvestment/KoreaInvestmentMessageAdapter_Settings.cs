@@ -14,19 +14,19 @@ namespace StockSharp.KoreaInvestment;
 	MessageAdapterCategories.Candles | MessageAdapterCategories.History | MessageAdapterCategories.Stock |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options)]
 [OrderCondition(typeof(KoreaInvestmentOrderCondition))]
-public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapter
+public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
 	/// <summary>Application key issued by KIS Developers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentAppKeyKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KoreaInvestmentAppKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public SecureString AppKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Application secret issued by KIS Developers.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentAppSecretKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.KoreaInvestmentAppSecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString AppSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>First eight digits of the KIS account number.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KoreaInvestmentAccountKey,
@@ -57,8 +57,8 @@ public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapte
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(AppKey), AppKey)
-			.Set(nameof(AppSecret), AppSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(AccountNumber), AccountNumber)
 			.Set(nameof(ProductCode), ProductCode)
 			.Set(nameof(HtsId), HtsId)
@@ -69,8 +69,8 @@ public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapte
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		AppKey = storage.GetValue<SecureString>(nameof(AppKey));
-		AppSecret = storage.GetValue<SecureString>(nameof(AppSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		AccountNumber = storage.GetValue<string>(nameof(AccountNumber));
 		ProductCode = storage.GetValue(nameof(ProductCode), ProductCode);
 		HtsId = storage.GetValue<string>(nameof(HtsId));

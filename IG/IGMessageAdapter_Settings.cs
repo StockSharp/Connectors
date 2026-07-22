@@ -13,7 +13,7 @@ namespace StockSharp.IG;
 	MessageAdapterCategories.Candles | MessageAdapterCategories.History | MessageAdapterCategories.Stock |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options)]
 [OrderCondition(typeof(IgOrderCondition))]
-public partial class IgMessageAdapter : MessageAdapter
+public partial class IgMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
 	/// <summary>IG application API key.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IgApiKeyKey,
@@ -25,7 +25,7 @@ public partial class IgMessageAdapter : MessageAdapter
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,
 		Description = LocalizedStrings.LoginDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public string UserName { get; set; }
+	public string Login { get; set; }
 
 	/// <summary>IG account password.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
@@ -54,7 +54,7 @@ public partial class IgMessageAdapter : MessageAdapter
 		base.Save(storage);
 		storage
 			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(UserName), UserName)
+			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
 			.Set(nameof(AccountId), AccountId)
 			.Set(nameof(Environment), Environment)
@@ -66,7 +66,7 @@ public partial class IgMessageAdapter : MessageAdapter
 	{
 		base.Load(storage);
 		ApiKey = storage.GetValue<string>(nameof(ApiKey));
-		UserName = storage.GetValue<string>(nameof(UserName));
+		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));
 		AccountId = storage.GetValue<string>(nameof(AccountId));
 		Environment = storage.GetValue(nameof(Environment), Environment);

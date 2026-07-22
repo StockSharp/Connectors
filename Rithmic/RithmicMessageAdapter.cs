@@ -54,7 +54,7 @@ public partial class RithmicMessageAdapter
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg, CancellationToken cancellationToken)
 	{
-		if (UserName.IsEmpty())
+		if (Login.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.LoginNotSpecified);
 
 		if (ServerAddress.IsEmpty())
@@ -173,7 +173,7 @@ public partial class RithmicMessageAdapter
 			{
 				TemplateId = TemplateId.RequestLogin,
 				TemplateVersion = "3.9",
-				User = UserName,
+				User = Login,
 				Password = Password.UnSecure(),
 				AppName = nameof(StockSharp),
 				AppVersion = "1.0.0.0",

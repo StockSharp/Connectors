@@ -13,13 +13,13 @@ namespace StockSharp.Saxo;
 	MessageAdapterCategories.History | MessageAdapterCategories.Stock | MessageAdapterCategories.Futures |
 	MessageAdapterCategories.Options | MessageAdapterCategories.FX)]
 [OrderCondition(typeof(SaxoOrderCondition))]
-public partial class SaxoMessageAdapter : MessageAdapter
+public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
 	/// <summary>OAuth access token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoAccessTokenKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.SaxoAccessTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public SecureString AccessToken { get; set; }
+	public SecureString Token { get; set; }
 
 	/// <summary>OAuth refresh token.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoRefreshTokenKey,
@@ -27,14 +27,14 @@ public partial class SaxoMessageAdapter : MessageAdapter
 	public SecureString RefreshToken { get; set; }
 
 	/// <summary>OAuth application key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoClientIdKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.SaxoClientIdDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>OAuth application secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoClientSecretKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SaxoClientSecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
-	public SecureString ClientSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>OAuth redirect URI registered for the application.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SaxoRedirectUriKey,
@@ -57,10 +57,10 @@ public partial class SaxoMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(AccessToken), AccessToken)
+			.Set(nameof(Token), Token)
 			.Set(nameof(RefreshToken), RefreshToken)
-			.Set(nameof(ClientId), ClientId)
-			.Set(nameof(ClientSecret), ClientSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(RedirectUri), RedirectUri)
 			.Set(nameof(AccountKey), AccountKey)
 			.Set(nameof(Environment), Environment);
@@ -70,10 +70,10 @@ public partial class SaxoMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		AccessToken = storage.GetValue<SecureString>(nameof(AccessToken));
+		Token = storage.GetValue<SecureString>(nameof(Token));
 		RefreshToken = storage.GetValue<SecureString>(nameof(RefreshToken));
-		ClientId = storage.GetValue<string>(nameof(ClientId));
-		ClientSecret = storage.GetValue<SecureString>(nameof(ClientSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		RedirectUri = storage.GetValue<string>(nameof(RedirectUri));
 		AccountKey = storage.GetValue<string>(nameof(AccountKey));
 		Environment = storage.GetValue(nameof(Environment), Environment);

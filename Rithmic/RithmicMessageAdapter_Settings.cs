@@ -20,7 +20,7 @@ using Ecng.Serialization;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options |
 	MessageAdapterCategories.Ticks)]
-public partial class RithmicMessageAdapter : MessageAdapter
+public partial class RithmicMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
 	/// <summary>
 	/// User login.
@@ -32,7 +32,7 @@ public partial class RithmicMessageAdapter : MessageAdapter
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
-	public string UserName { get; set; }
+	public string Login { get; set; }
 
 	/// <summary>
 	/// User password.
@@ -76,7 +76,7 @@ public partial class RithmicMessageAdapter : MessageAdapter
 		base.Save(storage);
 
 		storage
-			.Set(nameof(UserName), UserName)
+			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
 			.Set(nameof(SystemName), SystemName)
 			.Set(nameof(ServerAddress), ServerAddress);
@@ -87,7 +87,7 @@ public partial class RithmicMessageAdapter : MessageAdapter
 	{
 		base.Load(storage);
 
-		UserName = storage.GetValue<string>(nameof(UserName));
+		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));
 		SystemName = storage.GetValue<string>(nameof(SystemName));
 		ServerAddress = storage.GetValue<string>(nameof(ServerAddress));
@@ -95,5 +95,5 @@ public partial class RithmicMessageAdapter : MessageAdapter
 
 	/// <inheritdoc />
 	public override string ToString()
-		=> base.ToString() + $": {UserName} @ {SystemName}";
+		=> base.ToString() + $": {Login} @ {SystemName}";
 }

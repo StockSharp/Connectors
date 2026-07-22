@@ -88,19 +88,19 @@ public partial class PhillipPoemsMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 		ClearState();
-		var accessToken = AccessToken?.UnSecure();
+		var accessToken = Token?.UnSecure();
 		var refreshToken = RefreshToken?.UnSecure();
 		if (accessToken.IsEmpty() && refreshToken.IsEmpty())
 			throw new InvalidOperationException(
 				"A POEMS access token or refresh token is required.");
 		if (!refreshToken.IsEmpty() &&
-			(ClientId.IsEmpty() || ClientSecret?.UnSecure().IsEmpty() != false))
+			(Key.IsEmpty() || Secret?.UnSecure().IsEmpty() != false))
 			throw new InvalidOperationException(
 				"POEMS client credentials are required when a refresh token is configured.");
 
 		var client = new PhillipPoemsClient(IsDemo,
-			ApiKey?.UnSecure().ThrowIfEmpty(nameof(ApiKey)), ClientId,
-			ClientSecret?.UnSecure(), accessToken, refreshToken);
+			ApiKey?.UnSecure().ThrowIfEmpty(nameof(ApiKey)), Key?.UnSecure(),
+			Secret?.UnSecure(), accessToken, refreshToken);
 		_client = client;
 		try
 		{
@@ -283,7 +283,7 @@ public partial class PhillipPoemsMessageAdapter
 		if (_client == null)
 			return;
 		if (!_client.AccessToken.IsEmpty())
-			AccessToken = _client.AccessToken.Secure();
+			Token = _client.AccessToken.Secure();
 		if (!_client.RefreshToken.IsEmpty())
 			RefreshToken = _client.RefreshToken.Secure();
 	}

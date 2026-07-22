@@ -11,23 +11,23 @@ namespace StockSharp.Trading212;
 [MessageAdapterCategory(MessageAdapterCategories.Europe | MessageAdapterCategories.Free |
 	MessageAdapterCategories.Transactions | MessageAdapterCategories.Stock)]
 [OrderCondition(typeof(Trading212OrderCondition))]
-public partial class Trading212MessageAdapter : MessageAdapter, IDemoAdapter
+public partial class Trading212MessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Trading 212 Public API key.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.Trading212ApiKeyKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.Trading212ApiKeyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public SecureString ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Trading 212 Public API secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.Trading212ApiSecretKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.Trading212ApiSecretDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString ApiSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
@@ -53,8 +53,8 @@ public partial class Trading212MessageAdapter : MessageAdapter, IDemoAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(ApiSecret), ApiSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(IsDemo), IsDemo)
 			.Set(nameof(PollingInterval), PollingInterval);
 	}
@@ -63,8 +63,8 @@ public partial class Trading212MessageAdapter : MessageAdapter, IDemoAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ApiKey = storage.GetValue<SecureString>(nameof(ApiKey));
-		ApiSecret = storage.GetValue<SecureString>(nameof(ApiSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 		PollingInterval = storage.GetValue(nameof(PollingInterval), PollingInterval);
 	}

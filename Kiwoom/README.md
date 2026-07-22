@@ -20,7 +20,7 @@ Every REST request, response and WebSocket frame used by the connector is repres
 ## Configuration
 
 1. Open a Kiwoom securities account and register an application in the Kiwoom REST API portal.
-2. Set `AppKey` and `AppSecret` to the credentials issued for the application.
+2. Set `Key` and `Secret` to the credentials issued for the application.
 3. Set `IsDemo` to use `mockapi.kiwoom.com`. The mock environment officially supports domestic KRX functions only.
 
 Use `KRX`, `NXT`, `SOR`, `NASDAQ`, `NYSE` or `AMEX` as the security board. `KiwoomOrderCondition.Market` can explicitly select a native market when a board is unavailable. The condition also exposes the native order division, domestic time in force and stop price.

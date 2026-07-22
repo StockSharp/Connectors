@@ -8,23 +8,23 @@ namespace StockSharp.SnapTrade;
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Transactions | MessageAdapterCategories.Stock)]
 [OrderCondition(typeof(SnapTradeOrderCondition))]
-public partial class SnapTradeMessageAdapter : MessageAdapter
+public partial class SnapTradeMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private TimeSpan _pollingInterval = TimeSpan.FromMinutes(1);
 
 	/// <summary>Partner or Personal API client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SnapTradeClientIdKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.SnapTradeClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Secret used to sign SnapTrade API requests.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SnapTradeConsumerKeyKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SnapTradeConsumerKeyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString ConsumerKey { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Commercial SnapTrade user identifier. Empty for a Personal API key.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SnapTradeUserIdKey,
@@ -64,8 +64,8 @@ public partial class SnapTradeMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ClientId), ClientId)
-			.Set(nameof(ConsumerKey), ConsumerKey)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(UserId), UserId)
 			.Set(nameof(UserSecret), UserSecret)
 			.Set(nameof(AccountId), AccountId)
@@ -76,8 +76,8 @@ public partial class SnapTradeMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ClientId = storage.GetValue<string>(nameof(ClientId));
-		ConsumerKey = storage.GetValue<SecureString>(nameof(ConsumerKey));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		UserId = storage.GetValue<string>(nameof(UserId));
 		UserSecret = storage.GetValue<SecureString>(nameof(UserSecret));
 		AccountId = storage.GetValue<string>(nameof(AccountId));

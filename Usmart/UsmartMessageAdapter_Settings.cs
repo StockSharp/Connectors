@@ -12,14 +12,14 @@ namespace StockSharp.Usmart;
 	MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Candles |
 	MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(UsmartOrderCondition))]
-public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter
+public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, ITokenAdapter
 {
 	/// <summary>Authentication token issued by uSMART.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartAccessTokenKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.UsmartAccessTokenDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public SecureString AccessToken { get; set; }
+	public SecureString Token { get; set; }
 
 	/// <summary>Channel identifier assigned by uSMART.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartChannelKey,
@@ -49,7 +49,7 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter
 	public SecureString EncryptedTradePassword { get; set; }
 
 	/// <summary>Use the official UAT endpoints.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UsmartDemoKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.UsmartDemoDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 5)]
 	public bool IsDemo { get; set; }
@@ -65,7 +65,7 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(AccessToken), AccessToken)
+			.Set(nameof(Token), Token)
 			.Set(nameof(ChannelId), ChannelId)
 			.Set(nameof(PrivateKey), PrivateKey)
 			.Set(nameof(FundAccount), FundAccount)
@@ -78,7 +78,7 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		AccessToken = storage.GetValue<SecureString>(nameof(AccessToken));
+		Token = storage.GetValue<SecureString>(nameof(Token));
 		ChannelId = storage.GetValue<string>(nameof(ChannelId));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));
 		FundAccount = storage.GetValue<string>(nameof(FundAccount));

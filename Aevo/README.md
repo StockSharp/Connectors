@@ -24,8 +24,8 @@ samples as exchange candles.
 
 ## Configuration
 
-Public market data requires no credentials. Account data requires `ApiKey` and
-`ApiSecret`. `WalletAddress` is optional when the authenticated account should
+Public market data requires no credentials. Account data requires `Key` and
+`Secret`. `WalletAddress` is optional when the authenticated account should
 be discovered from the API.
 
 Trading additionally requires `SigningKey`, the EVM private signing key

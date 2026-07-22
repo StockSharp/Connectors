@@ -1,6 +1,6 @@
 namespace StockSharp.Copper;
 
-public partial class CopperMessageAdapter
+public partial class CopperMessageAdapter : IKeySecretAdapter
 {
 	private CopperEnvironments _environment = CopperEnvironments.Production;
 	private string _apiEndpoint =
@@ -29,7 +29,7 @@ public partial class CopperMessageAdapter
 		Description = LocalizedStrings.KeyKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public string ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Copper HMAC API secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -37,7 +37,7 @@ public partial class CopperMessageAdapter
 		Description = LocalizedStrings.SecretKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
-	public SecureString ApiSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Copper Platform REST root ending in /platform.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -120,8 +120,8 @@ public partial class CopperMessageAdapter
 		base.Save(storage);
 		storage
 			.Set(nameof(Environment), Environment)
-			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(ApiSecret), ApiSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(ApiEndpoint), ApiEndpoint)
 			.Set(nameof(PollingInterval), PollingInterval)
 			.Set(nameof(PageSize), PageSize)
@@ -134,8 +134,8 @@ public partial class CopperMessageAdapter
 	{
 		base.Load(storage);
 		Environment = storage.GetValue(nameof(Environment), Environment);
-		ApiKey = storage.GetValue<string>(nameof(ApiKey));
-		ApiSecret = storage.GetValue<SecureString>(nameof(ApiSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		ApiEndpoint = storage.GetValue(nameof(ApiEndpoint), ApiEndpoint);
 		PollingInterval = storage.GetValue(nameof(PollingInterval),
 			PollingInterval);
@@ -149,8 +149,8 @@ public partial class CopperMessageAdapter
 		=> new CopperMessageAdapter(TransactionIdGenerator)
 		{
 			Environment = Environment,
-			ApiKey = ApiKey,
-			ApiSecret = ApiSecret,
+			Key = Key,
+			Secret = Secret,
 			ApiEndpoint = ApiEndpoint,
 			PollingInterval = PollingInterval,
 			PageSize = PageSize,

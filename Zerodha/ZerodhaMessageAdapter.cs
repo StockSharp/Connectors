@@ -80,14 +80,14 @@ public partial class ZerodhaMessageAdapter
 		if (_rest != null || _stream != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		var apiKey = ApiKey.ThrowIfEmpty(nameof(ApiKey));
+		var apiKey = Key?.UnSecure().ThrowIfEmpty(nameof(Key));
 		var accessToken = Token?.UnSecure();
 		_rest = new(apiKey, accessToken, Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 		try
 		{
 			if (accessToken.IsEmpty())
 			{
-				var session = await _rest.ExchangeToken(RequestToken?.UnSecure(), ApiSecret?.UnSecure(),
+				var session = await _rest.ExchangeToken(RequestToken?.UnSecure(), Secret?.UnSecure(),
 					cancellationToken);
 				accessToken = session.AccessToken;
 				Token = accessToken.Secure();

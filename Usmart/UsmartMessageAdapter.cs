@@ -75,7 +75,7 @@ public partial class UsmartMessageAdapter
 		if (_rest != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 		ClearState();
-		var token = AccessToken?.UnSecure().ThrowIfEmpty(nameof(AccessToken));
+		var token = Token?.UnSecure().ThrowIfEmpty(nameof(Token));
 		var channel = ChannelId.ThrowIfEmpty(nameof(ChannelId));
 		var privateKey = PrivateKey?.UnSecure().ThrowIfEmpty(nameof(PrivateKey));
 		FundAccount.ThrowIfEmpty(nameof(FundAccount));

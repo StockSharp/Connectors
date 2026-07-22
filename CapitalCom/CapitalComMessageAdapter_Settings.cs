@@ -12,7 +12,7 @@ namespace StockSharp.CapitalCom;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Candles | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Futures | MessageAdapterCategories.FX)]
 [OrderCondition(typeof(CapitalComOrderCondition))]
-public partial class CapitalComMessageAdapter : MessageAdapter, IDemoAdapter
+public partial class CapitalComMessageAdapter : MessageAdapter, IDemoAdapter, ILoginPasswordAdapter
 {
 	/// <summary>API key generated in Capital.com API integrations.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CapitalComApiKeyKey,

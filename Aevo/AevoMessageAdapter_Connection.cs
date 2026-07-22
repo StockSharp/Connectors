@@ -18,7 +18,7 @@ public partial class AevoMessageAdapter
 			cancellationToken);
 		try
 		{
-			_authenticator = new(ApiKey, ApiSecret);
+			_authenticator = new(Key?.UnSecure(), Secret);
 			_signer = new(SigningKey, Environment);
 			_restClient = new(RestEndpoint.IsEmpty()
 				? Environment.RestEndpoint()

@@ -11,7 +11,7 @@ namespace StockSharp.Copper;
 	MessageAdapterCategories.History | MessageAdapterCategories.Paid |
 	MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(CopperOrderCondition))]
-public partial class CopperMessageAdapter : MessageAdapter
+public partial class CopperMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private sealed class PortfolioReference
 	{

@@ -88,8 +88,8 @@ public partial class KoreaInvestmentMessageAdapter
 	{
 		if (_rest != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		var appKey = AppKey?.UnSecure().ThrowIfEmpty(nameof(AppKey));
-		var appSecret = AppSecret?.UnSecure().ThrowIfEmpty(nameof(AppSecret));
+		var appKey = Key?.UnSecure().ThrowIfEmpty(nameof(Key));
+		var appSecret = Secret?.UnSecure().ThrowIfEmpty(nameof(Secret));
 		if (this.IsTransactional())
 		{
 			AccountNumber.ThrowIfEmpty(nameof(AccountNumber));

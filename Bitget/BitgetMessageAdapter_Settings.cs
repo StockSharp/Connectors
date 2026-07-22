@@ -1,4 +1,4 @@
-﻿namespace StockSharp.Bitget;
+namespace StockSharp.Bitget;
 
 using Ecng.ComponentModel;
 
@@ -44,7 +44,7 @@ public enum BitgetSections
 	MessageAdapterCategories.Free | MessageAdapterCategories.Ticks | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(BitgetOrderCondition))]
-public partial class BitgetMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
+public partial class BitgetMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter, IPassphraseAdapter
 {
 	/// <summary>
 	/// Possible time-frames.

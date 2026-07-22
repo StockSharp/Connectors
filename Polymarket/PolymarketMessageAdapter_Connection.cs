@@ -30,7 +30,7 @@ public partial class PolymarketMessageAdapter
 						StringComparison.OrdinalIgnoreCase))
 				throw new InvalidOperationException(
 					"An EOA Polymarket funder address must match the signer address.");
-			_authenticator = new(ApiKey, ApiSecret, Passphrase, signerAddress);
+			_authenticator = new(Key?.UnSecure(), Secret, Passphrase, signerAddress);
 			_restClient = new(ClobEndpoint, DataEndpoint, _authenticator)
 			{
 				Parent = this,

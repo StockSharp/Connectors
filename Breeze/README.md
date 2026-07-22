@@ -15,7 +15,7 @@ The connector integrates StockSharp with the current ICICI Direct Breeze API for
 
 ## Connection
 
-Create an application in the Breeze portal and configure `ApiKey`, `SecretKey`, and the daily `ApiSession`. The API session expires every trading day and must be regenerated through the ICICI Direct login flow. Order operations also require the static public IP registered with ICICI Direct.
+Create an application in the Breeze portal and configure `Key`, `Secret`, and the daily `ApiSession`. The API session expires every trading day and must be regenerated through the ICICI Direct login flow. Order operations also require the static public IP registered with ICICI Direct.
 
 Market orders are intentionally rejected: the current Breeze trading rules require an explicit limit price. Margin and Option Plus order flows are outside the connector's regular order lifecycle.
 

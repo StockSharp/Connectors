@@ -35,7 +35,7 @@ public enum EdgeXSections
 	MessageAdapterCategories.Free | MessageAdapterCategories.Ticks | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(EdgeXOrderCondition))]
-public partial class EdgeXMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
+public partial class EdgeXMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter, IPassphraseAdapter
 {
 	/// <summary>
 	/// Possible candle time-frames.

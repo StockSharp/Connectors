@@ -11,23 +11,23 @@ namespace StockSharp.JpmDataQuery;
 	MessageAdapterCategories.Options | MessageAdapterCategories.FX |
 	MessageAdapterCategories.Commodities | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.Paid)]
-public partial class JpmDataQueryMessageAdapter : MessageAdapter
+public partial class JpmDataQueryMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private const string _defaultAttribute = "MIDPRC";
 
 	/// <summary>OAuth application client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientIdKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>OAuth application client secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.SecretDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString ClientSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Entitled DataQuery group identifier used for instrument discovery.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.GroupIdKey,
@@ -60,8 +60,8 @@ public partial class JpmDataQueryMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ClientId), ClientId)
-			.Set(nameof(ClientSecret), ClientSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(GroupId), GroupId)
 			.Set(nameof(Attribute), Attribute)
 			.Set(nameof(ValueField), ValueField)
@@ -72,8 +72,8 @@ public partial class JpmDataQueryMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ClientId = storage.GetValue<string>(nameof(ClientId));
-		ClientSecret = storage.GetValue<SecureString>(nameof(ClientSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		GroupId = storage.GetValue<string>(nameof(GroupId));
 		Attribute = storage.GetValue(nameof(Attribute), _defaultAttribute);
 		ValueField = storage.GetValue(nameof(ValueField), ValueField);

@@ -26,7 +26,7 @@ public enum CapitalFuturesEnvironments
 	MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Transactions |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options)]
 [OrderCondition(typeof(CapitalFuturesOrderCondition))]
-public partial class CapitalFuturesMessageAdapter : MessageAdapter
+public partial class CapitalFuturesMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
 	/// <summary>Path to the official Capital API interop assembly or extracted C# package.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PathKey,

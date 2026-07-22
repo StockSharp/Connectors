@@ -15,7 +15,7 @@ public enum AevoEnvironments
 	Testnet,
 }
 
-public partial class AevoMessageAdapter
+public partial class AevoMessageAdapter : IKeySecretAdapter
 {
 	/// <summary>Aevo environment.</summary>
 	[Display(Name = "Environment", Description = "Aevo API environment.",
@@ -29,7 +29,7 @@ public partial class AevoMessageAdapter
 		Description = LocalizedStrings.KeyKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public string ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>API secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -37,7 +37,7 @@ public partial class AevoMessageAdapter
 		Description = LocalizedStrings.SecretKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
-	public SecureString ApiSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Aevo account wallet address.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -121,8 +121,8 @@ public partial class AevoMessageAdapter
 		base.Save(storage);
 		storage
 			.Set(nameof(Environment), Environment)
-			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(ApiSecret), ApiSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(WalletAddress), WalletAddress)
 			.Set(nameof(SigningKey), SigningKey)
 			.Set(nameof(RestEndpoint), RestEndpoint)
@@ -137,8 +137,8 @@ public partial class AevoMessageAdapter
 	{
 		base.Load(storage);
 		Environment = storage.GetValue(nameof(Environment), Environment);
-		ApiKey = storage.GetValue<string>(nameof(ApiKey));
-		ApiSecret = storage.GetValue<SecureString>(nameof(ApiSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		WalletAddress = storage.GetValue<string>(nameof(WalletAddress));
 		SigningKey = storage.GetValue<SecureString>(nameof(SigningKey));
 		RestEndpoint = storage.GetValue<string>(nameof(RestEndpoint));
@@ -154,8 +154,8 @@ public partial class AevoMessageAdapter
 		=> new AevoMessageAdapter(TransactionIdGenerator)
 		{
 			Environment = Environment,
-			ApiKey = ApiKey,
-			ApiSecret = ApiSecret,
+			Key = Key,
+			Secret = Secret,
 			WalletAddress = WalletAddress,
 			SigningKey = SigningKey,
 			RestEndpoint = RestEndpoint,

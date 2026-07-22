@@ -13,7 +13,7 @@ namespace StockSharp.Aevo;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Ticks)]
 [OrderCondition(typeof(AevoOrderCondition))]
-public partial class AevoMessageAdapter : MessageAdapter
+public partial class AevoMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private class MarketSubscription
 	{

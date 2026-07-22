@@ -15,7 +15,7 @@ using System.ComponentModel.DataAnnotations;
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.RealTime |
 	MessageAdapterCategories.Transactions | MessageAdapterCategories.Candles | MessageAdapterCategories.Options |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Level1)]
-public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter
+public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IKeySecretAdapter
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey, Description = LocalizedStrings.LoginKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
@@ -30,16 +30,16 @@ public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 	/// <summary>
 	/// OAuth client identifier.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientIdKey, Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey, Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>
 	/// OAuth client secret.
 	/// </summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey, Description = LocalizedStrings.SecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
 	[BasicSetting]
-	public SecureString ClientSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
@@ -48,8 +48,8 @@ public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 		storage
 			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
-			.Set(nameof(ClientId), ClientId)
-			.Set(nameof(ClientSecret), ClientSecret);
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret);
 	}
 
 	/// <inheritdoc />
@@ -58,7 +58,7 @@ public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 		base.Load(storage);
 		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));
-		ClientId = storage.GetValue<string>(nameof(ClientId));
-		ClientSecret = storage.GetValue<SecureString>(nameof(ClientSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 	}
 }

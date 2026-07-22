@@ -17,7 +17,7 @@ using Ecng.ComponentModel;
 [MessageAdapterCategory(MessageAdapterCategories.US | MessageAdapterCategories.RealTime |
 	MessageAdapterCategories.Transactions | MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth)]
-public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IDemoAdapter
+public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IDemoAdapter, IKeySecretAdapter
 {
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey, Description = LocalizedStrings.LoginKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
@@ -32,9 +32,9 @@ public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAda
 	/// <summary>
 	/// API client identifier.
 	/// </summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientIdKey, Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey, Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>
 	/// API client secret.
@@ -91,7 +91,7 @@ public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAda
 		storage
 			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
-			.Set(nameof(ClientId), ClientId)
+			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(AppId), AppId)
 			.Set(nameof(AppVersion), AppVersion)
@@ -105,7 +105,7 @@ public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAda
 		base.Load(storage);
 		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));
-		ClientId = storage.GetValue<string>(nameof(ClientId));
+		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		AppId = storage.GetValue(nameof(AppId), AppId);
 		AppVersion = storage.GetValue(nameof(AppVersion), AppVersion);

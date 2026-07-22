@@ -50,7 +50,7 @@ public partial class NinjaTraderMessageAdapter
 		if (_httpClient != null || _marketSocket != null || _accountSocket != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(IsDemo, Login, Password, AppId, AppVersion, DeviceId, ClientId, Secret) { Parent = this };
+		_httpClient = new(IsDemo, Login, Password, AppId, AppVersion, DeviceId, Key?.UnSecure(), Secret) { Parent = this };
 		await _httpClient.Authenticate(this.IsMarketData(), cancellationToken);
 
 		if (this.IsMarketData())

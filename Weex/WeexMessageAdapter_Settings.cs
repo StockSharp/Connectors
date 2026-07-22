@@ -36,7 +36,7 @@ public enum WeexSections
 	MessageAdapterCategories.Free | MessageAdapterCategories.Ticks | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(WeexOrderCondition))]
-public partial class WeexMessageAdapter : MessageAdapter, IKeySecretAdapter
+public partial class WeexMessageAdapter : MessageAdapter, IKeySecretAdapter, IPassphraseAdapter
 {
 	private const string _defaultSpotRestEndpoint = "https://api-spot.weex.com";
 	private const string _defaultFuturesRestEndpoint = "https://api-contract.weex.com";

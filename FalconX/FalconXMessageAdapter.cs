@@ -12,7 +12,7 @@ namespace StockSharp.FalconX;
 	MessageAdapterCategories.Transactions | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.MarketDepth)]
 [OrderCondition(typeof(FalconXOrderCondition))]
-public partial class FalconXMessageAdapter : MessageAdapter
+public partial class FalconXMessageAdapter : MessageAdapter, IKeySecretAdapter, IPassphraseAdapter
 {
 	private sealed class MarketSubscription
 	{

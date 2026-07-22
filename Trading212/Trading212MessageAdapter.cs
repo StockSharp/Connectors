@@ -54,8 +54,8 @@ public partial class Trading212MessageAdapter
 		if (_client != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		var apiKey = ApiKey?.UnSecure().ThrowIfEmpty(nameof(ApiKey));
-		var apiSecret = ApiSecret?.UnSecure().ThrowIfEmpty(nameof(ApiSecret));
+		var apiKey = Key?.UnSecure().ThrowIfEmpty(nameof(Key));
+		var apiSecret = Secret?.UnSecure().ThrowIfEmpty(nameof(Secret));
 		var client = new Trading212Client(apiKey, apiSecret, IsDemo,
 			Math.Max(1, ReConnectionSettings.ReAttemptCount))
 		{

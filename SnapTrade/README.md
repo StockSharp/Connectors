@@ -18,8 +18,8 @@ All request and response bodies use typed DTOs. Safe reads and the symbol-search
 
 ## Configuration
 
-- `ClientId` - the client ID from a Personal or Commercial SnapTrade API key.
-- `ConsumerKey` - the secret used for HMAC-SHA256 request signatures.
+- `Key` - the client ID from a Personal or Commercial SnapTrade API key.
+- `Secret` - the secret used for HMAC-SHA256 request signatures.
 - `UserId` and `UserSecret` - required together for a Commercial app user. Leave both empty when the API key is Personal and represents the authenticated user directly.
 - `AccountId` - the SnapTrade brokerage-account UUID or account number. It may be omitted only when one usable investment account is available.
 - `PollingInterval` - minimum spacing between polling jobs. The default is one minute and values below 15 seconds are clamped.

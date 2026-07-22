@@ -49,7 +49,7 @@ public partial class LimeMessageAdapter
 		if (_httpClient != null || _accountSocket != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(Login, Password, ClientId, ClientSecret) { Parent = this };
+		_httpClient = new(Login, Password, Key?.UnSecure(), Secret) { Parent = this };
 		await _httpClient.Authenticate(cancellationToken);
 		await EnsureAccounts(cancellationToken);
 

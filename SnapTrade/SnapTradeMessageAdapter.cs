@@ -59,8 +59,8 @@ public partial class SnapTradeMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 		ClearState();
 
-		var clientId = ClientId.ThrowIfEmpty(nameof(ClientId));
-		var consumerKey = ConsumerKey?.UnSecure().ThrowIfEmpty(nameof(ConsumerKey));
+		var clientId = Key?.UnSecure().ThrowIfEmpty(nameof(Key));
+		var consumerKey = Secret?.UnSecure().ThrowIfEmpty(nameof(Secret));
 		var userSecret = UserSecret?.UnSecure();
 		var client = new SnapTradeClient(clientId, consumerKey, UserId, userSecret,
 			Math.Max(1, ReConnectionSettings.ReAttemptCount))

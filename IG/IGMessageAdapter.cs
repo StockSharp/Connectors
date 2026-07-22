@@ -82,7 +82,7 @@ public partial class IgMessageAdapter
 	{
 		if (_rest != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		_rest = new(Environment, ApiKey, UserName, Password?.UnSecure(), EncryptPassword,
+		_rest = new(Environment, ApiKey, Login, Password?.UnSecure(), EncryptPassword,
 			Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 		try
 		{

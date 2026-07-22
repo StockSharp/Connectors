@@ -75,7 +75,7 @@ public partial class LsSecuritiesMessageAdapter
 		if (_rest != null || _stream != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_rest = new(AppKey?.UnSecure(), AppSecret?.UnSecure(),
+		_rest = new(Key?.UnSecure(), Secret?.UnSecure(),
 			Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 		try
 		{

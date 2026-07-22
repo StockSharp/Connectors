@@ -93,11 +93,11 @@ public partial class GrowwMessageAdapter
 		if (_rest != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		if ((AccessToken?.Length ?? 0) == 0 && (ApiKey?.Length ?? 0) == 0)
+		if ((Token?.Length ?? 0) == 0 && (Key?.Length ?? 0) == 0)
 			throw new InvalidOperationException("Set either a Groww access token or API key credentials.");
 
 		var attempts = Math.Max(1, ReConnectionSettings.ReAttemptCount);
-		_rest = new(AccessToken, ApiKey, ApiSecret, TotpSecret, attempts) { Parent = this };
+		_rest = new(Token, Key, Secret, TotpSecret, attempts) { Parent = this };
 		try
 		{
 			await _rest.Connect(cancellationToken);

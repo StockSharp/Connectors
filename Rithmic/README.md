@@ -13,7 +13,7 @@ This directory contains the Rithmic protobuf/WebSocket connector for the [StockS
 
 ## Configuration
 
-- `UserName` — Rithmic user login.
+- `Login` — Rithmic user login.
 - `Password` — Rithmic user password.
 - `SystemName` — Rithmic system name assigned to the account.
 - `ServerAddress` — secure Rithmic WebSocket endpoint (`wss://...`).

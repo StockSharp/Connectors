@@ -15,7 +15,7 @@ using System.ComponentModel.DataAnnotations;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Stock | MessageAdapterCategories.Futures |
 	MessageAdapterCategories.Options | MessageAdapterCategories.FX | MessageAdapterCategories.Commodities)]
-public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapter<string>, ILoginPasswordAdapter
+public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapter<string>, ILoginPasswordAdapter, IKeySecretAdapter
 {
 	private string _address = string.Empty;
 	private string _standbyAddress = string.Empty;
@@ -76,11 +76,11 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	public SecureString Password { get; set; }
 
 	/// <summary>LSEG OAuth client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ClientIdKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.LsegClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 6)]
 	[BasicSetting]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>LSEG OAuth v2 client secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
@@ -170,7 +170,7 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 			.Set(nameof(IsHotStandby), IsHotStandby)
 			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
-			.Set(nameof(ClientId), ClientId)
+			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(ApplicationId), ApplicationId)
 			.Set(nameof(Service), Service)
@@ -191,7 +191,7 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 		IsHotStandby = storage.GetValue(nameof(IsHotStandby), IsHotStandby);
 		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));
-		ClientId = storage.GetValue<string>(nameof(ClientId));
+		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		ApplicationId = storage.GetValue(nameof(ApplicationId), ApplicationId);
 		Service = storage.GetValue(nameof(Service), Service);

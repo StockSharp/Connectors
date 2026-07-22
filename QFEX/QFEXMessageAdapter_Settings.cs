@@ -14,7 +14,7 @@ namespace StockSharp.QFEX;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles)]
 [OrderCondition(typeof(QFEXOrderCondition))]
-public partial class QFEXMessageAdapter : MessageAdapter
+public partial class QFEXMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private const string _defaultRestEndpoint = "https://api.qfex.com/";
 	private const string _defaultMarketSocketEndpoint = "wss://mds.qfex.com/";
@@ -48,7 +48,7 @@ public partial class QFEXMessageAdapter : MessageAdapter
 		Name = LocalizedStrings.KeyKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
 	[BasicSetting]
-	public string Key { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Optional QFEX API secret.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings),
@@ -121,7 +121,7 @@ public partial class QFEXMessageAdapter : MessageAdapter
 		TradeSocketEndpoint = NormalizeEndpoint(storage.GetValue(
 			nameof(TradeSocketEndpoint), TradeSocketEndpoint), true,
 			nameof(TradeSocketEndpoint));
-		Key = storage.GetValue<string>(nameof(Key));
+		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		AccountId = storage.GetValue<string>(nameof(AccountId))?.Trim();
 		if (!AccountId.IsEmpty() && !Guid.TryParse(AccountId, out _))

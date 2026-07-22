@@ -13,25 +13,25 @@ namespace StockSharp.Longbridge;
 	MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Candles | MessageAdapterCategories.History |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Options)]
 [OrderCondition(typeof(LongbridgeOrderCondition))]
-public partial class LongbridgeMessageAdapter : MessageAdapter
+public partial class LongbridgeMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
 	/// <summary>Longbridge application key or OAuth client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongbridgeAppKeyKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.LongbridgeAppKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string AppKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Legacy HMAC application secret. Leave empty for OAuth Bearer authentication.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongbridgeAppSecretKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.LongbridgeAppSecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString AppSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Longbridge access token or OAuth access token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongbridgeAccessTokenKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.LongbridgeAccessTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 2)]
 	[BasicSetting]
-	public SecureString AccessToken { get; set; }
+	public SecureString Token { get; set; }
 
 	/// <summary>Portfolio name published to StockSharp.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LongbridgePortfolioKey,
@@ -58,9 +58,9 @@ public partial class LongbridgeMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(AppKey), AppKey)
-			.Set(nameof(AppSecret), AppSecret)
-			.Set(nameof(AccessToken), AccessToken)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
+			.Set(nameof(Token), Token)
 			.Set(nameof(Portfolio), Portfolio)
 			.Set(nameof(ApiUrl), ApiUrl)
 			.Set(nameof(QuoteUrl), QuoteUrl)
@@ -71,9 +71,9 @@ public partial class LongbridgeMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		AppKey = storage.GetValue<string>(nameof(AppKey));
-		AppSecret = storage.GetValue<SecureString>(nameof(AppSecret));
-		AccessToken = storage.GetValue<SecureString>(nameof(AccessToken));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
+		Token = storage.GetValue<SecureString>(nameof(Token));
 		Portfolio = storage.GetValue(nameof(Portfolio), Portfolio);
 		ApiUrl = storage.GetValue(nameof(ApiUrl), ApiUrl);
 		QuoteUrl = storage.GetValue(nameof(QuoteUrl), QuoteUrl);

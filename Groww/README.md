@@ -21,9 +21,9 @@ An active Groww Trading API subscription is required.
 
 Choose one authentication mode:
 
-1. Set `AccessToken` to a token generated in Groww. A manually generated token expires daily at 06:00 IST.
-2. Set `ApiKey` and `ApiSecret` for the approval flow. Daily approval in Groww Cloud is still required by Groww.
-3. Set `ApiKey` to the TOTP token and `TotpSecret` to its Base32 secret. The connector creates the current six-digit TOTP code locally.
+1. Set `Token` to a token generated in Groww. A manually generated token expires daily at 06:00 IST.
+2. Set `Key` and `Secret` for the approval flow. Daily approval in Groww Cloud is still required by Groww.
+3. Set `Key` to the TOTP token and `TotpSecret` to its Base32 secret. The connector creates the current six-digit TOTP code locally.
 
 `DefaultProduct` selects the product used when `GrowwOrderCondition.Product` is not specified. The order condition also exposes native validity and stop trigger price.
 

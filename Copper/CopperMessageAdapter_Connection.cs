@@ -15,7 +15,7 @@ public partial class CopperMessageAdapter
 		try
 		{
 			ApiEndpoint = ApiEndpoint.NormalizeCopperEndpoint();
-			_restClient = new(ApiEndpoint, ApiKey, ApiSecret)
+			_restClient = new(ApiEndpoint, Key?.UnSecure(), Secret)
 			{
 				Parent = this,
 			};

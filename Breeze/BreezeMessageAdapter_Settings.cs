@@ -15,7 +15,7 @@ using System.ComponentModel.DataAnnotations;
 	MessageAdapterCategories.Ticks | MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Futures | MessageAdapterCategories.Options)]
 [OrderCondition(typeof(BreezeOrderCondition))]
-public partial class BreezeMessageAdapter : MessageAdapter
+public partial class BreezeMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private static readonly TimeSpan[] _timeFrames =
 	[
@@ -32,22 +32,22 @@ public partial class BreezeMessageAdapter : MessageAdapter
 	/// <summary>Breeze application key.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.BreezeApiKeyKey,
+		Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.BreezeApiKeyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
-	public string ApiKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Breeze application secret.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.BreezeSecretKeyKey,
+		Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.BreezeSecretKeyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
-	public SecureString SecretKey { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Daily API session generated after interactive login.</summary>
 	[Display(
@@ -64,8 +64,8 @@ public partial class BreezeMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(SecretKey), SecretKey)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(ApiSession), ApiSession);
 	}
 
@@ -73,8 +73,8 @@ public partial class BreezeMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ApiKey = storage.GetValue<string>(nameof(ApiKey));
-		SecretKey = storage.GetValue<SecureString>(nameof(SecretKey));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		ApiSession = storage.GetValue<SecureString>(nameof(ApiSession));
 	}
 }

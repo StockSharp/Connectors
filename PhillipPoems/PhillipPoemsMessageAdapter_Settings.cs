@@ -11,23 +11,23 @@ namespace StockSharp.PhillipPoems;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Ticks |
 	MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Transactions)]
 [OrderCondition(typeof(PhillipPoemsOrderCondition))]
-public partial class PhillipPoemsMessageAdapter : MessageAdapter
+public partial class PhillipPoemsMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter, IDemoAdapter
 {
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
 	/// <summary>OAuth client identifier.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsClientIdKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.PhillipPoemsClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>OAuth client secret.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsClientSecretKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.PhillipPoemsClientSecretDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString ClientSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Application API key.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsApiKeyKey,
@@ -37,11 +37,11 @@ public partial class PhillipPoemsMessageAdapter : MessageAdapter
 	public SecureString ApiKey { get; set; }
 
 	/// <summary>OAuth access token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsAccessTokenKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.PhillipPoemsAccessTokenDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
 	[BasicSetting]
-	public SecureString AccessToken { get; set; }
+	public SecureString Token { get; set; }
 
 	/// <summary>OAuth refresh token.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsRefreshTokenKey,
@@ -70,7 +70,7 @@ public partial class PhillipPoemsMessageAdapter : MessageAdapter
 	public SecureString EncryptedPin { get; set; }
 
 	/// <summary>Use the POEMS sandbox API Gateway.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PhillipPoemsDemoKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.PhillipPoemsDemoDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 8)]
 	public bool IsDemo { get; set; }
@@ -109,10 +109,10 @@ public partial class PhillipPoemsMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ClientId), ClientId)
-			.Set(nameof(ClientSecret), ClientSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(ApiKey), ApiKey)
-			.Set(nameof(AccessToken), AccessToken)
+			.Set(nameof(Token), Token)
 			.Set(nameof(RefreshToken), RefreshToken)
 			.Set(nameof(AccountNo), AccountNo)
 			.Set(nameof(AccountType), AccountType)
@@ -128,10 +128,10 @@ public partial class PhillipPoemsMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ClientId = storage.GetValue<string>(nameof(ClientId));
-		ClientSecret = storage.GetValue<SecureString>(nameof(ClientSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		ApiKey = storage.GetValue<SecureString>(nameof(ApiKey));
-		AccessToken = storage.GetValue<SecureString>(nameof(AccessToken));
+		Token = storage.GetValue<SecureString>(nameof(Token));
 		RefreshToken = storage.GetValue<SecureString>(nameof(RefreshToken));
 		AccountNo = storage.GetValue<string>(nameof(AccountNo));
 		AccountType = storage.GetValue(nameof(AccountType), AccountType);

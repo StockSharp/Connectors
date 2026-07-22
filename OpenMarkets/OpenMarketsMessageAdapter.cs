@@ -72,8 +72,8 @@ public partial class OpenMarketsMessageAdapter
 
 		ClearState();
 		var client = new OpenMarketsClient(IsTest,
-			ClientId.ThrowIfEmpty(nameof(ClientId)),
-			ClientSecret?.UnSecure().ThrowIfEmpty(nameof(ClientSecret)));
+			Key?.UnSecure().ThrowIfEmpty(nameof(Key)),
+			Secret?.UnSecure().ThrowIfEmpty(nameof(Secret)));
 		_client = client;
 		try
 		{

@@ -5,7 +5,7 @@ This connector integrates StockSharp with the official Questrade API. OAuth and 
 ## Configuration
 
 - `RefreshToken` is the rotating OAuth refresh token generated or issued for the application. The connector redeems it and keeps both returned tokens in memory.
-- `AccessToken` and `ApiServer` can be supplied together when an already redeemed session must be used. `ApiServer` must be the server returned by Questrade, normally ending in `/v1`.
+- `Token` and `ApiServer` can be supplied together when an already redeemed session must be used. `ApiServer` must be the server returned by Questrade, normally ending in `/v1`.
 - `Account` optionally chooses one account number. When empty, the primary account is preferred.
 
 Treat all tokens as credentials. A refresh response can contain a replacement refresh token; persist the current adapter settings after a successful connection if the hosting application is responsible for durable credential storage.

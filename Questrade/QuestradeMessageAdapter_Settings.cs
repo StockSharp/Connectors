@@ -12,13 +12,13 @@ namespace StockSharp.Questrade;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Candles | MessageAdapterCategories.History |
 	MessageAdapterCategories.Transactions | MessageAdapterCategories.Stock | MessageAdapterCategories.Options)]
 [OrderCondition(typeof(QuestradeOrderCondition))]
-public partial class QuestradeMessageAdapter : MessageAdapter
+public partial class QuestradeMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	/// <summary>OAuth access token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuestradeAccessTokenKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.QuestradeAccessTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public SecureString AccessToken { get; set; }
+	public SecureString Token { get; set; }
 
 	/// <summary>OAuth refresh token.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuestradeRefreshTokenKey,
@@ -41,7 +41,7 @@ public partial class QuestradeMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(AccessToken), AccessToken)
+			.Set(nameof(Token), Token)
 			.Set(nameof(RefreshToken), RefreshToken)
 			.Set(nameof(ApiServer), ApiServer)
 			.Set(nameof(Account), Account);
@@ -51,7 +51,7 @@ public partial class QuestradeMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		AccessToken = storage.GetValue<SecureString>(nameof(AccessToken));
+		Token = storage.GetValue<SecureString>(nameof(Token));
 		RefreshToken = storage.GetValue<SecureString>(nameof(RefreshToken));
 		ApiServer = storage.GetValue<string>(nameof(ApiServer));
 		Account = storage.GetValue<string>(nameof(Account));

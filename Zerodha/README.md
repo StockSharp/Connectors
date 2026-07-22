@@ -19,12 +19,12 @@ Every REST form, query, JSON response and WebSocket JSON request/update used by 
 
 ## Authentication
 
-1. Create a Kite Connect application and set `ApiKey`.
+1. Create a Kite Connect application and set `Key`.
 2. Open `https://kite.zerodha.com/connect/login?v=3&api_key=YOUR_API_KEY` in a browser and complete Zerodha login and 2FA.
 3. Copy the short-lived `request_token` returned to the application's registered redirect URL.
-4. Set `RequestToken` and `ApiSecret`. If `Token` is empty, the connector computes the documented SHA-256 checksum, exchanges the request token and stores the resulting access token in `Token`.
+4. Set `RequestToken` and `Secret`. If `Token` is empty, the connector computes the documented SHA-256 checksum, exchanges the request token and stores the resulting access token in `Token`.
 
-Alternatively, set an already-issued access token directly in `Token`; `ApiSecret` and `RequestToken` are then not sent or required. Kite access tokens expire at 06:00 on the following day or earlier after logout/session invalidation. Kite Connect has no refresh-token flow for ordinary individual applications, so a new interactive login is required after expiry.
+Alternatively, set an already-issued access token directly in `Token`; `Secret` and `RequestToken` are then not sent or required. Kite access tokens expire at 06:00 on the following day or earlier after logout/session invalidation. Kite Connect has no refresh-token flow for ordinary individual applications, so a new interactive login is required after expiry.
 
 ## Streaming and market data
 

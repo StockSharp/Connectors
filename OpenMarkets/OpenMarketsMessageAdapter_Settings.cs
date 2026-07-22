@@ -10,23 +10,23 @@ namespace StockSharp.OpenMarkets;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Ticks |
 	MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Candles |
 	MessageAdapterCategories.Transactions)]
-public partial class OpenMarketsMessageAdapter : MessageAdapter
+public partial class OpenMarketsMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private TimeSpan _depthPollingInterval = TimeSpan.FromSeconds(2);
 
 	/// <summary>OAuth client identifier issued by OpenMarkets.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsClientIdKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.OpenMarketsClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string ClientId { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>OAuth client secret issued by OpenMarkets.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsClientSecretKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.OpenMarketsClientSecretDescKey,
 		GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString ClientSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <summary>Order-account code. Empty means all accessible accounts.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.OpenMarketsAccountKey,
@@ -94,8 +94,8 @@ public partial class OpenMarketsMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(ClientId), ClientId)
-			.Set(nameof(ClientSecret), ClientSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(AccountCode), AccountCode)
 			.Set(nameof(IsTest), IsTest)
 			.Set(nameof(DataSource), DataSource)
@@ -111,8 +111,8 @@ public partial class OpenMarketsMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		ClientId = storage.GetValue<string>(nameof(ClientId));
-		ClientSecret = storage.GetValue<SecureString>(nameof(ClientSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		AccountCode = storage.GetValue<string>(nameof(AccountCode));
 		IsTest = storage.GetValue(nameof(IsTest), IsTest);
 		DataSource = storage.GetValue(nameof(DataSource), DataSource);

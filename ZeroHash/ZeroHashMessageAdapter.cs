@@ -12,7 +12,7 @@ namespace StockSharp.ZeroHash;
 	MessageAdapterCategories.Transactions | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.MarketDepth)]
 [OrderCondition(typeof(ZeroHashOrderCondition))]
-public partial class ZeroHashMessageAdapter : MessageAdapter
+public partial class ZeroHashMessageAdapter : MessageAdapter, IKeySecretAdapter, IPassphraseAdapter
 {
 	private sealed class MarketSubscription
 	{

@@ -16,7 +16,7 @@ Select the environment that owns the account:
 
 `ApiEndpoint` may be overridden for an approved Copper gateway or proxy, but
 it must use HTTPS and end in `/platform`. Each request sends `Authorization:
-ApiKey <key>`, a Unix-millisecond `X-Timestamp`, and a lowercase HMAC-SHA256
+Key <key>`, a Unix-millisecond `X-Timestamp`, and a lowercase HMAC-SHA256
 `X-Signature`. The signature covers the timestamp, uppercase HTTP method, exact
 path including `/platform` and its query, and the exact minified request body.
 The secret is retained as a `SecureString` and is never transmitted.

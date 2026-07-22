@@ -13,13 +13,13 @@ namespace StockSharp.CQG;
 	MessageAdapterCategories.Candles | MessageAdapterCategories.History | MessageAdapterCategories.Stock |
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options)]
 [OrderCondition(typeof(CqgOrderCondition))]
-public partial class CqgMessageAdapter : MessageAdapter
+public partial class CqgMessageAdapter : MessageAdapter, ILoginPasswordAdapter, ITokenAdapter
 {
 	/// <summary>CQG username.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LoginKey,
 		Description = LocalizedStrings.LoginDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public string UserName { get; set; }
+	public string Login { get; set; }
 
 	/// <summary>CQG password.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PasswordKey,
@@ -33,9 +33,9 @@ public partial class CqgMessageAdapter : MessageAdapter
 	public SecureString OneTimePassword { get; set; }
 
 	/// <summary>Optional CQG access token.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CqgAccessTokenKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.TokenKey,
 		Description = LocalizedStrings.CqgAccessTokenDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 3)]
-	public SecureString AccessToken { get; set; }
+	public SecureString Token { get; set; }
 
 	/// <summary>CQG private label.</summary>
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CqgPrivateLabelKey,
@@ -72,10 +72,10 @@ public partial class CqgMessageAdapter : MessageAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(UserName), UserName)
+			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
 			.Set(nameof(OneTimePassword), OneTimePassword)
-			.Set(nameof(AccessToken), AccessToken)
+			.Set(nameof(Token), Token)
 			.Set(nameof(PrivateLabel), PrivateLabel)
 			.Set(nameof(ClientId), ClientId)
 			.Set(nameof(ClientVersion), ClientVersion)
@@ -88,10 +88,10 @@ public partial class CqgMessageAdapter : MessageAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		UserName = storage.GetValue<string>(nameof(UserName));
+		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));
 		OneTimePassword = storage.GetValue<SecureString>(nameof(OneTimePassword));
-		AccessToken = storage.GetValue<SecureString>(nameof(AccessToken));
+		Token = storage.GetValue<SecureString>(nameof(Token));
 		PrivateLabel = storage.GetValue(nameof(PrivateLabel), PrivateLabel);
 		ClientId = storage.GetValue(nameof(ClientId), ClientId);
 		ClientVersion = storage.GetValue(nameof(ClientVersion), ClientVersion);

@@ -154,7 +154,7 @@ public partial class RainMessageAdapter
             if (removed)
                 await ReleaseStreamAsync(
                     RainSocketChannels.AccountBalance,
-                    RestClient.AccessToken, cancellationToken);
+					RestClient.AccessToken, cancellationToken);
             return;
         }
         ValidatePortfolio(lookupMsg.PortfolioName);
@@ -180,7 +180,7 @@ public partial class RainMessageAdapter
         try
         {
             await AcquireStreamAsync(RainSocketChannels.AccountBalance,
-                RestClient.AccessToken, cancellationToken);
+				RestClient.AccessToken, cancellationToken);
             await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
         }
         catch
@@ -239,7 +239,7 @@ public partial class RainMessageAdapter
         try
         {
             await AcquireStreamAsync(RainSocketChannels.Orders,
-                RestClient.AccessToken, cancellationToken);
+				RestClient.AccessToken, cancellationToken);
             await SendSubscriptionResultAsync(statusMsg, cancellationToken);
         }
         catch
@@ -516,7 +516,7 @@ public partial class RainMessageAdapter
         }
         if (removed)
             await ReleaseStreamAsync(RainSocketChannels.Orders,
-                RestClient.AccessToken, cancellationToken);
+				RestClient.AccessToken, cancellationToken);
     }
 
     private async ValueTask CompleteOrderStatusAsync(

@@ -13,19 +13,19 @@ namespace StockSharp.Kiwoom;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Ticks |
 	MessageAdapterCategories.Candles | MessageAdapterCategories.History | MessageAdapterCategories.Stock)]
 [OrderCondition(typeof(KiwoomOrderCondition))]
-public partial class KiwoomMessageAdapter : MessageAdapter, IDemoAdapter
+public partial class KiwoomMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
 	/// <summary>Application key issued by the Kiwoom REST API portal.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KiwoomAppKeyKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KeyKey,
 		Description = LocalizedStrings.KiwoomAppKeyDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 0)]
 	[BasicSetting]
-	public SecureString AppKey { get; set; }
+	public SecureString Key { get; set; }
 
 	/// <summary>Application secret issued by the Kiwoom REST API portal.</summary>
-	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KiwoomAppSecretKey,
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SecretKey,
 		Description = LocalizedStrings.KiwoomAppSecretDescKey, GroupName = LocalizedStrings.ConnectionKey, Order = 1)]
 	[BasicSetting]
-	public SecureString AppSecret { get; set; }
+	public SecureString Secret { get; set; }
 
 	/// <inheritdoc />
 	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DemoKey,
@@ -38,8 +38,8 @@ public partial class KiwoomMessageAdapter : MessageAdapter, IDemoAdapter
 	{
 		base.Save(storage);
 		storage
-			.Set(nameof(AppKey), AppKey)
-			.Set(nameof(AppSecret), AppSecret)
+			.Set(nameof(Key), Key)
+			.Set(nameof(Secret), Secret)
 			.Set(nameof(IsDemo), IsDemo);
 	}
 
@@ -47,8 +47,8 @@ public partial class KiwoomMessageAdapter : MessageAdapter, IDemoAdapter
 	public override void Load(SettingsStorage storage)
 	{
 		base.Load(storage);
-		AppKey = storage.GetValue<SecureString>(nameof(AppKey));
-		AppSecret = storage.GetValue<SecureString>(nameof(AppSecret));
+		Key = storage.GetValue<SecureString>(nameof(Key));
+		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 	}
 }
