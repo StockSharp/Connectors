@@ -1,3 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\StockSharp (GitHub)\common_target_tests.props" />
+  <ItemGroup>
+    <ProjectReference Include="..\Deriv\Deriv.csproj" />
+  </ItemGroup>
 </Project>
