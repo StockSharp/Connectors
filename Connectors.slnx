@@ -104,6 +104,7 @@
     <Project Path="Marquee/Marquee.csproj" />
     <Project Path="Marketstack/Marketstack.csproj" />
     <Project Path="MatchTrader/MatchTrader.csproj" />
+    <Project Path="MetaApi/MetaApi.csproj" />
     <Project Path="Mexc/Mexc.csproj" />
     <Project Path="MiraeSharekhan/MiraeSharekhan.csproj" />
     <Project Path="Morningstar/Morningstar.csproj" />
