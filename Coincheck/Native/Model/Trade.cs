@@ -3,6 +3,12 @@ namespace StockSharp.Coincheck.Native.Model;
 [JsonConverter(typeof(JArrayToObjectConverter))]
 class Trade
 {
+	// the stream sends [timestamp, id, pair, rate, amount, order_type, taker_id, maker_id, ...]
+	// and JArrayToObjectConverter maps the elements by declaration order, so the leading
+	// unix time must be declared even though it is only converted later
+	[JsonProperty("timestamp")]
+	public long Time { get; set; }
+
 	[JsonProperty("id")]
 	public long Id { get; set; }
 

@@ -62,7 +62,9 @@ class PusherClient : BaseLogReceiver
 	{
 		var arr = msg.AsObject<JArray>();
 
-		if (arr.Count == 2)
+		// the book arrives as [pair, { bids, asks }] while trades arrive as an array of
+		// trade arrays, so the element types tell them apart - the count alone does not
+		if (arr.Count == 2 && arr[0].Type == JTokenType.String && arr[1].Type == JTokenType.Object)
 		{
 			if (OrderBookChanged is { } handler)
 				await handler((string)arr[0], arr[1].DeserializeObject<OrderBook>(), cancellationToken);
@@ -70,7 +72,10 @@ class PusherClient : BaseLogReceiver
 		else
 		{
 			if (NewTrade is { } handler)
-				await handler(arr.DeserializeObject<Trade>(), cancellationToken);
+			{
+				foreach (var trade in arr.DeserializeObject<Trade[]>())
+					await handler(trade, cancellationToken);
+			}
 		}
 	}
 

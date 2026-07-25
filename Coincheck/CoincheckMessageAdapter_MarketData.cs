@@ -107,7 +107,7 @@ partial class CoincheckMessageAdapter
 			TradeId = trade.Id,
 			TradePrice = trade.Price,
 			TradeVolume = trade.Amount,
-			ServerTime = CurrentTime,
+			ServerTime = trade.Time.FromUnix(),
 			OriginSide = trade.Type.ToSide(),
 		}, cancellationToken);
 	}
