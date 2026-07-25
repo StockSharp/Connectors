@@ -407,8 +407,7 @@ public partial class PolymarketMessageAdapter
 				break;
 			case PolymarketSocketEventTypes.NewMarket:
 			case PolymarketSocketEventTypes.MarketResolved:
-				using (_sync.EnterScope())
-					_nextMarketRefresh = CurrentTime;
+				ScheduleMarketRefresh();
 				break;
 			default:
 				throw new InvalidDataException(

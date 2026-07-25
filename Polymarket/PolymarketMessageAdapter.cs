@@ -29,6 +29,9 @@ public partial class PolymarketMessageAdapter : MessageAdapter, IKeySecretAdapte
 		public int Limit { get; init; }
 	}
 
+	private static readonly TimeSpan _marketRefreshDelay =
+		TimeSpan.FromMinutes(1);
+
 	private static readonly TimeSpan[] _timeFrames =
 	[
 		TimeSpan.FromMinutes(1),
@@ -133,6 +136,28 @@ public partial class PolymarketMessageAdapter : MessageAdapter, IKeySecretAdapte
 		using (_sync.EnterScope())
 			if (time > _serverTime)
 				_serverTime = time;
+	}
+
+	/// <summary>
+	/// Bring the next outcome catalogue refresh forward after the venue has reported a new or
+	/// a resolved market.
+	/// </summary>
+	/// <remarks>
+	/// Polymarket opens and settles short lived markets continuously, so those notifications
+	/// arrive in bursts of dozens per minute, while the catalogue itself is read as ten paged
+	/// requests of a few megabytes each. Refreshing on every notification would therefore keep
+	/// the REST connection downloading without a pause and run into the venue rate limits, so
+	/// the notifications are coalesced into one refresh per <see cref="_marketRefreshDelay"/>.
+	/// </remarks>
+	private void ScheduleMarketRefresh()
+	{
+		using (_sync.EnterScope())
+		{
+			var refreshTime = CurrentTime + _marketRefreshDelay;
+
+			if (refreshTime < _nextMarketRefresh)
+				_nextMarketRefresh = refreshTime;
+		}
 	}
 
 	private PolymarketMarket GetMarket(SecurityId securityId)
