@@ -298,7 +298,14 @@ abstract class BaseAuthPusherClient : BasePusherClient
 	}
 
 	protected override ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
-		=> Send(Operations.Login, _authenticator.GetLoginArg("/users/self/verify", Method.Get), default, cancellationToken);
+	{
+		// the business endpoint also serves public channels (candles, all trades),
+		// so a session without credentials is legitimate and must not be logged in
+		if (!_authenticator.CanSign)
+			return default;
+
+		return Send(Operations.Login, _authenticator.GetLoginArg("/users/self/verify", Method.Get), default, cancellationToken);
+	}
 
 	protected override async ValueTask<bool> OnProcessImpl(dynamic obj, CancellationToken cancellationToken)
 	{

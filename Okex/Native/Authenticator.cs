@@ -32,6 +32,9 @@ class Authenticator : Disposable
 		base.DisposeManaged();
 	}
 
+	// credentials are available, so requests and websocket sessions can be signed
+	public bool CanSign => _hasher != null;
+
 	private string Sign(string ts, string url, Method method, string body)
 		=> _hasher.ComputeHash($"{ts}{method.To<string>().ToUpperInvariant()}{url}{body}".UTF8()).Base64();
 

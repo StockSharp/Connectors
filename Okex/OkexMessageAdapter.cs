@@ -156,10 +156,12 @@ public partial class OkexMessageAdapter
 			}
 
 			_privatePusherClient = new(_authenticator, WebSocketAddressPrivate, attempts, accCfg.AccountLevel, ReConnectionSettings.WorkingTime) { Parent = this };
-			_businessPusherClient = new(_authenticator, WebSocketAddressBusiness, attempts, ReConnectionSettings.WorkingTime) { Parent = this };
 		}
 
 		_publicPusherClient = new(WebSocketAddressPublic, attempts, ReConnectionSettings.WorkingTime) { Parent = this };
+
+		// ticks and candle updates live on the business endpoint, which serves them without credentials
+		_businessPusherClient = new(_authenticator, WebSocketAddressBusiness, attempts, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribePushers(_publicPusherClient, _privatePusherClient, _businessPusherClient);
 
