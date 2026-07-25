@@ -67,7 +67,8 @@ class HttpClient : BaseLogReceiver
 		if (end != null)
 			request.AddParameter("end_time", end.Value);
 
-		return MakeRequest<IEnumerable<Ohlc>>(CreateUrl("kline"), ApplySecret(request), cancellationToken);
+		// kline is a public endpoint, signing it would demand credentials the market data feed does not need
+		return MakeRequest<IEnumerable<Ohlc>>(CreateUrl("kline"), request, cancellationToken);
 	}
 
 	public async Task<IEnumerable<SpotAsset>> GetSpotAssets(CancellationToken cancellationToken)
