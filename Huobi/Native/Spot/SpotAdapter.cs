@@ -343,6 +343,10 @@ class SpotAdapter(HuobiMessageAdapter parent, Authenticator authenticator, strin
 			{
 				await _pusherClient.SubscribeOrderBook(securityId, depth, transId, cancellationToken);
 
+				// MBP channel pushes increments only, the book stays empty until the
+				// snapshot is asked for explicitly
+				await _pusherClient.RequestOrderBook(securityId, depth, AddExtraRequest(), cancellationToken);
+
 				await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			}
 			else
