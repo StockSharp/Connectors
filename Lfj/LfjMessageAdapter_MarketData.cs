@@ -106,8 +106,12 @@ public partial class LfjMessageAdapter
         var from = mdMsg.From?.ToUniversalTime() ?? DateTime.UnixEpoch;
         var to = (mdMsg.To ?? now).ToUniversalTime().Min(now);
         var maximum = GetSubscriptionMaximum(mdMsg.Count);
-        var trades = await LoadTradesAsync(market, from, to,
-            maximum, cancellationToken);
+        // an open ended subscription is a live one, it only needs a recent seed before
+        // the stream takes over - walking the whole history window block by block would
+        // take minutes and delay the first trade for just as long
+        var trades = await LoadTradesAsync(market, from, to, maximum,
+            mdMsg.To is null ? HistoryBlockRange : HistoryBlockCount,
+            cancellationToken);
         var delivered = 0;
         foreach (var trade in trades)
             if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
@@ -254,12 +258,12 @@ public partial class LfjMessageAdapter
 
     private async ValueTask<LfjTrade[]> LoadTradesAsync(
         LfjMarket market, DateTime from, DateTime to, int maximum,
-        CancellationToken cancellationToken)
+        int blockDepth, CancellationToken cancellationToken)
     {
         var latest = await RpcClient.GetLatestBlockNumberAsync(
             cancellationToken);
         var fromBlock = from <= DateTime.UnixEpoch
-            ? BigInteger.Max(BigInteger.Zero, latest - HistoryBlockCount)
+            ? BigInteger.Max(BigInteger.Zero, latest - blockDepth)
             : await RpcClient.FindBlockAsync(from, latest, cancellationToken);
         var toBlock = to >= DateTime.UtcNow - TimeSpan.FromSeconds(3)
             ? latest
@@ -414,7 +418,7 @@ public partial class LfjMessageAdapter
         int maximum, CancellationToken cancellationToken)
     {
         var trades = await LoadTradesAsync(market, from, to, 10_000,
-            cancellationToken);
+            HistoryBlockCount, cancellationToken);
         return [.. trades.GroupBy(trade => FloorTime(trade.Time, timeFrame))
             .OrderBy(static group => group.Key)
             .Select(group =>
