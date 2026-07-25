@@ -590,12 +590,17 @@ public partial class FoxbitMessageAdapter
         var closeTime = candle.CloseTime > openTime
             ? candle.CloseTime.ToUtcTime()
             : openTime.GetCloseTime(timeFrame);
+        // Foxbit carries the previous close over as the bar open instead of the
+        // first trade of the interval, so on a gap it lands outside the range
+        // the bar actually traded in - the first trade can only be at the
+        // boundary the market gapped through
+        var open = candle.Open.Max(candle.Low).Min(candle.High);
         return SendOutMessageAsync(new TimeFrameCandleMessage
         {
             SecurityId = marketSymbol.ToStockSharp(),
             OpenTime = openTime,
             CloseTime = closeTime,
-            OpenPrice = candle.Open,
+            OpenPrice = open,
             HighPrice = candle.High,
             LowPrice = candle.Low,
             ClosePrice = candle.Close,

@@ -32,8 +32,8 @@ static class FoxbitQueryWriter
     {
         ArgumentNullException.ThrowIfNull(request);
         var builder = new Builder();
-        builder.Add("start_time", Format(request.From, false));
-        builder.Add("end_time", Format(request.To, false));
+        builder.Add("start_time", Format(request.From));
+        builder.Add("end_time", Format(request.To));
         builder.Add("page", request.Page);
         builder.Add("page_size", request.PageSize);
         return builder.Build();
@@ -44,8 +44,8 @@ static class FoxbitQueryWriter
         ArgumentNullException.ThrowIfNull(request);
         var builder = new Builder();
         builder.Add("interval", request.Interval);
-        builder.Add("start_time", Format(request.From, true));
-        builder.Add("end_time", Format(request.To, true));
+        builder.Add("start_time", Format(request.From));
+        builder.Add("end_time", Format(request.To));
         builder.Add("limit", request.Limit);
         builder.Add("order_direction", request.Direction);
         return builder.Build();
@@ -55,8 +55,8 @@ static class FoxbitQueryWriter
     {
         ArgumentNullException.ThrowIfNull(request);
         var builder = new Builder();
-        builder.Add("start_time", Format(request.From, false));
-        builder.Add("end_time", Format(request.To, false));
+        builder.Add("start_time", Format(request.From));
+        builder.Add("end_time", Format(request.To));
         builder.Add("page_size", request.PageSize);
         builder.Add("page", request.Page);
         builder.Add("market_symbol", request.MarketSymbol);
@@ -71,8 +71,8 @@ static class FoxbitQueryWriter
         var builder = new Builder();
         builder.Add("market_symbol", request.MarketSymbol);
         builder.Add("order_id", request.OrderId);
-        builder.Add("start_time", Format(request.From, false));
-        builder.Add("end_time", Format(request.To, false));
+        builder.Add("start_time", Format(request.From));
+        builder.Add("end_time", Format(request.To));
         builder.Add("page", request.Page);
         builder.Add("page_size", request.PageSize);
         return builder.Build();
@@ -85,10 +85,11 @@ static class FoxbitQueryWriter
         return builder.Build();
     }
 
-    private static string Format(DateTime? value, bool minutePrecision)
+    // the API accepts YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS only and rejects
+    // anything more precise, a round-trip stamp included
+    private static string Format(DateTime? value)
         => value is not DateTime actual
             ? null
-            : actual.ToUtcTime().ToString(
-                minutePrecision ? "yyyy-MM-dd'T'HH:mm" : "O",
+            : actual.ToUtcTime().ToString("yyyy-MM-dd'T'HH:mm:ss",
                 CultureInfo.InvariantCulture);
 }
