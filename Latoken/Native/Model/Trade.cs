@@ -9,8 +9,11 @@ class Trade : BaseEntity
 	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
 	public DateTime Timestamp { get; set; }
 
-	[JsonProperty("direction")]
-	public string Direction { get; set; }
+	/// <summary>
+	/// The buyer was the maker of the trade, which means the taker was the seller.
+	/// </summary>
+	[JsonProperty("makerBuyer")]
+	public bool MakerBuyer { get; set; }
 
 	[JsonProperty("price")]
 	public double Price { get; set; }

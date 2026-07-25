@@ -16,4 +16,8 @@ class Ticker : BaseEntity
 
 	[JsonProperty("lastPrice")]
 	public double? LastPrice { get; set; }
+
+	[JsonProperty("updateTimestamp")]
+	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
+	public DateTime UpdateTimestamp { get; set; }
 }

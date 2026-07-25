@@ -35,6 +35,13 @@ partial class LatokenMessageAdapter
 		return _currencyIds.GetValue(currencyId);
 	}
 
+	private async ValueTask<string> TryGetCurrencyCode(string currencyId, CancellationToken cancellationToken)
+	{
+		await EnsureCurrencyIdsAsync(cancellationToken);
+
+		return _currencyIds.TryGetValue(currencyId, out var code) ? code : null;
+	}
+
 	private ValueTask<(string code, string board)> GetCurrenciesId(SecurityId securityId, CancellationToken cancellationToken)
 	{
 		return GetCurrenciesId(securityId.SecurityCode, cancellationToken);
@@ -56,6 +63,14 @@ partial class LatokenMessageAdapter
 		return $"{await GetCurrencyCode(baseCurrId, cancellationToken)}/{await GetCurrencyCode(quoteCurrId, cancellationToken)}".ToStockSharp();
 	}
 
+	private async ValueTask<SecurityId?> TryGetSecurityId(string baseCurrId, string quoteCurrId, CancellationToken cancellationToken)
+	{
+		var baseCode = await TryGetCurrencyCode(baseCurrId, cancellationToken);
+		var quoteCode = await TryGetCurrencyCode(quoteCurrId, cancellationToken);
+
+		return baseCode.IsEmpty() || quoteCode.IsEmpty() ? null : $"{baseCode}/{quoteCode}".ToStockSharp();
+	}
+
 	/// <inheritdoc />
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
@@ -68,9 +83,14 @@ partial class LatokenMessageAdapter
 
 		foreach (var symbol in await _httpClient.GetSymbolsAsync(cancellationToken))
 		{
+			// the venue lists pairs built on currencies its own currency dictionary does not
+			// contain, such a pair has no code to report
+			if (await TryGetSecurityId(symbol.BaseCurrency, symbol.QuoteCurrency, cancellationToken) is not SecurityId securityId)
+				continue;
+
 			var secMsg = new SecurityMessage
 			{
-				SecurityId = await GetSecurityId(symbol, cancellationToken),
+				SecurityId = securityId,
 				Decimals = symbol.PriceDecimals,
 				PriceStep = (decimal)symbol.PriceTick,
 				VolumeStep = (decimal)symbol.QuantityTick,
@@ -143,11 +163,11 @@ partial class LatokenMessageAdapter
 		await SendOutMessageAsync(new Level1ChangeMessage
 		{
 			SecurityId = await GetSecurityId(ticker, cancellationToken),
-			ServerTime = CurrentTime,
+			ServerTime = ticker.UpdateTimestamp == default ? CurrentTime : ticker.UpdateTimestamp,
 		}
 		.TryAdd(Level1Fields.Change, (decimal?)ticker.Change24H)
 		.TryAdd(Level1Fields.Volume, (decimal?)ticker.Volume24H)
-		.TryAdd(Level1Fields.LowPrice, (decimal?)ticker.LastPrice), cancellationToken);
+		.TryAdd(Level1Fields.LastTradePrice, (decimal?)ticker.LastPrice), cancellationToken);
 	}
 
 	private async ValueTask SessionOnNewTrade(Trade trade, CancellationToken cancellationToken)
@@ -160,7 +180,8 @@ partial class LatokenMessageAdapter
 			TradeStringId = trade.Id,
 			TradePrice = (decimal)trade.Price,
 			TradeVolume = (decimal)trade.Quantity,
-			OriginSide = trade.Direction.ToSide(),
+			// the venue reports the side of the maker, the origin of a tick is the taker
+			OriginSide = trade.MakerBuyer ? Sides.Sell : Sides.Buy,
 		}, cancellationToken);
 	}
 
@@ -169,7 +190,7 @@ partial class LatokenMessageAdapter
 		var secId = await GetSecurityId(code, board, cancellationToken);
 
 		static QuoteChange toChange(OrderBookEntry entry)
-			=> new(entry.Price, entry.Size);
+			=> new(entry.Price, entry.Quantity);
 
 		await SendOutMessageAsync(new QuoteChangeMessage
 		{
