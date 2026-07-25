@@ -82,7 +82,8 @@ public partial class FXOpenMessageAdapter
         var symbol = ResolveSymbol(mdMsg.SecurityId).Symbol;
         var depth = dataType == DataType.MarketDepth
             ? (mdMsg.MaxDepth ?? 20).Max(1).Min(100) : 1;
-        var webSocket = mdMsg.IsHistoryOnly() ? null : WebSocketClient;
+        // the feed WebSocket requires Web API credentials, the public mode is REST only
+        var webSocket = mdMsg.IsHistoryOnly() ? null : _webSocketClient;
         this.AddDebugLog("FXOpen subscribing {0} for {1}, depth {2}, transaction {3}.",
             dataType, symbol, depth, mdMsg.TransactionId);
         if (mdMsg.From is not null || mdMsg.To is not null || mdMsg.Count is not null ||
@@ -107,6 +108,16 @@ public partial class FXOpenMessageAdapter
         if (mdMsg.IsHistoryOnly())
         {
             await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+            await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
+            return;
+        }
+
+        if (webSocket is null)
+        {
+            // without credentials there is no streaming feed, the REST snapshot above is all
+            // the public mode can deliver
+            this.AddDebugLog("FXOpen public mode has no streaming feed, {0} for {1} finished after the snapshot.",
+                dataType, symbol);
             await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
             return;
         }
@@ -262,11 +273,12 @@ public partial class FXOpenMessageAdapter
             _ => throw new NotSupportedException(
                 $"FXOpen candles cannot be built from '{mdMsg.BuildField}'."),
         };
-        var webSocket = mdMsg.IsHistoryOnly() ? null : WebSocketClient;
+        // the bar WebSocket requires Web API credentials, the public mode is REST only
+        var webSocket = mdMsg.IsHistoryOnly() ? null : _webSocketClient;
         this.AddDebugLog("FXOpen subscribing candles {0} {1} {2}, transaction {3}.",
             symbol, periodicity, priceType, mdMsg.TransactionId);
         if (mdMsg.From is not null || mdMsg.To is not null || mdMsg.Count is not null ||
-            mdMsg.Skip is not null || mdMsg.IsHistoryOnly())
+            mdMsg.Skip is not null || mdMsg.IsHistoryOnly() || webSocket is null)
         {
             var bars = await LoadBars(mdMsg, symbol, periodicity, priceType,
                 cancellationToken);
@@ -295,6 +307,16 @@ public partial class FXOpenMessageAdapter
         if (mdMsg.IsHistoryOnly())
         {
             await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+            await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
+            return;
+        }
+
+        if (webSocket is null)
+        {
+            // without credentials there is no streaming feed, the loaded history is all
+            // the public mode can deliver
+            this.AddDebugLog("FXOpen public mode has no streaming bars, {0} {1} finished after the history.",
+                symbol, periodicity);
             await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
             return;
         }

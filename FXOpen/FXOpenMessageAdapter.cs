@@ -77,10 +77,6 @@ public partial class FXOpenMessageAdapter
     private FXOpenRestClient RestClient
         => _restClient ?? throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-    private FXOpenWebSocketClient WebSocketClient
-        => _webSocketClient ?? throw new InvalidOperationException(
-            "FXOpen Web API credentials are required for streaming subscriptions.");
-
     private void EnsurePrivate()
     {
         if (!RestClient.IsCredentialsAvailable)
