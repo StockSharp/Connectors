@@ -54,7 +54,8 @@ class HttpClient : BaseLogReceiver
 
 		request.AddParameter("step", step);
 		request.AddParameter("limit", limit);
-		request.AddParameter("start", start.ToUnix());
+		// the endpoint rejects a fractional value with "Not a valid integer"
+		request.AddParameter("start", (long)start.ToUnix());
 		//request.AddParameter("end", end.ToUnix());
 		request.AddParameter("exclude_current_candle", true);
 
