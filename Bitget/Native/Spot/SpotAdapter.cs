@@ -71,8 +71,9 @@ class SpotAdapter : NativeAdapter
 			yield return new SecurityMessage
 			{
 				SecurityId = symbol.Id.ToStockSharp(BoardCode),
-				VolumeStep = symbol.MinTradeAmount?.ToDecimal(),
+				MinVolume = symbol.MinTradeAmount?.ToDecimal(),
 				MaxVolume = symbol.MaxTradeAmount?.ToDecimal(),
+				VolumeStep = symbol.QuantityScale?.GetPriceStep(),
 				OriginalTransactionId = lookupMsg.TransactionId,
 				Decimals = symbol.QuantityScale,
 				PriceStep = symbol.PriceScale?.GetPriceStep(),
@@ -143,12 +144,16 @@ class SpotAdapter : NativeAdapter
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
 
 		var symbol = mdMsg.SecurityId.ToSymbol();
-		var tf = mdMsg.GetTimeFrame().ToNative();
+		var timeFrame = mdMsg.GetTimeFrame();
+		var tf = timeFrame.ToNative();
 
 		if (mdMsg.IsSubscribe)
 		{
 			if (mdMsg.From is DateTime from)
 			{
+				// the spot REST endpoint names the frames differently than the web socket does
+				var granularity = timeFrame.ToSpotGranularity();
+
 				var to = mdMsg.To ?? DateTime.UtcNow;
 				var left = mdMsg.Count ?? long.MaxValue;
 
@@ -160,7 +165,7 @@ class SpotAdapter : NativeAdapter
 				while (from < to)
 				{
 					var needBreak = true;
-					var candles = await _httpClient.GetCandles(symbol, tf, startTime, endTime, maxCount, cancellationToken);
+					var candles = await _httpClient.GetCandles(symbol, granularity, startTime, endTime, maxCount, cancellationToken);
 
 					foreach (var candle in candles.OrderBy(c => c.Time))
 					{

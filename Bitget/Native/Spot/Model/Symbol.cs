@@ -23,10 +23,10 @@ class Symbol
 	[JsonProperty("makerFeeRate")]
 	public double? MakerFeeRate { get; set; }
 
-	[JsonProperty("priceScale")]
+	[JsonProperty("pricePrecision")]
 	public int? PriceScale { get; set; }
 
-	[JsonProperty("quantityScale")]
+	[JsonProperty("quantityPrecision")]
 	public int? QuantityScale { get; set; }
 
 	[JsonProperty("status")]

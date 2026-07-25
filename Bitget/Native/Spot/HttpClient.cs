@@ -173,6 +173,13 @@ class HttpClient : BaseLogReceiver
 	private RestRequest ApplySecret(RestRequest request, Uri url)
 		=> request.ApplySecret(url, _authenticator);
 
-	private Task<T> MakeRequest<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
-		=> request.InvokeAsync<T>(url, this, this.AddVerboseLog, cancellationToken);
+	private async Task<T> MakeRequest<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
+	{
+		var response = await request.InvokeAsync<RestEnvelope>(url, this, this.AddVerboseLog, cancellationToken);
+
+		if (response.Code != RestEnvelope.SuccessCode)
+			throw new InvalidOperationException($"(code={response.Code}) {response.Message}");
+
+		return response.Data is null ? default : response.Data.DeserializeObject<T>();
+	}
 }

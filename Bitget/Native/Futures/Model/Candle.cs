@@ -34,11 +34,16 @@ class Candle
 [JsonConverter(typeof(JArrayToObjectConverter))]
 class RestCandle
 {
-	public DateTime Time { get; set; }
+	// the array elements are quoted, the first one being unix milliseconds, so the
+	// converter (which maps element to field by position, without a per field converter)
+	// has to read it as a number and the moment is derived from it
+	public long Timestamp { get; set; }
 	public double? Open { get; set; }
 	public double? High { get; set; }
 	public double? Low { get; set; }
 	public double? Close { get; set; }
 	public double? BaseVolume { get; set; }
 	public double? UsdtVolume { get; set; }
+
+	public DateTime Time => Timestamp.FromUnix(false);
 }
