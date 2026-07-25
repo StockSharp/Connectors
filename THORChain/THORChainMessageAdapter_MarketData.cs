@@ -106,7 +106,7 @@ public partial class THORChainMessageAdapter
 		}
 		var market = GetMarket(mdMsg.SecurityId);
 		var now = DateTime.UtcNow;
-		var from = mdMsg.From?.ToUniversalTime() ?? DateTime.UnixEpoch;
+		var from = mdMsg.From?.ToUniversalTime() ?? now - _defaultTickHistory;
 		var to = (mdMsg.To ?? now).ToUniversalTime().Min(now);
 		var maximum = GetSubscriptionMaximum(mdMsg.Count);
 		var trades = await LoadTradesAsync(market, from, to, maximum,

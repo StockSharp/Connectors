@@ -4,6 +4,11 @@ public partial class THORChainMessageAdapter
 {
 	private const int _maximumDeliveryKeys = 100_000;
 
+	// Midgard pages actions backwards from the newest one and a single page takes
+	// seconds, so a subscription with no start time is seeded from a bounded recent
+	// window instead of walking the whole action history.
+	private static readonly TimeSpan _defaultTickHistory = TimeSpan.FromHours(1);
+
 	private sealed class Level1Subscription
 	{
 		public THORChainMarket Market { get; init; }
