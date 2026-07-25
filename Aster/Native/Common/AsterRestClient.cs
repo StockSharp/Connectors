@@ -218,8 +218,13 @@ sealed class AsterRestClient : BaseLogReceiver
 	{
 		var request = new RestRequest(resource, Method.Get);
 		requestBuilder?.Invoke(request);
-		return request.InvokeAsync<T>(_endpoint, this, this.AddVerboseLog, cancellationToken);
+		return request.InvokeAsync<T>(CreateUri(resource), this, this.AddVerboseLog, cancellationToken);
 	}
+
+	// the invoker replaces the resource of the request by the passed url, so the whole
+	// address, including the resource, must be built here
+	private Uri CreateUri(string resource)
+		=> new($"{_endpoint.ToString().TrimEnd('/')}/{resource.TrimStart('/')}");
 
 	private Task<T> SendPrivateAsync<T>(string resource, Method method, Action<RestRequest> requestBuilder, CancellationToken cancellationToken)
 	{
@@ -243,7 +248,7 @@ sealed class AsterRestClient : BaseLogReceiver
 			.AddHeader("X-MBX-APIKEY", _key.UnSecure())
 			.AddParameter("signature", signature);
 
-		return request.InvokeAsync<T>(_endpoint, this, this.AddVerboseLog, cancellationToken);
+		return request.InvokeAsync<T>(CreateUri(resource), this, this.AddVerboseLog, cancellationToken);
 	}
 
 	private void EnsurePrivateCredentials()

@@ -9,10 +9,16 @@ class Trade
 	public long? Id { get; set; }
 
 	[JsonProperty("p")]
-	public string Price { get; set; }
+	public string AggPrice { get; set; }
+
+	[JsonProperty("price")]
+	public string RawPrice { get; set; }
 
 	[JsonProperty("q")]
-	public string Quantity { get; set; }
+	public string AggQuantity { get; set; }
+
+	[JsonProperty("qty")]
+	public string RawQuantity { get; set; }
 
 	[JsonProperty("T")]
 	public long? TradeTime { get; set; }
@@ -21,5 +27,19 @@ class Trade
 	public long? Time { get; set; }
 
 	[JsonProperty("m")]
-	public bool? IsBuyerMaker { get; set; }
+	public bool? AggIsBuyerMaker { get; set; }
+
+	[JsonProperty("isBuyerMaker")]
+	public bool? RawIsBuyerMaker { get; set; }
+
+	// aggTrades reports the fields under short names, trades under full ones
+
+	[JsonIgnore]
+	public string Price => AggPrice ?? RawPrice;
+
+	[JsonIgnore]
+	public string Quantity => AggQuantity ?? RawQuantity;
+
+	[JsonIgnore]
+	public bool? IsBuyerMaker => AggIsBuyerMaker ?? RawIsBuyerMaker;
 }
