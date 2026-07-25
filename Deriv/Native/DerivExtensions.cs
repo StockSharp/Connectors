@@ -48,12 +48,13 @@ static class DerivExtensions
 		};
 	}
 
+	// the Deriv symbol is the security code itself, so no native id is attached:
+	// a duplicated native id only breaks matching with ids built from code and board
 	public static SecurityId ToSecurityId(this string symbol)
 		=> new()
 		{
 			SecurityCode = symbol.ThrowIfEmpty(nameof(symbol)),
 			BoardCode = BoardCodes.Deriv,
-			Native = symbol,
 		};
 
 	public static DateTime FromDerivEpoch(this long value)
