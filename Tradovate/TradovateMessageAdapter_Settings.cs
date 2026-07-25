@@ -45,7 +45,7 @@ public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAda
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
-		Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot,
+		Description = LocalizedStrings.ClientCodeDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]

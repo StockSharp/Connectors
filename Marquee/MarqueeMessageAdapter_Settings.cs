@@ -19,7 +19,7 @@ public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter, IKeyS
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
-		Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot,
+		Description = LocalizedStrings.ClientCodeDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]

@@ -43,7 +43,7 @@ public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter,
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
-		Description = LocalizedStrings.ClientIdKey + LocalizedStrings.Dot,
+		Description = LocalizedStrings.ClientCodeDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]

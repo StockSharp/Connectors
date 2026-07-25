@@ -34,7 +34,7 @@ public partial class DhanMessageAdapter : MessageAdapter, ITokenAdapter
 	/// <summary>Dhan client identifier.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.ClientIdKey,
+		Name = LocalizedStrings.ClientCodeKey,
 		Description = LocalizedStrings.DhanClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]

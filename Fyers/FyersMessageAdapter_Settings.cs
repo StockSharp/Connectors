@@ -40,7 +40,7 @@ public partial class FyersMessageAdapter : MessageAdapter, ITokenAdapter
 	/// <summary>FYERS application identifier.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.ClientIdKey,
+		Name = LocalizedStrings.ClientCodeKey,
 		Description = LocalizedStrings.FyersClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]

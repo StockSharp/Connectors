@@ -40,7 +40,7 @@ public partial class XtpMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 	/// <summary>XTP client identifier (1-99 for regular accounts).</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.ClientIdKey,
+		Name = LocalizedStrings.ClientCodeKey,
 		Description = LocalizedStrings.XtpClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]

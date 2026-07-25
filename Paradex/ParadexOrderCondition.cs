@@ -139,8 +139,8 @@ public class ParadexOrderCondition : OrderCondition, IStopLossOrderCondition, IT
 	[DataMember]
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
-		Name = LocalizedStrings.ClientIdKey,
-		Description = LocalizedStrings.ClientIdKey,
+		Name = LocalizedStrings.UserOrderIdKey,
+		Description = LocalizedStrings.UserOrderIdKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 6)]
 	public string ClientId
