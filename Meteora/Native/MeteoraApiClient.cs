@@ -61,11 +61,12 @@ sealed class MeteoraApiClient : BaseLogReceiver
 	{
 		address = address.NormalizePublicKey();
 		timeFrame = timeFrame.ThrowIfEmpty(nameof(timeFrame)).Trim();
+		// the API parses the bounds as integers and rejects a fractional second
 		var path = "pools/" + Uri.EscapeDataString(address) + "/ohlcv" +
 			"?timeframe=" + Uri.EscapeDataString(timeFrame) +
-			"&start_time=" + from.ToUniversalTime().ToUnix().ToString(
+			"&start_time=" + from.ToUnixSeconds().ToString(
 				CultureInfo.InvariantCulture) +
-			"&end_time=" + to.ToUniversalTime().ToUnix().ToString(
+			"&end_time=" + to.ToUnixSeconds().ToString(
 				CultureInfo.InvariantCulture);
 		return GetAsync<MeteoraApiOhlcvResponse>(path, cancellationToken);
 	}

@@ -166,6 +166,15 @@ static class MeteoraExtensions
 			: throw new NotSupportedException(
 				$"Meteora does not publish {timeFrame} OHLCV candles.");
 
+	/// <summary>
+	/// Candles a single OHLCV request may span. The API rejects a range of 100
+	/// intervals or more with "time range too large".
+	/// </summary>
+	public const int MaximumOhlcvCandles = 99;
+
+	public static long ToUnixSeconds(this DateTime value)
+		=> (long)Math.Floor(value.ToUniversalTime().ToUnix());
+
 	public static BigInteger ToBaseUnits(this decimal value, int decimals)
 	{
 		if (value < 0)

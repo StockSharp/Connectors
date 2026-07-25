@@ -426,13 +426,27 @@ public partial class MeteoraMessageAdapter
 		TimeSpan timeFrame, DateTime from, DateTime to, int maximum,
 		CancellationToken cancellationToken)
 	{
+		var start = from.ToUniversalTime();
+		var end = to.ToUniversalTime();
 		if (_apiClient is not null)
 		{
-			var response = await _apiClient.GetCandlesAsync(market.PoolAddress,
-				timeFrame.GetTimeFrameCode(), from, to, cancellationToken);
-			return [.. (response?.Data ?? []).Where(item => item is not null &&
+			var code = timeFrame.GetTimeFrameCode();
+			var window = TimeSpan.FromTicks(timeFrame.Ticks *
+				MeteoraExtensions.MaximumOhlcvCandles);
+			var items = new List<MeteoraApiCandle>();
+
+			// the API rejects a request spanning 100 intervals or more, so the
+			// range is walked window by window and the shared bounds deduplicated
+			for (var left = start; left < end; left += window)
+			{
+				var page = await _apiClient.GetCandlesAsync(market.PoolAddress,
+					code, left, (left + window).Min(end), cancellationToken);
+				items.AddRange(page?.Data ?? []);
+			}
+			return [.. items.Where(item => item is not null &&
 				item.Timestamp > 0 && item.Open > 0 && item.High > 0 &&
 				item.Low > 0 && item.Close > 0)
+				.DistinctBy(static item => item.Timestamp)
 				.Select(static item => new MeteoraCandle
 				{
 					OpenTime = item.Timestamp.FromUnix(),
@@ -443,8 +457,8 @@ public partial class MeteoraMessageAdapter
 					Volume = item.Volume > 0 ? item.Volume / item.Close : 0m,
 					Turnover = item.Volume,
 				})
-				.Where(candle => candle.OpenTime >= from.ToUniversalTime() &&
-					candle.OpenTime <= to.ToUniversalTime())
+				.Where(candle => candle.OpenTime >= start &&
+					candle.OpenTime <= end)
 				.OrderBy(static candle => candle.OpenTime).TakeLast(maximum)];
 		}
 		var trades = await LoadTradesAsync(market, from, to,
