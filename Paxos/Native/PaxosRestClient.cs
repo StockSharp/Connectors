@@ -109,8 +109,10 @@ sealed class PaxosRestClient : BaseLogReceiver
 			var requestPath = AddCursor(path, cursor);
 			if (!visited.Add(requestPath))
 				break;
+			// unlike the rest of the market data, historical candles are served
+			// to an authenticated session only
 			var response = await GetAsync<PaxosCandlesResponse>(requestPath,
-				false, cancellationToken);
+				true, cancellationToken);
 			var items = response?.Items ?? [];
 			result.AddRange(items.Take(maximum - result.Count));
 			if (items.Length == 0 || response?.NextPageCursor.IsEmpty() != false)

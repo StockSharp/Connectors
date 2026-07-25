@@ -158,12 +158,13 @@ static class PaxosConversions
 
 public partial class PaxosMessageAdapter
 {
+	// the market name is the security code itself, so no native id is exposed -
+	// filling it in would make the produced ids unequal to the plain code@board ones
 	private static SecurityId ToSecurityId(string market)
 		=> new()
 		{
 			SecurityCode = market,
 			BoardCode = BoardCodes.Paxos,
-			Native = market,
 		};
 
 	private static SecurityId ToAssetSecurityId(string asset)
@@ -171,7 +172,6 @@ public partial class PaxosMessageAdapter
 		{
 			SecurityCode = asset,
 			BoardCode = BoardCodes.Paxos,
-			Native = asset,
 		};
 
 	private static CurrencyTypes? ToCurrency(string value)
