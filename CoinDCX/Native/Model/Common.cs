@@ -20,6 +20,9 @@ enum CoinDCXOrderTypes
 	[EnumMember(Value = "stop_limit")]
 	StopLimit,
 
+	[EnumMember(Value = "stop_market")]
+	StopMarket,
+
 	[EnumMember(Value = "take_profit_limit")]
 	TakeProfitLimit,
 

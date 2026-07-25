@@ -449,9 +449,9 @@ public partial class CoinDCXMessageAdapter
 	private async ValueTask OnSocketDepthAsync(CoinDCXWebSocketDepth update,
 		bool isSnapshot, CancellationToken cancellationToken)
 	{
-		if (update?.Pair.IsEmpty() != false)
+		if (update?.Market.IsEmpty() != false)
 			return;
-		var market = GetMarketByPair(update.Pair);
+		var market = GetMarket(update.Market);
 		KeyValuePair<long, DepthSubscription>[] depthSubscriptions;
 		KeyValuePair<long, MarketSubscription>[] level1Subscriptions;
 		CoinDCXBookLevel[] bids;
@@ -522,9 +522,9 @@ public partial class CoinDCXMessageAdapter
 	private async ValueTask OnSocketCandleAsync(CoinDCXWebSocketCandle candle,
 		CancellationToken cancellationToken)
 	{
-		if (candle?.Pair.IsEmpty() != false || candle.Interval.IsEmpty())
+		if (candle?.Market.IsEmpty() != false || candle.Interval.IsEmpty())
 			return;
-		var market = GetMarketByPair(candle.Pair);
+		var market = GetMarket(candle.Market);
 		var timeFrame = candle.Interval.ToTimeFrame();
 		KeyValuePair<long, CandleSubscription>[] subscriptions;
 		using (_sync.EnterScope())

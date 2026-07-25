@@ -228,8 +228,9 @@ sealed class CoinDCXWebSocketDepth
 	[JsonProperty("E")]
 	public long EventTimestamp { get; set; }
 
+	// depth events name the market (BTCUSDT), unlike trades which name the pair (B-BTC_USDT)
 	[JsonProperty("s")]
-	public string Pair { get; set; }
+	public string Market { get; set; }
 
 	[JsonProperty("pr")]
 	public string Product { get; set; }
@@ -243,8 +244,9 @@ sealed class CoinDCXWebSocketCandle
 	[JsonProperty("T")]
 	public long CloseTimestamp { get; set; }
 
+	// candle events name the market (BTCUSDT), the pair is only part of the channel name
 	[JsonProperty("s")]
-	public string Pair { get; set; }
+	public string Market { get; set; }
 
 	[JsonProperty("i")]
 	public string Interval { get; set; }
