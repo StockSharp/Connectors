@@ -187,8 +187,8 @@ public partial class MercadoBitcoinMessageAdapter
                 }
                 baseAsset = baseAsset.ToUpperInvariant();
                 quoteAsset = quoteAsset.ToUpperInvariant();
-                var scale = values.PriceScales.GetAt(i);
-                var movement = values.MinimumMovements.GetAt(i);
+                var scale = values.PriceScales.GetAt(i) ?? 0m;
+                var movement = values.MinimumMovements.GetAt(i) ?? 0m;
                 var definition = new MarketDefinition
                 {
                     Symbol = symbol,
@@ -199,13 +199,13 @@ public partial class MercadoBitcoinMessageAdapter
                     PriceStep = scale > 0 && movement > 0
                         ? movement / scale
                         : 0m,
-                    VolumeStep = values.RoundLots.GetAt(i),
-                    MinimumPrice = values.MinimumPrices.GetAt(i),
-                    MaximumPrice = values.MaximumPrices.GetAt(i),
-                    MinimumVolume = values.MinimumVolumes.GetAt(i),
-                    MaximumVolume = values.MaximumVolumes.GetAt(i),
-                    MinimumCost = values.MinimumCosts.GetAt(i),
-                    MaximumCost = values.MaximumCosts.GetAt(i),
+                    VolumeStep = values.RoundLots.GetAt(i) ?? 0m,
+                    MinimumPrice = values.MinimumPrices.GetAt(i) ?? 0m,
+                    MaximumPrice = values.MaximumPrices.GetAt(i) ?? 0m,
+                    MinimumVolume = values.MinimumVolumes.GetAt(i) ?? 0m,
+                    MaximumVolume = values.MaximumVolumes.GetAt(i) ?? 0m,
+                    MinimumCost = values.MinimumCosts.GetAt(i) ?? 0m,
+                    MaximumCost = values.MaximumCosts.GetAt(i) ?? 0m,
                 };
                 _markets[definition.Symbol] = definition;
                 _streamMarkets.TryAdd(definition.StreamId, definition);

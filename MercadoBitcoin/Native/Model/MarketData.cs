@@ -25,11 +25,13 @@ sealed class MercadoBitcoinSymbols
     [JsonProperty("exchange-traded")]
     public bool[] IsExchangeTraded { get; init; }
 
+    // the numeric columns below are blank strings for symbols the limit does not apply to,
+    // so they must stay nullable - a plain decimal[] fails to deserialize the whole list
     [JsonProperty("minmovement")]
-    public decimal[] MinimumMovements { get; init; }
+    public decimal?[] MinimumMovements { get; init; }
 
     [JsonProperty("pricescale")]
-    public decimal[] PriceScales { get; init; }
+    public decimal?[] PriceScales { get; init; }
 
     [JsonProperty("type")]
     public string[] Types { get; init; }
@@ -41,25 +43,25 @@ sealed class MercadoBitcoinSymbols
     public string[] Sessions { get; init; }
 
     [JsonProperty("min-price")]
-    public decimal[] MinimumPrices { get; init; }
+    public decimal?[] MinimumPrices { get; init; }
 
     [JsonProperty("max-price")]
-    public decimal[] MaximumPrices { get; init; }
+    public decimal?[] MaximumPrices { get; init; }
 
     [JsonProperty("min-volume")]
-    public decimal[] MinimumVolumes { get; init; }
+    public decimal?[] MinimumVolumes { get; init; }
 
     [JsonProperty("max-volume")]
-    public decimal[] MaximumVolumes { get; init; }
+    public decimal?[] MaximumVolumes { get; init; }
 
     [JsonProperty("min-cost")]
-    public decimal[] MinimumCosts { get; init; }
+    public decimal?[] MinimumCosts { get; init; }
 
     [JsonProperty("max-cost")]
-    public decimal[] MaximumCosts { get; init; }
+    public decimal?[] MaximumCosts { get; init; }
 
     [JsonProperty("round-lot")]
-    public decimal[] RoundLots { get; init; }
+    public decimal?[] RoundLots { get; init; }
 }
 
 sealed class MercadoBitcoinTickersRequest
