@@ -141,17 +141,20 @@ partial class GopaxMessageAdapter
 		{
 			var interval = tf.ToNative();
 
-			if (mdMsg.To != null)
+			// history is asked for by the start time, the end one is optional and
+			// an open ended request goes on live after the history is sent
+			if (mdMsg.From != null)
 			{
 				var from = mdMsg.From.Value;
-				var to = mdMsg.To.Value;
+				var to = mdMsg.To ?? CurrentTime;
 
 				var candles = await _httpClient.GetCandlesAsync(symbol, interval, (long)from.ToUnix(false), (long)to.ToUnix(false), cancellationToken);
 
 				foreach (var candle in candles.OrderBy(t => t.Time))
-					await ProcessOhlcAsync(transId, candle, cancellationToken);
+					await ProcessOhlcAsync(transId, secId, tf, candle, cancellationToken);
 			}
-			else
+
+			if (mdMsg.To == null)
 				_candlesSubscriptions.Add(transId, RefTuple.Create(secId, interval, (long)DateTime.UtcNow.Truncate(tf).ToUnix(false)));
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -221,7 +224,8 @@ partial class GopaxMessageAdapter
 			foreach (var pair in _candlesSubscriptions.ToArray())
 			{
 				var info = pair.Value;
-				var mlsStep = (int)TimeSpan.FromMinutes(info.Second).TotalMilliseconds;
+				var tf = info.Second.ToTimeFrame();
+				var mlsStep = (int)tf.TotalMilliseconds;
 				var candles = await _httpClient.GetCandlesAsync(info.First.ToSymbol(), info.Second, info.Third, info.Third + mlsStep, cancellationToken);
 
 				foreach (var ohlc in candles.OrderBy(c => c.Time))
@@ -231,7 +235,7 @@ partial class GopaxMessageAdapter
 
 					info.Third = ohlc.Time;
 
-					await ProcessOhlcAsync(pair.Key, ohlc, cancellationToken);
+					await ProcessOhlcAsync(pair.Key, info.First, tf, ohlc, cancellationToken);
 
 					info.Third += mlsStep;
 				}
@@ -278,17 +282,23 @@ partial class GopaxMessageAdapter
 		}, cancellationToken);
 	}
 
-	private ValueTask ProcessOhlcAsync(long originId, Ohlc ohlc, CancellationToken cancellationToken)
+	private ValueTask ProcessOhlcAsync(long originId, SecurityId secId, TimeSpan tf, Ohlc ohlc, CancellationToken cancellationToken)
 	{
+		var openTime = ohlc.Time.FromUnix(false);
+		var closeTime = openTime + tf;
+
 		return SendOutMessageAsync(new TimeFrameCandleMessage
 		{
-			OpenTime = ohlc.Time.FromUnix(false),
+			SecurityId = secId,
+			TypedArg = tf,
+			OpenTime = openTime,
+			CloseTime = closeTime,
 			OpenPrice = (decimal)ohlc.Open,
 			HighPrice = (decimal)ohlc.High,
 			LowPrice = (decimal)ohlc.Low,
 			ClosePrice = (decimal)ohlc.Close,
 			TotalVolume = (decimal)ohlc.Volume,
-			State = CandleStates.Active,
+			State = closeTime <= CurrentTime ? CandleStates.Finished : CandleStates.Active,
 			OriginalTransactionId = originId,
 		}, cancellationToken);
 	}

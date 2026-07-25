@@ -66,10 +66,11 @@ partial class GopaxMessageAdapter
 	/// <inheritdoc />
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
-		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
-		
+		// the method is also called internally with no message to refresh balances
 		if (message != null)
 		{
+			await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 			if (!message.IsSubscribe)
 				return;
 
@@ -101,8 +102,10 @@ partial class GopaxMessageAdapter
 	/// <inheritdoc />
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
-		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
-		
+		// the method is also called internally with no message to refresh known orders
+		if (message != null)
+			await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message == null)
 		{
 			var portfolioRefresh = false;

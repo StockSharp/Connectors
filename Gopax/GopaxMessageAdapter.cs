@@ -98,17 +98,22 @@ partial class GopaxMessageAdapter
 	/// <inheritdoc />
 	protected override async ValueTask TimeAsync(TimeMessage timeMsg, CancellationToken cancellationToken)
 	{
-		if (_orderInfo.Count > 0)
+		// orders, balances and own trades are private, a market data only session has no
+		// credentials for them and must not poll them
+		if (this.IsTransactional())
 		{
-			await OrderStatusAsync(null, cancellationToken);
-			await PortfolioLookupAsync(null, cancellationToken);
-		}
+			if (_orderInfo.Count > 0)
+			{
+				await OrderStatusAsync(null, cancellationToken);
+				await PortfolioLookupAsync(null, cancellationToken);
+			}
 
-		if (BalanceCheckInterval > TimeSpan.Zero &&
-			(_lastTimeBalanceCheck == null || (CurrentTime - _lastTimeBalanceCheck) > BalanceCheckInterval))
-		{
-			await PortfolioLookupAsync(null, cancellationToken);
-			await ProcessOwnTradesAsync(cancellationToken);
+			if (BalanceCheckInterval > TimeSpan.Zero &&
+				(_lastTimeBalanceCheck == null || (CurrentTime - _lastTimeBalanceCheck) > BalanceCheckInterval))
+			{
+				await PortfolioLookupAsync(null, cancellationToken);
+				await ProcessOwnTradesAsync(cancellationToken);
+			}
 		}
 
 		await ProcessSubscriptionsAsync(cancellationToken);
