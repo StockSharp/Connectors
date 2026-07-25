@@ -94,7 +94,12 @@ static class LfjExtensions
         if (value < 0)
             throw new ArgumentOutOfRangeException(nameof(value), value,
                 "JSON-RPC quantities cannot be negative.");
-        return "0x" + value.ToString("x", CultureInfo.InvariantCulture);
+
+        // JSON-RPC rejects a quantity with leading zeros, and BigInteger.ToString("x")
+        // adds one whenever the leading digit is >= 8
+        var hex = value.ToString("x", CultureInfo.InvariantCulture).TrimStart('0');
+
+        return "0x" + (hex.Length == 0 ? "0" : hex);
     }
 
     public static BigInteger ToBaseUnits(this decimal value, int decimals)
@@ -198,7 +203,11 @@ static class LfjExtensions
     {
         if (value < 0)
             throw new ArgumentOutOfRangeException(nameof(value));
-        var hex = value.ToString("x", CultureInfo.InvariantCulture);
+
+        // BigInteger.ToString("x") prefixes a zero nibble when the leading digit is >= 8 to
+        // keep the value unsigned, which would overflow the fixed width word
+        var hex = value.ToString("x", CultureInfo.InvariantCulture).TrimStart('0');
+
         if (hex.Length > 64)
             throw new ArgumentOutOfRangeException(nameof(value),
                 "ABI integer exceeds 256 bits.");
@@ -227,8 +236,13 @@ static class LfjExtensions
     public static string ReadAbiAddress(string value, int index)
     {
         var word = ReadAbiWord(value, index);
-        return ("0x" + word.ToString("x", CultureInfo.InvariantCulture)
-            .PadLeft(40, '0')).NormalizeAddress();
+
+        // BigInteger.ToString("x") prefixes a zero nibble when the leading digit is >= 8 to
+        // keep the value unsigned, and an address is the low 20 bytes of the word anyway
+        var hex = word.ToString("x", CultureInfo.InvariantCulture);
+
+        return ("0x" + (hex.Length > 40 ? hex[^40..] : hex.PadLeft(40, '0')))
+            .NormalizeAddress();
     }
 
     public static (BigInteger X, BigInteger Y) ReadPackedAmounts(

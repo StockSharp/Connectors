@@ -280,12 +280,14 @@ static class BalancerExtensions
 		return result.IsEmpty() ? "TOKEN" : result.ToUpperInvariant();
 	}
 
+	// the market is always resolved by its unique security code, and the adapter does not
+	// declare native identifiers, so attaching the pool key here would only make ids built
+	// from code and board unequal to the ones the lookup reports
 	public static SecurityId ToStockSharp(this BalancerMarket market)
 		=> new()
 		{
 			SecurityCode = market.SecurityCode,
 			BoardCode = BoardCodes.Balancer,
-			Native = market.Key,
 		};
 
 	public static decimal ParseDecimal(string value, string field)
@@ -318,7 +320,12 @@ static class BalancerExtensions
 	{
 		if (value < 0)
 			throw new ArgumentOutOfRangeException(nameof(value));
-		return "0x" + value.ToString("x", CultureInfo.InvariantCulture);
+
+		// JSON-RPC rejects a quantity with leading zeros, and BigInteger.ToString("x")
+		// adds one whenever the leading digit is >= 8
+		var hex = value.ToString("x", CultureInfo.InvariantCulture).TrimStart('0');
+
+		return "0x" + (hex.Length == 0 ? "0" : hex);
 	}
 
 	public static BigInteger ToBaseUnits(this decimal value, int decimals)
@@ -407,7 +414,11 @@ static class BalancerExtensions
 	{
 		if (value < 0)
 			throw new ArgumentOutOfRangeException(nameof(value));
-		var hex = value.ToString("x", CultureInfo.InvariantCulture);
+
+		// BigInteger.ToString("x") prefixes a zero nibble when the leading digit is >= 8 to
+		// keep the value unsigned, which would overflow the fixed width word
+		var hex = value.ToString("x", CultureInfo.InvariantCulture).TrimStart('0');
+
 		if (hex.Length > 64)
 			throw new ArgumentOutOfRangeException(nameof(value),
 				"ABI integer exceeds 256 bits.");
@@ -444,8 +455,16 @@ static class BalancerExtensions
 	}
 
 	public static string ReadAbiAddress(string value, int index)
-		=> ("0x" + ReadAbiWord(value, index).ToString("x",
-			CultureInfo.InvariantCulture).PadLeft(40, '0')).NormalizeAddress();
+	{
+		var word = ReadAbiWord(value, index);
+
+		// BigInteger.ToString("x") prefixes a zero nibble when the leading digit is >= 8 to
+		// keep the value unsigned, and an address is the low 20 bytes of the word anyway
+		var hex = word.ToString("x", CultureInfo.InvariantCulture);
+
+		return ("0x" + (hex.Length > 40 ? hex[^40..] : hex.PadLeft(40, '0')))
+			.NormalizeAddress();
+	}
 
 	public static BalancerRawSwap DecodeSwap(BalancerRpcLog log,
 		BalancerDeployment deployment)

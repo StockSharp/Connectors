@@ -128,7 +128,12 @@ static class GainsNetworkExtensions
 	{
 		if (value < 0)
 			throw new ArgumentOutOfRangeException(nameof(value));
-		return "0x" + value.ToString("x", CultureInfo.InvariantCulture);
+
+		// JSON-RPC rejects a quantity with leading zeros, and BigInteger.ToString("x")
+		// adds one whenever the leading digit is >= 8
+		var hex = value.ToString("x", CultureInfo.InvariantCulture).TrimStart('0');
+
+		return "0x" + (hex.Length == 0 ? "0" : hex);
 	}
 
 	public static DateTime EnsureUtc(this DateTime value)
@@ -157,7 +162,11 @@ static class GainsNetworkExtensions
 	{
 		if (value < 0)
 			throw new ArgumentOutOfRangeException(nameof(value));
-		var hex = value.ToString("x", CultureInfo.InvariantCulture);
+
+		// BigInteger.ToString("x") prefixes a zero nibble when the leading digit is >= 8 to
+		// keep the value unsigned, which would overflow the fixed width word
+		var hex = value.ToString("x", CultureInfo.InvariantCulture).TrimStart('0');
+
 		if (hex.Length > 64)
 			throw new ArgumentOutOfRangeException(nameof(value),
 				"ABI integer exceeds 256 bits.");

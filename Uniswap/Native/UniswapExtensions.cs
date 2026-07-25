@@ -67,7 +67,12 @@ static class UniswapExtensions
         if (value < 0)
             throw new ArgumentOutOfRangeException(nameof(value), value,
                 "JSON-RPC quantities cannot be negative.");
-        return "0x" + value.ToString("x", CultureInfo.InvariantCulture);
+
+        // JSON-RPC rejects a quantity with leading zeros, and BigInteger.ToString("x")
+        // adds one whenever the leading digit is >= 8
+        var hex = value.ToString("x", CultureInfo.InvariantCulture).TrimStart('0');
+
+        return "0x" + (hex.Length == 0 ? "0" : hex);
     }
 
     public static BigInteger ToBaseUnits(this decimal value, int decimals)
