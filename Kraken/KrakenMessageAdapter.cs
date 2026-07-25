@@ -93,7 +93,7 @@ public partial class KrakenMessageAdapter
 			try
 			{
 				UnsubscribePusherClient();
-				_spotPusherClient.Disconnect();
+				await _spotPusherClient.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -133,7 +133,7 @@ public partial class KrakenMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_spotHttpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -141,8 +141,6 @@ public partial class KrakenMessageAdapter
 		_spotHttpClient.Dispose();
 		_spotHttpClient = null;
 
-		_spotPusherClient.Disconnect();
-
-		return default;
+		await _spotPusherClient.DisconnectAsync(cancellationToken);
 	}
 }

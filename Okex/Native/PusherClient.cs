@@ -87,10 +87,10 @@ abstract class BasePusherClient : BaseLogReceiver, IConnection
 		return _client.ConnectAsync(cancellationToken);
 	}
 
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		return _client.DisconnectAsync(cancellationToken);
 	}
 
 	protected virtual async ValueTask<bool> OnProcessImpl(dynamic obj, CancellationToken cancellationToken)

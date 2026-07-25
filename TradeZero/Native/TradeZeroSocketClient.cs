@@ -55,7 +55,7 @@ sealed class TradeZeroSocketClient : BaseLogReceiver
 		await _authorization.Task.WaitAsync(cancellationToken);
 	}
 
-	public void Disconnect() => _client.Disconnect();
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken) => _client.DisconnectAsync(cancellationToken);
 
 	public async ValueTask Subscribe(string accountId, CancellationToken cancellationToken)
 	{

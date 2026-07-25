@@ -66,8 +66,8 @@ class FuturesAdapter : NativeAdapter
 		=> _socketClient.Connect(cancellationToken);
 
 	/// <inheritdoc />
-	public override void Disconnect()
-		=> _socketClient.Disconnect();
+	public override ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> _socketClient.DisconnectAsync(cancellationToken);
 
 	/// <inheritdoc />
 	public override ValueTask Time(TimeMessage timeMsg, CancellationToken cancellationToken)

@@ -117,8 +117,7 @@ public partial class KucoinMessageAdapter
 	/// <inheritdoc />
 	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
-		_tracker.Disconnect();
-		return default;
+		return _tracker.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />

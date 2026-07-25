@@ -127,9 +127,7 @@ public partial class FtxMessageAdapter
 		if (_wsClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_wsClient.Disconnect();
-
-		return default;
+		return _wsClient.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />

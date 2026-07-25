@@ -130,11 +130,13 @@ class SocketClient : BaseLogReceiver
 		return client;
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
 		StopListenKeyLoop(closeListenKey: true);
-		_client?.Disconnect();
+
+		if (_client is { } client)
+			await client.DisconnectAsync(cancellationToken);
 	}
 
 	private void DisposeClient()

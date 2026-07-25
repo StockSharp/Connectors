@@ -117,12 +117,14 @@ class SocketClient : BaseLogReceiver
 		}, cancellationToken);
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
 
-		_publicClient.Disconnect();
-		_privateClient?.Disconnect();
+		await _publicClient.DisconnectAsync(cancellationToken);
+
+		if (_privateClient is { } privateClient)
+			await privateClient.DisconnectAsync(cancellationToken);
 	}
 
 	private async ValueTask OnPublicProcess(WebSocketMessage msg, CancellationToken cancellationToken)

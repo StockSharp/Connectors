@@ -77,7 +77,7 @@ public partial class BithumbMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage msg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage msg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -86,9 +86,7 @@ public partial class BithumbMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
 		_httpClient.Dispose();
-		_pusherClient.Disconnect();
-
-		return default;
+		await _pusherClient.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -113,7 +111,7 @@ public partial class BithumbMessageAdapter
 			try
 			{
 				UnsubscribePusherClient(pc);
-				pc.Disconnect();
+				await pc.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

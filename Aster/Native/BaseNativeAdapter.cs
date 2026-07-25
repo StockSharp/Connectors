@@ -31,15 +31,11 @@ abstract class BaseNativeAdapter(SecureString key, SecureString secret, string b
 	public virtual ValueTask ConnectAsync(CancellationToken cancellationToken)
 		=> default;
 
-	public virtual void Disconnect()
-	{
-	}
+	public virtual ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> default;
 
 	public virtual ValueTask ResetAsync(CancellationToken cancellationToken)
-	{
-		Disconnect();
-		return default;
-	}
+		=> DisconnectAsync(cancellationToken);
 
 	public virtual ValueTask TimeAsync(TimeMessage timeMsg, CancellationToken cancellationToken)
 		=> default;

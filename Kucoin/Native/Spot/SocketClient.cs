@@ -95,10 +95,10 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 		return _client.ConnectAsync(cancellationToken);
 	}
 
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		return _client.DisconnectAsync(cancellationToken);
 	}
 
 	public ValueTask Ping(CancellationToken cancellationToken)

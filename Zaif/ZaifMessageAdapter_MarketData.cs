@@ -62,7 +62,7 @@ partial class ZaifMessageAdapter
 		else
 		{
 			_tickerSubscriptions.Remove(currency);
-			TryRemoveSocket(currency);
+			await TryRemoveSocketAsync(currency, cancellationToken);
 		}
 	}
 
@@ -83,7 +83,7 @@ partial class ZaifMessageAdapter
 		else
 		{
 			_depthSubscriptions.Remove(currency);
-			TryRemoveSocket(currency);
+			await TryRemoveSocketAsync(currency, cancellationToken);
 		}
 	}
 
@@ -117,7 +117,7 @@ partial class ZaifMessageAdapter
 		else
 		{
 			_tickSubscriptions.Remove(currency);
-			TryRemoveSocket(currency);
+			await TryRemoveSocketAsync(currency, cancellationToken);
 		}
 	}
 
@@ -127,7 +127,7 @@ partial class ZaifMessageAdapter
 			await _pusherClient.SubscribeAsync(currency, cancellationToken);
 	}
 
-	private void TryRemoveSocket(string currency)
+	private async ValueTask TryRemoveSocketAsync(string currency, CancellationToken cancellationToken)
 	{
 		if (!_wsSubscriptions.Contains(currency))
 			return;
@@ -135,7 +135,7 @@ partial class ZaifMessageAdapter
 		if (_tickSubscriptions.Contains(currency) || _depthSubscriptions.Contains(currency) || _tickerSubscriptions.Contains(currency))
 			return;
 
-		_pusherClient.UnSubscribe(currency);
+		await _pusherClient.UnSubscribeAsync(currency, cancellationToken);
 		_wsSubscriptions.Remove(currency);
 	}
 

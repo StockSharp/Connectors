@@ -79,14 +79,18 @@ public partial class NinjaTraderMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_marketSocket?.Disconnect();
-		_accountSocket?.Disconnect();
-		return base.DisconnectAsync(disconnectMsg, cancellationToken);
+		if (_marketSocket != null)
+			await _marketSocket.DisconnectAsync(cancellationToken);
+
+		if (_accountSocket != null)
+			await _accountSocket.DisconnectAsync(cancellationToken);
+
+		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

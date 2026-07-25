@@ -154,9 +154,7 @@ public partial class AlorMessageAdapter
 		_orderSocketClient.OrderCreated -= OnOrderCreated;
 		_orderSocketClient.TransError -= OnTransError;
 
-		_stateTracker.Disconnect();
-
-		return default;
+		return _stateTracker.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />

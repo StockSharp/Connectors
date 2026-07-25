@@ -74,11 +74,11 @@ class WsClient : BaseLogReceiver
 		StartPingLoop();
 	}
 
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
 		StopPingLoop();
-		_client.Disconnect();
+		return _client.DisconnectAsync(cancellationToken);
 	}
 
 	public ValueTask PingAsync(CancellationToken cancellationToken)

@@ -116,7 +116,7 @@ public partial class ByBitMessageAdapter
 			try
 			{
 				UnsubscribePusherClient(client);
-				client.Disconnect();
+				await client.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -231,9 +231,7 @@ public partial class ByBitMessageAdapter
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_tracker.Disconnect();
-
-		return default;
+		return _tracker.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />

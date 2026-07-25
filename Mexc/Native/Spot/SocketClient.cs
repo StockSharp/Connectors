@@ -44,7 +44,7 @@ class SocketClient : BaseLogReceiver
 	protected override void DisposeManaged()
 	{
 		StopPingLoop();
-		DisconnectPrivate();
+		DisposePrivate();
 		_publicClient.Dispose();
 		base.DisposeManaged();
 	}
@@ -56,12 +56,12 @@ class SocketClient : BaseLogReceiver
 		StartPingLoop();
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
 		StopPingLoop();
-		DisconnectPrivate();
-		_publicClient.Disconnect();
+		await DisconnectPrivateAsync(cancellationToken);
+		await _publicClient.DisconnectAsync(cancellationToken);
 	}
 
 	public async ValueTask EnsurePrivateConnected(string listenKey, CancellationToken cancellationToken)
@@ -72,7 +72,7 @@ class SocketClient : BaseLogReceiver
 		if (_privateClient != null && _listenKey == listenKey)
 			return;
 
-		DisconnectPrivate();
+		await DisconnectPrivateAsync(cancellationToken);
 
 		_listenKey = listenKey;
 		var url = $"{_publicUrl}?listenKey={listenKey}";
@@ -81,24 +81,41 @@ class SocketClient : BaseLogReceiver
 		StartPingLoop();
 	}
 
-	public void DisconnectPrivate()
+	public async ValueTask DisconnectPrivateAsync(CancellationToken cancellationToken)
 	{
-		var privateClient = _privateClient;
-		_privateClient = null;
-		_listenKey = null;
+		var privateClient = TakePrivate();
 
 		if (privateClient is null)
 			return;
 
 		try
 		{
-			privateClient.Disconnect();
+			await privateClient.DisconnectAsync(cancellationToken);
 		}
 		catch
 		{
 		}
 
 		privateClient.Dispose();
+	}
+
+	// Drops the private client without a graceful close - used from disposal, which cannot await.
+	private void DisposePrivate()
+	{
+		var privateClient = TakePrivate();
+
+		if (privateClient is null)
+			return;
+
+		privateClient.Dispose();
+	}
+
+	private WebSocketClient TakePrivate()
+	{
+		var privateClient = _privateClient;
+		_privateClient = null;
+		_listenKey = null;
+		return privateClient;
 	}
 
 	private WebSocketClient CreateClient(string url, bool isPrivate, Func<WebSocketMessage, CancellationToken, ValueTask> onProcess, WorkingTime workingTime)

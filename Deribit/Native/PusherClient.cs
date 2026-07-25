@@ -124,7 +124,7 @@ class PusherClient : BaseLogReceiver
 		await Send(id, Actions.Logout, null, cancellationToken);
 		
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		await _client.DisconnectAsync(cancellationToken);
 	}
 
 	public ValueTask CancelOnDisconnect(long id, bool enabled, string scope, CancellationToken cancellationToken)

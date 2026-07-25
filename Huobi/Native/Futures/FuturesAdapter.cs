@@ -151,7 +151,7 @@ class FuturesAdapter(HuobiMessageAdapter parent, Authenticator authenticator, st
 		await _pusherClient.ConnectAsync(Parent.IsMarketData(), Parent.IsTransactional(), cancellationToken);
 	}
 
-	public override ValueTask DisconnectAsync(CancellationToken cancellationToken)
+	public override async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -162,8 +162,7 @@ class FuturesAdapter(HuobiMessageAdapter parent, Authenticator authenticator, st
 		_httpClient.Dispose();
 		_httpClient = null;
 
-		_pusherClient.Disconnect();
-		return default;
+		await _pusherClient.DisconnectAsync(cancellationToken);
 	}
 
 	public override async ValueTask SuspendedAsync(ProcessSuspendedMessage message, CancellationToken cancellationToken)

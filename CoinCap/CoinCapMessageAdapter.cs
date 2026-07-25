@@ -91,7 +91,7 @@ public partial class CoinCapMessageAdapter
 				try
 				{
 					pusher.NewTrade -= PusherOnNewTrade;
-					pusher.Disconnect();
+					await pusher.DisconnectAsync(cancellationToken);
 					pusher.Dispose();
 				}
 				catch (Exception ex)

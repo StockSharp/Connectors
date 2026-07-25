@@ -112,15 +112,17 @@ partial class LmaxMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_socketClient?.Disconnect();
+		if (_socketClient != null)
+			await _socketClient.DisconnectAsync(cancellationToken);
+
 		_httpClient.Disconnect();
 
-		return base.DisconnectAsync(disconnectMsg, cancellationToken);
+		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

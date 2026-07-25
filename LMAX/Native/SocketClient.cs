@@ -99,10 +99,13 @@ class SocketClient : BaseLogReceiver
 		this.AddInfoLog("Connected to account WebSocket");
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
-		_marketDataClient?.Disconnect();
-		_accountClient?.Disconnect();
+		if (_marketDataClient != null)
+			await _marketDataClient.DisconnectAsync(cancellationToken);
+
+		if (_accountClient != null)
+			await _accountClient.DisconnectAsync(cancellationToken);
 
 		_subscribedOrderBooks.Clear();
 		_subscribedTickers.Clear();

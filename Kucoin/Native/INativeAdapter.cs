@@ -64,7 +64,7 @@ abstract class BaseNativeAdapter : Disposable, INativeAdapter
 	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
 
 	public abstract ValueTask ConnectAsync(CancellationToken cancellationToken);
-	public abstract void Disconnect();
+	public abstract ValueTask DisconnectAsync(CancellationToken cancellationToken);
 
 	protected ValueTask SendOutConnectionStateAsync(ConnectionStates state, CancellationToken cancellationToken)
 	{

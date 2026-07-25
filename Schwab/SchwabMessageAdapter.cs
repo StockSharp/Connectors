@@ -64,7 +64,7 @@ public partial class SchwabMessageAdapter
 			_streamer.BookReceived -= OnBookReceived;
 			_streamer.AccountActivityReceived -= OnAccountActivityReceived;
 			_streamer.Error -= OnStreamerError;
-			_streamer.Disconnect();
+			await _streamer.DisconnectAsync(cancellationToken);
 			_streamer.Dispose();
 			_streamer = null;
 		}

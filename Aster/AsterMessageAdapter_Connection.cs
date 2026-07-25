@@ -73,7 +73,7 @@ public partial class AsterMessageAdapter
 		{
 			try
 			{
-				adapter.Disconnect();
+				await adapter.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

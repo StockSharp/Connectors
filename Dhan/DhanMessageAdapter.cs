@@ -79,10 +79,18 @@ public partial class DhanMessageAdapter
 		if (_restClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_marketClient?.Disconnect();
-		_orderClient?.Disconnect();
-		_depth20Client?.Disconnect();
-		_depth200Client?.Disconnect();
+		if (_marketClient != null)
+			await _marketClient.DisconnectAsync(cancellationToken);
+
+		if (_orderClient != null)
+			await _orderClient.DisconnectAsync(cancellationToken);
+
+		if (_depth20Client != null)
+			await _depth20Client.DisconnectAsync(cancellationToken);
+
+		if (_depth200Client != null)
+			await _depth200Client.DisconnectAsync(cancellationToken);
+
 		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 

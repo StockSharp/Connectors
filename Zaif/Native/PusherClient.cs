@@ -49,10 +49,16 @@ class PusherClient : BaseLogReceiver
 			return _client.ConnectAsync(cancellationToken);
 		}
 
-		public void Disconnect()
+		public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 		{
 			this.AddInfoLog(LocalizedStrings.Disconnecting);
-			_client.Disconnect();
+			return _client.DisconnectAsync(cancellationToken);
+		}
+
+		protected override void DisposeManaged()
+		{
+			_client.Dispose();
+			base.DisposeManaged();
 		}
 
 		private async ValueTask OnProcess(WebSocketMessage msg, CancellationToken cancellationToken)
@@ -112,20 +118,26 @@ class PusherClient : BaseLogReceiver
 		return socket.ConnectAsync(cancellationToken);
 	}
 
-	public void UnSubscribe(string currency)
+	public ValueTask UnSubscribeAsync(string currency, CancellationToken cancellationToken)
 	{
 		var socket = _sockets.GetAndRemove(currency);
-		socket.Disconnect();
+		return socket.DisconnectAsync(cancellationToken);
 	}
 
-	public void DisconnectAll()
+	public async ValueTask DisconnectAllAsync(CancellationToken cancellationToken)
 	{
-		_sockets.Keys.ToArray().ForEach(UnSubscribe);
+		foreach (var currency in _sockets.Keys.ToArray())
+			await UnSubscribeAsync(currency, cancellationToken);
 	}
 
 	protected override void DisposeManaged()
 	{
-		DisconnectAll();
+		// sync dispose cannot await, socket dispose cancels and closes the connection
+		foreach (var socket in _sockets.Values.ToArray())
+			socket.Dispose();
+
+		_sockets.Clear();
+
 		base.DisposeManaged();
 	}
 }

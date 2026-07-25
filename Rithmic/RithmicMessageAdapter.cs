@@ -306,7 +306,7 @@ public partial class RithmicMessageAdapter
 			}
 			catch { }
 
-			client.Disconnect();
+			await client.DisconnectAsync(cancellationToken);
 		}
 	}
 

@@ -76,8 +76,12 @@ public partial class AngelOneMessageAdapter
 		if (_restClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_marketClient?.Disconnect();
-		_orderClient?.Disconnect();
+		if (_marketClient != null)
+			await _marketClient.DisconnectAsync(cancellationToken);
+
+		if (_orderClient != null)
+			await _orderClient.DisconnectAsync(cancellationToken);
+
 		await _restClient.Logout(cancellationToken);
 		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}

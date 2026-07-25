@@ -133,7 +133,7 @@ public partial class CoinCapMessageAdapter
 		if (_pricesPusher != null)
 		{
 			_pricesPusher.PricesChanged -= PricesPusherOnPricesChanged;
-			_pricesPusher.Disconnect();
+			await _pricesPusher.DisconnectAsync(cancellationToken);
 			_pricesPusher.Dispose();
 			_pricesPusher = null;
 		}
@@ -189,7 +189,7 @@ public partial class CoinCapMessageAdapter
 			if (_tradesPushers.TryGetValue(exchange, out var pusher))
 			{
 				pusher.NewTrade -= PusherOnNewTrade;
-				pusher.Disconnect();
+				await pusher.DisconnectAsync(cancellationToken);
 				pusher.Dispose();
 				_tradesPushers.Remove(exchange);
 			}

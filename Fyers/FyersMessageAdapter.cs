@@ -80,9 +80,15 @@ public partial class FyersMessageAdapter
 		if (_restClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_marketClient?.Disconnect();
-		_orderClient?.Disconnect();
-		_tbtClient?.Disconnect();
+		if (_marketClient != null)
+			await _marketClient.DisconnectAsync(cancellationToken);
+
+		if (_orderClient != null)
+			await _orderClient.DisconnectAsync(cancellationToken);
+
+		if (_tbtClient != null)
+			await _tbtClient.DisconnectAsync(cancellationToken);
+
 		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 

@@ -78,9 +78,16 @@ public partial class BreezeMessageAdapter
 	{
 		if (_restClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
-		_marketClient?.Disconnect();
-		_orderClient?.Disconnect();
-		_ohlcClient?.Disconnect();
+
+		if (_marketClient != null)
+			await _marketClient.DisconnectAsync(cancellationToken);
+
+		if (_orderClient != null)
+			await _orderClient.DisconnectAsync(cancellationToken);
+
+		if (_ohlcClient != null)
+			await _ohlcClient.DisconnectAsync(cancellationToken);
+
 		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 

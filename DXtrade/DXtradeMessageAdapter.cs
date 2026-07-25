@@ -90,7 +90,7 @@ public partial class DXtradeMessageAdapter
 			try
 			{
 				UnsubscribePusherClient(client);
-				client.Disconnect();
+				await client.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -169,7 +169,7 @@ public partial class DXtradeMessageAdapter
 
 		await _httpClient.Logout(cancellationToken);
 
-		_tracker.Disconnect();
+		await _tracker.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />

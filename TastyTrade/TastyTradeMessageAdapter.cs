@@ -83,11 +83,15 @@ public partial class TastyTradeMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage message, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage message, CancellationToken cancellationToken)
 	{
-		_marketStreamer?.Disconnect();
-		_accountStreamer?.Disconnect();
-		return base.DisconnectAsync(message, cancellationToken);
+		if (_marketStreamer is not null)
+			await _marketStreamer.DisconnectAsync(cancellationToken);
+
+		if (_accountStreamer is not null)
+			await _accountStreamer.DisconnectAsync(cancellationToken);
+
+		await base.DisconnectAsync(message, cancellationToken);
 	}
 
 	/// <inheritdoc />

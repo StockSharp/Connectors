@@ -100,7 +100,7 @@ public partial class CoinbaseMessageAdapter
 			try
 			{
 				UnsubscribePusherClient();
-				_socketClient.Disconnect();
+				await _socketClient.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -159,7 +159,7 @@ public partial class CoinbaseMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_restClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -171,8 +171,7 @@ public partial class CoinbaseMessageAdapter
 		_restClient = null;
 
 		//await _socketClient.UnSubscribeStatus(cancellationToken);
-		_socketClient.Disconnect();
-		return default;
+		await _socketClient.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />

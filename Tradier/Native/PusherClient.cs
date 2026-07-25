@@ -58,10 +58,10 @@ abstract class BaseSocketClient : BaseLogReceiver
 		return _client.ConnectAsync(cancellationToken);
 	}
 
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		return _client.DisconnectAsync(cancellationToken);
 	}
 
 	private async ValueTask OnProcess(WebSocketMessage msg, CancellationToken cancellationToken)
@@ -164,7 +164,7 @@ class MarketDataClient : BaseSocketClient
 		else
 			_symbols.Remove(symbol);
 
-		Disconnect();
+		await DisconnectAsync(cancellationToken);
 		await TimeSpan.FromSeconds(5).Delay(cancellationToken);
 		await Connect(cancellationToken);
 

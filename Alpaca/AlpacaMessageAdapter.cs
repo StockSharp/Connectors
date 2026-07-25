@@ -153,9 +153,8 @@ partial class AlpacaMessageAdapter
 
 		if (_tracker is null)
 			return base.DisconnectAsync(msg, cancellationToken);
-		
-		_tracker.Disconnect();
-		return default;
+
+		return _tracker.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -186,13 +185,25 @@ partial class AlpacaMessageAdapter
 		_newsClient = await disposeClient(_newsClient);
 		_tradingClient = await disposeClient(_tradingClient);
 
-		ValueTask<T> disposeSocketClient<T>(T client, Action<T> unsubscribe)
+		async ValueTask<T> disposeSocketClient<T>(T client, Action<T> unsubscribe)
 			where T : SocketAlpacaClient
 		{
 			if (client is not null)
+			{
 				unsubscribe(client);
 
-			return disposeClient(client);
+				try
+				{
+					// mark the disconnect as expected, otherwise disposing the socket looks like a connection loss
+					await client.DisconnectAsync(cancellationToken);
+				}
+				catch (Exception ex)
+				{
+					await SendOutErrorAsync(ex, cancellationToken);
+				}
+			}
+
+			return await disposeClient(client);
 		}
 
 		_socketStockClient = await disposeSocketClient(_socketStockClient, UnsubscribeSocketClient);

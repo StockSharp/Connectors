@@ -32,7 +32,6 @@ class SpotAdapter : NativeAdapter
 	{
 		UnsubscribePusherClient();
 		StopListenKeyLoop();
-		_socketClient.DisconnectPrivate();
 
 		_httpClient.Dispose();
 		_socketClient.Dispose();
@@ -83,10 +82,10 @@ class SpotAdapter : NativeAdapter
 		return _socketClient.Connect(cancellationToken);
 	}
 
-	public override void Disconnect()
+	public override ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		StopListenKeyLoop();
-		_socketClient.Disconnect();
+		return _socketClient.DisconnectAsync(cancellationToken);
 	}
 
 	public override async IAsyncEnumerable<SecurityMessage> SecurityLookup(SecurityLookupMessage lookupMsg, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -396,7 +395,7 @@ class SpotAdapter : NativeAdapter
 				_dealsStreamSubscribed = false;
 			}
 
-			_socketClient.DisconnectPrivate();
+			await _socketClient.DisconnectPrivateAsync(cancellationToken);
 			await DeleteListenKey(cancellationToken);
 			StopListenKeyLoop();
 			return;

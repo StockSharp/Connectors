@@ -86,10 +86,10 @@ class FtxWebSocketClient : BaseLogReceiver
 	/// <summary>
 	/// Closes the WebSocket connection
 	/// </summary>
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		return _client.DisconnectAsync(cancellationToken);
 	}
 
 	/// <summary>

@@ -40,7 +40,8 @@ internal sealed class CapitalComWebSocketClient : BaseLogReceiver
 	public ValueTask ConnectAsync(CancellationToken cancellationToken)
 		=> _client.ConnectAsync(cancellationToken);
 
-	public void Disconnect() => _client.Disconnect();
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> _client.DisconnectAsync(cancellationToken);
 
 	public ValueTask Ping(CancellationToken cancellationToken)
 		=> SendRequest("ping", (CapitalComEmptyPayload)null, cancellationToken);

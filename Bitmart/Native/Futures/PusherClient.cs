@@ -120,10 +120,10 @@ abstract class PusherClient : BaseLogReceiver
 		return _client.ConnectAsync(cancellationToken);
 	}
 
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		return _client.DisconnectAsync(cancellationToken);
 	}
 
 	private static (string table, string arg, string filter) SplitTopic(string topic)

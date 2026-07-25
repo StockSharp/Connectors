@@ -260,7 +260,7 @@ class SpotAdapter(HuobiMessageAdapter parent, Authenticator authenticator, strin
 		await _pusherClient.ConnectAsync(Parent.IsMarketData(), Parent.IsTransactional(), cancellationToken);
 	}
 
-	public override ValueTask DisconnectAsync(CancellationToken cancellationToken)
+	public override async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -271,8 +271,7 @@ class SpotAdapter(HuobiMessageAdapter parent, Authenticator authenticator, strin
 		_httpClient.Dispose();
 		_httpClient = null;
 
-		_pusherClient.Disconnect();
-		return default;
+		await _pusherClient.DisconnectAsync(cancellationToken);
 	}
 
 	public override async ValueTask SuspendedAsync(ProcessSuspendedMessage message, CancellationToken cancellationToken)

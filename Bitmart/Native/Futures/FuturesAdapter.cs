@@ -72,8 +72,11 @@ class FuturesAdapter : BaseNativeAdapter
 		}
 		else
 		{
-			_publicClient?.Disconnect();
-			_privateClient?.Disconnect();
+			if (_publicClient is not null)
+				await _publicClient.DisconnectAsync(cancellationToken);
+
+			if (_privateClient is not null)
+				await _privateClient.DisconnectAsync(cancellationToken);
 		}
 	}
 
@@ -99,7 +102,8 @@ class FuturesAdapter : BaseNativeAdapter
 
 		try
 		{
-			_publicClient?.Disconnect();
+			if (_publicClient is not null)
+				await _publicClient.DisconnectAsync(cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -110,7 +114,8 @@ class FuturesAdapter : BaseNativeAdapter
 
 		try
 		{
-			_privateClient?.Disconnect();
+			if (_privateClient is not null)
+				await _privateClient.DisconnectAsync(cancellationToken);
 		}
 		catch (Exception ex)
 		{

@@ -91,7 +91,7 @@ public partial class KabuStationMessageAdapter
 		}
 		catch
 		{
-			DisposeClients();
+			await DisposeClientsAsync(cancellationToken);
 			throw;
 		}
 	}
@@ -101,14 +101,14 @@ public partial class KabuStationMessageAdapter
 	{
 		if (_rest == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
-		DisposeClients();
+		await DisposeClientsAsync(cancellationToken);
 		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />
 	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
 	{
-		DisposeClients();
+		await DisposeClientsAsync(cancellationToken);
 		_marketSubscriptions.Clear();
 		_securityInfos.Clear();
 		_registeredSecurities.Clear();
@@ -145,7 +145,7 @@ public partial class KabuStationMessageAdapter
 			await _rest.Register(security, cancellationToken);
 	}
 
-	private void DisposeClients()
+	private async ValueTask DisposeClientsAsync(CancellationToken cancellationToken)
 	{
 		if (_socket != null)
 		{
@@ -153,7 +153,7 @@ public partial class KabuStationMessageAdapter
 			_socket.Connected -= OnSocketConnected;
 			_socket.Error -= SendOutErrorAsync;
 			_socket.StateChanged -= SendOutConnectionStateAsync;
-			_socket.Disconnect();
+			await _socket.DisconnectAsync(cancellationToken);
 			_socket.Dispose();
 			_socket = null;
 		}

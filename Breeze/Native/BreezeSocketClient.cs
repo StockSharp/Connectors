@@ -39,7 +39,7 @@ abstract class BreezeSocketClient : BaseLogReceiver
 	}
 
 	public ValueTask Connect(CancellationToken cancellationToken) => _client.ConnectAsync(cancellationToken);
-	public void Disconnect() => _client.Disconnect();
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken) => _client.DisconnectAsync(cancellationToken);
 	public ValueTask SendHeartbeat(CancellationToken cancellationToken) => default;
 
 	protected async ValueTask AddRoom(string symbol, CancellationToken cancellationToken)

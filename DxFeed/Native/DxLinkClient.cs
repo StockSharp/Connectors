@@ -74,13 +74,18 @@ internal sealed class DxLinkClient : BaseLogReceiver
 		}
 	}
 
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
+	{
+		StopKeepAlive();
+		return _client.DisconnectAsync(cancellationToken);
+	}
+
+	private void StopKeepAlive()
 	{
 		_keepAliveCts?.Cancel();
 		_keepAliveCts?.Dispose();
 		_keepAliveCts = null;
 		_keepAliveTask = null;
-		_client.Disconnect();
 	}
 
 	public async ValueTask SubscribeFeed(string eventType, string symbol, DateTime? from,
@@ -491,7 +496,8 @@ internal sealed class DxLinkClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		Disconnect();
+		// sync dispose cannot await the disconnect, the web socket client's Dispose closes the socket itself
+		StopKeepAlive();
 		_client.PostConnect -= OnPostConnect;
 		_client.Dispose();
 		base.DisposeManaged();

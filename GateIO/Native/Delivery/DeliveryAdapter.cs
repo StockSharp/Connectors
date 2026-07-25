@@ -67,8 +67,8 @@ class DeliveryAdapter : NativeAdapter
 	public override ValueTask ConnectAsync(CancellationToken cancellationToken)
 		=> _socketClient.Connect(cancellationToken);
 
-	public override void Disconnect()
-		=> _socketClient.Disconnect();
+	public override ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> _socketClient.DisconnectAsync(cancellationToken);
 
 	public override ValueTask Time(TimeMessage timeMsg, CancellationToken cancellationToken)
 		=> _socketClient.Ping(cancellationToken);

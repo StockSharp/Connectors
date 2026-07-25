@@ -62,8 +62,8 @@ sealed class LigtherWsClient : BaseLogReceiver
 	public ValueTask ConnectAsync(CancellationToken cancellationToken)
 		=> _client.ConnectAsync(cancellationToken);
 
-	public void Disconnect()
-		=> _client.Disconnect();
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> _client.DisconnectAsync(cancellationToken);
 
 	public ValueTask SubscribeAsync(string channel, string authToken, CancellationToken cancellationToken)
 		=> SendAsync("subscribe", channel, authToken, cancellationToken, GetOrCreateSubscriptionId(channel));

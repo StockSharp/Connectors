@@ -120,8 +120,6 @@ public partial class MexcMessageAdapter
 		if (_adapters.Count == 0)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_tracker.Disconnect();
-
-		return default;
+		return _tracker.DisconnectAsync(cancellationToken);
 	}
 }

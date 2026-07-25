@@ -123,12 +123,13 @@ class PusherClient : BaseLogReceiver
 		return _client.ConnectAsync(cancellationToken);
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		await _client.DisconnectAsync(cancellationToken);
 
-		_marketDataClients.Values.Distinct().ForEach(c => c.Disconnect());
+		foreach (var c in _marketDataClients.Values.Distinct())
+			await c.DisconnectAsync(cancellationToken);
 
 		ClearMarketDataClients();
 	}
@@ -736,7 +737,7 @@ class PusherClient : BaseLogReceiver
 
 		if (client.Counter <= 0)
 		{
-			client.Disconnect();
+			await client.DisconnectAsync(cancellationToken);
 
 			_clientsByChannelId.Remove(chanId);
 

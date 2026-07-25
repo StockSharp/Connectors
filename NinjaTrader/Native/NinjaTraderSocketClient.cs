@@ -57,7 +57,8 @@ sealed class NinjaTraderSocketClient : BaseLogReceiver
 		await _authorization.Task.WaitAsync(cancellationToken);
 	}
 
-	public void Disconnect() => _client.Disconnect();
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> _client.DisconnectAsync(cancellationToken);
 
 	public ValueTask SendHeartbeat(CancellationToken cancellationToken)
 		=> _client.SendAsync("[]", cancellationToken);

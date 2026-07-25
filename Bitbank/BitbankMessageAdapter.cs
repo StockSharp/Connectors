@@ -79,7 +79,7 @@ public partial class BitbankMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage msg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage msg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -90,9 +90,7 @@ public partial class BitbankMessageAdapter : MessageAdapter
 		_httpClient.Dispose();
 		_httpClient = null;
 
-		_pusherClient.Disconnect();
-
-		return default;
+		await _pusherClient.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -117,7 +115,7 @@ public partial class BitbankMessageAdapter : MessageAdapter
 			try
 			{
 				UnsubscribePusherClient();
-				_pusherClient.Disconnect();
+				await _pusherClient.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

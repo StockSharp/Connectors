@@ -154,8 +154,7 @@ public partial class CoinExMessageAdapter
 		if (_futures == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_traker.Disconnect();
-		return default;
+		return _traker.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />

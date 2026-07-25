@@ -44,13 +44,18 @@ sealed class TastyTradeAccountStreamer : BaseLogReceiver
 		_heartbeatTask = Heartbeat(_heartbeatCts.Token);
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
+	{
+		StopHeartbeat();
+		await _client.DisconnectAsync(cancellationToken);
+	}
+
+	private void StopHeartbeat()
 	{
 		_heartbeatCts?.Cancel();
 		_heartbeatCts?.Dispose();
 		_heartbeatCts = null;
 		_heartbeatTask = null;
-		_client.Disconnect();
 	}
 
 	private ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
@@ -126,8 +131,9 @@ sealed class TastyTradeAccountStreamer : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		Disconnect();
+		StopHeartbeat();
 		_client.PostConnect -= OnPostConnect;
+		// Dispose cancels the client's token source and closes the socket.
 		_client.Dispose();
 		base.DisposeManaged();
 	}

@@ -93,15 +93,18 @@ public partial class TradierMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_mdClient?.Disconnect();
-		_accClient?.Disconnect();
+		if (_mdClient != null)
+			await _mdClient.DisconnectAsync(cancellationToken);
 
-		return base.DisconnectAsync(disconnectMsg, cancellationToken);
+		if (_accClient != null)
+			await _accClient.DisconnectAsync(cancellationToken);
+
+		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

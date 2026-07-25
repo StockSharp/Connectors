@@ -79,7 +79,7 @@ partial class LatokenMessageAdapter
 			try
 			{
 				UnsubscribePusherClient();
-				_pusherClient.Disconnect();
+				await _pusherClient.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -140,7 +140,7 @@ partial class LatokenMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage message, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage message, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -151,8 +151,6 @@ partial class LatokenMessageAdapter
 		_httpClient.Dispose();
 		_httpClient = null;
 
-		_pusherClient.Disconnect();
-
-		return default;
+		await _pusherClient.DisconnectAsync(cancellationToken);
 	}
 }

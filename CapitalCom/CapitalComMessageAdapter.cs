@@ -126,7 +126,9 @@ public partial class CapitalComMessageAdapter
 
 		try
 		{
-			_stream?.Disconnect();
+			if (_stream != null)
+				await _stream.DisconnectAsync(cancellationToken);
+
 			await _rest.Logout(cancellationToken);
 			await base.DisconnectAsync(disconnectMsg, cancellationToken);
 		}

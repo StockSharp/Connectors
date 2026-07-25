@@ -55,8 +55,6 @@ abstract class SocketAlpacaClient : BaseLogReceiver, IConnection
 
 	protected override void DisposeManaged()
 	{
-		Disconnect();
-		
 		_client.PostConnect -= OnPostConnect;
 		_client.Dispose();
 
@@ -75,13 +73,13 @@ abstract class SocketAlpacaClient : BaseLogReceiver, IConnection
 		return _client.ConnectAsync(cancellationToken);
 	}
 
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		if (!_client.IsConnected)
-			return;
+			return default;
 
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		return _client.DisconnectAsync(cancellationToken);
 	}
 
 	protected abstract ValueTask OnProcess(WebSocketMessage msg, CancellationToken cancellationToken);

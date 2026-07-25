@@ -124,10 +124,10 @@ class SocketClient : BaseLogReceiver
 	private static Dictionary<string, object> CreateHeader()
 		=> new() { { Extensions.BrokerRefKey, Extensions.BrokerRefValue } };
 
-	public void Disconnect()
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
-		_client.Disconnect();
+		return _client.DisconnectAsync(cancellationToken);
 	}
 
 	private async ValueTask OnProcess(WebSocketMessage msg, CancellationToken cancellationToken)

@@ -72,14 +72,18 @@ public partial class UpstoxMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_restClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_marketClient?.Disconnect();
-		_portfolioClient?.Disconnect();
-		return base.DisconnectAsync(disconnectMsg, cancellationToken);
+		if (_marketClient != null)
+			await _marketClient.DisconnectAsync(cancellationToken);
+
+		if (_portfolioClient != null)
+			await _portfolioClient.DisconnectAsync(cancellationToken);
+
+		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

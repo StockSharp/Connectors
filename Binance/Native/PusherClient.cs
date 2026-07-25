@@ -99,10 +99,16 @@ class PusherClient : BaseLogReceiver
 			return _client.ConnectAsync(cancellationToken);
 		}
 
-		public void Disconnect()
+		public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 		{
 			this.AddInfoLog(LocalizedStrings.Disconnecting);
-			_client.Disconnect();
+			return _client.DisconnectAsync(cancellationToken);
+		}
+
+		protected override void DisposeManaged()
+		{
+			_client.Dispose();
+			base.DisposeManaged();
 		}
 
 		protected abstract ValueTask OnParse(WebSocketMessage msg, CancellationToken cancellationToken);
@@ -580,22 +586,35 @@ class PusherClient : BaseLogReceiver
 		private bool _subscriptionsChanged;
 		private readonly CachedSynchronizedSet<MarketDataPusherClient> _clients = [];
 
-		private void DisconnectInternal()
+		private async ValueTask DisconnectInternalAsync(CancellationToken cancellationToken)
 		{
 			foreach (var client in _clients.CopyAndClear())
-				client.Disconnect();
+				await client.DisconnectAsync(cancellationToken);
 		}
 
-		public void Disconnect()
+		private void ClearSubscriptions()
 		{
-			DisconnectInternal();
-
 			using (_subscribedStreams.EnterScope())
 			{
 				_subscribedStreams.Clear();
 				_lastSubscription = null;
 				_subscriptionsChanged = false;
 			}
+		}
+
+		public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		{
+			await DisconnectInternalAsync(cancellationToken);
+
+			ClearSubscriptions();
+		}
+
+		public void DisposeClients()
+		{
+			foreach (var client in _clients.CopyAndClear())
+				client.Dispose();
+
+			ClearSubscriptions();
 		}
 
 		public void Process(bool isSubscribe, string symbol)
@@ -620,14 +639,14 @@ class PusherClient : BaseLogReceiver
 			}
 		}
 
-		public ValueTask ProcessSubscriptions(CancellationToken cancellationToken)
+		public async ValueTask ProcessSubscriptions(CancellationToken cancellationToken)
 		{
 			bool canConnect;
 
 			using (_subscribedStreams.EnterScope())
 			{
 				if (!_subscriptionsChanged || _lastSubscription == null || (DateTime.UtcNow - _lastSubscription.Value).TotalSeconds < 5)
-					return default;
+					return;
 
 				_subscriptionsChanged = false;
 				canConnect = _subscribedStreams.Count > 0;
@@ -635,7 +654,7 @@ class PusherClient : BaseLogReceiver
 
 			try
 			{
-				DisconnectInternal();
+				await DisconnectInternalAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -643,7 +662,7 @@ class PusherClient : BaseLogReceiver
 			}
 
 			if (!canConnect)
-				return default;
+				return;
 
 			var subscribedStreams = _subscribedStreams.Cache;
 
@@ -656,20 +675,20 @@ class PusherClient : BaseLogReceiver
 
 			if (subscribedStreams.Length <= 20)
 			{
-				return createClient(subscribedStreams);
+				await createClient(subscribedStreams);
 			}
 			else
 			{
 				if (_allSymbolsStream.IsEmpty())
 				{
-					return subscribedStreams
+					await subscribedStreams
 						.Chunk(100)
 						.Select(createClient)
 						.WhenAll();
 				}
 				else
 				{
-					return createClient([_allSymbolsStream]);
+					await createClient([_allSymbolsStream]);
 				}
 			}
 		}
@@ -678,27 +697,27 @@ class PusherClient : BaseLogReceiver
 	private readonly CachedSynchronizedDictionary<(BinanceSections section, string symbol), StreamInfo> _marketDataStreams = [];
 	private readonly CachedSynchronizedDictionary<(BinanceSections section, string symbol), AuthPusherClient> _authClients = [];
 
-	private void DisconnectMarketData()
+	private async ValueTask DisconnectMarketDataAsync(CancellationToken cancellationToken)
 	{
 		foreach (var stream in _marketDataStreams.CachedValues)
-			stream.Disconnect();
+			await stream.DisconnectAsync(cancellationToken);
 
 		_marketDataStreams.Clear();
 	}
 
-	private void DisconnectAuth(BinanceSections section, string isolatedSymbol)
+	private async ValueTask DisconnectAuthAsync(BinanceSections section, string isolatedSymbol, CancellationToken cancellationToken)
 	{
 		if (_authClients.TryGetAndRemove((section, isolatedSymbol), out var client))
-			client.Disconnect();
+			await client.DisconnectAsync(cancellationToken);
 	}
 
-	public void DisconnectAll()
+	public async ValueTask DisconnectAllAsync(CancellationToken cancellationToken)
 	{
-		DisconnectMarketData();
+		await DisconnectMarketDataAsync(cancellationToken);
 
 		foreach (var section in _authClients.CachedKeys)
 		{
-			DisconnectAuth(section.section, section.symbol);
+			await DisconnectAuthAsync(section.section, section.symbol, cancellationToken);
 		}
 	}
 
@@ -768,8 +787,8 @@ class PusherClient : BaseLogReceiver
 		_authClients.Add((section, isolatedSymbol), client);
 	}
 
-	public void UnSubscribeAccount(BinanceSections section, string isolatedSymbol)
-		=> DisconnectAuth(section, isolatedSymbol);
+	public ValueTask UnSubscribeAccount(BinanceSections section, string isolatedSymbol, CancellationToken cancellationToken)
+		=> DisconnectAuthAsync(section, isolatedSymbol, cancellationToken);
 
 	private void Process(bool isSubscribe, BinanceSections section, string symbol, string oneSymbolStream, string allSymbolsStream)
 	{
@@ -787,7 +806,15 @@ class PusherClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		DisconnectAll();
+		// dispose cannot await, so close the sockets by disposing the clients themselves
+		foreach (var stream in _marketDataStreams.CachedValues)
+			stream.DisposeClients();
+
+		_marketDataStreams.Clear();
+
+		foreach (var (_, client) in _authClients.CopyAndClear())
+			client.Dispose();
+
 		base.DisposeManaged();
 	}
 }

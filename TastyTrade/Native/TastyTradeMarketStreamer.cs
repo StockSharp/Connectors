@@ -42,14 +42,19 @@ sealed class TastyTradeMarketStreamer : BaseLogReceiver
 		_keepAliveTask = KeepAlive(_keepAliveCts.Token);
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
+	{
+		StopKeepAlive();
+		await _client.DisconnectAsync(cancellationToken);
+	}
+
+	private void StopKeepAlive()
 	{
 		_isReady = false;
 		_keepAliveCts?.Cancel();
 		_keepAliveCts?.Dispose();
 		_keepAliveCts = null;
 		_keepAliveTask = null;
-		_client.Disconnect();
 	}
 
 	public async ValueTask Subscribe(DxEventTypes type, string symbol, DateTime? from, CancellationToken cancellationToken)
@@ -206,8 +211,9 @@ sealed class TastyTradeMarketStreamer : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		Disconnect();
+		StopKeepAlive();
 		_client.PostConnect -= OnPostConnect;
+		// Dispose cancels the client's token source and closes the socket.
 		_client.Dispose();
 		base.DisposeManaged();
 	}

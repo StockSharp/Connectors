@@ -89,13 +89,13 @@ class SocketClient : BaseLogReceiver
 		StartPingLoop();
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
 		StopPingLoop();
 		_isLoggedIn = false;
 		_loginInProgress = false;
-		_client.Disconnect();
+		await _client.DisconnectAsync(cancellationToken);
 	}
 
 	private async ValueTask OnProcess(WebSocketMessage msg, CancellationToken cancellationToken)

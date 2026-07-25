@@ -208,7 +208,7 @@ public partial class DxFeedMessageAdapter
 
 		try
 		{
-			_client.Disconnect();
+			await _client.DisconnectAsync(cancellationToken);
 			await base.DisconnectAsync(disconnectMsg, cancellationToken);
 		}
 		finally

@@ -61,8 +61,8 @@ class SpotAdapter : NativeAdapter
 	public override ValueTask ConnectAsync(CancellationToken cancellationToken)
 		=> _socketClient.Connect(cancellationToken);
 
-	public override void Disconnect()
-		=> _socketClient.Disconnect();
+	public override ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> _socketClient.DisconnectAsync(cancellationToken);
 
 	public override async IAsyncEnumerable<SecurityMessage> SecurityLookup(SecurityLookupMessage lookupMsg, [EnumeratorCancellation] CancellationToken cancellationToken)
 	{

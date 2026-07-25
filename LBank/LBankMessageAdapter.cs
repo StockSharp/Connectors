@@ -88,7 +88,7 @@ partial class LBankMessageAdapter
 			try
 			{
 				UnsubscribePusherClient();
-				_pusherClient.Disconnect();
+				await _pusherClient.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -159,7 +159,7 @@ partial class LBankMessageAdapter
 		_httpClient.Dispose();
 		_httpClient = null;
 
-		_pusherClient.Disconnect();
+		await _pusherClient.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />

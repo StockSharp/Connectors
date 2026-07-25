@@ -103,7 +103,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 				_wsClient.MarketStatsReceived -= OnWsMarketStatsAsync;
 				_wsClient.SpotMarketStatsReceived -= OnWsSpotMarketStatsAsync;
 				_wsClient.Error -= OnWsErrorAsync;
-				_wsClient.Disconnect();
+				await _wsClient.DisconnectAsync(cancellationToken);
 				_wsClient.Dispose();
 				_wsClient = null;
 			}
@@ -124,7 +124,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 			_wsClient.MarketStatsReceived -= OnWsMarketStatsAsync;
 			_wsClient.SpotMarketStatsReceived -= OnWsSpotMarketStatsAsync;
 			_wsClient.Error -= OnWsErrorAsync;
-			_wsClient.Disconnect();
+			await _wsClient.DisconnectAsync(cancellationToken);
 			_wsClient.Dispose();
 			_wsClient = null;
 		}

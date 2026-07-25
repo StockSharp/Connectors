@@ -75,7 +75,7 @@ partial class ZaifMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -86,9 +86,9 @@ partial class ZaifMessageAdapter
 		_httpClient.Dispose();
 		_httpClient = null;
 
-		_pusherClient.DisconnectAll();
+		await _pusherClient.DisconnectAllAsync(cancellationToken);
 
-		return SendOutDisconnectMessageAsync(true, cancellationToken);
+		await SendOutDisconnectMessageAsync(true, cancellationToken);
 	}
 
 	/// <inheritdoc />

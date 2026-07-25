@@ -68,7 +68,7 @@ public partial class CoinigyMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage msg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage msg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -79,9 +79,7 @@ public partial class CoinigyMessageAdapter
 		_httpClient.Dispose();
 		_httpClient = null;
 
-		_pusherClient.Disconnect();
-
-		return default;
+		await _pusherClient.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -106,7 +104,7 @@ public partial class CoinigyMessageAdapter
 			try
 			{
 				UnsubscribePusherClient();
-				_pusherClient.Disconnect();
+				await _pusherClient.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

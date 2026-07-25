@@ -52,7 +52,7 @@ abstract class NativeAdapter : BaseLogReceiver, IConnection
 	}
 
 	public abstract ValueTask ConnectAsync(CancellationToken cancellationToken);
-	public abstract void Disconnect();
+	public abstract ValueTask DisconnectAsync(CancellationToken cancellationToken);
 
 	public abstract ValueTask Time(TimeMessage timeMsg, CancellationToken cancellationToken);
 

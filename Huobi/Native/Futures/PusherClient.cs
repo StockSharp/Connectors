@@ -112,13 +112,13 @@ class PusherClient : BaseLogReceiver
 			return _client.ConnectAsync(cancellationToken);
 		}
 
-		public void Disconnect()
+		public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 		{
 			if (!_client.IsConnected)
-				return;
+				return default;
 
 			this.AddInfoLog(LocalizedStrings.Disconnecting);
-			_client.Disconnect();
+			return _client.DisconnectAsync(cancellationToken);
 		}
 
 		protected ValueTask RaisePingAsync(long id, CancellationToken cancellationToken)
@@ -576,11 +576,11 @@ class PusherClient : BaseLogReceiver
 		}
 	}
 
-	public void Disconnect()
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
-		_feedClient.Disconnect();
-		//_mbpClient.Disconnect();
-		_accountClient.Disconnect();
+		await _feedClient.DisconnectAsync(cancellationToken);
+		//await _mbpClient.DisconnectAsync(cancellationToken);
+		await _accountClient.DisconnectAsync(cancellationToken);
 	}
 
 	public ValueTask SubscribeTicker(string symbol, SecurityId securityId, long id, CancellationToken cancellationToken)

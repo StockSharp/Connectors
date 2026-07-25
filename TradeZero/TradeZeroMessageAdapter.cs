@@ -72,14 +72,18 @@ public partial class TradeZeroMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		_portfolioSocket?.Disconnect();
-		_pnlSocket?.Disconnect();
-		return base.DisconnectAsync(disconnectMsg, cancellationToken);
+		if (_portfolioSocket != null)
+			await _portfolioSocket.DisconnectAsync(cancellationToken);
+
+		if (_pnlSocket != null)
+			await _pnlSocket.DisconnectAsync(cancellationToken);
+
+		await base.DisconnectAsync(disconnectMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

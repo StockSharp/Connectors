@@ -48,8 +48,8 @@ internal class SocketClient : BaseLogReceiver
 	public ValueTask ConnectAsync(CancellationToken cancellationToken)
 		=> _client.ConnectAsync(cancellationToken);
 
-	public void Disconnect()
-		=> _client.Disconnect();
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> _client.DisconnectAsync(cancellationToken);
 
 	public ValueTask SendAsync(Google.Protobuf.IMessage message, CancellationToken cancellationToken)
 		=> _client.SendAsync(message.ToByteArray(), WebSocketMessageType.Binary, cancellationToken);

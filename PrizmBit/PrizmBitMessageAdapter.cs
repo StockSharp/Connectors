@@ -82,7 +82,7 @@ partial class PrizmBitMessageAdapter
 			try
 			{
 				UnsubscribePusherClient();
-				_pusherClient.Disconnect();
+				await _pusherClient.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -145,7 +145,7 @@ partial class PrizmBitMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (_httpClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
@@ -159,8 +159,6 @@ partial class PrizmBitMessageAdapter
 		_httpClient.Dispose();
 		_httpClient = null;
 
-		_pusherClient.Disconnect();
-
-		return default;
+		await _pusherClient.DisconnectAsync(cancellationToken);
 	}
 }

@@ -187,9 +187,7 @@ public partial class OkexMessageAdapter
 
 		_httpClient.Dispose();
 
-		_tracker.Disconnect();
-
-		return default;
+		return _tracker.DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -219,7 +217,7 @@ public partial class OkexMessageAdapter
 
 			try
 			{
-				pc.Disconnect();
+				await pc.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

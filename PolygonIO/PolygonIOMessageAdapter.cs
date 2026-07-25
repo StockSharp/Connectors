@@ -71,14 +71,15 @@ public partial class PolygonIOMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (ConnectionType == PolygonIOConnectionTypes.History)
-			return base.DisconnectAsync(disconnectMsg, cancellationToken);
+		{
+			await base.DisconnectAsync(disconnectMsg, cancellationToken);
+			return;
+		}
 
-		SafeSocket().Disconnect();
-
-		return default;
+		await SafeSocket().DisconnectAsync(cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -89,7 +90,7 @@ public partial class PolygonIOMessageAdapter
 			try
 			{
 				UnSubscribeSocket();
-				_socket.Disconnect();
+				await _socket.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

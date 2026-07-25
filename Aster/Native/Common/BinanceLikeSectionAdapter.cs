@@ -78,15 +78,15 @@ abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 			await ConnectPrivateStreamAsync(cancellationToken);
 	}
 
-	public override void Disconnect()
+	public override async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
-		base.Disconnect();
+		await base.DisconnectAsync(cancellationToken);
 
 		if (!_listenKey.IsEmpty() && _restClient is not null)
 		{
 			try
 			{
-				RestClient.DeleteListenKeyAsync(IsDerivativesSection, _listenKey, default).AsTask().GetAwaiter().GetResult();
+				await RestClient.DeleteListenKeyAsync(IsDerivativesSection, _listenKey, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -94,7 +94,7 @@ abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 			}
 		}
 
-		DisconnectPrivateStream();
+		await DisconnectPrivateStreamAsync(cancellationToken);
 
 		ClearRealtimeSubscriptions();
 		if (_wsClient is not null)
@@ -104,7 +104,7 @@ abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 			_wsClient.TradeReceived -= OnWsTradeAsync;
 			_wsClient.CandleReceived -= OnWsCandleAsync;
 			_wsClient.Error -= OnWsErrorAsync;
-			_wsClient.Disconnect();
+			await _wsClient.DisconnectAsync(cancellationToken);
 			_wsClient.Dispose();
 			_wsClient = null;
 		}
@@ -821,14 +821,14 @@ abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 		await _privateWsClient.ConnectAsync(cancellationToken);
 	}
 
-	private void DisconnectPrivateStream()
+	private async ValueTask DisconnectPrivateStreamAsync(CancellationToken cancellationToken)
 	{
 		if (_privateWsClient is null)
 			return;
 
 		_privateWsClient.PrivateEventReceived -= OnPrivateWsEventAsync;
 		_privateWsClient.Error -= OnWsErrorAsync;
-		_privateWsClient.Disconnect();
+		await _privateWsClient.DisconnectAsync(cancellationToken);
 		_privateWsClient.Dispose();
 		_privateWsClient = null;
 		_listenKey = null;

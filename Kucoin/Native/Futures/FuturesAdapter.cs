@@ -85,7 +85,8 @@ class FuturesAdapter : BaseNativeAdapter
 			try
 			{
 				UnsubscribePublicClient();
-				_publicClient.Disconnect();
+				// sync dispose tears down the underlying socket, disconnect is async now
+				_publicClient.Dispose();
 			}
 			catch (Exception ex)
 			{
@@ -100,7 +101,8 @@ class FuturesAdapter : BaseNativeAdapter
 			try
 			{
 				UnsubscribePrivateClient();
-				_privateClient.Disconnect();
+				// sync dispose tears down the underlying socket, disconnect is async now
+				_privateClient.Dispose();
 			}
 			catch (Exception ex)
 			{
@@ -169,7 +171,7 @@ class FuturesAdapter : BaseNativeAdapter
 		await _tracker.ConnectAsync(cancellationToken);
 	}
 
-	public override void Disconnect() => _tracker.Disconnect();
+	public override ValueTask DisconnectAsync(CancellationToken cancellationToken) => _tracker.DisconnectAsync(cancellationToken);
 
 	public override async ValueTask RegisterOrderAsync(OrderRegisterMessage regMsg, CancellationToken cancellationToken)
 	{

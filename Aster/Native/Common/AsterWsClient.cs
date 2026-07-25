@@ -64,8 +64,8 @@ sealed class AsterWsClient : BaseLogReceiver
 	public ValueTask ConnectAsync(CancellationToken cancellationToken)
 		=> _client.ConnectAsync(cancellationToken);
 
-	public void Disconnect()
-		=> _client.Disconnect();
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
+		=> _client.DisconnectAsync(cancellationToken);
 
 	public ValueTask SubscribeTickerAsync(string symbol, CancellationToken cancellationToken)
 		=> SubscribeAsync($"{NormalizeSymbol(symbol)}@ticker", cancellationToken);

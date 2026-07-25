@@ -125,7 +125,7 @@ partial class YobitMessageAdapter
 
 		try
 		{
-			_pusherClient.Disconnect();
+			await _pusherClient.DisconnectAsync(cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -160,7 +160,7 @@ partial class YobitMessageAdapter
 			try
 			{
 				UnsubscribePusherClient();
-				_pusherClient.Disconnect();
+				await _pusherClient.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

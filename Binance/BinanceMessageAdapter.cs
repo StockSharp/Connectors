@@ -137,7 +137,7 @@ public partial class BinanceMessageAdapter
 
 				this.AddWarningLog("subscribe error ({0}, {1}): {2}", section, isolatedSymbol, e);
 
-				_pusherClient.UnSubscribeAccount(section, isolatedSymbol);
+				await _pusherClient.UnSubscribeAccount(section, isolatedSymbol, cancellationToken);
 
 				if (i == attempts - 1)
 					throw;
@@ -202,7 +202,7 @@ public partial class BinanceMessageAdapter
 
 		try
 		{
-			_pusherClient.DisconnectAll();
+			await _pusherClient.DisconnectAllAsync(cancellationToken);
 		}
 		catch
 		{
@@ -261,7 +261,7 @@ public partial class BinanceMessageAdapter
 		try
 		{
 			UnsubscribePusherClient();
-			_pusherClient.DisconnectAll();
+			await _pusherClient.DisconnectAllAsync(cancellationToken);
 		}
 		catch (Exception ex)
 		{

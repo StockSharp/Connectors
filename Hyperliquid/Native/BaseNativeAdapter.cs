@@ -49,12 +49,12 @@ abstract class BaseNativeAdapter(HyperliquidMessageAdapter owner) : INativeAdapt
 		await WsClient.ConnectAsync(cancellationToken);
 	}
 
-	public virtual ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	public virtual async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
 		if (InfoClient is null || WsClient is null || ExchangeClient is null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		WsClient.Disconnect();
+		await WsClient.DisconnectAsync(cancellationToken);
 		UnsubscribeWsSection();
 		UnsubscribeWsCommon();
 		WsClient.Dispose();
@@ -68,8 +68,6 @@ abstract class BaseNativeAdapter(HyperliquidMessageAdapter owner) : INativeAdapt
 		Signer = null;
 
 		ClearCaches();
-
-		return default;
 	}
 
 	public virtual async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
@@ -80,7 +78,7 @@ abstract class BaseNativeAdapter(HyperliquidMessageAdapter owner) : INativeAdapt
 			{
 				UnsubscribeWsSection();
 				UnsubscribeWsCommon();
-				WsClient.Disconnect();
+				await WsClient.DisconnectAsync(cancellationToken);
 				WsClient.Dispose();
 			}
 			catch (Exception ex)

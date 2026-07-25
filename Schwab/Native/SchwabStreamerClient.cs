@@ -66,7 +66,7 @@ sealed class SchwabStreamerClient : BaseLogReceiver
 		await _loginSource.Task.WaitAsync(cancellationToken);
 	}
 
-	public void Disconnect() => _client.Disconnect();
+	public ValueTask DisconnectAsync(CancellationToken cancellationToken) => _client.DisconnectAsync(cancellationToken);
 
 	private async ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
 	{
