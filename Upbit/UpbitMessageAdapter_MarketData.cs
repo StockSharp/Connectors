@@ -2,6 +2,9 @@ namespace StockSharp.Upbit;
 
 partial class UpbitMessageAdapter
 {
+	private const int _maxCandles = 200;
+	private const string _candleTimeFormat = "yyyy-MM-dd HH:mm:ss";
+
 	/// <inheritdoc />
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
@@ -90,31 +93,71 @@ partial class UpbitMessageAdapter
 
 		await SendSubscriptionReplyAsync(transId, cancellationToken);
 
+		if (!mdMsg.IsSubscribe)
+			return;
+
 		var tf = mdMsg.GetTimeFrame();
 		var tfName = tf.ToNative();
 
-		if (mdMsg.IsSubscribe)
-		{
-			if (mdMsg.To != null)
-			{
-				string resolution = null;
+		string resolution = null;
 
-				if (int.TryParse(tfName, out var num))
+		if (int.TryParse(tfName, out var num))
+		{
+			tfName = "minutes";
+			resolution = num.To<string>();
+		}
+
+		var from = mdMsg.From;
+		var to = mdMsg.To ?? CurrentTime;
+		var left = mdMsg.Count ?? long.MaxValue;
+
+		// neither a start bound nor a count means the newest candles are enough
+		var isSinglePage = from is null && mdMsg.Count is null;
+
+		var received = new List<Ohlc>();
+
+		// Upbit returns the newest candles preceding the exclusive 'to' bound,
+		// so the requested range is walked backwards page by page
+		while (true)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var candles = (await _httpClient.GetCandlesAsync(symbol, tfName, resolution, to.FromDateTime(_candleTimeFormat), _maxCandles, cancellationToken))
+				.OrderByDescending(c => c.DateTimeUtc)
+				.ToArray();
+
+			if (candles.Length == 0)
+				break;
+
+			var isFinished = candles.Length < _maxCandles;
+
+			foreach (var candle in candles)
+			{
+				if (from != null && candle.DateTimeUtc < from.Value)
 				{
-					tfName = "minutes";
-					resolution = num.To<string>();
+					isFinished = true;
+					break;
 				}
 
-				var candles = await _httpClient.GetCandlesAsync(symbol, tfName, resolution, mdMsg.From.Value.ToString("yyyy-MM-dd HH:mm:ss"), 200, cancellationToken);
+				received.Add(candle);
 
-				foreach (var candle in candles)
+				if (--left <= 0)
 				{
-					await ProcessCandleAsync(candle, secId, tf, transId, cancellationToken);
+					isFinished = true;
+					break;
 				}
 			}
 
-			await SendSubscriptionFinishedAsync(transId, cancellationToken);
+			if (isFinished || isSinglePage)
+				break;
+
+			to = candles[^1].DateTimeUtc;
 		}
+
+		for (var i = received.Count - 1; i >= 0; i--)
+			await ProcessCandleAsync(received[i], secId, tf, transId, cancellationToken);
+
+		await SendSubscriptionFinishedAsync(transId, cancellationToken);
 	}
 
 	private ValueTask ProcessCandleAsync(Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originTransId, CancellationToken cancellationToken)
