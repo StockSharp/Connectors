@@ -3,22 +3,21 @@ namespace StockSharp.Mexc.Native.Spot.Model;
 [JsonConverter(typeof(JArrayToObjectConverter))]
 class Candle
 {
-	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
-	public DateTime OpenTime { get; set; }
-	
+	// the endpoint answers with positional arrays of exactly eight elements
+	// (open time, OHLC, volume, close time, quote volume), and the converter maps element to
+	// field by position without honoring a per field converter, so the moments are read as
+	// unix milliseconds and derived below
+	public long OpenTimestamp { get; set; }
 	public double Open { get; set; }
 	public double High { get; set; }
 	public double Low { get; set; }
 	public double Close { get; set; }
 	public double Volume { get; set; }
-	
-	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
-	public DateTime CloseTime { get; set; }
-	
+	public long CloseTimestamp { get; set; }
 	public double QuoteVolume { get; set; }
-	public int TradeCount { get; set; }
-	public double TakerBuyBaseVolume { get; set; }
-	public double TakerBuyQuoteVolume { get; set; }
+
+	public DateTime OpenTime => OpenTimestamp.FromUnix(false);
+	public DateTime CloseTime => CloseTimestamp.FromUnix(false);
 }
 
 class CandleStream

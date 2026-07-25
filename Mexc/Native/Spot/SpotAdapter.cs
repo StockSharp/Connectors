@@ -95,7 +95,7 @@ class SpotAdapter : NativeAdapter
 
 		foreach (var symbol in exchangeInfo.Symbols)
 		{
-			if (symbol.Status != "TRADING")
+			if (!symbol.IsTrading)
 				continue;
 
 			var lotFilter = symbol.Filters?.FirstOrDefault(f => f.FilterType == "LOT_SIZE");

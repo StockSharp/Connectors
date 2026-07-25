@@ -58,6 +58,13 @@ class Symbol
 
 	[JsonProperty("permissions")]
 	public string[] Permissions { get; set; }
+
+	/// <summary>
+	/// The venue reports the trading state as a numeric code ("1" means the symbol is online),
+	/// earlier payloads spelled it out, so both spellings are accepted.
+	/// </summary>
+	[JsonIgnore]
+	public bool IsTrading => Status.EqualsIgnoreCase("1") || Status.EqualsIgnoreCase("ENABLED");
 }
 
 class Filter
