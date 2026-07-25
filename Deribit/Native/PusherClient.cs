@@ -43,7 +43,10 @@ class PusherClient : BaseLogReceiver
 	private readonly WebSocketClient _client;
 	private bool _isLogout;
 
-	private const long _authTransId = 1;
+	// the auth request needs an id of its own, taken from outside the range the adapter's
+	// transaction id generator produces - otherwise the first subscription that happens to get
+	// this id collides with it in _requests
+	private const long _authTransId = long.MaxValue;
 
 	public PusherClient(string address, Authenticator authenticator, int attemptsCount, WorkingTime workingTime)
 	{
@@ -417,9 +420,9 @@ class PusherClient : BaseLogReceiver
 
 	private static class Channels
 	{
-		public const string OrderBook = "book.{0}.raw";
-		public const string Trade = "trades.{0}.raw";
-		public const string Ticker = "ticker.{0}.raw";
+		public const string OrderBook = "book.{0}.{1}";
+		public const string Trade = "trades.{0}.{1}";
+		public const string Ticker = "ticker.{0}.{1}";
 		public const string Announcements = "announcements";
 		//public const string UserOrder = "user.orders.any.any.raw";
 		//public const string UserTrade = "user.trades.any.any.raw";
@@ -428,40 +431,44 @@ class PusherClient : BaseLogReceiver
 		public const string Chart = "chart.trades.{0}.{1}";
 	}
 
+	// update interval of the book, ticker and trade channels. the venue serves the unthrottled raw
+	// feed to authorized clients only, anyone else gets 13778 raw_subscriptions_not_available_for_unauthorized
+	private string Interval => _authenticator.CanSign ? "raw" : "100ms";
+
 	public ValueTask SubscribeTicker(long transactionId, string instrument, CancellationToken cancellationToken)
 	{
 		_requests.Add(transactionId, (MessageTypes.Level1Change, true));
-		return PublicSubscribe(transactionId, Channels.Ticker.Put(instrument), cancellationToken);
+		return PublicSubscribe(transactionId, Channels.Ticker.Put(instrument, Interval), cancellationToken);
 	}
 
 	public ValueTask UnSubscribeTicker(long originTransId, long transactionId, string instrument, CancellationToken cancellationToken)
 	{
 		_requests.Add(transactionId, (MessageTypes.Level1Change, false));
-		return PublicUnSubscribe(originTransId, transactionId, Channels.Ticker.Put(instrument), cancellationToken);
+		return PublicUnSubscribe(originTransId, transactionId, Channels.Ticker.Put(instrument, Interval), cancellationToken);
 	}
 
 	public ValueTask SubscribeTrades(long transactionId, string instrument, CancellationToken cancellationToken)
 	{
 		_requests.Add(transactionId, (DeribitMessageTypes.Ticks, true));
-		return PublicSubscribe(transactionId, Channels.Trade.Put(instrument), cancellationToken);
+		return PublicSubscribe(transactionId, Channels.Trade.Put(instrument, Interval), cancellationToken);
 	}
 
 	public ValueTask UnSubscribeTrades(long originTransId, long transactionId, string instrument, CancellationToken cancellationToken)
 	{
 		_requests.Add(transactionId, (DeribitMessageTypes.Ticks, false));
-		return PublicUnSubscribe(originTransId, transactionId, Channels.Trade.Put(instrument), cancellationToken);
+		return PublicUnSubscribe(originTransId, transactionId, Channels.Trade.Put(instrument, Interval), cancellationToken);
 	}
 
 	public ValueTask SubscribeOrderBook(long transactionId, string instrument, CancellationToken cancellationToken)
 	{
 		_requests.Add(transactionId, (MessageTypes.QuoteChange, true));
-		return PublicSubscribe(transactionId, Channels.OrderBook.Put(instrument), cancellationToken);
+		return PublicSubscribe(transactionId, Channels.OrderBook.Put(instrument, Interval), cancellationToken);
 	}
 
 	public ValueTask UnSubscribeOrderBook(long originTransId, long transactionId, string instrument, CancellationToken cancellationToken)
 	{
 		_requests.Add(transactionId, (MessageTypes.QuoteChange, false));
-		return PublicUnSubscribe(originTransId, transactionId, Channels.OrderBook.Put(instrument), cancellationToken);
+		return PublicUnSubscribe(originTransId, transactionId, Channels.OrderBook.Put(instrument, Interval), cancellationToken);
 	}
 
 	public ValueTask RequestCandles(long transactionId, string instrument, long from, long to, string resolution, CancellationToken cancellationToken)
