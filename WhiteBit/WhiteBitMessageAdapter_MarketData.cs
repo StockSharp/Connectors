@@ -242,7 +242,7 @@ public partial class WhiteBitMessageAdapter
         {
             await SendCandleAsync(candle, symbol, boardCode, timeFrame,
                 mdMsg.TransactionId, cancellationToken);
-            lastOpenTime = candle.OpenTime.FromUnix(false);
+            lastOpenTime = candle.OpenTime.FromUnix();
         }
 
         await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -485,7 +485,7 @@ public partial class WhiteBitMessageAdapter
             if (candle.Symbol.IsEmpty() || !candle.Symbol.EqualsIgnoreCase(stream.Symbol))
                 continue;
 
-            var openTime = candle.OpenTime.FromUnix(false);
+            var openTime = candle.OpenTime.FromUnix();
             (long TransactionId, CandleSubscription Subscription)[] subscriptions;
             using (_sync.EnterScope())
             {
@@ -525,11 +525,11 @@ public partial class WhiteBitMessageAdapter
             var pageEnd = (cursor + TimeSpan.FromTicks(timeFrame.Ticks * pageSize)).Min(to);
             var page = await RestClient.GetCandlesAsync(symbol, timeFrame, cursor, pageEnd,
                 pageSize, cancellationToken);
-            result.AddRange((page ?? []).Where(candle => candle.OpenTime.FromUnix(false) >= start &&
-                candle.OpenTime.FromUnix(false) <= to));
+            result.AddRange((page ?? []).Where(candle => candle.OpenTime.FromUnix() >= start &&
+                candle.OpenTime.FromUnix() <= to));
 
             var next = page?.Length > 0
-                ? page.Max(static candle => candle.OpenTime).FromUnix(false) + timeFrame
+                ? page.Max(static candle => candle.OpenTime).FromUnix() + timeFrame
                 : pageEnd + timeFrame;
             if (next <= cursor)
                 break;
@@ -596,7 +596,7 @@ public partial class WhiteBitMessageAdapter
     private ValueTask SendCandleAsync(WhiteBitCandle candle, string symbol, string boardCode,
         TimeSpan timeFrame, long transactionId, CancellationToken cancellationToken)
     {
-        var openTime = candle.OpenTime.FromUnix(false);
+        var openTime = candle.OpenTime.FromUnix();
         var closeTime = openTime + timeFrame;
         return SendOutMessageAsync(new TimeFrameCandleMessage
         {

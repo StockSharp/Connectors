@@ -49,8 +49,9 @@ sealed class WhiteBitRestClient : BaseLogReceiver
     public async ValueTask<WhiteBitCandle[]> GetCandlesAsync(string symbol, TimeSpan timeFrame,
         DateTime? from, DateTime? to, int limit, CancellationToken cancellationToken)
     {
-        var end = (to ?? DateTime.UtcNow).ToUnix();
-        var start = (from ?? (to ?? DateTime.UtcNow) - TimeSpan.FromTicks(timeFrame.Ticks * limit)).ToUnix();
+        // the endpoint rejects a fractional bound with "Start/End field must be an integer"
+        var end = (long)(to ?? DateTime.UtcNow).ToUnix();
+        var start = (long)(from ?? (to ?? DateTime.UtcNow) - TimeSpan.FromTicks(timeFrame.Ticks * limit)).ToUnix();
         var path = $"/api/v1/public/kline?market={Escape(symbol)}&start={start}&end={end}" +
             $"&interval={Escape(timeFrame.ToNative())}&limit={limit.Min(1440).Max(1)}";
         var response = await SendPublicAsync<WhiteBitKlineResponse>(path, cancellationToken);
