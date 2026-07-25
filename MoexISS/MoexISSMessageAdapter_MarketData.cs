@@ -203,7 +203,10 @@ public partial class MoexISSMessageAdapter
 			var beginIdx = GetIdx("begin");
 			var endIdx = GetIdx("end");
 
-			var noData = true;
+			// ISS pages the history by 500 records, so a page whose candles are all older than
+			// the requested range is not the end of the data - only an empty page (or a candle
+			// beyond the range) is
+			var isLast = candlesResponse.Data.Count == 0;
 
 			foreach (var candle in candlesResponse.Data)
 			{
@@ -219,7 +222,7 @@ public partial class MoexISSMessageAdapter
 
 				if (openTime > to)
 				{
-					noData = true;
+					isLast = true;
 					break;
 				}
 
@@ -240,15 +243,13 @@ public partial class MoexISSMessageAdapter
 					CloseTime = Get<DateTime>(endIdx),
 				};
 
-				noData = false;
-
 				await SendOutMessageAsync(tfc, cancellationToken);
 
 				if (--left <= 0)
 					break;
 			}
 
-			if (left <= 0 || noData)
+			if (left <= 0 || isLast)
 				break;
 
 			start = (start ?? 0) + candlesResponse.Data.Count;
