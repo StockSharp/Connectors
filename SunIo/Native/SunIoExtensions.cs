@@ -15,6 +15,11 @@ static class SunIoExtensions
 		"SUNSWAP_V1,SUNSWAP_V2,SUNSWAP_V3,PSM,CURVE";
 	public const decimal TrxScale = 1_000_000m;
 
+	// the router transaction scan rejects a wider query window with
+	// "Invalid param: query time range exceeds maximum"
+	public static readonly TimeSpan MaximumHistoryRange =
+		TimeSpan.FromDays(365);
+
 	public static readonly TimeSpan[] TimeFrames =
 	[
 		TimeSpan.FromMinutes(1),

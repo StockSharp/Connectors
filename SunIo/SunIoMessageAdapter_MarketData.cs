@@ -308,6 +308,7 @@ public partial class SunIoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		maximum = maximum.Min(HistoryMaximum).Max(1);
+		from = from.Max(to - SunIoExtensions.MaximumHistoryRange);
 		var transactions = new List<SunIoRouterTransaction>();
 		string offset = null;
 		for (var page = 0; transactions.Count < HistoryMaximum; page++)
