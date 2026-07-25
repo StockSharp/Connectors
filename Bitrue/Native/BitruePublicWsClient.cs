@@ -52,7 +52,7 @@ sealed class BitruePublicWsClient : BaseLogReceiver
 	protected override void DisposeManaged()
 	{
 		if (_client is not null)
-			_client.PreProcess2 -= PreProcess;
+			_client.PreProcessAsync -= PreProcess;
 		_client?.Dispose();
 		_sendSync.Dispose();
 		_requestSync.Dispose();
@@ -220,9 +220,13 @@ sealed class BitruePublicWsClient : BaseLogReceiver
 			BufferSize = 2 * 1024 * 1024,
 			BufferSizeUncompress = 20 * 1024 * 1024,
 		};
-		client.Init += socket => socket.Options.SetRequestHeader("User-Agent",
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-Bitrue-Connector/1.0");
-		client.PreProcess2 += PreProcess;
+			return default;
+		};
+		client.PreProcessAsync += PreProcess;
 		return client;
 	}
 
@@ -232,7 +236,7 @@ sealed class BitruePublicWsClient : BaseLogReceiver
 		_client = null;
 		if (client is null)
 			return;
-		client.PreProcess2 -= PreProcess;
+		client.PreProcessAsync -= PreProcess;
 		try
 		{
 			if (client.IsConnected)
@@ -468,7 +472,7 @@ sealed class BitruePublicWsClient : BaseLogReceiver
 				"Bitrue spot does not expose WebSocket history requests.");
 	}
 
-	private int PreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination)
+	private async ValueTask<int> PreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination, CancellationToken cancellationToken)
 	{
 		if (source.IsEmpty)
 			return 0;
@@ -478,7 +482,7 @@ sealed class BitruePublicWsClient : BaseLogReceiver
 			source.CopyTo(destination);
 			return source.Length;
 		}
-		return source.UnGzipTo(destination);
+		return await source.UnGzipToAsync(destination, cancellationToken);
 	}
 
 	private TMessage Deserialize<TMessage>(string payload)

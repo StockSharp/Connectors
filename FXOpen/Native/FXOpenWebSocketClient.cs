@@ -213,8 +213,11 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
                 NullValueHandling = NullValueHandling.Ignore,
             },
         };
-        client.Init += static socket =>
+        client.InitAsync += static (socket, _) =>
+        {
             socket.Options.SetRequestHeader("User-Agent", "StockSharp-FXOpen-Connector/1.0");
+            return default;
+        };
         return client;
     }
 

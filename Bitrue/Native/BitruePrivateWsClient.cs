@@ -41,7 +41,7 @@ sealed class BitruePrivateWsClient : BaseLogReceiver
 	protected override void DisposeManaged()
 	{
 		if (_client is not null)
-			_client.PreProcess2 -= PreProcess;
+			_client.PreProcessAsync -= PreProcess;
 		_client?.Dispose();
 		_sendSync.Dispose();
 		base.DisposeManaged();
@@ -114,9 +114,13 @@ sealed class BitruePrivateWsClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += socket => socket.Options.SetRequestHeader("User-Agent",
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-Bitrue-Connector/1.0");
-		client.PreProcess2 += PreProcess;
+			return default;
+		};
+		client.PreProcessAsync += PreProcess;
 		return client;
 	}
 
@@ -126,7 +130,7 @@ sealed class BitruePrivateWsClient : BaseLogReceiver
 		_client = null;
 		if (client is null)
 			return;
-		client.PreProcess2 -= PreProcess;
+		client.PreProcessAsync -= PreProcess;
 		try
 		{
 			if (client.IsConnected)
@@ -248,7 +252,7 @@ sealed class BitruePrivateWsClient : BaseLogReceiver
 		}
 	}
 
-	private int PreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination)
+	private async ValueTask<int> PreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination, CancellationToken cancellationToken)
 	{
 		if (source.IsEmpty)
 			return 0;
@@ -258,7 +262,7 @@ sealed class BitruePrivateWsClient : BaseLogReceiver
 			source.CopyTo(destination);
 			return source.Length;
 		}
-		return source.UnGzipTo(destination);
+		return await source.UnGzipToAsync(destination, cancellationToken);
 	}
 
 	private TMessage Deserialize<TMessage>(string payload)

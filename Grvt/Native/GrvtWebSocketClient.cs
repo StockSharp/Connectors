@@ -142,18 +142,19 @@ sealed class GrvtWebSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += InitializeSocket;
+		client.InitAsync += InitializeSocket;
 		return client;
 	}
 
-	private void InitializeSocket(ClientWebSocket socket)
+	private ValueTask InitializeSocket(ClientWebSocket socket, CancellationToken _)
 	{
 		socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-GRVT-Connector/1.0");
 		if (_cookie.IsEmpty())
-			return;
+			return default;
 		socket.Options.SetRequestHeader("Cookie", _cookie);
 		socket.Options.SetRequestHeader("X-Grvt-Account-Id", _accountId);
+		return default;
 	}
 
 	private async ValueTask OnStateChangedAsync(WebSocketClient client,

@@ -403,14 +403,12 @@ class PusherClient : BaseLogReceiver
 		return ProcessAsync("getTradingBalance", new { }, transactionId, cancellationToken);
 	}
 
-	public void SubscribeReports()
-	{
-		_client.Send(new
+	public ValueTask SubscribeReportsAsync(CancellationToken cancellationToken)
+		=> _client.SendAsync(new
 		{
 			method = "subscribeReports",
 			@params = new { },
-		});
-	}
+		}, cancellationToken);
 
 	public async Task<string> WithdrawAsync(string currency, decimal volume, WithdrawInfo info, CancellationToken cancellationToken)
 	{

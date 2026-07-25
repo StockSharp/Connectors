@@ -149,11 +149,12 @@ sealed class CoinMarketCapSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.SetRequestHeader("X-CMC_PRO_API_KEY", _apiKey);
 			socket.Options.SetRequestHeader("User-Agent",
 				"StockSharp-CoinMarketCap/1.0");
+			return default;
 		};
 		_client = client;
 	}

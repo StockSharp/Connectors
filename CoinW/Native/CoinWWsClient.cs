@@ -38,7 +38,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 				NullValueHandling = NullValueHandling.Ignore,
 			},
 		};
-		_client.Init += OnInit;
+		_client.InitAsync += OnInit;
 
 		if (isPrivate)
 		{
@@ -68,7 +68,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= OnInit;
+		_client.InitAsync -= OnInit;
 		_restoreSync.Dispose();
 		_client.Dispose();
 		base.DisposeManaged();
@@ -615,8 +615,11 @@ sealed class CoinWWsClient : BaseLogReceiver
 			completion.TrySetException(new InvalidOperationException($"CoinW WebSocket login failed: {message}"));
 	}
 
-	private void OnInit(ClientWebSocket socket)
-		=> socket.Options.SetRequestHeader("User-Agent", "StockSharp-CoinW-Connector/1.0");
+	private ValueTask OnInit(ClientWebSocket socket, CancellationToken _)
+	{
+		socket.Options.SetRequestHeader("User-Agent", "StockSharp-CoinW-Connector/1.0");
+		return default;
+	}
 
 	private static T Deserialize<T>(string payload)
 		where T : class

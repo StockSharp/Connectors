@@ -178,11 +178,12 @@ sealed class AmberdataSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.SetRequestHeader("x-api-key", _apiKey);
 			socket.Options.SetRequestHeader("User-Agent",
 				"StockSharp-Amberdata/1.0");
+			return default;
 		};
 		_client = client;
 	}

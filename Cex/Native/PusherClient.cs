@@ -125,7 +125,7 @@ class PusherClient : BaseLogReceiver
 
 			case Events.Ping:
 			{
-				_client.Send(new { e = Events.Pong });
+				await _client.SendAsync(new { e = Events.Pong }, cancellationToken);
 				break;
 			}
 

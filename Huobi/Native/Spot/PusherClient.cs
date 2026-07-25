@@ -1,5 +1,7 @@
 namespace StockSharp.Huobi.Native.Spot;
 
+using System.IO.Compression;
+
 using Ecng.IO.Compression;
 
 using StockSharp.Huobi.Native.Spot.Model;
@@ -319,17 +321,21 @@ class PusherClient : BaseLogReceiver
 		public MarketDataClient(int type, string address, PusherClient parent, WorkingTime workingTime)
 			: base(type, address, parent, workingTime)
 		{
-			Client.PreProcess2 += OnPreProcess;
+			Client.PreProcessAsync += OnPreProcess;
 		}
 
 		protected override void DisposeManaged()
 		{
-			Client.PreProcess2 -= OnPreProcess;
+			Client.PreProcessAsync -= OnPreProcess;
 			base.DisposeManaged();
 		}
 
-		private int OnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> dest)
-			=> source.Span.UnGZip(dest.Span);
+		private async ValueTask<int> OnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination, CancellationToken cancellationToken)
+		{
+			var uncompressed = await source.ToArray().UncompressAsync<GZipStream>(cancellationToken: cancellationToken);
+			uncompressed.AsMemory().CopyTo(destination);
+			return uncompressed.Length;
+		}
 
 		private static class Channels
 		{

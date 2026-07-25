@@ -1,5 +1,7 @@
 namespace StockSharp.Digifinex.Native;
 
+using System.IO.Compression;
+
 using Ecng.IO.Compression;
 
 class PusherClient : BaseLogReceiver
@@ -45,20 +47,22 @@ class PusherClient : BaseLogReceiver
 			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
 		};
 
-		_client.PreProcess2 += ClientOnPreProcess;
+		_client.PreProcessAsync += ClientOnPreProcess;
 	}
 
-	private static int ClientOnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination)
+	private static async ValueTask<int> ClientOnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination, CancellationToken cancellationToken)
 	{
 		// https://stackoverflow.com/a/21544269/1296971
 		const int offset = 2;
 
-		return source.Span[offset..].UnDeflate(destination.Span);
+		var uncompressed = await source[offset..].ToArray().UncompressAsync<DeflateStream>(cancellationToken: cancellationToken);
+		uncompressed.AsMemory().CopyTo(destination);
+		return uncompressed.Length;
 	}
 
 	protected override void DisposeManaged()
 	{
-		_client.PreProcess2 -= ClientOnPreProcess;
+		_client.PreProcessAsync -= ClientOnPreProcess;
 		_client.Dispose();
 		base.DisposeManaged();
 	}

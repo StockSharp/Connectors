@@ -1,5 +1,7 @@
 namespace StockSharp.CoinEx.Native.Spot;
 
+using System.IO.Compression;
+
 using Ecng.IO.Compression;
 
 using StockSharp.CoinEx.Native.Spot.Model;
@@ -53,7 +55,7 @@ class SocketClient : BaseLogReceiver
 			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
 		};
 
-		_client.PreProcess2 += OnPreProcess;
+		_client.PreProcessAsync += OnPreProcess;
 
 		if (_authenticator.CanSign)
 		{
@@ -67,14 +69,18 @@ class SocketClient : BaseLogReceiver
 		if (_authenticator.CanSign)
 			_client.PostConnect -= OnPostConnect;
 
-		_client.PreProcess2 -= OnPreProcess;
+		_client.PreProcessAsync -= OnPreProcess;
 		_client.Dispose();
 
 		base.DisposeManaged();
 	}
 
-	private int OnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> dest)
-		=> source.Span.UnGZip(dest.Span);
+	private async ValueTask<int> OnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination, CancellationToken cancellationToken)
+	{
+		var uncompressed = await source.ToArray().UncompressAsync<GZipStream>(cancellationToken: cancellationToken);
+		uncompressed.AsMemory().CopyTo(destination);
+		return uncompressed.Length;
+	}
 
 	public ValueTask Connect(CancellationToken cancellationToken)
 	{

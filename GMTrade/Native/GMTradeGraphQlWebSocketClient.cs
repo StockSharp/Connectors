@@ -266,12 +266,13 @@ sealed class GMTradeGraphQlWebSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += static socket =>
+		client.InitAsync += static (socket, _) =>
 		{
 			socket.Options.AddSubProtocol("graphql-transport-ws");
 			socket.Options.SetRequestHeader(
 				"User-Agent", "StockSharp-GMTrade-Connector/1.0");
 			socket.Options.SetRequestHeader("Origin", "https://gmtrade.xyz");
+			return default;
 		};
 		return client;
 	}

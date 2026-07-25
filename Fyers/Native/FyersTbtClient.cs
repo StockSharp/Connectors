@@ -30,7 +30,7 @@ sealed class FyersTbtClient : BaseLogReceiver
 			WorkingTime = workingTime,
 			DisableAutoResend = true,
 		};
-		_client.Init += OnInit;
+		_client.InitAsync += OnInit;
 		_client.PostConnect += OnPostConnect;
 	}
 
@@ -42,7 +42,7 @@ sealed class FyersTbtClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= OnInit;
+		_client.InitAsync -= OnInit;
 		_client.PostConnect -= OnPostConnect;
 		_client.Dispose();
 		base.DisposeManaged();
@@ -68,8 +68,11 @@ sealed class FyersTbtClient : BaseLogReceiver
 		await SendSubscription(false, [symbol], cancellationToken);
 	}
 
-	private void OnInit(ClientWebSocket socket)
-		=> socket.Options.SetRequestHeader("authorization", _authorization);
+	private ValueTask OnInit(ClientWebSocket socket, CancellationToken _)
+	{
+		socket.Options.SetRequestHeader("authorization", _authorization);
+		return default;
+	}
 
 	private async ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
 	{

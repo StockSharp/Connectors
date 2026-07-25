@@ -1,5 +1,7 @@
 namespace StockSharp.Bibox.Native;
 
+using System.IO.Compression;
+
 using Ecng.IO.Compression;
 
 class PusherClient : BaseLogReceiver
@@ -100,7 +102,7 @@ class PusherClient : BaseLogReceiver
 
 			if (item.binary == 1)
 			{
-				var decoded = ((string)data).Base64().UnGZip();
+				var decoded = (await ((string)data).Base64().UncompressAsync<GZipStream>(cancellationToken: cancellationToken)).UTF8();
 				this.AddVerboseLog(decoded);
 
 				data = decoded.DeserializeObject<object>();

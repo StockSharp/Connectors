@@ -172,8 +172,12 @@ sealed class BTSEWsClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += socket => socket.Options.SetRequestHeader("User-Agent",
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-BTSE-Connector/1.0");
+			return default;
+		};
 		return client;
 	}
 

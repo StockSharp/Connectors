@@ -200,17 +200,18 @@ sealed class GeminiWsClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.SetRequestHeader("User-Agent",
 				"StockSharp-Gemini-Connector/1.0");
 			if (!IsPrivateAvailable)
-				return;
+				return default;
 			var auth = _restClient.CreateWebSocketAuthentication();
 			socket.Options.SetRequestHeader("X-GEMINI-APIKEY", _restClient.ApiKey);
 			socket.Options.SetRequestHeader("X-GEMINI-NONCE", auth.Nonce);
 			socket.Options.SetRequestHeader("X-GEMINI-PAYLOAD", auth.Payload);
 			socket.Options.SetRequestHeader("X-GEMINI-SIGNATURE", auth.Signature);
+			return default;
 		};
 		return client;
 	}

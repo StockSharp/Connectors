@@ -136,8 +136,12 @@ sealed class QFEXMarketDataWebSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += static socket => socket.Options.SetRequestHeader(
+		client.InitAsync += static (socket, _) =>
+		{
+			socket.Options.SetRequestHeader(
 			"User-Agent", "StockSharp-QFEX-Connector/1.0");
+			return default;
+		};
 		return client;
 	}
 

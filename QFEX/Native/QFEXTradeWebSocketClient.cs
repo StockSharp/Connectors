@@ -276,7 +276,7 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.SetRequestHeader(
 				"User-Agent", "StockSharp-QFEX-Connector/1.0");
@@ -292,6 +292,7 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 			if (!_authenticator.AccountId.IsEmpty())
 				socket.Options.SetRequestHeader(
 					"x-qfex-requested-account-id", _authenticator.AccountId);
+			return default;
 		};
 		return client;
 	}

@@ -193,19 +193,21 @@ static class BitrueExtensions
 		return step;
 	}
 
-	public static int UnGzipTo(this ReadOnlyMemory<byte> source, Memory<byte> destination)
+	public static async ValueTask<int> UnGzipToAsync(this ReadOnlyMemory<byte> source, Memory<byte> destination, CancellationToken cancellationToken)
 	{
 		using var input = new MemoryStream(source.ToArray(), false);
 		using var gzip = new GZipStream(input, CompressionMode.Decompress);
 		var written = 0;
 		while (written < destination.Length)
 		{
-			var count = gzip.Read(destination.Span[written..]);
+			var count = await gzip.ReadAsync(destination[written..], cancellationToken);
 			if (count == 0)
 				return written;
 			written += count;
 		}
-		if (gzip.ReadByte() >= 0)
+
+		var overflow = new byte[1];
+		if (await gzip.ReadAsync(overflow, cancellationToken) > 0)
 			throw new InvalidDataException(
 				"The Bitrue WebSocket decompression buffer is too small.");
 		return written;

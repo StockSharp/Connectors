@@ -214,7 +214,7 @@ sealed class AnchorageSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			var timestamp = checked((long)DateTime.UtcNow.ToUnix()).ToString(
 					CultureInfo.InvariantCulture);
@@ -224,6 +224,7 @@ sealed class AnchorageSocketClient : BaseLogReceiver
 				timestamp, "GET", _endpoint.PathAndQuery, []));
 			socket.Options.SetRequestHeader("User-Agent",
 				"StockSharp-Anchorage/1.0");
+			return default;
 		};
 		_client = client;
 	}

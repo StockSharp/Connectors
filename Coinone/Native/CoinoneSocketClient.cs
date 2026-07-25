@@ -149,17 +149,18 @@ sealed class CoinoneSocketClient : BaseLogReceiver
             Indent = false,
             SendSettings = _jsonSettings,
         };
-        client.Init += socket =>
+        client.InitAsync += (socket, _) =>
         {
             socket.Options.SetRequestHeader("User-Agent",
                 "StockSharp-Coinone-Connector/1.0");
             if (!_isPrivate)
-                return;
+                return default;
             var authentication = _restClient.CreateWebSocketAuthentication();
             socket.Options.SetRequestHeader("X-COINONE-PAYLOAD",
                 authentication.EncodedPayload);
             socket.Options.SetRequestHeader("X-COINONE-SIGNATURE",
                 authentication.Signature);
+            return default;
         };
         return client;
     }

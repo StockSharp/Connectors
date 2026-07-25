@@ -132,11 +132,12 @@ sealed class OrderlyNetworkSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.SetRequestHeader("User-Agent",
 				"StockSharp-OrderlyNetwork-Connector/1.0");
 			socket.Options.DangerousDeflateOptions = new();
+			return default;
 		};
 		return client;
 	}

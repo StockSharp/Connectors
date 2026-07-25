@@ -123,12 +123,13 @@ sealed class MercadoBitcoinSocketClient : BaseLogReceiver
             Indent = false,
             SendSettings = _jsonSettings,
         };
-        client.Init += socket =>
+        client.InitAsync += (socket, _) =>
         {
             socket.Options.SetRequestHeader("User-Agent",
                 "StockSharp-MercadoBitcoin-Connector/1.0");
             socket.Options.SetRequestHeader("Origin",
                 "https://www.mercadobitcoin.com.br");
+            return default;
         };
         return client;
     }

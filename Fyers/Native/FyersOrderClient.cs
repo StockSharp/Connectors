@@ -28,7 +28,7 @@ sealed class FyersOrderClient : BaseLogReceiver
 			WorkingTime = workingTime,
 			DisableAutoResend = true,
 		};
-		_client.Init += OnInit;
+		_client.InitAsync += OnInit;
 		_client.PostConnect += OnPostConnect;
 	}
 
@@ -42,7 +42,7 @@ sealed class FyersOrderClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= OnInit;
+		_client.InitAsync -= OnInit;
 		_client.PostConnect -= OnPostConnect;
 		_client.Dispose();
 		base.DisposeManaged();
@@ -52,8 +52,11 @@ sealed class FyersOrderClient : BaseLogReceiver
 	public ValueTask DisconnectAsync(CancellationToken cancellationToken) => _client.DisconnectAsync(cancellationToken);
 	public ValueTask SendHeartbeat(CancellationToken cancellationToken) => _client.SendAsync("ping", cancellationToken);
 
-	private void OnInit(ClientWebSocket socket)
-		=> socket.Options.SetRequestHeader("authorization", _authorization);
+	private ValueTask OnInit(ClientWebSocket socket, CancellationToken _)
+	{
+		socket.Options.SetRequestHeader("authorization", _authorization);
+		return default;
+	}
 
 	private ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
 		=> _client.SendAsync(JsonConvert.SerializeObject(new FyersOrderSubscriptionRequest

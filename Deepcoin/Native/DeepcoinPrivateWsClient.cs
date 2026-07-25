@@ -95,8 +95,12 @@ sealed class DeepcoinPrivateWsClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += socket => socket.Options.SetRequestHeader("User-Agent",
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-Deepcoin-Connector/2.0");
+			return default;
+		};
 		return client;
 	}
 

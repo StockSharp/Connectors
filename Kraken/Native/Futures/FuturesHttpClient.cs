@@ -30,7 +30,7 @@ class FuturesHttpClient : BaseLogReceiver
 	// to get readable name after obfuscation
 	public override string Name => nameof(Kraken) + "_" + nameof(FuturesHttpClient);
 
-	public Dictionary<string, AssetPair> GetAssetPairs(string info = null, string pairs = null)
+	public Task<Dictionary<string, AssetPair>> GetAssetPairsAsync(string info = null, string pairs = null, CancellationToken cancellationToken = default)
 	{
 		var request = CreateRequest(Method.Get);
 
@@ -40,10 +40,10 @@ class FuturesHttpClient : BaseLogReceiver
 		if (pairs != null)
 			request.AddParameter("pairs", pairs);
 
-		return MakeRequest<Dictionary<string, AssetPair>>(CreateUrl("public/AssetPairs"), request);
+		return MakeRequestAsync<Dictionary<string, AssetPair>>(CreateUrl("public/AssetPairs"), request, cancellationToken);
 	}
 
-	public (Dictionary<string, Ohlc[]> Data, long Last) GetOhlc(string pair, int interval, long? since = null)
+	public async Task<(Dictionary<string, Ohlc[]> Data, long Last)> GetOhlcAsync(string pair, int interval, long? since = null, CancellationToken cancellationToken = default)
 	{
 		if (pair.IsEmpty())
 			throw new ArgumentNullException(nameof(pair));
@@ -56,7 +56,7 @@ class FuturesHttpClient : BaseLogReceiver
 		if (since != null)
 			request.AddParameter("since", since.Value);
 
-		var jo = MakeRequest<JObject>(CreateUrl("public/OHLC"), request);
+		var jo = await MakeRequestAsync<JObject>(CreateUrl("public/OHLC"), request, cancellationToken);
 
 		var data = new Dictionary<string, Ohlc[]>();
 		long last = 0;
@@ -78,7 +78,7 @@ class FuturesHttpClient : BaseLogReceiver
 		return (data, last);
 	}
 
-	public (Dictionary<string, Trade[]> Data, long Last) GetRecentTrades(string pair, long? since = null)
+	public async Task<(Dictionary<string, Trade[]> Data, long Last)> GetRecentTradesAsync(string pair, long? since = null, CancellationToken cancellationToken = default)
 	{
 		var request = CreateRequest(Method.Get);
 
@@ -87,7 +87,7 @@ class FuturesHttpClient : BaseLogReceiver
 		if (since != null)
 			request.AddParameter("since", since.Value);
 
-		var jo = MakeRequest<JObject>(CreateUrl("public/Trades"), request);
+		var jo = await MakeRequestAsync<JObject>(CreateUrl("public/Trades"), request, cancellationToken);
 
 		var data = new Dictionary<string, Trade[]>();
 		long last = 0;
@@ -109,14 +109,14 @@ class FuturesHttpClient : BaseLogReceiver
 		return (data, last);
 	}
 
-	public Dictionary<string, decimal> GetAccountBalance()
+	public Task<Dictionary<string, decimal>> GetAccountBalanceAsync(CancellationToken cancellationToken = default)
 	{
 		var uri = CreateUrl("private/Balance");
 		var request = CreateRequest(Method.Post);
-		return MakeRequest<Dictionary<string, decimal>>(uri, ApplySecret(request, uri));
+		return MakeRequestAsync<Dictionary<string, decimal>>(uri, ApplySecret(request, uri), cancellationToken);
 	}
 
-	public OpenOrders GetOpenOrders(bool includeTrades = false, string userRef = null)
+	public Task<OpenOrders> GetOpenOrdersAsync(bool includeTrades = false, string userRef = null, CancellationToken cancellationToken = default)
 	{
 		var uri = CreateUrl("private/OpenOrders");
 
@@ -128,10 +128,10 @@ class FuturesHttpClient : BaseLogReceiver
 		if (!userRef.IsEmpty())
 			request.AddParameter("userref", userRef);
 
-		return MakeRequest<OpenOrders>(uri, ApplySecret(request, uri));
+		return MakeRequestAsync<OpenOrders>(uri, ApplySecret(request, uri), cancellationToken);
 	}
 
-	public ClosedOrders GetClosedOrders(bool includeTrades = false, long? userRef = null, long? start = null, long? end = null, int? offset = null, string closeTime = null)
+	public Task<ClosedOrders> GetClosedOrdersAsync(bool includeTrades = false, long? userRef = null, long? start = null, long? end = null, int? offset = null, string closeTime = null, CancellationToken cancellationToken = default)
 	{
 		var uri = CreateUrl("private/ClosedOrders");
 
@@ -155,10 +155,10 @@ class FuturesHttpClient : BaseLogReceiver
 		if (!closeTime.IsEmpty())
 			request.AddParameter("closetime", closeTime);
 
-		return MakeRequest<ClosedOrders>(uri, ApplySecret(request, uri));
+		return MakeRequestAsync<ClosedOrders>(uri, ApplySecret(request, uri), cancellationToken);
 	}
 
-	public Dictionary<string, OrderInfo> GetOrdersInfo(IEnumerable<string> transactionIds, bool includeTrades = false, long? userRef = null)
+	public Task<Dictionary<string, OrderInfo>> GetOrdersInfoAsync(IEnumerable<string> transactionIds, bool includeTrades = false, long? userRef = null, CancellationToken cancellationToken = default)
 	{
 		if (transactionIds == null)
 			throw new ArgumentNullException(nameof(transactionIds));
@@ -175,10 +175,10 @@ class FuturesHttpClient : BaseLogReceiver
 
 		request.AddParameter("txid", transactionIds.JoinComma());
 
-		return MakeRequest<Dictionary<string, OrderInfo>>(uri, ApplySecret(request, uri));
+		return MakeRequestAsync<Dictionary<string, OrderInfo>>(uri, ApplySecret(request, uri), cancellationToken);
 	}
 
-	public Dictionary<string, PositionInfo> GetOpenPositions(IEnumerable<string> transactionIds, bool doCalculations = false)
+	public Task<Dictionary<string, PositionInfo>> GetOpenPositionsAsync(IEnumerable<string> transactionIds, bool doCalculations = false, CancellationToken cancellationToken = default)
 	{
 		if (transactionIds == null)
 			throw new ArgumentNullException(nameof(transactionIds));
@@ -192,10 +192,10 @@ class FuturesHttpClient : BaseLogReceiver
 		if (doCalculations)
 			request.AddParameter("docalcs", "true");
 
-		return MakeRequest<Dictionary<string, PositionInfo>>(uri, ApplySecret(request, uri));
+		return MakeRequestAsync<Dictionary<string, PositionInfo>>(uri, ApplySecret(request, uri), cancellationToken);
 	}
 
-	public string AddOrder(string pair, string type, string orderType, decimal volume, decimal? price = null, decimal? price2 = null, string leverage = null, string orderFlags = null, string startTime = null, double? expireTime = null, long? userRef = null, bool validate = false)
+	public async Task<string> AddOrderAsync(string pair, string type, string orderType, decimal volume, decimal? price = null, decimal? price2 = null, string leverage = null, string orderFlags = null, string startTime = null, double? expireTime = null, long? userRef = null, bool validate = false, CancellationToken cancellationToken = default)
 	{
 		var uri = CreateUrl("private/AddOrder");
 
@@ -231,12 +231,12 @@ class FuturesHttpClient : BaseLogReceiver
 		if (validate)
 			request.AddParameter("validate", "true");
 
-		dynamic response = MakeRequest<object>(uri, ApplySecret(request, uri), 0);
+		dynamic response = await MakeRequestAsync<object>(uri, ApplySecret(request, uri), cancellationToken, 0);
 
 		return (string)response.txid[0];
 	}
 
-	public void CancelOrder(string transactionId)
+	public async Task CancelOrderAsync(string transactionId, CancellationToken cancellationToken = default)
 	{
 		var uri = CreateUrl("private/CancelOrder");
 
@@ -244,10 +244,10 @@ class FuturesHttpClient : BaseLogReceiver
 			CreateRequest(Method.Post)
 				.AddParameter("txid", transactionId);
 
-		MakeRequest<object>(uri, ApplySecret(request, uri), 0);
+		await MakeRequestAsync<object>(uri, ApplySecret(request, uri), cancellationToken, 0);
 	}
 
-	public string Withdraw(string currency, decimal volume, WithdrawInfo info)
+	public async Task<string> WithdrawAsync(string currency, decimal volume, WithdrawInfo info, CancellationToken cancellationToken = default)
 	{
 		if (info == null)
 			throw new ArgumentNullException(nameof(info));
@@ -263,7 +263,7 @@ class FuturesHttpClient : BaseLogReceiver
 				.AddParameter("key", _key.UnSecure())
 				.AddParameter("amount", volume);
 
-		dynamic response = MakeRequest<object>(uri, ApplySecret(request, uri), 0);
+		dynamic response = await MakeRequestAsync<object>(uri, ApplySecret(request, uri), cancellationToken, 0);
 
 		return (string)response.refid;
 	}
@@ -315,9 +315,9 @@ class FuturesHttpClient : BaseLogReceiver
 		return request;
 	}
 
-	private T MakeRequest<T>(Uri url, RestRequest request, int apiCallCost = 1)
+	private async Task<T> MakeRequestAsync<T>(Uri url, RestRequest request, CancellationToken cancellationToken, int apiCallCost = 1)
 	{
-		dynamic obj = request.Invoke(url, this, this.AddVerboseLog);
+		dynamic obj = await request.InvokeAsync(url, this, this.AddVerboseLog, cancellationToken);
 
 		var error = (JArray)obj.error;
 

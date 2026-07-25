@@ -108,7 +108,7 @@ class SpotPusherClient : BaseLogReceiver
 			switch (evt)
 			{
 				case "ping":
-					_client.Send(new { @event = "pong", reqid });
+					await _client.SendAsync(new { @event = "pong", reqid }, cancellationToken);
 					break;
 				case "pong":
 					break;

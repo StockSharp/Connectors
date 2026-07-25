@@ -38,7 +38,7 @@ sealed class WeexWsClient : BaseLogReceiver
 				NullValueHandling = NullValueHandling.Ignore,
 			},
 		};
-		_client.Init += OnInit;
+		_client.InitAsync += OnInit;
 
 		if (isPrivate)
 		{
@@ -66,7 +66,7 @@ sealed class WeexWsClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= OnInit;
+		_client.InitAsync -= OnInit;
 		_restoreSync.Dispose();
 		_client.Dispose();
 		base.DisposeManaged();
@@ -273,17 +273,18 @@ sealed class WeexWsClient : BaseLogReceiver
 		}
 	}
 
-	private void OnInit(ClientWebSocket socket)
+	private ValueTask OnInit(ClientWebSocket socket, CancellationToken _)
 	{
 		socket.Options.SetRequestHeader("User-Agent", "StockSharp-WEEX-Connector/1.0");
 		if (!_isPrivate)
-			return;
+			return default;
 
 		var authentication = _authenticationProvider();
 		socket.Options.SetRequestHeader("ACCESS-KEY", authentication.ApiKey);
 		socket.Options.SetRequestHeader("ACCESS-PASSPHRASE", authentication.Passphrase);
 		socket.Options.SetRequestHeader("ACCESS-TIMESTAMP", authentication.Timestamp);
 		socket.Options.SetRequestHeader("ACCESS-SIGN", authentication.Signature);
+		return default;
 	}
 
 	private static T Deserialize<T>(string payload)

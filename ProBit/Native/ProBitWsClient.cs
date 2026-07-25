@@ -144,8 +144,11 @@ sealed class ProBitWsClient : BaseLogReceiver
 				NullValueHandling = NullValueHandling.Ignore,
 			},
 		};
-		client.Init += static socket =>
+		client.InitAsync += static (socket, _) =>
+		{
 			socket.Options.SetRequestHeader("User-Agent", "StockSharp-ProBit-Connector/1.0");
+			return default;
+		};
 		return client;
 	}
 

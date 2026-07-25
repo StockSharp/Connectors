@@ -124,8 +124,12 @@ sealed class BYDFiWebSocketClient : BaseLogReceiver
             Indent = false,
             SendSettings = _jsonSettings,
         };
-        client.Init += socket => socket.Options.SetRequestHeader(
+        client.InitAsync += (socket, _) =>
+        {
+            socket.Options.SetRequestHeader(
             "User-Agent", "StockSharp-BYDFi-Connector/1.0");
+            return default;
+        };
         return client;
     }
 

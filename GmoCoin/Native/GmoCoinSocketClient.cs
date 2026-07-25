@@ -145,8 +145,12 @@ sealed class GmoCoinSocketClient : BaseLogReceiver
             Indent = false,
             SendSettings = _jsonSettings,
         };
-        client.Init += socket => socket.Options.SetRequestHeader("User-Agent",
+        client.InitAsync += (socket, _) =>
+        {
+            socket.Options.SetRequestHeader("User-Agent",
             "StockSharp-GmoCoin-Connector/1.0");
+            return default;
+        };
         return client;
     }
 

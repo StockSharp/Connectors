@@ -47,7 +47,7 @@ sealed class EdgeXWsClient : BaseLogReceiver
 		};
 
 		if (_headers.Length > 0)
-			_client.Init += OnInit;
+			_client.InitAsync += OnInit;
 	}
 
 	public override string Name => nameof(EdgeX) + "_" + nameof(EdgeXWsClient);
@@ -63,7 +63,7 @@ sealed class EdgeXWsClient : BaseLogReceiver
 	protected override void DisposeManaged()
 	{
 		if (_headers.Length > 0)
-			_client.Init -= OnInit;
+			_client.InitAsync -= OnInit;
 
 		_client.Dispose();
 		base.DisposeManaged();
@@ -202,10 +202,12 @@ sealed class EdgeXWsClient : BaseLogReceiver
 		return lower is "order-event" or "trade-event" or "asset-event" or "position-event";
 	}
 
-	private void OnInit(ClientWebSocket socket)
+	private ValueTask OnInit(ClientWebSocket socket, CancellationToken _)
 	{
 		foreach (var (key, value) in _headers)
 			socket.Options.SetRequestHeader(key, value);
+
+		return default;
 	}
 
 	private long GetOrCreateSubscriptionId(string channel)

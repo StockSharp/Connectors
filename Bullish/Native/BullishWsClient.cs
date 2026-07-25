@@ -198,11 +198,12 @@ sealed class BullishWsClient : BaseLogReceiver
 				NullValueHandling = NullValueHandling.Ignore,
 			},
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.SetRequestHeader("User-Agent", "StockSharp-Bullish-Connector/1.0");
 			if (!jwt.IsEmpty())
 				socket.Options.SetRequestHeader("Cookie", $"JWT_COOKIE={jwt}");
+			return default;
 		};
 		return client;
 	}

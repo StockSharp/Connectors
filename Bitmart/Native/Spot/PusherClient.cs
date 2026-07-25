@@ -1,6 +1,7 @@
 namespace StockSharp.Bitmart.Native.Spot;
 
 using System.Dynamic;
+using System.IO.Compression;
 using System.Net.WebSockets;
 
 using Ecng.IO.Compression;
@@ -82,21 +83,22 @@ abstract class PusherClient : BaseLogReceiver
 			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
 		};
 
-		_client.Init += Client_OnInit;
-		_client.PreProcess2 += Client_OnPreProcess;
+		_client.InitAsync += Client_OnInit;
+		_client.PreProcessAsync += Client_OnPreProcess;
 		_client.PostConnect += OnPostConnect;
 	}
 
-	private void Client_OnInit(ClientWebSocket s)
+	private ValueTask Client_OnInit(ClientWebSocket s, CancellationToken _)
 	{
 		/* disable standard ping/pong frames */
 		s.Options.KeepAliveInterval = Timeout.InfiniteTimeSpan;
+		return default;
 	}
 
 	protected virtual ValueTask OnPostConnect(bool reconnect, CancellationToken token)
 		=> default;
 
-	private int Client_OnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination)
+	private async ValueTask<int> Client_OnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination, CancellationToken cancellationToken)
 	{
 		var span = source.Span;
 		var count = source.Length;
@@ -109,13 +111,15 @@ abstract class PusherClient : BaseLogReceiver
 			return count;
 		}
 
-		return span.UnDeflate(destination.Span);
+		var uncompressed = await source.ToArray().UncompressAsync<DeflateStream>(cancellationToken: cancellationToken);
+		uncompressed.AsMemory().CopyTo(destination);
+		return uncompressed.Length;
 	}
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= Client_OnInit;
-		_client.PreProcess2 -= Client_OnPreProcess;
+		_client.InitAsync -= Client_OnInit;
+		_client.PreProcessAsync -= Client_OnPreProcess;
 		_client.PostConnect -= OnPostConnect;
 
 		_client.Dispose();

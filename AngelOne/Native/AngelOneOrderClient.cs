@@ -31,7 +31,7 @@ sealed class AngelOneOrderClient : BaseLogReceiver
 			WorkingTime = workingTime,
 			DisableAutoResend = true,
 		};
-		_client.Init += OnInit;
+		_client.InitAsync += OnInit;
 	}
 
 	public override string Name => nameof(AngelOne) + "_" + nameof(AngelOneOrderClient);
@@ -42,7 +42,7 @@ sealed class AngelOneOrderClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= OnInit;
+		_client.InitAsync -= OnInit;
 		_client.Dispose();
 		base.DisposeManaged();
 	}
@@ -51,12 +51,13 @@ sealed class AngelOneOrderClient : BaseLogReceiver
 	public ValueTask DisconnectAsync(CancellationToken cancellationToken) => _client.DisconnectAsync(cancellationToken);
 	public ValueTask SendHeartbeat(CancellationToken cancellationToken) => _client.SendAsync("ping", cancellationToken);
 
-	private void OnInit(ClientWebSocket socket)
+	private ValueTask OnInit(ClientWebSocket socket, CancellationToken _)
 	{
 		socket.Options.SetRequestHeader("Authorization", _jwtToken);
 		socket.Options.SetRequestHeader("x-api-key", _apiKey);
 		socket.Options.SetRequestHeader("x-client-code", _clientCode);
 		socket.Options.SetRequestHeader("x-feed-token", _feedToken);
+		return default;
 	}
 
 	private async ValueTask Process(WebSocketMessage message, CancellationToken cancellationToken)

@@ -1,5 +1,7 @@
 namespace StockSharp.Bittrex.Native;
 
+using System.IO.Compression;
+
 using Ecng.IO.Compression;
 
 using Microsoft.AspNet.SignalR.Client;
@@ -84,7 +86,7 @@ class PusherClient : BaseLogReceiver
 	{
 		try
 		{
-			var decoded = Decode(tzip);
+			var decoded = await DecodeAsync(tzip);
 
 			this.AddVerboseLog(decoded);
 
@@ -154,10 +156,8 @@ class PusherClient : BaseLogReceiver
 		}
 	}
 
-	private static string Decode(string tzip)
-	{
-		return tzip.Base64().UnDeflate();
-	}
+	private static async Task<string> DecodeAsync(string tzip)
+		=> (await tzip.Base64().UncompressAsync<DeflateStream>()).UTF8();
 
 	public Task<bool> SubscribeToSummaryDeltasAsync()
 		=> InvokeAsync<bool>("SubscribeToSummaryDeltas");
@@ -168,13 +168,13 @@ class PusherClient : BaseLogReceiver
 	public async Task<string> QuerySummaryStateAsync()
 	{
 		var result = await InvokeAsync<string>("QuerySummaryState");
-		return Decode(result);
+		return await DecodeAsync(result);
 	}
 
 	public async Task<WsOrderBook> QueryExchangeStateAsync(string market)
 	{
 		var result = await InvokeAsync<string>("QueryExchangeState", market);
-		return Decode(result).DeserializeObject<WsOrderBook>();
+		return (await DecodeAsync(result)).DeserializeObject<WsOrderBook>();
 	}
 
 	private Task<string> GetAuthContextAsync(string apiKey)

@@ -56,8 +56,12 @@ sealed class GainsNetworkSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += static socket => socket.Options.SetRequestHeader(
+		client.InitAsync += static (socket, _) =>
+		{
+			socket.Options.SetRequestHeader(
 			"User-Agent", "StockSharp-GainsNetwork-Connector/1.0");
+			return default;
+		};
 		_client = client;
 		try
 		{

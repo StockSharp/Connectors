@@ -74,10 +74,11 @@ class SocketClient : BaseLogReceiver
 			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
 		};
 
-		_accountClient.Init += ws =>
+		_accountClient.InitAsync += (ws, _) =>
 		{
 			var token = _getToken();
 			ws.Options.SetRequestHeader("Authorization", $"Bearer {token.UnSecure()}");
+			return default;
 		};
 
 		_accountClient.PostConnect += OnAccountPostConnect;

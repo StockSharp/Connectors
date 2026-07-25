@@ -99,7 +99,7 @@ partial class HitBtcMessageAdapter
 		await _pusherClient.RequestActiveOrdersAsync(message.TransactionId, cancellationToken);
 
 		if (!message.IsHistoryOnly())
-			_pusherClient.SubscribeReports();
+			await _pusherClient.SubscribeReportsAsync(cancellationToken);
 
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}

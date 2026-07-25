@@ -142,8 +142,12 @@ sealed class ZoomexSocketClient : BaseLogReceiver
             Indent = false,
             SendSettings = _jsonSettings,
         };
-        client.Init += socket => socket.Options.SetRequestHeader(
+        client.InitAsync += (socket, _) =>
+        {
+            socket.Options.SetRequestHeader(
             "User-Agent", "StockSharp-Zoomex-Connector/1.0");
+            return default;
+        };
         return client;
     }
 

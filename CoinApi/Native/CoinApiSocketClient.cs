@@ -133,10 +133,11 @@ sealed class CoinApiSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.SetRequestHeader("X-CoinAPI-Key", _apiKey);
 			socket.Options.SetRequestHeader("User-Agent", "StockSharp-CoinAPI/1.0");
+			return default;
 		};
 		_client = client;
 	}

@@ -1,6 +1,7 @@
 namespace StockSharp.Bitmart.Native.Futures;
 
 using System.Dynamic;
+using System.IO.Compression;
 
 using Ecng.IO.Compression;
 
@@ -83,14 +84,14 @@ abstract class PusherClient : BaseLogReceiver
 			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
 		};
 
-		_client.PreProcess2 += Client_OnPreProcess;
+		_client.PreProcessAsync += Client_OnPreProcess;
 		_client.PostConnect += OnPostConnect;
 	}
 
 	protected virtual ValueTask OnPostConnect(bool reconnect, CancellationToken token)
 		=> default;
 
-	private int Client_OnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination)
+	private async ValueTask<int> Client_OnPreProcess(ReadOnlyMemory<byte> source, Memory<byte> destination, CancellationToken cancellationToken)
 	{
 		var span = source.Span;
 		var count = source.Length;
@@ -103,12 +104,14 @@ abstract class PusherClient : BaseLogReceiver
 			return count;
 		}
 
-		return span.UnDeflate(destination.Span);
+		var uncompressed = await source.ToArray().UncompressAsync<DeflateStream>(cancellationToken: cancellationToken);
+		uncompressed.AsMemory().CopyTo(destination);
+		return uncompressed.Length;
 	}
 
 	protected override void DisposeManaged()
 	{
-		_client.PreProcess2 -= Client_OnPreProcess;
+		_client.PreProcessAsync -= Client_OnPreProcess;
 		_client.PostConnect -= OnPostConnect;
 		_client.Dispose();
 		base.DisposeManaged();

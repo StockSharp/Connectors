@@ -49,7 +49,7 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
 			DisableAutoResend = true,
 		};
-		_client.Init += InitializeSocket;
+		_client.InitAsync += InitializeSocket;
 		_client.PostConnect += OnPostConnectAsync;
 	}
 
@@ -192,10 +192,11 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 		}
 	}
 
-	private void InitializeSocket(ClientWebSocket socket)
+	private ValueTask InitializeSocket(ClientWebSocket socket, CancellationToken _)
 	{
 		socket.Options.SetRequestHeader("Client-Id", _clientId);
 		socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
+		return default;
 	}
 
 	private ValueTask OnPostConnectAsync(bool isReconnect,
@@ -603,7 +604,7 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= InitializeSocket;
+		_client.InitAsync -= InitializeSocket;
 		_client.PostConnect -= OnPostConnectAsync;
 		_client.Dispose();
 		base.DisposeManaged();

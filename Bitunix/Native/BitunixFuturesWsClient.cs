@@ -262,8 +262,12 @@ sealed class BitunixFuturesWsClient : BaseLogReceiver
 				NullValueHandling = NullValueHandling.Ignore,
 			},
 		};
-		client.Init += socket => socket.Options.SetRequestHeader("User-Agent",
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-Bitunix-Connector/1.0");
+			return default;
+		};
 		return client;
 	}
 

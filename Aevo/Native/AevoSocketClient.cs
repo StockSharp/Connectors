@@ -98,7 +98,11 @@ sealed class AevoSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += socket => socket.Options.DangerousDeflateOptions = new();
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.DangerousDeflateOptions = new();
+			return default;
+		};
 		return client;
 	}
 

@@ -62,7 +62,7 @@ class PusherClient : BaseLogReceiver
 		_client.PostConnect += OnPostConnect;
 
 		if (_authenticator.CanSign)
-			_client.Init += OnInit;
+			_client.InitAsync += OnInit;
 	}
 
 	protected override void DisposeManaged()
@@ -70,13 +70,13 @@ class PusherClient : BaseLogReceiver
 		_client.PostConnect -= OnPostConnect;
 
 		if (_authenticator.CanSign)
-			_client.Init -= OnInit;
+			_client.InitAsync -= OnInit;
 
 		_client.Dispose();
 		base.DisposeManaged();
 	}
 
-	private void OnInit(ClientWebSocket s)
+	private ValueTask OnInit(ClientWebSocket s, CancellationToken _)
 	{
 		var signData = ((long)TimeHelper.UnixNowS).ToString();
 
@@ -84,6 +84,7 @@ class PusherClient : BaseLogReceiver
 		s.Options.SetRequestHeader("X-LA-DIGEST", Authenticator.HashAlgo);
 		s.Options.SetRequestHeader("X-LA-SIGNATURE", _authenticator.MakeSign(signData));
 		s.Options.SetRequestHeader("X-LA-SIGDATA", signData);
+		return default;
 	}
 
 	// the session has to be opened with a STOMP handshake before any destination can be subscribed,

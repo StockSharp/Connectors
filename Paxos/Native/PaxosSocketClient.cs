@@ -89,8 +89,12 @@ sealed class PaxosSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += socket => socket.Options.SetRequestHeader("User-Agent",
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-Paxos/1.0");
+			return default;
+		};
 		_client = client;
 	}
 

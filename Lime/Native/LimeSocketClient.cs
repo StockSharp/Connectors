@@ -28,7 +28,7 @@ sealed class LimeSocketClient : BaseLogReceiver
 			WorkingTime = workingTime,
 			DisableAutoResend = true,
 		};
-		_client.Init += OnInit;
+		_client.InitAsync += OnInit;
 		_client.PostConnect += OnPostConnect;
 	}
 
@@ -43,14 +43,17 @@ sealed class LimeSocketClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= OnInit;
+		_client.InitAsync -= OnInit;
 		_client.PostConnect -= OnPostConnect;
 		_client.Dispose();
 		base.DisposeManaged();
 	}
 
-	private void OnInit(ClientWebSocket socket)
-		=> socket.Options.SetRequestHeader("Authorization", $"Bearer {_accessToken.UnSecure()}");
+	private ValueTask OnInit(ClientWebSocket socket, CancellationToken _)
+	{
+		socket.Options.SetRequestHeader("Authorization", $"Bearer {_accessToken.UnSecure()}");
+		return default;
+	}
 
 	public ValueTask ConnectAsync(CancellationToken cancellationToken)
 		=> _client.ConnectAsync(cancellationToken);

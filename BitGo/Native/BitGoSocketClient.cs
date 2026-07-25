@@ -222,8 +222,12 @@ sealed class BitGoSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += socket => socket.Options.SetRequestHeader(
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.SetRequestHeader(
 			"Authorization", "Bearer " + _accessToken);
+			return default;
+		};
 		_client = client;
 	}
 

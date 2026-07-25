@@ -37,7 +37,7 @@ sealed class AngelOneMarketDataClient : BaseLogReceiver
 			WorkingTime = workingTime,
 			DisableAutoResend = true,
 		};
-		_client.Init += OnInit;
+		_client.InitAsync += OnInit;
 		_client.PostConnect += OnPostConnect;
 	}
 
@@ -49,7 +49,7 @@ sealed class AngelOneMarketDataClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_client.Init -= OnInit;
+		_client.InitAsync -= OnInit;
 		_client.PostConnect -= OnPostConnect;
 		_client.Dispose();
 		base.DisposeManaged();
@@ -59,12 +59,13 @@ sealed class AngelOneMarketDataClient : BaseLogReceiver
 	public ValueTask DisconnectAsync(CancellationToken cancellationToken) => _client.DisconnectAsync(cancellationToken);
 	public ValueTask SendHeartbeat(CancellationToken cancellationToken) => _client.SendAsync("ping", cancellationToken);
 
-	private void OnInit(ClientWebSocket socket)
+	private ValueTask OnInit(ClientWebSocket socket, CancellationToken _)
 	{
 		socket.Options.SetRequestHeader("Authorization", _jwtToken);
 		socket.Options.SetRequestHeader("x-api-key", _apiKey);
 		socket.Options.SetRequestHeader("x-client-code", _clientCode);
 		socket.Options.SetRequestHeader("x-feed-token", _feedToken);
+		return default;
 	}
 
 	private async ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)

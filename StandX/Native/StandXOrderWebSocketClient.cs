@@ -124,8 +124,12 @@ sealed class StandXOrderWebSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += static socket => socket.Options.SetRequestHeader(
+		client.InitAsync += static (socket, _) =>
+		{
+			socket.Options.SetRequestHeader(
 			"User-Agent", "StockSharp-StandX-Connector/1.0");
+			return default;
+		};
 		return client;
 	}
 

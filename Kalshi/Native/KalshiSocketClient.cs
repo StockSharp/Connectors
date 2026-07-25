@@ -76,8 +76,11 @@ sealed class KalshiSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _settings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
+		{
 			_authenticator.AddSocketHeaders(socket.Options);
+			return default;
+		};
 		_client = client;
 		return default;
 	}

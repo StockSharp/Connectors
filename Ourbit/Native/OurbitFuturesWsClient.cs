@@ -191,8 +191,12 @@ sealed class OurbitFuturesWsClient : BaseLogReceiver
 				NullValueHandling = NullValueHandling.Ignore,
 			},
 		};
-		client.Init += socket => socket.Options.SetRequestHeader("User-Agent",
+		client.InitAsync += (socket, _) =>
+		{
+			socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-Ourbit-Connector/1.0");
+			return default;
+		};
 		return client;
 	}
 

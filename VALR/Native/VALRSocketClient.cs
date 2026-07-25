@@ -162,7 +162,7 @@ sealed class VALRSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 				.ToString(CultureInfo.InvariantCulture);
@@ -176,6 +176,7 @@ sealed class VALRSocketClient : BaseLogReceiver
 			if (!_subAccountId.IsEmpty())
 				socket.Options.SetRequestHeader("X-VALR-SUB-ACCOUNT-ID",
 					_subAccountId);
+			return default;
 		};
 		return client;
 	}

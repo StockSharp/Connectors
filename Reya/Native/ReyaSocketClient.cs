@@ -116,11 +116,12 @@ sealed class ReyaSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.Init += socket =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.SetRequestHeader("User-Agent",
 				"StockSharp-Reya-Connector/1.0");
 			socket.Options.DangerousDeflateOptions = new();
+			return default;
 		};
 		return client;
 	}
