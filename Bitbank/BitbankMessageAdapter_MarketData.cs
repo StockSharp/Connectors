@@ -111,11 +111,13 @@ public partial class BitbankMessageAdapter
 
 		if (mdMsg.IsSubscribe)
 		{
-			if (mdMsg.To != null)
+			// the venue serves candles per day, the range is driven by From, To is optional
+			if (mdMsg.From != null)
 			{
 				var date = mdMsg.From.Value;
+				var to = mdMsg.To ?? DateTime.UtcNow;
 
-				while (date <= mdMsg.To.Value)
+				while (date <= to)
 				{
 					var candles = await _httpClient.GetCandlesAsync(currency, tfName, date, cancellationToken);
 
