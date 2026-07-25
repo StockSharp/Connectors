@@ -1,18 +1,21 @@
-name: Release Tests
+name: Tests
 
-# Gate a release on the deterministic test suite. Runs when a release is published,
-# when a version tag is pushed, and on demand for a dry run before either.
+# Runs on every push to the default branch, and gates a release: when one is published,
+# when a version tag is pushed, and on demand.
 on:
-  release:
-    types: [published]
   push:
+    branches:
+      - main
     tags:
       - 'v*'
+  pull_request:
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 60
 
     steps:
