@@ -395,7 +395,8 @@ public partial class DriftMessageAdapter
 			TradePrice = trade.GetTradePrice(),
 			TradeVolume = trade.BaseAssetAmountFilled.ParseDriftDecimal(
 				"trade volume"),
-			OriginSide = trade.TakerOrderDirection.ToStockSharpDirection(),
+			// AMM fills are reported without a taker direction
+			OriginSide = trade.TakerOrderDirection.TryToStockSharpDirection(),
 			OriginalTransactionId = transactionId,
 		}, cancellationToken);
 	}

@@ -126,13 +126,17 @@ static class DriftExtensions
 			? currency
 			: null;
 
-	public static Sides ToStockSharpDirection(this string value)
+	public static Sides? TryToStockSharpDirection(this string value)
 		=> value.EqualsIgnoreCase("long")
 			? Sides.Buy
 			: value.EqualsIgnoreCase("short")
 				? Sides.Sell
-				: throw new InvalidDataException(
-					$"Drift returned unknown order direction '{value}'.");
+				: null;
+
+	public static Sides ToStockSharpDirection(this string value)
+		=> value.TryToStockSharpDirection()
+			?? throw new InvalidDataException(
+				$"Drift returned unknown order direction '{value}'.");
 
 	public static DriftOrderDirections ToDrift(this Sides side)
 		=> side == Sides.Buy

@@ -41,11 +41,13 @@ sealed class DriftRestClient : BaseLogReceiver
 			throw new ArgumentOutOfRangeException(nameof(limit));
 		var path = $"market/{Escape(symbol)}/candles/{Escape(resolution)}" +
 			$"?limit={limit.ToString(CultureInfo.InvariantCulture)}";
-		if (from is DateTime start)
-			path += "&startTs=" + start.ToDriftSeconds().ToString(
-				CultureInfo.InvariantCulture);
+		// the endpoint pages backwards: startTs is the newest bound and endTs the
+		// oldest one, the opposite order is rejected as a validation error
 		if (to is DateTime end)
-			path += "&endTs=" + end.ToDriftSeconds().ToString(
+			path += "&startTs=" + end.ToDriftSeconds().ToString(
+				CultureInfo.InvariantCulture);
+		if (from is DateTime start)
+			path += "&endTs=" + start.ToDriftSeconds().ToString(
 				CultureInfo.InvariantCulture);
 		return GetDataAsync<DriftCandlesResponse>(path, cancellationToken);
 	}
