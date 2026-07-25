@@ -202,22 +202,22 @@ public partial class KalshiMessageAdapter
 		var market = await GetMarketAsync(mdMsg.SecurityId, cancellationToken);
 		var maximum = (mdMsg.Count ?? HistoryLimit).Min(HistoryLimit).Max(1)
 			.To<int>();
-		if (mdMsg.IsHistoryOnly() || mdMsg.From is not null || mdMsg.To is not null)
-		{
-			var from = mdMsg.From?.EnsureUtc();
-			var to = mdMsg.To?.EnsureUtc();
-			if (from is DateTime start && to is DateTime end && start > end)
-				throw new ArgumentOutOfRangeException(nameof(mdMsg),
-					"Kalshi trade-history start time cannot be later than end time.");
-			var trades = await RestClient.GetTradesAsync(market.Ticker, from, to,
-				maximum, cancellationToken);
-			foreach (var trade in trades
-				.Where(static trade => trade?.TradeId.IsEmpty() == false)
-				.OrderBy(static trade => trade.CreatedTime.TryParseKalshiTime() ??
-					DateTime.UnixEpoch))
-				await SendTickAsync(market, trade, mdMsg.TransactionId,
-					cancellationToken);
-		}
+		var from = mdMsg.From?.EnsureUtc();
+		var to = mdMsg.To?.EnsureUtc();
+		if (from is DateTime start && to is DateTime end && start > end)
+			throw new ArgumentOutOfRangeException(nameof(mdMsg),
+				"Kalshi trade-history start time cannot be later than end time.");
+		// the trade channel streams new trades only, so a subscription starts from
+		// the trades the public REST feed already reports, like the Level1 and the
+		// order-book subscriptions start from their snapshots
+		var trades = await RestClient.GetTradesAsync(market.Ticker, from, to,
+			maximum, cancellationToken);
+		foreach (var trade in trades
+			.Where(static trade => trade?.TradeId.IsEmpty() == false)
+			.OrderBy(static trade => trade.CreatedTime.TryParseKalshiTime() ??
+				DateTime.UnixEpoch))
+			await SendTickAsync(market, trade, mdMsg.TransactionId,
+				cancellationToken);
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
@@ -278,13 +278,21 @@ public partial class KalshiMessageAdapter
 		foreach (var candle in candles.OrderBy(static candle => candle.EndTime)
 			.TakeLast(maximum))
 		{
-			var open = candle?.Price?.Open.TryParseKalshiDecimal();
-			var high = candle?.Price?.High.TryParseKalshiDecimal();
-			var low = candle?.Price?.Low.TryParseKalshiDecimal();
-			var close = candle?.Price?.Close.TryParseKalshiDecimal();
-			if (open is null || high is null || low is null || close is null ||
-				candle.EndTime <= 0)
+			if (candle is null || candle.EndTime <= 0)
 				continue;
+			var open = candle.Price?.Open.TryParseKalshiDecimal();
+			var high = candle.Price?.High.TryParseKalshiDecimal();
+			var low = candle.Price?.Low.TryParseKalshiDecimal();
+			var close = candle.Price?.Close.TryParseKalshiDecimal();
+			if (open is null || high is null || low is null || close is null)
+			{
+				// nothing traded within the period, Kalshi reports the carried
+				// forward price instead, which makes the candle a flat one
+				var previous = candle.Price?.Previous.TryParseKalshiDecimal();
+				if (previous is null)
+					continue;
+				open = high = low = close = previous;
+			}
 			var closeTime = candle.EndTime.FromKalshiSeconds();
 			UpdateServerTime(closeTime);
 			await SendOutMessageAsync(new TimeFrameCandleMessage
