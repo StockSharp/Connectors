@@ -299,6 +299,10 @@ enum PacificaInstrumentTypes
 {
 	[EnumMember(Value = "perpetual")]
 	Perpetual,
+
+	// spot pairs share the market list, the adapter keeps only perpetuals
+	[EnumMember(Value = "spot")]
+	Spot,
 }
 
 [JsonConverter(typeof(StringEnumConverter))]
