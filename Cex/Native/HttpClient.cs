@@ -35,10 +35,11 @@ namespace StockSharp.Cex.Native;
 
 		var dict = new Dictionary<string, Ohlc[]>();
 
-		if (response == null)
+		// a day the venue has no aggregated data for is answered with an empty array
+		if (response is not JObject obj)
 			return dict;
 
-		foreach (var prop in ((JObject)response).Properties())
+		foreach (var prop in obj.Properties())
 		{
 			if (!prop.Name.StartsWithIgnoreCase("data"))
 				continue;

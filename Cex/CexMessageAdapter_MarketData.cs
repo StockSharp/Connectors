@@ -122,7 +122,9 @@ public partial class CexMessageAdapter
 
 		if (mdMsg.IsSubscribe)
 		{
-			if (mdMsg.To != null)
+			// any bounded request is served from the daily history, only an open ended
+			// subscription falls back to the stream
+			if (mdMsg.From != null || mdMsg.To != null)
 			{
 				var date = (mdMsg.From ?? mdMsg.To.Value).Date;
 
