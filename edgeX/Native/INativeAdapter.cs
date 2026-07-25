@@ -8,7 +8,7 @@ interface INativeAdapter : IDisposable
 	event Func<Message, CancellationToken, ValueTask> NewOutMessage;
 
 	ValueTask ConnectAsync(CancellationToken cancellationToken);
-	void Disconnect();
+	ValueTask DisconnectAsync(CancellationToken cancellationToken);
 	ValueTask ResetAsync(CancellationToken cancellationToken);
 	ValueTask TimeAsync(TimeMessage timeMsg, CancellationToken cancellationToken);
 

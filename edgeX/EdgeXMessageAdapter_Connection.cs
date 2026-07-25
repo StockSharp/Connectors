@@ -69,7 +69,7 @@ public partial class EdgeXMessageAdapter
 		{
 			try
 			{
-				adapter.Disconnect();
+				await adapter.DisconnectAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

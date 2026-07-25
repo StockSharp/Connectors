@@ -114,11 +114,11 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 			await ConnectPrivateWsAsync(cancellationToken);
 	}
 
-	public override void Disconnect()
+	public override async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
-		base.Disconnect();
+		await base.DisconnectAsync(cancellationToken);
 
-		DisconnectPrivateWs();
+		await DisconnectPrivateWsAsync(cancellationToken);
 
 		ClearRealtimeSubscriptions();
 		if (_wsClient is not null)
@@ -128,7 +128,7 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 			_wsClient.TradeReceived -= OnWsTradeAsync;
 			_wsClient.CandleReceived -= OnWsCandleAsync;
 			_wsClient.Error -= OnWsErrorAsync;
-			_wsClient.Disconnect();
+			await _wsClient.DisconnectAsync(cancellationToken);
 			_wsClient.Dispose();
 			_wsClient = null;
 		}
@@ -136,11 +136,11 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 		_restClient = null;
 	}
 
-	public override ValueTask ResetAsync(CancellationToken cancellationToken)
+	public override async ValueTask ResetAsync(CancellationToken cancellationToken)
 	{
-		Disconnect();
+		await DisconnectAsync(cancellationToken);
 		ClearMetadataCache();
-		return base.ResetAsync(cancellationToken);
+		await base.ResetAsync(cancellationToken);
 	}
 
 	public override ValueTask TimeAsync(TimeMessage timeMsg, CancellationToken cancellationToken)
@@ -1156,14 +1156,14 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 			await _privateWsClient.SubscribeAsync(channel, cancellationToken);
 	}
 
-	private void DisconnectPrivateWs()
+	private async ValueTask DisconnectPrivateWsAsync(CancellationToken cancellationToken)
 	{
 		if (_privateWsClient is null)
 			return;
 
 		_privateWsClient.PrivatePayloadReceived -= OnPrivateWsPayloadAsync;
 		_privateWsClient.Error -= OnWsErrorAsync;
-		_privateWsClient.Disconnect();
+		await _privateWsClient.DisconnectAsync(cancellationToken);
 		_privateWsClient.Dispose();
 		_privateWsClient = null;
 	}
