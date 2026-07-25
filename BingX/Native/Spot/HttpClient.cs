@@ -23,9 +23,11 @@ class HttpClient : BaseLogReceiver
 
 	public override string Name => nameof(BingX) + "_" + nameof(Spot) + nameof(HttpClient);
 
-	public Task<IEnumerable<Symbol>> GetSymbols(CancellationToken cancellationToken)
+	public async Task<IEnumerable<Symbol>> GetSymbols(CancellationToken cancellationToken)
 	{
-		return MakeRequest<IEnumerable<Symbol>>(CreateUrl("spot/v1/common/symbols"), CreateRequest(Method.Get), cancellationToken);
+		var response = await MakeRequest<SymbolsResponse>(CreateUrl("spot/v1/common/symbols"), CreateRequest(Method.Get), cancellationToken);
+
+		return response?.Symbols ?? [];
 	}
 
 	public Task<RestCandle[]> GetCandles(string symbol, string interval, long? startTime, long? endTime, int? limit, CancellationToken cancellationToken)
@@ -141,6 +143,13 @@ class HttpClient : BaseLogReceiver
 	private RestRequest ApplySecret(RestRequest request, Uri url)
 		=> request.ApplySecret(url, _authenticator);
 
-	private Task<T> MakeRequest<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
-		=> request.InvokeAsync<T>(url, this, this.AddVerboseLog, cancellationToken);
+	private async Task<T> MakeRequest<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
+	{
+		var response = await request.InvokeAsync<RestEnvelope>(url, this, this.AddVerboseLog, cancellationToken);
+
+		if (response.Code != 0)
+			throw new InvalidOperationException($"(code={response.Code}) {response.Message}");
+
+		return response.Data is null ? default : response.Data.DeserializeObject<T>();
+	}
 }

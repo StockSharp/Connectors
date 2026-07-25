@@ -53,34 +53,22 @@ class Candle
 	public double? TakerBuyQuoteVolume { get; set; }
 }
 
+[JsonConverter(typeof(JArrayToObjectConverter))]
 class RestCandle
 {
-	[JsonProperty("openTime")]
-	[JsonConverter(typeof(JsonDateTimeConverter))]
-	public DateTime OpenTime { get; set; }
-
-	[JsonProperty("open")]
+	// the endpoint answers with positional arrays of exactly eight elements
+	// (open time, OHLC, volume, close time, quote volume), and the converter maps element to
+	// field by position without honoring a per field converter, so the moments are read as
+	// unix milliseconds and derived below
+	public long OpenTimestamp { get; set; }
 	public double Open { get; set; }
-
-	[JsonProperty("high")]
 	public double High { get; set; }
-
-	[JsonProperty("low")]
 	public double Low { get; set; }
-
-	[JsonProperty("close")]
 	public double Close { get; set; }
-
-	[JsonProperty("volume")]
 	public double Volume { get; set; }
+	public long CloseTimestamp { get; set; }
+	public double QuoteAssetVolume { get; set; }
 
-	[JsonProperty("closeTime")]
-	[JsonConverter(typeof(JsonDateTimeConverter))]
-	public DateTime CloseTime { get; set; }
-
-	[JsonProperty("quoteAssetVolume")]
-	public double? QuoteAssetVolume { get; set; }
-
-	[JsonProperty("count")]
-	public int? Count { get; set; }
+	public DateTime OpenTime => OpenTimestamp.FromUnix(false);
+	public DateTime CloseTime => CloseTimestamp.FromUnix(false);
 }

@@ -6,7 +6,7 @@ class Ticker
 	public string EventType { get; set; }
 
 	[JsonProperty("E")]
-	[JsonConverter(typeof(JsonDateTimeConverter))]
+	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
 	public DateTime EventTime { get; set; }
 
 	[JsonProperty("s")]
@@ -16,6 +16,7 @@ class Ticker
 	public double? PriceChange { get; set; }
 
 	[JsonProperty("P")]
+	[JsonConverter(typeof(JsonPercentConverter))]
 	public double? PriceChangePercent { get; set; }
 
 	[JsonProperty("w")]
@@ -30,16 +31,17 @@ class Ticker
 	[JsonProperty("Q")]
 	public double? LastQuantity { get; set; }
 
-	[JsonProperty("b")]
+	// the venue sends the best prices upper cased and their sizes lower cased
+	[JsonProperty("B")]
 	public double? BestBidPrice { get; set; }
 
-	[JsonProperty("B")]
+	[JsonProperty("b")]
 	public double? BestBidQuantity { get; set; }
 
-	[JsonProperty("a")]
+	[JsonProperty("A")]
 	public double? BestAskPrice { get; set; }
 
-	[JsonProperty("A")]
+	[JsonProperty("a")]
 	public double? BestAskQuantity { get; set; }
 
 	[JsonProperty("o")]
@@ -58,11 +60,11 @@ class Ticker
 	public double? QuoteVolume { get; set; }
 
 	[JsonProperty("O")]
-	[JsonConverter(typeof(JsonDateTimeConverter))]
+	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
 	public DateTime OpenTime { get; set; }
 
 	[JsonProperty("C")]
-	[JsonConverter(typeof(JsonDateTimeConverter))]
+	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
 	public DateTime CloseTime { get; set; }
 
 	[JsonProperty("F")]

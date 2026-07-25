@@ -69,19 +69,14 @@ class SpotAdapter : NativeAdapter
 	{
 		foreach (var symbol in await _httpClient.GetSymbols(cancellationToken))
 		{
-			var lotFilter = symbol.Filters?.FirstOrDefault(f => f.FilterType == "LOT_SIZE");
-			var priceFilter = symbol.Filters?.FirstOrDefault(f => f.FilterType == "PRICE_FILTER");
-			var notionalFilter = symbol.Filters?.FirstOrDefault(f => f.FilterType == "MIN_NOTIONAL");
-
 			yield return new SecurityMessage
 			{
 				SecurityId = symbol.Id.ToStockSharp(BoardCode),
-				MinVolume = lotFilter?.MinQty?.ToDecimal(),
-				VolumeStep = lotFilter?.StepSize?.ToDecimal(),
-				MaxVolume = lotFilter?.MaxQty?.ToDecimal(),
-				PriceStep = priceFilter?.TickSize?.ToDecimal(),
+				MinVolume = symbol.MinQty?.ToDecimal(),
+				VolumeStep = symbol.StepSize?.ToDecimal(),
+				MaxVolume = symbol.MaxQty?.ToDecimal(),
+				PriceStep = symbol.TickSize?.ToDecimal(),
 				OriginalTransactionId = lookupMsg.TransactionId,
-				Decimals = symbol.BaseAssetPrecision,
 				SecurityType = SecType,
 			}.TryFillUnderlyingId(symbol.BaseAsset);
 		}
@@ -147,7 +142,10 @@ class SpotAdapter : NativeAdapter
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
 
 		var symbol = mdMsg.SecurityId.ToSymbol();
-		var tf = mdMsg.GetTimeFrame().ToNative();
+		var timeFrame = mdMsg.GetTimeFrame();
+		var tf = timeFrame.ToNative();
+		// the stream names the frames differently than the REST endpoint does
+		var streamTf = timeFrame.ToStream();
 
 		if (mdMsg.IsSubscribe)
 		{
@@ -203,15 +201,15 @@ class SpotAdapter : NativeAdapter
 
 			if (!mdMsg.IsHistoryOnly())
 			{
-				_candleTransIds[$"{tf}_{symbol}"] = mdMsg.TransactionId;
-				await _socketClient.SubscribeCandles(symbol, tf, cancellationToken);
+				_candleTransIds[$"{streamTf}_{symbol}"] = mdMsg.TransactionId;
+				await _socketClient.SubscribeCandles(symbol, streamTf, cancellationToken);
 			}
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		else
 		{
-			await _socketClient.UnsubscribeCandles(symbol, tf, cancellationToken);
+			await _socketClient.UnsubscribeCandles(symbol, streamTf, cancellationToken);
 		}
 	}
 

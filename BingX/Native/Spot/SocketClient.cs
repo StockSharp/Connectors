@@ -95,7 +95,7 @@ class SocketClient : BaseLogReceiver
 
 	private WebSocketClient CreateClient(string url, WorkingTime workingTime)
 	{
-		return new WebSocketClient(
+		var client = new WebSocketClient(
 			url,
 			(state, token) =>
 			{
@@ -119,6 +119,10 @@ class SocketClient : BaseLogReceiver
 			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
 			SendSettings = Extensions.CreateJsonSettings(),
 		};
+
+		client.PreProcessAsync += Native.Extensions.UnpackFrameAsync;
+
+		return client;
 	}
 
 	public void Disconnect()
@@ -606,7 +610,7 @@ class SocketClient : BaseLogReceiver
 
 	private static TimeSpan GetIntervalTimeSpan(string interval)
 	{
-		return Native.Extensions.TimeFrames.TryGetKey2(interval) ?? TimeSpan.FromMinutes(1);
+		return Native.Extensions.StreamTimeFrames.TryGetKey2(interval) ?? TimeSpan.FromMinutes(1);
 	}
 
 	private static DateTime ToDateTime(JToken token)

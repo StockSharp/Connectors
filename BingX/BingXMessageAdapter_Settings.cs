@@ -47,7 +47,9 @@ public partial class BingXMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
-	public static IEnumerable<TimeSpan> AllTimeFrames => [.. Native.Extensions.TimeFrames.Keys];
+	// only the frames the venue both serves as history and streams are offered, because
+	// the adapter reports candle updates as supported
+	public static IEnumerable<TimeSpan> AllTimeFrames => [.. Native.Extensions.StreamTimeFrames.Keys];
 
 	/// <inheritdoc />
 	[Display(
