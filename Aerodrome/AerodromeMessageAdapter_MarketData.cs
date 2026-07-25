@@ -361,12 +361,23 @@ public partial class AerodromeMessageAdapter
 		{
 			Id = $"{log.TransactionHash.ToLowerInvariant()}:" +
 				log.LogIndex.ToLowerInvariant(),
-			Time = await GetBlockTimeAsync(blockNumber, cancellationToken),
+			Time = await GetLogTimeAsync(log, blockNumber, cancellationToken),
 			Price = quote / volume,
 			Volume = volume,
 			Side = signedBase > 0 ? Sides.Sell : Sides.Buy,
 			TransactionHash = log.TransactionHash.ToLowerInvariant(),
 		};
+	}
+
+	private async ValueTask<DateTime> GetLogTimeAsync(AerodromeRpcLog log,
+		BigInteger blockNumber, CancellationToken cancellationToken)
+	{
+		// Base returns the block timestamp inside the log itself, which spares a
+		// separate block request for every block a swap was mined in
+		if (log.BlockTimestamp.IsEmpty())
+			return await GetBlockTimeAsync(blockNumber, cancellationToken);
+		return CacheBlockTime(blockNumber,
+			log.BlockTimestamp.ParseInteger().ToUtcTime());
 	}
 
 	private async ValueTask<DateTime> GetBlockTimeAsync(
@@ -377,6 +388,11 @@ public partial class AerodromeMessageAdapter
 				return cached;
 		var time = await RpcClient.GetBlockTimeAsync(blockNumber,
 			cancellationToken);
+		return CacheBlockTime(blockNumber, time);
+	}
+
+	private DateTime CacheBlockTime(BigInteger blockNumber, DateTime time)
+	{
 		using (_sync.EnterScope())
 		{
 			if (!_blockTimes.ContainsKey(blockNumber))

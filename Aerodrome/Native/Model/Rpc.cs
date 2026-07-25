@@ -129,6 +129,8 @@ sealed class AerodromeRpcLog
 	public string Address { get; init; }
 	[JsonProperty("blockNumber")]
 	public string BlockNumber { get; init; }
+	[JsonProperty("blockTimestamp")]
+	public string BlockTimestamp { get; init; }
 	[JsonProperty("transactionHash")]
 	public string TransactionHash { get; init; }
 	[JsonProperty("transactionIndex")]
