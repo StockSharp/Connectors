@@ -82,6 +82,13 @@ public partial class CoinMarketCapMessageAdapter
 		=> _rest ?? throw new InvalidOperationException(
 			LocalizedStrings.ConnectionNotOk);
 
+	/// <summary>
+	/// The live price stream is a paid feature, the keyless mode is limited to REST snapshots.
+	/// </summary>
+	private bool IsStreamingAvailable
+		=> IsStreamingEnabled && AccessMode == CoinMarketCapAccessModes.ApiKey &&
+			!Token.IsEmpty();
+
 	private CoinMarketCapSocketClient GetOrCreateSocket()
 	{
 		if (!IsStreamingEnabled)

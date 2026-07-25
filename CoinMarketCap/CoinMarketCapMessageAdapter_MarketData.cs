@@ -74,7 +74,8 @@ public partial class CoinMarketCapMessageAdapter
 
 		var key = await ResolveKeyAsync(message.SecurityId, cancellationToken);
 		var isHistoryOnly = message.IsHistoryOnly();
-		if (!isHistoryOnly &&
+		var isStreaming = !isHistoryOnly && IsStreamingAvailable;
+		if (isStreaming &&
 			!key.QuoteCurrency.EqualsIgnoreCase("USD"))
 			throw new NotSupportedException(
 				"CoinMarketCap WebSocket prices are USD-denominated. Use USD for live Level 1 subscriptions.");
@@ -84,7 +85,8 @@ public partial class CoinMarketCapMessageAdapter
 		var remaining = message.Count;
 		if (sent && remaining is > 0)
 			remaining--;
-		if (isHistoryOnly || remaining == 0)
+		// without the paid stream the REST snapshot above is the whole answer
+		if (isHistoryOnly || remaining == 0 || !isStreaming)
 		{
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
@@ -203,11 +205,17 @@ public partial class CoinMarketCapMessageAdapter
 			item.Slug.EqualsIgnoreCase(identity));
 		if (coin is null)
 		{
+			// dozens of tokens reuse a well known ticker, so a plain symbol is never unique.
+			// the coins are ordered by the CoinMarketCap rank, which makes the best ranked
+			// match both deterministic and the asset the code actually means
 			var matches = coins.Where(item =>
-				item.Symbol.EqualsIgnoreCase(identity)).Take(2).ToArray();
-			if (matches.Length != 1)
+				item.Symbol.EqualsIgnoreCase(identity)).ToArray();
+			if (matches.Length == 0)
 				throw new InvalidOperationException(
-					$"CoinMarketCap cryptocurrency '{identity}' is unknown or ambiguous. Use security lookup to preserve its API ID.");
+					$"CoinMarketCap cryptocurrency '{identity}' is unknown. Use security lookup to preserve its API ID.");
+			if (matches.Length > 1)
+				this.AddDebugLog("CoinMarketCap ticker {0} is shared by {1} cryptocurrencies, using the best ranked {2}.",
+					identity, matches.Length, matches[0].Id);
 			coin = matches[0];
 		}
 		return ToKey(coin, quoteCurrency);
