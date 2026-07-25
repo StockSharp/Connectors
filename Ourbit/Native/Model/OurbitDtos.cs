@@ -1269,9 +1269,14 @@ static class OurbitJson
 	{
 		if (!reader.Read())
 			throw new JsonSerializationException($"Unexpected end of Ourbit {field}.");
-		if (reader.TokenType is not (JsonToken.Integer or JsonToken.Float or JsonToken.String))
-			throw new JsonSerializationException($"Ourbit {field} must be numeric.");
-		return Convert.ToDecimal(reader.Value, CultureInfo.InvariantCulture);
+		if (reader.TokenType is JsonToken.Integer or JsonToken.Float)
+			return Convert.ToDecimal(reader.Value, CultureInfo.InvariantCulture);
+		// quoted numbers may use scientific notation ("9.4E-5" for a small candle volume),
+		// which Convert.ToDecimal rejects because it parses with NumberStyles.Number
+		if (reader.TokenType == JsonToken.String &&
+			decimal.TryParse((string)reader.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+			return value;
+		throw new JsonSerializationException($"Ourbit {field} must be numeric.");
 	}
 
 	public static long ReadInt64(JsonReader reader, string field)
