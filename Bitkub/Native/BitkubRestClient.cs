@@ -97,11 +97,19 @@ sealed class BitkubRestClient : BaseLogReceiver
 	public async ValueTask<BitkubTicker> GetTickerAsync(string symbol,
 		CancellationToken cancellationToken)
 	{
+		symbol = symbol.NormalizeSymbol();
 		var query = new StringBuilder();
-		Append(query, "sym", symbol.NormalizeSymbol());
-		return Deserialize<BitkubTicker>(await SendRawAsync(HttpMethod.Get,
+		Append(query, "sym", symbol);
+		// the endpoint answers with an array even when a single symbol is asked for
+		var tickers = Deserialize<BitkubTicker[]>(await SendRawAsync(HttpMethod.Get,
 			"api/v3/market/ticker", query, null, false, RateBuckets.Public, true,
-			cancellationToken));
+			cancellationToken))
+			.Where(static ticker => ticker is not null).ToArray();
+		return tickers.FirstOrDefault(ticker =>
+				ticker.Symbol.EqualsIgnoreCase(symbol)) ??
+			tickers.FirstOrDefault() ??
+			throw new InvalidDataException(
+				$"Bitkub returned no ticker for '{symbol}'.");
 	}
 
 	public async ValueTask<BitkubOrderBook> GetDepthAsync(string symbol, int depth,
