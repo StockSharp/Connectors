@@ -1,5 +1,8 @@
 namespace StockSharp.Gemini.Native.Model;
 
+// the header is parsed for every incoming message, so it may only carry fields whose
+// shape is the same in all of them - "b", for instance, is a price in a book ticker
+// but an array of levels in a depth update, and typing it would break the parsing
 sealed class GeminiWsHeader
 {
 	[JsonProperty("id")]
@@ -20,11 +23,8 @@ sealed class GeminiWsHeader
 	[JsonProperty("t")]
 	public long? TradeId { get; set; }
 
-	[JsonProperty("b")]
-	public decimal? Bid { get; set; }
-
-	[JsonProperty("B")]
-	public decimal? BidSize { get; set; }
+	[JsonProperty("u")]
+	public long? UpdateId { get; set; }
 }
 
 sealed class GeminiWsError

@@ -435,8 +435,8 @@ sealed class GeminiWsClient : BaseLogReceiver
 					await tradeHandler(Deserialize<GeminiWsTrade>(payload),
 						cancellationToken);
 			}
-			else if (header.Bid is not null && header.BidSize is not null &&
-				!header.Symbol.IsEmpty() && TickerReceived is { } tickerHandler)
+			else if (header.UpdateId is not null && !header.Symbol.IsEmpty() &&
+				TickerReceived is { } tickerHandler)
 				await tickerHandler(Deserialize<GeminiWsBookTicker>(payload),
 					cancellationToken);
 		}
