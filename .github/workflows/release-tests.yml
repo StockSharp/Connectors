@@ -1,0 +1,72 @@
+name: Release Tests
+
+# Gate a release on the deterministic test suite. Runs when a release is published,
+# when a version tag is pushed, and on demand for a dry run before either.
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      # The connector projects import "../StockSharp (GitHub)/common_target_net.props" and
+      # reference Messages.csproj and Media.Names.csproj from there, so both repos must sit
+      # side by side and the StockSharp folder must be named exactly "StockSharp (GitHub)".
+      - name: Checkout Connectors
+        uses: actions/checkout@v4
+        with:
+          path: Connectors
+
+      - name: Checkout StockSharp
+        uses: actions/checkout@v4
+        with:
+          repository: StockSharp/StockSharp
+          path: 'StockSharp (GitHub)'
+
+      # ConnectorDocumentationTests resolves every [Doc] path against ../doc/en when that
+      # checkout exists. Without it the test falls back to fetching 275 pages over HTTP,
+      # which is slow and depends on the live site being up.
+      - name: Checkout doc
+        uses: actions/checkout@v4
+        with:
+          repository: StockSharp/doc
+          path: doc
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            10.0.x
+
+      - name: Build
+        working-directory: Connectors
+        run: dotnet build Connectors.slnx --configuration Release
+
+      # The live market data checks talk to real venues, so they are left out of a release
+      # gate: they are slow, they depend on third party uptime, and several venues refuse
+      # cloud IPs outright. They also opt out of CI on their own (BaseTestClass.SkipInCI).
+      - name: Run tests
+        working-directory: Connectors
+        run: >
+          dotnet test Tests/Tests.csproj
+          --no-build
+          --configuration Release
+          --filter "TestCategory!=Integration"
+          --logger "trx;LogFileName=release-tests.trx"
+          --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: Connectors/TestResults/*.trx
+          if-no-files-found: warn
