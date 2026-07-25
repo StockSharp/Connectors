@@ -3,6 +3,7 @@ namespace StockSharp.Nado.Native;
 static class NadoExtensions
 {
 	private const decimal _x18 = 1_000_000_000_000_000_000m;
+	private static readonly BigInteger _x18Integer = new(1_000_000_000_000_000_000L);
 
 	public static readonly TimeSpan[] TimeFrames =
 	[
@@ -18,18 +19,21 @@ static class NadoExtensions
 	];
 
 	public static decimal ParseX18(this string value, string field)
-		=> ParseInteger(value, field) / _x18;
+		=> ParseScaled(value, field);
 
 	public static decimal? TryParseX18(this string value)
 	{
 		if (!BigInteger.TryParse(value, NumberStyles.Integer,
 			CultureInfo.InvariantCulture, out var number))
 			return null;
-		return ToDecimal(number, "x18 value") / _x18;
+
+		// the venue uses an out of range x18 integer as an "unbounded" marker for limits
+		// such as the maximum order size, so a Try method must report it as no value
+		return TryScale(number);
 	}
 
 	public static decimal ParseAmount(this string value, string field)
-		=> ParseInteger(value, field) / _x18;
+		=> ParseScaled(value, field);
 
 	public static decimal? TryParseAmount(this string value)
 		=> value.TryParseX18();
@@ -156,6 +160,30 @@ static class NadoExtensions
 			CultureInfo.InvariantCulture, out var number))
 			throw new InvalidDataException("Nado " + field + " is invalid.");
 		return ToDecimal(number, field);
+	}
+
+	private static decimal ParseScaled(string value, string field)
+	{
+		if (!BigInteger.TryParse(value, NumberStyles.Integer,
+			CultureInfo.InvariantCulture, out var number))
+			throw new InvalidDataException("Nado " + field + " is invalid.");
+
+		return TryScale(number) ?? throw new InvalidDataException(
+			"Nado " + field + " exceeds decimal range.");
+	}
+
+	/// <summary>
+	/// Scale an x18 integer down to a decimal, dividing before the conversion so that a raw
+	/// value far beyond <see cref="decimal.MaxValue"/> still yields its scaled counterpart.
+	/// </summary>
+	private static decimal? TryScale(BigInteger value)
+	{
+		var whole = BigInteger.DivRem(value, _x18Integer, out var remainder);
+
+		if (whole < (BigInteger)decimal.MinValue || whole > (BigInteger)decimal.MaxValue)
+			return null;
+
+		return (decimal)whole + (decimal)remainder / _x18;
 	}
 
 	private static decimal ToDecimal(BigInteger value, string field)
