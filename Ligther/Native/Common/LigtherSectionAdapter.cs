@@ -2,7 +2,7 @@ namespace StockSharp.Ligther.Native.Common;
 
 abstract class LigtherSectionAdapter : BaseNativeAdapter
 {
-	private const int _maxTradesLimit = 500;
+	private const int _maxTradesLimit = LigtherRestClient.MaxTradesLimit;
 	private static readonly TimeSpan _pollInterval = TimeSpan.FromSeconds(5);
 
 	private LigtherRestClient _restClient;
@@ -771,7 +771,11 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 	{
 		var buckets = new SortedDictionary<DateTime, List<(decimal Price, decimal Volume)>>();
 
-		foreach (var trade in trades)
+		// the venue returns the most recent trade first, so without ordering the open and the
+		// close prices of every bucket would be swapped
+		foreach (var trade in trades
+			.OrderBy(t => ParseUnixMs(t["timestamp"]) ?? CurrentTime)
+			.ThenBy(static t => t["trade_id"]?.Value<long?>() ?? 0))
 		{
 			var time = ParseUnixMs(trade["timestamp"]) ?? CurrentTime;
 			if (time < from || time > to)

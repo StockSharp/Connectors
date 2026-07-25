@@ -2,6 +2,16 @@ namespace StockSharp.Ligther.Native.Common;
 
 sealed class LigtherRestClient : BaseLogReceiver
 {
+	/// <summary>
+	/// Maximum number of rows the venue returns from the recent trades endpoint.
+	/// </summary>
+	public const int MaxTradesLimit = 100;
+
+	/// <summary>
+	/// Maximum number of orders per side the venue returns from the order book endpoint.
+	/// </summary>
+	public const int MaxOrderBookLimit = 250;
+
 	private readonly Uri _endpoint;
 	private readonly SecureString _key;
 	private readonly SecureString _secret;
@@ -43,8 +53,8 @@ sealed class LigtherRestClient : BaseLogReceiver
 		{
 			request.AddParameter("market_id", marketId);
 
-			if (limit is int l && l > 0)
-				request.AddParameter("limit", l);
+			// the venue rejects the request without an explicit limit and caps it at MaxOrderBookLimit
+			request.AddParameter("limit", (limit ?? MaxOrderBookLimit).Max(1).Min(MaxOrderBookLimit));
 		}, cancellationToken));
 
 	public ValueTask<JObject> GetRecentTradesAsync(int marketId, int? limit, CancellationToken cancellationToken)
@@ -52,8 +62,8 @@ sealed class LigtherRestClient : BaseLogReceiver
 		{
 			request.AddParameter("market_id", marketId);
 
-			if (limit is int l && l > 0)
-				request.AddParameter("limit", l);
+			// the venue rejects the request without an explicit limit and caps it at MaxTradesLimit
+			request.AddParameter("limit", (limit ?? MaxTradesLimit).Max(1).Min(MaxTradesLimit));
 		}, cancellationToken));
 
 	public ValueTask<JObject> GetExchangeStatsAsync(CancellationToken cancellationToken)
@@ -115,17 +125,18 @@ sealed class LigtherRestClient : BaseLogReceiver
 		}, cancellationToken));
 
 	private Task<JObject> GetAsync(string resource, Action<RestRequest> requestBuilder, CancellationToken cancellationToken)
-	{
-		var request = new RestRequest(resource, Method.Get);
-		requestBuilder?.Invoke(request);
-		return request.InvokeAsync<JObject>(_endpoint, this, this.AddVerboseLog, cancellationToken);
-	}
+		=> SendAsync(resource, Method.Get, requestBuilder, cancellationToken);
 
 	private Task<JObject> PostAsync(string resource, Action<RestRequest> requestBuilder, CancellationToken cancellationToken)
+		=> SendAsync(resource, Method.Post, requestBuilder, cancellationToken);
+
+	private Task<JObject> SendAsync(string resource, Method method, Action<RestRequest> requestBuilder, CancellationToken cancellationToken)
 	{
-		var request = new RestRequest(resource, Method.Post);
+		// the invoker overwrites RestRequest.Resource with the passed url, so the resource has
+		// to be part of that url - otherwise every call would land on the site root
+		var request = new RestRequest((string)null, method);
 		requestBuilder?.Invoke(request);
-		return request.InvokeAsync<JObject>(_endpoint, this, this.AddVerboseLog, cancellationToken);
+		return request.InvokeAsync<JObject>(new(_endpoint, resource), this, this.AddVerboseLog, cancellationToken);
 	}
 
 	private void AttachAuth(RestRequest request, string authTokenOverride, bool required = false)
