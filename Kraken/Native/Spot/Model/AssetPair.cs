@@ -5,6 +5,9 @@ class AssetPair
 	[JsonProperty("altname")]
 	public string AlternateName { get; set; }
 
+	[JsonProperty("wsname")]
+	public string WebSocketName { get; set; }
+
 	[JsonProperty("aclass_base")]
 	public string AssetClassBase { get; set; }
 

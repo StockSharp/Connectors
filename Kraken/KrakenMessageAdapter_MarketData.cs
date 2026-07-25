@@ -17,9 +17,13 @@ public partial class KrakenMessageAdapter
 		{
 			var asset = pair.Value;
 
+			// the code travels straight into the web socket subscriptions, which only accept the
+			// slashed wsname, while ToSymbol strips the slash back for the REST endpoints
+			var secId = (asset.WebSocketName.IsEmpty() ? asset.AlternateName : asset.WebSocketName).ToStockSharp();
+
 			var secMsg = new SecurityMessage
 			{
-				SecurityId = asset.AlternateName.ToStockSharp(),
+				SecurityId = secId,
 				Name = asset.AlternateName,
 				PriceStep = asset.PairDecimals.GetPriceStep(),
 				Decimals = asset.PairDecimals,
@@ -36,7 +40,7 @@ public partial class KrakenMessageAdapter
 
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
-				SecurityId = asset.AlternateName.ToStockSharp(),
+				SecurityId = secId,
 				ServerTime = CurrentTime,
 			}
 			.TryAdd(Level1Fields.CommissionTaker, asset.Fees?.FirstOrDefault().PercentFee)
