@@ -219,18 +219,23 @@ sealed class EdgeXRestClient : BaseLogReceiver
 		return headers;
 	}
 
+	// the invoker overwrites RestRequest.Resource with the passed url, so the resource has to be
+	// part of that url - otherwise every call would land on the site root and answer with HTML
+	private Uri CreateUrl(string resource)
+		=> new(_endpoint, resource);
+
 	private Task<JObject> GetPublicAsync(string resource, Action<RestRequest> requestBuilder, CancellationToken cancellationToken)
 	{
-		var request = new RestRequest(resource, Method.Get);
+		var request = new RestRequest((string)null, Method.Get);
 		requestBuilder?.Invoke(request);
-		return request.InvokeAsync<JObject>(_endpoint, this, this.AddVerboseLog, cancellationToken);
+		return request.InvokeAsync<JObject>(CreateUrl(resource), this, this.AddVerboseLog, cancellationToken);
 	}
 
 	private Task<JObject> SendPrivateAsync(string resource, Method method, Action<RestRequest> requestBuilder, JToken bodyForSign, CancellationToken cancellationToken)
 	{
 		EnsurePrivateCredentials();
 
-		var request = new RestRequest(resource, method);
+		var request = new RestRequest((string)null, method);
 		requestBuilder?.Invoke(request);
 
 		var timestamp = ((long)DateTime.UtcNow.ToUnix(false)).ToString();
@@ -254,7 +259,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 		if (!_passphrase.IsEmpty())
 			request.AddHeader("EDGE_PASSPHRASE", _passphrase.UnSecure());
 
-		return request.InvokeAsync<JObject>(_endpoint, this, this.AddVerboseLog, cancellationToken);
+		return request.InvokeAsync<JObject>(CreateUrl(resource), this, this.AddVerboseLog, cancellationToken);
 	}
 
 	private void EnsurePrivateCredentials()

@@ -1030,7 +1030,7 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 		}
 
 		if (shouldSubscribe)
-			await WsClient.SubscribeAsync($"trade.{contractId}", cancellationToken);
+			await WsClient.SubscribeAsync($"trades.{contractId}", cancellationToken);
 	}
 
 	private async ValueTask UnregisterTicksAsync(long originalTransactionId, CancellationToken cancellationToken)
@@ -1052,7 +1052,7 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 		}
 
 		if (shouldUnsubscribe && _wsClient is not null)
-			await WsClient.UnsubscribeAsync($"trade.{contractId}", cancellationToken);
+			await WsClient.UnsubscribeAsync($"trades.{contractId}", cancellationToken);
 	}
 
 	private async ValueTask RegisterCandlesAsync(long transactionId, string symbol, string contractId, TimeSpan timeFrame, DateTime lastOpenTime, CancellationToken cancellationToken)
@@ -1457,7 +1457,9 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 			return;
 
 		var serverTime = ParseUnixMs(trade["time"] ?? trade["createdTime"] ?? trade["tradeTime"] ?? trade["timestamp"]) ?? CurrentTime;
-		var tradeId = trade["ticketId"]?.Value<long?>() ?? trade["tradeId"]?.Value<long?>();
+		// the venue identifies a public trade by a GUID, only the private feed uses numeric ids
+		var tradeStringId = trade["ticketId"]?.Value<string>();
+		var tradeId = ParseLong(trade["tradeId"]);
 		var originSide = trade["isBuyerMaker"]?.Value<bool?>() == true ? Sides.Sell : Sides.Buy;
 
 		if (trade["side"]?.Value<string>() is { } sideValue && !sideValue.IsEmpty())
@@ -1471,6 +1473,7 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 				SecurityId = subscription.Symbol.ToStockSharp(BoardCode),
 				ServerTime = serverTime,
 				TradeId = tradeId,
+				TradeStringId = tradeStringId,
 				TradePrice = trade["price"]?.Value<string>().To<decimal?>(),
 				TradeVolume = trade["size"]?.Value<string>().To<decimal?>(),
 				OriginSide = originSide,

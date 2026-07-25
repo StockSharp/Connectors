@@ -143,7 +143,8 @@ public partial class EdgeXMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 	public bool IsDemo { get; set; }
 
 	private const string _mainRest = "https://pro.edgex.exchange";
-	private const string _mainPublicWs = "wss://pro.edgex.exchange/api/v1/public/ws";
+	// the public feed lives on the quote host, the trading host answers it with 404
+	private const string _mainPublicWs = "wss://quote.edgex.exchange/api/v1/public/ws";
 	private const string _mainPrivateWs = "wss://pro.edgex.exchange/api/v1/private/ws";
 
 	/// <summary>

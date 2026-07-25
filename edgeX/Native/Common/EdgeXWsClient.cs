@@ -103,10 +103,11 @@ sealed class EdgeXWsClient : BaseLogReceiver
 		switch (type)
 		{
 			case "ping":
-				await _client.SendAsync(new { type = "pong" }, cancellationToken, default);
+				await _client.SendAsync(new { type = "pong", time = obj["time"]?.Value<string>() }, cancellationToken, default);
 				return;
 
 			case "pong":
+			case "connected":
 			case "subscribed":
 			case "unsubscribed":
 				return;
@@ -115,56 +116,54 @@ sealed class EdgeXWsClient : BaseLogReceiver
 				if (Error is { } errorHandler)
 					await errorHandler(new InvalidOperationException(obj.ToString(Formatting.None)), cancellationToken);
 				return;
-
-			case "payload":
-			{
-				var channel = obj["channel"]?.Value<string>() ?? obj["topic"]?.Value<string>();
-
-				if (channel.IsEmpty())
-					return;
-
-				var content = obj["content"] as JObject ?? obj;
-				var rows = EnumeratePayloadRows(content);
-				var hasRows = false;
-
-				foreach (var item in rows)
-				{
-					hasRows = true;
-
-					if (channel.StartsWithIgnoreCase("ticker.") && TickerReceived is { } tickerHandler)
-					{
-						await tickerHandler(channel, item, cancellationToken);
-						continue;
-					}
-
-					if (channel.StartsWithIgnoreCase("depth.") && DepthReceived is { } depthHandler)
-					{
-						await depthHandler(channel, item, cancellationToken);
-						continue;
-					}
-
-					if ((channel.StartsWithIgnoreCase("trade.") || channel.StartsWithIgnoreCase("trades.")) && TradeReceived is { } tradeHandler)
-					{
-						await tradeHandler(channel, item, cancellationToken);
-						continue;
-					}
-
-					if (channel.StartsWithIgnoreCase("kline.") && CandleReceived is { } candleHandler)
-					{
-						await candleHandler(channel, item, cancellationToken);
-						continue;
-					}
-
-					if (IsPrivateChannel(channel) && PrivatePayloadReceived is { } privateHandler)
-						await privateHandler(channel, item, cancellationToken);
-				}
-
-				if (!hasRows && IsPrivateChannel(channel) && PrivatePayloadReceived is { } fallbackPrivateHandler)
-					await fallbackPrivateHandler(channel, content, cancellationToken);
-
-				return;
-			}
 		}
+
+		// data frames are named after the event they carry - quote-event for the public feed,
+		// order-event, trade-event and so on for the private one - and only the public feed
+		// carries a channel header, so the event name stands in for the private channels
+		var channel = obj["channel"]?.Value<string>() ?? obj["topic"]?.Value<string>() ?? type;
+
+		if (channel.IsEmpty())
+			return;
+
+		var content = obj["content"] as JObject ?? obj;
+		var rows = EnumeratePayloadRows(content);
+		var hasRows = false;
+
+		foreach (var item in rows)
+		{
+			hasRows = true;
+
+			if (channel.StartsWithIgnoreCase("ticker.") && TickerReceived is { } tickerHandler)
+			{
+				await tickerHandler(channel, item, cancellationToken);
+				continue;
+			}
+
+			if (channel.StartsWithIgnoreCase("depth.") && DepthReceived is { } depthHandler)
+			{
+				await depthHandler(channel, item, cancellationToken);
+				continue;
+			}
+
+			if ((channel.StartsWithIgnoreCase("trade.") || channel.StartsWithIgnoreCase("trades.")) && TradeReceived is { } tradeHandler)
+			{
+				await tradeHandler(channel, item, cancellationToken);
+				continue;
+			}
+
+			if (channel.StartsWithIgnoreCase("kline.") && CandleReceived is { } candleHandler)
+			{
+				await candleHandler(channel, item, cancellationToken);
+				continue;
+			}
+
+			if (IsPrivateChannel(channel) && PrivatePayloadReceived is { } privateHandler)
+				await privateHandler(channel, item, cancellationToken);
+		}
+
+		if (!hasRows && IsPrivateChannel(channel) && PrivatePayloadReceived is { } fallbackPrivateHandler)
+			await fallbackPrivateHandler(channel, content, cancellationToken);
 	}
 
 	private static IEnumerable<JObject> EnumeratePayloadRows(JObject content)
