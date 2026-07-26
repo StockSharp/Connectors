@@ -2,17 +2,20 @@ namespace StockSharp.LMAX.Native.Model;
 
 class CloseOrderRequest
 {
-	[JsonProperty("close_instruction_id")]
-	public string CloseInstructionId { get; set; }
+	[JsonProperty("closing_instruction_id")]
+	public string ClosingInstructionId { get; set; }
 
 	[JsonProperty("instrument_id")]
 	public string InstrumentId { get; set; }
 
 	[JsonProperty("quantity")]
-	public double? Quantity { get; set; }
+	public string Quantity { get; set; }
 
 	[JsonProperty("instruction_id")]
 	public string InstructionId { get; set; }
+
+	[JsonProperty("side")]
+	public string Side { get; set; }
 }
 
 class CloseOrderResponse
@@ -26,9 +29,6 @@ class CloseOrderResponse
 	[JsonProperty("order_id")]
 	public string OrderId { get; set; }
 
-	[JsonProperty("close_instruction_id")]
-	public string CloseInstructionId { get; set; }
-
 	[JsonProperty("closed_instruction_id")]
 	public string ClosedInstructionId { get; set; }
 
@@ -39,19 +39,19 @@ class CloseOrderResponse
 	public DateTime Timestamp { get; set; }
 
 	[JsonProperty("quantity")]
-	public double? Quantity { get; set; }
+	public string Quantity { get; set; }
 
 	[JsonProperty("matched_quantity")]
-	public double? MatchedQuantity { get; set; }
+	public string MatchedQuantity { get; set; }
 
 	[JsonProperty("cancelled_quantity")]
-	public double? CancelledQuantity { get; set; }
+	public string CancelledQuantity { get; set; }
 
 	[JsonProperty("matched_cost")]
-	public double? MatchedCost { get; set; }
+	public string MatchedCost { get; set; }
 
 	[JsonProperty("commission")]
-	public double? Commission { get; set; }
+	public string Commission { get; set; }
 
 	[JsonProperty("side")]
 	public string Side { get; set; }
@@ -59,8 +59,8 @@ class CloseOrderResponse
 
 class CloseOrderRejectionResponse
 {
-	[JsonProperty("close_instruction_id")]
-	public string CloseInstructionId { get; set; }
+	[JsonProperty("closing_instruction_id")]
+	public string ClosingInstructionId { get; set; }
 
 	[JsonProperty("instruction_id")]
 	public string InstructionId { get; set; }

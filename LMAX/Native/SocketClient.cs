@@ -6,7 +6,15 @@ class SocketClient : BaseLogReceiver
 {
 	private readonly string _marketDataWsUrl;
 	private readonly string _accountWsUrl;
-	private readonly Func<SecureString> _getToken;
+	private readonly Func<SecureString> _getMarketDataToken;
+	private readonly Func<SecureString> _getAccountToken;
+	private readonly SemaphoreSlim _subscriptionGate = new(1, 1);
+	private readonly JsonSerializerSettings _jsonSettings = new()
+	{
+		DateParseHandling = DateParseHandling.DateTime,
+		DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+		FloatParseHandling = FloatParseHandling.Decimal,
+	};
 
 	private WebSocketClient _marketDataClient;
 	private WebSocketClient _accountClient;
@@ -15,83 +23,92 @@ class SocketClient : BaseLogReceiver
 	private readonly SynchronizedSet<string> _subscribedTickers = [];
 	private readonly SynchronizedSet<string> _subscribedTrades = [];
 
-	// Events for market data
-	public event Func<WsOrderBookMessage, CancellationToken, ValueTask> OrderBookReceived;
-	public event Func<WsTickerMessage, CancellationToken, ValueTask> TickerReceived;
-	public event Func<WsTradeMessage, CancellationToken, ValueTask> TradeReceived;
+	public event Func<WsOrderBookMessage, CancellationToken, ValueTask>
+		OrderBookReceived;
+	public event Func<WsOrderBookMessage, CancellationToken, ValueTask>
+		TickerReceived;
+	public event Func<WsTradeEventMessage, CancellationToken, ValueTask>
+		TradeReceived;
 
-	// Events for account data
-	public event Func<WsOrderMessage, CancellationToken, ValueTask> OrderReceived;
-	public event Func<WsExecutionMessage, CancellationToken, ValueTask> ExecutionReceived;
-	public event Func<WsPositionMessage, CancellationToken, ValueTask> PositionReceived;
-	public event Func<WsWalletMessage, CancellationToken, ValueTask> WalletReceived;
-	public event Func<WsRejectionMessage, CancellationToken, ValueTask> RejectionReceived;
+	public event Func<WsOrderMessage, CancellationToken, ValueTask>
+		OrderReceived;
+	public event Func<WsExecutionMessage, CancellationToken, ValueTask>
+		ExecutionReceived;
+	public event Func<WsPositionMessage, CancellationToken, ValueTask>
+		PositionReceived;
+	public event Func<WsWalletMessage, CancellationToken, ValueTask>
+		WalletReceived;
 
-	// Error and connection events
 	public event Func<Exception, CancellationToken, ValueTask> Error;
-	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
+	public event Func<ConnectionStates, CancellationToken, ValueTask>
+		StateChanged;
 
-	public SocketClient(string marketDataWsUrl, string accountWsUrl, Func<SecureString> getToken, WorkingTime workingTime)
+	public SocketClient(
+		string marketDataWsUrl,
+		string accountWsUrl,
+		Func<SecureString> getMarketDataToken,
+		Func<SecureString> getAccountToken,
+		WorkingTime workingTime)
 	{
-		_marketDataWsUrl = marketDataWsUrl ?? throw new ArgumentNullException(nameof(marketDataWsUrl));
-		_accountWsUrl = accountWsUrl ?? throw new ArgumentNullException(nameof(accountWsUrl));
-		_getToken = getToken ?? throw new ArgumentNullException(nameof(getToken));
+		_marketDataWsUrl = marketDataWsUrl
+			?? throw new ArgumentNullException(nameof(marketDataWsUrl));
+		_accountWsUrl = accountWsUrl
+			?? throw new ArgumentNullException(nameof(accountWsUrl));
+		_getMarketDataToken = getMarketDataToken
+			?? throw new ArgumentNullException(nameof(getMarketDataToken));
+		_getAccountToken = getAccountToken
+			?? throw new ArgumentNullException(nameof(getAccountToken));
+		workingTime = workingTime
+			?? throw new ArgumentNullException(nameof(workingTime));
+
 		_marketDataClient = new WebSocketClient(
 			_marketDataWsUrl,
-			(state, token) => OnMarketDataStateChanged(state, token),
-			(error, token) =>
-			{
-				this.AddErrorLog(error);
-				if (Error is { } handler)
-					return handler(error, token);
-				return default;
-			},
+			OnMarketDataStateChanged,
+			OnError,
 			ProcessMarketDataMessage,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
 			(s, a) => this.AddVerboseLog(s, a))
 		{
 			ReconnectAttempts = -1,
-			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
+			WorkingTime = workingTime,
 		};
 
 		_accountClient = new WebSocketClient(
 			_accountWsUrl,
-			(state, token) => OnAccountStateChanged(state, token),
-			(error, token) =>
-			{
-				this.AddErrorLog(error);
-				if (Error is { } handler)
-					return handler(error, token);
-				return default;
-			},
+			OnAccountStateChanged,
+			OnError,
 			ProcessAccountMessage,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
 			(s, a) => this.AddVerboseLog(s, a))
 		{
 			ReconnectAttempts = -1,
-			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
+			WorkingTime = workingTime,
 		};
 
-		_accountClient.InitAsync += (ws, _) =>
+		_marketDataClient.InitAsync += (ws, _) =>
 		{
-			var token = _getToken();
-			ws.Options.SetRequestHeader("Authorization", $"Bearer {token.UnSecure()}");
+			SetAuthorizationHeader(ws, _getMarketDataToken);
 			return default;
 		};
-
+		_accountClient.InitAsync += (ws, _) =>
+		{
+			SetAuthorizationHeader(ws, _getAccountToken);
+			return default;
+		};
+		_marketDataClient.PostConnect += OnMarketDataPostConnect;
 		_accountClient.PostConnect += OnAccountPostConnect;
 	}
 
-	// to get readable name after obfuscation
 	public override string Name => nameof(LMAX) + "_" + nameof(SocketClient);
 
 	public bool IsConnected =>
 		_marketDataClient?.IsConnected == true &&
 		_accountClient?.IsConnected == true;
 
-	public async ValueTask ConnectAsync(CancellationToken cancellationToken)
+	public async ValueTask ConnectAsync(
+		CancellationToken cancellationToken)
 	{
 		await _marketDataClient.ConnectAsync(cancellationToken);
 		this.AddInfoLog("Connected to market data WebSocket");
@@ -100,7 +117,8 @@ class SocketClient : BaseLogReceiver
 		this.AddInfoLog("Connected to account WebSocket");
 	}
 
-	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
+	public async ValueTask DisconnectAsync(
+		CancellationToken cancellationToken)
 	{
 		if (_marketDataClient != null)
 			await _marketDataClient.DisconnectAsync(cancellationToken);
@@ -115,59 +133,81 @@ class SocketClient : BaseLogReceiver
 		this.AddInfoLog("Disconnected");
 	}
 
-	// Market data subscriptions
+	public ValueTask SubscribeOrderBookAsync(
+		string instrumentId,
+		CancellationToken cancellationToken)
+		=> ChangeBidOfferSubscriptionAsync(
+			instrumentId,
+			_subscribedOrderBooks,
+			_subscribedTickers,
+			true,
+			cancellationToken);
 
-	public ValueTask SubscribeOrderBookAsync(string instrumentId, CancellationToken cancellationToken)
+	public ValueTask UnsubscribeOrderBookAsync(
+		string instrumentId,
+		CancellationToken cancellationToken)
+		=> ChangeBidOfferSubscriptionAsync(
+			instrumentId,
+			_subscribedOrderBooks,
+			_subscribedTickers,
+			false,
+			cancellationToken);
+
+	public ValueTask SubscribeTickerAsync(
+		string instrumentId,
+		CancellationToken cancellationToken)
+		=> ChangeBidOfferSubscriptionAsync(
+			instrumentId,
+			_subscribedTickers,
+			_subscribedOrderBooks,
+			true,
+			cancellationToken);
+
+	public ValueTask UnsubscribeTickerAsync(
+		string instrumentId,
+		CancellationToken cancellationToken)
+		=> ChangeBidOfferSubscriptionAsync(
+			instrumentId,
+			_subscribedTickers,
+			_subscribedOrderBooks,
+			false,
+			cancellationToken);
+
+	public ValueTask SubscribeTradesAsync(
+		string instrumentId,
+		CancellationToken cancellationToken)
+		=> ChangeMarketSubscriptionAsync(
+			instrumentId,
+			_subscribedTrades,
+			WsChannels.Trade,
+			true,
+			cancellationToken);
+
+	public ValueTask UnsubscribeTradesAsync(
+		string instrumentId,
+		CancellationToken cancellationToken)
+		=> ChangeMarketSubscriptionAsync(
+			instrumentId,
+			_subscribedTrades,
+			WsChannels.Trade,
+			false,
+			cancellationToken);
+
+	private ValueTask OnError(
+		Exception error,
+		CancellationToken cancellationToken)
 	{
-		if (!_subscribedOrderBooks.TryAdd(instrumentId))
-			return default;
+		this.AddErrorLog(error);
 
-		return SubscribeAsync(_marketDataClient, WsChannels.OrderBook, [instrumentId], cancellationToken);
+		if (Error is { } handler)
+			return handler(error, cancellationToken);
+
+		return default;
 	}
 
-	public ValueTask UnsubscribeOrderBookAsync(string instrumentId, CancellationToken cancellationToken)
-	{
-		if (!_subscribedOrderBooks.Remove(instrumentId))
-			return default;
-
-		return UnsubscribeAsync(_marketDataClient, WsChannels.OrderBook, [instrumentId], cancellationToken);
-	}
-
-	public ValueTask SubscribeTickerAsync(string instrumentId, CancellationToken cancellationToken)
-	{
-		if (!_subscribedTickers.TryAdd(instrumentId))
-			return default;
-
-		return SubscribeAsync(_marketDataClient, WsChannels.Ticker, [instrumentId], cancellationToken);
-	}
-
-	public ValueTask UnsubscribeTickerAsync(string instrumentId, CancellationToken cancellationToken)
-	{
-		if (!_subscribedTickers.Remove(instrumentId))
-			return default;
-
-		return UnsubscribeAsync(_marketDataClient, WsChannels.Ticker, [instrumentId], cancellationToken);
-	}
-
-	public ValueTask SubscribeTradesAsync(string instrumentId, CancellationToken cancellationToken)
-	{
-		if (!_subscribedTrades.TryAdd(instrumentId))
-			return default;
-
-		return SubscribeAsync(_marketDataClient, WsChannels.Trade, [instrumentId], cancellationToken);
-	}
-
-	public ValueTask UnsubscribeTradesAsync(string instrumentId, CancellationToken cancellationToken)
-	{
-		if (!_subscribedTrades.Remove(instrumentId))
-			return default;
-
-		return UnsubscribeAsync(_marketDataClient, WsChannels.Trade, [instrumentId], cancellationToken);
-	}
-
-	// Private methods
-
-	private ValueTask OnMarketDataStateChanged(ConnectionStates state, CancellationToken cancellationToken)
+	private ValueTask OnMarketDataStateChanged(
+		ConnectionStates state,
+		CancellationToken cancellationToken)
 	{
 		this.AddInfoLog("MarketData WebSocket state: {0}", state);
 
@@ -177,7 +217,9 @@ class SocketClient : BaseLogReceiver
 		return default;
 	}
 
-	private ValueTask OnAccountStateChanged(ConnectionStates state, CancellationToken cancellationToken)
+	private ValueTask OnAccountStateChanged(
+		ConnectionStates state,
+		CancellationToken cancellationToken)
 	{
 		this.AddInfoLog("Account WebSocket state: {0}", state);
 
@@ -187,181 +229,402 @@ class SocketClient : BaseLogReceiver
 		return default;
 	}
 
-	private async ValueTask OnAccountPostConnect(bool reconnect, CancellationToken cancellationToken)
+	private async ValueTask OnMarketDataPostConnect(
+		bool reconnect,
+		CancellationToken cancellationToken)
 	{
-		// Subscribe to account channels after connection
-		await SubscribeAccountChannelsAsync(cancellationToken);
+		if (!reconnect)
+			return;
+
+		await _subscriptionGate.WaitAsync(cancellationToken);
+		try
+		{
+			var bidOffer = _subscribedOrderBooks
+				.Concat(_subscribedTickers)
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToArray();
+			var channels = new List<WsMarketChannel>();
+
+			if (bidOffer.Length > 0)
+			{
+				channels.Add(new()
+				{
+					Name = WsChannels.BidOffer,
+					Instruments = bidOffer,
+				});
+			}
+
+			if (_subscribedTrades.Count > 0)
+			{
+				channels.Add(new()
+				{
+					Name = WsChannels.Trade,
+					Instruments = [.. _subscribedTrades],
+				});
+			}
+
+			if (channels.Count > 0)
+			{
+				await _marketDataClient.SendAsync(
+					new WsMarketSubscribeRequest
+					{
+						Channels = [.. channels],
+					},
+					cancellationToken);
+			}
+		}
+		finally
+		{
+			_subscriptionGate.Release();
+		}
 	}
 
-	private ValueTask SubscribeAccountChannelsAsync(CancellationToken cancellationToken)
+	private ValueTask OnAccountPostConnect(
+		bool reconnect,
+		CancellationToken cancellationToken)
 	{
-		var request = new WsSubscribeRequest
+		_ = reconnect;
+
+		return _accountClient.SendAsync(
+			new WsAccountSubscribeRequest
+			{
+				Channels =
+				[
+					WsChannels.InstrumentPositions,
+					WsChannels.WalletBalances,
+					WsChannels.WorkingOrders,
+					WsChannels.Trades,
+				],
+			},
+			cancellationToken);
+	}
+
+	private async ValueTask ChangeBidOfferSubscriptionAsync(
+		string instrumentId,
+		SynchronizedSet<string> target,
+		SynchronizedSet<string> other,
+		bool subscribe,
+		CancellationToken cancellationToken)
+	{
+		instrumentId = instrumentId.ThrowIfEmpty(nameof(instrumentId));
+		await _subscriptionGate.WaitAsync(cancellationToken);
+		try
 		{
-			Channels =
-			[
-				new WsChannel { Name = WsChannels.Order, Instruments = [] },
-				new WsChannel { Name = WsChannels.Execution, Instruments = [] },
-				new WsChannel { Name = WsChannels.Position, Instruments = [] },
-				new WsChannel { Name = WsChannels.Wallet, Instruments = [] },
-				new WsChannel { Name = WsChannels.Rejection, Instruments = [] },
-			]
+			if (subscribe)
+			{
+				if (!target.TryAdd(instrumentId))
+					return;
+				if (other.Contains(instrumentId))
+					return;
+
+				try
+				{
+					await SendMarketSubscriptionAsync(
+						WsChannels.BidOffer,
+						instrumentId,
+						true,
+						cancellationToken);
+				}
+				catch
+				{
+					target.Remove(instrumentId);
+					throw;
+				}
+			}
+			else
+			{
+				if (!target.Remove(instrumentId))
+					return;
+				if (other.Contains(instrumentId))
+					return;
+
+				try
+				{
+					await SendMarketSubscriptionAsync(
+						WsChannels.BidOffer,
+						instrumentId,
+						false,
+						cancellationToken);
+				}
+				catch
+				{
+					target.Add(instrumentId);
+					throw;
+				}
+			}
+		}
+		finally
+		{
+			_subscriptionGate.Release();
+		}
+	}
+
+	private async ValueTask ChangeMarketSubscriptionAsync(
+		string instrumentId,
+		SynchronizedSet<string> target,
+		string channel,
+		bool subscribe,
+		CancellationToken cancellationToken)
+	{
+		instrumentId = instrumentId.ThrowIfEmpty(nameof(instrumentId));
+		await _subscriptionGate.WaitAsync(cancellationToken);
+		try
+		{
+			if (subscribe)
+			{
+				if (!target.TryAdd(instrumentId))
+					return;
+
+				try
+				{
+					await SendMarketSubscriptionAsync(
+						channel,
+						instrumentId,
+						true,
+						cancellationToken);
+				}
+				catch
+				{
+					target.Remove(instrumentId);
+					throw;
+				}
+			}
+			else
+			{
+				if (!target.Remove(instrumentId))
+					return;
+
+				try
+				{
+					await SendMarketSubscriptionAsync(
+						channel,
+						instrumentId,
+						false,
+						cancellationToken);
+				}
+				catch
+				{
+					target.Add(instrumentId);
+					throw;
+				}
+			}
+		}
+		finally
+		{
+			_subscriptionGate.Release();
+		}
+	}
+
+	private ValueTask SendMarketSubscriptionAsync(
+		string channel,
+		string instrumentId,
+		bool subscribe,
+		CancellationToken cancellationToken)
+	{
+		var channels = new[]
+		{
+			new WsMarketChannel
+			{
+				Name = channel,
+				Instruments = [instrumentId],
+			},
 		};
 
-		return _accountClient.SendAsync(request, cancellationToken);
+		return subscribe
+			? _marketDataClient.SendAsync(
+				new WsMarketSubscribeRequest { Channels = channels },
+				cancellationToken)
+			: _marketDataClient.SendAsync(
+				new WsMarketUnsubscribeRequest { Channels = channels },
+				cancellationToken);
 	}
 
-	private static ValueTask SubscribeAsync(WebSocketClient client, string channel, string[] instruments, CancellationToken cancellationToken)
-	{
-		var request = new WsSubscribeRequest
-		{
-			Channels =
-			[
-				new WsChannel { Name = channel, Instruments = instruments }
-			]
-		};
-
-		return client.SendAsync(request, cancellationToken);
-	}
-
-	private static ValueTask UnsubscribeAsync(WebSocketClient client, string channel, string[] instruments, CancellationToken cancellationToken)
-	{
-		var request = new WsUnsubscribeRequest
-		{
-			Channels =
-			[
-				new WsChannel { Name = channel, Instruments = instruments }
-			]
-		};
-
-		return client.SendAsync(request, cancellationToken);
-	}
-
-	private async ValueTask ProcessMarketDataMessage(WebSocketMessage msg, CancellationToken cancellationToken)
+	private async ValueTask ProcessMarketDataMessage(
+		WebSocketMessage message,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			var obj = msg.AsObject();
-			var baseMsg = ((JToken)obj).DeserializeObject<WsMessage>();
+			var payload = GetPayload(message);
+			var header = Deserialize<WsMessage>(payload);
 
-			switch (baseMsg.Type)
+			switch (header.Type)
 			{
-				case WsMessageTypes.Snapshot:
-				case WsMessageTypes.Update:
-					await ProcessMarketDataUpdate((JToken)obj, baseMsg.Channel, cancellationToken);
+				case WsMessageTypes.BidOfferSnapshot:
+					var orderBook = Deserialize<WsOrderBookMessage>(payload);
+					if (_subscribedOrderBooks.Contains(
+						orderBook.InstrumentId) &&
+						OrderBookReceived is { } orderBookHandler)
+					{
+						await orderBookHandler(orderBook, cancellationToken);
+					}
+					if (_subscribedTickers.Contains(
+						orderBook.InstrumentId) &&
+						TickerReceived is { } tickerHandler)
+					{
+						await tickerHandler(orderBook, cancellationToken);
+					}
 					break;
 
-				case WsMessageTypes.Subscribed:
-				case WsMessageTypes.Unsubscribed:
-					this.AddInfoLog("MarketData subscription: {0}", baseMsg.Type);
+				case WsMessageTypes.TradeEvent:
+					var trade = Deserialize<WsTradeEventMessage>(payload);
+					if (_subscribedTrades.Contains(trade.InstrumentId) &&
+						TradeReceived is { } tradeHandler)
+					{
+						await tradeHandler(
+							trade,
+							cancellationToken);
+					}
+					break;
+
+				case WsMessageTypes.Subscriptions:
+					this.AddInfoLog(
+						"MarketData subscriptions were updated.");
+					break;
+
+				case WsMessageTypes.SubscriptionRejection:
+					var rejection =
+						Deserialize<WsSubscriptionRejectionMessage>(payload);
+					this.AddErrorLog(
+						"MarketData subscription rejected: {0} - {1}",
+						rejection.Reason,
+						rejection.Message);
 					break;
 
 				case WsMessageTypes.Error:
-					var error = ((JToken)obj).DeserializeObject<WsErrorMessage>();
-					this.AddErrorLog("MarketData error: {0} - {1}", error.ErrorCode, error.ErrorMessage);
+					LogWebSocketError(
+						"MarketData",
+						Deserialize<WsErrorMessage>(payload));
 					break;
 
-				case WsMessageTypes.Heartbeat:
-					// Ignore heartbeats
+				default:
+					this.AddWarningLog(
+						"Unsupported MarketData WebSocket message type '{0}'.",
+						header.Type);
 					break;
 			}
 		}
-		catch (Exception ex)
+		catch (Exception error)
 		{
-			this.AddErrorLog("Error processing market data message: {0}", ex);
+			this.AddErrorLog(
+				"Error processing market data message: {0}",
+				error);
 		}
 	}
 
-	private async ValueTask ProcessMarketDataUpdate(JToken obj, string channel, CancellationToken cancellationToken)
-	{
-		switch (channel)
-		{
-			case WsChannels.OrderBook:
-				if (OrderBookReceived is { } obHandler)
-					await obHandler(obj.DeserializeObject<WsOrderBookMessage>(), cancellationToken);
-				break;
-
-			case WsChannels.Ticker:
-				if (TickerReceived is { } tickerHandler)
-					await tickerHandler(obj.DeserializeObject<WsTickerMessage>(), cancellationToken);
-				break;
-
-			case WsChannels.Trade:
-				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(obj.DeserializeObject<WsTradeMessage>(), cancellationToken);
-				break;
-		}
-	}
-
-	private async ValueTask ProcessAccountMessage(WebSocketMessage msg, CancellationToken cancellationToken)
+	private async ValueTask ProcessAccountMessage(
+		WebSocketMessage message,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			var obj = msg.AsObject();
-			var baseMsg = ((JToken)obj).DeserializeObject<WsMessage>();
+			var payload = GetPayload(message);
+			var header = Deserialize<WsMessage>(payload);
 
-			switch (baseMsg.Type)
+			switch (header.Type)
 			{
-				case WsMessageTypes.Snapshot:
-				case WsMessageTypes.Update:
-					await ProcessAccountUpdate((JToken)obj, baseMsg.Channel, cancellationToken);
+				case WsMessageTypes.WorkingOrder:
+					if (OrderReceived is { } orderHandler)
+					{
+						await orderHandler(
+							Deserialize<WsOrderMessage>(payload),
+							cancellationToken);
+					}
 					break;
 
-				case WsMessageTypes.Subscribed:
-				case WsMessageTypes.Unsubscribed:
-					this.AddInfoLog("Account subscription: {0}", baseMsg.Type);
+				case WsMessageTypes.Trade:
+					if (ExecutionReceived is { } executionHandler)
+					{
+						await executionHandler(
+							Deserialize<WsExecutionMessage>(payload),
+							cancellationToken);
+					}
+					break;
+
+				case WsMessageTypes.InstrumentPosition:
+					if (PositionReceived is { } positionHandler)
+					{
+						await positionHandler(
+							Deserialize<WsPositionMessage>(payload),
+							cancellationToken);
+					}
+					break;
+
+				case WsMessageTypes.WalletBalances:
+					if (WalletReceived is { } walletHandler)
+					{
+						await walletHandler(
+							Deserialize<WsWalletMessage>(payload),
+							cancellationToken);
+					}
+					break;
+
+				case WsMessageTypes.Subscriptions:
+					this.AddInfoLog(
+						"Account subscriptions were updated.");
 					break;
 
 				case WsMessageTypes.Error:
-					var error = ((JToken)obj).DeserializeObject<WsErrorMessage>();
-					this.AddErrorLog("Account error: {0} - {1}", error.ErrorCode, error.ErrorMessage);
+					LogWebSocketError(
+						"Account",
+						Deserialize<WsErrorMessage>(payload));
 					break;
 
-				case WsMessageTypes.Heartbeat:
-					// Ignore heartbeats
+				default:
+					this.AddWarningLog(
+						"Unsupported Account WebSocket message type '{0}'.",
+						header.Type);
 					break;
 			}
 		}
-		catch (Exception ex)
+		catch (Exception error)
 		{
-			this.AddErrorLog("Error processing account message: {0}", ex);
+			this.AddErrorLog(
+				"Error processing account message: {0}",
+				error);
 		}
 	}
 
-	private async ValueTask ProcessAccountUpdate(JToken obj, string channel, CancellationToken cancellationToken)
+	private static void SetAuthorizationHeader(
+		ClientWebSocket socket,
+		Func<SecureString> getToken)
 	{
-		switch (channel)
+		var token = getToken();
+
+		if (token.IsEmpty())
 		{
-			case WsChannels.Order:
-				if (OrderReceived is { } orderHandler)
-					await orderHandler(obj.DeserializeObject<WsOrderMessage>(), cancellationToken);
-				break;
-
-			case WsChannels.Execution:
-				if (ExecutionReceived is { } execHandler)
-					await execHandler(obj.DeserializeObject<WsExecutionMessage>(), cancellationToken);
-				break;
-
-			case WsChannels.Position:
-				if (PositionReceived is { } posHandler)
-					await posHandler(obj.DeserializeObject<WsPositionMessage>(), cancellationToken);
-				break;
-
-			case WsChannels.Wallet:
-				if (WalletReceived is { } walletHandler)
-					await walletHandler(obj.DeserializeObject<WsWalletMessage>(), cancellationToken);
-				break;
-
-			case WsChannels.Rejection:
-				if (RejectionReceived is { } rejHandler)
-					await rejHandler(obj.DeserializeObject<WsRejectionMessage>(), cancellationToken);
-				break;
+			throw new InvalidOperationException(
+				"LMAX WebSocket authentication token is unavailable.");
 		}
+
+		socket.Options.SetRequestHeader(
+			"Authorization",
+			$"Bearer {token.UnSecure()}");
+	}
+
+	private static string GetPayload(WebSocketMessage message)
+		=> message.AsString()?.Trim().ThrowIfEmpty(nameof(message));
+
+	private TMessage Deserialize<TMessage>(string payload)
+		where TMessage : class
+		=> JsonConvert.DeserializeObject<TMessage>(payload, _jsonSettings)
+			?? throw new InvalidDataException(
+				$"LMAX returned an empty {typeof(TMessage).Name} payload.");
+
+	private void LogWebSocketError(string source, WsErrorMessage error)
+	{
+		this.AddErrorLog(
+			"{0} error: {1} - {2}",
+			source,
+			error.ErrorCode,
+			error.ErrorMessage);
 	}
 
 	protected override void DisposeManaged()
 	{
 		_marketDataClient?.Dispose();
 		_accountClient?.Dispose();
+		_subscriptionGate.Dispose();
 		base.DisposeManaged();
 	}
 }

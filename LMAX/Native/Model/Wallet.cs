@@ -5,20 +5,17 @@ class WalletBalance
 	[JsonProperty("currency")]
 	public string Currency { get; set; }
 
+	[JsonProperty("cash")]
+	public string Cash { get; set; }
+
+	[JsonProperty("credit")]
+	public string Credit { get; set; }
+
 	[JsonProperty("balance")]
-	public double? Balance { get; set; }
+	public string Balance { get; set; }
 
-	[JsonProperty("available_to_trade")]
-	public double? AvailableToTrade { get; set; }
-
-	[JsonProperty("available_to_withdraw")]
-	public double? AvailableToWithdraw { get; set; }
-
-	[JsonProperty("unrealised_pnl")]
-	public double? UnrealisedPnl { get; set; }
-
-	[JsonProperty("margin")]
-	public double? Margin { get; set; }
+	[JsonProperty("collateralized_credit_limit")]
+	public string CollateralizedCreditLimit { get; set; }
 }
 
 class WalletBalancesResponse

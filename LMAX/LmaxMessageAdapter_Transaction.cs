@@ -17,9 +17,11 @@ partial class LmaxMessageAdapter
 			InstrumentId = instrumentId,
 			Type = regMsg.OrderType.ToLmax(hasStopPrice),
 			Side = regMsg.Side.ToLmax(),
-			Quantity = regMsg.Volume.ToString(),
-			Price = regMsg.Price.DefaultAsNull()?.ToString(),
-			StopPrice = condition?.StopPrice?.ToString(),
+			Quantity = regMsg.Volume.ToString(CultureInfo.InvariantCulture),
+			Price = regMsg.Price.DefaultAsNull()?.ToString(
+				CultureInfo.InvariantCulture),
+			StopPrice = condition?.StopPrice?.ToString(
+				CultureInfo.InvariantCulture),
 			TimeInForce = regMsg.TimeInForce.ToLmax(regMsg.TillDate),
 		};
 
@@ -81,11 +83,15 @@ partial class LmaxMessageAdapter
 
 		var request = new CancelAndReplaceOrderRequest
 		{
-			CancelInstructionId = replaceMsg.TransactionId.To<string>(),
+			ReplacementInstructionId =
+				replaceMsg.TransactionId.To<string>(),
 			InstructionId = replaceMsg.OriginalTransactionId.To<string>(),
 			InstrumentId = instrumentId,
-			Quantity = replaceMsg.Volume.ToString(),
-			Price = replaceMsg.Price.DefaultAsNull()?.ToString(),
+			Side = replaceMsg.Side.ToLmax(),
+			Quantity = replaceMsg.Volume.ToString(
+				CultureInfo.InvariantCulture),
+			Price = replaceMsg.Price.DefaultAsNull()?.ToString(
+				CultureInfo.InvariantCulture),
 		};
 
 		var response = await _httpClient.CancelAndReplaceOrderAsync(request, cancellationToken);
@@ -130,7 +136,7 @@ partial class LmaxMessageAdapter
 				OrderPrice = order.LimitPrice?.ToDecimal() ?? default,
 				OrderVolume = order.Quantity?.ToDecimal()?.Abs(),
 				Balance = order.UnfilledQuantity?.ToDecimal()?.Abs(),
-				Side = order.Quantity?.ToDecimal() > 0 ? Sides.Buy : Sides.Sell,
+				Side = order.Side.ToSide() ?? default,
 				TimeInForce = order.TimeInForce.ToTimeInForce(),
 				OrderState = OrderStates.Active,
 				ServerTime = order.Timestamp,
@@ -154,12 +160,11 @@ partial class LmaxMessageAdapter
 
 		foreach (var wallet in walletsResponse.Wallets ?? [])
 		{
-			await SendOutMessageAsync(
-				this
-					.CreatePortfolioChangeMessage(walletsResponse.AccountId)
-					.TryAdd(PositionChangeTypes.CurrentPrice, wallet.Balance?.ToDecimal())
-					.TryAdd(PositionChangeTypes.BlockedValue, wallet.Margin?.ToDecimal())
-					.TryAdd(PositionChangeTypes.UnrealizedPnL, wallet.UnrealisedPnl?.ToDecimal()),
+			await SendWalletAsync(
+				walletsResponse.AccountId,
+				walletsResponse.Timestamp,
+				wallet,
+				lookupMsg.TransactionId,
 				cancellationToken);
 		}
 
@@ -169,13 +174,16 @@ partial class LmaxMessageAdapter
 		foreach (var position in positionsResponse.Positions ?? [])
 		{
 			var secId = GetSecurityId(position.InstrumentId);
+			var (quantity, averagePrice) = GetPositionValues(
+				position.OpenQuantity,
+				position.OpenCost,
+				position.Side);
 
 			await SendOutMessageAsync(
 				this
-					.CreatePositionChangeMessage(positionsResponse.AccountId, secId)
-					.TryAdd(PositionChangeTypes.CurrentValue, position.OpenQuantity?.ToDecimal())
-					.TryAdd(PositionChangeTypes.CurrentPrice, position.OpenCost?.ToDecimal())
-					.TryAdd(PositionChangeTypes.UnrealizedPnL, position.UnrealisedPnl?.ToDecimal()),
+					.CreatePositionChangeMessage(position.AccountId, secId)
+					.TryAdd(PositionChangeTypes.CurrentValue, quantity)
+					.TryAdd(PositionChangeTypes.AveragePrice, averagePrice),
 				cancellationToken);
 		}
 
@@ -207,7 +215,7 @@ partial class LmaxMessageAdapter
 			OrderPrice = msg.LimitPrice?.ToDecimal() ?? default,
 			OrderVolume = quantity,
 			Balance = unfilledQty,
-			Side = quantity > 0 ? Sides.Buy : Sides.Sell,
+			Side = msg.Side.ToSide() ?? default,
 			TimeInForce = msg.TimeInForce.ToTimeInForce(),
 			Commission = msg.Commission?.ToDecimal(),
 			OrderState = state,
@@ -218,8 +226,9 @@ partial class LmaxMessageAdapter
 
 	private ValueTask OnExecutionReceived(WsExecutionMessage msg, CancellationToken cancellationToken)
 	{
-		if (!long.TryParse(msg.InstructionId, out var transId))
-			return default;
+		_ = long.TryParse(
+			msg.OrderInformation?.InstructionId,
+			out var transId);
 
 		var secId = GetSecurityId(msg.InstrumentId);
 
@@ -228,7 +237,7 @@ partial class LmaxMessageAdapter
 			DataTypeEx = DataType.Transactions,
 			SecurityId = secId,
 			OriginalTransactionId = transId,
-			TradeStringId = msg.TradeId,
+			TradeStringId = msg.ExecutionId,
 			OrderStringId = msg.OrderId,
 			TradePrice = msg.Price?.ToDecimal(),
 			TradeVolume = msg.Quantity?.ToDecimal()?.Abs(),
@@ -241,43 +250,82 @@ partial class LmaxMessageAdapter
 	private ValueTask OnPositionReceived(WsPositionMessage msg, CancellationToken cancellationToken)
 	{
 		var secId = GetSecurityId(msg.InstrumentId);
+		var (quantity, averagePrice) = GetPositionValues(
+			msg.OpenQuantity,
+			msg.OpenCost,
+			msg.Side);
 
 		return SendOutMessageAsync(
 			this
 				.CreatePositionChangeMessage(msg.AccountId, secId)
-				.TryAdd(PositionChangeTypes.CurrentValue, msg.OpenQuantity?.ToDecimal())
-				.TryAdd(PositionChangeTypes.CurrentPrice, msg.OpenCost?.ToDecimal())
-				.TryAdd(PositionChangeTypes.UnrealizedPnL, msg.UnrealisedPnl?.ToDecimal()),
+				.TryAdd(PositionChangeTypes.CurrentValue, quantity)
+				.TryAdd(PositionChangeTypes.AveragePrice, averagePrice),
 			cancellationToken);
 	}
 
-	private ValueTask OnWalletReceived(WsWalletMessage msg, CancellationToken cancellationToken)
+	private async ValueTask OnWalletReceived(
+		WsWalletMessage msg,
+		CancellationToken cancellationToken)
 	{
-		return SendOutMessageAsync(
-			this
-				.CreatePortfolioChangeMessage(msg.AccountId)
-				.TryAdd(PositionChangeTypes.CurrentPrice, msg.Balance?.ToDecimal())
-				.TryAdd(PositionChangeTypes.BlockedValue, msg.Margin?.ToDecimal())
-				.TryAdd(PositionChangeTypes.UnrealizedPnL, msg.UnrealisedPnl?.ToDecimal()),
-			cancellationToken);
-	}
-
-	private ValueTask OnRejectionReceived(WsRejectionMessage msg, CancellationToken cancellationToken)
-	{
-		if (!long.TryParse(msg.InstructionId, out var transId))
-			return default;
-
-		var secId = GetSecurityId(msg.InstrumentId);
-
-		return SendOutMessageAsync(new ExecutionMessage
+		foreach (var wallet in msg.Wallets ?? [])
 		{
-			DataTypeEx = DataType.Transactions,
-			SecurityId = secId,
-			OriginalTransactionId = transId,
-			OrderState = OrderStates.Failed,
-			Error = new InvalidOperationException($"{msg.RejectionReason}: {msg.Message}"),
-			ServerTime = msg.Timestamp,
-			HasOrderInfo = true,
-		}, cancellationToken);
+			await SendWalletAsync(
+				msg.AccountId,
+				msg.Timestamp,
+				wallet,
+				0,
+				cancellationToken);
+		}
+	}
+
+	private ValueTask SendWalletAsync(
+		string accountId,
+		DateTime timestamp,
+		WalletBalance wallet,
+		long originalTransactionId,
+		CancellationToken cancellationToken)
+		=> SendOutMessageAsync(new PositionChangeMessage
+		{
+			PortfolioName = accountId,
+			SecurityId = new()
+			{
+				SecurityCode = wallet.Currency,
+				BoardCode = BoardCodes.Lmax,
+			},
+			ServerTime = timestamp,
+			OriginalTransactionId = originalTransactionId,
+		}
+		.TryAdd(
+			PositionChangeTypes.CurrentValue,
+			wallet.Balance?.ToDecimal()),
+			cancellationToken);
+
+	private static (decimal? Quantity, decimal? AveragePrice)
+		GetPositionValues(
+			string openQuantity,
+			string openCost,
+			string side)
+	{
+		var quantity = openQuantity.ToDecimal();
+		var cost = openCost.ToDecimal();
+
+		if (quantity is not decimal quantityValue)
+			return (null, null);
+
+		quantityValue = side switch
+		{
+			OrderSides.Bid => quantityValue.Abs(),
+			OrderSides.Ask => -quantityValue.Abs(),
+			OrderSides.Zero => 0m,
+			_ => throw new InvalidDataException(
+				$"Invalid LMAX position side '{side}'."),
+		};
+
+		var averagePrice = cost is decimal costValue &&
+			quantityValue != 0
+				? costValue.Abs() / quantityValue.Abs()
+				: (decimal?)null;
+
+		return (quantityValue, averagePrice);
 	}
 }

@@ -109,29 +109,37 @@ partial class LmaxMessageAdapter
 		return SendOutMessageAsync(new QuoteChangeMessage
 		{
 			SecurityId = secId,
-			Bids = msg.Bids?.Select(p => new QuoteChange((decimal)p.Price, (decimal)p.Quantity)).ToArray() ?? [],
-			Asks = msg.Asks?.Select(p => new QuoteChange((decimal)p.Price, (decimal)p.Quantity)).ToArray() ?? [],
+			Bids = msg.Bids?.Select(p => new QuoteChange(
+				p.Price.ToDecimal() ?? throw new InvalidDataException(
+					"LMAX bid price is missing."),
+				p.Quantity.ToDecimal() ?? throw new InvalidDataException(
+					"LMAX bid quantity is missing."))).ToArray() ?? [],
+			Asks = msg.Asks?.Select(p => new QuoteChange(
+				p.Price.ToDecimal() ?? throw new InvalidDataException(
+					"LMAX ask price is missing."),
+				p.Quantity.ToDecimal() ?? throw new InvalidDataException(
+					"LMAX ask quantity is missing."))).ToArray() ?? [],
 			ServerTime = msg.Timestamp,
 		}, cancellationToken);
 	}
 
-	private ValueTask OnTickerReceived(WsTickerMessage msg, CancellationToken cancellationToken)
+	private ValueTask OnTickerReceived(
+		WsOrderBookMessage msg,
+		CancellationToken cancellationToken)
 	{
 		var secId = GetSecurityId(msg.InstrumentId);
+		var bestBid = msg.Bids?.FirstOrDefault();
+		var bestAsk = msg.Asks?.FirstOrDefault();
 
 		var l1Msg = new Level1ChangeMessage
 		{
 			SecurityId = secId,
 			ServerTime = msg.Timestamp,
 		}
-		.TryAdd(Level1Fields.BestBidPrice, msg.BestBid?.ToDecimal())
-		.TryAdd(Level1Fields.BestAskPrice, msg.BestAsk?.ToDecimal())
-		.TryAdd(Level1Fields.LastTradePrice, msg.LastPrice?.ToDecimal())
-		.TryAdd(Level1Fields.LastTradeVolume, msg.LastQuantity?.ToDecimal())
-		.TryAdd(Level1Fields.OpenPrice, msg.SessionOpen?.ToDecimal())
-		.TryAdd(Level1Fields.HighPrice, msg.SessionHigh?.ToDecimal())
-		.TryAdd(Level1Fields.LowPrice, msg.SessionLow?.ToDecimal())
-		.TryAdd(Level1Fields.Volume, msg.DailyVolume?.ToDecimal())
+		.TryAdd(Level1Fields.BestBidPrice, bestBid?.Price.ToDecimal())
+		.TryAdd(Level1Fields.BestBidVolume, bestBid?.Quantity.ToDecimal())
+		.TryAdd(Level1Fields.BestAskPrice, bestAsk?.Price.ToDecimal())
+		.TryAdd(Level1Fields.BestAskVolume, bestAsk?.Quantity.ToDecimal())
 		;
 
 		if (l1Msg.Changes.Count > 0)
@@ -140,20 +148,23 @@ partial class LmaxMessageAdapter
 		return default;
 	}
 
-	private ValueTask OnTradeReceived(WsTradeMessage msg, CancellationToken cancellationToken)
+	private async ValueTask OnTradeReceived(
+		WsTradeEventMessage msg,
+		CancellationToken cancellationToken)
 	{
 		var secId = GetSecurityId(msg.InstrumentId);
 
-		return SendOutMessageAsync(new ExecutionMessage
+		foreach (var trade in msg.Trades ?? [])
 		{
-			DataTypeEx = DataType.Ticks,
-			SecurityId = secId,
-			TradeStringId = msg.TradeId,
-			TradePrice = msg.Price?.ToDecimal(),
-			TradeVolume = msg.Quantity?.ToDecimal(),
-			OriginSide = msg.TakerSide.ToSide(),
-			ServerTime = msg.Timestamp,
-		}, cancellationToken);
+			await SendOutMessageAsync(new ExecutionMessage
+			{
+				DataTypeEx = DataType.Ticks,
+				SecurityId = secId,
+				TradePrice = trade.Price.ToDecimal(),
+				TradeVolume = trade.Quantity.ToDecimal(),
+				ServerTime = msg.Timestamp,
+			}, cancellationToken);
+		}
 	}
 
 	private string GetInstrumentId(SecurityId securityId)

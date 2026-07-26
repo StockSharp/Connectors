@@ -12,6 +12,7 @@ static class OrderSides
 {
 	public const string Bid = "BID";
 	public const string Ask = "ASK";
+	public const string Zero = "ZERO";
 }
 
 static class TimeInForce
@@ -55,25 +56,25 @@ static class Liquidity
 
 static class WsChannels
 {
-	public const string OrderBook = "ORDER_BOOK";
-	public const string Ticker = "TICKER";
+	public const string BidOffer = "BID_OFFER";
 	public const string Trade = "TRADE";
-	public const string Order = "ORDER";
-	public const string Execution = "EXECUTION";
-	public const string Position = "POSITION";
-	public const string Wallet = "WALLET";
-	public const string Rejection = "REJECTION";
-	public const string Heartbeat = "HEARTBEAT";
+	public const string InstrumentPositions = "INSTRUMENT_POSITIONS";
+	public const string WalletBalances = "WALLET_BALANCES";
+	public const string WorkingOrders = "WORKING_ORDERS";
+	public const string Trades = "TRADES";
 }
 
 static class WsMessageTypes
 {
 	public const string Subscribe = "SUBSCRIBE";
 	public const string Unsubscribe = "UNSUBSCRIBE";
-	public const string Subscribed = "SUBSCRIBED";
-	public const string Unsubscribed = "UNSUBSCRIBED";
-	public const string Snapshot = "SNAPSHOT";
-	public const string Update = "UPDATE";
+	public const string Subscriptions = "SUBSCRIPTIONS";
+	public const string SubscriptionRejection = "SUBSCRIPTION_REJECTION";
+	public const string BidOfferSnapshot = "BID_OFFER_SNAPSHOT";
+	public const string TradeEvent = "TRADE_EVENT";
+	public const string InstrumentPosition = "INSTRUMENT_POSITION";
+	public const string WalletBalances = "WALLET_BALANCES";
+	public const string WorkingOrder = "WORKING_ORDER";
+	public const string Trade = "TRADE";
 	public const string Error = "ERROR";
-	public const string Heartbeat = "HEARTBEAT";
 }

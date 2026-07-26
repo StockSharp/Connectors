@@ -1,49 +1,58 @@
 namespace StockSharp.LMAX.Native.Model;
 
-class WsSubscribeRequest
+class WsMarketSubscribeRequest
 {
 	[JsonProperty("type")]
-	public string Type { get; set; } = "SUBSCRIBE";
+	public string Type { get; set; } = WsMessageTypes.Subscribe;
 
 	[JsonProperty("channels")]
-	public WsChannel[] Channels { get; set; }
+	public WsMarketChannel[] Channels { get; set; }
 }
 
-class WsUnsubscribeRequest
+class WsMarketUnsubscribeRequest
 {
 	[JsonProperty("type")]
-	public string Type { get; set; } = "UNSUBSCRIBE";
+	public string Type { get; set; } = WsMessageTypes.Unsubscribe;
 
 	[JsonProperty("channels")]
-	public WsChannel[] Channels { get; set; }
+	public WsMarketChannel[] Channels { get; set; }
 }
 
-class WsChannel
+class WsAccountSubscribeRequest
+{
+	[JsonProperty("type")]
+	public string Type { get; set; } = WsMessageTypes.Subscribe;
+
+	[JsonProperty("channels")]
+	public string[] Channels { get; set; }
+}
+
+class WsMarketChannel
 {
 	[JsonProperty("name")]
 	public string Name { get; set; }
 
 	[JsonProperty("instruments")]
 	public string[] Instruments { get; set; }
+
+	[JsonProperty("depth", NullValueHandling = NullValueHandling.Ignore)]
+	public int? Depth { get; set; }
 }
 
 class WsMessage
 {
 	[JsonProperty("type")]
 	public string Type { get; set; }
+}
 
-	[JsonProperty("channel")]
-	public string Channel { get; set; }
-
+class WsOrderBookMessage : WsMessage
+{
 	[JsonProperty("instrument_id")]
 	public string InstrumentId { get; set; }
 
 	[JsonProperty("timestamp")]
 	public DateTime Timestamp { get; set; }
-}
 
-class WsOrderBookMessage : WsMessage
-{
 	[JsonProperty("status")]
 	public string Status { get; set; }
 
@@ -54,46 +63,16 @@ class WsOrderBookMessage : WsMessage
 	public MarketDataEntry[] Asks { get; set; }
 }
 
-class WsTradeMessage : WsMessage
+class WsTradeEventMessage : WsMessage
 {
-	[JsonProperty("trade_id")]
-	public string TradeId { get; set; }
+	[JsonProperty("instrument_id")]
+	public string InstrumentId { get; set; }
 
-	[JsonProperty("price")]
-	public double? Price { get; set; }
+	[JsonProperty("timestamp")]
+	public DateTime Timestamp { get; set; }
 
-	[JsonProperty("quantity")]
-	public double? Quantity { get; set; }
-
-	[JsonProperty("taker_side")]
-	public string TakerSide { get; set; }
-}
-
-class WsTickerMessage : WsMessage
-{
-	[JsonProperty("best_bid")]
-	public double? BestBid { get; set; }
-
-	[JsonProperty("best_ask")]
-	public double? BestAsk { get; set; }
-
-	[JsonProperty("last_price")]
-	public double? LastPrice { get; set; }
-
-	[JsonProperty("last_quantity")]
-	public double? LastQuantity { get; set; }
-
-	[JsonProperty("session_open")]
-	public double? SessionOpen { get; set; }
-
-	[JsonProperty("session_high")]
-	public double? SessionHigh { get; set; }
-
-	[JsonProperty("session_low")]
-	public double? SessionLow { get; set; }
-
-	[JsonProperty("daily_volume")]
-	public double? DailyVolume { get; set; }
+	[JsonProperty("trades")]
+	public MarketDataEntry[] Trades { get; set; }
 }
 
 class WsOrderMessage : WsMessage
@@ -110,26 +89,32 @@ class WsOrderMessage : WsMessage
 	[JsonProperty("instruction_id")]
 	public string InstructionId { get; set; }
 
+	[JsonProperty("instrument_id")]
+	public string InstrumentId { get; set; }
+
+	[JsonProperty("timestamp")]
+	public DateTime Timestamp { get; set; }
+
 	[JsonProperty("limit_price")]
-	public double? LimitPrice { get; set; }
+	public string LimitPrice { get; set; }
 
 	[JsonProperty("stop_price")]
-	public double? StopPrice { get; set; }
+	public string StopPrice { get; set; }
 
 	[JsonProperty("quantity")]
-	public double? Quantity { get; set; }
+	public string Quantity { get; set; }
 
 	[JsonProperty("unfilled_quantity")]
-	public double? UnfilledQuantity { get; set; }
+	public string UnfilledQuantity { get; set; }
 
 	[JsonProperty("matched_quantity")]
-	public double? MatchedQuantity { get; set; }
+	public string MatchedQuantity { get; set; }
 
 	[JsonProperty("cancelled_quantity")]
-	public double? CancelledQuantity { get; set; }
+	public string CancelledQuantity { get; set; }
 
 	[JsonProperty("commission")]
-	public double? Commission { get; set; }
+	public string Commission { get; set; }
 
 	[JsonProperty("side")]
 	public string Side { get; set; }
@@ -140,32 +125,35 @@ class WsOrderMessage : WsMessage
 
 class WsExecutionMessage : WsMessage
 {
-	[JsonProperty("trade_id")]
-	public string TradeId { get; set; }
+	[JsonProperty("account_id")]
+	public string AccountId { get; set; }
+
+	[JsonProperty("instrument_id")]
+	public string InstrumentId { get; set; }
+
+	[JsonProperty("execution_id")]
+	public string ExecutionId { get; set; }
+
+	[JsonProperty("timestamp")]
+	public DateTime Timestamp { get; set; }
+
+	[JsonProperty("price")]
+	public string Price { get; set; }
+
+	[JsonProperty("quantity")]
+	public string Quantity { get; set; }
 
 	[JsonProperty("order_id")]
 	public string OrderId { get; set; }
 
-	[JsonProperty("instruction_id")]
-	public string InstructionId { get; set; }
-
-	[JsonProperty("account_id")]
-	public string AccountId { get; set; }
-
-	[JsonProperty("price")]
-	public double? Price { get; set; }
-
-	[JsonProperty("quantity")]
-	public double? Quantity { get; set; }
-
 	[JsonProperty("side")]
 	public string Side { get; set; }
 
-	[JsonProperty("liquidity")]
-	public string Liquidity { get; set; }
-
 	[JsonProperty("commission")]
-	public double? Commission { get; set; }
+	public string Commission { get; set; }
+
+	[JsonProperty("order_information")]
+	public OrderInformation OrderInformation { get; set; }
 }
 
 class WsPositionMessage : WsMessage
@@ -173,17 +161,20 @@ class WsPositionMessage : WsMessage
 	[JsonProperty("account_id")]
 	public string AccountId { get; set; }
 
-	[JsonProperty("open_quantity")]
-	public double? OpenQuantity { get; set; }
+	[JsonProperty("timestamp")]
+	public DateTime Timestamp { get; set; }
 
-	[JsonProperty("cumulative_cost")]
-	public double? CumulativeCost { get; set; }
+	[JsonProperty("instrument_id")]
+	public string InstrumentId { get; set; }
+
+	[JsonProperty("open_quantity")]
+	public string OpenQuantity { get; set; }
 
 	[JsonProperty("open_cost")]
-	public double? OpenCost { get; set; }
+	public string OpenCost { get; set; }
 
-	[JsonProperty("unrealised_pnl")]
-	public double? UnrealisedPnl { get; set; }
+	[JsonProperty("side")]
+	public string Side { get; set; }
 }
 
 class WsWalletMessage : WsMessage
@@ -191,61 +182,27 @@ class WsWalletMessage : WsMessage
 	[JsonProperty("account_id")]
 	public string AccountId { get; set; }
 
-	[JsonProperty("currency")]
-	public string Currency { get; set; }
+	[JsonProperty("timestamp")]
+	public DateTime Timestamp { get; set; }
 
-	[JsonProperty("balance")]
-	public double? Balance { get; set; }
-
-	[JsonProperty("available_to_trade")]
-	public double? AvailableToTrade { get; set; }
-
-	[JsonProperty("available_to_withdraw")]
-	public string AvailableToWithdraw { get; set; }
-
-	[JsonProperty("unrealised_pnl")]
-	public double? UnrealisedPnl { get; set; }
-
-	[JsonProperty("margin")]
-	public double? Margin { get; set; }
+	[JsonProperty("wallets")]
+	public WalletBalance[] Wallets { get; set; }
 }
 
-class WsRejectionMessage : WsMessage
+class WsSubscriptionRejectionMessage : WsMessage
 {
-	[JsonProperty("instruction_id")]
-	public string InstructionId { get; set; }
-
-	[JsonProperty("account_id")]
-	public string AccountId { get; set; }
-
-	[JsonProperty("rejection_reason")]
-	public string RejectionReason { get; set; }
+	[JsonProperty("reason")]
+	public string Reason { get; set; }
 
 	[JsonProperty("message")]
 	public string Message { get; set; }
 }
 
-class WsHeartbeatMessage : WsMessage
+class WsErrorMessage : WsMessage
 {
-}
-
-class WsErrorMessage
-{
-	[JsonProperty("type")]
-	public string Type { get; set; }
-
 	[JsonProperty("error_code")]
 	public string ErrorCode { get; set; }
 
 	[JsonProperty("error_message")]
 	public string ErrorMessage { get; set; }
-}
-
-class WsSubscriptionConfirmation
-{
-	[JsonProperty("type")]
-	public string Type { get; set; }
-
-	[JsonProperty("channels")]
-	public WsChannel[] Channels { get; set; }
 }

@@ -18,37 +18,43 @@ class Instrument
 	public string UnitOfMeasure { get; set; }
 
 	[JsonProperty("quantity_increment")]
-	public double? QuantityIncrement { get; set; }
+	public string QuantityIncrement { get; set; }
 
 	[JsonProperty("margin")]
-	public double? Margin { get; set; }
+	public string Margin { get; set; }
 
 	[JsonProperty("minimum_position_size")]
-	public double? MinimumPositionSize { get; set; }
+	public string MinimumPositionSize { get; set; }
 
 	[JsonProperty("maximum_position_size")]
-	public double? MaximumPositionSize { get; set; }
+	public string MaximumPositionSize { get; set; }
 
 	[JsonProperty("price_increment")]
-	public double? PriceIncrement { get; set; }
+	public string PriceIncrement { get; set; }
 
 	[JsonProperty("minimum_price")]
-	public double? MinimumPrice { get; set; }
+	public string MinimumPrice { get; set; }
 
 	[JsonProperty("maximum_price")]
-	public double? MaximumPrice { get; set; }
+	public string MaximumPrice { get; set; }
 
 	[JsonProperty("asset_class")]
 	public string AssetClass { get; set; }
 
 	[JsonProperty("minimum_commission")]
-	public double? MinimumCommission { get; set; }
+	public string MinimumCommission { get; set; }
+
+	[JsonProperty("aggressive_commission_per_unit_of_measure")]
+	public string AggressiveCommissionPerUnitOfMeasure { get; set; }
+
+	[JsonProperty("passive_commission_per_unit_of_measure")]
+	public string PassiveCommissionPerUnitOfMeasure { get; set; }
 
 	[JsonProperty("aggressive_commission_rate")]
-	public double? AggressiveCommissionRate { get; set; }
+	public string AggressiveCommissionRate { get; set; }
 
 	[JsonProperty("passive_commission_rate")]
-	public double? PassiveCommissionRate { get; set; }
+	public string PassiveCommissionRate { get; set; }
 
 	[JsonProperty("open_time")]
 	public string OpenTime { get; set; }

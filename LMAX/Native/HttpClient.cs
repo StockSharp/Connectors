@@ -11,12 +11,33 @@ class HttpClient(
 	private readonly Uri _accountApiBaseUrl = accountApiBaseUrl?.To<Uri>() ?? throw new ArgumentNullException(nameof(accountApiBaseUrl));
 	private readonly Uri _marketDataApiBaseUrl = marketDataApiBaseUrl?.To<Uri>() ?? throw new ArgumentNullException(nameof(marketDataApiBaseUrl));
 
-	private SecureString _token;
+	private SecureString _accountToken;
+	private SecureString _marketDataToken;
 
 	// to get readable name after obfuscation
 	public override string Name => nameof(LMAX) + "_" + nameof(HttpClient);
 
-	public async Task<string> ConnectAsync(CancellationToken cancellationToken)
+	public async Task<(string AccountToken, string MarketDataToken)>
+		ConnectAsync(CancellationToken cancellationToken)
+	{
+		var accountToken = await AuthenticateAsync(
+			_accountApiBaseUrl,
+			cancellationToken);
+		var marketDataToken = await AuthenticateAsync(
+			_marketDataApiBaseUrl,
+			cancellationToken);
+
+		_accountToken = accountToken.Secure();
+		_marketDataToken = marketDataToken.Secure();
+
+		this.AddInfoLog("Authenticated successfully");
+
+		return (accountToken, marketDataToken);
+	}
+
+	private async Task<string> AuthenticateAsync(
+		Uri baseUrl,
+		CancellationToken cancellationToken)
 	{
 		var (timestamp, nonce, signature) = _authenticator.CreateSignature();
 
@@ -29,22 +50,23 @@ class HttpClient(
 		};
 
 		var response = await PostAsync<AuthenticationRequest, AuthenticationResponse>(
-			_accountApiBaseUrl,
+			baseUrl,
 			"/v1/authenticate",
 			request,
 			authenticated: false,
 			cancellationToken);
 
-		_token = response.Token.Secure();
-
-		this.AddInfoLog("Authenticated successfully");
+		if (response.Token.IsEmpty())
+			throw new InvalidDataException(
+				"LMAX authentication returned an empty token.");
 
 		return response.Token;
 	}
 
 	public void Disconnect()
 	{
-		_token = null;
+		_accountToken = null;
+		_marketDataToken = null;
 		this.AddInfoLog("Disconnected");
 	}
 
@@ -53,21 +75,29 @@ class HttpClient(
 	public Task<InstrumentDataResponse> GetInstrumentDataAsync(CancellationToken cancellationToken)
 		=> GetAsync<InstrumentDataResponse>(_accountApiBaseUrl, "/v1/account/instrument-data", cancellationToken);
 
-	public Task<WorkingOrdersResponse> GetWorkingOrdersAsync(string instrumentId = null, int? limit = null, string offset = null, CancellationToken cancellationToken = default)
+	public Task<WorkingOrdersResponse> GetWorkingOrdersAsync(
+		int? pageSize = null,
+		string after = null,
+		string before = null,
+		CancellationToken cancellationToken = default)
 	{
 		var request = CreateRequest(Method.Get);
-		request.SetBearer(_token);
+		request.SetBearer(_accountToken);
 
-		if (!instrumentId.IsEmpty())
-			request.AddQueryParameter("instrument_id", instrumentId);
+		if (pageSize != null)
+			request.AddQueryParameter("page_size", pageSize.Value.ToString());
 
-		if (limit != null)
-			request.AddQueryParameter("limit", limit.Value.ToString());
+		if (!after.IsEmpty())
+			request.AddQueryParameter("after", after);
 
-		if (!offset.IsEmpty())
-			request.AddQueryParameter("offset", offset);
+		if (!before.IsEmpty())
+			request.AddQueryParameter("before", before);
 
-		return MakeRequestAsync<WorkingOrdersResponse>(_accountApiBaseUrl, "/v1/account/working-orders", request, cancellationToken);
+		return MakeRequestAsync<WorkingOrdersResponse>(
+			_accountApiBaseUrl,
+			"/v1/account/working-orders",
+			request,
+			cancellationToken);
 	}
 
 	public Task<PlaceOrderResponse> PlaceOrderAsync(PlaceOrderRequest body, CancellationToken cancellationToken)
@@ -88,112 +118,151 @@ class HttpClient(
 	public Task<InstrumentPositionsResponse> GetInstrumentPositionsAsync(CancellationToken cancellationToken)
 		=> GetAsync<InstrumentPositionsResponse>(_accountApiBaseUrl, "/v1/account/positions", cancellationToken);
 
-	public Task<OrderPositionsResponse> GetOrderPositionsAsync(string instrumentId = null, int? limit = null, string offset = null, CancellationToken cancellationToken = default)
+	public Task<OrderPositionsResponse> GetOrderPositionsAsync(
+		int? pageSize = null,
+		string after = null,
+		string before = null,
+		CancellationToken cancellationToken = default)
 	{
 		var request = CreateRequest(Method.Get);
-		request.SetBearer(_token);
+		request.SetBearer(_accountToken);
 
-		if (!instrumentId.IsEmpty())
-			request.AddQueryParameter("instrument_id", instrumentId);
+		if (pageSize != null)
+			request.AddQueryParameter("page_size", pageSize.Value.ToString());
 
-		if (limit != null)
-			request.AddQueryParameter("limit", limit.Value.ToString());
+		if (!after.IsEmpty())
+			request.AddQueryParameter("after", after);
 
-		if (!offset.IsEmpty())
-			request.AddQueryParameter("offset", offset);
+		if (!before.IsEmpty())
+			request.AddQueryParameter("before", before);
 
-		return MakeRequestAsync<OrderPositionsResponse>(_accountApiBaseUrl, "/v1/account/order-positions", request, cancellationToken);
+		return MakeRequestAsync<OrderPositionsResponse>(
+			_accountApiBaseUrl,
+			"/v1/account/order-positions",
+			request,
+			cancellationToken);
 	}
 
 	public Task<WalletBalancesResponse> GetWalletBalancesAsync(CancellationToken cancellationToken)
 		=> GetAsync<WalletBalancesResponse>(_accountApiBaseUrl, "/v1/account/wallets", cancellationToken);
 
 	public Task<TradeHistoryResponse> GetTradeHistoryAsync(
-		string instrumentId = null,
-		string from = null,
-		string to = null,
-		int? limit = null,
-		string offset = null,
+		bool? orderInformation = null,
+		string startTime = null,
+		string endTime = null,
+		int? pageSize = null,
+		string after = null,
+		string before = null,
 		CancellationToken cancellationToken = default)
 	{
 		var request = CreateRequest(Method.Get);
-		request.SetBearer(_token);
+		request.SetBearer(_accountToken);
 
-		if (!instrumentId.IsEmpty())
-			request.AddQueryParameter("instrument_id", instrumentId);
+		if (orderInformation != null)
+			request.AddQueryParameter(
+				"order_information",
+				orderInformation.Value.ToString().ToLowerInvariant());
 
-		if (!from.IsEmpty())
-			request.AddQueryParameter("from", from);
+		if (!startTime.IsEmpty())
+			request.AddQueryParameter("start_time", startTime);
 
-		if (!to.IsEmpty())
-			request.AddQueryParameter("to", to);
+		if (!endTime.IsEmpty())
+			request.AddQueryParameter("end_time", endTime);
 
-		if (limit != null)
-			request.AddQueryParameter("limit", limit.Value.ToString());
+		if (pageSize != null)
+			request.AddQueryParameter("page_size", pageSize.Value.ToString());
 
-		if (!offset.IsEmpty())
-			request.AddQueryParameter("offset", offset);
+		if (!after.IsEmpty())
+			request.AddQueryParameter("after", after);
 
-		return MakeRequestAsync<TradeHistoryResponse>(_accountApiBaseUrl, "/v1/account/trades", request, cancellationToken);
+		if (!before.IsEmpty())
+			request.AddQueryParameter("before", before);
+
+		return MakeRequestAsync<TradeHistoryResponse>(
+			_accountApiBaseUrl,
+			"/v1/account/trades",
+			request,
+			cancellationToken);
 	}
 
 	public Task<AccountTransactionResponse> GetAccountTransactionsAsync(
-		string from = null,
-		string to = null,
-		int? limit = null,
-		string offset = null,
+		string startTime = null,
+		string endTime = null,
+		int? pageSize = null,
+		string after = null,
+		string before = null,
 		CancellationToken cancellationToken = default)
 	{
 		var request = CreateRequest(Method.Get);
-		request.SetBearer(_token);
+		request.SetBearer(_accountToken);
 
-		if (!from.IsEmpty())
-			request.AddQueryParameter("from", from);
+		if (!startTime.IsEmpty())
+			request.AddQueryParameter("start_time", startTime);
 
-		if (!to.IsEmpty())
-			request.AddQueryParameter("to", to);
+		if (!endTime.IsEmpty())
+			request.AddQueryParameter("end_time", endTime);
 
-		if (limit != null)
-			request.AddQueryParameter("limit", limit.Value.ToString());
+		if (pageSize != null)
+			request.AddQueryParameter("page_size", pageSize.Value.ToString());
 
-		if (!offset.IsEmpty())
-			request.AddQueryParameter("offset", offset);
+		if (!after.IsEmpty())
+			request.AddQueryParameter("after", after);
 
-		return MakeRequestAsync<AccountTransactionResponse>(_accountApiBaseUrl, "/v1/account/transactions", request, cancellationToken);
+		if (!before.IsEmpty())
+			request.AddQueryParameter("before", before);
+
+		return MakeRequestAsync<AccountTransactionResponse>(
+			_accountApiBaseUrl,
+			"/v1/account/account-transactions",
+			request,
+			cancellationToken);
 	}
 
-	public Task<OrderStateResponse> GetOrderStateAsync(string instructionId, CancellationToken cancellationToken)
-		=> GetAsync<OrderStateResponse>(_accountApiBaseUrl, $"/v1/account/order-state/{instructionId}", cancellationToken);
+	public Task<OrderStateResponse> GetOrderStateAsync(
+		string instructionId,
+		string instrumentId,
+		CancellationToken cancellationToken)
+	{
+		var request = CreateRequest(Method.Get);
+		request.SetBearer(_accountToken);
+		request.AddQueryParameter("instruction_id", instructionId);
+		request.AddQueryParameter("instrument_id", instrumentId);
+
+		return MakeRequestAsync<OrderStateResponse>(
+			_accountApiBaseUrl,
+			"/v1/account/order-state",
+			request,
+			cancellationToken);
+	}
 
 	// Market Data API methods
 
 	public Task<OrderBookSnapshot> GetOrderBookAsync(string instrumentId, CancellationToken cancellationToken)
-		=> GetAsync<OrderBookSnapshot>(_marketDataApiBaseUrl, $"/v1/marketdata/{instrumentId}", cancellationToken, authenticated: false);
+		=> GetAsync<OrderBookSnapshot>(
+			_marketDataApiBaseUrl,
+			$"/v1/marketdata/{instrumentId}",
+			cancellationToken);
 
 	public Task<HistoricClosingPricesResponse> GetHistoricClosingPricesAsync(
 		string instrumentId,
-		string from = null,
-		string to = null,
-		int? limit = null,
-		string offset = null,
+		string startDate = null,
+		string endDate = null,
 		CancellationToken cancellationToken = default)
 	{
 		var request = CreateRequest(Method.Get);
-		request.SetBearer(_token);
+		request.SetBearer(_marketDataToken);
 
-		if (!from.IsEmpty())
-			request.AddQueryParameter("from", from);
+		if (!startDate.IsEmpty())
+			request.AddQueryParameter("start_date", startDate);
 
-		if (!to.IsEmpty())
-			request.AddQueryParameter("to", to);
+		if (!endDate.IsEmpty())
+			request.AddQueryParameter("end_date", endDate);
 
-		if (limit != null)
-			request.AddQueryParameter("limit", limit.Value.ToString());
-
-		if (!offset.IsEmpty())
-			request.AddQueryParameter("offset", offset);
-
-		return MakeRequestAsync<HistoricClosingPricesResponse>(_marketDataApiBaseUrl, $"/v1/marketdata/{instrumentId}/historic-closing-prices", request, cancellationToken);
+		return MakeRequestAsync<HistoricClosingPricesResponse>(
+			_marketDataApiBaseUrl,
+			$"/v1/marketdata/{instrumentId}/historic-closing-prices",
+			request,
+			cancellationToken);
 	}
 
 	public Task<TimeResponse> GetServerTimeAsync(CancellationToken cancellationToken)
@@ -201,6 +270,18 @@ class HttpClient(
 
 	public Task<VersionResponse> GetVersionAsync(CancellationToken cancellationToken)
 		=> GetAsync<VersionResponse>(_accountApiBaseUrl, "/v1/version", cancellationToken, authenticated: false);
+
+	public async Task HeartbeatAsync(CancellationToken cancellationToken)
+	{
+		await HeartbeatAsync(
+			_accountApiBaseUrl,
+			_accountToken,
+			cancellationToken);
+		await HeartbeatAsync(
+			_marketDataApiBaseUrl,
+			_marketDataToken,
+			cancellationToken);
+	}
 
 	// Private methods
 
@@ -214,7 +295,7 @@ class HttpClient(
 		var request = CreateRequest(Method.Get);
 
 		if (authenticated)
-			request.SetBearer(_token);
+			request.SetBearer(GetToken(baseUrl));
 
 		return MakeRequestAsync<TResponse>(baseUrl, path, request, cancellationToken);
 	}
@@ -224,7 +305,7 @@ class HttpClient(
 		var request = CreateRequest(Method.Post);
 
 		if (authenticated)
-			request.SetBearer(_token);
+			request.SetBearer(GetToken(baseUrl));
 
 		var json = body.ToJson();
 		request.AddBodyAsStr(json);
@@ -232,22 +313,37 @@ class HttpClient(
 		return MakeRequestAsync<TResponse>(baseUrl, path, request, cancellationToken);
 	}
 
+	private async Task HeartbeatAsync(
+		Uri baseUrl,
+		SecureString token,
+		CancellationToken cancellationToken)
+	{
+		var request = CreateRequest(Method.Get);
+		request.SetBearer(token);
+
+		await request.InvokeAsync<object>(
+			new Uri(baseUrl, "/v1/heartbeat"),
+			this,
+			this.AddVerboseLog,
+			cancellationToken,
+			throwIfEmptyResponse: false);
+	}
+
+	private SecureString GetToken(Uri baseUrl)
+		=> baseUrl == _marketDataApiBaseUrl
+			? _marketDataToken
+			: _accountToken;
+
 	private async Task<TResponse> MakeRequestAsync<TResponse>(Uri baseUrl, string path, RestRequest request, CancellationToken cancellationToken)
 	{
 		var url = new Uri(baseUrl, path);
+		var response = await request.InvokeAsync<TResponse>(
+			url,
+			this,
+			this.AddVerboseLog,
+			cancellationToken);
 
-		dynamic obj = await request.InvokeAsync(url, this, this.AddVerboseLog, cancellationToken);
-
-		if (obj is JObject jObj)
-		{
-			// Check for error response
-			if (jObj["error"] != null || jObj["error_code"] != null)
-			{
-				var errorMsg = jObj["error_message"]?.ToString() ?? jObj["error"]?.ToString() ?? "Unknown error";
-				throw new InvalidOperationException($"API error: {errorMsg}");
-			}
-		}
-
-		return ((JToken)obj).DeserializeObject<TResponse>();
+		return response ?? throw new InvalidDataException(
+			$"LMAX returned an empty response for '{path}'.");
 	}
 }

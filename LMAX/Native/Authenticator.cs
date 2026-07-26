@@ -7,14 +7,15 @@ class Authenticator(SecureString clientKeyId, SecureString secretKey)
 	private readonly SecureString _clientKeyId = clientKeyId ?? throw new ArgumentNullException(nameof(clientKeyId));
 	private readonly SecureString _secretKey = secretKey ?? throw new ArgumentNullException(nameof(secretKey));
 
-    public SecureString ClientKeyId => _clientKeyId;
+	public SecureString ClientKeyId => _clientKeyId;
 
 	public (string timestamp, string nonce, string signature) CreateSignature()
 	{
-		var timestamp = ((long)DateTime.UtcNow.ToUnix(false)).ToString();
+		var timestamp = DateTime.UtcNow.ToString(
+			"yyyy-MM-dd'T'HH:mm:ss.fff'Z'",
+			CultureInfo.InvariantCulture);
 		var nonce = Guid.NewGuid().ToString("N");
-
-		var message = $"{timestamp}{nonce}";
+		var message = _clientKeyId.UnSecure() + nonce + timestamp;
 		var signature = ComputeHmacSha256(message);
 
 		return (timestamp, nonce, signature);

@@ -45,7 +45,6 @@ partial class LmaxMessageAdapter
 				_socketClient.ExecutionReceived -= OnExecutionReceived;
 				_socketClient.PositionReceived -= OnPositionReceived;
 				_socketClient.WalletReceived -= OnWalletReceived;
-				_socketClient.RejectionReceived -= OnRejectionReceived;
 
 				_socketClient.Dispose();
 				_socketClient = null;
@@ -90,11 +89,19 @@ partial class LmaxMessageAdapter
 			Parent = this
 		};
 
+		var (accountTokenValue, marketDataTokenValue) =
+			await _httpClient.ConnectAsync(cancellationToken);
+		var accountToken = accountTokenValue.Secure();
+		var marketDataToken = marketDataTokenValue.Secure();
+
 		await FillSecIds(cancellationToken);
 
-		var token = (await _httpClient.ConnectAsync(cancellationToken)).Secure();
-
-		_socketClient = new(marketDataWsUrl, accountWsUrl, () => token, ReConnectionSettings.WorkingTime)
+		_socketClient = new(
+			marketDataWsUrl,
+			accountWsUrl,
+			() => marketDataToken,
+			() => accountToken,
+			ReConnectionSettings.WorkingTime)
 		{
 			Parent = this
 		};
@@ -108,7 +115,6 @@ partial class LmaxMessageAdapter
 		_socketClient.ExecutionReceived += OnExecutionReceived;
 		_socketClient.PositionReceived += OnPositionReceived;
 		_socketClient.WalletReceived += OnWalletReceived;
-		_socketClient.RejectionReceived += OnRejectionReceived;
 
 		await _socketClient.ConnectAsync(cancellationToken);
 
@@ -132,7 +138,7 @@ partial class LmaxMessageAdapter
 	/// <inheritdoc />
 	protected override async ValueTask TimeAsync(TimeMessage timeMsg, CancellationToken cancellationToken)
 	{
-		await _httpClient.GetServerTimeAsync(cancellationToken);
+		await _httpClient.HeartbeatAsync(cancellationToken);
 	}
 
 	private (string accountApi, string marketDataApi, string marketDataWs, string accountWs) GetUrls()

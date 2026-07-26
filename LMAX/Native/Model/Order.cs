@@ -60,28 +60,28 @@ class PlaceOrderResponse
 	public DateTime Timestamp { get; set; }
 
 	[JsonProperty("limit_price")]
-	public double? LimitPrice { get; set; }
+	public string LimitPrice { get; set; }
 
 	[JsonProperty("stop_price")]
-	public double? StopPrice { get; set; }
+	public string StopPrice { get; set; }
 
 	[JsonProperty("quantity")]
-	public double? Quantity { get; set; }
+	public string Quantity { get; set; }
 
 	[JsonProperty("unfilled_quantity")]
-	public double? UnfilledQuantity { get; set; }
+	public string UnfilledQuantity { get; set; }
 
 	[JsonProperty("matched_quantity")]
-	public double? MatchedQuantity { get; set; }
+	public string MatchedQuantity { get; set; }
 
 	[JsonProperty("cancelled_quantity")]
-	public double? CancelledQuantity { get; set; }
+	public string CancelledQuantity { get; set; }
 
 	[JsonProperty("matched_cost")]
-	public double? MatchedCost { get; set; }
+	public string MatchedCost { get; set; }
 
 	[JsonProperty("commission")]
-	public double? Commission { get; set; }
+	public string Commission { get; set; }
 
 	[JsonProperty("side")]
 	public string Side { get; set; }
@@ -144,7 +144,7 @@ class CancelOrderResponse
 	public DateTime Timestamp { get; set; }
 
 	[JsonProperty("cancelled_quantity")]
-	public double? CancelledQuantity { get; set; }
+	public string CancelledQuantity { get; set; }
 
 	[JsonProperty("side")]
 	public string Side { get; set; }
@@ -192,28 +192,28 @@ class WorkingOrder
 	public DateTime Timestamp { get; set; }
 
 	[JsonProperty("limit_price")]
-	public double? LimitPrice { get; set; }
+	public string LimitPrice { get; set; }
 
 	[JsonProperty("stop_price")]
-	public double? StopPrice { get; set; }
+	public string StopPrice { get; set; }
 
 	[JsonProperty("quantity")]
-	public double? Quantity { get; set; }
+	public string Quantity { get; set; }
 
 	[JsonProperty("unfilled_quantity")]
-	public double? UnfilledQuantity { get; set; }
+	public string UnfilledQuantity { get; set; }
 
 	[JsonProperty("matched_quantity")]
-	public double? MatchedQuantity { get; set; }
+	public string MatchedQuantity { get; set; }
 
 	[JsonProperty("cancelled_quantity")]
-	public double? CancelledQuantity { get; set; }
+	public string CancelledQuantity { get; set; }
 
 	[JsonProperty("matched_cost")]
-	public double? MatchedCost { get; set; }
+	public string MatchedCost { get; set; }
 
 	[JsonProperty("commission")]
-	public double? Commission { get; set; }
+	public string Commission { get; set; }
 
 	[JsonProperty("side")]
 	public string Side { get; set; }
@@ -222,40 +222,28 @@ class WorkingOrder
 	public string TimeInForce { get; set; }
 
 	[JsonProperty("stop_loss_offset")]
-	public double? StopLossOffset { get; set; }
+	public string StopLossOffset { get; set; }
 
 	[JsonProperty("take_profit_offset")]
-	public double? TakeProfitOffset { get; set; }
+	public string TakeProfitOffset { get; set; }
 }
 
 class WorkingOrdersResponse
 {
-	[JsonProperty("account_id")]
-	public string AccountId { get; set; }
+	[JsonProperty("before_cursor")]
+	public string BeforeCursor { get; set; }
 
-	[JsonProperty("timestamp")]
-	public string Timestamp { get; set; }
+	[JsonProperty("after_cursor")]
+	public string AfterCursor { get; set; }
 
 	[JsonProperty("orders")]
 	public WorkingOrder[] Orders { get; set; }
-
-	[JsonProperty("paging")]
-	public PagingInfo Paging { get; set; }
-}
-
-class PagingInfo
-{
-	[JsonProperty("next")]
-	public string Next { get; set; }
-
-	[JsonProperty("previous")]
-	public string Previous { get; set; }
 }
 
 class CancelAndReplaceOrderRequest
 {
-	[JsonProperty("cancel_instruction_id")]
-	public string CancelInstructionId { get; set; }
+	[JsonProperty("replacement_instruction_id")]
+	public string ReplacementInstructionId { get; set; }
 
 	[JsonProperty("instruction_id")]
 	public string InstructionId { get; set; }
@@ -269,14 +257,8 @@ class CancelAndReplaceOrderRequest
 	[JsonProperty("price")]
 	public string Price { get; set; }
 
-	[JsonProperty("stop_price")]
-	public string StopPrice { get; set; }
-
-	[JsonProperty("stop_loss_offset")]
-	public string StopLossOffset { get; set; }
-
-	[JsonProperty("take_profit_offset")]
-	public string TakeProfitOffset { get; set; }
+	[JsonProperty("side")]
+	public string Side { get; set; }
 }
 
 class CancelAndReplaceOrderResponse
@@ -293,12 +275,6 @@ class CancelAndReplaceOrderResponse
 	[JsonProperty("instruction_id")]
 	public string InstructionId { get; set; }
 
-	[JsonProperty("cancel_instruction_id")]
-	public string CancelInstructionId { get; set; }
-
-	[JsonProperty("cancelled_instruction_id")]
-	public string CancelledInstructionId { get; set; }
-
 	[JsonProperty("instrument_id")]
 	public string InstrumentId { get; set; }
 
@@ -306,46 +282,43 @@ class CancelAndReplaceOrderResponse
 	public DateTime Timestamp { get; set; }
 
 	[JsonProperty("limit_price")]
-	public double? LimitPrice { get; set; }
+	public string LimitPrice { get; set; }
 
 	[JsonProperty("stop_price")]
-	public double? StopPrice { get; set; }
+	public string StopPrice { get; set; }
 
 	[JsonProperty("quantity")]
-	public double? Quantity { get; set; }
+	public string Quantity { get; set; }
 
 	[JsonProperty("unfilled_quantity")]
-	public double? UnfilledQuantity { get; set; }
+	public string UnfilledQuantity { get; set; }
 
 	[JsonProperty("matched_quantity")]
-	public double? MatchedQuantity { get; set; }
+	public string MatchedQuantity { get; set; }
 
 	[JsonProperty("cancelled_quantity")]
-	public double? CancelledQuantity { get; set; }
+	public string CancelledQuantity { get; set; }
 
 	[JsonProperty("matched_cost")]
-	public double? MatchedCost { get; set; }
+	public string MatchedCost { get; set; }
 
 	[JsonProperty("commission")]
-	public double? Commission { get; set; }
+	public string Commission { get; set; }
 
 	[JsonProperty("side")]
 	public string Side { get; set; }
 
 	[JsonProperty("time_in_force")]
 	public string TimeInForce { get; set; }
+
+	[JsonProperty("replaced_instruction_id")]
+	public string ReplacedInstructionId { get; set; }
 }
 
 class CancelAllOrdersRequest
 {
 	[JsonProperty("cancel_instruction_id")]
 	public string CancelInstructionId { get; set; }
-
-	[JsonProperty("instrument_id")]
-	public string InstrumentId { get; set; }
-
-	[JsonProperty("side")]
-	public string Side { get; set; }
 }
 
 class CancelAllOrdersResponse
@@ -353,30 +326,9 @@ class CancelAllOrdersResponse
 	[JsonProperty("account_id")]
 	public string AccountId { get; set; }
 
-	[JsonProperty("cancel_instruction_id")]
-	public string CancelInstructionId { get; set; }
-
-	[JsonProperty("timestamp")]
-	public DateTime Timestamp { get; set; }
-
-	[JsonProperty("cancelled_orders")]
-	public CancelledOrderInfo[] CancelledOrders { get; set; }
-}
-
-class CancelledOrderInfo
-{
-	[JsonProperty("order_id")]
-	public string OrderId { get; set; }
-
 	[JsonProperty("instruction_id")]
 	public string InstructionId { get; set; }
 
-	[JsonProperty("instrument_id")]
-	public string InstrumentId { get; set; }
-
-	[JsonProperty("cancelled_quantity")]
-	public DateTime CancelledQuantity { get; set; }
-
-	[JsonProperty("side")]
-	public string Side { get; set; }
+	[JsonProperty("cancelled_orders")]
+	public CancelOrderResponse[] CancelledOrders { get; set; }
 }

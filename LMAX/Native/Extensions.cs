@@ -2,6 +2,24 @@ namespace StockSharp.LMAX.Native;
 
 static class Extensions
 {
+	public static decimal? ToDecimal(this string value)
+	{
+		if (value.IsEmpty())
+			return null;
+
+		if (decimal.TryParse(
+			value,
+			NumberStyles.Float,
+			CultureInfo.InvariantCulture,
+			out var result))
+		{
+			return result;
+		}
+
+		throw new InvalidDataException(
+			$"Invalid LMAX decimal value '{value}'.");
+	}
+
 	public static SecurityTypes? ToSecurityType(this string assetClass)
 	{
 		if (assetClass.IsEmpty())

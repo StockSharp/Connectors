@@ -3,10 +3,10 @@ namespace StockSharp.LMAX.Native.Model;
 class MarketDataEntry
 {
 	[JsonProperty("price")]
-	public double Price { get; set; }
+	public string Price { get; set; }
 
 	[JsonProperty("quantity")]
-	public double Quantity { get; set; }
+	public string Quantity { get; set; }
 }
 
 class OrderBookSnapshot
@@ -33,10 +33,10 @@ class HistoricClosingPrice
 	public string ClosingDate { get; set; }
 
 	[JsonProperty("closing_price")]
-	public double? ClosingPrice { get; set; }
+	public string ClosingPrice { get; set; }
 
 	[JsonProperty("settlement_price")]
-	public double? SettlementPrice { get; set; }
+	public string SettlementPrice { get; set; }
 }
 
 class HistoricClosingPricesResponse
