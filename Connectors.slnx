@@ -52,6 +52,7 @@
     <Project Path="Deribit/Deribit.csproj" />
     <Project Path="Dhan/Dhan.csproj" />
     <Project Path="Digifinex/Digifinex.csproj" />
+    <Project Path="Directa/Directa.csproj" />
     <Project Path="DowJones/DowJones.csproj" />
     <Project Path="Drift/Drift.csproj" />
     <Project Path="DukasCopyLive/DukasCopyLive.csproj" />

@@ -47,6 +47,7 @@
     <ProjectReference Include="..\Deribit\Deribit.csproj" />
     <ProjectReference Include="..\Deriv\Deriv.csproj" />
     <ProjectReference Include="..\Digifinex\Digifinex.csproj" />
+    <ProjectReference Include="..\Directa\Directa.csproj" />
     <ProjectReference Include="..\Drift\Drift.csproj" />
     <ProjectReference Include="..\DydxChain\DydxChain.csproj" />
     <ProjectReference Include="..\edgeX\EdgeX.csproj" />
