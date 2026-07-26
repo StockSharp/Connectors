@@ -16,6 +16,9 @@ public partial class MiraeSharekhanMessageAdapter
 		var orderId = response.GetOrderId();
 		if (orderId.IsEmpty())
 			throw new InvalidDataException("Mirae Asset Sharekhan order placement returned no order id.");
+		var rmsCode = response.GetRmsCode();
+		if (!rmsCode.IsEmpty() && !rmsCode.EqualsIgnoreCase("null"))
+			request.RmsCode = rmsCode;
 
 		_orders[orderId] = new()
 		{
@@ -64,6 +67,7 @@ public partial class MiraeSharekhanMessageAdapter
 		var request = await CreateOrderRequest(securityId, side, replaceMsg.Volume,
 			replaceMsg.Price, orderType, replaceMsg.TimeInForce, condition, "MODIFY", orderId,
 			cancellationToken);
+		request.ExecutedQuantity = tracker.ReportedFilled;
 		await GetRest().SubmitOrder(request, cancellationToken);
 		tracker.Request = request;
 		tracker.OrderType = orderType;
@@ -79,6 +83,7 @@ public partial class MiraeSharekhanMessageAdapter
 		var tracker = await GetOrderTracker(orderId, cancellationToken);
 		var request = CopyRequest(tracker.Request);
 		request.OrderId = orderId;
+		request.ExecutedQuantity = tracker.ReportedFilled;
 		request.RequestType = "CANCEL";
 		await GetRest().SubmitOrder(request, cancellationToken);
 	}
@@ -108,9 +113,6 @@ public partial class MiraeSharekhanMessageAdapter
 			if (--left <= 0)
 				break;
 		}
-		foreach (var trade in await GetRest().GetTrades(CustomerId, cancellationToken))
-			await ProcessTrade(trade, statusMsg.TransactionId, cancellationToken);
-
 		if (statusMsg.IsHistoryOnly())
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 		else
@@ -149,8 +151,6 @@ public partial class MiraeSharekhanMessageAdapter
 		_lastOrderRefresh = DateTime.UtcNow;
 		foreach (var order in await GetRest().GetOrders(CustomerId, cancellationToken))
 			await ProcessOrder(order, _orderStatusSubscriptionId, false, cancellationToken);
-		foreach (var trade in await GetRest().GetTrades(CustomerId, cancellationToken))
-			await ProcessTrade(trade, _orderStatusSubscriptionId, cancellationToken);
 	}
 
 	private ValueTask SendPortfolioSnapshot(CancellationToken cancellationToken)
@@ -177,21 +177,22 @@ public partial class MiraeSharekhanMessageAdapter
 				SecurityId = SecurityId.Money,
 				ServerTime = DateTime.UtcNow,
 			}
-			.TryAdd(PositionChangeTypes.BeginValue, funds.OpeningBalance, true)
+			.TryAdd(PositionChangeTypes.BeginValue, funds.GetOpening(), true)
 			.TryAdd(PositionChangeTypes.CurrentValue, funds.GetAvailable(), true)
 			.TryAdd(PositionChangeTypes.BlockedValue, funds.GetBlocked(), true), cancellationToken);
 		}
 
 		foreach (var holding in await GetRest().GetHoldings(CustomerId, cancellationToken))
 		{
-			if (holding == null || holding.ScripCode <= 0)
+			if (holding == null || holding.TradingSymbol.IsEmpty())
 				continue;
+			var securityId = await ResolvePositionSecurity(holding.Exchange, holding.ScripCode,
+				holding.TradingSymbol, cancellationToken);
 			await SendOutMessageAsync(new PositionChangeMessage
 			{
 				OriginalTransactionId = originalTransactionId,
 				PortfolioName = PortfolioName,
-				SecurityId = CreateSecurityId(holding.Exchange.IsEmpty("NC"), holding.ScripCode,
-					holding.TradingSymbol),
+				SecurityId = securityId,
 				ServerTime = DateTime.UtcNow,
 			}
 			.Add(PositionChangeTypes.CurrentValue, holding.GetQuantity())
@@ -199,26 +200,42 @@ public partial class MiraeSharekhanMessageAdapter
 			.TryAdd(PositionChangeTypes.CurrentPrice, holding.LastPrice, true), cancellationToken);
 		}
 
-		foreach (var position in await GetRest().GetTrades(CustomerId, cancellationToken))
+		foreach (var position in await GetRest().GetPositions(CustomerId, cancellationToken))
 		{
 			var quantity = position.NetQuantity ??
 				((position.BuyQuantity ?? 0) - (position.SellQuantity ?? 0));
-			if (position.ScripCode <= 0 || quantity == 0 && position.NetQuantity == null &&
+			if (position.TradingSymbol.IsEmpty() || quantity == 0 && position.NetQuantity == null &&
 				position.BuyQuantity == null && position.SellQuantity == null)
 				continue;
+			var securityId = await ResolvePositionSecurity(position.Exchange, position.ScripCode,
+				position.TradingSymbol, cancellationToken);
 			await SendOutMessageAsync(new PositionChangeMessage
 			{
 				OriginalTransactionId = originalTransactionId,
 				PortfolioName = PortfolioName,
-				SecurityId = CreateSecurityId(position.Exchange, position.ScripCode,
-					position.TradingSymbol),
-				ServerTime = position.GetTime() ?? DateTime.UtcNow,
+				SecurityId = securityId,
+				ServerTime = DateTime.UtcNow,
 			}
 			.Add(PositionChangeTypes.CurrentValue, quantity)
 			.TryAdd(PositionChangeTypes.AveragePrice, position.AveragePrice, true)
 			.TryAdd(PositionChangeTypes.RealizedPnL, position.RealizedPnL, true)
 			.TryAdd(PositionChangeTypes.UnrealizedPnL, position.UnrealizedPnL, true), cancellationToken);
 		}
+	}
+
+	private async Task<SecurityId> ResolvePositionSecurity(string exchange, long scripCode,
+		string tradingSymbol, CancellationToken cancellationToken)
+	{
+		exchange = exchange.IsEmpty("NC").ToNativeExchange();
+		if (scripCode > 0)
+			return CreateSecurityId(exchange, scripCode, tradingSymbol);
+		var instrument = await ResolveInstrument(new()
+		{
+			SecurityCode = tradingSymbol,
+			BoardCode = exchange,
+		}, cancellationToken);
+		return CreateSecurityId(instrument.Exchange, instrument.GetScripCode(),
+			instrument.GetSymbol());
 	}
 
 	private async ValueTask ProcessOrder(MiraeSharekhanOrder order, long originalTransactionId,
@@ -295,29 +312,6 @@ public partial class MiraeSharekhanMessageAdapter
 			TradePrice = order.AveragePrice ?? order.Price,
 			TradeVolume = filled - previousFilled,
 			ServerTime = serverTime,
-		}, cancellationToken);
-	}
-
-	private ValueTask ProcessTrade(MiraeSharekhanTrade trade, long originalTransactionId,
-		CancellationToken cancellationToken)
-	{
-		var tradeId = trade?.GetTradeId();
-		if (tradeId.IsEmpty() || trade.ScripCode <= 0 || !_reportedTrades.TryAdd(tradeId))
-			return default;
-		return SendOutMessageAsync(new ExecutionMessage
-		{
-			DataTypeEx = DataType.Transactions,
-			OriginalTransactionId = originalTransactionId,
-			OrderId = ToLongId(trade.OrderId),
-			OrderStringId = trade.OrderId,
-			TradeId = ToLongId(tradeId),
-			TradeStringId = tradeId,
-			SecurityId = CreateSecurityId(trade.Exchange, trade.ScripCode, trade.TradingSymbol),
-			PortfolioName = PortfolioName,
-			Side = trade.TransactionType.ToSide(),
-			TradePrice = trade.GetPrice(),
-			TradeVolume = trade.GetQuantity(),
-			ServerTime = trade.GetTime() ?? DateTime.UtcNow,
 		}, cancellationToken);
 	}
 
@@ -400,9 +394,10 @@ public partial class MiraeSharekhanMessageAdapter
 			TransactionType = order.TransactionType,
 			Quantity = order.Quantity,
 			DisclosedQuantity = order.DisclosedQuantity,
+			ExecutedQuantity = order.GetFilledQuantity(),
 			Price = order.Price,
 			TriggerPrice = order.TriggerPrice,
-			RmsCode = "ANY",
+			RmsCode = order.RmsCode.IsEmpty("ANY"),
 			AfterHour = "N",
 			ChannelUser = order.CustomerId,
 			RequestType = "MODIFY",
@@ -424,6 +419,7 @@ public partial class MiraeSharekhanMessageAdapter
 			TransactionType = request.TransactionType,
 			Quantity = request.Quantity,
 			DisclosedQuantity = request.DisclosedQuantity,
+			ExecutedQuantity = request.ExecutedQuantity,
 			Price = request.Price,
 			TriggerPrice = request.TriggerPrice,
 			RmsCode = request.RmsCode,
@@ -457,7 +453,7 @@ public partial class MiraeSharekhanMessageAdapter
 		=> new()
 		{
 			Product = order.ProductType.ToProduct(),
-			RmsCode = "ANY",
+			RmsCode = order.RmsCode.IsEmpty("ANY"),
 			TriggerPrice = order.TriggerPrice > 0 ? order.TriggerPrice : null,
 			DisclosedVolume = order.DisclosedQuantity > 0 ? order.DisclosedQuantity : null,
 			InstrumentType = order.InstrumentType.ToInstrumentType(),

@@ -71,7 +71,7 @@ internal sealed class MiraeSharekhanWebSocketClient : BaseLogReceiver
 		if (socket?.State != WebSocketState.Open)
 			return;
 		if (!previous.IsEmpty())
-			await SendFeed(socket, "unsubscribe", previous, [streamKey], cancellationToken);
+			await SendFeed(socket, "unsubscribe", "feed", [streamKey], cancellationToken);
 		if (!mode.IsEmpty())
 			await SendFeed(socket, "feed", mode, [streamKey], cancellationToken);
 	}
@@ -234,30 +234,36 @@ internal sealed class MiraeSharekhanWebSocketClient : BaseLogReceiver
 		{
 			if (payload.TrimStart().StartsWith("[", StringComparison.Ordinal))
 			{
-				foreach (var message in JsonConvert.DeserializeObject<MiraeSharekhanStreamMessage[]>(payload,
+				foreach (var item in JsonConvert.DeserializeObject<MiraeSharekhanStreamEnvelope[]>(payload,
 					_jsonSettings) ?? [])
-					await Invoke(FeedReceived, message, cancellationToken);
+					await ProcessEnvelope(item, cancellationToken);
 				return;
 			}
 
 			var envelope = JsonConvert.DeserializeObject<MiraeSharekhanStreamEnvelope>(payload, _jsonSettings);
-			if (envelope == null)
-				return;
-			if (!envelope.Error.IsEmpty())
-			{
-				await Invoke(Error, new InvalidOperationException(envelope.Error), cancellationToken);
-				return;
-			}
-			if (!envelope.GetStreamKey().IsEmpty())
-				await Invoke(FeedReceived, envelope, cancellationToken);
-			foreach (var message in envelope.GetMessages())
-				await Invoke(FeedReceived, message, cancellationToken);
+			await ProcessEnvelope(envelope, cancellationToken);
 		}
 		catch (JsonException ex)
 		{
 			await Invoke(Error, new InvalidDataException(
 				"Cannot parse a Mirae Asset Sharekhan WebSocket message.", ex), cancellationToken);
 		}
+	}
+
+	private async ValueTask ProcessEnvelope(MiraeSharekhanStreamEnvelope envelope,
+		CancellationToken cancellationToken)
+	{
+		if (envelope == null)
+			return;
+		if (!envelope.Error.IsEmpty())
+		{
+			await Invoke(Error, new InvalidOperationException(envelope.Error), cancellationToken);
+			return;
+		}
+		if (!envelope.GetStreamKey().IsEmpty())
+			await Invoke(FeedReceived, envelope, cancellationToken);
+		foreach (var message in envelope.GetMessages())
+			await Invoke(FeedReceived, message, cancellationToken);
 	}
 
 	private Task SendFeed(ClientWebSocket socket, string action, string mode, string[] streamKeys,

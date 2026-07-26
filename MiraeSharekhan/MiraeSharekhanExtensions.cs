@@ -84,11 +84,13 @@ internal static class MiraeSharekhanExtensions
 	public static OrderStates ToOrderState(this string status)
 	{
 		var value = status?.Replace(" ", string.Empty, StringComparison.Ordinal).ToUpperInvariant();
-		if (value is "COMPLETE" or "COMPLETED" or "TRADED" or "EXECUTED" or "CANCELLED" or "CANCELED")
+		if (value is "COMPLETE" or "COMPLETED" or "TRADED" or "EXECUTED" or
+			"FULLYEXECUTED" or "CANCELLED" or "CANCELED")
 			return OrderStates.Done;
 		if (value is "REJECTED" or "FAILED" or "ERROR")
 			return OrderStates.Failed;
-		if (value is "OPEN" or "ACTIVE" or "PENDING" or "PARTIALLYFILLED" or "PARTTRADED")
+		if (value is "OPEN" or "ACTIVE" or "PENDING" or "PARTIALLYFILLED" or
+			"PARTIALLYEXECUTED" or "PARTTRADED")
 			return OrderStates.Active;
 		return OrderStates.Pending;
 	}

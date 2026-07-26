@@ -31,7 +31,6 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 		};
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("api-key", apiKey);
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("access-token", accessToken);
-		_http.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", accessToken);
 		if (!vendorKey.IsEmpty())
 			_http.DefaultRequestHeaders.TryAddWithoutValidation("vendor-key", vendorKey);
 		_http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -79,6 +78,8 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 			await Post("orders", order, cancellationToken), _jsonSettings)
 			?? throw new InvalidDataException("Mirae Asset Sharekhan returned an invalid order response.");
 		ThrowIfFailed(response);
+		if (!response.GetErrorMessage().IsEmpty())
+			throw new InvalidOperationException(response.GetErrorMessage());
 		return response;
 	}
 
@@ -87,9 +88,9 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 		=> DeserializeItems<MiraeSharekhanOrder>(await Get(
 			$"reports/{Uri.EscapeDataString(customerId)}", cancellationToken));
 
-	public async Task<MiraeSharekhanTrade[]> GetTrades(string customerId,
+	public async Task<MiraeSharekhanPosition[]> GetPositions(string customerId,
 		CancellationToken cancellationToken)
-		=> DeserializeItems<MiraeSharekhanTrade>(await Get(
+		=> DeserializeItems<MiraeSharekhanPosition>(await Get(
 			$"trades/{Uri.EscapeDataString(customerId)}", cancellationToken));
 
 	public async Task<MiraeSharekhanHolding[]> GetHoldings(string customerId,
@@ -99,9 +100,9 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 
 	public async Task<MiraeSharekhanFunds> GetFunds(string exchange, string customerId,
 		CancellationToken cancellationToken)
-		=> DeserializeObject<MiraeSharekhanFunds>(await Get(
+		=> DeserializeItems<MiraeSharekhanFunds>(await Get(
 			$"limitstmt/{Uri.EscapeDataString(exchange)}/{Uri.EscapeDataString(customerId)}",
-			cancellationToken));
+			cancellationToken)).FirstOrDefault();
 
 	private Task<string> Get(string path, CancellationToken cancellationToken)
 		=> Send(HttpMethod.Get, path, null, cancellationToken);
@@ -128,6 +129,8 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 					var content = await response.Content.ReadAsStringAsync(cancellationToken);
 					if (!response.IsSuccessStatusCode)
 						throw CreateException(response.StatusCode, content);
+					if (response.StatusCode == HttpStatusCode.NoContent)
+						return "[]";
 					if (content.IsEmpty())
 						throw new InvalidDataException("Mirae Asset Sharekhan returned an empty response.");
 					return content;
@@ -155,15 +158,6 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 			?? throw new InvalidDataException("Mirae Asset Sharekhan returned an invalid response.");
 		ThrowIfFailed(response);
 		return response.GetItems();
-	}
-
-	private T DeserializeObject<T>(string content)
-		where T : class
-	{
-		var response = JsonConvert.DeserializeObject<MiraeSharekhanObjectResponse<T>>(content, _jsonSettings)
-			?? throw new InvalidDataException("Mirae Asset Sharekhan returned an invalid response.");
-		ThrowIfFailed(response);
-		return response.GetValue() ?? JsonConvert.DeserializeObject<T>(content, _jsonSettings);
 	}
 
 	private static void ThrowIfFailed(MiraeSharekhanResponse response)

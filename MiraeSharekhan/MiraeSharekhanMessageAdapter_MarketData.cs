@@ -213,12 +213,13 @@ public partial class MiraeSharekhanMessageAdapter
 			.TryAdd(Level1Fields.HighPrice, feed.HighPrice)
 			.TryAdd(Level1Fields.LowPrice, feed.LowPrice)
 			.TryAdd(Level1Fields.ClosePrice, feed.ClosePrice)
-			.TryAdd(Level1Fields.Volume, feed.Volume)
+			.TryAdd(Level1Fields.Volume, feed.GetVolume())
 			.TryAdd(Level1Fields.OpenInterest, feed.GetOpenInterest())
-			.TryAdd(Level1Fields.BestBidPrice, bestBid?.Price ?? feed.BestBidPrice)
+			.TryAdd(Level1Fields.BestBidPrice, bestBid?.Price ?? feed.GetBestBidPrice())
 			.TryAdd(Level1Fields.BestBidVolume, bestBid?.GetQuantity() ?? feed.BestBidQuantity)
-			.TryAdd(Level1Fields.BestAskPrice, bestAsk?.Price ?? feed.BestAskPrice)
-			.TryAdd(Level1Fields.BestAskVolume, bestAsk?.GetQuantity() ?? feed.BestAskQuantity),
+			.TryAdd(Level1Fields.BestAskPrice, bestAsk?.Price ?? feed.GetBestAskPrice())
+			.TryAdd(Level1Fields.BestAskVolume, bestAsk?.GetQuantity() ??
+				feed.GetBestAskQuantity()),
 				cancellationToken);
 		}
 
