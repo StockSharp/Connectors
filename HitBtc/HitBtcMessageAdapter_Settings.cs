@@ -16,8 +16,11 @@
 [OrderCondition(typeof(HitBtcOrderCondition))]
 public partial class HitBtcMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
-	private const string _defaultRestEndpoint = "https://api.hitbtc.com/api";
-	private const string _defaultWebSocketEndpoint = "wss://api.hitbtc.com/api/2/ws";
+	private const string _legacyRestEndpoint = "https://api.hitbtc.com/api";
+	private const string _legacyWebSocketEndpoint = "wss://api.hitbtc.com/api/2/ws";
+	private const string _defaultRestEndpoint = "https://api.hitbtc.com/api/3";
+	private const string _defaultWebSocketEndpoint = "wss://api.hitbtc.com/api/3/ws/public";
+	private const string _defaultTradingWebSocketEndpoint = "wss://api.hitbtc.com/api/3/ws/trading";
 
 	/// <summary>
 	/// Possible time-frames.
@@ -60,6 +63,14 @@ public partial class HitBtcMessageAdapter : MessageAdapter, IKeySecretAdapter
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
+	/// <summary>Trading WebSocket endpoint.</summary>
+	[Display(
+		Name = "Trading WebSocket endpoint",
+		Description = "Trading WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string TradingWebSocketEndpoint { get; set; } = _defaultTradingWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -69,6 +80,7 @@ public partial class HitBtcMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
 		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		storage.SetValue(nameof(TradingWebSocketEndpoint), TradingWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -80,6 +92,13 @@ public partial class HitBtcMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
 		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		TradingWebSocketEndpoint = storage.GetValue(nameof(TradingWebSocketEndpoint), TradingWebSocketEndpoint);
+
+		if (RestEndpoint.EqualsIgnoreCase(_legacyRestEndpoint))
+			RestEndpoint = _defaultRestEndpoint;
+
+		if (WebSocketEndpoint.EqualsIgnoreCase(_legacyWebSocketEndpoint))
+			WebSocketEndpoint = _defaultWebSocketEndpoint;
 	}
 
 	/// <inheritdoc />

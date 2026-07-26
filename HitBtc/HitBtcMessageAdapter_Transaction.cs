@@ -20,7 +20,8 @@ partial class HitBtcMessageAdapter
 				if (!condition.IsWithdraw)
 					break;
 
-				var withdrawId = await _pusherClient.WithdrawAsync(regMsg.SecurityId.SecurityCode, regMsg.Volume, condition.WithdrawInfo, cancellationToken);
+				var withdrawId = await _restClient.WithdrawAsync(regMsg.SecurityId.SecurityCode,
+					regMsg.Volume, condition.WithdrawInfo, cancellationToken);
 
 				await SendOutMessageAsync(new ExecutionMessage
 				{
@@ -39,7 +40,7 @@ partial class HitBtcMessageAdapter
 
 		var price = regMsg.OrderType == OrderTypes.Market ? (decimal?)null : regMsg.Price;
 
-		await _pusherClient.PlaceOrderAsync(regMsg.TransactionId.ToClientOrderId(), regMsg.SecurityId.ToCurrency(), regMsg.Side.ToNative(),
+		await _tradingSocket.PlaceOrderAsync(regMsg.TransactionId.ToClientOrderId(), regMsg.SecurityId.ToCurrency(), regMsg.Side.ToNative(),
 			regMsg.OrderType.ToNative(condition?.StopPrice), price, regMsg.Volume, regMsg.TimeInForce.ToNative(regMsg.TillDate, regMsg.OrderType),
 			condition?.StopPrice, regMsg.TillDate.EnsureToday(null), regMsg.TransactionId, cancellationToken);
 	}
@@ -50,13 +51,14 @@ partial class HitBtcMessageAdapter
 		if (cancelMsg.OriginalTransactionId == 0)
 			throw new InvalidOperationException(LocalizedStrings.OrderNoExchangeId.Put(cancelMsg.TransactionId));
 
-		return _pusherClient.CancelOrderAsync(cancelMsg.OriginalTransactionId.ToClientOrderId(), cancelMsg.TransactionId, cancellationToken);
+		return _tradingSocket.CancelOrderAsync(cancelMsg.OriginalTransactionId.ToClientOrderId(),
+			cancelMsg.TransactionId, cancellationToken);
 	}
 
 	/// <inheritdoc />
 	protected override ValueTask ReplaceOrderAsync(OrderReplaceMessage replaceMsg, CancellationToken cancellationToken)
 	{
-		return _pusherClient.ReplaceOrderAsync(replaceMsg.OriginalTransactionId.ToClientOrderId(),
+		return _tradingSocket.ReplaceOrderAsync(replaceMsg.OriginalTransactionId.ToClientOrderId(),
 			replaceMsg.TransactionId.ToClientOrderId(),
 			replaceMsg.Price, replaceMsg.Volume, replaceMsg.TransactionId, cancellationToken);
 	}
@@ -70,7 +72,11 @@ partial class HitBtcMessageAdapter
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
 
 		if (!message.IsSubscribe)
+		{
+			if (_tradingSocket is not null)
+				await _tradingSocket.SubscribeBalancesAsync(false, cancellationToken);
 			return;
+		}
 
 		await SendOutMessageAsync(new PortfolioMessage
 		{
@@ -80,7 +86,10 @@ partial class HitBtcMessageAdapter
 		}, cancellationToken);
 
 		if (!message.IsHistoryOnly())
-			await _pusherClient.RequestBalanceAsync(message.TransactionId, cancellationToken);
+		{
+			await _tradingSocket.RequestBalanceAsync(message.TransactionId, cancellationToken);
+			await _tradingSocket.SubscribeBalancesAsync(true, cancellationToken);
+		}
 
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
@@ -94,12 +103,16 @@ partial class HitBtcMessageAdapter
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
 
 		if (!message.IsSubscribe)
+		{
+			if (_tradingSocket is not null)
+				await _tradingSocket.SubscribeReportsAsync(false, cancellationToken);
 			return;
+		}
 
-		await _pusherClient.RequestActiveOrdersAsync(message.TransactionId, cancellationToken);
+		await _tradingSocket.RequestActiveOrdersAsync(message.TransactionId, cancellationToken);
 
 		if (!message.IsHistoryOnly())
-			await _pusherClient.SubscribeReportsAsync(cancellationToken);
+			await _tradingSocket.SubscribeReportsAsync(true, cancellationToken);
 
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
@@ -130,8 +143,8 @@ partial class HitBtcMessageAdapter
 				PortfolioName = PortfolioName,
 				OriginalTransactionId = transactionId,
 			}
-			.TryAdd(PositionChangeTypes.CurrentValue, balance.Available.ToDecimal(), true)
-			.TryAdd(PositionChangeTypes.BlockedValue, balance.Reserved.ToDecimal(), true), cancellationToken);
+			.TryAdd(PositionChangeTypes.CurrentValue, balance.Available, true)
+			.TryAdd(PositionChangeTypes.BlockedValue, balance.Reserved, true), cancellationToken);
 		}
 	}
 
@@ -151,7 +164,8 @@ partial class HitBtcMessageAdapter
 		await ProcessOrderAsync(transactionId, order, 0, order.UpdatedAt ?? order.CreatedAt, cancellationToken);
 
 		if (order.TradeId != null)
-			await _pusherClient.RequestBalanceAsync(TransactionIdGenerator.GetNextId(), cancellationToken);
+			await _tradingSocket.RequestBalanceAsync(TransactionIdGenerator.GetNextId(),
+				cancellationToken);
 	}
 
 	private async ValueTask SessionOnNewOrders(long originTransId, Order[] orders, CancellationToken cancellationToken)
@@ -176,16 +190,16 @@ partial class HitBtcMessageAdapter
 		return SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Transactions,
-			SecurityId = order.Symbol.ToStockSharp(),
+			SecurityId = ResolveSecurityId(order.Symbol),
 			ServerTime = time,
 			HasOrderInfo = true,
-			//OrderId = order.Id,
+			OrderId = order.Id,
 			OrderStringId = order.ClientId,
 			TransactionId = transId,
 			OriginalTransactionId = originTransId,
-			Balance = order.Quantity.ToDecimal() - (order.CumQuantity?.ToDecimal() ?? 0),
-			OrderVolume = order.Quantity.ToDecimal(),
-			OrderPrice = order.Price?.ToDecimal() ?? 0,
+			Balance = order.Quantity - order.CumQuantity,
+			OrderVolume = order.Quantity,
+			OrderPrice = order.Price ?? 0,
 			OrderType = order.Type.ToOrderType(order.StopPrice, out var condition),
 			Condition = condition,
 			TimeInForce = order.TimeInForce.ToTimeInForce(),
@@ -195,9 +209,9 @@ partial class HitBtcMessageAdapter
 			Side = order.Side.ToSide(),
 
 			TradeId = order.TradeId,
-			TradePrice = order.TradePrice?.ToDecimal(),
-			TradeVolume = order.TradeQuantity?.ToDecimal(),
-			Commission = order.TradeFee?.ToDecimal(),
+			TradePrice = order.TradePrice,
+			TradeVolume = order.TradeQuantity,
+			Commission = order.TradeFee,
 		}, cancellationToken);
 	}
 

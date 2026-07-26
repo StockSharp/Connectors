@@ -6,8 +6,8 @@ class Balance
 	public string Currency { get; set; }
 
 	[JsonProperty("available")]
-	public double Available { get; set; }
+	public decimal Available { get; set; }
 
 	[JsonProperty("reserved")]
-	public double Reserved { get; set; }
+	public decimal Reserved { get; set; }
 }

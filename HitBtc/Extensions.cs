@@ -42,7 +42,7 @@ static class Extensions
 		}
 	}
 
-	public static OrderTypes ToOrderType(this string type, double? stopPrice, out HitBtcOrderCondition condition)
+	public static OrderTypes ToOrderType(this string type, decimal? stopPrice, out HitBtcOrderCondition condition)
 	{
 		condition = null;
 
@@ -56,7 +56,7 @@ static class Extensions
 			case "stopLimit":
 				condition = new HitBtcOrderCondition
 				{
-					StopPrice = stopPrice?.ToDecimal(),
+					StopPrice = stopPrice,
 				};
 				return OrderTypes.Conditional;
 			default:
@@ -104,7 +104,7 @@ static class Extensions
 				if (tillDate == null)
 					return "GTC";
 				else if (tillDate.Value.IsToday())
-					return "DAY";
+					return "Day";
 				else
 					return "GTD";
 			}
@@ -125,6 +125,7 @@ static class Extensions
 		switch (tif)
 		{
 			case "GTC":
+			case "Day":
 			case "DAY":
 			case "GTD":
 				return TimeInForce.PutInQueue;
@@ -168,7 +169,6 @@ static class Extensions
 		{ TimeSpan.FromHours(1), "H1" },
 		{ TimeSpan.FromHours(4), "H4" },
 		{ TimeSpan.FromDays(1), "D1" },
-		{ TimeSpan.FromDays(3), "D3" },
 		{ TimeSpan.FromDays(7), "D7" },
 		{ TimeSpan.FromTicks(TimeHelper.TicksPerMonth), "1M" },
 	};
@@ -200,12 +200,36 @@ static class Extensions
 
 	public static SecurityId ToStockSharp(this string currency)
 	{
-		currency = currency.Insert(currency.Length - (currency.EndsWithIgnoreCase("USDT") ? 4: 3), "/");
+		currency = currency.ThrowIfEmpty(nameof(currency)).ToUpperInvariant();
+
+		var quote = new[]
+		{
+			"USDT", "USDC", "TUSD", "BUSD", "DAI", "BTC", "ETH", "EUR", "USD", "GBP",
+		}
+		.FirstOrDefault(currency.EndsWithIgnoreCase);
+
+		if (quote is not null && currency.Length > quote.Length)
+			currency = currency.Insert(currency.Length - quote.Length, "/");
 
 		return new SecurityId
 		{
-			SecurityCode = currency.ToUpperInvariant(),
+			SecurityCode = currency,
 			BoardCode = BoardCodes.HitBtc,
 		};
 	}
+
+	public static SecurityId ToStockSharp(this Symbol symbol)
+	{
+		if (symbol is null)
+			throw new ArgumentNullException(nameof(symbol));
+
+		return new SecurityId
+		{
+			SecurityCode = $"{symbol.BaseCurrency}/{symbol.QuoteCurrency}".ToUpperInvariant(),
+			BoardCode = BoardCodes.HitBtc,
+		};
+	}
+
+	public static DateTime FromHitBtcMilliseconds(this long timestamp)
+		=> DateTimeOffset.FromUnixTimeMilliseconds(timestamp).UtcDateTime;
 }

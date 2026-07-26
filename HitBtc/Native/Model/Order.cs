@@ -5,7 +5,7 @@ class Order
 	[JsonProperty("id")]
 	public long Id { get; set; }
 
-	[JsonProperty("clientOrderId")]
+	[JsonProperty("client_order_id")]
 	public string ClientId { get; set; }
 
 	[JsonProperty("symbol")]
@@ -20,42 +20,42 @@ class Order
 	[JsonProperty("status")]
 	public string Status { get; set; }
 
-	[JsonProperty("timeInForce")]
+	[JsonProperty("time_in_force")]
 	public string TimeInForce { get; set; }
 
 	[JsonProperty("price")]
-	public double? Price { get; set; }
+	public decimal? Price { get; set; }
 
 	[JsonProperty("quantity")]
-	public double Quantity { get; set; }
+	public decimal Quantity { get; set; }
 
-	[JsonProperty("cumQuantity")]
-	public double? CumQuantity { get; set; }
+	[JsonProperty("quantity_cumulative")]
+	public decimal CumQuantity { get; set; }
 
-	[JsonProperty("createdAt")]
+	[JsonProperty("created_at")]
 	public DateTime CreatedAt { get; set; }
 
-	[JsonProperty("updatedAt")]
+	[JsonProperty("updated_at")]
 	public DateTime? UpdatedAt { get; set; }
 
-	[JsonProperty("reportType")]
+	[JsonProperty("report_type")]
 	public string ReportType { get; set; }
 
-	[JsonProperty("expireTime")]
+	[JsonProperty("expire_time")]
 	public DateTime? ExpireTime { get; set; }
 
-	[JsonProperty("stopPrice")]
-	public double? StopPrice { get; set; }
+	[JsonProperty("stop_price")]
+	public decimal? StopPrice { get; set; }
 
-	[JsonProperty("tradeQuantity")]
-	public double? TradeQuantity { get; set; }
+	[JsonProperty("trade_quantity")]
+	public decimal? TradeQuantity { get; set; }
 
-	[JsonProperty("tradePrice")]
-	public double? TradePrice { get; set; }
+	[JsonProperty("trade_price")]
+	public decimal? TradePrice { get; set; }
 
-	[JsonProperty("tradeId")]
+	[JsonProperty("trade_id")]
 	public long? TradeId { get; set; }
 
-	[JsonProperty("tradeFee")]
-	public double? TradeFee { get; set; }
+	[JsonProperty("trade_fee")]
+	public decimal? TradeFee { get; set; }
 }

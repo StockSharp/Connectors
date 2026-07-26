@@ -2,33 +2,42 @@ namespace StockSharp.HitBtc.Native.Model;
 
 class Ticker
 {
-	[JsonProperty("bid")]
-	public double? Bid { get; set; }
+	[JsonProperty("b")]
+	public decimal? Bid { get; set; }
 
-	[JsonProperty("ask")]
-	public double? Ask { get; set; }
+	[JsonProperty("B")]
+	public decimal? BidVolume { get; set; }
 
-	[JsonProperty("last")]
-	public double? Last { get; set; }
+	[JsonProperty("a")]
+	public decimal? Ask { get; set; }
 
-	[JsonProperty("open")]
-	public double? Open { get; set; }
+	[JsonProperty("A")]
+	public decimal? AskVolume { get; set; }
 
-	[JsonProperty("high")]
-	public double? High { get; set; }
+	[JsonProperty("c")]
+	public decimal? Last { get; set; }
 
-	[JsonProperty("low")]
-	public double? Low { get; set; }
+	[JsonProperty("o")]
+	public decimal? Open { get; set; }
 
-	[JsonProperty("volume")]
-	public double? Volume { get; set; }
+	[JsonProperty("h")]
+	public decimal? High { get; set; }
 
-	[JsonProperty("volumeQuote")]
-	public double? VolumeQuote { get; set; }
+	[JsonProperty("l")]
+	public decimal? Low { get; set; }
 
-	[JsonProperty("timestamp")]
-	public DateTime Time { get; set; }
+	[JsonProperty("v")]
+	public decimal? Volume { get; set; }
 
-	[JsonProperty("symbol")]
+	[JsonProperty("q")]
+	public decimal? VolumeQuote { get; set; }
+
+	[JsonProperty("t")]
+	public long Timestamp { get; set; }
+
+	[JsonIgnore]
 	public string Symbol { get; set; }
+
+	[JsonIgnore]
+	public DateTime Time => Timestamp.FromHitBtcMilliseconds();
 }

@@ -1,25 +1,19 @@
 namespace StockSharp.HitBtc.Native.Model;
 
-class OrderBookEntry
-{
-	[JsonProperty("price")]
-	public decimal Price { get; set; }
-
-	[JsonProperty("size")]
-	public decimal Size { get; set; }
-}
-
 class OrderBook
 {
-	[JsonProperty("bid")]
-	public OrderBookEntry[] Bids { get; set; }
+	[JsonProperty("b")]
+	public decimal[][] Bids { get; set; }
 
-	[JsonProperty("ask")]
-	public OrderBookEntry[] Asks { get; set; }
+	[JsonProperty("a")]
+	public decimal[][] Asks { get; set; }
 
-	[JsonProperty("symbol")]
+	[JsonIgnore]
 	public string Symbol { get; set; }
 
-	[JsonProperty("sequence")]
+	[JsonProperty("s")]
 	public long Sequence { get; set; }
+
+	[JsonProperty("t")]
+	public long Timestamp { get; set; }
 }

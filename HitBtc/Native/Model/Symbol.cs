@@ -2,27 +2,33 @@ namespace StockSharp.HitBtc.Native.Model;
 
 class Symbol
 {
-	[JsonProperty("id")]
+	[JsonIgnore]
 	public string Id { get; set; }
 
-	[JsonProperty("baseCurrency")]
+	[JsonProperty("type")]
+	public string Type { get; set; }
+
+	[JsonProperty("base_currency")]
 	public string BaseCurrency { get; set; }
 
-	[JsonProperty("quoteCurrency")]
+	[JsonProperty("quote_currency")]
 	public string QuoteCurrency { get; set; }
 
-	[JsonProperty("quantityIncrement")]
+	[JsonProperty("status")]
+	public string Status { get; set; }
+
+	[JsonProperty("quantity_increment")]
 	public decimal QuantityIncrement { get; set; }
 
-	[JsonProperty("tickSize")]
+	[JsonProperty("tick_size")]
 	public decimal TickSize { get; set; }
 
-	[JsonProperty("takeLiquidityRate")]
+	[JsonProperty("take_rate")]
 	public decimal TakeLiquidityRate { get; set; }
 
-	[JsonProperty("provideLiquidityRate")]
+	[JsonProperty("make_rate")]
 	public decimal ProvideLiquidityRate { get; set; }
 
-	[JsonProperty("feeCurrency")]
+	[JsonProperty("fee_currency")]
 	public string FeeCurrency { get; set; }
 }

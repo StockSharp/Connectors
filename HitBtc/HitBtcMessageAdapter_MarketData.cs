@@ -2,131 +2,239 @@ namespace StockSharp.HitBtc;
 
 partial class HitBtcMessageAdapter
 {
-	private readonly SynchronizedSet<string> _orderBooks = new(StringComparer.InvariantCultureIgnoreCase);
-	private readonly SynchronizedDictionary<long, DateTime?> _tickSubscriptionEndDates = new();
+	private readonly SynchronizedDictionary<string, SecurityId> _securityIds =
+		new(StringComparer.OrdinalIgnoreCase);
+	private readonly SynchronizedSet<SecurityId> _level1Subscriptions = [];
+	private readonly SynchronizedSet<SecurityId> _bookSubscriptions = [];
+	private readonly SynchronizedSet<SecurityId> _tradeSubscriptions = [];
+	private readonly SynchronizedSet<(SecurityId securityId, TimeSpan timeFrame)>
+		_candleSubscriptions = [];
 
 	/// <inheritdoc />
-	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
+	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg,
+		CancellationToken cancellationToken)
 	{
-		var transId = lookupMsg.TransactionId;
-		await _pusherClient.RequestSymbolsAsync(transId, cancellationToken);
-	}
+		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
 
-	/// <inheritdoc />
-	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
-	{
-		var transactionId = mdMsg.TransactionId;
-		var currency = mdMsg.SecurityId.ToCurrency();
+		var symbols = await _restClient.GetSymbolsAsync(cancellationToken) ?? [];
+		var securityTypes = lookupMsg.GetSecurityTypes();
 
-		await SendSubscriptionReplyAsync(transactionId, cancellationToken);
-
-		if (mdMsg.IsSubscribe)
+		foreach (var symbol in symbols)
 		{
-			await _pusherClient.SubscribeTickerAsync(currency, transactionId, cancellationToken);
-			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
-		}
-		else
-			await _pusherClient.UnSubscribeTickerAsync(currency, transactionId, cancellationToken);
-	}
+			if (symbol.Id.IsEmpty() || symbol.BaseCurrency.IsEmpty() ||
+				symbol.QuoteCurrency.IsEmpty() || !symbol.Type.EqualsIgnoreCase("spot"))
+				continue;
 
-	/// <inheritdoc />
-	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
-	{
-		var transactionId = mdMsg.TransactionId;
-		var currency = mdMsg.SecurityId.ToCurrency();
-
-		await SendSubscriptionReplyAsync(transactionId, cancellationToken);
-
-		if (mdMsg.IsSubscribe)
-		{
-			await _pusherClient.SubscribeOrderBookAsync(currency, transactionId, cancellationToken);
-			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
-		}
-		else
-			await _pusherClient.UnSubscribeOrderBookAsync(currency, transactionId, cancellationToken);
-	}
-
-	/// <inheritdoc />
-	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
-	{
-		var transactionId = mdMsg.TransactionId;
-		var currency = mdMsg.SecurityId.ToCurrency();
-
-		await SendSubscriptionReplyAsync(transactionId, cancellationToken);
-
-		if (mdMsg.IsSubscribe)
-		{
-			if (mdMsg.To != null)
+			var securityId = symbol.ToStockSharp();
+			var security = new SecurityMessage
 			{
-				_tickSubscriptionEndDates.Add(transactionId, mdMsg.To);
+				SecurityId = securityId,
+				OriginalTransactionId = lookupMsg.TransactionId,
+				PriceStep = symbol.TickSize,
+				VolumeStep = symbol.QuantityIncrement,
+			}.FillDefaultCryptoFields();
 
-				var trades = await _httpClient.GetTradesAsync(currency, "ASC", "timestamp", (long?)mdMsg.From?.ToUnix(), (long?)mdMsg.To?.ToUnix(), mdMsg.Count, null, cancellationToken);
+			if (!security.IsMatch(lookupMsg, securityTypes))
+				continue;
 
-				await ProcessTicksAsync(transactionId, mdMsg.SecurityId, trades, cancellationToken);
+			RememberSecurity(symbol.Id, securityId);
+			await SendOutMessageAsync(security, cancellationToken);
+
+			await SendOutMessageAsync(new Level1ChangeMessage
+			{
+				SecurityId = securityId,
+				ServerTime = CurrentTime,
 			}
-			else
-				await _pusherClient.SubscribeTradesAsync(currency, transactionId, cancellationToken);
+			.TryAdd(Level1Fields.State, symbol.Status.EqualsIgnoreCase("working")
+				? SecurityStates.Trading
+				: SecurityStates.Stoped)
+			.TryAdd(Level1Fields.CommissionTaker, symbol.TakeLiquidityRate)
+			.TryAdd(Level1Fields.CommissionMaker, symbol.ProvideLiquidityRate), cancellationToken);
+		}
+
+		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+	}
+
+	/// <inheritdoc />
+	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
+	{
+		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+		var symbol = mdMsg.SecurityId.ToCurrency();
+		RememberSecurity(symbol, mdMsg.SecurityId);
+
+		if (mdMsg.IsSubscribe)
+		{
+			if (_level1Subscriptions.TryAdd(mdMsg.SecurityId))
+				await _publicSocket.SubscribeTickerAsync(symbol, mdMsg.TransactionId,
+					cancellationToken);
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
-		else
+		else if (_level1Subscriptions.Remove(mdMsg.SecurityId))
 		{
-			await _pusherClient.UnSubscribeTradesAsync(currency, transactionId, cancellationToken);
+			await _publicSocket.UnsubscribeTickerAsync(symbol, mdMsg.TransactionId,
+				cancellationToken);
 		}
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
+	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
-		var transactionId = mdMsg.TransactionId;
-		var currency = mdMsg.SecurityId.ToCurrency();
-
-		await SendSubscriptionReplyAsync(transactionId, cancellationToken);
-
-		var tf = mdMsg.GetTimeFrame();
-		var tfName = tf.ToNative();
+		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+		var symbol = mdMsg.SecurityId.ToCurrency();
+		RememberSecurity(symbol, mdMsg.SecurityId);
 
 		if (mdMsg.IsSubscribe)
 		{
-			if (mdMsg.To == null)
-				await _pusherClient.SubscribeCandlesAsync(currency, tfName, transactionId, cancellationToken);
+			if (_bookSubscriptions.TryAdd(mdMsg.SecurityId))
+				await _publicSocket.SubscribeOrderBookAsync(symbol, mdMsg.TransactionId,
+					cancellationToken);
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
-		else
-			await _pusherClient.UnSubscribeCandlesAsync(currency, tfName, transactionId, cancellationToken);
+		else if (_bookSubscriptions.Remove(mdMsg.SecurityId))
+		{
+			await _publicSocket.UnsubscribeOrderBookAsync(symbol, mdMsg.TransactionId,
+				cancellationToken);
+		}
 	}
 
-	private ValueTask SessionOnTickerChanged(Ticker ticker, CancellationToken cancellationToken)
+	/// <inheritdoc />
+	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
+		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+		var symbol = mdMsg.SecurityId.ToCurrency();
+		RememberSecurity(symbol, mdMsg.SecurityId);
+
+		if (!mdMsg.IsSubscribe)
+		{
+			if (_tradeSubscriptions.Remove(mdMsg.SecurityId))
+				await _publicSocket.UnsubscribeTradesAsync(symbol, mdMsg.TransactionId,
+					cancellationToken);
+			return;
+		}
+
+		if (mdMsg.Count is <= 0)
+		{
+			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
+			return;
+		}
+
+		if (mdMsg.From is not null || mdMsg.To is not null || mdMsg.IsHistoryOnly())
+		{
+			var trades = await _restClient.GetTradesAsync(symbol, mdMsg.From, mdMsg.To,
+				mdMsg.Count, cancellationToken) ?? [];
+
+			await ProcessTicksAsync(mdMsg.TransactionId, mdMsg.SecurityId,
+				trades.OrderBy(static trade => trade.Time).ThenBy(static trade => trade.Id),
+				cancellationToken);
+		}
+
+		if (mdMsg.IsHistoryOnly())
+		{
+			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
+			return;
+		}
+
+		if (_tradeSubscriptions.TryAdd(mdMsg.SecurityId))
+			await _publicSocket.SubscribeTradesAsync(symbol, mdMsg.TransactionId,
+				cancellationToken);
+
+		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+	}
+
+	/// <inheritdoc />
+	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
+	{
+		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+		var symbol = mdMsg.SecurityId.ToCurrency();
+		var timeFrame = mdMsg.GetTimeFrame();
+		var period = timeFrame.ToNative();
+		var subscription = (mdMsg.SecurityId, timeFrame);
+		RememberSecurity(symbol, mdMsg.SecurityId);
+
+		if (!mdMsg.IsSubscribe)
+		{
+			if (_candleSubscriptions.Remove(subscription))
+				await _publicSocket.UnsubscribeCandlesAsync(symbol, period, mdMsg.TransactionId,
+					cancellationToken);
+			return;
+		}
+
+		if (mdMsg.Count is <= 0)
+		{
+			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
+			return;
+		}
+
+		if (mdMsg.From is not null || mdMsg.To is not null || mdMsg.IsHistoryOnly())
+		{
+			var candles = await _restClient.GetCandlesAsync(symbol, period, mdMsg.From, mdMsg.To,
+				mdMsg.Count, cancellationToken) ?? [];
+
+			foreach (var candle in candles.OrderBy(static candle => candle.Time))
+			{
+				await ProcessCandleAsync(symbol, period, candle, mdMsg.TransactionId,
+					candle.Time + timeFrame <= CurrentTime
+						? CandleStates.Finished
+						: CandleStates.Active,
+					cancellationToken);
+			}
+		}
+
+		if (mdMsg.IsHistoryOnly())
+		{
+			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
+			return;
+		}
+
+		if (_candleSubscriptions.TryAdd(subscription))
+			await _publicSocket.SubscribeCandlesAsync(symbol, period, mdMsg.TransactionId,
+				cancellationToken);
+
+		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+	}
+
+	private ValueTask SessionOnTickerChanged(Ticker ticker,
+		CancellationToken cancellationToken)
+	{
+		var securityId = ResolveSecurityId(ticker.Symbol);
+
+		if (!_level1Subscriptions.Contains(securityId))
+			return default;
+
 		return SendOutMessageAsync(new Level1ChangeMessage
 		{
-			SecurityId = ticker.Symbol.ToStockSharp(),
+			SecurityId = securityId,
 			ServerTime = ticker.Time,
 		}
-		.TryAdd(Level1Fields.OpenPrice, ticker.Open?.ToDecimal())
-		.TryAdd(Level1Fields.HighPrice, ticker.High?.ToDecimal())
-		.TryAdd(Level1Fields.LowPrice, ticker.Low?.ToDecimal())
-		.TryAdd(Level1Fields.LastTradePrice, ticker.Last?.ToDecimal())
-		.TryAdd(Level1Fields.BestBidPrice, ticker.Bid?.ToDecimal())
-		.TryAdd(Level1Fields.BestAskPrice, ticker.Ask?.ToDecimal())
-		.TryAdd(Level1Fields.Volume, ticker.Volume?.ToDecimal()), cancellationToken);
+		.TryAdd(Level1Fields.OpenPrice, ticker.Open)
+		.TryAdd(Level1Fields.HighPrice, ticker.High)
+		.TryAdd(Level1Fields.LowPrice, ticker.Low)
+		.TryAdd(Level1Fields.LastTradePrice, ticker.Last)
+		.TryAdd(Level1Fields.BestBidPrice, ticker.Bid)
+		.TryAdd(Level1Fields.BestBidVolume, ticker.BidVolume)
+		.TryAdd(Level1Fields.BestAskPrice, ticker.Ask)
+		.TryAdd(Level1Fields.BestAskVolume, ticker.AskVolume)
+		.TryAdd(Level1Fields.Volume, ticker.Volume), cancellationToken);
 	}
 
-	private async ValueTask SessionOnNewTrades(long transactionId, string symbol, IEnumerable<Trade> trades, CancellationToken cancellationToken)
+	private ValueTask SessionOnNewTrades(string symbol, IEnumerable<Trade> trades,
+		CancellationToken cancellationToken)
 	{
-		await ProcessTicksAsync(transactionId, symbol.ToStockSharp(), trades, cancellationToken);
+		var securityId = ResolveSecurityId(symbol);
 
-		if (transactionId != 0 && _tickSubscriptionEndDates.TryGetValue(transactionId, out var date))
-		{
-			if (date == null)
-				await _pusherClient.SubscribeTradesAsync(symbol, transactionId, cancellationToken);
-			else
-				await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
-		}
+		return _tradeSubscriptions.Contains(securityId)
+			? ProcessTicksAsync(0, securityId, trades, cancellationToken)
+			: default;
 	}
 
-	private async ValueTask ProcessTicksAsync(long transactionId, SecurityId securityId, IEnumerable<Trade> trades, CancellationToken cancellationToken)
+	private async ValueTask ProcessTicksAsync(long transactionId, SecurityId securityId,
+		IEnumerable<Trade> trades, CancellationToken cancellationToken)
 	{
 		foreach (var trade in trades)
 		{
@@ -137,73 +245,80 @@ partial class HitBtcMessageAdapter
 				TradeId = trade.Id,
 				TradePrice = trade.Price,
 				TradeVolume = trade.Quantity,
+				OriginSide = trade.Side.ToSide(),
 				OriginalTransactionId = transactionId,
-				ServerTime = CurrentTime,
+				ServerTime = trade.Time,
+				SeqNum = trade.Id,
 			}, cancellationToken);
 		}
 	}
 
-	private ValueTask SessionOnOrderBookChanged(OrderBook book, CancellationToken cancellationToken)
+	private ValueTask SessionOnOrderBookChanged(OrderBook book, QuoteChangeStates state,
+		CancellationToken cancellationToken)
 	{
-		var state = _orderBooks.TryAdd(book.Symbol) ? QuoteChangeStates.SnapshotComplete : QuoteChangeStates.Increment;
+		var securityId = ResolveSecurityId(book.Symbol);
 
-		QuoteChange ToChange(OrderBookEntry entry)
-			=> new(entry.Price, entry.Size);
+		if (!_bookSubscriptions.Contains(securityId))
+			return default;
+
+		QuoteChange[] ToQuotes(decimal[][] levels)
+			=> [.. (levels ?? [])
+				.Where(static level => level is { Length: >= 2 })
+				.Where(level => state == QuoteChangeStates.Increment || level[1] != 0)
+				.Select(static level => new QuoteChange(level[0], level[1]))];
 
 		return SendOutMessageAsync(new QuoteChangeMessage
 		{
-			SecurityId = book.Symbol.ToStockSharp(),
-			Bids = book.Bids?.Select(ToChange).ToArray() ?? [],
-			Asks = book.Asks?.Select(ToChange).ToArray() ?? [],
+			SecurityId = securityId,
+			Bids = ToQuotes(book.Bids),
+			Asks = ToQuotes(book.Asks),
 			State = state,
-			ServerTime = CurrentTime,
+			ServerTime = book.Timestamp.FromHitBtcMilliseconds(),
+			SeqNum = book.Sequence,
 		}, cancellationToken);
 	}
 
-	private ValueTask SessionOnNewCandle(string symbol, string timeFrame, Ohlc candle, CancellationToken cancellationToken)
+	private ValueTask SessionOnNewCandle(string symbol, string period, Ohlc candle,
+		CancellationToken cancellationToken)
 	{
-		return ProcessCandleAsync(symbol, timeFrame, candle, 0, cancellationToken);
+		var timeFrame = period.ToTimeFrame();
+		var securityId = ResolveSecurityId(symbol);
+
+		return _candleSubscriptions.Contains((securityId, timeFrame))
+			? ProcessCandleAsync(symbol, period, candle, 0,
+				candle.Time + timeFrame <= CurrentTime
+					? CandleStates.Finished
+					: CandleStates.Active,
+				cancellationToken)
+			: default;
 	}
 
-	private ValueTask ProcessCandleAsync(string symbol, string timeFrame, Ohlc candle, long originTransId, CancellationToken cancellationToken)
+	private ValueTask ProcessCandleAsync(string symbol, string period, Ohlc candle,
+		long originTransId, CandleStates state, CancellationToken cancellationToken)
 	{
 		return SendOutMessageAsync(new TimeFrameCandleMessage
 		{
-			SecurityId = symbol.ToStockSharp(),
-			TypedArg = timeFrame.ToTimeFrame(),
+			SecurityId = ResolveSecurityId(symbol),
+			TypedArg = period.ToTimeFrame(),
 			OpenPrice = candle.Open,
 			ClosePrice = candle.Close,
 			HighPrice = candle.High,
 			LowPrice = candle.Low,
 			TotalVolume = candle.Volume,
 			OpenTime = candle.Time,
-			State = CandleStates.Finished,
+			State = state,
 			OriginalTransactionId = originTransId,
 		}, cancellationToken);
 	}
 
-	private async ValueTask SessionOnNewSymbols(long transactionId, IEnumerable<Symbol> symbols, CancellationToken cancellationToken)
+	private void RememberSecurity(string symbol, SecurityId securityId)
 	{
-		foreach (var symbol in symbols)
-		{
-			await SendOutMessageAsync(new SecurityMessage
-			{
-				SecurityId = symbol.Id.ToStockSharp(),
-				OriginalTransactionId = transactionId,
-				SecurityType = SecurityTypes.CryptoCurrency,
-				PriceStep = symbol.TickSize,
-				VolumeStep = symbol.QuantityIncrement,
-			}.TryFillUnderlyingId(symbol.BaseCurrency.ToUpperInvariant()), cancellationToken);
-
-			await SendOutMessageAsync(new Level1ChangeMessage
-			{
-				SecurityId = symbol.Id.ToStockSharp(),
-				ServerTime = CurrentTime,
-			}
-			.TryAdd(Level1Fields.CommissionTaker, symbol.TakeLiquidityRate)
-			.TryAdd(Level1Fields.CommissionMaker, symbol.ProvideLiquidityRate), cancellationToken);
-		}
-
-		await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
+		if (!symbol.IsEmpty())
+			_securityIds[symbol] = securityId;
 	}
+
+	private SecurityId ResolveSecurityId(string symbol)
+		=> _securityIds.TryGetValue(symbol, out var securityId)
+			? securityId
+			: symbol.ToStockSharp();
 }

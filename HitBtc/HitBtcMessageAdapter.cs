@@ -2,8 +2,9 @@ namespace StockSharp.HitBtc;
 
 partial class HitBtcMessageAdapter
 {
-	private HttpClient _httpClient;
-	private PusherClient _pusherClient;
+	private HitBtcRestClient _restClient;
+	private HitBtcSocketClient _publicSocket;
+	private HitBtcSocketClient _tradingSocket;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="HitBtcMessageAdapter"/>.
@@ -12,7 +13,7 @@ partial class HitBtcMessageAdapter
 	public HitBtcMessageAdapter(IdGenerator transactionIdGenerator)
 		: base(transactionIdGenerator)
 	{
-		//HeartbeatInterval = TimeSpan.FromSeconds(1);
+		HeartbeatInterval = TimeSpan.FromSeconds(15);
 
 		this.AddMarketDataSupport();
 		this.AddTransactionalSupport();
@@ -26,7 +27,8 @@ partial class HitBtcMessageAdapter
 
 	/// <inheritdoc />
 	public override bool IsAllDownloadingSupported(DataType dataType)
-		=> dataType == DataType.Securities || dataType == DataType.Transactions || dataType == DataType.PositionChanges || base.IsAllDownloadingSupported(dataType);
+		=> dataType == DataType.Securities || dataType == DataType.Transactions ||
+			dataType == DataType.PositionChanges || base.IsAllDownloadingSupported(dataType);
 
 	/// <inheritdoc />
 	public override bool IsSupportCandlesUpdates(MarketDataMessage subscription) => true;
@@ -37,39 +39,15 @@ partial class HitBtcMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards => [BoardCodes.HitBtc];
 
-	private void SubscribePusherClient()
-	{
-		_pusherClient.StateChanged += SendOutConnectionStateAsync;
-		_pusherClient.Error += SendOutErrorAsync;
-		_pusherClient.TickerChanged += SessionOnTickerChanged;
-		_pusherClient.OrderBookChanged += SessionOnOrderBookChanged;
-		_pusherClient.NewTrades += SessionOnNewTrades;
-		_pusherClient.NewCandle += SessionOnNewCandle;
-		_pusherClient.NewSymbols += SessionOnNewSymbols;
-		_pusherClient.NewOrders += SessionOnNewOrders;
-		_pusherClient.OrderChanged += SessionOnOrderChanged;
-		_pusherClient.BalanceChanged += SessionOnBalanceChanged;
-		_pusherClient.OrderError += SessionOnOrderError;
-	}
-
-	private void UnsubscribePusherClient()
-	{
-		_pusherClient.StateChanged -= SendOutConnectionStateAsync;
-		_pusherClient.Error -= SendOutErrorAsync;
-		_pusherClient.TickerChanged -= SessionOnTickerChanged;
-		_pusherClient.OrderBookChanged -= SessionOnOrderBookChanged;
-		_pusherClient.NewTrades -= SessionOnNewTrades;
-		_pusherClient.NewCandle -= SessionOnNewCandle;
-		_pusherClient.NewSymbols -= SessionOnNewSymbols;
-		_pusherClient.NewOrders -= SessionOnNewOrders;
-		_pusherClient.OrderChanged -= SessionOnOrderChanged;
-		_pusherClient.BalanceChanged -= SessionOnBalanceChanged;
-		_pusherClient.OrderError -= SessionOnOrderError;
-	}
-
 	/// <inheritdoc />
-	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg,
+		CancellationToken cancellationToken)
 	{
+		_ = connectMsg;
+
+		if (_restClient is not null || _publicSocket is not null || _tradingSocket is not null)
+			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
+
 		if (this.IsTransactional())
 		{
 			if (Key.IsEmpty())
@@ -79,69 +57,147 @@ partial class HitBtcMessageAdapter
 				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 		}
 
-		if (_httpClient != null)
-			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
+		ClearState();
+		_restClient = new(RestEndpoint, Key, Secret) { Parent = this };
 
-		if (_pusherClient != null)
-			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
+		await SendOutConnectionStateAsync(ConnectionStates.Connecting, cancellationToken);
 
-		_httpClient = new HttpClient(RestEndpoint) { Parent = this };
+		try
+		{
+			if (this.IsTransactional())
+			{
+				_tradingSocket = CreateTradingSocket();
+				await _tradingSocket.ConnectAsync(cancellationToken);
+			}
 
-		_pusherClient = new PusherClient(RestEndpoint, WebSocketEndpoint, Key, Secret, ReConnectionSettings.WorkingTime) { Parent = this };
-		SubscribePusherClient();
-		await _pusherClient.ConnectAsync(cancellationToken);
+			_publicSocket = CreatePublicSocket();
+			await _publicSocket.ConnectAsync(cancellationToken);
+			await SendOutConnectionStateAsync(ConnectionStates.Connected, cancellationToken);
+		}
+		catch
+		{
+			await DisposeClientsAsync(cancellationToken);
+			await SendOutConnectionStateAsync(ConnectionStates.Disconnected, cancellationToken);
+			throw;
+		}
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
+	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg,
+		CancellationToken cancellationToken)
 	{
-		if (_httpClient == null)
+		_ = disconnectMsg;
+
+		if (_restClient is null || _publicSocket is null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		if (_pusherClient == null)
-			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
-
-		_httpClient.Dispose();
-		_httpClient = null;
-
-		await _pusherClient.DisconnectAsync(cancellationToken);
+		await SendOutConnectionStateAsync(ConnectionStates.Disconnecting, cancellationToken);
+		await DisposeClientsAsync(cancellationToken);
+		await SendOutConnectionStateAsync(ConnectionStates.Disconnected, cancellationToken);
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
+	protected override async ValueTask ResetAsync(ResetMessage resetMsg,
+		CancellationToken cancellationToken)
 	{
-		if (_httpClient != null)
+		await DisposeClientsAsync(cancellationToken);
+		ClearState();
+		await base.ResetAsync(resetMsg, cancellationToken);
+	}
+
+	/// <inheritdoc />
+	protected override async ValueTask TimeAsync(TimeMessage timeMsg,
+		CancellationToken cancellationToken)
+	{
+		_ = timeMsg;
+
+		if (_publicSocket is not null)
+			await _publicSocket.PingAsync(cancellationToken);
+
+		if (_tradingSocket is not null)
+			await _tradingSocket.PingAsync(cancellationToken);
+	}
+
+	private HitBtcSocketClient CreatePublicSocket()
+	{
+		var client = new HitBtcSocketClient(WebSocketEndpoint, false, Key, Secret,
+			ReConnectionSettings.WorkingTime, ReConnectionSettings.ReAttemptCount)
+		{
+			Parent = this,
+		};
+
+		client.TickerChanged += SessionOnTickerChanged;
+		client.OrderBookChanged += SessionOnOrderBookChanged;
+		client.NewTrades += SessionOnNewTrades;
+		client.NewCandle += SessionOnNewCandle;
+		client.Error += SendOutErrorAsync;
+		client.StateChanged += OnPublicSocketStateAsync;
+		return client;
+	}
+
+	private HitBtcSocketClient CreateTradingSocket()
+	{
+		var client = new HitBtcSocketClient(TradingWebSocketEndpoint, true, Key, Secret,
+			ReConnectionSettings.WorkingTime, ReConnectionSettings.ReAttemptCount)
+		{
+			Parent = this,
+		};
+
+		client.NewOrders += SessionOnNewOrders;
+		client.OrderChanged += SessionOnOrderChanged;
+		client.BalanceChanged += SessionOnBalanceChanged;
+		client.OrderError += SessionOnOrderError;
+		client.Error += SendOutErrorAsync;
+		client.StateChanged += OnTradingSocketStateAsync;
+		return client;
+	}
+
+	private async ValueTask OnPublicSocketStateAsync(ConnectionStates state,
+		CancellationToken cancellationToken)
+	{
+		if (state is ConnectionStates.Restored or ConnectionStates.Failed)
+			await SendOutConnectionStateAsync(state, cancellationToken);
+	}
+
+	private async ValueTask OnTradingSocketStateAsync(ConnectionStates state,
+		CancellationToken cancellationToken)
+	{
+		if (state == ConnectionStates.Failed)
+			await SendOutConnectionStateAsync(state, cancellationToken);
+	}
+
+	private async ValueTask DisposeClientsAsync(CancellationToken cancellationToken)
+	{
+		var tradingSocket = _tradingSocket;
+		var publicSocket = _publicSocket;
+		_tradingSocket = null;
+		_publicSocket = null;
+
+		foreach (var client in new[] { tradingSocket, publicSocket }
+			.Where(static client => client is not null))
 		{
 			try
 			{
-				_httpClient.Dispose();
+				await client.DisconnectAsync(cancellationToken);
 			}
-			catch (Exception ex)
+			catch (Exception error) when (!cancellationToken.IsCancellationRequested)
 			{
-				await SendOutErrorAsync(ex, cancellationToken);
+				await SendOutErrorAsync(error, cancellationToken);
 			}
 
-			_httpClient = null;
+			client.Dispose();
 		}
 
-		if (_pusherClient != null)
-		{
-			try
-			{
-				UnsubscribePusherClient();
-				await _pusherClient.DisconnectAsync(cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				await SendOutErrorAsync(ex, cancellationToken);
-			}
+		_restClient?.Dispose();
+		_restClient = null;
+	}
 
-			_pusherClient = null;
-		}
-
-		_orderBooks.Clear();
-		_tickSubscriptionEndDates.Clear();
-
-		await SendOutMessageAsync(new ResetMessage(), cancellationToken);
+	private void ClearState()
+	{
+		_securityIds.Clear();
+		_level1Subscriptions.Clear();
+		_bookSubscriptions.Clear();
+		_tradeSubscriptions.Clear();
+		_candleSubscriptions.Clear();
 	}
 }
