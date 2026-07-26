@@ -48,6 +48,7 @@
     <Project Path="CTP/Ctp.csproj" />
     <Project Path="Databento/Databento.csproj" />
     <Project Path="Daishin/Daishin.csproj" />
+    <Project Path="Definedge/Definedge.csproj" />
     <Project Path="Deriv/Deriv.csproj" />
     <Project Path="Deribit/Deribit.csproj" />
     <Project Path="Dhan/Dhan.csproj" />
