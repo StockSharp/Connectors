@@ -3,7 +3,7 @@ namespace StockSharp.Cetus.Native;
 sealed class CetusApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 1024 * 1024;
-	private const int _routerVersion = 1_010_601;
+	private const int _routerVersion = 1_010_607;
 
 	private readonly HttpClient _httpClient;
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
