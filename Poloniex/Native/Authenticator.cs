@@ -1,41 +1,46 @@
 namespace StockSharp.Poloniex.Native;
 
-using System.Security.Cryptography;
-
-class Authenticator : Disposable
+sealed class Authenticator : Disposable
 {
-	private readonly HashAlgorithm _hasher;
+	private readonly byte[] _secret;
+	private long _lastTimestamp;
 
 	public Authenticator(bool canSign, SecureString key, SecureString secret)
 	{
 		CanSign = canSign;
 		Key = key;
-		Secret = secret;
-		_hasher = CanSign ? new HMACSHA512(secret.UnSecure().UTF8()) : null;
+		_secret = CanSign ? secret.UnSecure().UTF8() : null;
 	}
 
 	protected override void DisposeManaged()
 	{
-		_hasher?.Dispose();
+		if (_secret is not null)
+			CryptographicOperations.ZeroMemory(_secret);
+
 		base.DisposeManaged();
 	}
 
 	public bool CanSign { get; }
 	public SecureString Key { get; }
-	public SecureString Secret { get; }
 
-	private readonly UTCMillisecondIdGenerator _nonceGen = new();
+	public long GetTimestamp()
+	{
+		while (true)
+		{
+			var current = Interlocked.Read(ref _lastTimestamp);
+			var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+			var next = Math.Max(now, current + 1);
 
-	public long GetNonce() => _nonceGen.GetNextId();
+			if (Interlocked.CompareExchange(ref _lastTimestamp, next, current) == current)
+				return next;
+		}
+	}
 
 	public string Sign(string data)
 	{
 		if (!CanSign)
-			throw new InvalidOperationException();
+			throw new InvalidOperationException("Poloniex credentials are required for signing.");
 
-		return _hasher
-			.ComputeHash(data.UTF8())
-			.Digest()
-			.ToLowerInvariant();
+		return Convert.ToBase64String(HMACSHA256.HashData(_secret, data.UTF8()));
 	}
 }

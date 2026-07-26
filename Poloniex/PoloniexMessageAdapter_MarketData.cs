@@ -3,311 +3,266 @@ namespace StockSharp.Poloniex;
 partial class PoloniexMessageAdapter
 {
 	private int _level1Counter;
-	//private int _trollboxCounter;
-	private readonly SynchronizedPairSet<int, SecurityId> _tickerIds = [];
-	private readonly SynchronizedPairSet<int, SecurityId> _currencyIds = [];
-
-	private readonly HashSet<SecurityId> _wsSubscriptions = [];
 	private readonly SynchronizedSet<SecurityId> _wsBookSubscriptions = [];
 	private readonly SynchronizedSet<SecurityId> _wsTradesSubscriptions = [];
 
-	private async Task EnsureIdAsync(CancellationToken cancellationToken)
-	{
-		if (_tickerIds.Count == 0)
-		{
-			foreach (var pair in await _httpClient.GetTickersAsync(cancellationToken))
-				_tickerIds[pair.Value.TickerId] = pair.Key.ToStockSharp();
-		}
-
-		if (_currencyIds.Count == 0)
-		{
-			var currencies = await _httpClient.GetCurrenciesAsync(cancellationToken);
-
-			foreach (var pair in currencies)
-				_currencyIds[pair.Value.Id] = pair.Key.ToStockSharp();
-		}
-	}
-
-	private async Task<int> EnsureTickerIdAsync(SecurityId secId, CancellationToken cancellationToken)
-	{
-		await EnsureIdAsync(cancellationToken);
-
-		if (_tickerIds.TryGetKey(secId, out var tickerId))
-			return tickerId;
-
-		throw new ArgumentOutOfRangeException(nameof(secId), secId, LocalizedStrings.InvalidValue);
-	}
-
-	private SecurityId EnsureSecId(int tickerId, bool isCurrency = false)
-	{
-		if (isCurrency)
-		{
-			if (_currencyIds.TryGetValue(tickerId, out var secId))
-				return secId;
-		}
-		else
-		{
-			if (_tickerIds.TryGetValue(tickerId, out var secId))
-				return secId;
-		}
-
-		throw new ArgumentOutOfRangeException(nameof(tickerId), tickerId, LocalizedStrings.InvalidValue);
-	}
-
 	/// <inheritdoc />
-	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
+	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg,
+		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
-		var secTypes = lookupMsg.GetSecurityTypes();
 
-		var tickers = await _httpClient.GetTickersAsync(cancellationToken);
+		var markets = await _restClient.GetMarketsAsync(cancellationToken) ?? [];
+		var tickers = (await _restClient.GetTickersAsync(cancellationToken) ?? [])
+			.Where(static ticker => !ticker.Symbol.IsEmpty())
+			.ToDictionary(static ticker => ticker.Symbol, StringComparer.OrdinalIgnoreCase);
+		var securityTypes = lookupMsg.GetSecurityTypes();
 
-		foreach (var pair in tickers)
+		foreach (var market in markets)
 		{
-			var secId = pair.Key.ToStockSharp();
-			var ticker = pair.Value;
-
-			_tickerIds[ticker.TickerId] = secId;
-
-			var secMsg = new SecurityMessage
-			{
-				SecurityId = secId,
-				OriginalTransactionId = lookupMsg.TransactionId,
-			}.FillDefaultCryptoFields();
-
-			if (!secMsg.IsMatch(lookupMsg, secTypes))
+			if (market.Symbol.IsEmpty())
 				continue;
 
-			await SendOutMessageAsync(secMsg, cancellationToken);
+			var securityId = market.Symbol.ToStockSharp();
+			var tradeLimit = market.TradeLimit;
+			var security = new SecurityMessage
+			{
+				SecurityId = securityId,
+				OriginalTransactionId = lookupMsg.TransactionId,
+				PriceStep = ToStep(tradeLimit?.PriceScale),
+				VolumeStep = ToStep(tradeLimit?.QuantityScale),
+				MinVolume = Positive(tradeLimit?.MinQuantity),
+			}.FillDefaultCryptoFields();
 
-			await SessionOnTickerChanged(ticker.TickerId, ticker, cancellationToken);
-		}
+			if (!security.IsMatch(lookupMsg, securityTypes))
+				continue;
 
-		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+			await SendOutMessageAsync(security, cancellationToken);
 
-		var currencies = await _httpClient.GetCurrenciesAsync(cancellationToken);
-
-		foreach (var pair in currencies)
-		{
-			var secId = pair.Key.ToStockSharp();
-
-			_currencyIds[pair.Value.Id] = secId;
+			if (tickers.TryGetValue(market.Symbol, out var ticker))
+				await SessionOnTickerChanged(ticker, cancellationToken);
 
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
-				SecurityId = secId,
+				SecurityId = securityId,
 				ServerTime = CurrentTime,
-			}.TryAdd(Level1Fields.CommissionTaker, (decimal?)pair.Value.TxFee), cancellationToken);
+			}.TryAdd(Level1Fields.State, market.State.EqualsIgnoreCase("NORMAL")
+				? SecurityStates.Trading
+				: SecurityStates.Stoped), cancellationToken);
 		}
+
+		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
+	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
 
 		if (mdMsg.IsSubscribe)
 		{
-			if (_level1Counter == 0)
-				await _pusherClient.SubscribeToTicker(cancellationToken);
-
-			_level1Counter++;
+			if (_level1Counter++ == 0)
+				await _publicSocket.SubscribeTickerAsync(cancellationToken);
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
-		else
+		else if (_level1Counter > 0 && --_level1Counter == 0)
 		{
-			_level1Counter--;
-
-			if (_level1Counter == 0)
-				await _pusherClient.UnSubscribeFromTicker(cancellationToken);
+			await _publicSocket.UnsubscribeTickerAsync(cancellationToken);
 		}
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
+	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+		var symbol = mdMsg.SecurityId.ToCurrency();
 
 		if (mdMsg.IsSubscribe)
 		{
-			_wsBookSubscriptions.Add(mdMsg.SecurityId);
-
-			if (_wsSubscriptions.Add(mdMsg.SecurityId))
-				await _pusherClient.SubscribeTicker(await EnsureTickerIdAsync(mdMsg.SecurityId, cancellationToken), cancellationToken);
+			if (!_wsBookSubscriptions.Contains(mdMsg.SecurityId))
+			{
+				_wsBookSubscriptions.Add(mdMsg.SecurityId);
+				await _publicSocket.SubscribeBookAsync(symbol, cancellationToken);
+			}
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
-		else
+		else if (_wsBookSubscriptions.Contains(mdMsg.SecurityId))
 		{
 			_wsBookSubscriptions.Remove(mdMsg.SecurityId);
-
-			if (_wsSubscriptions.Remove(mdMsg.SecurityId))
-				await _pusherClient.UnSubscribeTicker(await EnsureTickerIdAsync(mdMsg.SecurityId, cancellationToken), cancellationToken);
+			await _publicSocket.UnsubscribeBookAsync(symbol, cancellationToken);
 		}
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
+	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
-		var currency = mdMsg.SecurityId.ToCurrency();
-
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+		var symbol = mdMsg.SecurityId.ToCurrency();
 
 		if (mdMsg.IsSubscribe)
 		{
-			if (mdMsg.To != null)
+			if (mdMsg.From is not null || mdMsg.To is not null || mdMsg.IsHistoryOnly())
 			{
-				var trades = await _httpClient.GetTradeHistoryAsync(currency, (long?)mdMsg.From?.ToUnix(), (long?)mdMsg.To?.ToUnix(), cancellationToken);
+				var trades = await _restClient.GetTradeHistoryAsync(symbol, mdMsg.From, mdMsg.To,
+					cancellationToken);
 
-				foreach (var trade in trades.OrderBy(t => t.GlobalId))
+				foreach (var trade in trades.OrderBy(static trade => trade.Id))
 				{
 					await SendOutMessageAsync(new ExecutionMessage
 					{
 						DataTypeEx = DataType.Ticks,
 						SecurityId = mdMsg.SecurityId,
-						TradeId = trade.GlobalId,
-						TradePrice = (decimal)trade.Rate,
-						TradeVolume = (decimal)trade.Amount,
-						ServerTime = trade.Date.ToDto(),
-						OriginSide = trade.Type.ToSide(),
+						TradeId = trade.Id,
+						TradePrice = trade.Price,
+						TradeVolume = trade.Quantity,
+						ServerTime = trade.CreateTime.FromUnix(false),
+						OriginSide = trade.TakerSide.ToSide(),
 						OriginalTransactionId = mdMsg.TransactionId,
 					}, cancellationToken);
 				}
 			}
 
-			if (!mdMsg.IsHistoryOnly())
+			if (mdMsg.IsHistoryOnly())
+			{
+				await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
+				return;
+			}
+
+			if (!_wsTradesSubscriptions.Contains(mdMsg.SecurityId))
 			{
 				_wsTradesSubscriptions.Add(mdMsg.SecurityId);
-
-				if (_wsSubscriptions.Add(mdMsg.SecurityId))
-					await _pusherClient.SubscribeTicker(await EnsureTickerIdAsync(mdMsg.SecurityId, cancellationToken), cancellationToken);
+				await _publicSocket.SubscribeTradesAsync(symbol, cancellationToken);
 			}
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
-		else
+		else if (_wsTradesSubscriptions.Contains(mdMsg.SecurityId))
 		{
 			_wsTradesSubscriptions.Remove(mdMsg.SecurityId);
-			//_pusherClient.UnSubscribeTrades(currency);
+			await _publicSocket.UnsubscribeTradesAsync(symbol, cancellationToken);
 		}
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
+	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
 
-		if (mdMsg.IsSubscribe)
-		{
-			var candles = await _httpClient.GetChartDataAsync(mdMsg.SecurityId.ToCurrency(), (int)mdMsg.GetTimeFrame().TotalSeconds, mdMsg.From?.ToUnix() ?? 1, mdMsg.To?.ToUnix() ?? 9999999999, cancellationToken);
+		if (!mdMsg.IsSubscribe)
+			return;
 
-			foreach (var candle in candles)
+		var timeFrame = mdMsg.GetTimeFrame();
+		var candles = await _restClient.GetCandlesAsync(mdMsg.SecurityId.ToCurrency(), timeFrame,
+			mdMsg.From, mdMsg.To, cancellationToken) ?? [];
+
+		foreach (var candle in candles.OrderBy(static candle => candle.StartTime))
+		{
+			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{
-				await SendOutMessageAsync(new TimeFrameCandleMessage
-				{
-					SecurityId = mdMsg.SecurityId,
-					TypedArg = mdMsg.GetTimeFrame(),
-					OpenPrice = candle.Open,
-					ClosePrice = candle.Close,
-					HighPrice = candle.High,
-					LowPrice = candle.Low,
-					TotalVolume = candle.Volume,
-					OpenTime = candle.Date.FromUnix(),
-					State = CandleStates.Finished,
-					OriginalTransactionId = mdMsg.TransactionId,
-				}, cancellationToken);
-			}
+				SecurityId = mdMsg.SecurityId,
+				TypedArg = timeFrame,
+				OpenPrice = candle.Open,
+				ClosePrice = candle.Close,
+				HighPrice = candle.High,
+				LowPrice = candle.Low,
+				TotalVolume = candle.Quantity,
+				OpenTime = candle.StartTime.FromUnix(false),
+				State = CandleStates.Finished,
+				OriginalTransactionId = mdMsg.TransactionId,
+			}, cancellationToken);
+		}
 
-			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
-		}
-		else
-		{
-			// No unsubscribe behavior for candles in original logic
-		}
+		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
 
-	private ValueTask SessionOnNewTrade(int tickerId, Trade trade, CancellationToken cancellationToken)
+	private ValueTask SessionOnNewTrade(PoloniexPublicTrade trade,
+		CancellationToken cancellationToken)
 	{
-		var secId = EnsureSecId(tickerId);
+		if (trade.Symbol.IsEmpty())
+			return default;
 
-		if (!_wsTradesSubscriptions.Contains(secId))
+		var securityId = trade.Symbol.ToStockSharp();
+		if (!_wsTradesSubscriptions.Contains(securityId))
 			return default;
 
 		return SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Ticks,
-			SecurityId = secId,
-			TradeId = trade.Id == 0 ? null : trade.Id,
-			TradePrice = (decimal)trade.Rate,
-			TradeVolume = (decimal)trade.Amount,
-			ServerTime = trade.Date.FromUnix(),
-			OriginSide = trade.Type.ToSide(),
+			SecurityId = securityId,
+			TradeId = trade.Id,
+			TradePrice = trade.Price,
+			TradeVolume = trade.Quantity,
+			ServerTime = trade.CreateTime.FromUnix(false),
+			OriginSide = trade.TakerSide.ToSide(),
+			SeqNum = trade.Id,
 		}, cancellationToken);
 	}
 
-	private ValueTask SessionOnOrderBookSnapshot(int tickerId, OrderBook book, CancellationToken cancellationToken)
+	private ValueTask SessionOnBookChanged(PoloniexBookUpdate book, QuoteChangeStates state,
+		CancellationToken cancellationToken)
 	{
-		static QuoteChange ToQuote(OrderEntry entry)
-			=> new((decimal)entry.PricePerCoin, (decimal)entry.AmountQuote);
+		if (book.Symbol.IsEmpty())
+			return default;
 
-		return ProcessBook(tickerId, () => [.. book.Bids.Select(ToQuote)], () => [.. book.Asks.Select(ToQuote)], QuoteChangeStates.SnapshotComplete, cancellationToken);
-	}
+		var securityId = book.Symbol.ToStockSharp();
+		if (!_wsBookSubscriptions.Contains(securityId))
+			return default;
 
-	private ValueTask SessionOnOrderBookChanged(int tickerId, Trade trade, CancellationToken cancellationToken)
-	{
-		QuoteChange[] bids = null, asks = null;
+		static QuoteChange[] ToQuotes(decimal[][] levels)
+			=> [.. (levels ?? [])
+				.Where(static level => level is { Length: >= 2 })
+				.Select(static level => new QuoteChange(level[0], level[1]))];
 
-		QuoteChange ToQuote()
-			=> new((decimal)trade.Rate, (decimal)trade.Amount);
-
-		if (trade.Type == 1)
-			bids = [ToQuote()];
-		else
-			asks = [ToQuote()];
-
-		return ProcessBook(tickerId, () => bids, () => asks, QuoteChangeStates.Increment, cancellationToken);
-	}
-
-	private ValueTask ProcessBook(int tickerId, Func<QuoteChange[]> getBids, Func<QuoteChange[]> getAsks, QuoteChangeStates state, CancellationToken cancellationToken)
-	{
-		var secId = EnsureSecId(tickerId);
-
-		//if (!_wsBookSubscriptions.Contains(info.Item1))
-		//	return;
-
-		var quotesMsg = new QuoteChangeMessage
+		return SendOutMessageAsync(new QuoteChangeMessage
 		{
-			SecurityId = secId,
-			ServerTime = CurrentTime,
+			SecurityId = securityId,
+			ServerTime = (book.CreateTime != 0 ? book.CreateTime : book.Timestamp).FromUnix(false),
 			State = state,
-		};
-
-		var bids = getBids();
-		if (bids != null)
-			quotesMsg.Bids = bids;
-
-		var asks = getAsks();
-		if (asks != null)
-			quotesMsg.Asks = asks;
-
-		return SendOutMessageAsync(quotesMsg, cancellationToken);
+			Bids = ToQuotes(book.Bids),
+			Asks = ToQuotes(book.Asks),
+			SeqNum = book.Id,
+		}, cancellationToken);
 	}
 
-	private ValueTask SessionOnTickerChanged(int tickerId, Ticker ticker, CancellationToken cancellationToken)
+	private ValueTask SessionOnTickerChanged(PoloniexTicker ticker,
+		CancellationToken cancellationToken)
 	{
-		var secId = EnsureSecId(tickerId);
+		if (ticker.Symbol.IsEmpty())
+			return default;
 
 		return SendOutMessageAsync(new Level1ChangeMessage
 		{
-			SecurityId = secId,
-			ServerTime = CurrentTime,
+			SecurityId = ticker.Symbol.ToStockSharp(),
+			ServerTime = (ticker.Timestamp != 0 ? ticker.Timestamp : ticker.CloseTime)
+				.FromUnix(false),
 		}
-		.TryAdd(Level1Fields.HighBidPrice, (decimal?)ticker.HighestBid)
-		.TryAdd(Level1Fields.LowAskPrice, (decimal?)ticker.LowestAsk)
-		.TryAdd(Level1Fields.LastTradePrice, (decimal?)ticker.Last)
-		.TryAdd(Level1Fields.Volume, (decimal?)ticker.QuoteVolume)
-		.TryAdd(Level1Fields.State, ticker.IsFrozen ? SecurityStates.Stoped : SecurityStates.Trading), cancellationToken);
+		.TryAdd(Level1Fields.BestBidPrice, ticker.Bid)
+		.TryAdd(Level1Fields.BestBidVolume, ticker.BidQuantity)
+		.TryAdd(Level1Fields.BestAskPrice, ticker.Ask)
+		.TryAdd(Level1Fields.BestAskVolume, ticker.AskQuantity)
+		.TryAdd(Level1Fields.LastTradePrice, ticker.Close)
+		.TryAdd(Level1Fields.HighPrice, ticker.High)
+		.TryAdd(Level1Fields.LowPrice, ticker.Low)
+		.TryAdd(Level1Fields.Volume, ticker.Quantity), cancellationToken);
 	}
+
+	private static decimal? ToStep(int? scale)
+	{
+		if (scale is null or < 0 or > 28)
+			return null;
+
+		var result = 1m;
+		for (var i = 0; i < scale; i++)
+			result /= 10m;
+		return result;
+	}
+
+	private static decimal? Positive(decimal? value)
+		=> value is > 0 ? value : null;
 }

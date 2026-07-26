@@ -1,302 +1,373 @@
 namespace StockSharp.Poloniex.Native;
 
-class HttpClient(string baseUrl, Authenticator authenticator) : BaseLogReceiver
+sealed class PoloniexRestClient : BaseLogReceiver
 {
-	private readonly Authenticator _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
-	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
+	private const int _maximumReadAttempts = 4;
 
-	// to get readable name after obfuscation
-	public override string Name => nameof(Poloniex) + "_" + nameof(HttpClient);
-
-	public Task<IDictionary<string, PoloniexCurrency>> GetCurrenciesAsync(CancellationToken cancellationToken)
+	private readonly Uri _endpoint;
+	private readonly System.Net.Http.HttpClient _http;
+	private readonly Authenticator _authenticator;
+	private readonly JsonSerializerSettings _jsonSettings = new()
 	{
-		var request = CreateRequest(Method.Get);
+		DateParseHandling = DateParseHandling.None,
+		NullValueHandling = NullValueHandling.Ignore,
+		Formatting = Formatting.None,
+		Culture = CultureInfo.InvariantCulture,
+	};
 
-		request
-			.AddParameter("command", "returnCurrencies");
-
-		return MakeRequestAsync<IDictionary<string, PoloniexCurrency>>(CreateUrl("public"), request, cancellationToken);
-	}
-
-	public Task<IDictionary<string, Ticker>> GetTickersAsync(CancellationToken cancellationToken)
+	public PoloniexRestClient(string endpoint, Authenticator authenticator)
 	{
-		var request = CreateRequest(Method.Get);
+		var value = endpoint.ThrowIfEmpty(nameof(endpoint)).Trim().TrimEnd('/') + "/";
 
-		request
-			.AddParameter("command", "returnTicker");
+		if (!Uri.TryCreate(value, UriKind.Absolute, out _endpoint) ||
+			!_endpoint.Scheme.EqualsIgnoreCase(Uri.UriSchemeHttps))
+			throw new ArgumentException("Poloniex REST endpoint must be an absolute HTTPS URI.", nameof(endpoint));
 
-		return MakeRequestAsync<IDictionary<string, Ticker>>(CreateUrl("public"), request, cancellationToken);
-	}
-
-	//public Task<OrderBook> GetOrderBookAsync(string currencyPair, int depth, CancellationToken cancellationToken)
-	//{
-	//	var request = CreateRequest(Method.Get);
-
-	//	request
-	//		.AddParameter("command", "returnOrderBook")
-	//		.AddParameter("currencyPair", currencyPair)
-	//		.AddParameter("depth", depth);
-
-	//	return MakeRequest<OrderBook>(CreateUrl("public"), request, cancellationToken);
-	//}
-
-	public Task<IEnumerable<HttpTrade>> GetTradeHistoryAsync(string currencyPair, long? start, long? end, CancellationToken cancellationToken)
-	{
-		var request = CreateRequest(Method.Get);
-
-		request
-			.AddParameter("command", "returnTradeHistory")
-			.AddParameter("currencyPair", currencyPair);
-
-		if (start != null)
-			request.AddParameter("start", start.Value);
-
-		if (end != null)
-			request.AddParameter("end", end.Value);
-
-		return MakeRequestAsync<IEnumerable<HttpTrade>>(CreateUrl("public"), request, cancellationToken);
-	}
-
-	public Task<IEnumerable<MarketChartData>> GetChartDataAsync(string currencyPair, int period, double start, double end, CancellationToken cancellationToken)
-	{
-		var request = CreateRequest(Method.Get);
-
-		request
-			.AddParameter("command", "returnChartData")
-			.AddParameter("currencyPair", currencyPair)
-			.AddParameter("period", period);
-
-		request.AddParameter("start", start);
-		request.AddParameter("end", end);
-
-		return MakeRequestAsync<IEnumerable<MarketChartData>>(CreateUrl("public"), request, cancellationToken);
-	}
-
-	public Task<IDictionary<string, Order[]>> GetOpenOrdersAsync(string currencyPair, CancellationToken cancellationToken)
-	{
-		var request = CreateRequest(Method.Post);
-
-		request
-			.AddParameter("command", "returnOpenOrders")
-			.AddParameter("currencyPair", currencyPair);
-
-		var url = CreateUrl("tradingApi");
-
-		return MakeRequestAsync<IDictionary<string, Order[]>>(url, ApplySecret(request), cancellationToken);
-	}
-
-	public Task<OwnTrade[]> GetOwnTradesAsync(string currencyPair, double? start, double? end, CancellationToken cancellationToken)
-	{
-		var request = CreateRequest(Method.Post);
-
-		request
-			.AddParameter("command", "returnTradeHistory")
-			.AddParameter("currencyPair", currencyPair);
-
-		if (start != null)
-			request.AddParameter("start", start.Value);
-
-		if (end != null)
-			request.AddParameter("end", end.Value);
-
-		var url = CreateUrl("tradingApi");
-
-		return MakeRequestAsync<OwnTrade[]>(url, ApplySecret(request), cancellationToken);
-	}
-
-	public async Task<OwnTrade[]> GetOrderTradesAsync(long orderNumber, CancellationToken cancellationToken)
-	{
-		var request = CreateRequest(Method.Post);
-
-		request
-			.AddParameter("command", "returnOrderTrades")
-			.AddParameter("orderNumber", orderNumber);
-
-		var url = CreateUrl("tradingApi");
-
-		try
+		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
+		_http = new System.Net.Http.HttpClient(new HttpClientHandler
 		{
-			return await MakeRequestAsync<OwnTrade[]>(url, ApplySecret(request), cancellationToken) ?? [];
-		}
-		catch (InvalidOperationException e)
+			AutomaticDecompression = DecompressionMethods.All,
+		})
 		{
-			// if order do not have trades this issue will be occured
-			if (e.Message == "Order not found, or you are not the person who placed it.")
-				return [];
-
-			throw;
-		}
+			Timeout = TimeSpan.FromSeconds(30),
+		};
+		_http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Poloniex-Connector/1.0");
 	}
 
-	public async Task<long> NewOrderAsync(long transactionId, string currencyPair, string type, decimal rate, decimal amount, bool fillOrKill, bool immediateOrCancel, bool? postOnly, CancellationToken cancellationToken)
+	public override string Name => nameof(Poloniex) + "_Rest";
+
+	protected override void DisposeManaged()
 	{
-		var request = CreateRequest(Method.Post);
-
-		request
-			.AddParameter("command", type)
-			.AddParameter("currencyPair", currencyPair)
-			.AddParameter("rate", rate)
-			.AddParameter("amount", amount);
-
-		if (fillOrKill)
-			request.AddParameter("fillOrKill", 1);
-
-		if (immediateOrCancel)
-			request.AddParameter("immediateOrCancel", 1);
-
-		if (postOnly != null)
-			request.AddParameter("postOnly", postOnly.Value ? 1 : 0);
-
-		request.AddParameter("clientOrderId", transactionId);
-
-		var url = CreateUrl("tradingApi");
-
-		dynamic response = await MakeRequestAsync<object>(url, ApplySecret(request), cancellationToken);
-
-		return (long)response.orderNumber;
+		_http.Dispose();
+		base.DisposeManaged();
 	}
 
-	public Task CancelOrderAsync(long transactionId, CancellationToken cancellationToken)
+	public ValueTask<PoloniexMarket[]> GetMarketsAsync(CancellationToken cancellationToken)
+		=> SendAsync<PoloniexMarket[]>(HttpMethod.Get, "markets", [], null, false, true, cancellationToken);
+
+	public async ValueTask<IDictionary<string, PoloniexCurrency>> GetCurrenciesAsync(
+		CancellationToken cancellationToken)
 	{
-		var request = CreateRequest(Method.Post);
+		var rows = await SendAsync<Dictionary<string, PoloniexCurrency>[]>(
+			HttpMethod.Get, "currencies", [], null, false, true, cancellationToken) ?? [];
 
-		request
-			.AddParameter("command", "cancelOrder")
-			.AddParameter("clientOrderId", transactionId);
-
-		var url = CreateUrl("tradingApi");
-
-		return MakeRequestAsync<object>(url, ApplySecret(request), cancellationToken);
+		return rows
+			.SelectMany(static row => row)
+			.GroupBy(static pair => pair.Key, StringComparer.OrdinalIgnoreCase)
+			.ToDictionary(static group => group.Key, static group => group.Last().Value,
+				StringComparer.OrdinalIgnoreCase);
 	}
 
-	public Task CancelAllOrdersAsync(string currencyPair, CancellationToken cancellationToken)
+	public ValueTask<PoloniexTicker[]> GetTickersAsync(CancellationToken cancellationToken)
+		=> SendAsync<PoloniexTicker[]>(HttpMethod.Get, "markets/ticker24h", [], null, false, true,
+			cancellationToken);
+
+	public async ValueTask<PoloniexPublicTrade[]> GetTradeHistoryAsync(string symbol,
+		DateTime? from, DateTime? to, CancellationToken cancellationToken)
 	{
-		var request = CreateRequest(Method.Post);
+		var trades = await SendAsync<PoloniexPublicTrade[]>(HttpMethod.Get,
+			$"markets/{EscapePath(symbol)}/trades",
+			[new("limit", "1000")], null, false, true, cancellationToken) ?? [];
 
-		request
-			.AddParameter("command", "cancelAllOrders");
+		var fromMilliseconds = from is DateTime fromValue ? (long?)fromValue.ToUnix(false) : null;
+		var toMilliseconds = to is DateTime toValue ? (long?)toValue.ToUnix(false) : null;
 
-		if (!currencyPair.IsEmpty())
-			request.AddParameter("currencyPair", currencyPair);
-
-		var url = CreateUrl("tradingApi");
-
-		return MakeRequestAsync<object>(url, ApplySecret(request), cancellationToken);
+		return
+		[
+			.. trades.Where(trade =>
+				(fromMilliseconds is null || trade.CreateTime >= fromMilliseconds) &&
+				(toMilliseconds is null || trade.CreateTime <= toMilliseconds)),
+		];
 	}
 
-	public Task MoveOrderAsync(long transactionId, long orderNumber, decimal rate, decimal? amount, bool fillOrKill, bool immediateOrCancel, bool? postOnly, CancellationToken cancellationToken)
+	public ValueTask<PoloniexCandle[]> GetCandlesAsync(string symbol, TimeSpan timeFrame,
+		DateTime? from, DateTime? to, CancellationToken cancellationToken)
 	{
-		var request = CreateRequest(Method.Post);
+		var query = new List<KeyValuePair<string, string>>
+		{
+			new("interval", timeFrame.ToPoloniexInterval()),
+			new("limit", "500"),
+		};
 
-		request
-			.AddParameter("command", "moveOrder")
-			.AddParameter("orderNumber", orderNumber)
-			.AddParameter("clientOrderId", transactionId)
-			.AddParameter("rate", rate);
+		if (from is DateTime fromTime)
+			query.Add(new("startTime",
+				((long)fromTime.ToUnix(false)).ToString(CultureInfo.InvariantCulture)));
 
-		if (amount != null)
-			request.AddParameter("amount", amount.Value);
+		if (to is DateTime toTime)
+			query.Add(new("endTime",
+				((long)toTime.ToUnix(false)).ToString(CultureInfo.InvariantCulture)));
 
-		if (fillOrKill)
-			request.AddParameter("fillOrKill", 1);
-
-		if (immediateOrCancel)
-			request.AddParameter("immediateOrCancel", 1);
-
-		if (postOnly != null)
-			request.AddParameter("postOnly", postOnly.Value ? 1 : 0);
-
-		var url = CreateUrl("tradingApi");
-
-		return MakeRequestAsync<object>(url, ApplySecret(request), cancellationToken);
+		return SendAsync<PoloniexCandle[]>(HttpMethod.Get,
+			$"markets/{EscapePath(symbol)}/candles", query, null, false, true, cancellationToken);
 	}
 
-	public Task<IDictionary<string, Balance>> GetCompleteBalancesAsync(CancellationToken cancellationToken)
+	public ValueTask<PoloniexOrder[]> GetOpenOrdersAsync(string symbol,
+		CancellationToken cancellationToken)
 	{
-		var request = CreateRequest(Method.Post);
+		var query = symbol.IsEmpty()
+			? Array.Empty<KeyValuePair<string, string>>()
+			: new[] { new KeyValuePair<string, string>("symbol", symbol) };
 
-		request
-			.AddParameter("command", "returnCompleteBalances")
-			.AddParameter("account", "all");
-
-		var url = CreateUrl("tradingApi");
-
-		return MakeRequestAsync<IDictionary<string, Balance>>(url, ApplySecret(request), cancellationToken);
+		return SendAsync<PoloniexOrder[]>(HttpMethod.Get, "orders", query, null, true, true,
+			cancellationToken);
 	}
 
-	public async Task<long> WithdrawAsync(string currency, decimal amount, WithdrawInfo info, CancellationToken cancellationToken)
+	public ValueTask<PoloniexOwnTrade[]> GetOrderTradesAsync(long orderId,
+		CancellationToken cancellationToken)
+		=> SendAsync<PoloniexOwnTrade[]>(HttpMethod.Get,
+			$"orders/{orderId.ToString(CultureInfo.InvariantCulture)}/trades", [], null, true, true,
+			cancellationToken);
+
+	public async ValueTask<long> NewOrderAsync(long transactionId, string symbol, Sides side,
+		OrderTypes orderType, decimal price, decimal volume, TimeInForce? timeInForce, bool? postOnly,
+		CancellationToken cancellationToken)
 	{
-		if (info == null)
+		var isMarket = orderType == OrderTypes.Market;
+
+		if (isMarket && side == Sides.Buy)
+			throw new NotSupportedException(
+				"Poloniex market buys require a quote-currency amount; StockSharp order volume is expressed in base units.");
+
+		var request = new PoloniexOrderRequest
+		{
+			Symbol = symbol,
+			Side = side.ToNative(),
+			Type = postOnly == true ? "LIMIT_MAKER" : isMarket ? "MARKET" : "LIMIT",
+			TimeInForce = isMarket || postOnly == true ? null : timeInForce.ToPoloniex(),
+			Price = isMarket ? null : price,
+			Quantity = volume,
+			ClientOrderId = transactionId.ToString(CultureInfo.InvariantCulture),
+		};
+
+		var result = await SendAsync<PoloniexOrderResult>(HttpMethod.Post, "orders", [], request,
+			true, false, cancellationToken);
+
+		return result?.Id ??
+			throw new InvalidDataException("Poloniex returned an empty create-order response.");
+	}
+
+	public ValueTask CancelOrderByClientIdAsync(long transactionId,
+		CancellationToken cancellationToken)
+		=> SendWithoutResultAsync(HttpMethod.Delete,
+			$"orders/cid:{transactionId.ToString(CultureInfo.InvariantCulture)}", null,
+			cancellationToken);
+
+	public ValueTask CancelOrderByIdAsync(long orderId, CancellationToken cancellationToken)
+		=> SendWithoutResultAsync(HttpMethod.Delete,
+			$"orders/{orderId.ToString(CultureInfo.InvariantCulture)}", null,
+			cancellationToken);
+
+	public ValueTask CancelAllOrdersAsync(string symbol, CancellationToken cancellationToken)
+		=> SendWithoutResultAsync(HttpMethod.Delete, "orders", new PoloniexCancelAllRequest
+		{
+			Symbols = symbol.IsEmpty() ? null : [symbol],
+		}, cancellationToken);
+
+	public async ValueTask<long> ReplaceOrderAsync(long transactionId, long orderId, decimal price,
+		decimal? volume, TimeInForce? timeInForce, bool? postOnly,
+		CancellationToken cancellationToken)
+	{
+		var result = await SendAsync<PoloniexReplaceOrderResult>(HttpMethod.Put,
+			$"orders/{orderId.ToString(CultureInfo.InvariantCulture)}", [],
+			new PoloniexReplaceOrderRequest
+			{
+				ClientOrderId = transactionId.ToString(CultureInfo.InvariantCulture),
+				Price = price,
+				Quantity = volume,
+				Type = postOnly == true ? "LIMIT_MAKER" : "LIMIT",
+				TimeInForce = postOnly == true ? "GTC" : timeInForce.ToPoloniex(),
+			}, true, false, cancellationToken);
+
+		return result?.Id ??
+			throw new InvalidDataException("Poloniex returned an empty replace-order response.");
+	}
+
+	public ValueTask<PoloniexAccountBalances[]> GetBalancesAsync(CancellationToken cancellationToken)
+		=> SendAsync<PoloniexAccountBalances[]>(HttpMethod.Get, "accounts/balances", [], null, true,
+			true, cancellationToken);
+
+	public async ValueTask<long> WithdrawAsync(string currency, decimal amount, WithdrawInfo info,
+		CancellationToken cancellationToken)
+	{
+		if (info is null)
 			throw new ArgumentNullException(nameof(info));
 
 		if (info.Type != WithdrawTypes.Crypto)
 			throw new NotSupportedException(LocalizedStrings.WithdrawTypeNotSupported.Put(info.Type));
 
-		var request = CreateRequest(Method.Post);
+		var result = await SendAsync<PoloniexWithdrawResult>(HttpMethod.Post, "wallets/withdraw", [],
+			new PoloniexWithdrawRequest
+			{
+				Currency = currency,
+				Amount = amount,
+				Address = info.CryptoAddress,
+				PaymentId = info.PaymentId,
+			}, true, false, cancellationToken);
 
-		request
-			.AddParameter("command", "withdraw")
-			.AddParameter("currency", currency)
-			.AddParameter("amount", amount)
-			.AddParameter("address", info.CryptoAddress);
-
-		if (!info.PaymentId.IsEmpty())
-			request.AddParameter("paymentId", info.PaymentId);
-
-		var url = CreateUrl("tradingApi");
-
-		dynamic responce = await MakeRequestAsync<object>(url, ApplySecret(request), cancellationToken);
-
-		return (long)responce.withdrawalNumber;
+		return result?.Id ??
+			throw new InvalidDataException("Poloniex returned an empty withdrawal response.");
 	}
 
-	private Url CreateUrl(string methodName, string version = "")
+	private async ValueTask SendWithoutResultAsync(HttpMethod method, string path, object body,
+		CancellationToken cancellationToken)
 	{
-		if (methodName.IsEmpty())
-			throw new ArgumentNullException(nameof(methodName));
-
-		return new Url($"{_baseUrl}/{version}{methodName}");
+		_ = await SendAsync<object>(method, path, [], body, true, false, cancellationToken);
 	}
 
-	private static RestRequest CreateRequest(Method method)
+	private async ValueTask<T> SendAsync<T>(HttpMethod method, string path,
+		IEnumerable<KeyValuePair<string, string>> query, object body, bool authenticated, bool safe,
+		CancellationToken cancellationToken)
 	{
-		return new RestRequest((string)null, method);
-	}
+		path = "/" + path.Trim('/');
+		var queryParameters = query.ToArray();
+		var queryString = BuildQuery(queryParameters);
+		var bodyJson = body is null ? null : JsonConvert.SerializeObject(body, _jsonSettings);
+		var target = path.TrimStart('/') + (queryString.IsEmpty() ? string.Empty : "?" + queryString);
 
-	private RestRequest ApplySecret(RestRequest request)
-	{
-		if (request is null)
-			throw new ArgumentNullException(nameof(request));
-
-		request.AddParameter("nonce", _authenticator.GetNonce());
-
-		var encodedArgs = request
-			.Parameters
-			.Where(p => p.Type == ParameterType.GetOrPost && p.Value != null)
-			.ToQueryString();
-
-		var signature = _authenticator.Sign(encodedArgs);
-
-		request
-			.AddHeader("Key", _authenticator.Key.UnSecure())
-			.AddHeader("Sign", signature);
-
-		return request;
-	}
-
-	private async Task<T> MakeRequestAsync<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
-	{
-		dynamic obj = await request.InvokeAsync<JToken>(url, this, this.AddVerboseLog, cancellationToken);
-
-		if (((JToken)obj).Type == JTokenType.Object)
+		for (var attempt = 1; ; attempt++)
 		{
-			if (obj.error != null)
-				throw new InvalidOperationException((string)obj.error.ToString());
+			using var request = new HttpRequestMessage(method, new Uri(_endpoint, target));
 
-			if (obj.success != null && obj.success == 0)
-				throw new InvalidOperationException((string)obj.message.ToString());
+			if (bodyJson is not null)
+				request.Content = new StringContent(bodyJson, Encoding.UTF8, "application/json");
+
+			if (authenticated)
+				AddAuthentication(request, method, path, queryParameters, bodyJson);
+
+			HttpResponseMessage response;
+			try
+			{
+				response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead,
+					cancellationToken);
+			}
+			catch (HttpRequestException error) when (safe && attempt < _maximumReadAttempts)
+			{
+				this.AddWarningLog("Poloniex {0} transport error. Retrying safe request: {1}",
+					target, error.Message);
+				await Task.Delay(GetRetryDelay(null, attempt), cancellationToken);
+				continue;
+			}
+
+			using (response)
+			{
+				var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+				if (safe && (response.StatusCode == HttpStatusCode.TooManyRequests ||
+					(int)response.StatusCode >= 500) && attempt < _maximumReadAttempts)
+				{
+					await Task.Delay(GetRetryDelay(response, attempt), cancellationToken);
+					continue;
+				}
+
+				if (!response.IsSuccessStatusCode)
+					throw CreateHttpError(response.StatusCode, target, responseBody, safe);
+
+				if (responseBody.IsEmpty())
+					return default;
+
+				ThrowIfApiError(target, responseBody, safe);
+
+				try
+				{
+					return JsonConvert.DeserializeObject<T>(responseBody, _jsonSettings);
+				}
+				catch (JsonException error)
+				{
+					throw new InvalidDataException(
+						$"Poloniex {target} returned an unexpected response shape.", error);
+				}
+			}
+		}
+	}
+
+	private void AddAuthentication(HttpRequestMessage request, HttpMethod method, string path,
+		IEnumerable<KeyValuePair<string, string>> query, string body)
+	{
+		if (!_authenticator.CanSign)
+			throw new InvalidOperationException(
+				"Poloniex API key and secret are required for private requests.");
+
+		var timestamp = _authenticator.GetTimestamp();
+		var timestampText = timestamp.ToString(CultureInfo.InvariantCulture);
+		string parameters;
+
+		if (body is not null)
+			parameters = $"requestBody={body}&signTimestamp={timestampText}";
+		else
+			parameters = BuildQuery(query.Append(new("signTimestamp", timestampText)));
+
+		var payload = $"{method.Method.ToUpperInvariant()}\n{path}\n{parameters}";
+
+		request.Headers.TryAddWithoutValidation("key", _authenticator.Key.UnSecure());
+		request.Headers.TryAddWithoutValidation("signatureMethod", "HmacSHA256");
+		request.Headers.TryAddWithoutValidation("signatureVersion", "2");
+		request.Headers.TryAddWithoutValidation("signTimestamp", timestampText);
+		request.Headers.TryAddWithoutValidation("signature", _authenticator.Sign(payload));
+	}
+
+	private static string BuildQuery(IEnumerable<KeyValuePair<string, string>> query)
+		=> query
+			.Where(static pair => !pair.Key.IsEmpty() && pair.Value is not null)
+			.OrderBy(static pair => pair.Key, StringComparer.Ordinal)
+			.Select(static pair => Escape(pair.Key) + "=" + Escape(pair.Value))
+			.Join("&");
+
+	private static void ThrowIfApiError(string target, string responseBody, bool safe)
+	{
+		if (!responseBody.AsSpan().TrimStart().StartsWith("{"))
+			return;
+
+		PoloniexApiError error;
+		try
+		{
+			error = JsonConvert.DeserializeObject<PoloniexApiError>(responseBody);
+		}
+		catch (JsonException exception)
+		{
+			throw new InvalidDataException($"Poloniex {target} returned malformed JSON.", exception);
 		}
 
-		return ((JToken)obj).DeserializeObject<T>();
+		if (error?.Code is not int code || code is 0 or 200)
+			return;
+
+		throw new InvalidOperationException(
+			$"Poloniex {target} failed ({code}): {error.Message}. " +
+			(safe ? "The request was read-only." :
+				"The write was not retried; inspect exchange state before retrying."));
 	}
+
+	private static Exception CreateHttpError(HttpStatusCode statusCode, string target, string body,
+		bool safe)
+	{
+		string message;
+		try
+		{
+			message = JsonConvert.DeserializeObject<PoloniexApiError>(body)?.Message;
+		}
+		catch (JsonException)
+		{
+			message = null;
+		}
+
+		message = message.IsEmpty() ? body?.Trim() : message;
+		if (message?.Length > 512)
+			message = message[..512];
+
+		return new HttpRequestException(
+			$"Poloniex {target} returned HTTP {(int)statusCode}: {message}. " +
+			(safe ? "The read request failed." :
+				"The write was not retried; inspect exchange state before retrying."),
+			null, statusCode);
+	}
+
+	private static TimeSpan GetRetryDelay(HttpResponseMessage response, int attempt)
+		=> response?.Headers.RetryAfter?.Delta ??
+			TimeSpan.FromMilliseconds(250 * (1 << (attempt - 1)));
+
+	private static string Escape(string value)
+		=> Uri.EscapeDataString(value ?? string.Empty);
+
+	private static string EscapePath(string value)
+		=> Uri.EscapeDataString(value.ThrowIfEmpty(nameof(value)));
 }

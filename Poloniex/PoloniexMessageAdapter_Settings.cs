@@ -16,18 +16,26 @@ namespace StockSharp.Poloniex;
 [OrderCondition(typeof(PoloniexOrderCondition))]
 public partial class PoloniexMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
-	private const string _defaultRestEndpoint = "https://poloniex.com";
-	private const string _defaultWebSocketEndpoint = "wss://api2.poloniex.com";
+	private const string _defaultRestEndpoint = "https://api.poloniex.com";
+	private const string _defaultWebSocketEndpoint = "wss://ws.poloniex.com/ws/public";
+	private const string _defaultPrivateWebSocketEndpoint = "wss://ws.poloniex.com/ws/private";
 
 	private static readonly HashSet<TimeSpan> _timeFrames =
 	[
+		TimeSpan.FromMinutes(1),
 		TimeSpan.FromMinutes(5),
+		TimeSpan.FromMinutes(10),
 		TimeSpan.FromMinutes(15),
 		TimeSpan.FromMinutes(30),
-		//TimeSpan.FromHours(1),
+		TimeSpan.FromHours(1),
 		TimeSpan.FromHours(2),
 		TimeSpan.FromHours(4),
+		TimeSpan.FromHours(6),
+		TimeSpan.FromHours(12),
 		TimeSpan.FromDays(1),
+		TimeSpan.FromDays(3),
+		TimeSpan.FromDays(7),
+		TimeSpan.FromDays(30),
 	];
 
 	/// <summary>
@@ -63,13 +71,21 @@ public partial class PoloniexMessageAdapter : MessageAdapter, IKeySecretAdapter
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
-	/// <summary>WebSocket endpoint.</summary>
+	/// <summary>Public WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "WebSocket endpoint.",
+		Name = "Public WebSocket endpoint",
+		Description = "Public WebSocket endpoint.",
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>Private WebSocket endpoint.</summary>
+	[Display(
+		Name = "Private WebSocket endpoint",
+		Description = "Private WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string PrivateWebSocketEndpoint { get; set; } = _defaultPrivateWebSocketEndpoint;
 
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
@@ -80,6 +96,7 @@ public partial class PoloniexMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
 		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		storage.SetValue(nameof(PrivateWebSocketEndpoint), PrivateWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -91,6 +108,7 @@ public partial class PoloniexMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
 		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		PrivateWebSocketEndpoint = storage.GetValue(nameof(PrivateWebSocketEndpoint), PrivateWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
