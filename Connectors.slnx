@@ -36,6 +36,7 @@
     <Project Path="CapitalFutures/CapitalFutures.csproj" />
     <Project Path="CboeDataShop/CboeDataShop.csproj" />
     <Project Path="Cex/Cex.csproj" />
+    <Project Path="ChoiceFinX/ChoiceFinX.csproj" />
     <Project Path="CQG/CQG.csproj" />
     <Project Path="Coinbase/Coinbase.csproj" />
     <Project Path="CoinCap/CoinCap.csproj" />
