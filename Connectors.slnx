@@ -72,6 +72,7 @@
     <Project Path="FinancialModelingPrep/FinancialModelingPrep.csproj" />
     <Project Path="Finnhub/Finnhub.csproj" />
     <Project Path="FivePaisa/FivePaisa.csproj" />
+    <Project Path="Firstock/Firstock.csproj" />
     <Project Path="Flattrade/Flattrade.csproj" />
     <Project Path="FubonNeo/FubonNeo.csproj" />
     <Project Path="Fugle/Fugle.csproj" />
