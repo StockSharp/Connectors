@@ -65,7 +65,7 @@ sealed class MotilalOswalRestClient : BaseLogReceiver
 		try
 		{
 			var limit = await Send<MotilalOswalBroadcastLimit, MotilalOswalClientRequest>(
-				"rest/report/v3/getbroadcastmaxlimit", new() { ClientCode = _clientCode }, cancellationToken);
+				"rest/report/v1/getbroadcastmaxlimit", new() { ClientCode = _clientCode }, cancellationToken);
 			return limit?.Maximum > 0 ? limit.Maximum : 200;
 		}
 		catch (InvalidOperationException ex)

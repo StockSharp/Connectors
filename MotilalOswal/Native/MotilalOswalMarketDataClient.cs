@@ -137,7 +137,9 @@ sealed class MotilalOswalMarketDataClient : BaseLogReceiver
 			}
 
 			var update = Decode(packet);
-			if (update != null && UpdateReceived is { } handler)
+			if (update != null &&
+				_subscriptions.ContainsKey(update.Exchange.ToInstrumentKey(update.ScripCode)) &&
+				UpdateReceived is { } handler)
 				await handler(update, cancellationToken);
 		}
 

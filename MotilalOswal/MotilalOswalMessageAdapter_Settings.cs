@@ -20,7 +20,7 @@ public partial class MotilalOswalMessageAdapter : MessageAdapter, IKeySecretAdap
 	private const string _defaultDemoRestEndpoint = "https://openapi.motilaloswaluat.com/";
 	private const string _defaultMarketWebSocketEndpoint = "wss://ws1feed.motilaloswal.com/jwebsocket/jwebsocket";
 	private const string _defaultOrderWebSocketEndpoint = "wss://openapi.motilaloswal.com/ws";
-	private const string _defaultDemoOrderWebSocketEndpoint = "wss://openapi.motilaloswaluat.com/ws";
+	private const string _defaultDemoOrderWebSocketEndpoint = "wss://uatopenapi.motilaloswal.com/ws";
 
 	/// <inheritdoc />
 	[Display(

@@ -160,7 +160,8 @@ static class Extensions
 			"MCX" => 'M',
 			"NCDEX" => 'D',
 			"NSECD" => 'C',
-			"BSEFO" or "BSECD" => 'G',
+			"BSEFO" => 'G',
+			"BSECD" => 'E',
 			_ => throw new ArgumentOutOfRangeException(nameof(exchange), exchange, "Unsupported Motilal Oswal broadcast exchange."),
 		};
 
@@ -176,6 +177,7 @@ static class Extensions
 			'D' => "NCDEX",
 			'C' => "NSECD",
 			'G' => "BSEFO",
+			'E' => "BSECD",
 			_ => throw new InvalidDataException($"Unknown Motilal Oswal broadcast exchange '{exchange}'."),
 		};
 
