@@ -88,6 +88,7 @@
     <ProjectReference Include="..\Ligther\Ligther.csproj" />
     <ProjectReference Include="..\Luno\Luno.csproj" />
     <ProjectReference Include="..\ManifestTrade\ManifestTrade.csproj" />
+    <ProjectReference Include="..\Mastertrust\Mastertrust.csproj" />
     <ProjectReference Include="..\MercadoBitcoin\MercadoBitcoin.csproj" />
     <ProjectReference Include="..\MetaApi\MetaApi.csproj" />
     <ProjectReference Include="..\Meteora\Meteora.csproj" />
