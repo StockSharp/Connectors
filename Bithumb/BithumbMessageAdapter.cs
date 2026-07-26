@@ -37,8 +37,8 @@ public partial class BithumbMessageAdapter
 		pusherClient.StateChanged += SendOutConnectionStateAsync;
 		pusherClient.Error += SendOutErrorAsync;
 		pusherClient.OrderBookChanged += SessionOnOrderBookChanged;
-		pusherClient.NewTicks += SessionOnNewTicks;
-		pusherClient.TickersChanged += SessionOnTickersChanged;
+		pusherClient.NewTrade += SessionOnNewTrade;
+		pusherClient.TickerChanged += SessionOnTickerChanged;
 	}
 
 	private void UnsubscribePusherClient(PusherClient pusherClient)
@@ -46,8 +46,8 @@ public partial class BithumbMessageAdapter
 		pusherClient.StateChanged -= SendOutConnectionStateAsync;
 		pusherClient.Error -= SendOutErrorAsync;
 		pusherClient.OrderBookChanged -= SessionOnOrderBookChanged;
-		pusherClient.NewTicks -= SessionOnNewTicks;
-		pusherClient.TickersChanged -= SessionOnTickersChanged;
+		pusherClient.NewTrade -= SessionOnNewTrade;
+		pusherClient.TickerChanged -= SessionOnTickerChanged;
 	}
 
 	/// <inheritdoc />

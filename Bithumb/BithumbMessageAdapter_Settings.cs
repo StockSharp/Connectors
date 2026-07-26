@@ -18,7 +18,7 @@ public partial class BithumbMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private const string _defaultRestEndpoint = "https://api.bithumb.com";
 	private const string _defaultPrimeRestEndpoint = "https://prime.bithumb.com";
-	private const string _defaultWebSocketEndpoint = "wss://pubwss.bithumb.com/pub/ws";
+	private const string _defaultWebSocketEndpoint = "wss://ws-api.bithumb.com/websocket/v1";
 
 	/// <summary>
 	/// Default value for <see cref="MessageAdapter.HeartbeatInterval"/>.

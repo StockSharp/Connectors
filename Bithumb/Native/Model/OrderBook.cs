@@ -1,29 +1,35 @@
 namespace StockSharp.Bithumb.Native.Model;
 
-class OrderBookEntry
+sealed class OrderBookEntry
 {
-	[JsonProperty("quantity")]
-	public double Quantity { get; set; }
+	[JsonProperty("ask_price")]
+	public decimal AskPrice { get; set; }
 
-	[JsonProperty("price")]
-	public double Price { get; set; }
+	[JsonProperty("bid_price")]
+	public decimal BidPrice { get; set; }
+
+	[JsonProperty("ask_size")]
+	public decimal AskSize { get; set; }
+
+	[JsonProperty("bid_size")]
+	public decimal BidSize { get; set; }
 }
 
-class OrderBook
+sealed class OrderBook
 {
-	//[JsonProperty("order_currency")]
-	//public string OrderCurrency { get; set; }
+	[JsonProperty("market")]
+	public string Market { get; set; }
 
-	//[JsonProperty("payment_currency")]
-	//public string PaymentCurrency { get; set; }
+	[JsonProperty("code")]
+	public string Code { get; set; }
 
-	[JsonProperty("bids")]
-	public OrderBookEntry[] Bids { get; set; }
+	[JsonProperty("timestamp")]
+	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
+	public DateTime Timestamp { get; set; }
 
-	[JsonProperty("asks")]
-	public OrderBookEntry[] Asks { get; set; }
+	[JsonProperty("orderbook_units")]
+	public OrderBookEntry[] Units { get; set; }
 
-	//[JsonProperty("timestamp")]
-	//[JsonConverter(typeof(JsonDateTimeMlsConverter))]
-	//public DateTime Timestamp { get; set; }
+	[JsonIgnore]
+	public string Symbol => Code.IsEmpty() ? Market : Code;
 }

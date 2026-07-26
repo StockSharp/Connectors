@@ -1,313 +1,300 @@
 namespace StockSharp.Bithumb.Native;
 
+using System.Globalization;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
-
-class TradePlaceData
-{
-	[JsonProperty("cont_id")]
-	public long ContId { get; set; }
-
-	[JsonProperty("units")]
-	public decimal Units { get; set; }
-
-	[JsonProperty("price")]
-	public decimal Price { get; set; }
-
-	[JsonProperty("total")]
-	public decimal Total { get; set; }
-
-	[JsonProperty("fee")]
-	public decimal Fee { get; set; }
-}
+using System.Text;
 
 class HttpClient : BaseLogReceiver
 {
+	private static readonly KeyValuePair<string, string>[] _noParameters = [];
+
 	private readonly SecureString _key;
 	private readonly SecureString _secret;
-	private readonly HashAlgorithm _hasher;
-
-	//private readonly UTCMlsIncrementalIdGenerator _nonceGen;
-
-	private readonly string _baseUrl;
+	private readonly Uri _baseUri;
+	private readonly global::System.Net.Http.HttpClient _http = new()
+	{
+		Timeout = TimeSpan.FromSeconds(60),
+	};
+	private readonly JsonSerializerSettings _jsonSettings = new()
+	{
+		DateParseHandling = DateParseHandling.DateTimeOffset,
+		FloatParseHandling = FloatParseHandling.Decimal,
+		NullValueHandling = NullValueHandling.Ignore,
+	};
 
 	public HttpClient(string baseUrl, SecureString key, SecureString secret)
 	{
 		_key = key;
 		_secret = secret;
-		_hasher = secret.IsEmpty() ? null : new HMACSHA512(secret.UnSecure().UTF8());
+		_baseUri = new Uri(baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/') + "/", UriKind.Absolute);
 
-		//_nonceGen = new UTCMlsIncrementalIdGenerator();
+		if (!_baseUri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+			throw new ArgumentException("Bithumb REST endpoint must use HTTPS.", nameof(baseUrl));
 
-		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
+		_http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Bithumb");
 	}
+
+	public override string Name => nameof(Bithumb) + "_" + nameof(HttpClient);
+
+	public Task<Symbol[]> GetSymbolsAsync(CancellationToken cancellationToken)
+		=> SendPublicAsync<Symbol[]>(HttpMethod.Get, "v1/market/all",
+			[Pair("isDetails", "true")], cancellationToken);
+
+	public Task<Transaction[]> GetTransactionsAsync(string symbol, CancellationToken cancellationToken)
+		=> SendPublicAsync<Transaction[]>(HttpMethod.Get, "v1/trades/ticks",
+			[Pair("market", symbol), Pair("count", "200")], cancellationToken);
+
+	public Task<Balance[]> GetBalancesAsync(CancellationToken cancellationToken)
+		=> SendPrivateAsync<Balance[]>(HttpMethod.Get, "v1/accounts", _noParameters, null,
+			cancellationToken);
+
+	public async Task<Order[]> GetPendingOrdersAsync(CancellationToken cancellationToken)
+	{
+		var result = new List<Order>();
+		string nextKey = null;
+
+		do
+		{
+			var parameters = new List<KeyValuePair<string, string>>
+			{
+				Pair("state", "wait"),
+				Pair("limit", "100"),
+				Pair("order_by", "asc"),
+			};
+
+			if (!nextKey.IsEmpty())
+				parameters.Add(Pair("next_key", nextKey));
+
+			var page = await SendPrivateAsync<OrdersPage>(HttpMethod.Get, "v2/orders/pending",
+				parameters, null, cancellationToken);
+
+			if (page.Data != null)
+				result.AddRange(page.Data);
+
+			nextKey = page.HasNext ? page.NextKey : null;
+		}
+		while (!nextKey.IsEmpty());
+
+		return [.. result];
+	}
+
+	public Task<Order[]> GetOrdersAsync(string[] orderIds, CancellationToken cancellationToken)
+	{
+		if (orderIds is null)
+			throw new ArgumentNullException(nameof(orderIds));
+		if (orderIds.Length == 0)
+			return Task.FromResult(Array.Empty<Order>());
+		if (orderIds.Length > 100)
+			throw new ArgumentOutOfRangeException(nameof(orderIds), orderIds.Length,
+				"Bithumb accepts at most 100 order identifiers per request.");
+
+		var request = new SearchOrdersRequest { OrderIds = orderIds };
+		var parameters = orderIds.Select(id => Pair("order_ids[]", id)).ToArray();
+
+		return SendPrivateAsync<Order[]>(HttpMethod.Post, "v2/orders/search", parameters, request,
+			cancellationToken);
+	}
+
+	public async Task<string> RegisterOrderAsync(string symbol, Sides side, decimal? price,
+		decimal volume, string clientOrderId, CancellationToken cancellationToken)
+	{
+		if (price is null && side == Sides.Buy)
+			throw new NotSupportedException(
+				"Bithumb market buy orders require a quote-currency amount.");
+
+		var request = new RegisterOrderRequest
+		{
+			Market = symbol,
+			Side = side.ToNative(),
+			OrderType = price is null ? "market" : "limit",
+			Price = price?.ToString(CultureInfo.InvariantCulture),
+			Volume = volume.ToString(CultureInfo.InvariantCulture),
+			ClientOrderId = clientOrderId,
+		};
+
+		var parameters = new List<KeyValuePair<string, string>>
+		{
+			Pair("market", request.Market),
+			Pair("side", request.Side),
+			Pair("order_type", request.OrderType),
+		};
+
+		if (!request.Price.IsEmpty())
+			parameters.Add(Pair("price", request.Price));
+
+		parameters.Add(Pair("volume", request.Volume));
+
+		if (!request.ClientOrderId.IsEmpty())
+			parameters.Add(Pair("client_order_id", request.ClientOrderId));
+
+		var response = await SendPrivateAsync<RegisterOrderResponse>(HttpMethod.Post, "v2/orders",
+			parameters, request, cancellationToken);
+
+		return response.OrderId.ThrowIfEmpty(nameof(response.OrderId));
+	}
+
+	public Task CancelOrderAsync(string orderId, CancellationToken cancellationToken)
+	{
+		orderId.ThrowIfEmpty(nameof(orderId));
+
+		return SendPrivateAsync<CancelOrderResponse>(HttpMethod.Delete, "v2/order",
+			[Pair("order_id", orderId)], null, cancellationToken);
+	}
+
+	public async Task<string> WithdrawAsync(string currency, decimal volume, WithdrawInfo info,
+		CancellationToken cancellationToken)
+	{
+		if (info is null)
+			throw new ArgumentNullException(nameof(info));
+		if (info.Type != WithdrawTypes.Crypto)
+			throw new NotSupportedException(LocalizedStrings.WithdrawTypeNotSupported.Put(info.Type));
+
+		var request = new WithdrawRequest
+		{
+			Currency = currency.ToUpperInvariant(),
+			Network = currency.ToUpperInvariant(),
+			Amount = volume.ToString(CultureInfo.InvariantCulture),
+			Address = info.CryptoAddress.ThrowIfEmpty(nameof(info.CryptoAddress)),
+			SecondaryAddress = info.PaymentId,
+		};
+
+		var parameters = new List<KeyValuePair<string, string>>
+		{
+			Pair("currency", request.Currency),
+			Pair("net_type", request.Network),
+			Pair("amount", request.Amount),
+			Pair("address", request.Address),
+		};
+
+		if (!request.SecondaryAddress.IsEmpty())
+			parameters.Add(Pair("secondary_address", request.SecondaryAddress));
+
+		var response = await SendPrivateAsync<WithdrawResponse>(HttpMethod.Post, "v1/withdraws/coin",
+			parameters, request, cancellationToken);
+
+		return response.Id.ThrowIfEmpty(nameof(response.Id));
+	}
+
+	private Task<T> SendPublicAsync<T>(HttpMethod method, string path,
+		IReadOnlyCollection<KeyValuePair<string, string>> parameters,
+		CancellationToken cancellationToken)
+		=> SendAsync<T>(method, path, parameters, null, false, cancellationToken);
+
+	private Task<T> SendPrivateAsync<T>(HttpMethod method, string path,
+		IReadOnlyCollection<KeyValuePair<string, string>> parameters, object body,
+		CancellationToken cancellationToken)
+		=> SendAsync<T>(method, path, parameters, body, true, cancellationToken);
+
+	private async Task<T> SendAsync<T>(HttpMethod method, string path,
+		IReadOnlyCollection<KeyValuePair<string, string>> parameters, object body,
+		bool authenticated, CancellationToken cancellationToken)
+	{
+		var query = body is null ? BuildParameters(parameters, true) : string.Empty;
+		var uri = new Uri(_baseUri, path + (query.IsEmpty() ? string.Empty : "?" + query));
+
+		using var request = new HttpRequestMessage(method, uri);
+
+		if (body != null)
+		{
+			request.Content = new StringContent(
+				JsonConvert.SerializeObject(body, Formatting.None, _jsonSettings),
+				Encoding.UTF8, "application/json");
+		}
+
+		if (authenticated)
+		{
+			if (_key.IsEmpty())
+				throw new InvalidOperationException(LocalizedStrings.KeyNotSpecified);
+			if (_secret.IsEmpty())
+				throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
+
+			var token = CreateToken(BuildParameters(parameters, false));
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		}
+
+		using var response = await _http.SendAsync(request,
+			HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+		var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+		this.AddVerboseLog("Bithumb {0} {1} -> {2}.", method, uri,
+			(int)response.StatusCode);
+
+		if (!response.IsSuccessStatusCode)
+		{
+			ApiError error = null;
+
+			try
+			{
+				error = JsonConvert.DeserializeObject<ApiErrorResponse>(content, _jsonSettings)?.Error;
+			}
+			catch (JsonException)
+			{
+			}
+
+			var message = error is null
+				? content.IsEmpty(response.ReasonPhrase)
+				: $"{error.Name}: {error.Message}";
+
+			throw new HttpRequestException(
+				$"Bithumb HTTP {(int)response.StatusCode}: {message}.",
+				null, response.StatusCode);
+		}
+
+		return JsonConvert.DeserializeObject<T>(content, _jsonSettings)
+			?? throw new InvalidOperationException("Bithumb returned an empty JSON response.");
+	}
+
+	private string CreateToken(string parameters)
+	{
+		var payload = new JwtPayload
+		{
+			AccessKey = _key.UnSecure(),
+			Nonce = Guid.NewGuid().ToString("D"),
+			Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+		};
+
+		if (!parameters.IsEmpty())
+		{
+			payload.QueryHash = Convert.ToHexString(
+				SHA512.HashData(Encoding.UTF8.GetBytes(parameters))).ToLowerInvariant();
+			payload.QueryHashAlgorithm = "SHA512";
+		}
+
+		var header = Base64UrlEncode(JsonConvert.SerializeObject(new JwtHeader(),
+			Formatting.None, _jsonSettings));
+		var claims = Base64UrlEncode(JsonConvert.SerializeObject(payload,
+			Formatting.None, _jsonSettings));
+		var unsignedToken = header + "." + claims;
+
+		using var signer = new HMACSHA256(Encoding.UTF8.GetBytes(_secret.UnSecure()));
+		var signature = signer.ComputeHash(Encoding.ASCII.GetBytes(unsignedToken));
+
+		return unsignedToken + "." + Base64UrlEncode(signature);
+	}
+
+	private static string BuildParameters(
+		IReadOnlyCollection<KeyValuePair<string, string>> parameters, bool encode)
+		=> parameters.Count == 0
+			? string.Empty
+			: string.Join("&", parameters.Select(pair =>
+				(encode ? Uri.EscapeDataString(pair.Key) : pair.Key) + "=" +
+				(encode ? Uri.EscapeDataString(pair.Value) : pair.Value)));
+
+	private static KeyValuePair<string, string> Pair(string name, string value)
+		=> new(name, value);
+
+	private static string Base64UrlEncode(string value)
+		=> Base64UrlEncode(Encoding.UTF8.GetBytes(value));
+
+	private static string Base64UrlEncode(byte[] value)
+		=> Convert.ToBase64String(value).TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
 	protected override void DisposeManaged()
 	{
-		_hasher?.Dispose();
+		_http.Dispose();
 		base.DisposeManaged();
-	}
-
-	// to get readable name after obfuscation
-	public override string Name => nameof(Bithumb) + "_" + nameof(HttpClient);
-
-	public async Task<IDictionary<string, Ticker>> GetAllTickersAsync(CancellationToken cancellationToken)
-	{
-		var url = CreateUrl("public/ticker/all");
-		var request = CreateRequest(Method.Get);
-
-		var token = await MakeRequestAsync<JObject>(url, request, cancellationToken);
-
-		return token
-		       .Properties()
-		       .Where(p => p.Name != "date" && p.Value.Type != JTokenType.Array)
-		       .ToDictionary(p => p.Name, p => p.Value.DeserializeObject<Ticker>());
-	}
-
-	public Task<Ticker> GetTickerAsync(string currency, CancellationToken cancellationToken)
-	{
-		var url = CreateUrl($"public/ticker/{currency}");
-		var request = CreateRequest(Method.Get);
-
-		return MakeRequestAsync<Ticker>(url, request, cancellationToken);
-	}
-
-	public Task<OrderBook> GetOrderBookAsync(string currency, bool? groupOrders, int? count, CancellationToken cancellationToken)
-	{
-		var url = CreateUrl($"public/orderbook/{currency}");
-		var request = CreateRequest(Method.Get);
-
-		if (groupOrders != null)
-			request.AddParameter("group_orders", groupOrders.Value ? 1 : 0);
-
-		if (count != null)
-			request.AddParameter("count", count.Value);
-
-		return MakeRequestAsync<OrderBook>(url, request, cancellationToken);
-	}
-
-	public async Task<IEnumerable<Transaction>> GetTransactionsAsync(string symbol, CancellationToken cancellationToken)
-	{
-		var url = CreateUrl($"public/transaction_history/{symbol}");
-		var request = CreateRequest(Method.Get);
-
-		//if (fromId != null)
-		//	request.AddParameter("cont_no", fromId.Value);
-
-		//if (count != null)
-		//	request.AddParameter("count", count.Value);
-
-		return await MakeRequestAsync<IEnumerable<Transaction>>(url, request, cancellationToken) ?? [];
-	}
-
-	public Task<Account> GetAccountAsync(string currency, CancellationToken cancellationToken)
-	{
-		var url = CreateUrl("info/account");
-		var request = CreateRequest(Method.Post);
-		
-		if (!currency.IsEmpty())
-			request.AddParameter("currency", currency);
-
-		return MakeRequestAsync<Account>(url, ApplySecret(request, url), cancellationToken);
-	}
-
-	public Task<IDictionary<string, decimal>> GetBalanceAsync(string currency, CancellationToken cancellationToken)
-	{
-		var url = CreateUrl("info/balance");
-		var request = CreateRequest(Method.Post).AddParameter("currency", currency);
-
-		return MakeRequestAsync<IDictionary<string, decimal>>(url, ApplySecret(request, url), cancellationToken);
-	}
-
-	public async Task<IEnumerable<UserTransaction>> GetUserTransactionsAsync(string currency, int searchGb, int? offset, int? count, CancellationToken cancellationToken)
-	{
-		var url = CreateUrl("info/user_transactions");
-
-		var request = CreateRequest(Method.Post);
-
-		if (offset != null)
-			request.AddParameter("offset", offset.Value);
-
-		if (count != null)
-			request.AddParameter("count", count.Value);
-
-		if (!currency.IsEmpty())
-			request.AddParameter("currency", currency);
-
-		request.AddParameter("searchGb", searchGb);
-
-		return await MakeRequestAsync<IEnumerable<UserTransaction>>(url, ApplySecret(request, url), cancellationToken) ?? [];
-	}
-
-	public async Task<IEnumerable<Order>> GetOrdersAsync(string currency = default, Sides? side = default, int? count = default, long? after = default, long? orderId = default, CancellationToken cancellationToken = default)
-	{
-		var url = CreateUrl("info/orders");
-
-		var request = CreateRequest(Method.Post);
-
-		if (after != null)
-			request.AddParameter("after", after.Value);
-
-		if (side != null)
-			request.AddParameter("type", side.Value.ToNative());
-
-		if (!currency.IsEmpty())
-			request.AddParameter("currency", currency);
-
-		if (count != null)
-			request.AddParameter("count", count.Value);
-
-		if (orderId != null)
-			request.AddParameter("order_id", orderId.Value);
-
-		return await MakeRequestAsync<IEnumerable<Order>>(url, ApplySecret(request, url), cancellationToken) ?? [];
-	}
-
-	public async Task<Tuple<long, IEnumerable<TradePlaceData>>> RegisterOrderAsync(string currency, Sides side, decimal? price, decimal volume, CancellationToken cancellationToken)
-	{
-		var url = CreateUrl(price == null ? (side == Sides.Buy ? "trade/market_buy" : "trade/market_sell") : "trade/place");
-		
-		var request = CreateRequest(Method.Post);
-
-		request
-			.AddParameter("order_currency", currency)
-			.AddParameter("units", volume)
-			.AddParameter("type", side.ToNative());
-
-		if (price != null)
-			request.AddParameter("price", price.Value);
-
-		dynamic response = await MakeRequestAsync<object>(url, ApplySecret(request, url), cancellationToken, false);
-
-		return Tuple.Create((long)response.order_id, ((JToken)response.data).DeserializeObject<IEnumerable<TradePlaceData>>() ?? Enumerable.Empty<TradePlaceData>());
-	}
-
-	public Task CancelOrderAsync(Sides side, string currency, long orderId, CancellationToken cancellationToken)
-	{
-		var url = CreateUrl("trade/cancel");
-
-		var request = CreateRequest(Method.Post);
-
-		request
-			.AddParameter("type", side.ToNative())
-			.AddParameter("order_id", orderId)
-			.AddParameter("currency", currency);
-		
-		return MakeRequestAsync<object>(url, ApplySecret(request, url), cancellationToken);
-	}
-
-	public Task WithdrawAsync(string currency, decimal volume, WithdrawInfo info, CancellationToken cancellationToken)
-	{
-		if (info == null)
-			throw new ArgumentNullException(nameof(info));
-
-		var name = currency.EqualsIgnoreCase("krw") ? "krw" : "btc";
-		var url = CreateUrl($"trade/{name}_withdrawal".ToLowerInvariant());
-
-		var request = CreateRequest(Method.Post);
-
-		switch (info.Type)
-		{
-			case WithdrawTypes.BankWire:
-			{
-				request
-					.AddParameter("bank", info.BankDetails.Name)
-					.AddParameter("account", info.BankDetails.Account)
-					.AddParameter("price", (int)volume);
-
-				break;
-			}
-
-			case WithdrawTypes.Crypto:
-			{
-				request
-					.AddParameter("units", volume)
-					.AddParameter("address", info.CryptoAddress)
-					.AddParameter("destination", info.PaymentId)
-					.AddParameter("currency", currency);
-
-				break;
-			}
-			default:
-				throw new NotSupportedException(LocalizedStrings.WithdrawTypeNotSupported.Put(info.Type));
-		}
-		
-		return MakeRequestAsync<object>(url, ApplySecret(request, url), cancellationToken);
-	}
-
-	private Uri CreateUrl(string methodName, string version = "")
-	{
-		if (methodName.IsEmpty())
-			throw new ArgumentNullException(nameof(methodName));
-
-		return $"{_baseUrl}/{version}{methodName}".To<Uri>();
-	}
-
-	private static RestRequest CreateRequest(Method method)
-	{
-		return new RestRequest((string)null, method);
-	}
-
-	private RestRequest ApplySecret(RestRequest request, Uri uri)
-	{
-		if (request == null)
-			throw new ArgumentNullException(nameof(request));
-
-		var nonce = (long)DateTime.UtcNow.ToUnix(false);
-
-		var endpoint = uri.ToString().Remove(_baseUrl);
-
-		//request.AddParameter("endpoint", endpoint);
-
-		//var encodedArgs = request
-		//	.Parameters
-		//	.Where(p => p.Type == ParameterType.GetOrPost && p.Value != null)
-		//	.Select(p => $"{p.Name}={p.Value}")
-		//	.ToQueryString();
-
-		//encodedArgs = WebUtility.UrlEncode(encodedArgs)
-		//			.Replace("+", "%20").Replace("%21", "!")
-		//			.Replace("%27", "'").Replace("%28", "(")
-		//			.Replace("%29", ")").Replace("%26", "&")
-		//			.Replace("%3D", "=").Replace("%7E", "~");
-
-		//var signature = _hasher
-		//	.ComputeHash($"{endpoint};{encodedArgs};{nonce}".UTF8())
-		//	.Digest()
-		//	.ToLowerInvariant()
-		//	.UTF8()
-		//	.Base64();
-
-		//request
-		//	.AddHeader("api-client-type", "2")
-		//	.AddHeader("Api-Key", _key.UnSecure())
-		//	.AddHeader("Api-Sign", signature)
-		//	.AddHeader("Api-Nonce", nonce.To<string>());
-
-		request
-			.AddParameter("apiKey", _key.UnSecure())
-			.AddParameter("secretKey", _secret.UnSecure());
-
-		return request;
-	}
-
-	private async Task<T> MakeRequestAsync<T>(Uri url, RestRequest request, CancellationToken cancellationToken, bool onlyData = true)
-	{
-		dynamic obj = await request.InvokeAsync(url, this, this.AddVerboseLog, cancellationToken);
-
-		if (((JToken)obj).Type == JTokenType.Object && obj.status != null)
-		{
-			if ((int)obj.status != 0)
-			{
-				if ((int)obj.status == 5600 /* empty orders treats as error */ && typeof(T) == typeof(IEnumerable<Order>))
-					return default;
-
-				throw new InvalidOperationException((string)obj.message);
-			}
-
-			if (onlyData)
-				return ((JToken)obj.data).DeserializeObject<T>();
-		}
-
-		return ((JToken)obj).DeserializeObject<T>();
 	}
 }

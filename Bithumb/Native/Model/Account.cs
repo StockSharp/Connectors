@@ -1,17 +1,19 @@
 namespace StockSharp.Bithumb.Native.Model;
 
-class Account
+sealed class Balance
 {
-	[JsonProperty("created")]
-	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
-	public DateTime Created { get; set; }
-
-	[JsonProperty("account_id")]
-	public string AccountId { get; set; }
-
-	[JsonProperty("trade_fee")]
-	public decimal TradeFee { get; set; }
+	[JsonProperty("currency")]
+	public string Currency { get; set; }
 
 	[JsonProperty("balance")]
-	public decimal Balance { get; set; }
+	public string Value { get; set; }
+
+	[JsonProperty("locked")]
+	public string Locked { get; set; }
+
+	[JsonProperty("avg_buy_price")]
+	public string AveragePrice { get; set; }
+
+	[JsonProperty("unit_currency")]
+	public string UnitCurrency { get; set; }
 }

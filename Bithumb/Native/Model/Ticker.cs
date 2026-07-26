@@ -1,32 +1,45 @@
 namespace StockSharp.Bithumb.Native.Model;
 
-class Ticker
+sealed class Ticker
 {
-	[JsonProperty("buy_price")]
-	public double? Bid { get; set; }
+	[JsonProperty("market")]
+	public string Market { get; set; }
 
-	[JsonProperty("sell_price")]
-	public double? Ask { get; set; }
+	[JsonProperty("code")]
+	public string Code { get; set; }
 
 	[JsonProperty("opening_price")]
-	public double? OpeningPrice { get; set; }
+	public decimal? OpeningPrice { get; set; }
 
-	[JsonProperty("closing_price")]
-	public double? ClosingPrice { get; set; }
+	[JsonProperty("high_price")]
+	public decimal? HighPrice { get; set; }
 
-	[JsonProperty("max_price")]
-	public double? High { get; set; }
+	[JsonProperty("low_price")]
+	public decimal? LowPrice { get; set; }
 
-	[JsonProperty("min_price")]
-	public double? Low { get; set; }
+	[JsonProperty("trade_price")]
+	public decimal? TradePrice { get; set; }
 
-	[JsonProperty("units_traded")]
-	public double? Volume { get; set; }
+	[JsonProperty("change_price")]
+	public decimal? ChangePrice { get; set; }
 
-	[JsonProperty("average_price")]
-	public double? VWAP { get; set; }
+	[JsonProperty("trade_volume")]
+	public decimal? TradeVolume { get; set; }
 
-	[JsonProperty("date")]
+	[JsonProperty("acc_trade_volume_24h")]
+	public decimal? AccumulatedVolume24H { get; set; }
+
+	[JsonProperty("trade_timestamp")]
 	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
-	public DateTime? Time { get; set; }
+	public DateTime? TradeTimestamp { get; set; }
+
+	[JsonProperty("timestamp")]
+	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
+	public DateTime Timestamp { get; set; }
+
+	[JsonProperty("ask_bid")]
+	public string AskBid { get; set; }
+
+	[JsonIgnore]
+	public string Symbol => Code.IsEmpty() ? Market : Code;
 }

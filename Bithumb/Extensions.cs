@@ -1,55 +1,74 @@
 namespace StockSharp.Bithumb;
 
+using System.Globalization;
+
 static class Extensions
 {
 	public static string ToNative(this Sides side)
 	{
-		switch (side)
+		return side switch
 		{
-			case Sides.Buy:
-				return "bid";
-			case Sides.Sell:
-				return "ask";
-			default:
-				throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue);
-		}
+			Sides.Buy => "bid",
+			Sides.Sell => "ask",
+			_ => throw new ArgumentOutOfRangeException(nameof(side), side,
+				LocalizedStrings.InvalidValue),
+		};
 	}
 
 	public static Sides ToSide(this string side)
 	{
-		switch (side)
+		return side?.ToLowerInvariant() switch
 		{
-			case "bid":
-			case "up":
-				return Sides.Buy;
-			case "ask":
-			case "dn":
-				return Sides.Sell;
-			default:
-				throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue);
-		}
+			"bid" or "buy" or "up" => Sides.Buy,
+			"ask" or "sell" or "dn" => Sides.Sell,
+			_ => throw new ArgumentOutOfRangeException(nameof(side), side,
+				LocalizedStrings.InvalidValue),
+		};
 	}
 
-	private const string _fiatPart = "/KRW";
+	public static Sides? ToOriginSide(this string side)
+		=> side.IsEmpty() ? null : side.ToSide();
+
+	public static OrderStates? ToOrderState(this string state)
+	{
+		return state?.ToLowerInvariant() switch
+		{
+			null or "" => null,
+			"wait" or "watch" => OrderStates.Active,
+			"done" or "cancel" => OrderStates.Done,
+			_ => throw new ArgumentOutOfRangeException(nameof(state), state,
+				LocalizedStrings.InvalidValue),
+		};
+	}
+
+	public static decimal? ToDecimal(this string value)
+		=> decimal.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+			out var result)
+			? result
+			: null;
 
 	public static string ToSymbol(this SecurityId securityId)
 	{
-		return securityId.SecurityCode;
+		var parts = securityId.SecurityCode.Split('/');
+
+		return parts.Length == 2
+			? $"{parts[1]}-{parts[0]}".ToUpperInvariant()
+			: securityId.SecurityCode.ToUpperInvariant();
 	}
 
 	public static SecurityId ToStockSharp(this string symbol)
 	{
+		symbol.ThrowIfEmpty(nameof(symbol));
+
+		var parts = symbol.Split('-');
+		var securityCode = parts.Length == 2
+			? $"{parts[1]}/{parts[0]}"
+			: symbol;
+
 		return new SecurityId
 		{
-			SecurityCode = symbol.ToUpperInvariant() + _fiatPart,
+			SecurityCode = securityCode.ToUpperInvariant(),
 			BoardCode = BoardCodes.Bithumb,
 		};
-	}
-
-	public static DateTime ToDto(this string value)
-	{
-		var dt = value.ToDateTime(value.Length == 19 ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd HH:mm:ss.ffffff");
-
-		return dt.UtcKind();
 	}
 }

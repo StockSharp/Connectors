@@ -15,9 +15,6 @@ global using global::Ecng.ComponentModel;
 global using global::Ecng.Logging;
 
 global using global::Newtonsoft.Json;
-global using global::Newtonsoft.Json.Linq;
-
-global using global::RestSharp;
 
 global using global::StockSharp.Messages;
 global using global::StockSharp.Localization;

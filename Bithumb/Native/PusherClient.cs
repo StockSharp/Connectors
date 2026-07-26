@@ -2,26 +2,40 @@ namespace StockSharp.Bithumb.Native;
 
 class PusherClient : BaseLogReceiver
 {
-	public event Func<string, IEnumerable<Transaction>, CancellationToken, ValueTask> NewTicks;
-	public event Func<string, OrderBook, CancellationToken, ValueTask> OrderBookChanged;
-	public event Func<IDictionary<string, Ticker>, CancellationToken, ValueTask> TickersChanged;
+	private const string _ticker = "ticker";
+	private const string _trade = "trade";
+	private const string _orderBook = "orderbook";
+
+	private readonly WebSocketClient _client;
+	private readonly SemaphoreSlim _subscriptionLock = new(1, 1);
+	private readonly HashSet<string> _tickers = new(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _trades = new(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _orderBooks = new(StringComparer.OrdinalIgnoreCase);
+
+	public event Func<Ticker, CancellationToken, ValueTask> TickerChanged;
+	public event Func<Transaction, CancellationToken, ValueTask> NewTrade;
+	public event Func<OrderBook, CancellationToken, ValueTask> OrderBookChanged;
 	public event Func<Exception, CancellationToken, ValueTask> Error;
 	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
 
-	private readonly WebSocketClient _client;
-
-	// to get readable name after obfuscation
 	public override string Name => nameof(Bithumb) + "_" + nameof(PusherClient);
 
 	public PusherClient(string endpoint, int attemptsCount, WorkingTime workingTime)
 	{
+		var uri = new Uri(endpoint.ThrowIfEmpty(nameof(endpoint)), UriKind.Absolute);
+
+		if (!uri.Scheme.Equals("wss", StringComparison.OrdinalIgnoreCase))
+			throw new ArgumentException("Bithumb WebSocket endpoint must use WSS.", nameof(endpoint));
+
 		_client = new(
-			endpoint.ThrowIfEmpty(nameof(endpoint)),
-			(state, token) =>
+			uri.ToString(),
+			async (state, token) =>
 			{
+				if (state == ConnectionStates.Connected)
+					await SendSubscriptionsAsync(0, token);
+
 				if (StateChanged is { } handler)
-					return handler(state, token);
-				return default;
+					await handler(state, token);
 			},
 			(error, token) =>
 			{
@@ -40,12 +54,6 @@ class PusherClient : BaseLogReceiver
 		};
 	}
 
-	protected override void DisposeManaged()
-	{
-		_client.Dispose();
-		base.DisposeManaged();
-	}
-
 	public ValueTask ConnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Connecting);
@@ -58,77 +66,159 @@ class PusherClient : BaseLogReceiver
 		return _client.DisconnectAsync(cancellationToken);
 	}
 
-	private async ValueTask OnProcess(WebSocketMessage msg, CancellationToken cancellationToken)
+	public ValueTask SubscribeTickerAsync(long transactionId, string symbol,
+		CancellationToken cancellationToken)
+		=> ChangeSubscriptionAsync(transactionId, _tickers, symbol, true, cancellationToken);
+
+	public ValueTask UnsubscribeTickerAsync(long transactionId, string symbol,
+		CancellationToken cancellationToken)
+		=> ChangeSubscriptionAsync(transactionId, _tickers, symbol, false, cancellationToken);
+
+	public ValueTask SubscribeTransactionAsync(long transactionId, string symbol,
+		CancellationToken cancellationToken)
+		=> ChangeSubscriptionAsync(transactionId, _trades, symbol, true, cancellationToken);
+
+	public ValueTask UnsubscribeTransactionAsync(long transactionId, string symbol,
+		CancellationToken cancellationToken)
+		=> ChangeSubscriptionAsync(transactionId, _trades, symbol, false, cancellationToken);
+
+	public ValueTask SubscribeOrderBookAsync(long transactionId, string symbol,
+		CancellationToken cancellationToken)
+		=> ChangeSubscriptionAsync(transactionId, _orderBooks, symbol, true, cancellationToken);
+
+	public ValueTask UnsubscribeOrderBookAsync(long transactionId, string symbol,
+		CancellationToken cancellationToken)
+		=> ChangeSubscriptionAsync(transactionId, _orderBooks, symbol, false, cancellationToken);
+
+	private async ValueTask ChangeSubscriptionAsync(long transactionId, HashSet<string> symbols,
+		string symbol, bool subscribe, CancellationToken cancellationToken)
 	{
-		if (msg.AsString().IsEmpty())
-			return;
+		symbol.ThrowIfEmpty(nameof(symbol));
 
-		var obj = msg.AsObject();
-
-		var header = obj.header;
-
-		if (header == null)
-			return;
-
-		var service = (string)header.service;
-		var data = (JToken)obj.data;
-
-		switch (service)
+		await _subscriptionLock.WaitAsync(cancellationToken);
+		try
 		{
-			case "ticker":
-				var tickers = data.DeserializeObject<IDictionary<string, Ticker>>();
-				if (TickersChanged is { } tickersHandler)
-					await tickersHandler(tickers, cancellationToken);
-				break;
+			var changed = subscribe ? symbols.Add(symbol) : symbols.Remove(symbol);
 
-			case "quote":
-			case "chRt":
-				break;
-
-			case "transaction":
-				var ticks = data.DeserializeObject<IEnumerable<Transaction>>();
-				if (NewTicks is { } ticksHandler)
-					await ticksHandler((string)header.currency, ticks, cancellationToken);
-				break;
-
-			case "orderbook":
-				var book = data.DeserializeObject<OrderBook>();
-				if (OrderBookChanged is { } bookHandler)
-					await bookHandler((string)header.currency, book, cancellationToken);
-				break;
-
-			default:
-			{
-				if (service.StartsWithIgnoreCase("ticker_"))
-				{
-					if (TickersChanged is { } tickersHandler2)
-						await tickersHandler2(data.DeserializeObject<IDictionary<string, Ticker>>(), cancellationToken);
-					break;
-				}
-
-				this.AddErrorLog(LocalizedStrings.UnknownEvent, service);
-				break;
-			}
+			if (changed)
+				await SendSubscriptionsCoreAsync(transactionId, cancellationToken);
+		}
+		finally
+		{
+			_subscriptionLock.Release();
 		}
 	}
 
-	public ValueTask SubscribeTickerAsync(long transId, string symbol, CancellationToken cancellationToken)
-		=> SubscribeToMarketDataAsync(transId, symbol, "ticker", cancellationToken);
-
-	public ValueTask SubscribeTransactionAsync(long transId, string symbol, CancellationToken cancellationToken)
-		=> SubscribeToMarketDataAsync(transId, symbol, "transaction", cancellationToken);
-
-	public ValueTask SubscribeOrderBookAsync(long transId, string symbol, CancellationToken cancellationToken)
-		=> SubscribeToMarketDataAsync(transId, symbol, "orderbookdepth", cancellationToken);
-
-	private ValueTask SubscribeToMarketDataAsync(long transId, string symbol, string channel, CancellationToken cancellationToken)
+	private async ValueTask SendSubscriptionsAsync(long transactionId,
+		CancellationToken cancellationToken)
 	{
-		var subscribeMessage = new
+		await _subscriptionLock.WaitAsync(cancellationToken);
+		try
 		{
-			type = channel,
-			symbols = new[] { symbol },
+			await SendSubscriptionsCoreAsync(transactionId, cancellationToken);
+		}
+		finally
+		{
+			_subscriptionLock.Release();
+		}
+	}
+
+	private ValueTask SendSubscriptionsCoreAsync(long transactionId,
+		CancellationToken cancellationToken)
+	{
+		if (_tickers.Count == 0 && _trades.Count == 0 && _orderBooks.Count == 0)
+			return default;
+
+		var request = new List<SocketRequestField>
+		{
+			new SocketTicket
+			{
+				Ticket = transactionId == 0
+					? Guid.NewGuid().ToString("N")
+					: transactionId.ToString(),
+			},
 		};
 
-		return _client.SendAsync(subscribeMessage, cancellationToken, transId);
+		AddSubscription(request, _ticker, _tickers);
+		AddSubscription(request, _trade, _trades);
+		AddSubscription(request, _orderBook, _orderBooks);
+		request.Add(new SocketFormat());
+
+		return _client.SendAsync(request.ToArray(), cancellationToken, transactionId);
+	}
+
+	private static void AddSubscription(List<SocketRequestField> request, string type,
+		HashSet<string> symbols)
+	{
+		if (symbols.Count == 0)
+			return;
+
+		request.Add(new SocketSubscription
+		{
+			Type = type,
+			Codes = [.. symbols.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)],
+		});
+	}
+
+	private async ValueTask OnProcess(WebSocketMessage message,
+		CancellationToken cancellationToken)
+	{
+		var json = message.AsString();
+
+		if (json.IsEmpty())
+			return;
+
+		var envelope = JsonConvert.DeserializeObject<SocketEnvelope>(json);
+
+		if (envelope?.Error != null)
+		{
+			var error = new InvalidOperationException(
+				$"Bithumb WebSocket error {envelope.Error.Name}: {envelope.Error.Message}.");
+
+			if (Error is { } errorHandler)
+				await errorHandler(error, cancellationToken);
+			else
+				this.AddErrorLog(error);
+
+			return;
+		}
+
+		switch (envelope?.Type)
+		{
+			case _ticker:
+				if (TickerChanged is { } tickerHandler)
+					await tickerHandler(
+						JsonConvert.DeserializeObject<Ticker>(json)
+						?? throw new InvalidOperationException("Bithumb returned an empty ticker."),
+						cancellationToken);
+				break;
+
+			case _trade:
+				if (NewTrade is { } tradeHandler)
+					await tradeHandler(
+						JsonConvert.DeserializeObject<Transaction>(json)
+						?? throw new InvalidOperationException("Bithumb returned an empty trade."),
+						cancellationToken);
+				break;
+
+			case _orderBook:
+				if (OrderBookChanged is { } orderBookHandler)
+					await orderBookHandler(
+						JsonConvert.DeserializeObject<OrderBook>(json)
+						?? throw new InvalidOperationException("Bithumb returned an empty order book."),
+						cancellationToken);
+				break;
+
+			default:
+				this.AddErrorLog(LocalizedStrings.UnknownEvent, envelope?.Type);
+				break;
+		}
+	}
+
+	protected override void DisposeManaged()
+	{
+		_client.Dispose();
+		_subscriptionLock.Dispose();
+		base.DisposeManaged();
 	}
 }

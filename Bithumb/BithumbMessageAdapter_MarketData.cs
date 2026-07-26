@@ -3,24 +3,24 @@ namespace StockSharp.Bithumb;
 public partial class BithumbMessageAdapter
 {
 	private readonly HashSet<SecurityId> _orderBookSubscriptions = [];
-	private readonly Dictionary<SecurityId, long?> _tradesSubscriptions = [];
+	private readonly Dictionary<SecurityId, long> _tradesSubscriptions = [];
 	private readonly HashSet<SecurityId> _level1Subscriptions = [];
 
 	/// <inheritdoc />
-	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
+	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg,
+		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		var secTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
-		foreach (var pair in await _httpClient.GetAllTickersAsync(cancellationToken))
+		foreach (var symbol in await _httpClient.GetSymbolsAsync(cancellationToken))
 		{
-			var secId = pair.Key.ToStockSharp();
-
 			var secMsg = new SecurityMessage
 			{
-				SecurityId = secId,
+				SecurityId = symbol.Market.ToStockSharp(),
+				Name = symbol.EnglishName,
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}.FillDefaultCryptoFields();
 
@@ -29,8 +29,6 @@ public partial class BithumbMessageAdapter
 
 			await SendOutMessageAsync(secMsg, cancellationToken);
 
-			await ProcessTickerAsync(secId, ticker: pair.Value, cancellationToken);
-
 			if (--left <= 0)
 				break;
 		}
@@ -38,25 +36,29 @@ public partial class BithumbMessageAdapter
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
-	private ValueTask ProcessTickerAsync(SecurityId secId, Ticker ticker, CancellationToken cancellationToken)
+	private ValueTask ProcessTickerAsync(Ticker ticker, CancellationToken cancellationToken)
 	{
+		var serverTime = ticker.Timestamp == default ? CurrentTime : ticker.Timestamp;
+
 		return SendOutMessageAsync(new Level1ChangeMessage
 		{
-			ServerTime = CurrentTime,
-			SecurityId = secId,
+			ServerTime = serverTime,
+			SecurityId = ticker.Symbol.ToStockSharp(),
 		}
-		.TryAdd(Level1Fields.OpenPrice, ticker.OpeningPrice?.ToDecimal())
-		.TryAdd(Level1Fields.HighPrice, ticker.High?.ToDecimal())
-		.TryAdd(Level1Fields.LowPrice, ticker.Low?.ToDecimal())
-		.TryAdd(Level1Fields.ClosePrice, ticker.ClosingPrice?.ToDecimal())
-		.TryAdd(Level1Fields.BestBidPrice, ticker.Bid?.ToDecimal())
-		.TryAdd(Level1Fields.BestAskPrice, ticker.Ask?.ToDecimal())
-		.TryAdd(Level1Fields.Volume, ticker.Volume?.ToDecimal())
-		.TryAdd(Level1Fields.AveragePrice, ticker.VWAP?.ToDecimal()), cancellationToken);
+		.TryAdd(Level1Fields.OpenPrice, ticker.OpeningPrice)
+		.TryAdd(Level1Fields.HighPrice, ticker.HighPrice)
+		.TryAdd(Level1Fields.LowPrice, ticker.LowPrice)
+		.TryAdd(Level1Fields.LastTradePrice, ticker.TradePrice)
+		.TryAdd(Level1Fields.LastTradeVolume, ticker.TradeVolume)
+		.TryAdd(Level1Fields.LastTradeTime, ticker.TradeTimestamp)
+		.TryAdd(Level1Fields.LastTradeOrigin, ticker.AskBid.ToOriginSide())
+		.TryAdd(Level1Fields.Change, ticker.ChangePrice)
+		.TryAdd(Level1Fields.Volume, ticker.AccumulatedVolume24H), cancellationToken);
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
+	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
 		var symbol = mdMsg.SecurityId.ToSymbol();
 
@@ -64,17 +66,20 @@ public partial class BithumbMessageAdapter
 
 		if (mdMsg.IsSubscribe)
 		{
-			await _pusherClient.SubscribeTickerAsync(mdMsg.TransactionId, symbol, cancellationToken);
 			_level1Subscriptions.Add(mdMsg.SecurityId);
-
+			await _pusherClient.SubscribeTickerAsync(mdMsg.TransactionId, symbol, cancellationToken);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		else
+		{
 			_level1Subscriptions.Remove(mdMsg.SecurityId);
+			await _pusherClient.UnsubscribeTickerAsync(mdMsg.TransactionId, symbol, cancellationToken);
+		}
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
+	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
 		var symbol = mdMsg.SecurityId.ToSymbol();
 
@@ -82,17 +87,20 @@ public partial class BithumbMessageAdapter
 
 		if (mdMsg.IsSubscribe)
 		{
-			await _pusherClient.SubscribeOrderBookAsync(mdMsg.TransactionId, symbol, cancellationToken);
 			_orderBookSubscriptions.Add(mdMsg.SecurityId);
-
+			await _pusherClient.SubscribeOrderBookAsync(mdMsg.TransactionId, symbol, cancellationToken);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		else
+		{
 			_orderBookSubscriptions.Remove(mdMsg.SecurityId);
+			await _pusherClient.UnsubscribeOrderBookAsync(mdMsg.TransactionId, symbol, cancellationToken);
+		}
 	}
 
 	/// <inheritdoc />
-	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
+	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg,
+		CancellationToken cancellationToken)
 	{
 		var symbol = mdMsg.SecurityId.ToSymbol();
 
@@ -103,27 +111,22 @@ public partial class BithumbMessageAdapter
 			if (mdMsg.From is DateTime from)
 			{
 				var to = mdMsg.To ?? DateTime.UtcNow;
+				var trades = await _httpClient.GetTransactionsAsync(symbol, cancellationToken);
 
-				var trades = (await _httpClient.GetTransactionsAsync(symbol, cancellationToken)).ToArray();
-
-				foreach (var trade in trades)
+				foreach (var trade in trades.OrderBy(t => t.Time))
 				{
-					var time = trade.Time.ToDto();
-
-					if (time < from)
+					if (trade.Time < from || trade.Time > to)
 						continue;
 
-					if (time > to)
-						break;
-
-					await ProcessTickAsync(mdMsg.TransactionId, mdMsg.SecurityId, trade, cancellationToken);
+					await ProcessTickAsync(mdMsg.TransactionId, trade, cancellationToken);
 				}
 			}
 
 			if (!mdMsg.IsHistoryOnly())
 			{
-				await _pusherClient.SubscribeTransactionAsync(mdMsg.TransactionId, symbol, cancellationToken);
-				_tradesSubscriptions.Add(mdMsg.SecurityId, null);
+				_tradesSubscriptions[mdMsg.SecurityId] = mdMsg.TransactionId;
+				await _pusherClient.SubscribeTransactionAsync(mdMsg.TransactionId, symbol,
+					cancellationToken);
 			}
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -131,63 +134,61 @@ public partial class BithumbMessageAdapter
 		else
 		{
 			_tradesSubscriptions.Remove(mdMsg.SecurityId);
+			await _pusherClient.UnsubscribeTransactionAsync(mdMsg.TransactionId, symbol,
+				cancellationToken);
 		}
 	}
 
-	private ValueTask ProcessTickAsync(long originTransId, SecurityId secId, Transaction trade, CancellationToken cancellationToken)
+	private ValueTask ProcessTickAsync(long originTransId, Transaction trade,
+		CancellationToken cancellationToken)
 	{
 		return SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Ticks,
-			SecurityId = secId,
+			SecurityId = trade.Symbol.ToStockSharp(),
 			TradeId = trade.Id,
-			TradePrice = (decimal)trade.Price,
-			TradeVolume = trade.Amount.ToDecimal(),
-			ServerTime = trade.Time.ToDto(),
+			TradePrice = trade.Price,
+			TradeVolume = trade.Amount,
+			ServerTime = trade.Time,
 			OriginalTransactionId = originTransId,
-			OriginSide = trade.Type.ToSide(),
+			OriginSide = trade.Side.ToOriginSide(),
 		}, cancellationToken);
 	}
 
-	private async ValueTask SessionOnTickersChanged(IDictionary<string, Ticker> tickers, CancellationToken cancellationToken)
+	private ValueTask SessionOnTickerChanged(Ticker ticker,
+		CancellationToken cancellationToken)
 	{
-		foreach (var pair in tickers)
-		{
-			var secId = pair.Key.ToStockSharp();
+		var securityId = ticker.Symbol.ToStockSharp();
 
-			if (!_level1Subscriptions.Contains(secId))
-				continue;
-
-			await ProcessTickerAsync(secId, pair.Value, cancellationToken);
-		}
+		return _level1Subscriptions.Contains(securityId)
+			? ProcessTickerAsync(ticker, cancellationToken)
+			: default;
 	}
 
-	private async ValueTask SessionOnNewTicks(string currency, IEnumerable<Transaction> ticks, CancellationToken cancellationToken)
+	private ValueTask SessionOnNewTrade(Transaction trade,
+		CancellationToken cancellationToken)
 	{
-		var secId = currency.ToStockSharp();
+		var securityId = trade.Symbol.ToStockSharp();
 
-		if (!_tradesSubscriptions.ContainsKey(secId))
-			return;
-
-		foreach (var tick in ticks)
-		{
-			await ProcessTickAsync(0, secId, tick, cancellationToken);
-		}
+		return _tradesSubscriptions.TryGetValue(securityId, out var transactionId)
+			? ProcessTickAsync(transactionId, trade, cancellationToken)
+			: default;
 	}
 
-	private ValueTask SessionOnOrderBookChanged(string currency, OrderBook book, CancellationToken cancellationToken)
+	private ValueTask SessionOnOrderBookChanged(OrderBook book,
+		CancellationToken cancellationToken)
 	{
-		var secId = currency.ToStockSharp();
+		var securityId = book.Symbol.ToStockSharp();
 
-		if (!_orderBookSubscriptions.Contains(secId))
+		if (!_orderBookSubscriptions.Contains(securityId))
 			return default;
 
 		return SendOutMessageAsync(new QuoteChangeMessage
 		{
-			SecurityId = secId,
-			Bids = [.. book.Bids.Select(e => new QuoteChange((decimal)e.Price, (decimal)e.Quantity))],
-			Asks = [.. book.Asks.Select(e => new QuoteChange((decimal)e.Price, (decimal)e.Quantity))],
-			ServerTime = CurrentTime,
+			SecurityId = securityId,
+			Bids = [.. book.Units.Select(unit => new QuoteChange(unit.BidPrice, unit.BidSize))],
+			Asks = [.. book.Units.Select(unit => new QuoteChange(unit.AskPrice, unit.AskSize))],
+			ServerTime = book.Timestamp,
 		}, cancellationToken);
 	}
 }
