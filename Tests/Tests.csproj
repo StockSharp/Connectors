@@ -115,6 +115,7 @@
     <ProjectReference Include="..\Synthetix\Synthetix.csproj" />
     <ProjectReference Include="..\THORChain\THORChain.csproj" />
     <ProjectReference Include="..\Toobit\Toobit.csproj" />
+    <ProjectReference Include="..\Tradernet\Tradernet.csproj" />
     <ProjectReference Include="..\Upbit\Upbit.csproj" />
     <ProjectReference Include="..\VALR\VALR.csproj" />
     <ProjectReference Include="..\VariationalOmni\VariationalOmni.csproj" />
