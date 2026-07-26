@@ -12,7 +12,7 @@ class OwnTrade
 
 	// User-defined ID
 	[JsonProperty("clientOrderId")]
-	public string ÑlientOrderId { get; set; }
+	public string ClientOrderId { get; set; }
 
 	// Trading pair symbol
 	[JsonProperty("symbol")]
