@@ -20,6 +20,12 @@ sealed class LongbridgeOtp
 {
 	[JsonProperty("otp")]
 	public string Otp { get; set; }
+
+	[JsonProperty("limit")]
+	public int Limit { get; set; }
+
+	[JsonProperty("online")]
+	public int Online { get; set; }
 }
 
 sealed class LongbridgeSubmitOrderRequest
@@ -62,6 +68,9 @@ sealed class LongbridgeSubmitOrderRequest
 
 	[JsonProperty("time_in_force")]
 	public string TimeInForce { get; set; }
+
+	[JsonProperty("client_request_id")]
+	public string ClientRequestId { get; set; }
 }
 
 sealed class LongbridgeReplaceOrderRequest

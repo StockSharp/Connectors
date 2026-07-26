@@ -31,6 +31,8 @@ public partial class LongbridgeMessageAdapter
 			OutsideRth = (condition?.OutsideRth ?? LongbridgeOutsideRths.RegularOnly).ToNative(),
 			Remark = condition?.Remark,
 			TimeInForce = nativeTimeInForce.ToNative(),
+			ClientRequestId = regMsg.TransactionId.ToString(
+				CultureInfo.InvariantCulture),
 		};
 		var response = await _restClient.SubmitOrder(request, cancellationToken);
 		var orderId = response?.OrderId.ThrowIfEmpty("OrderId");
@@ -324,7 +326,7 @@ public partial class LongbridgeMessageAdapter
 		=> type is LongbridgeOrderTypes.Limit or LongbridgeOrderTypes.EnhancedLimit or
 			LongbridgeOrderTypes.AtAuctionLimit or LongbridgeOrderTypes.OddLot or
 			LongbridgeOrderTypes.LimitIfTouched or LongbridgeOrderTypes.TrailingLimitAmount or
-			LongbridgeOrderTypes.TrailingLimitPercent;
+			LongbridgeOrderTypes.TrailingLimitPercent or LongbridgeOrderTypes.SpecialLimit;
 
 	private static string GetOrderId(long? numericId, string stringId, long transactionId)
 	{

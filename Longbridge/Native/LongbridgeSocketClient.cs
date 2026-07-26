@@ -13,6 +13,7 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 {
 	private const int _maxFrameSize = 16 * 1024 * 1024;
 	private readonly Uri _socketUri;
+	private readonly string _dataCenterRegion;
 	private readonly Func<CancellationToken, Task<string>> _otpProvider;
 	private readonly CancellationTokenSource _lifetime = new();
 	private readonly TaskCompletionSource _initialConnection = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -23,11 +24,16 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 	private Task _runTask;
 	private int _requestId;
 
-	public LongbridgeSocketClient(string url, Func<CancellationToken, Task<string>> otpProvider)
+	public LongbridgeSocketClient(
+		string url,
+		string dataCenterRegion,
+		Func<CancellationToken, Task<string>> otpProvider)
 	{
 		var builder = new UriBuilder(url.ThrowIfEmpty(nameof(url)));
 		builder.Query = "version=1&codec=1&platform=9";
 		_socketUri = builder.Uri;
+		_dataCenterRegion = dataCenterRegion.ThrowIfEmpty(
+			nameof(dataCenterRegion));
 		_otpProvider = otpProvider ?? throw new ArgumentNullException(nameof(otpProvider));
 	}
 
@@ -130,6 +136,12 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 			try
 			{
 				using var socket = new ClientWebSocket();
+				socket.Options.SetRequestHeader(
+					"accept-language",
+					"en");
+				socket.Options.SetRequestHeader(
+					"x-dc-region",
+					_dataCenterRegion);
 				using var connection = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 				_socket = socket;
 				await socket.ConnectAsync(_socketUri, connection.Token);

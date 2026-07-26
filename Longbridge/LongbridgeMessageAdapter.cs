@@ -92,8 +92,13 @@ public partial class LongbridgeMessageAdapter
 
 	private LongbridgeSocketClient CreateSocket(string url)
 	{
-		var socket = new LongbridgeSocketClient(url, async cancellationToken =>
-			(await _restClient.GetOtp(cancellationToken))?.Otp) { Parent = this };
+		var socket = new LongbridgeSocketClient(
+			url,
+			_restClient.DataCenterRegion,
+			_restClient.GetOtp)
+		{
+			Parent = this
+		};
 		socket.Error += (error, _) => SendOutErrorAsync(error, CancellationToken.None);
 		return socket;
 	}

@@ -18,8 +18,37 @@ sealed class LongbridgeRestClient : BaseLogReceiver
 		_apiRoot = new Uri(apiUrl.ThrowIfEmpty(nameof(apiUrl)).TrimEnd('/') + "/", UriKind.Absolute);
 	}
 
-	public Task<LongbridgeOtp> GetOtp(CancellationToken cancellationToken)
-		=> Send<LongbridgeOtp>(HttpMethod.Get, "v2/socket/token", false, cancellationToken);
+	public string DataCenterRegion => IsUsCredential() ? "us" : "ap";
+
+	public async Task<string> GetOtp(CancellationToken cancellationToken)
+	{
+		var response = await Send<LongbridgeOtp>(
+			HttpMethod.Get,
+			"v1/socket/token",
+			false,
+			cancellationToken);
+
+		if (response == null || response.Otp.IsEmpty())
+			throw new InvalidDataException(
+				"Longbridge returned an empty socket OTP.");
+
+		if (response.Limit <= 0)
+		{
+			throw new InvalidDataException(
+				$"Longbridge returned an invalid socket connection limit " +
+				$"'{response.Limit.ToString(CultureInfo.InvariantCulture)}'.");
+		}
+
+		if (response.Online >= response.Limit)
+		{
+			throw new InvalidOperationException(
+				$"Longbridge socket connection limit reached " +
+				$"({response.Online.ToString(CultureInfo.InvariantCulture)}/" +
+				$"{response.Limit.ToString(CultureInfo.InvariantCulture)}).");
+		}
+
+		return response.Otp;
+	}
 
 	public Task<LongbridgeSubmitOrderResponse> SubmitOrder(LongbridgeSubmitOrderRequest request, CancellationToken cancellationToken)
 		=> Send<LongbridgeSubmitOrderResponse, LongbridgeSubmitOrderRequest>(HttpMethod.Post, "v1/trade/order", request, true, cancellationToken);
@@ -80,11 +109,15 @@ sealed class LongbridgeRestClient : BaseLogReceiver
 			request.Headers.TryAddWithoutValidation("accept-language", "en");
 			request.Headers.TryAddWithoutValidation("x-api-key", _appKey);
 			request.Headers.TryAddWithoutValidation("authorization", _appSecret.IsEmpty() ? $"Bearer {_accessToken}" : _accessToken);
-			request.Headers.TryAddWithoutValidation("x-dc-region", IsUsCredential() ? "us" : "ap");
+			request.Headers.TryAddWithoutValidation("x-dc-region", DataCenterRegion);
+			var timestamp = DateTimeOffset.UtcNow
+				.ToUnixTimeMilliseconds()
+				.ToString(CultureInfo.InvariantCulture);
+			request.Headers.TryAddWithoutValidation("x-timestamp", timestamp);
 			if (bodyBytes.Length > 0)
 				request.Content = new ByteArrayContent(bodyBytes) { Headers = { ContentType = new("application/json") { CharSet = "utf-8" } } };
 			if (!_appSecret.IsEmpty())
-				Sign(request, bodyBytes);
+				Sign(request, bodyBytes, timestamp);
 			using var response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 			var content = await response.Content.ReadAsStringAsync(cancellationToken);
 			if (response.StatusCode == HttpStatusCode.TooManyRequests && !rateRetried)
@@ -130,10 +163,11 @@ sealed class LongbridgeRestClient : BaseLogReceiver
 		}
 	}
 
-	private void Sign(HttpRequestMessage request, byte[] body)
+	private void Sign(
+		HttpRequestMessage request,
+		byte[] body,
+		string timestamp)
 	{
-		var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
-		request.Headers.TryAddWithoutValidation("x-timestamp", timestamp);
 		const string signedHeaders = "authorization;x-api-key;x-timestamp";
 		var signatureHeader = $"HMAC-SHA256 SignedHeaders={signedHeaders}";
 		request.Headers.TryAddWithoutValidation("x-api-signature", signatureHeader);
@@ -149,7 +183,9 @@ sealed class LongbridgeRestClient : BaseLogReceiver
 	private bool IsUsCredential()
 		=> _appKey.StartsWith("us_", StringComparison.OrdinalIgnoreCase) ||
 			_accessToken.StartsWith("us_", StringComparison.OrdinalIgnoreCase) ||
-			_appSecret.StartsWith("us_", StringComparison.OrdinalIgnoreCase);
+			_appSecret?.StartsWith(
+				"us_",
+				StringComparison.OrdinalIgnoreCase) == true;
 
 	private static TimeSpan GetRetryDelay(HttpResponseMessage response)
 	{

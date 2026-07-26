@@ -91,6 +91,7 @@ static class LongbridgeExtensions
 			LongbridgeOrderTypes.TrailingLimitPercent => "TSLPPCT",
 			LongbridgeOrderTypes.TrailingMarketAmount => "TSMAMT",
 			LongbridgeOrderTypes.TrailingMarketPercent => "TSMPCT",
+			LongbridgeOrderTypes.SpecialLimit => "SLO",
 			_ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
 		};
 
@@ -108,6 +109,7 @@ static class LongbridgeExtensions
 			"TSLPPCT" => LongbridgeOrderTypes.TrailingLimitPercent,
 			"TSMAMT" => LongbridgeOrderTypes.TrailingMarketAmount,
 			"TSMPCT" => LongbridgeOrderTypes.TrailingMarketPercent,
+			"SLO" => LongbridgeOrderTypes.SpecialLimit,
 			_ => LongbridgeOrderTypes.Limit,
 		};
 
@@ -124,8 +126,9 @@ static class LongbridgeExtensions
 		{
 			"REJECTEDSTATUS" => OrderStates.Failed,
 			"FILLEDSTATUS" or "CANCELEDSTATUS" or "EXPIREDSTATUS" or "PARTIALWITHDRAWAL" => OrderStates.Done,
-			"NEWSTATUS" or "REPLACEDSTATUS" or "PARTIALFILLEDSTATUS" or "PENDINGREPLACESTATUS" or
-				"PENDINGCANCELSTATUS" => OrderStates.Active,
+			"NEWSTATUS" or "REPLACEDSTATUS" or "PARTIALFILLEDSTATUS" or
+				"WAITTOREPLACE" or "PENDINGREPLACESTATUS" or
+				"WAITTOCANCEL" or "PENDINGCANCELSTATUS" => OrderStates.Active,
 			_ => OrderStates.Pending,
 		};
 

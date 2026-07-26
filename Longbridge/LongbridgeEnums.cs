@@ -38,6 +38,9 @@ public enum LongbridgeOrderTypes
 
 	/// <summary>Trailing market order by percentage.</summary>
 	TrailingMarketPercent,
+
+	/// <summary>Special limit order.</summary>
+	SpecialLimit,
 }
 
 /// <summary>Longbridge regular-hours policies.</summary>
