@@ -42,6 +42,7 @@
     <Project Path="Coincheck/Coincheck.csproj" />
     <Project Path="CoinEx/CoinEx.csproj" />
     <Project Path="Coinigy/Coinigy.csproj" />
+    <Project Path="Comdirect/Comdirect.csproj" />
     <Project Path="CSV/CSV.csproj" />
     <Project Path="cTrader/cTrader.csproj" />
     <Project Path="CTP/Ctp.csproj" />
