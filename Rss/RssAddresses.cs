@@ -43,7 +43,7 @@ public static class RssAddresses
 	/// <summary>
 	/// MarketWatch.
 	/// </summary>
-	public const string MarketWatch = "http://feeds.marketwatch.com/marketwatch/bulletins?format=xml";
+	public const string MarketWatch = "https://feeds.content.dowjones.io/public/rss/mw_bulletins";
 
 	/// <summary>
 	/// Smart-Lab.
