@@ -905,7 +905,7 @@ sealed class DaishinComBridge : IDisposable
 				Board = "KRX",
 				SecurityType = securityType,
 				OptionType = securityType == SecurityTypes.Option
-					? code.StartsWith("2", StringComparison.Ordinal) ? OptionTypes.Call : OptionTypes.Put
+					? InferOptionType(code)
 					: null,
 				Strike = securityType == SecurityTypes.Option
 					? Positive(ConvertDecimal(Invoke(manager, "GetData", (short)4, (short)index)))
@@ -1087,10 +1087,21 @@ sealed class DaishinComBridge : IDisposable
 	{
 		if (!code.IsEmpty() && _securities.TryGetValue(code, out var security))
 			return security.SecurityType;
-		return code?.StartsWith("2", StringComparison.Ordinal) == true ||
-			code?.StartsWith("3", StringComparison.Ordinal) == true
+
+		var prefix = code.IsEmpty() ? '\0' : char.ToUpperInvariant(code[0]);
+
+		return prefix is '2' or '3' or 'B' or 'C'
 			? SecurityTypes.Option : SecurityTypes.Future;
 	}
+
+	private static OptionTypes InferOptionType(string code)
+		=> char.ToUpperInvariant(code.ThrowIfEmpty(nameof(code))[0]) switch
+		{
+			'2' or 'B' => OptionTypes.Call,
+			'3' or 'C' => OptionTypes.Put,
+			_ => throw new InvalidOperationException(
+				$"Unsupported CYBOS Plus option code '{code}'."),
+		};
 
 	private static Sides? ParseOriginSide(string value)
 		=> value?.Trim() switch
