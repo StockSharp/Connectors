@@ -13,10 +13,16 @@ public enum CowProtocolChains
     Polygon = 137,
     /// <summary>Base.</summary>
     Base = 8453,
+    /// <summary>Plasma.</summary>
+    Plasma = 9745,
     /// <summary>Arbitrum One.</summary>
     Arbitrum = 42161,
     /// <summary>Avalanche C-Chain.</summary>
     Avalanche = 43114,
+    /// <summary>Ink.</summary>
+    Ink = 57073,
+    /// <summary>Linea.</summary>
+    Linea = 59144,
 }
 
 /// <summary>The message adapter for CoW Protocol batch auctions.</summary>

@@ -39,6 +39,9 @@ static class CowProtocolExtensions
             CowProtocolChains.Avalanche => "https://api.cow.fi/avalanche",
             CowProtocolChains.Polygon => "https://api.cow.fi/polygon",
             CowProtocolChains.Bnb => "https://api.cow.fi/bnb",
+            CowProtocolChains.Linea => "https://api.cow.fi/linea",
+            CowProtocolChains.Plasma => "https://api.cow.fi/plasma",
+            CowProtocolChains.Ink => "https://api.cow.fi/ink",
             _ => throw new ArgumentOutOfRangeException(nameof(chain), chain,
                 "Unsupported CoW Protocol chain."),
         };
@@ -57,6 +60,9 @@ static class CowProtocolExtensions
                 "https://polygon-bor-rpc.publicnode.com",
             CowProtocolChains.Bnb =>
                 "https://bsc-dataseed.binance.org",
+            CowProtocolChains.Linea => "https://rpc.linea.build",
+            CowProtocolChains.Plasma => "https://rpc.plasma.to",
+            CowProtocolChains.Ink => "https://rpc-ten.inkonchain.com",
             _ => throw new ArgumentOutOfRangeException(nameof(chain), chain,
                 "Unsupported CoW Protocol chain."),
         };
@@ -92,6 +98,18 @@ static class CowProtocolExtensions
                 "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c|" +
                 "0x55d398326f99059fF775485246999027B3197955|" +
                 "WBNB-USDT",
+            CowProtocolChains.Linea =>
+                "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f|" +
+                "0x176211869ca2b568f2a7d4ee941e073a821ee1ff|" +
+                "WETH-USDC",
+            CowProtocolChains.Plasma =>
+                "0x6100e367285b01f48d07953803a2d8dca5d19873|" +
+                "0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb|" +
+                "WXPL-USDT0",
+            CowProtocolChains.Ink =>
+                "0x4200000000000000000000000000000000000006|" +
+                "0x0200c29006150606b650577bbe7b6248f58470c1|" +
+                "WETH-USDT0",
             _ => throw new ArgumentOutOfRangeException(nameof(chain), chain,
                 "Unsupported CoW Protocol chain."),
         };
@@ -105,6 +123,8 @@ static class CowProtocolExtensions
             CowProtocolChains.Avalanche => "AVAX",
             CowProtocolChains.Polygon => "POL",
             CowProtocolChains.Bnb => "BNB",
+            CowProtocolChains.Linea or CowProtocolChains.Ink => "ETH",
+            CowProtocolChains.Plasma => "XPL",
             _ => throw new ArgumentOutOfRangeException(nameof(chain), chain,
                 "Unsupported CoW Protocol chain."),
         };
