@@ -17,14 +17,12 @@ using Ecng.Serialization;
 public partial class MoexLchiMessageAdapter : HistoricalMessageAdapter
 {
 	private const string _defaultFtpHost = "ftp.moex.com";
-	private const string _defaultLegacyWebEndpoint = "http://investor.moex.com";
-	private const string _defaultWebEndpoint = "https://investor.moex.com";
 
 	private readonly SynchronizedDictionary<DateTime, CompetitionYear> _competitions = [];
 
 	static MoexLchiMessageAdapter()
 	{
-		const int beginYear = 2006;
+		const int beginYear = 2013;
 		const int endYear = 2015;
 
 		_allYears = new DateTime[endYear - beginYear + 1];
@@ -46,20 +44,6 @@ public partial class MoexLchiMessageAdapter : HistoricalMessageAdapter
 		Description = "MOEX contest FTP host.",
 		GroupName = LocalizedStrings.AddressesKey)]
 	public string FtpHost { get; set; } = _defaultFtpHost;
-
-	/// <summary>Legacy contest website endpoint.</summary>
-	[Display(
-		Name = "Legacy web endpoint",
-		Description = "Legacy contest website endpoint.",
-		GroupName = LocalizedStrings.AddressesKey)]
-	public string LegacyWebEndpoint { get; set; } = _defaultLegacyWebEndpoint;
-
-	/// <summary>Contest website endpoint.</summary>
-	[Display(
-		Name = "Web endpoint",
-		Description = "Contest website endpoint.",
-		GroupName = LocalizedStrings.AddressesKey)]
-	public string WebEndpoint { get; set; } = _defaultWebEndpoint;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="MoexLchiMessageAdapter"/>.
@@ -154,17 +138,14 @@ public partial class MoexLchiMessageAdapter : HistoricalMessageAdapter
 	private CompetitionYear Get(DateTime year)
 	{
 		return _competitions.SafeAdd(new DateTime(year.Year, 1, 1),
-			key => new CompetitionYear(key, FtpHost, LegacyWebEndpoint, WebEndpoint));
+			key => new CompetitionYear(key, FtpHost));
 	}
 
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
-		storage
-			.Set(nameof(FtpHost), FtpHost)
-			.Set(nameof(LegacyWebEndpoint), LegacyWebEndpoint)
-			.Set(nameof(WebEndpoint), WebEndpoint);
+		storage.Set(nameof(FtpHost), FtpHost);
 	}
 
 	/// <inheritdoc />
@@ -172,7 +153,5 @@ public partial class MoexLchiMessageAdapter : HistoricalMessageAdapter
 	{
 		base.Load(storage);
 		FtpHost = storage.GetValue(nameof(FtpHost), FtpHost);
-		LegacyWebEndpoint = storage.GetValue(nameof(LegacyWebEndpoint), LegacyWebEndpoint);
-		WebEndpoint = storage.GetValue(nameof(WebEndpoint), WebEndpoint);
 	}
 }
