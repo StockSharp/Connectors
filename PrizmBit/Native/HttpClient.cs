@@ -1,11 +1,11 @@
 namespace StockSharp.PrizmBit.Native;
 
-class HttpClient(Authenticator authenticator, bool isDemo) : BaseLogReceiver
+class HttpClient(string baseUrl, Authenticator authenticator, bool isDemo) : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 	private readonly bool _isDemo = isDemo;
 
-	private const string _baseUrl = "https://api.prizmbit.com/api/po";
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
 	// to get readable name after obfuscation
 	public override string Name => nameof(PrizmBit) + "_" + nameof(HttpClient);
@@ -214,7 +214,7 @@ class HttpClient(Authenticator authenticator, bool isDemo) : BaseLogReceiver
 		return (long)response.id;
 	}
 
-	private static Uri CreateUrl(string methodName)
+	private Uri CreateUrl(string methodName)
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

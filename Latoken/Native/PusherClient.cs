@@ -32,12 +32,12 @@ class PusherClient : BaseLogReceiver
 	private readonly SynchronizedDictionary<string, long> _subscriptions = new(StringComparer.InvariantCultureIgnoreCase);
 	private long _nextSubscriptionId;
 
-	public PusherClient(Authenticator authenticator, WorkingTime workingTime)
+	public PusherClient(string endpoint, Authenticator authenticator, WorkingTime workingTime)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
 		_client = new(
-			"wss://api.latoken.com/stomp",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

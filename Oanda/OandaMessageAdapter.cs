@@ -82,9 +82,11 @@ partial class OandaMessageAdapter
 		if (_streamigClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new OandaRestClient(IsDemo, Token, UseCompression);
+		var restEndpoint = IsDemo ? DemoRestEndpoint : RestEndpoint;
+		var streamingEndpoint = IsDemo ? DemoStreamingEndpoint : StreamingEndpoint;
+		_restClient = new OandaRestClient(restEndpoint, Token, UseCompression);
 
-		_streamigClient = new OandaStreamingClient(IsDemo, Token, UseCompression);
+		_streamigClient = new OandaStreamingClient(streamingEndpoint, Token, UseCompression);
 		_streamigClient.Log += StreamigClientOnLog;
 		_streamigClient.NewError += SendOutErrorAsync;
 		_streamigClient.NewTransaction += SessionOnNewTransaction;

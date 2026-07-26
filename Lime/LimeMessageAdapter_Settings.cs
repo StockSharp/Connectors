@@ -17,6 +17,10 @@ using System.ComponentModel.DataAnnotations;
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Level1)]
 public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IKeySecretAdapter
 {
+	private const string _defaultOAuthEndpoint = "https://auth.lime.co/connect/token";
+	private const string _defaultRestEndpoint = "https://api.lime.co/";
+	private const string _defaultWebSocketEndpoint = "wss://api.lime.co/accounts";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -61,6 +65,30 @@ public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter,
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
+	/// <summary>OAuth token endpoint.</summary>
+	[Display(
+		Name = "OAuth endpoint",
+		Description = "OAuth token endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;
+
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -69,7 +97,10 @@ public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter,
 			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
 			.Set(nameof(Key), Key)
-			.Set(nameof(Secret), Secret);
+			.Set(nameof(Secret), Secret)
+			.Set(nameof(OAuthEndpoint), OAuthEndpoint)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -80,5 +111,8 @@ public partial class LimeMessageAdapter : MessageAdapter, ILoginPasswordAdapter,
 		Password = storage.GetValue<SecureString>(nameof(Password));
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
+		OAuthEndpoint = storage.GetValue(nameof(OAuthEndpoint), OAuthEndpoint);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }

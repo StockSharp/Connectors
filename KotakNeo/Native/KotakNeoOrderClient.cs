@@ -5,9 +5,11 @@ sealed class KotakNeoOrderClient : BaseLogReceiver
 	private readonly WebSocketClient _client;
 	private readonly string _token;
 	private readonly string _sid;
+	private readonly string _endpointTemplate;
 
-	public KotakNeoOrderClient(KotakNeoSession session, int reconnectAttempts, WorkingTime workingTime)
+	public KotakNeoOrderClient(string endpointTemplate, KotakNeoSession session, int reconnectAttempts, WorkingTime workingTime)
 	{
+		_endpointTemplate = endpointTemplate.ThrowIfEmpty(nameof(endpointTemplate));
 		if (session == null)
 			throw new ArgumentNullException(nameof(session));
 		_token = session.Token.ThrowIfEmpty(nameof(session.Token));
@@ -80,14 +82,17 @@ sealed class KotakNeoOrderClient : BaseLogReceiver
 		}
 	}
 
-	private static string GetUrl(string dataCenter)
-		=> dataCenter?.ToLowerInvariant() switch
+	private string GetUrl(string dataCenter)
+	{
+		var host = dataCenter?.ToLowerInvariant() switch
 		{
-			"adc" => "wss://cis.kotaksecurities.com/realtime",
-			"e21" => "wss://e21.kotaksecurities.com/realtime",
-			"e22" => "wss://e22.kotaksecurities.com/realtime",
-			"e41" => "wss://e41.kotaksecurities.com/realtime",
-			"e43" => "wss://e43.kotaksecurities.com/realtime",
-			_ => "wss://mis.kotaksecurities.com/realtime",
+			"adc" => "cis",
+			"e21" => "e21",
+			"e22" => "e22",
+			"e41" => "e41",
+			"e43" => "e43",
+			_ => "mis",
 		};
+		return _endpointTemplate.Put(host);
+	}
 }

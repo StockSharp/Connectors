@@ -68,8 +68,8 @@ public partial class BithumbMessageAdapter
 		if (_pusherClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(IsPrime, Key, Secret) { Parent = this };
-		_pusherClient = new(ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_httpClient = new(IsPrime ? PrimeRestEndpoint : RestEndpoint, Key, Secret) { Parent = this };
+		_pusherClient = new(WebSocketEndpoint, ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribePusherClient(_pusherClient);
 

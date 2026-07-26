@@ -145,6 +145,22 @@ public partial class PhillipPoemsMessageAdapter : MessageAdapter, IKeySecretAdap
 			? TimeSpan.FromSeconds(1) : value;
 	}
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = "https://api.poems.com.sg/api-gateway/pspl/";
+
+	/// <summary>Sandbox REST API endpoint.</summary>
+	[Display(
+		Name = "Sandbox REST endpoint",
+		Description = "Sandbox REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string SandboxRestEndpoint { get; set; } = "https://sandboxapi.poems.com.sg/api-gateway/pspl/";
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -162,7 +178,9 @@ public partial class PhillipPoemsMessageAdapter : MessageAdapter, IKeySecretAdap
 			.Set(nameof(DefaultMarket), DefaultMarket)
 			.Set(nameof(DefaultExchange), DefaultExchange)
 			.Set(nameof(DefaultSettlementCurrency), DefaultSettlementCurrency)
-			.Set(nameof(PollingInterval), PollingInterval);
+			.Set(nameof(PollingInterval), PollingInterval)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(SandboxRestEndpoint), SandboxRestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -183,5 +201,7 @@ public partial class PhillipPoemsMessageAdapter : MessageAdapter, IKeySecretAdap
 		DefaultSettlementCurrency = storage.GetValue(nameof(DefaultSettlementCurrency),
 			DefaultSettlementCurrency);
 		PollingInterval = storage.GetValue(nameof(PollingInterval), PollingInterval);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		SandboxRestEndpoint = storage.GetValue(nameof(SandboxRestEndpoint), SandboxRestEndpoint);
 	}
 }

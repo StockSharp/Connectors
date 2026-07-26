@@ -9,13 +9,12 @@ class HttpClient : BaseLogReceiver
 	private readonly string _baseUrl;
 	private const string _version = "v1";
 
-	public HttpClient(bool sandbox, SecureString bearer)
+	public HttpClient(string restEndpoint, SecureString bearer)
 	{
 		if (bearer.IsEmpty())
 			throw new ArgumentNullException(nameof(bearer));
 
-		var url = sandbox ? "sandbox" : "api";
-		_baseUrl = $"https://{url}.tradier.com";
+		_baseUrl = restEndpoint.ThrowIfEmpty(nameof(restEndpoint)).TrimEnd('/');
 		_bearer = bearer;
 	}
 

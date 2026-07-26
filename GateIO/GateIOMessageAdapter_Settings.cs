@@ -135,15 +135,22 @@ public partial class GateIOMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	public bool IsDemo { get; set; }
 
 	private const string _defaultRestDomain = "api.gateio.ws";
+	private const string _defaultDemoRestDomain = "fx-api-testnet.gateio.ws";
 	private const string _defaultSpotWsDomain = "api.gateio.ws/ws/v4";
 	private const string _defaultFuturesWsDomain = "fx-ws.gateio.ws/v4/ws";
 	private const string _defaultDeliveryWsDomain = "fx-ws.gateio.ws/v4/ws/delivery";
 	private const string _defaultOptionsWsDomain = "op-ws.gateio.live/v4/ws";
+	private const string _defaultDemoFuturesWsDomain = "fx-ws-testnet.gateio.ws/v4/ws";
+	private const string _defaultDemoDeliveryWsDomain = "fx-ws-testnet.gateio.ws/v4/ws/delivery";
+	private const string _defaultDemoOptionsWsDomain = "op-ws-testnet.gateio.live/v4/ws";
 
 	/// <summary>
 	/// REST domain.
 	/// </summary>
 	public string RestDomain { get; set; } = _defaultRestDomain;
+
+	/// <summary>Demo REST domain.</summary>
+	public string DemoRestDomain { get; set; } = _defaultDemoRestDomain;
 
 	/// <summary>
 	/// <see cref="GateIOSections.Spot"/> web sockets domain.
@@ -165,6 +172,15 @@ public partial class GateIOMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	/// </summary>
 	public string OptionsWsDomain { get; set; } = _defaultOptionsWsDomain;
 
+	/// <summary>Demo futures web sockets domain.</summary>
+	public string DemoFuturesWsDomain { get; set; } = _defaultDemoFuturesWsDomain;
+
+	/// <summary>Demo delivery web sockets domain.</summary>
+	public string DemoDeliveryWsDomain { get; set; } = _defaultDemoDeliveryWsDomain;
+
+	/// <summary>Demo options web sockets domain.</summary>
+	public string DemoOptionsWsDomain { get; set; } = _defaultDemoOptionsWsDomain;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -177,10 +193,14 @@ public partial class GateIOMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 			.Set(nameof(IsDemo), IsDemo)
 
 			.Set(nameof(RestDomain), RestDomain)
+			.Set(nameof(DemoRestDomain), DemoRestDomain)
 			.Set(nameof(SpotWsDomain), SpotWsDomain)
 			.Set(nameof(FuturesWsDomain), FuturesWsDomain)
 			.Set(nameof(DeliveryWsDomain), DeliveryWsDomain)
 			.Set(nameof(OptionsWsDomain), OptionsWsDomain)
+			.Set(nameof(DemoFuturesWsDomain), DemoFuturesWsDomain)
+			.Set(nameof(DemoDeliveryWsDomain), DemoDeliveryWsDomain)
+			.Set(nameof(DemoOptionsWsDomain), DemoOptionsWsDomain)
 		;
 	}
 
@@ -195,10 +215,14 @@ public partial class GateIOMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
 
 		RestDomain = storage.GetValue(nameof(RestDomain), RestDomain);
+		DemoRestDomain = storage.GetValue(nameof(DemoRestDomain), DemoRestDomain);
 		SpotWsDomain = storage.GetValue(nameof(SpotWsDomain), SpotWsDomain);
 		FuturesWsDomain = storage.GetValue(nameof(FuturesWsDomain), FuturesWsDomain);
 		DeliveryWsDomain = storage.GetValue(nameof(DeliveryWsDomain), DeliveryWsDomain);
 		OptionsWsDomain = storage.GetValue(nameof(OptionsWsDomain), OptionsWsDomain);
+		DemoFuturesWsDomain = storage.GetValue(nameof(DemoFuturesWsDomain), DemoFuturesWsDomain);
+		DemoDeliveryWsDomain = storage.GetValue(nameof(DemoDeliveryWsDomain), DemoDeliveryWsDomain);
+		DemoOptionsWsDomain = storage.GetValue(nameof(DemoOptionsWsDomain), DemoOptionsWsDomain);
 	}
 
 	/// <inheritdoc />

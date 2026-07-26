@@ -14,6 +14,9 @@ namespace StockSharp.FactSet;
 	MessageAdapterCategories.Candles | MessageAdapterCategories.Paid)]
 public partial class FactSetMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.factset.com/content/";
+	private const string _defaultOAuthDiscoveryEndpoint = "https://auth.factset.com/.well-known/openid-configuration";
+
 	/// <summary>Authentication scheme.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -72,6 +75,22 @@ public partial class FactSetMessageAdapter : MessageAdapter, ILoginPasswordAdapt
 		Order = 5)]
 	public FactSetPriceAdjustments PriceAdjustment { get; set; }
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>OAuth discovery endpoint.</summary>
+	[Display(
+		Name = "OAuth discovery endpoint",
+		Description = "OAuth OpenID discovery endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OAuthDiscoveryEndpoint { get; set; } = _defaultOAuthDiscoveryEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -82,7 +101,9 @@ public partial class FactSetMessageAdapter : MessageAdapter, ILoginPasswordAdapt
 			.Set(nameof(Password), Password)
 			.Set(nameof(OAuthConfigFile), OAuthConfigFile)
 			.Set(nameof(Currency), Currency)
-			.Set(nameof(PriceAdjustment), PriceAdjustment);
+			.Set(nameof(PriceAdjustment), PriceAdjustment)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(OAuthDiscoveryEndpoint), OAuthDiscoveryEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -95,5 +116,7 @@ public partial class FactSetMessageAdapter : MessageAdapter, ILoginPasswordAdapt
 		OAuthConfigFile = storage.GetValue<string>(nameof(OAuthConfigFile));
 		Currency = storage.GetValue<string>(nameof(Currency));
 		PriceAdjustment = storage.GetValue(nameof(PriceAdjustment), PriceAdjustment);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		OAuthDiscoveryEndpoint = storage.GetValue(nameof(OAuthDiscoveryEndpoint), OAuthDiscoveryEndpoint);
 	}
 }

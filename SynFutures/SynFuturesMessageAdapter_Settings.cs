@@ -21,6 +21,7 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	private const string _defaultWebSocketEndpoint =
 		"wss://base-api.synfutures.com/v4/public/ws";
 	private const string _defaultRpcEndpoint = "https://mainnet.base.org";
+	private const string _defaultOrigin = "https://app.synfutures.com";
 
 	/// <summary>Official SynFutures Base API endpoint.</summary>
 	[Display(
@@ -43,6 +44,13 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
+
+	/// <summary>Origin header used by SynFutures services.</summary>
+	[Display(
+		Name = "Origin",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
+	public string Origin { get; set; } = _defaultOrigin;
 
 	/// <summary>Optional EVM wallet for read-only account access.</summary>
 	[Display(
@@ -187,6 +195,7 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 			.Set(nameof(ApiEndpoint), ApiEndpoint)
 			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
 			.Set(nameof(RpcEndpoint), RpcEndpoint)
+			.Set(nameof(Origin), Origin)
 			.Set(nameof(WalletAddress), WalletAddress)
 			.Set(nameof(PrivateKey), PrivateKey)
 			.Set(nameof(DefaultLeverage), DefaultLeverage)
@@ -209,6 +218,8 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 			nameof(WebSocketEndpoint));
 		RpcEndpoint = NormalizeEndpoint(storage.GetValue(nameof(RpcEndpoint),
 			RpcEndpoint), false, nameof(RpcEndpoint));
+		Origin = NormalizeEndpoint(storage.GetValue(nameof(Origin), Origin),
+			false, nameof(Origin));
 		WalletAddress = storage.GetValue<string>(nameof(WalletAddress));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));
 		DefaultLeverage = storage.GetValue(nameof(DefaultLeverage),
@@ -230,6 +241,7 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 			ApiEndpoint = ApiEndpoint,
 			WebSocketEndpoint = WebSocketEndpoint,
 			RpcEndpoint = RpcEndpoint,
+			Origin = Origin,
 			WalletAddress = WalletAddress,
 			PrivateKey = PrivateKey,
 			DefaultLeverage = DefaultLeverage,

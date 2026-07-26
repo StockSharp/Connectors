@@ -30,12 +30,12 @@ class PusherClient : BaseLogReceiver
 
 	private readonly Authenticator _authenticator;
 
-	public PusherClient(Authenticator authenticator, int attemptsCount, WorkingTime workingTime)
+	public PusherClient(string endpoint, Authenticator authenticator, int attemptsCount, WorkingTime workingTime)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
 		_client = new(
-			"wss://ws.cex.io/ws",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

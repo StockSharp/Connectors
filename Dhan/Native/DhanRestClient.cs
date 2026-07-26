@@ -2,9 +2,6 @@ namespace StockSharp.Dhan.Native;
 
 sealed class DhanRestClient : BaseLogReceiver
 {
-	private const string _apiUrl = "https://api.dhan.co/v2/";
-	private const string _instrumentUrl = "https://images.dhan.co/api-data/api-scrip-master-detailed.csv";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -12,6 +9,8 @@ sealed class DhanRestClient : BaseLogReceiver
 
 	private readonly string _clientId;
 	private readonly SecureString _token;
+	private readonly string _apiUrl;
+	private readonly string _instrumentUrl;
 	private readonly HttpClient _instrumentClient = new();
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private DhanInstrument[] _instruments;
@@ -20,8 +19,10 @@ sealed class DhanRestClient : BaseLogReceiver
 	private IReadOnlyDictionary<string, DhanInstrument> _equitiesByExchangeAndId;
 	private IReadOnlyDictionary<string, DhanInstrument> _equitiesById;
 
-	public DhanRestClient(string clientId, SecureString token)
+	public DhanRestClient(string apiEndpoint, string instrumentEndpoint, string clientId, SecureString token)
 	{
+		_apiUrl = apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint));
+		_instrumentUrl = instrumentEndpoint.ThrowIfEmpty(nameof(instrumentEndpoint));
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_token = token.ThrowIfEmpty(nameof(token));
 	}

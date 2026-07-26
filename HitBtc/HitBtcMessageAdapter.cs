@@ -85,9 +85,9 @@ partial class HitBtcMessageAdapter
 		if (_pusherClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new HttpClient { Parent = this };
+		_httpClient = new HttpClient(RestEndpoint) { Parent = this };
 
-		_pusherClient = new PusherClient(Key, Secret, ReConnectionSettings.WorkingTime) { Parent = this };
+		_pusherClient = new PusherClient(RestEndpoint, WebSocketEndpoint, Key, Secret, ReConnectionSettings.WorkingTime) { Parent = this };
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);
 	}

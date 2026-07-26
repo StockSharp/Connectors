@@ -178,7 +178,8 @@ public partial class PancakeSwapMessageAdapter
 				"subgraph features are disabled.", poolVersion);
 			return;
 		}
-		var client = new PancakeSwapGraphClient(GraphApiKey, source,
+		var client = new PancakeSwapGraphClient(GraphApiKey,
+			GraphGatewayEndpoint, source,
 			poolVersion)
 		{
 			Parent = this,

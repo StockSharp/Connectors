@@ -2,8 +2,6 @@ namespace StockSharp.Shoonya.Native;
 
 sealed class ShoonyaRestClient : BaseLogReceiver
 {
-	private const string _apiUrl = "https://api.shoonya.com/NorenWClientTP/";
-	private const string _instrumentUrl = "https://api.shoonya.com/{0}_symbols.txt.zip";
 	private static readonly string[] _segments = ["NSE", "BSE", "NFO", "BFO", "CDS", "MCX"];
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
@@ -13,17 +11,21 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 	private readonly string _userId;
 	private readonly string _accountId;
 	private readonly string _sessionToken;
-	private readonly HttpClient _httpClient = new() { BaseAddress = new(_apiUrl) };
+	private readonly string _instrumentEndpointTemplate;
+	private readonly HttpClient _httpClient;
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private ShoonyaInstrument[] _instruments;
 	private IReadOnlyDictionary<string, ShoonyaInstrument> _instrumentsByKey;
 	private IReadOnlyDictionary<string, ShoonyaInstrument> _instrumentsBySymbol;
 
-	public ShoonyaRestClient(string userId, string accountId, SecureString sessionToken)
+	public ShoonyaRestClient(string userId, string accountId, SecureString sessionToken,
+		string restEndpoint, string instrumentEndpointTemplate)
 	{
 		_userId = userId.ThrowIfEmpty(nameof(userId));
 		_accountId = accountId.ThrowIfEmpty(nameof(accountId));
 		_sessionToken = sessionToken.ThrowIfEmpty(nameof(sessionToken)).UnSecure();
+		_instrumentEndpointTemplate = instrumentEndpointTemplate.ThrowIfEmpty(nameof(instrumentEndpointTemplate));
+		_httpClient = new() { BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))) };
 		_httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 		_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Shoonya/1.0");
 	}
@@ -239,7 +241,7 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 
 	private async Task<ShoonyaInstrument[]> DownloadInstruments(string segment, CancellationToken cancellationToken)
 	{
-		var bytes = await _httpClient.GetByteArrayAsync(string.Format(CultureInfo.InvariantCulture, _instrumentUrl, segment), cancellationToken);
+		var bytes = await _httpClient.GetByteArrayAsync(string.Format(CultureInfo.InvariantCulture, _instrumentEndpointTemplate, segment), cancellationToken);
 		using var archive = new ZipArchive(new MemoryStream(bytes), ZipArchiveMode.Read);
 		var entry = archive.Entries.FirstOrDefault(e => !e.Name.IsEmpty())
 			?? throw new InvalidDataException($"Shoonya {segment} security master is empty.");

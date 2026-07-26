@@ -2,8 +2,6 @@ namespace StockSharp.AngelOne.Native;
 
 sealed class AngelOneOrderClient : BaseLogReceiver
 {
-	private const string _url = "wss://tns.angelone.in/smart-order-update";
-
 	private readonly WebSocketClient _client;
 	private readonly string _jwtToken;
 	private readonly string _apiKey;
@@ -11,7 +9,7 @@ sealed class AngelOneOrderClient : BaseLogReceiver
 	private readonly string _feedToken;
 
 	public AngelOneOrderClient(string jwtToken, string apiKey, string clientCode, string feedToken,
-		int reconnectAttempts, WorkingTime workingTime)
+		int reconnectAttempts, WorkingTime workingTime, string webSocketEndpoint)
 	{
 		_jwtToken = jwtToken.ThrowIfEmpty(nameof(jwtToken));
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
@@ -19,7 +17,7 @@ sealed class AngelOneOrderClient : BaseLogReceiver
 		_feedToken = feedToken.ThrowIfEmpty(nameof(feedToken));
 
 		_client = new(
-			_url,
+			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
 			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
 			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
 			Process,

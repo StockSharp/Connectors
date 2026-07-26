@@ -21,7 +21,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 	private long _requestId;
 	private DateTime _nextRequestTime;
 
-	public GMTradeRpcClient(string endpoint, string walletAddress)
+	public GMTradeRpcClient(string endpoint, string origin, string walletAddress)
 	{
 		endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).Trim();
 		if (!endpoint.Contains("://", StringComparison.Ordinal))
@@ -45,7 +45,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"StockSharp-GMTrade-Connector/1.0");
 		_http.DefaultRequestHeaders.TryAddWithoutValidation(
-			"Origin", "https://gmtrade.xyz");
+			"Origin", origin.ThrowIfEmpty(nameof(origin)));
 	}
 
 	public override string Name => "GMTRADE_SOLANA_RPC";

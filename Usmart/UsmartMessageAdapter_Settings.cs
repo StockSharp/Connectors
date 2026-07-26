@@ -16,6 +16,13 @@ namespace StockSharp.Usmart;
 [OrderCondition(typeof(UsmartOrderCondition))]
 public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, ITokenAdapter
 {
+	private const string _defaultQuoteEndpoint = "https://open-hz.usmartsg.com:8443/";
+	private const string _defaultDemoQuoteEndpoint = "https://open-hz-uat.yxzq.com/";
+	private const string _defaultTradeEndpoint = "https://open-jy.yxzq.com/";
+	private const string _defaultDemoTradeEndpoint = "http://open-jy-uat.yxzq.com/";
+	private const string _defaultWebSocketEndpoint = "wss://open-hz.usmartsg.com:8443/wss/v1";
+	private const string _defaultDemoWebSocketEndpoint = "wss://open-hz-uat.yxzq.com/wss/v1";
+
 	/// <summary>Authentication token issued by uSMART.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -83,6 +90,54 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, IToken
 		Order = 6)]
 	public string DefaultMarket { get; set; } = "hk";
 
+	/// <summary>Production quote REST API endpoint.</summary>
+	[Display(
+		Name = "Quote endpoint",
+		Description = "Production quote REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 7)]
+	public string QuoteEndpoint { get; set; } = _defaultQuoteEndpoint;
+
+	/// <summary>Demo quote REST API endpoint.</summary>
+	[Display(
+		Name = "Demo quote endpoint",
+		Description = "Demo quote REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 8)]
+	public string DemoQuoteEndpoint { get; set; } = _defaultDemoQuoteEndpoint;
+
+	/// <summary>Production trading REST API endpoint.</summary>
+	[Display(
+		Name = "Trade endpoint",
+		Description = "Production trading REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 9)]
+	public string TradeEndpoint { get; set; } = _defaultTradeEndpoint;
+
+	/// <summary>Demo trading REST API endpoint.</summary>
+	[Display(
+		Name = "Demo trade endpoint",
+		Description = "Demo trading REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 10)]
+	public string DemoTradeEndpoint { get; set; } = _defaultDemoTradeEndpoint;
+
+	/// <summary>Production WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Production WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 11)]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>Demo WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "Demo WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 12)]
+	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -94,7 +149,13 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, IToken
 			.Set(nameof(FundAccount), FundAccount)
 			.Set(nameof(EncryptedTradePassword), EncryptedTradePassword)
 			.Set(nameof(IsDemo), IsDemo)
-			.Set(nameof(DefaultMarket), DefaultMarket);
+			.Set(nameof(DefaultMarket), DefaultMarket)
+			.Set(nameof(QuoteEndpoint), QuoteEndpoint)
+			.Set(nameof(DemoQuoteEndpoint), DemoQuoteEndpoint)
+			.Set(nameof(TradeEndpoint), TradeEndpoint)
+			.Set(nameof(DemoTradeEndpoint), DemoTradeEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+			.Set(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -108,5 +169,11 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, IToken
 		EncryptedTradePassword = storage.GetValue<SecureString>(nameof(EncryptedTradePassword));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 		DefaultMarket = storage.GetValue(nameof(DefaultMarket), DefaultMarket);
+		QuoteEndpoint = storage.GetValue(nameof(QuoteEndpoint), QuoteEndpoint);
+		DemoQuoteEndpoint = storage.GetValue(nameof(DemoQuoteEndpoint), DemoQuoteEndpoint);
+		TradeEndpoint = storage.GetValue(nameof(TradeEndpoint), TradeEndpoint);
+		DemoTradeEndpoint = storage.GetValue(nameof(DemoTradeEndpoint), DemoTradeEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		DemoWebSocketEndpoint = storage.GetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 }

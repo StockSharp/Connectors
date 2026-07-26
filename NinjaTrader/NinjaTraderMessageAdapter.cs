@@ -50,13 +50,14 @@ public partial class NinjaTraderMessageAdapter
 		if (_httpClient != null || _marketSocket != null || _accountSocket != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(IsDemo, Login, Password, AppId, AppVersion, DeviceId, Key?.UnSecure(), Secret) { Parent = this };
+		var restEndpoint = IsDemo ? DemoRestEndpoint : RestEndpoint;
+		_httpClient = new(restEndpoint, Login, Password, AppId, AppVersion, DeviceId, Key?.UnSecure(), Secret) { Parent = this };
 		await _httpClient.Authenticate(this.IsMarketData(), cancellationToken);
 
 		if (this.IsMarketData())
 		{
-			var environment = IsDemo ? "md-demo" : "md";
-			_marketSocket = new($"wss://{environment}.tradovateapi.com/v1/websocket", _httpClient.MarketDataAccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			var endpoint = IsDemo ? DemoMarketWebSocketEndpoint : MarketWebSocketEndpoint;
+			_marketSocket = new(endpoint, _httpClient.MarketDataAccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_marketSocket.QuoteReceived += OnQuoteReceived;
 			_marketSocket.DomReceived += OnDomReceived;
 			_marketSocket.ChartReceived += OnChartReceived;
@@ -67,8 +68,8 @@ public partial class NinjaTraderMessageAdapter
 
 		if (this.IsTransactional())
 		{
-			var environment = IsDemo ? "demo" : "live";
-			_accountSocket = new($"wss://{environment}.tradovateapi.com/v1/websocket", _httpClient.AccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			var endpoint = IsDemo ? DemoAccountWebSocketEndpoint : AccountWebSocketEndpoint;
+			_accountSocket = new(endpoint, _httpClient.AccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_accountSocket.EntityReceived += OnEntityReceived;
 			_accountSocket.Error += OnSocketError;
 			_accountSocket.StateChanged += SendOutConnectionStateAsync;

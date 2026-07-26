@@ -175,7 +175,8 @@ public partial class QuickSwapMessageAdapter
 				"subgraph features are disabled.", poolVersion);
 			return;
 		}
-		var client = new QuickSwapGraphClient(GraphApiKey, source,
+		var client = new QuickSwapGraphClient(GraphApiKey,
+			GraphGatewayEndpoint, source,
 			poolVersion)
 		{
 			Parent = this,

@@ -8,8 +8,8 @@ sealed class LimeClient : BaseLogReceiver
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	private static readonly Uri _authUri = new("https://auth.lime.co/connect/token");
-	private static readonly Uri _baseUri = new("https://api.lime.co/");
+	private readonly Uri _authUri;
+	private readonly Uri _baseUri;
 
 	private readonly string _login;
 	private readonly SecureString _password;
@@ -17,8 +17,10 @@ sealed class LimeClient : BaseLogReceiver
 	private readonly SecureString _clientSecret;
 	private SecureString _accessToken;
 
-	public LimeClient(string login, SecureString password, string clientId, SecureString clientSecret)
+	public LimeClient(string oauthEndpoint, string restEndpoint, string login, SecureString password, string clientId, SecureString clientSecret)
 	{
+		_authUri = new(oauthEndpoint.ThrowIfEmpty(nameof(oauthEndpoint)));
+		_baseUri = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
 		_login = login.ThrowIfEmpty(nameof(login));
 		_password = password.ThrowIfEmpty(nameof(password));
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));

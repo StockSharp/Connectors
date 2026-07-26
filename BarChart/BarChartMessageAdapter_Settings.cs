@@ -28,6 +28,8 @@ using StockSharp.Messages;
 	MessageAdapterCategories.FX | MessageAdapterCategories.Level1 | MessageAdapterCategories.Candles)]
 public partial class BarChartMessageAdapter : HistoricalMessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://ondemand.websol.barchart.com";
+
 	private static readonly HashSet<TimeSpan> _timeFrames = new(
 	[
 		TimeSpan.FromMinutes(1),
@@ -54,12 +56,21 @@ public partial class BarChartMessageAdapter : HistoricalMessageAdapter, ITokenAd
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
 
 		storage.SetValue(nameof(Token), Token);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -68,6 +79,7 @@ public partial class BarChartMessageAdapter : HistoricalMessageAdapter, ITokenAd
 		base.Load(storage);
 
 		Token = storage.GetValue<SecureString>(nameof(Token));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
 	}
 
 	/// <inheritdoc />

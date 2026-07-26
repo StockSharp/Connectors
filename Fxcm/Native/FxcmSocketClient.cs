@@ -20,12 +20,11 @@ internal sealed class FxcmSocketClient : BaseLogReceiver
 	private ClientWebSocket _socket;
 	private Task _runTask;
 
-	public FxcmSocketClient(bool isDemo, string token, int maxAttempts)
+	public FxcmSocketClient(string endpoint, string token, int maxAttempts)
 	{
 		token.ThrowIfEmpty(nameof(token));
 		_maxAttempts = Math.Max(1, maxAttempts);
-		var host = isDemo ? "api-demo.fxcm.com" : "api.fxcm.com";
-		_uri = new($"wss://{host}/socket.io/?access_token={Uri.EscapeDataString(token)}&EIO=3&transport=websocket");
+		_uri = new($"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('?')}?access_token={Uri.EscapeDataString(token)}&EIO=3&transport=websocket");
 	}
 
 	public override string Name => nameof(Fxcm) + "_" + nameof(FxcmSocketClient);

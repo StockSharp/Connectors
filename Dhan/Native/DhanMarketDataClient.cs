@@ -2,8 +2,6 @@ namespace StockSharp.Dhan.Native;
 
 sealed class DhanMarketDataClient : BaseLogReceiver
 {
-	private const string _url = "wss://api-feed.dhan.co";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -12,11 +10,11 @@ sealed class DhanMarketDataClient : BaseLogReceiver
 	private readonly WebSocketClient _client;
 	private readonly SynchronizedDictionary<string, DhanFeedModes> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 
-	public DhanMarketDataClient(string clientId, string token, int reconnectAttempts, WorkingTime workingTime)
+	public DhanMarketDataClient(string endpoint, string clientId, string token, int reconnectAttempts, WorkingTime workingTime)
 	{
 		clientId.ThrowIfEmpty(nameof(clientId));
 		token.ThrowIfEmpty(nameof(token));
-		var url = $"{_url}?version=2&token={Uri.EscapeDataString(token)}&clientId={Uri.EscapeDataString(clientId)}&authType=2";
+		var url = $"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('?')}?version=2&token={Uri.EscapeDataString(token)}&clientId={Uri.EscapeDataString(clientId)}&authType=2";
 
 		_client = new(
 			url,

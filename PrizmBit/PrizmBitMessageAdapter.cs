@@ -137,9 +137,9 @@ partial class PrizmBitMessageAdapter
 
 		_authenticator = new Authenticator(this.IsTransactional(), Key, Secret);
 
-		_httpClient = new HttpClient(_authenticator, IsDemo) { Parent = this };
+		_httpClient = new HttpClient(RestEndpoint, _authenticator, IsDemo) { Parent = this };
 
-		_pusherClient = new PusherClient(_authenticator, ReConnectionSettings.WorkingTime) { Parent = this };
+		_pusherClient = new PusherClient(WebSocketEndpoint, _authenticator, ReConnectionSettings.WorkingTime) { Parent = this };
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);
 	}

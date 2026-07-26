@@ -15,6 +15,11 @@ namespace StockSharp.Kiwoom;
 [OrderCondition(typeof(KiwoomOrderCondition))]
 public partial class KiwoomMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.kiwoom.com/";
+	private const string _defaultDemoRestEndpoint = "https://mockapi.kiwoom.com/";
+	private const string _defaultWebSocketEndpoint = "wss://api.kiwoom.com:10000";
+	private const string _defaultDemoWebSocketEndpoint = "wss://mockapi.kiwoom.com:10000";
+
 	/// <summary>Application key issued by the Kiwoom REST API portal.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -45,6 +50,38 @@ public partial class KiwoomMessageAdapter : MessageAdapter, IDemoAdapter, IKeySe
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Production WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Production WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>Demo WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "Demo WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -52,7 +89,11 @@ public partial class KiwoomMessageAdapter : MessageAdapter, IDemoAdapter, IKeySe
 		storage
 			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+			.Set(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -62,5 +103,9 @@ public partial class KiwoomMessageAdapter : MessageAdapter, IDemoAdapter, IKeySe
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		DemoWebSocketEndpoint = storage.GetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 }

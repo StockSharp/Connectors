@@ -149,9 +149,9 @@ public partial class CoinbaseMessageAdapter
 		if (_socketClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(_authenticator) { Parent = this };
+		_restClient = new(RestEndpoint, _authenticator) { Parent = this };
 
-		_socketClient = new(_authenticator, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_socketClient = new(WebSocketEndpoint, _authenticator, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 		SubscribePusherClient();
 
 		await _socketClient.Connect(cancellationToken);

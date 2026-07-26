@@ -16,6 +16,8 @@ Configure the app key, demat client code, and a current bearer access token issu
 
 `AlgoId` defaults to zero for non-algorithmic orders. Accounts placing exchange-registered algorithmic orders must configure the identifier assigned for that algorithm.
 
+All REST and WebSocket service endpoints can be overridden in the adapter settings. The three routed market-feed endpoints are configured separately so private deployments can preserve the `A` and `B` redirect behavior encoded in the access token.
+
 ## Security identifiers
 
 Run a security lookup before subscribing or trading. The connector downloads the official complete scrip master and stores `exchange|exchangeType|scripCode` in `SecurityId.Native`. This preserves the exchange segment when numeric scrip codes overlap.

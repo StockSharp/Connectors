@@ -124,9 +124,9 @@ public partial class KrakenMessageAdapter
 		if (_spotHttpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_spotHttpClient = new(Key, Secret) { Parent = this };
+		_spotHttpClient = new(Key, Secret, RestEndpoint) { Parent = this };
 
-		_spotPusherClient = new(ReConnectionSettings.WorkingTime) { Parent = this };
+		_spotPusherClient = new(WebSocketEndpoint, ReConnectionSettings.WorkingTime) { Parent = this };
 		SubscribePusherClient();
 
 		return _spotPusherClient.Connect(cancellationToken);

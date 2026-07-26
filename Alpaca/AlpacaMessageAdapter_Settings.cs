@@ -46,6 +46,13 @@ public enum AlpacaSections
 [OrderCondition(typeof(AlpacaOrderCondition))]
 public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
 {
+	private const string _defaultTradingRestEndpoint = "https://api.alpaca.markets";
+	private const string _defaultDemoTradingRestEndpoint = "https://paper-api.alpaca.markets";
+	private const string _defaultMarketDataRestEndpoint = "https://data.alpaca.markets";
+	private const string _defaultTradingWebSocketEndpoint = "wss://api.alpaca.markets/stream";
+	private const string _defaultDemoTradingWebSocketEndpoint = "wss://paper-api.alpaca.markets/stream";
+	private const string _defaultMarketDataWebSocketEndpoint = "wss://stream.data.alpaca.markets";
+
 	private class StockFeedSource : ItemsSourceBase<string>
 	{
 		public StockFeedSource()
@@ -155,6 +162,54 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	[BasicSetting]
 	public IEnumerable<AlpacaSections> Sections { get; set; } = Enumerator.GetValues<AlpacaSections>();
 
+	/// <summary>Production trading REST endpoint.</summary>
+	[Display(
+		Name = "Trading REST endpoint",
+		Description = "Production trading REST endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string TradingRestEndpoint { get; set; } = _defaultTradingRestEndpoint;
+
+	/// <summary>Demo trading REST endpoint.</summary>
+	[Display(
+		Name = "Demo trading REST endpoint",
+		Description = "Demo trading REST endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoTradingRestEndpoint { get; set; } = _defaultDemoTradingRestEndpoint;
+
+	/// <summary>Market data REST endpoint.</summary>
+	[Display(
+		Name = "Market data REST endpoint",
+		Description = "Market data REST endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketDataRestEndpoint { get; set; } = _defaultMarketDataRestEndpoint;
+
+	/// <summary>Production trading WebSocket endpoint.</summary>
+	[Display(
+		Name = "Trading WebSocket endpoint",
+		Description = "Production trading WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string TradingWebSocketEndpoint { get; set; } = _defaultTradingWebSocketEndpoint;
+
+	/// <summary>Demo trading WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo trading WebSocket endpoint",
+		Description = "Demo trading WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoTradingWebSocketEndpoint { get; set; } = _defaultDemoTradingWebSocketEndpoint;
+
+	/// <summary>Market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market data WebSocket endpoint",
+		Description = "Base market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketDataWebSocketEndpoint { get; set; } = _defaultMarketDataWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -167,7 +222,13 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 			.Set(nameof(StockFeed), StockFeed)
 			.Set(nameof(CryptoLocation), CryptoLocation)
 			.Set(nameof(Sections), Sections.Select(s => s.To<string>()).JoinComma())
-		;
+			.Set(nameof(TradingRestEndpoint), TradingRestEndpoint)
+			.Set(nameof(DemoTradingRestEndpoint), DemoTradingRestEndpoint)
+			.Set(nameof(MarketDataRestEndpoint), MarketDataRestEndpoint)
+			.Set(nameof(TradingWebSocketEndpoint), TradingWebSocketEndpoint)
+			.Set(nameof(DemoTradingWebSocketEndpoint), DemoTradingWebSocketEndpoint)
+			.Set(nameof(MarketDataWebSocketEndpoint), MarketDataWebSocketEndpoint)
+			;
 	}
 
 	/// <inheritdoc />
@@ -181,6 +242,12 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 		StockFeed = storage.GetValue<string>(nameof(StockFeed));
 		CryptoLocation = storage.GetValue<string>(nameof(CryptoLocation));
 		Sections = storage.GetValue<string>(nameof(Sections)).SplitByComma().Select(s => s.To<AlpacaSections>()).ToArray();
+		TradingRestEndpoint = storage.GetValue(nameof(TradingRestEndpoint), TradingRestEndpoint);
+		DemoTradingRestEndpoint = storage.GetValue(nameof(DemoTradingRestEndpoint), DemoTradingRestEndpoint);
+		MarketDataRestEndpoint = storage.GetValue(nameof(MarketDataRestEndpoint), MarketDataRestEndpoint);
+		TradingWebSocketEndpoint = storage.GetValue(nameof(TradingWebSocketEndpoint), TradingWebSocketEndpoint);
+		DemoTradingWebSocketEndpoint = storage.GetValue(nameof(DemoTradingWebSocketEndpoint), DemoTradingWebSocketEndpoint);
+		MarketDataWebSocketEndpoint = storage.GetValue(nameof(MarketDataWebSocketEndpoint), MarketDataWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

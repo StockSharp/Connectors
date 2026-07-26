@@ -35,13 +35,13 @@ class FtxWebSocketClient : BaseLogReceiver
 
 	private readonly WebSocketClient _client;
 
-	public FtxWebSocketClient(SecureString key, SecureString secret, string subaccountName, int attemptsCount, WorkingTime workingTime)
+	public FtxWebSocketClient(string endpoint, SecureString key, SecureString secret, string subaccountName, int attemptsCount, WorkingTime workingTime)
 	{
 		_key = key;
 		_hasher = secret.IsEmpty() ? null : new(secret.UnSecure().UTF8());
 
 		_client = new(
-			"wss://ftx.com/ws",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

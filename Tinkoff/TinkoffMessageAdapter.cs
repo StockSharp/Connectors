@@ -10,8 +10,6 @@ public partial class TinkoffMessageAdapter
 	private GrpcChannel _channel;
 	private InvestApiClient _service;
 	private AsyncDuplexStreamingCall<MarketDataRequest, MarketDataResponse> _mdStream;
-	private const string _domainAddr = "invest-public-api.tbank.ru";
-
 	private static readonly TimeSpan _baseDelay = TimeSpan.FromSeconds(1);
 	private static readonly TimeSpan _maxDelay = TimeSpan.FromMinutes(5);
 
@@ -81,8 +79,8 @@ public partial class TinkoffMessageAdapter
 			return Task.CompletedTask;
 		}));
 
-		var prefix = IsDemo ? "sandbox-" : string.Empty;
-		_channel = GrpcChannel.ForAddress($"https://{prefix}{_domainAddr}", new()
+		_channel = GrpcChannel.ForAddress((IsDemo ? DemoEndpoint : Endpoint)
+			.ThrowIfEmpty(IsDemo ? nameof(DemoEndpoint) : nameof(Endpoint)), new()
 		{
 			Credentials = credentials,
 			MaxReceiveMessageSize = null,

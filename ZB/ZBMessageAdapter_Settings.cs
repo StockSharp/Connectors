@@ -16,6 +16,10 @@
 [OrderCondition(typeof(ZBOrderCondition))]
 public partial class ZBMessageAdapter : MessageAdapter, IKeySecretAdapter, IPassphraseAdapter
 {
+	private const string _defaultPublicRestEndpoint = "http://api.zb.cn/data/v1";
+	private const string _defaultPrivateRestEndpoint = "https://trade.zb.cn/api";
+	private const string _defaultWebSocketEndpoint = "wss://api.zb.cn/websocket";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -51,6 +55,30 @@ public partial class ZBMessageAdapter : MessageAdapter, IKeySecretAdapter, IPass
 	[BasicSetting]
 	public SecureString Passphrase { get; set; }
 
+	/// <summary>Public REST API endpoint.</summary>
+	[Display(
+		Name = "Public REST endpoint",
+		Description = "Public REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string PublicRestEndpoint { get; set; } = _defaultPublicRestEndpoint;
+
+	/// <summary>Private REST API endpoint.</summary>
+	[Display(
+		Name = "Private REST endpoint",
+		Description = "Private REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string PrivateRestEndpoint { get; set; } = _defaultPrivateRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	private TimeSpan _balanceCheckInterval;
 
 	/// <summary>
@@ -83,6 +111,9 @@ public partial class ZBMessageAdapter : MessageAdapter, IKeySecretAdapter, IPass
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(Passphrase), Passphrase);
 		storage.SetValue(nameof(BalanceCheckInterval), BalanceCheckInterval);
+		storage.SetValue(nameof(PublicRestEndpoint), PublicRestEndpoint);
+		storage.SetValue(nameof(PrivateRestEndpoint), PrivateRestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -94,6 +125,9 @@ public partial class ZBMessageAdapter : MessageAdapter, IKeySecretAdapter, IPass
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Passphrase = storage.GetValue<SecureString>(nameof(Passphrase));
 		BalanceCheckInterval = storage.GetValue<TimeSpan>(nameof(BalanceCheckInterval));
+		PublicRestEndpoint = storage.GetValue(nameof(PublicRestEndpoint), PublicRestEndpoint);
+		PrivateRestEndpoint = storage.GetValue(nameof(PrivateRestEndpoint), PrivateRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

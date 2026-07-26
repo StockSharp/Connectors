@@ -22,7 +22,7 @@ class PusherClient : BaseLogReceiver
 			var workingTime = _parent._workingTime;
 
 			_client = new(
-				$"wss://ws.zaif.jp:8888/stream?currency_pair={_symbol}",
+				$"{_parent._endpoint}?currency_pair={_symbol}",
 				(state, token) =>
 				{
 					return default;
@@ -95,9 +95,11 @@ class PusherClient : BaseLogReceiver
 	}
 
 	private readonly WorkingTime _workingTime;
+	private readonly string _endpoint;
 
-	public PusherClient(WorkingTime workingTime)
+	public PusherClient(string endpoint, WorkingTime workingTime)
 	{
+		_endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('?');
 		_workingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime));
 	}
 

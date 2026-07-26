@@ -62,6 +62,7 @@ class PusherClient : BaseLogReceiver
 	private readonly HashAlgorithm _hasher;
 	private readonly int _attemptsCount;
 	private readonly WorkingTime _workingTime;
+	private readonly string _publicWebSocketEndpoint;
 	private readonly UTCIncrementalIdGenerator _nonceGen;
 
 	// https://www.bitfinex.com/posts/267
@@ -71,9 +72,10 @@ class PusherClient : BaseLogReceiver
 	private readonly SynchronizedPairSet<(Channels, string, string), int> _channelIds = [];
 	private readonly SynchronizedDictionary<int, MarketDataWebSocketClient> _clientsByChannelId = [];
 
-	public PusherClient(SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
+	public PusherClient(string privateWebSocketEndpoint, string publicWebSocketEndpoint, SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
 	{
 		_workingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime));
+		_publicWebSocketEndpoint = publicWebSocketEndpoint.ThrowIfEmpty(nameof(publicWebSocketEndpoint));
 		_key = key;
 		_hasher = secret.IsEmpty() ? null : new HMACSHA384(secret.UnSecure().ASCII());
 		_attemptsCount = attemptsCount;
@@ -81,7 +83,7 @@ class PusherClient : BaseLogReceiver
 		_nonceGen = new UTCIncrementalIdGenerator();
 
 		_client = new(
-			"wss://api.bitfinex.com/ws/2",
+			privateWebSocketEndpoint.ThrowIfEmpty(nameof(privateWebSocketEndpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
@@ -766,7 +768,7 @@ class PusherClient : BaseLogReceiver
 
 		await _sleepInterval.Delay(cancellationToken);
 
-		_currentMarketDataClient = new MarketDataWebSocketClient(this, "wss://api-pub.bitfinex.com/ws/2")
+		_currentMarketDataClient = new MarketDataWebSocketClient(this, _publicWebSocketEndpoint)
 		{
 			Counter = 1,
 			ReconnectAttempts = _attemptsCount,

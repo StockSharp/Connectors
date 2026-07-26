@@ -2,14 +2,14 @@ namespace StockSharp.Coincheck.Native;
 
 using System.Security.Cryptography;
 
-class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
+class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLogReceiver
 {
 	private readonly SecureString _key = key;
 	private readonly HashAlgorithm _hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().ASCII());
 
 	private readonly UTCIncrementalIdGenerator _nonceGen = new();
 
-	private const string _baseUrl = "https://coincheck.com/api";
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
         protected override void DisposeManaged()
 	{
@@ -168,7 +168,7 @@ class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
 		return ((long)response.id, (decimal?)response.fee);
 	}
 
-	private static Uri CreateUrl(string methodName, string version = "")
+	private Uri CreateUrl(string methodName, string version = "")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

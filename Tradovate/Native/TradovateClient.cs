@@ -18,7 +18,7 @@ sealed class TradovateClient : BaseLogReceiver
 	private readonly SecureString _secret;
 	private SecureString _accessToken;
 
-	public TradovateClient(bool isDemo, string login, SecureString password, string appId, string appVersion, string deviceId, string clientId, SecureString secret)
+	public TradovateClient(string restEndpoint, string login, SecureString password, string appId, string appVersion, string deviceId, string clientId, SecureString secret)
 	{
 		_login = login.ThrowIfEmpty(nameof(login));
 		_password = password.ThrowIfEmpty(nameof(password));
@@ -27,7 +27,7 @@ sealed class TradovateClient : BaseLogReceiver
 		_deviceId = deviceId.ThrowIfEmpty(nameof(deviceId));
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_secret = secret.ThrowIfEmpty(nameof(secret));
-		_baseUrl = isDemo ? "https://demo.tradovateapi.com/v1/" : "https://live.tradovateapi.com/v1/";
+		_baseUrl = restEndpoint.ThrowIfEmpty(nameof(restEndpoint));
 	}
 
 	public override string Name => nameof(Tradovate) + "_" + nameof(TradovateClient);

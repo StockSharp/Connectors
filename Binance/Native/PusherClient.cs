@@ -62,7 +62,7 @@ class PusherClient : BaseLogReceiver
 			{
 				case BinanceSections.Spot:
 					if (isDemo)
-						return "wss://testnet.binance.vision";
+						hostSpot = adapter.DemoHostWebSocketSpot;
 
 					hostSpot.CheckHostName(nameof(adapter.HostWebSocketSpot));
 					return $"wss://{hostSpot}";
@@ -76,14 +76,14 @@ class PusherClient : BaseLogReceiver
 
 				case BinanceSections.Futures:
 					if(isDemo)
-						return "wss://stream.binancefuture.com";
+						hostFuture = adapter.DemoHostWebSocketFuture;
 
 					hostFuture.CheckHostName(nameof(adapter.HostWebSocketFuture));
 					return $"wss://{hostFuture}";
 
 				case BinanceSections.FuturesCoin:
 					if(isDemo)
-						return "wss://dstream.binancefuture.com";
+						hostFutureCoin = adapter.DemoHostWebSocketFutureCoin;
 
 					hostFutureCoin.CheckHostName(nameof(adapter.HostWebSocketFutureCoin));
 					return $"wss://{hostFutureCoin}";

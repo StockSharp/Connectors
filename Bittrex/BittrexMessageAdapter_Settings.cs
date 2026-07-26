@@ -16,6 +16,9 @@
 [OrderCondition(typeof(BittrexOrderCondition))]
 public partial class BittrexMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://bittrex.com/api";
+	private const string _defaultSignalREndpoint = "https://socket.bittrex.com/signalr";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -41,6 +44,26 @@ public partial class BittrexMessageAdapter : MessageAdapter, IKeySecretAdapter
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Bittrex REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// SignalR endpoint.
+	/// </summary>
+	[Display(
+		Name = "SignalR endpoint",
+		Description = "Bittrex streaming endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string SignalREndpoint { get; set; } = _defaultSignalREndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -48,6 +71,8 @@ public partial class BittrexMessageAdapter : MessageAdapter, IKeySecretAdapter
 
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(SignalREndpoint), SignalREndpoint);
 	}
 
 	/// <inheritdoc />
@@ -57,6 +82,8 @@ public partial class BittrexMessageAdapter : MessageAdapter, IKeySecretAdapter
 
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		SignalREndpoint = storage.GetValue(nameof(SignalREndpoint), SignalREndpoint);
 	}
 
 	/// <inheritdoc />

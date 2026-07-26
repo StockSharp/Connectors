@@ -142,8 +142,8 @@ public partial class BitmexMessageAdapter
 
 		_authenticator = new(this.IsTransactional(), Key, Secret);
 
-		_httpClient = new(_authenticator, IsDemo ? "testnet" : "www") { Parent = this };
-		_pusherClient = new(_authenticator, IsDemo ? "testnet." : string.Empty, new UTCIncrementalIdGenerator(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_httpClient = new(_authenticator, IsDemo ? DemoRestEndpoint : RestEndpoint) { Parent = this };
+		_pusherClient = new(_authenticator, IsDemo ? DemoWebSocketEndpoint : WebSocketEndpoint, new UTCIncrementalIdGenerator(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribePusherClient();
 		return _pusherClient.Connect(cancellationToken);

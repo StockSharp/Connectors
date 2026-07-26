@@ -112,13 +112,18 @@ public partial class BingXMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 	public bool IsDemo { get; set; }
 
 	private const string _defaultRestDomain = "open-api.bingx.com";
+	private const string _defaultDemoRestDomain = "open-api-vst.bingx.com";
 	private const string _defaultSpotWsDomain = "open-api-ws.bingx.com/market";
 	private const string _defaultFuturesWsDomain = "open-api-swap.bingx.com/swap-market";
+	private const string _defaultDemoFuturesWsDomain = "vst-open-api-ws.bingx.com/swap-market";
 
 	/// <summary>
 	/// REST domain.
 	/// </summary>
 	public string RestDomain { get; set; } = _defaultRestDomain;
+
+	/// <summary>Demo REST domain.</summary>
+	public string DemoRestDomain { get; set; } = _defaultDemoRestDomain;
 
 	/// <summary>
 	/// <see cref="BingXSections.Spot"/> web sockets domain.
@@ -129,6 +134,9 @@ public partial class BingXMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 	/// <see cref="BingXSections.Futures"/> web sockets domain.
 	/// </summary>
 	public string FuturesWsDomain { get; set; } = _defaultFuturesWsDomain;
+
+	/// <summary>Demo futures web sockets domain.</summary>
+	public string DemoFuturesWsDomain { get; set; } = _defaultDemoFuturesWsDomain;
 
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
@@ -142,8 +150,10 @@ public partial class BingXMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 			.Set(nameof(IsDemo), IsDemo)
 
 			.Set(nameof(RestDomain), RestDomain)
+			.Set(nameof(DemoRestDomain), DemoRestDomain)
 			.Set(nameof(SpotWsDomain), SpotWsDomain)
 			.Set(nameof(FuturesWsDomain), FuturesWsDomain)
+			.Set(nameof(DemoFuturesWsDomain), DemoFuturesWsDomain)
 		;
 	}
 
@@ -158,8 +168,10 @@ public partial class BingXMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
 
 		RestDomain = storage.GetValue(nameof(RestDomain), RestDomain);
+		DemoRestDomain = storage.GetValue(nameof(DemoRestDomain), DemoRestDomain);
 		SpotWsDomain = storage.GetValue(nameof(SpotWsDomain), SpotWsDomain);
 		FuturesWsDomain = storage.GetValue(nameof(FuturesWsDomain), FuturesWsDomain);
+		DemoFuturesWsDomain = storage.GetValue(nameof(DemoFuturesWsDomain), DemoFuturesWsDomain);
 	}
 
 	/// <inheritdoc />

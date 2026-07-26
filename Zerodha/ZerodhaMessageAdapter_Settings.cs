@@ -15,6 +15,9 @@ namespace StockSharp.Zerodha;
 [OrderCondition(typeof(ZerodhaOrderCondition))]
 public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.kite.trade/";
+	private const string _defaultWebSocketEndpoint = "wss://ws.kite.trade";
+
 	/// <summary>Kite Connect application API key.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -62,6 +65,22 @@ public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter, IKey
 		Order = 4)]
 	public ZerodhaProducts DefaultProduct { get; set; } = ZerodhaProducts.Intraday;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -71,7 +90,9 @@ public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter, IKey
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(Token), Token)
 			.Set(nameof(RequestToken), RequestToken)
-			.Set(nameof(DefaultProduct), DefaultProduct);
+			.Set(nameof(DefaultProduct), DefaultProduct)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -83,5 +104,7 @@ public partial class ZerodhaMessageAdapter : MessageAdapter, ITokenAdapter, IKey
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		RequestToken = storage.GetValue<SecureString>(nameof(RequestToken));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }

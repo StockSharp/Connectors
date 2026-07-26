@@ -14,6 +14,8 @@ namespace StockSharp.Questrade;
 [OrderCondition(typeof(QuestradeOrderCondition))]
 public partial class QuestradeMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultOAuthEndpoint = "https://login.questrade.com/oauth2/token";
+
 	/// <summary>OAuth access token.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -52,6 +54,14 @@ public partial class QuestradeMessageAdapter : MessageAdapter, ITokenAdapter
 		Order = 3)]
 	public string Account { get; set; }
 
+	/// <summary>OAuth token endpoint.</summary>
+	[Display(
+		Name = "OAuth endpoint",
+		Description = "OAuth token endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
+	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -60,7 +70,8 @@ public partial class QuestradeMessageAdapter : MessageAdapter, ITokenAdapter
 			.Set(nameof(Token), Token)
 			.Set(nameof(RefreshToken), RefreshToken)
 			.Set(nameof(ApiServer), ApiServer)
-			.Set(nameof(Account), Account);
+			.Set(nameof(Account), Account)
+			.Set(nameof(OAuthEndpoint), OAuthEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -71,5 +82,6 @@ public partial class QuestradeMessageAdapter : MessageAdapter, ITokenAdapter
 		RefreshToken = storage.GetValue<SecureString>(nameof(RefreshToken));
 		ApiServer = storage.GetValue<string>(nameof(ApiServer));
 		Account = storage.GetValue<string>(nameof(Account));
+		OAuthEndpoint = storage.GetValue(nameof(OAuthEndpoint), OAuthEndpoint);
 	}
 }

@@ -95,8 +95,8 @@ abstract class SocketAlpacaClient : BaseLogReceiver, IConnection
 
 class SocketTradingClient : SocketAlpacaClient
 {
-	public SocketTradingClient(bool isDemo, SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
-		: base("wss://{0}api.alpaca.markets/stream".Put(isDemo ? "paper-" : string.Empty), key, secret, attemptsCount, workingTime)
+	public SocketTradingClient(string endpoint, SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
+		: base(endpoint, key, secret, attemptsCount, workingTime)
 	{
 	}
 
@@ -288,8 +288,8 @@ abstract class SocketMarketDataClient : SocketAlpacaClient
 
 class SocketStockClient : SocketMarketDataClient
 {
-	public SocketStockClient(bool isDemo, string feed, SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
-		: base("wss://stream.data.{0}alpaca.markets/v2/{1}".Put(isDemo ? /* sandbox not working, need use feed=iex "sandbox."*/string.Empty : string.Empty, feed), key, secret, attemptsCount, workingTime)
+	public SocketStockClient(string endpoint, string feed, SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
+		: base($"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/')}/v2/{feed}", key, secret, attemptsCount, workingTime)
 	{
 	}
 
@@ -299,8 +299,8 @@ class SocketStockClient : SocketMarketDataClient
 
 class SocketCryptoClient : SocketMarketDataClient
 {
-	public SocketCryptoClient(SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
-		: base("wss://stream.data.alpaca.markets/v1beta3/crypto/us", key, secret, attemptsCount, workingTime)
+	public SocketCryptoClient(string endpoint, string location, SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
+		: base($"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/')}/v1beta3/crypto/{location.ThrowIfEmpty(nameof(location))}", key, secret, attemptsCount, workingTime)
 	{
 	}
 
@@ -310,8 +310,8 @@ class SocketCryptoClient : SocketMarketDataClient
 
 class SocketNewsClient : SocketMarketDataClient
 {
-	public SocketNewsClient(SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
-		: base("wss://stream.data.alpaca.markets/v1beta1/news", key, secret, attemptsCount, workingTime)
+	public SocketNewsClient(string endpoint, SecureString key, SecureString secret, int attemptsCount, WorkingTime workingTime)
+		: base($"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/')}/v1beta1/news", key, secret, attemptsCount, workingTime)
 	{
 	}
 

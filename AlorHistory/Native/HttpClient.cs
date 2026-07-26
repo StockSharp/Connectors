@@ -6,9 +6,9 @@ class HttpClient : BaseLogReceiver
 {
 	private readonly string _baseUrl;
 
-	public HttpClient(string domain)
+	public HttpClient(string endpoint)
 	{
-		_baseUrl = $"https://{domain}";
+		_baseUrl = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/');
 	}
 
 	// to get readable name after obfuscation

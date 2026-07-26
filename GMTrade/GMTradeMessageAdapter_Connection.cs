@@ -20,7 +20,7 @@ public partial class GMTradeMessageAdapter
 			{
 				Parent = this,
 			};
-			_rpcClient = new(RpcEndpoint, WalletAddress) { Parent = this };
+			_rpcClient = new(RpcEndpoint, Origin, WalletAddress) { Parent = this };
 			if (_rpcClient.IsWalletAvailable)
 			{
 				WalletAddress = _rpcClient.WalletAddress;
@@ -111,6 +111,7 @@ public partial class GMTradeMessageAdapter
 	private GMTradeGraphQlWebSocketClient CreateMarketSocket()
 	{
 		var client = new GMTradeGraphQlWebSocketClient(KeeperSocketEndpoint,
+			Origin,
 			ReConnectionSettings.WorkingTime,
 			ReConnectionSettings.ReAttemptCount) { Parent = this };
 		client.MarketReceived += OnMarketAsync;
@@ -124,6 +125,7 @@ public partial class GMTradeMessageAdapter
 	private GMTradeGraphQlWebSocketClient CreateCandleSocket()
 	{
 		var client = new GMTradeGraphQlWebSocketClient(CandleSocketEndpoint,
+			Origin,
 			ReConnectionSettings.WorkingTime,
 			ReConnectionSettings.ReAttemptCount) { Parent = this };
 		client.CandleReceived += OnCandleAsync;

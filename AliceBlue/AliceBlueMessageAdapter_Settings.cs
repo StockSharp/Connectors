@@ -16,6 +16,11 @@ namespace StockSharp.AliceBlue;
 [OrderCondition(typeof(AliceBlueOrderCondition))]
 public partial class AliceBlueMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://a3.aliceblueonline.com/";
+	private const string _defaultInstrumentEndpoint = "https://v2api.aliceblueonline.com/restpy/static/contract_master/V2/";
+	private const string _defaultMarketWebSocketEndpoint = "wss://ws1.aliceblueonline.com/NorenWS";
+	private const string _defaultOrderWebSocketEndpoint = "wss://a3.aliceblueonline.com/open-api/order-notify/websocket";
+
 	/// <summary>Alice Blue user identifier.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -72,6 +77,38 @@ public partial class AliceBlueMessageAdapter : MessageAdapter, ITokenAdapter
 		Order = 5)]
 	public int ReconnectAttempts { get; set; } = 10;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Instrument master endpoint.</summary>
+	[Display(
+		Name = "Instrument endpoint",
+		Description = "Instrument master endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
+
+	/// <summary>Market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
+
+	/// <summary>Order WebSocket endpoint.</summary>
+	[Display(
+		Name = "Order WebSocket endpoint",
+		Description = "Order WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -82,7 +119,11 @@ public partial class AliceBlueMessageAdapter : MessageAdapter, ITokenAdapter
 			.Set(nameof(Token), Token)
 			.Set(nameof(DeviceId), DeviceId)
 			.Set(nameof(DefaultProduct), DefaultProduct)
-			.Set(nameof(ReconnectAttempts), ReconnectAttempts);
+			.Set(nameof(ReconnectAttempts), ReconnectAttempts)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(InstrumentEndpoint), InstrumentEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -95,5 +136,9 @@ public partial class AliceBlueMessageAdapter : MessageAdapter, ITokenAdapter
 		DeviceId = storage.GetValue(nameof(DeviceId), DeviceId);
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
 		ReconnectAttempts = storage.GetValue(nameof(ReconnectAttempts), ReconnectAttempts);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		InstrumentEndpoint = storage.GetValue(nameof(InstrumentEndpoint), InstrumentEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		OrderWebSocketEndpoint = storage.GetValue(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint);
 	}
 }

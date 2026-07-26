@@ -12,13 +12,13 @@ internal sealed class FxcmRestClient : BaseLogReceiver, IDisposable
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	public FxcmRestClient(bool isDemo, string bearer, int maxAttempts)
+	public FxcmRestClient(string endpoint, string bearer, int maxAttempts)
 	{
 		bearer.ThrowIfEmpty(nameof(bearer));
 		_maxAttempts = Math.Max(1, maxAttempts);
 		_http = new()
 		{
-			BaseAddress = new(isDemo ? "https://api-demo.fxcm.com/" : "https://api.fxcm.com/"),
+			BaseAddress = new(endpoint.ThrowIfEmpty(nameof(endpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 		_http.DefaultRequestHeaders.Authorization = new("Bearer", bearer);

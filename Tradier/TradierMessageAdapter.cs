@@ -63,12 +63,16 @@ public partial class TradierMessageAdapter
 			token = (authToken ?? throw new InvalidOperationException(LocalizedStrings.TokenNotSpecified)).Value.Secure();
 		}
 
-		_httpClient = new(IsDemo, token) { Parent = this };
+		_httpClient = new(IsDemo ? DemoRestEndpoint : RestEndpoint, token) { Parent = this };
 
-		var wsPrefix = IsDemo ? "sandbox-" : string.Empty;
-
-		_mdClient = this.IsMarketData() ? new("wss://ws.tradier.com/v1/markets/events", (await _httpClient.CreateMarketStreaming(cancellationToken)).sessionId, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this } : null;
-		_accClient = this.IsTransactional() ? new($"wss://{wsPrefix}ws.tradier.com/v1/accounts/events", (await _httpClient.CreateAccountStreaming(cancellationToken)).sessionId, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this } : null;
+		_mdClient = this.IsMarketData() ? new(
+			IsDemo ? DemoMarketWebSocketEndpoint : MarketWebSocketEndpoint,
+			(await _httpClient.CreateMarketStreaming(cancellationToken)).sessionId,
+			ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this } : null;
+		_accClient = this.IsTransactional() ? new(
+			IsDemo ? DemoAccountWebSocketEndpoint : AccountWebSocketEndpoint,
+			(await _httpClient.CreateAccountStreaming(cancellationToken)).sessionId,
+			ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this } : null;
 
 		if (_mdClient is MarketDataClient mdc)
 		{

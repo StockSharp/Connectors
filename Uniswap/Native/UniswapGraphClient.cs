@@ -39,7 +39,8 @@ sealed class UniswapGraphClient : BaseLogReceiver
     };
     private DateTime _nextSend;
 
-    public UniswapGraphClient(SecureString apiKey, string subgraphId)
+    public UniswapGraphClient(SecureString apiKey, string gatewayEndpoint,
+        string subgraphId)
     {
         var key = apiKey.IsEmpty() ? null : apiKey.UnSecure().Trim();
         subgraphId = subgraphId?.Trim();
@@ -51,7 +52,7 @@ sealed class UniswapGraphClient : BaseLogReceiver
             throw new ArgumentException("Invalid subgraph identifier.",
                 nameof(subgraphId));
         _endpoint = new Uri(
-            $"https://gateway.thegraph.com/api/{Uri.EscapeDataString(key)}" +
+            $"{gatewayEndpoint.ThrowIfEmpty(nameof(gatewayEndpoint)).TrimEnd('/')}/{Uri.EscapeDataString(key)}" +
             $"/subgraphs/id/{Uri.EscapeDataString(subgraphId)}");
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "StockSharp-Uniswap-Connector/1.0");

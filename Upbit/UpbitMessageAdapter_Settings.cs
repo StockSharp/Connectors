@@ -16,6 +16,9 @@
 [OrderCondition(typeof(UpbitOrderCondition))]
 public partial class UpbitMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.upbit.com";
+	private const string _defaultWebSocketEndpoint = "wss://api.upbit.com/websocket/v1";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -40,6 +43,22 @@ public partial class UpbitMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
+
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	private TimeSpan _balanceCheckInterval;
 
@@ -72,6 +91,8 @@ public partial class UpbitMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(BalanceCheckInterval), BalanceCheckInterval);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -82,6 +103,8 @@ public partial class UpbitMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		BalanceCheckInterval = storage.GetValue<TimeSpan>(nameof(BalanceCheckInterval));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

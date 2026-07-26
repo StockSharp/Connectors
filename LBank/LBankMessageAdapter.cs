@@ -126,7 +126,7 @@ partial class LBankMessageAdapter
 		if (_pusherClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new HttpClient(Key, Secret) { Parent = this };
+		_httpClient = new HttpClient(RestEndpoint, Key, Secret) { Parent = this };
 
 		if (this.IsTransactional())
 		{
@@ -134,7 +134,7 @@ partial class LBankMessageAdapter
 			_authKeyLastTimeRefresh = DateTime.Now;
 		}
 
-		_pusherClient = new PusherClient(ReConnectionSettings.WorkingTime) { Parent = this };
+		_pusherClient = new PusherClient(WebSocketEndpoint, ReConnectionSettings.WorkingTime) { Parent = this };
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);
 	}

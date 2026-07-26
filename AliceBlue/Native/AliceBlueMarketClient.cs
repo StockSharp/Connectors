@@ -2,7 +2,6 @@ namespace StockSharp.AliceBlue.Native;
 
 sealed class AliceBlueMarketClient : BaseLogReceiver
 {
-	private const string _url = "wss://ws1.aliceblueonline.com/NorenWS";
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -14,7 +13,7 @@ sealed class AliceBlueMarketClient : BaseLogReceiver
 	private readonly SynchronizedDictionary<string, bool> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 	private TaskCompletionSource<bool> _loginCompletion;
 
-	public AliceBlueMarketClient(string clientId, SecureString sessionToken, int reconnectAttempts,
+	public AliceBlueMarketClient(string endpoint, string clientId, SecureString sessionToken, int reconnectAttempts,
 		WorkingTime workingTime)
 	{
 		var resolvedClientId = clientId.ThrowIfEmpty(nameof(clientId));
@@ -27,7 +26,7 @@ sealed class AliceBlueMarketClient : BaseLogReceiver
 		_sessionToken = token.DoubleSha256();
 
 		_client = new(
-			_url,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

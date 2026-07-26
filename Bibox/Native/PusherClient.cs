@@ -29,12 +29,12 @@ class PusherClient : BaseLogReceiver
 
 	private DateTime? _nextPing;
 
-	public PusherClient(Authenticator authenticator, WorkingTime workingTime)
+	public PusherClient(string endpoint, Authenticator authenticator, WorkingTime workingTime)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
 		_client = new(
-			"wss://market-wss.bibox360.com/cbu",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

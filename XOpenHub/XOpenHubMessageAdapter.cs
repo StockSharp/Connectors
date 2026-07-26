@@ -64,7 +64,9 @@ public partial class XOpenHubMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 		ClearState();
-		var command = new XApiCommandClient(IsDemo) { Parent = this };
+		var commandEndpoint = (IsDemo ? DemoCommandEndpoint : CommandEndpoint)
+			.ThrowIfEmpty(IsDemo ? nameof(DemoCommandEndpoint) : nameof(CommandEndpoint));
+		var command = new XApiCommandClient(commandEndpoint) { Parent = this };
 		_command = command;
 		try
 		{
@@ -75,7 +77,9 @@ public partial class XOpenHubMessageAdapter
 					_symbols[symbol.Symbol] = symbol;
 			}
 
-			var stream = new XApiStreamClient(IsDemo, command.StreamSessionId,
+			var streamEndpoint = (IsDemo ? DemoStreamEndpoint : StreamEndpoint)
+				.ThrowIfEmpty(IsDemo ? nameof(DemoStreamEndpoint) : nameof(StreamEndpoint));
+			var stream = new XApiStreamClient(streamEndpoint, command.StreamSessionId,
 				Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 			_stream = stream;
 			stream.TickReceived += ProcessTick;

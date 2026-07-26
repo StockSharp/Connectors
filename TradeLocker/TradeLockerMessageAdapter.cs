@@ -44,7 +44,8 @@ public partial class TradeLockerMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 		ClearState();
-		var client = new TradeLockerClient(IsDemo, Login, Password?.UnSecure(), Server,
+		var client = new TradeLockerClient(IsDemo ? DemoRestEndpoint : RestEndpoint,
+			Login, Password?.UnSecure(), Server,
 			DeveloperApiKey?.UnSecure(), ReConnectionSettings.ReAttemptCount)
 		{
 			Parent = this,

@@ -17,6 +17,10 @@ using System.ComponentModel.DataAnnotations;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions | MessageAdapterCategories.OrderLog)]
 public partial class BitfinexMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.bitfinex.com";
+	private const string _defaultPrivateWebSocketEndpoint = "wss://api.bitfinex.com/ws/2";
+	private const string _defaultPublicWebSocketEndpoint = "wss://api-pub.bitfinex.com/ws/2";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -43,6 +47,36 @@ public partial class BitfinexMessageAdapter : MessageAdapter, IKeySecretAdapter
 	public SecureString Secret { get; set; }
 
 	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Bitfinex REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// Private WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "Private WebSocket endpoint",
+		Description = "Bitfinex authenticated WebSocket endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string PrivateWebSocketEndpoint { get; set; } = _defaultPrivateWebSocketEndpoint;
+
+	/// <summary>
+	/// Public WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "Public WebSocket endpoint",
+		Description = "Bitfinex public WebSocket endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string PublicWebSocketEndpoint { get; set; } = _defaultPublicWebSocketEndpoint;
+
+	/// <summary>
 	/// Cancel On Disconnect.
 	/// </summary>
 	[Display(
@@ -61,6 +95,9 @@ public partial class BitfinexMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(CancelOnDisconnect), CancelOnDisconnect);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(PrivateWebSocketEndpoint), PrivateWebSocketEndpoint);
+		storage.SetValue(nameof(PublicWebSocketEndpoint), PublicWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -71,6 +108,9 @@ public partial class BitfinexMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		CancelOnDisconnect = storage.GetValue<bool>(nameof(CancelOnDisconnect));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		PrivateWebSocketEndpoint = storage.GetValue(nameof(PrivateWebSocketEndpoint), PrivateWebSocketEndpoint);
+		PublicWebSocketEndpoint = storage.GetValue(nameof(PublicWebSocketEndpoint), PublicWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

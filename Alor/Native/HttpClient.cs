@@ -13,9 +13,9 @@ class HttpClient : BaseLogReceiver
 
 	private readonly SecureString _token;
 
-	public HttpClient(string domain, SecureString token)
+	public HttpClient(string endpoint, SecureString token)
 	{
-		_baseUrl = $"https://{domain}";
+		_baseUrl = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/');
 		_token = token;
 	}
 

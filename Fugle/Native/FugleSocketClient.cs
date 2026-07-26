@@ -17,16 +17,13 @@ sealed class FugleSocketClient : BaseLogReceiver
 	private TaskCompletionSource<bool> _authenticationCompletion;
 	private bool _isConnected;
 
-	public FugleSocketClient(FugleAssetKinds kind, SecureString apiKey, int reconnectAttempts, WorkingTime workingTime)
+	public FugleSocketClient(FugleAssetKinds kind, string endpoint, SecureString apiKey, int reconnectAttempts, WorkingTime workingTime)
 	{
 		_kind = kind;
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey)).UnSecure();
-		var url = kind == FugleAssetKinds.Stock
-			? "wss://api.fugle.tw/marketdata/v1.0/stock/streaming"
-			: "wss://api.fugle.tw/marketdata/v1.0/futopt/streaming";
 
 		_client = new(
-			url,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(_, _) => default,
 			(error, cancellationToken) => Error is { } handler ? handler(error, cancellationToken) : default,
 			Process,

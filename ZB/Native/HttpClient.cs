@@ -1,8 +1,10 @@
 namespace StockSharp.ZB.Native;
 
-class HttpClient(Authenticator authenticator) : BaseLogReceiver
+class HttpClient(string publicEndpoint, string privateEndpoint, Authenticator authenticator) : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
+	private readonly string _publicEndpoint = publicEndpoint.ThrowIfEmpty(nameof(publicEndpoint)).TrimEnd('/');
+	private readonly string _privateEndpoint = privateEndpoint.ThrowIfEmpty(nameof(privateEndpoint)).TrimEnd('/');
 
 	private readonly IdGenerator _nonceGen = new UTCMlsIncrementalIdGenerator();
 
@@ -11,14 +13,14 @@ class HttpClient(Authenticator authenticator) : BaseLogReceiver
 
 	public Task<IDictionary<string, Ticker>> GetSymbolsAsync(CancellationToken cancellationToken)
 	{
-		return MakeRequestAsync<IDictionary<string, Ticker>>(new Url("http://api.zb.cn/data/v1/allTicker"), CreateRequest(Method.Get), cancellationToken);
+		return MakeRequestAsync<IDictionary<string, Ticker>>(new Url($"{_publicEndpoint}/allTicker"), CreateRequest(Method.Get), cancellationToken);
 	}
 
 	public Task<IEnumerable<Ohlc>> GetCandlesAsync(string symbol, CancellationToken cancellationToken)
 	{
 		var request = CreateRequest(Method.Get);
 
-		return MakeRequestAsync<IEnumerable<Ohlc>>(new Url($"http://api.zb.cn/data/v1/kline?market={symbol}"), request, cancellationToken);
+		return MakeRequestAsync<IEnumerable<Ohlc>>(new Url($"{_publicEndpoint}/kline?market={symbol}"), request, cancellationToken);
 	}
 
 	public async Task<string> WithdrawAsync(string currency, decimal volume, WithdrawInfo info, SecureString password, CancellationToken cancellationToken)
@@ -29,7 +31,7 @@ class HttpClient(Authenticator authenticator) : BaseLogReceiver
 		if (info.Type != WithdrawTypes.Crypto)
 			throw new NotSupportedException(LocalizedStrings.WithdrawTypeNotSupported.Put(info.Type));
 
-		var url = new Url("https://trade.zb.cn/api/withdraw");
+		var url = new Url($"{_privateEndpoint}/withdraw");
 
 		var qs = url.QueryString;
 

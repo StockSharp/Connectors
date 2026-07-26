@@ -29,14 +29,12 @@ internal sealed class LsSecuritiesWebSocketClient : BaseLogReceiver
 	private ClientWebSocket _socket;
 	private Task _runTask;
 
-	public LsSecuritiesWebSocketClient(Func<CancellationToken, Task<string>> accessTokenProvider,
-		bool isDemo, int maxAttempts)
+	public LsSecuritiesWebSocketClient(string endpoint, Func<CancellationToken, Task<string>> accessTokenProvider,
+		int maxAttempts)
 	{
 		_accessTokenProvider = accessTokenProvider ?? throw new ArgumentNullException(nameof(accessTokenProvider));
 		_maxAttempts = Math.Max(1, maxAttempts);
-		_uri = new(isDemo
-			? "wss://openapi.ls-sec.co.kr:29443/websocket"
-			: "wss://openapi.ls-sec.co.kr:9443/websocket");
+		_uri = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 	}
 
 	public override string Name => nameof(LsSecurities) + "_WebSocket";

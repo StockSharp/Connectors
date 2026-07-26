@@ -33,19 +33,21 @@ class PusherClient : BaseLogReceiver
 
 	private readonly Authenticator _authenticator;
 	private readonly bool _canSign;
+	private readonly string _endpoint;
 
 	private HubConnection _connection;
 	private IHubProxy _hub;
 
-	public PusherClient(Authenticator authenticator, bool canSign)
+	public PusherClient(string endpoint, Authenticator authenticator, bool canSign)
 	{
+		_endpoint = endpoint.ThrowIfEmpty(nameof(endpoint));
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 		_canSign = canSign;
 	}
 
 	public async ValueTask ConnectAsync(CancellationToken cancellationToken)
 	{
-		_connection = new HubConnection("https://socket.bittrex.com/signalr");
+		_connection = new HubConnection(_endpoint);
 		_hub = _connection.CreateHubProxy("c2");
 
 		_hub.On<string>("uS", tzip => Invoke(Channels.Summary, tzip));

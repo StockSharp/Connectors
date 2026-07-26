@@ -22,6 +22,8 @@ public enum QuickSwapChains
 	MessageAdapterCategories.Transactions)]
 public partial class QuickSwapMessageAdapter : MessageAdapter
 {
+	private const string _defaultGraphGatewayEndpoint =
+		"https://gateway.thegraph.com/api";
 	private const string _defaultMarkets =
 		"V3|0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270|" +
 		"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174;" +
@@ -114,6 +116,16 @@ public partial class QuickSwapMessageAdapter : MessageAdapter
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string V3Subgraph { get; set; }
+
+	/// <summary>The Graph gateway endpoint.</summary>
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
+	public string GraphGatewayEndpoint { get; set; } =
+		_defaultGraphGatewayEndpoint;
 
 	/// <summary>
 	/// Semicolon-separated <c>version|base token|quote token</c>
@@ -213,6 +225,7 @@ public partial class QuickSwapMessageAdapter : MessageAdapter
 			.Set(nameof(RpcEndpoint), RpcEndpoint)
 			.Set(nameof(V2Subgraph), V2Subgraph)
 			.Set(nameof(V3Subgraph), V3Subgraph)
+			.Set(nameof(GraphGatewayEndpoint), GraphGatewayEndpoint)
 			.Set(nameof(Markets), Markets)
 			.Set(nameof(MaximumDiscoveredPools), MaximumDiscoveredPools)
 			.Set(nameof(ProbeVolume), ProbeVolume)
@@ -232,6 +245,8 @@ public partial class QuickSwapMessageAdapter : MessageAdapter
 			nameof(RpcEndpoint), RpcEndpoint));
 		V2Subgraph = storage.GetValue<string>(nameof(V2Subgraph));
 		V3Subgraph = storage.GetValue(nameof(V3Subgraph), V3Subgraph);
+		GraphGatewayEndpoint = NormalizeEndpoint(storage.GetValue(
+			nameof(GraphGatewayEndpoint), GraphGatewayEndpoint));
 		Markets = storage.GetValue(nameof(Markets), Markets);
 		MaximumDiscoveredPools = storage.GetValue(
 			nameof(MaximumDiscoveredPools), MaximumDiscoveredPools);

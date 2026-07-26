@@ -20,6 +20,13 @@ using Ecng.ComponentModel;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 public partial class TradierMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.tradier.com";
+	private const string _defaultDemoRestEndpoint = "https://sandbox.tradier.com";
+	private const string _defaultMarketWebSocketEndpoint = "wss://ws.tradier.com/v1/markets/events";
+	private const string _defaultDemoMarketWebSocketEndpoint = "wss://ws.tradier.com/v1/markets/events";
+	private const string _defaultAccountWebSocketEndpoint = "wss://ws.tradier.com/v1/accounts/events";
+	private const string _defaultDemoAccountWebSocketEndpoint = "wss://sandbox-ws.tradier.com/v1/accounts/events";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -45,6 +52,54 @@ public partial class TradierMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Production market WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Production market WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
+	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
+
+	/// <summary>Demo market WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo market WebSocket endpoint",
+		Description = "Demo market WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
+	public string DemoMarketWebSocketEndpoint { get; set; } = _defaultDemoMarketWebSocketEndpoint;
+
+	/// <summary>Production account WebSocket endpoint.</summary>
+	[Display(
+		Name = "Account WebSocket endpoint",
+		Description = "Production account WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
+	public string AccountWebSocketEndpoint { get; set; } = _defaultAccountWebSocketEndpoint;
+
+	/// <summary>Demo account WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo account WebSocket endpoint",
+		Description = "Demo account WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 7)]
+	public string DemoAccountWebSocketEndpoint { get; set; } = _defaultDemoAccountWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -52,7 +107,13 @@ public partial class TradierMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 
 		storage
 			.Set(nameof(Token), Token)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(DemoMarketWebSocketEndpoint), DemoMarketWebSocketEndpoint)
+			.Set(nameof(AccountWebSocketEndpoint), AccountWebSocketEndpoint)
+			.Set(nameof(DemoAccountWebSocketEndpoint), DemoAccountWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -62,5 +123,11 @@ public partial class TradierMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
 		Token = storage.GetValue<SecureString>(nameof(Token));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		DemoMarketWebSocketEndpoint = storage.GetValue(nameof(DemoMarketWebSocketEndpoint), DemoMarketWebSocketEndpoint);
+		AccountWebSocketEndpoint = storage.GetValue(nameof(AccountWebSocketEndpoint), AccountWebSocketEndpoint);
+		DemoAccountWebSocketEndpoint = storage.GetValue(nameof(DemoAccountWebSocketEndpoint), DemoAccountWebSocketEndpoint);
 	}
 }

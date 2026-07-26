@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 abstract class BaseRequest<TResponse>
 {
-	private const string _baseUrl = "https://iss.moex.com/iss/";
 	private readonly HttpClient _client;
 	private readonly string _url;
 
@@ -13,7 +12,7 @@ abstract class BaseRequest<TResponse>
 		if (url.IsEmpty())
 			throw new ArgumentNullException(nameof(url));
 
-		_url = $"{_baseUrl}{url}{CompileDict(query)}";
+		_url = $"{url}{CompileDict(query)}";
 		_client = client ?? throw new ArgumentNullException(nameof(client));
 	}
 

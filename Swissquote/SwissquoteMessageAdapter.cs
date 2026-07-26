@@ -65,7 +65,8 @@ public partial class SwissquoteMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 		if (Token.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.TokenNotSpecified);
-		_rest = new(Token.UnSecure(), IsDemo, Math.Max(1, ReConnectionSettings.ReAttemptCount))
+		_rest = new(Token.UnSecure(), IsDemo ? DemoTradingEndpoint : TradingEndpoint,
+			CustodyEndpoint, Math.Max(1, ReConnectionSettings.ReAttemptCount))
 		{
 			Parent = this,
 		};

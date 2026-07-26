@@ -2,8 +2,6 @@ namespace StockSharp.TradeZero.Native;
 
 sealed class TradeZeroClient : BaseLogReceiver
 {
-	private const string _baseUrl = "https://webapi.tradezero.com/v1/api/";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -12,11 +10,13 @@ sealed class TradeZeroClient : BaseLogReceiver
 
 	private readonly string _apiKey;
 	private readonly SecureString _apiSecret;
+	private readonly Uri _baseUri;
 
-	public TradeZeroClient(string apiKey, SecureString apiSecret)
+	public TradeZeroClient(string apiKey, SecureString apiSecret, string restEndpoint)
 	{
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
 		_apiSecret = apiSecret.ThrowIfEmpty(nameof(apiSecret));
+		_baseUri = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
 	}
 
 	public override string Name => nameof(TradeZero) + "_" + nameof(TradeZeroClient);
@@ -80,5 +80,5 @@ sealed class TradeZeroClient : BaseLogReceiver
 			.AddHeader("TZ-API-SECRET-KEY", _apiSecret.UnSecure());
 
 	private Task<T> Invoke<T>(string path, RestRequest request, CancellationToken cancellationToken)
-		=> request.InvokeAsync<T>(new Uri(new Uri(_baseUrl), path), this, this.AddVerboseLog, cancellationToken);
+		=> request.InvokeAsync<T>(new Uri(_baseUri, path), this, this.AddVerboseLog, cancellationToken);
 }

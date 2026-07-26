@@ -20,7 +20,7 @@ internal sealed class ZerodhaRestClient : BaseLogReceiver, IDisposable
 	private DateTimeOffset _lastHistoricalRequest;
 	private KiteInstrument[] _instruments;
 
-	public ZerodhaRestClient(string apiKey, string accessToken, int maxAttempts)
+	public ZerodhaRestClient(string restEndpoint, string apiKey, string accessToken, int maxAttempts)
 	{
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
 		_maxAttempts = Math.Max(1, maxAttempts);
@@ -30,7 +30,7 @@ internal sealed class ZerodhaRestClient : BaseLogReceiver, IDisposable
 		};
 		_http = new(handler)
 		{
-			BaseAddress = new("https://api.kite.trade/"),
+			BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 		_http.DefaultRequestHeaders.Add("X-Kite-Version", "3");

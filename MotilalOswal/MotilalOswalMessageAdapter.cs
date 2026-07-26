@@ -49,8 +49,9 @@ public partial class MotilalOswalMessageAdapter
 		if (ReconnectAttempts < 0)
 			throw new ArgumentOutOfRangeException(nameof(ReconnectAttempts), ReconnectAttempts, "Reconnect attempts cannot be negative.");
 
-		_restClient = new(IsDemo, Key, Secret, Token, AccessToken, ClientCode,
-			LocalIp, PublicIp, MacAddress, VendorInfo, InstalledAppId) { Parent = this };
+		_restClient = new(IsDemo ? DemoRestEndpoint : RestEndpoint, Key, Secret, Token,
+			AccessToken, ClientCode, LocalIp, PublicIp, MacAddress, VendorInfo,
+			InstalledAppId) { Parent = this };
 		await _restClient.GetProfile(cancellationToken);
 
 		try
@@ -58,7 +59,8 @@ public partial class MotilalOswalMessageAdapter
 			if (this.IsMarketData())
 			{
 				var limit = await _restClient.GetBroadcastLimit(cancellationToken);
-				_marketClient = new(ClientCode, limit, ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
+				_marketClient = new(ClientCode, limit, ReconnectAttempts,
+					ReConnectionSettings.WorkingTime, MarketWebSocketEndpoint) { Parent = this };
 				_marketClient.UpdateReceived += OnMarketUpdate;
 				_marketClient.Error += SendOutErrorAsync;
 				_marketClient.StateChanged += SendOutConnectionStateAsync;
@@ -67,7 +69,9 @@ public partial class MotilalOswalMessageAdapter
 
 			if (this.IsTransactional())
 			{
-				_orderClient = new(IsDemo, ClientCode, Token, Key, ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
+				_orderClient = new(IsDemo ? DemoOrderWebSocketEndpoint : OrderWebSocketEndpoint,
+					ClientCode, Token, Key, ReconnectAttempts,
+					ReConnectionSettings.WorkingTime) { Parent = this };
 				_orderClient.OrderReceived += OnOrderUpdate;
 				_orderClient.TradeReceived += OnTradeUpdate;
 				_orderClient.Error += SendOutErrorAsync;

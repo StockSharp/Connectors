@@ -20,6 +20,11 @@ using Ecng.ComponentModel;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions | MessageAdapterCategories.OrderLog)]
 public partial class BitmexMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://www.bitmex.com/api/v1";
+	private const string _defaultDemoRestEndpoint = "https://testnet.bitmex.com/api/v1";
+	private const string _defaultWebSocketEndpoint = "wss://ws.bitmex.com/realtime";
+	private const string _defaultDemoWebSocketEndpoint = "wss://ws.testnet.bitmex.com/realtime";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -55,6 +60,46 @@ public partial class BitmexMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
+	/// <summary>
+	/// Production REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "BitMEX production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// Demo REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "BitMEX testnet REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>
+	/// Production WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "BitMEX production WebSocket endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>
+	/// Demo WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "BitMEX testnet WebSocket endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -63,6 +108,10 @@ public partial class BitmexMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(IsDemo), IsDemo);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		storage.SetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -73,6 +122,10 @@ public partial class BitmexMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		DemoWebSocketEndpoint = storage.GetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

@@ -26,14 +26,12 @@ sealed class MarqueeClient : BaseLogReceiver, IDisposable
 	private string _accessToken;
 	private DateTime _tokenExpires;
 
-	public MarqueeClient(string clientId, string clientSecret, bool isDemo)
+	public MarqueeClient(string apiEndpoint, string oauthEndpoint, string clientId, string clientSecret)
 	{
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_clientSecret = clientSecret.ThrowIfEmpty(nameof(clientSecret));
-		_apiAddress = new(isDemo ? "https://api.marquee-qa.gs.com/v1/" : "https://api.gs.com/v1/");
-		_authAddress = new(isDemo
-			? "https://idfs-qa.gs.com/as/token.oauth2"
-			: "https://idfs.gs.com/as/token.oauth2");
+		_apiAddress = new(apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint)));
+		_authAddress = new(oauthEndpoint.ThrowIfEmpty(nameof(oauthEndpoint)));
 		_http.DefaultRequestHeaders.Accept.Add(
 			new MediaTypeWithQualityHeaderValue("application/json"));
 	}

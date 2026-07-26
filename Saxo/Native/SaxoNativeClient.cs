@@ -19,11 +19,13 @@ sealed class SaxoNativeClient : BaseLogReceiver
 	private string _lastSequenceId;
 	private SaxoBalance _balance;
 
-	public SaxoNativeClient(SaxoEnvironments environment, string accessToken, string refreshToken, string clientId,
-		string clientSecret, string redirectUri, int reconnectAttempts)
+	public SaxoNativeClient(string accessToken, string refreshToken, string clientId,
+		string clientSecret, string redirectUri, int reconnectAttempts, string restEndpoint,
+		string tokenEndpoint, string streamAuthorizeEndpoint, string webSocketEndpoint)
 	{
-		_restClient = new(environment, accessToken, refreshToken, clientId, clientSecret, redirectUri) { Parent = this };
-		_streamClient = new(environment, () => _restClient.AccessToken, reconnectAttempts) { Parent = this };
+		_restClient = new(accessToken, refreshToken, clientId, clientSecret, redirectUri,
+			restEndpoint, tokenEndpoint, streamAuthorizeEndpoint) { Parent = this };
+		_streamClient = new(webSocketEndpoint, () => _restClient.AccessToken, reconnectAttempts) { Parent = this };
 		_streamClient.PayloadReceived += OnPayloadReceived;
 		_streamClient.SubscriptionsReset += OnSubscriptionsReset;
 		_streamClient.Error += OnError;

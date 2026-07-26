@@ -2,17 +2,14 @@ namespace StockSharp.Fyers.Native;
 
 sealed class FyersRestClient : BaseLogReceiver
 {
-	private const string _baseUrl = "https://api-t1.fyers.in/";
-	private const string _defaultTbtUrl = "wss://rtsocket-api.fyers.in/versova";
-
-	private static readonly (string boardCode, string url)[] _masterFiles =
+	private static readonly (string boardCode, string fileName)[] _masterFiles =
 	[
-		("NSE", "https://public.fyers.in/sym_details/NSE_CM.csv"),
-		("NFO", "https://public.fyers.in/sym_details/NSE_FO.csv"),
-		("CDS", "https://public.fyers.in/sym_details/NSE_CD.csv"),
-		("BSE", "https://public.fyers.in/sym_details/BSE_CM.csv"),
-		("BFO", "https://public.fyers.in/sym_details/BSE_FO.csv"),
-		("MCX", "https://public.fyers.in/sym_details/MCX_COM.csv"),
+		("NSE", "NSE_CM.csv"),
+		("NFO", "NSE_FO.csv"),
+		("CDS", "NSE_CD.csv"),
+		("BSE", "BSE_CM.csv"),
+		("BFO", "BSE_FO.csv"),
+		("MCX", "MCX_COM.csv"),
 	];
 
 	private static readonly JsonSerializerSettings _jsonSettings = new()
@@ -22,13 +19,19 @@ sealed class FyersRestClient : BaseLogReceiver
 
 	private readonly string _clientId;
 	private readonly SecureString _token;
+	private readonly string _baseUrl;
+	private readonly string _instrumentEndpoint;
+	private readonly string _defaultTbtUrl;
 	private readonly HttpClient _instrumentClient = new();
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private FyersInstrument[] _instruments;
 	private IReadOnlyDictionary<string, FyersInstrument> _instrumentsBySymbol;
 
-	public FyersRestClient(string clientId, SecureString token)
+	public FyersRestClient(string apiEndpoint, string instrumentEndpoint, string tbtEndpoint, string clientId, SecureString token)
 	{
+		_baseUrl = apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint));
+		_instrumentEndpoint = instrumentEndpoint.ThrowIfEmpty(nameof(instrumentEndpoint)).TrimEnd('/');
+		_defaultTbtUrl = tbtEndpoint.ThrowIfEmpty(nameof(tbtEndpoint));
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_token = token.ThrowIfEmpty(nameof(token));
 		_instrumentClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; StockSharp FYERS connector)");
@@ -61,12 +64,13 @@ sealed class FyersRestClient : BaseLogReceiver
 			{
 				try
 				{
-					await ReadInstrumentFile(source.url, instruments, cancellationToken);
+					var url = $"{_instrumentEndpoint}/{source.fileName}";
+					await ReadInstrumentFile(url, instruments, cancellationToken);
 				}
 				catch (Exception ex) when (ex is HttpRequestException or IOException)
 				{
 					errors.Add(new InvalidOperationException($"Unable to download FYERS symbol master '{source.boardCode}'.", ex));
-					this.AddWarningLog("Unable to download {0}: {1}", source.url, ex.Message);
+					this.AddWarningLog("Unable to download {0}: {1}", source.fileName, ex.Message);
 				}
 			}
 

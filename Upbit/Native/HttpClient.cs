@@ -5,14 +5,14 @@ using System.Security.Cryptography;
 using JWT.Algorithms;
 using JWT.Builder;
 
-class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
+class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLogReceiver
 {
 	private readonly SecureString _key = key;
 	private readonly SecureString _secret = secret;
 
 	private readonly HashAlgorithm _hasher = secret.IsEmpty() ? null : SHA512.Create();
 
-	private const string _baseUrl = "https://api.upbit.com";
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 	private const string _version = "v1";
 
 	protected override void DisposeManaged()
@@ -121,7 +121,7 @@ class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
 		return (string)response.uuid;
 	}
 
-	private static Uri CreateUrl(string methodName)
+	private Uri CreateUrl(string methodName)
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

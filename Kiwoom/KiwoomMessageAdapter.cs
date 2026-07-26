@@ -88,7 +88,8 @@ public partial class KiwoomMessageAdapter
 		var appKey = Key?.UnSecure().ThrowIfEmpty(nameof(Key));
 		var appSecret = Secret?.UnSecure().ThrowIfEmpty(nameof(Secret));
 		var attempts = Math.Max(1, ReConnectionSettings.ReAttemptCount);
-		_rest = new(appKey, appSecret, IsDemo, attempts) { Parent = this };
+		var restEndpoint = IsDemo ? DemoRestEndpoint : RestEndpoint;
+		_rest = new(restEndpoint, appKey, appSecret, IsDemo, attempts) { Parent = this };
 
 		try
 		{
@@ -164,7 +165,8 @@ public partial class KiwoomMessageAdapter
 
 	private KiwoomWebSocketClient CreateStream(KiwoomAssetClasses assetClass, int attempts)
 	{
-		var stream = new KiwoomWebSocketClient(_rest.GetAccessToken, assetClass, IsDemo, attempts) { Parent = this };
+		var webSocketEndpoint = IsDemo ? DemoWebSocketEndpoint : WebSocketEndpoint;
+		var stream = new KiwoomWebSocketClient(webSocketEndpoint, _rest.GetAccessToken, assetClass, attempts) { Parent = this };
 		stream.EventReceived += OnRealtimeEvent;
 		stream.Error += SendOutErrorAsync;
 		stream.StateChanged += SendOutConnectionStateAsync;

@@ -30,13 +30,13 @@ class PusherClient : BaseLogReceiver
 	private readonly Authenticator _authenticator;
 	private readonly UTCIncrementalIdGenerator _nonceGen;
 
-	public PusherClient(Authenticator authenticator, string subDomain, UTCIncrementalIdGenerator nonceGen, int attemptsCount, WorkingTime workingTime)
+	public PusherClient(Authenticator authenticator, string endpoint, UTCIncrementalIdGenerator nonceGen, int attemptsCount, WorkingTime workingTime)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 		_nonceGen = nonceGen ?? throw new ArgumentNullException(nameof(nonceGen));
 
 		_client = new(
-			$"wss://ws.{subDomain}bitmex.com/realtime",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

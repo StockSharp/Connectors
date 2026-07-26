@@ -20,6 +20,9 @@ using Ecng.ComponentModel;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 public partial class FtxMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://ftx.com";
+	private const string _defaultWebSocketEndpoint = "wss://ftx.com/ws";
+
 	/// <summary>
 	/// Default value for <see cref="MessageAdapter.HeartbeatInterval"/>.
 	/// </summary>
@@ -56,6 +59,26 @@ public partial class FtxMessageAdapter : MessageAdapter, IKeySecretAdapter
 	[BasicSetting]
 	public string SubaccountName { get; set; }
 
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "FTX REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "FTX WebSocket API endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -64,6 +87,8 @@ public partial class FtxMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(SubaccountName), SubaccountName);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -74,6 +99,8 @@ public partial class FtxMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		SubaccountName = storage.GetValue<string>(nameof(SubaccountName));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

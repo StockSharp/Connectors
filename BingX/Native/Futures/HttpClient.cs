@@ -6,7 +6,7 @@ class HttpClient : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator;
 
-	private readonly string _baseUrl = "https://open-api.bingx.com";
+	private readonly string _baseUrl;
 	private const string _version = "v2";
 
 	public HttpClient(BingXMessageAdapter adapter, Authenticator authenticator)
@@ -14,7 +14,7 @@ class HttpClient : BaseLogReceiver
 		if (adapter is null)
 			throw new ArgumentNullException(nameof(adapter));
 
-		_baseUrl = adapter.IsDemo ? "https://open-api-vst.bingx.com" : $"https://{adapter.RestDomain}";
+		_baseUrl = $"https://{(adapter.IsDemo ? adapter.DemoRestDomain : adapter.RestDomain)}";
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 	}
 

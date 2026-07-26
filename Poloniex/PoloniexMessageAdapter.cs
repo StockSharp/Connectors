@@ -150,9 +150,9 @@ partial class PoloniexMessageAdapter
 
 		_authenticator = new(this.IsTransactional(), Key, Secret);
 
-		_httpClient = new(_authenticator) { Parent = this };
+		_httpClient = new(RestEndpoint, _authenticator) { Parent = this };
 
-		_pusherClient = new(_authenticator, ReConnectionSettings.WorkingTime) { Parent = this };
+		_pusherClient = new(WebSocketEndpoint, _authenticator, ReConnectionSettings.WorkingTime) { Parent = this };
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);
 	}

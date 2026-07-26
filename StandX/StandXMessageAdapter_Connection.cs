@@ -14,7 +14,7 @@ public partial class StandXMessageAdapter
 			cancellationToken);
 		try
 		{
-			_restClient = new(RestEndpoint, AuthEndpoint, Chain, WalletAddress,
+			_restClient = new(RestEndpoint, AuthEndpoint, SignInEndpoint, Chain, WalletAddress,
 				PrivateKey) { Parent = this };
 			await RestClient.SynchronizeTimeAsync(cancellationToken);
 			await RefreshInstrumentsAsync(cancellationToken);

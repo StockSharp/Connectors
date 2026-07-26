@@ -49,7 +49,7 @@ public partial class FactSetMessageAdapter
 				throw new ArgumentOutOfRangeException(nameof(AuthenticationMode), AuthenticationMode, null);
 		}
 
-		var client = new FactSetClient(AuthenticationMode, Login, Password.UnSecure(), OAuthConfigFile)
+		var client = new FactSetClient(RestEndpoint, OAuthDiscoveryEndpoint, AuthenticationMode, Login, Password.UnSecure(), OAuthConfigFile)
 		{
 			Parent = this,
 		};

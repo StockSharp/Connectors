@@ -53,7 +53,7 @@ public partial class PublicMessageAdapter
 		if (PollingInterval <= TimeSpan.Zero)
 			throw new InvalidOperationException(LocalizedStrings.InvalidValue.Put(PollingInterval));
 
-		_client = new(Token);
+		_client = new(Token, RestEndpoint);
 		await _client.Authenticate(cancellationToken);
 		_accounts = await _client.GetAccounts(cancellationToken);
 		_pollingCts = new CancellationTokenSource();

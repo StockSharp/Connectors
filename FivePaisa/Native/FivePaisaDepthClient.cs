@@ -2,8 +2,6 @@ namespace StockSharp.FivePaisa.Native;
 
 sealed class FivePaisaDepthClient : BaseLogReceiver
 {
-	private const string _url = "wss://gateway.5paisa.com/openapi/20depth";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -12,10 +10,10 @@ sealed class FivePaisaDepthClient : BaseLogReceiver
 	private readonly WebSocketClient _client;
 	private readonly SynchronizedSet<string> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 
-	public FivePaisaDepthClient(string token, int reconnectAttempts, WorkingTime workingTime)
+	public FivePaisaDepthClient(string endpoint, string token, int reconnectAttempts, WorkingTime workingTime)
 	{
 		token.ThrowIfEmpty(nameof(token));
-		var url = $"{_url}?access_token={Uri.EscapeDataString(token)}";
+		var url = $"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('?')}?access_token={Uri.EscapeDataString(token)}";
 		_client = new(
 			url,
 			(state, cancellationToken) => default,

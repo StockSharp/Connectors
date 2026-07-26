@@ -50,10 +50,10 @@ internal sealed class KabuStationRestClient : BaseLogReceiver
 	private readonly RequestPacer _informationPacer = new(10);
 	private string _token;
 
-	public KabuStationRestClient(SecureString password, bool isDemo, int maxAttempts)
+	public KabuStationRestClient(SecureString password, string restEndpoint, int maxAttempts)
 	{
 		_password = password.ThrowIfEmpty(nameof(password)).UnSecure();
-		_root = new($"http://localhost:{(isDemo ? 18081 : 18080)}/kabusapi/");
+		_root = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
 		_maxAttempts = Math.Max(1, maxAttempts);
 	}
 

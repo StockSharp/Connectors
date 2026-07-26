@@ -48,7 +48,7 @@ class PusherClient : BaseLogReceiver
 
 	//private readonly Dictionary<long?, object[]> _acks;
 
-	public PusherClient(SecureString key, SecureString secret, SecureString webSocketId, WorkingTime workingTime)
+	public PusherClient(string endpoint, SecureString key, SecureString secret, SecureString webSocketId, WorkingTime workingTime)
 	{
 		_key = key;
 		_secret = secret;
@@ -57,7 +57,7 @@ class PusherClient : BaseLogReceiver
 		//_acks = new Dictionary<long?, object[]>();
 
 		_client = new(
-			"wss://sc-02.coinigy.com/socketcluster/",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

@@ -12,11 +12,11 @@ sealed class LimeSocketClient : BaseLogReceiver
 	private readonly SecureString _accessToken;
 	private readonly SynchronizedSet<(LimeFeedActions action, string account)> _subscriptions = [];
 
-	public LimeSocketClient(SecureString accessToken, int reconnectAttempts, WorkingTime workingTime)
+	public LimeSocketClient(string endpoint, SecureString accessToken, int reconnectAttempts, WorkingTime workingTime)
 	{
 		_accessToken = accessToken.ThrowIfEmpty(nameof(accessToken));
 		_client = new(
-			"wss://api.lime.co/accounts",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
 			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
 			Process,

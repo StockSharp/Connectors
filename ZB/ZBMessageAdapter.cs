@@ -77,8 +77,8 @@ partial class ZBMessageAdapter
 
 		_authenticator = new Authenticator(this.IsTransactional(), Key, Secret);
 
-		_httpClient = new HttpClient(_authenticator) { Parent = this };
-		_pusherClient = new PusherClient(_authenticator, ReConnectionSettings.WorkingTime) { Parent = this };
+		_httpClient = new HttpClient(PublicRestEndpoint, PrivateRestEndpoint, _authenticator) { Parent = this };
+		_pusherClient = new PusherClient(WebSocketEndpoint, _authenticator, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);

@@ -31,7 +31,7 @@ public partial class MercadoBitcoinMessageAdapter
                     throw new InvalidDataException(
                         "Mercado Bitcoin returned no tradeable markets.");
 
-            _socketClient = new(WebSocketEndpoint,
+            _socketClient = new(WebSocketEndpoint, WebSocketOrigin,
                 ReConnectionSettings.WorkingTime,
                 ReConnectionSettings.ReAttemptCount)
             {

@@ -15,7 +15,7 @@ using StockSharp.Messages;
 partial class AlphaVantageMessageAdapter
 {
 	private readonly HttpClient _httpClient = new();
-	private readonly AlphaClient _alphaClient;
+	private AlphaClient _alphaClient;
 
 	/// <inheritdoc />
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
@@ -77,7 +77,7 @@ partial class AlphaVantageMessageAdapter
 				{
 					var fileName = secType == SecurityTypes.CryptoCurrency ? "digital" : "physical";
 
-					var csv = await _httpClient.GetStringAsync($"https://www.alphavantage.co/{fileName}_currency_list/", cancellationToken);
+					var csv = await _httpClient.GetStringAsync($"{CurrencyListEndpoint.ThrowIfEmpty(nameof(CurrencyListEndpoint)).TrimEnd('/')}/{fileName}_currency_list/", cancellationToken);
 
 					var reader = new FastCsvReader(csv, StringHelper.RN) { ColumnSeparator = ',' };
 					if (await reader.NextLineAsync(cancellationToken))

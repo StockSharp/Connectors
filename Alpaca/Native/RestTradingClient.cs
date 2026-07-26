@@ -4,8 +4,8 @@ using System.Dynamic;
 
 class RestTradingClient : RestAlpacaClient
 {
-	public RestTradingClient(bool isDemo, SecureString key, SecureString secret)
-		: base("https://{0}api.alpaca.markets".Put(isDemo ? "paper-" : string.Empty), key, secret)
+	public RestTradingClient(string endpoint, SecureString key, SecureString secret)
+		: base(endpoint, key, secret)
 	{
 	}
 

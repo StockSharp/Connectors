@@ -27,6 +27,9 @@ using StockSharp.Messages;
 	MessageAdapterCategories.FX | MessageAdapterCategories.Candles | MessageAdapterCategories.Free)]
 public partial class AlphaVantageMessageAdapter : HistoricalMessageAdapter, ITokenAdapter
 {
+	private const string _defaultQueryEndpoint = "https://www.alphavantage.co/query";
+	private const string _defaultCurrencyListEndpoint = "https://www.alphavantage.co";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -52,12 +55,30 @@ public partial class AlphaVantageMessageAdapter : HistoricalMessageAdapter, ITok
 	[BasicSetting]
 	public SecureString Token { get; set; }
 
+	/// <summary>Query API endpoint.</summary>
+	[Display(
+		Name = "Query endpoint",
+		Description = "Query API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string QueryEndpoint { get; set; } = _defaultQueryEndpoint;
+
+	/// <summary>Currency list endpoint.</summary>
+	[Display(
+		Name = "Currency list endpoint",
+		Description = "Base endpoint for currency list files.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string CurrencyListEndpoint { get; set; } = _defaultCurrencyListEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
 
 		storage.SetValue(nameof(Token), Token);
+		storage.SetValue(nameof(QueryEndpoint), QueryEndpoint);
+		storage.SetValue(nameof(CurrencyListEndpoint), CurrencyListEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -66,5 +87,7 @@ public partial class AlphaVantageMessageAdapter : HistoricalMessageAdapter, ITok
 		base.Load(storage);
 
 		Token = storage.GetValue<SecureString>(nameof(Token));
+		QueryEndpoint = storage.GetValue(nameof(QueryEndpoint), QueryEndpoint);
+		CurrencyListEndpoint = storage.GetValue(nameof(CurrencyListEndpoint), CurrencyListEndpoint);
 	}
 }

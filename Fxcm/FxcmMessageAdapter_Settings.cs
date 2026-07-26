@@ -14,6 +14,11 @@ namespace StockSharp.Fxcm;
 [OrderCondition(typeof(FxcmOrderCondition))]
 public partial class FxcmMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.fxcm.com/";
+	private const string _defaultDemoRestEndpoint = "https://api-demo.fxcm.com/";
+	private const string _defaultWebSocketEndpoint = "wss://api.fxcm.com/socket.io/";
+	private const string _defaultDemoWebSocketEndpoint = "wss://api-demo.fxcm.com/socket.io/";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -34,13 +39,49 @@ public partial class FxcmMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAd
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Production WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Production WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>Demo WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "Demo WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
 		storage
 			.Set(nameof(Token), Token)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+			.Set(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -49,5 +90,9 @@ public partial class FxcmMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAd
 		base.Load(storage);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		DemoWebSocketEndpoint = storage.GetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 }

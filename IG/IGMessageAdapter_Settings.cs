@@ -15,6 +15,9 @@ namespace StockSharp.IG;
 [OrderCondition(typeof(IgOrderCondition))]
 public partial class IgMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.ig.com/gateway/deal/";
+	private const string _defaultDemoRestEndpoint = "https://demo-api.ig.com/gateway/deal/";
+
 	/// <summary>IG application API key.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -72,6 +75,22 @@ public partial class IgMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 		Order = 5)]
 	public bool EncryptPassword { get; set; }
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -82,7 +101,9 @@ public partial class IgMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 			.Set(nameof(Password), Password)
 			.Set(nameof(AccountId), AccountId)
 			.Set(nameof(Environment), Environment)
-			.Set(nameof(EncryptPassword), EncryptPassword);
+			.Set(nameof(EncryptPassword), EncryptPassword)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -95,5 +116,7 @@ public partial class IgMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 		AccountId = storage.GetValue<string>(nameof(AccountId));
 		Environment = storage.GetValue(nameof(Environment), Environment);
 		EncryptPassword = storage.GetValue(nameof(EncryptPassword), EncryptPassword);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
 	}
 }

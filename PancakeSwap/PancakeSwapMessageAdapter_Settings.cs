@@ -42,6 +42,8 @@ public partial class PancakeSwapMessageAdapter : MessageAdapter
 {
 	private const string _defaultV3SubgraphId =
 		"Hv1GncLY5docZoGtXjo4kwbTvxm3MAhVZqBZE4sUT9eZ";
+	private const string _defaultGraphGatewayEndpoint =
+		"https://gateway.thegraph.com/api";
 	private const string _defaultMarkets =
 		"V3|0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c|" +
 		"0x55d398326f99059fF775485246999027B3197955|500;" +
@@ -126,6 +128,16 @@ public partial class PancakeSwapMessageAdapter : MessageAdapter
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string V3Subgraph { get; set; } = _defaultV3SubgraphId;
+
+	/// <summary>The Graph gateway endpoint.</summary>
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
+	public string GraphGatewayEndpoint { get; set; } =
+		_defaultGraphGatewayEndpoint;
 
 	/// <summary>
 	/// Semicolon-separated <c>version|base token|quote token|fee</c>
@@ -225,6 +237,7 @@ public partial class PancakeSwapMessageAdapter : MessageAdapter
 			.Set(nameof(RpcEndpoint), RpcEndpoint)
 			.Set(nameof(V2Subgraph), V2Subgraph)
 			.Set(nameof(V3Subgraph), V3Subgraph)
+			.Set(nameof(GraphGatewayEndpoint), GraphGatewayEndpoint)
 			.Set(nameof(Markets), Markets)
 			.Set(nameof(MaximumDiscoveredPools), MaximumDiscoveredPools)
 			.Set(nameof(ProbeVolume), ProbeVolume)
@@ -244,6 +257,8 @@ public partial class PancakeSwapMessageAdapter : MessageAdapter
 			nameof(RpcEndpoint), RpcEndpoint));
 		V2Subgraph = storage.GetValue<string>(nameof(V2Subgraph));
 		V3Subgraph = storage.GetValue(nameof(V3Subgraph), V3Subgraph);
+		GraphGatewayEndpoint = NormalizeEndpoint(storage.GetValue(
+			nameof(GraphGatewayEndpoint), GraphGatewayEndpoint));
 		Markets = storage.GetValue(nameof(Markets), Markets);
 		MaximumDiscoveredPools = storage.GetValue(
 			nameof(MaximumDiscoveredPools), MaximumDiscoveredPools);

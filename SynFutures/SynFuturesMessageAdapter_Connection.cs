@@ -22,7 +22,7 @@ public partial class SynFuturesMessageAdapter
 				nameof(WebSocketEndpoint));
 			RpcEndpoint = NormalizeEndpoint(RpcEndpoint, false,
 				nameof(RpcEndpoint));
-			_apiClient = new(ApiEndpoint) { Parent = this };
+			_apiClient = new(ApiEndpoint, Origin) { Parent = this };
 			_rpcClient = new(RpcEndpoint, WalletAddress, PrivateKey)
 			{
 				Parent = this,
@@ -35,7 +35,7 @@ public partial class SynFuturesMessageAdapter
 					RpcClient.WalletAddress[2..10];
 			}
 			await RefreshMarketsAsync(cancellationToken);
-			_socketClient = new(WebSocketEndpoint) { Parent = this };
+			_socketClient = new(WebSocketEndpoint, Origin) { Parent = this };
 			SocketClient.MarketChanged += OnMarketChangedAsync;
 			SocketClient.DepthReceived += OnDepthAsync;
 			SocketClient.TradesReceived += OnTradesAsync;

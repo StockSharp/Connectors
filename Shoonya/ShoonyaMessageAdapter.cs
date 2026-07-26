@@ -70,7 +70,7 @@ public partial class ShoonyaMessageAdapter
 		UserId.ThrowIfEmpty(nameof(UserId));
 		Token.ThrowIfEmpty(nameof(Token));
 		_resolvedAccountId = AccountId.IsEmpty() ? UserId : AccountId;
-		_restClient = new(UserId, _resolvedAccountId, Token) { Parent = this };
+		_restClient = new(UserId, _resolvedAccountId, Token, RestEndpoint, InstrumentEndpointTemplate) { Parent = this };
 
 		try
 		{
@@ -80,7 +80,7 @@ public partial class ShoonyaMessageAdapter
 			if (this.IsMarketData() || this.IsTransactional())
 			{
 				_socketClient = new(UserId, _resolvedAccountId, Token, this.IsTransactional(),
-					ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
+					ReconnectAttempts, ReConnectionSettings.WorkingTime, WebSocketEndpoint) { Parent = this };
 				_socketClient.MarketDataReceived += OnMarketDataReceived;
 				_socketClient.OrderReceived += OnOrderReceived;
 				_socketClient.Error += SendOutErrorAsync;

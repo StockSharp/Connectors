@@ -18,6 +18,12 @@ using System.ComponentModel.DataAnnotations;
 [OrderCondition(typeof(FyersOrderCondition))]
 public partial class FyersMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://api-t1.fyers.in/";
+	private const string _defaultInstrumentEndpoint = "https://public.fyers.in/sym_details/";
+	private const string _defaultMarketWebSocketEndpoint = "wss://socket.fyers.in/hsm/v1-5/prod";
+	private const string _defaultOrderWebSocketEndpoint = "wss://socket.fyers.in/trade/v3";
+	private const string _defaultTbtWebSocketEndpoint = "wss://rtsocket-api.fyers.in/versova";
+
 	private static readonly TimeSpan[] _timeFrames =
 	[
 		TimeSpan.FromMinutes(1),
@@ -66,6 +72,46 @@ public partial class FyersMessageAdapter : MessageAdapter, ITokenAdapter
 		Order = 2)]
 	public FyersProducts DefaultProduct { get; set; } = FyersProducts.Intraday;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Instrument master endpoint.</summary>
+	[Display(
+		Name = "Instrument endpoint",
+		Description = "Base instrument master endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
+
+	/// <summary>Market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
+
+	/// <summary>Order WebSocket endpoint.</summary>
+	[Display(
+		Name = "Order WebSocket endpoint",
+		Description = "Order WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;
+
+	/// <summary>Tick-by-tick WebSocket endpoint.</summary>
+	[Display(
+		Name = "TBT WebSocket endpoint",
+		Description = "Fallback tick-by-tick WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string TbtWebSocketEndpoint { get; set; } = _defaultTbtWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -73,7 +119,12 @@ public partial class FyersMessageAdapter : MessageAdapter, ITokenAdapter
 		storage
 			.Set(nameof(ClientId), ClientId)
 			.Set(nameof(Token), Token)
-			.Set(nameof(DefaultProduct), DefaultProduct);
+			.Set(nameof(DefaultProduct), DefaultProduct)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(InstrumentEndpoint), InstrumentEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint)
+			.Set(nameof(TbtWebSocketEndpoint), TbtWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -83,5 +134,10 @@ public partial class FyersMessageAdapter : MessageAdapter, ITokenAdapter
 		ClientId = storage.GetValue<string>(nameof(ClientId));
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		InstrumentEndpoint = storage.GetValue(nameof(InstrumentEndpoint), InstrumentEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		OrderWebSocketEndpoint = storage.GetValue(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint);
+		TbtWebSocketEndpoint = storage.GetValue(nameof(TbtWebSocketEndpoint), TbtWebSocketEndpoint);
 	}
 }

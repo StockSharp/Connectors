@@ -2,9 +2,6 @@ namespace StockSharp.AngelOne.Native;
 
 sealed class AngelOneRestClient : BaseLogReceiver
 {
-	private const string _apiUrl = "https://apiconnect.angelone.in";
-	private const string _instrumentUrl = "https://margincalculator.angelone.in/OpenAPI_File/files/OpenAPIScripMaster.json";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -18,13 +15,16 @@ sealed class AngelOneRestClient : BaseLogReceiver
 	private readonly string _clientLocalIp;
 	private readonly string _clientPublicIp;
 	private readonly string _macAddress;
+	private readonly Uri _apiEndpoint;
+	private readonly string _instrumentEndpoint;
 	private readonly HttpClient _instrumentClient = new();
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private AngelOneInstrument[] _instruments;
 	private string _jwtToken;
 
 	public AngelOneRestClient(string clientCode, SecureString pin, SecureString apiKey, SecureString totpSecret,
-		string clientLocalIp, string clientPublicIp, string macAddress)
+		string clientLocalIp, string clientPublicIp, string macAddress, string restEndpoint,
+		string instrumentEndpoint)
 	{
 		_clientCode = clientCode.ThrowIfEmpty(nameof(clientCode));
 		_pin = pin.ThrowIfEmpty(nameof(pin));
@@ -33,6 +33,8 @@ sealed class AngelOneRestClient : BaseLogReceiver
 		_clientLocalIp = clientLocalIp.ThrowIfEmpty(nameof(clientLocalIp));
 		_clientPublicIp = clientPublicIp.ThrowIfEmpty(nameof(clientPublicIp));
 		_macAddress = macAddress.ThrowIfEmpty(nameof(macAddress));
+		_apiEndpoint = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
+		_instrumentEndpoint = instrumentEndpoint.ThrowIfEmpty(nameof(instrumentEndpoint));
 	}
 
 	public override string Name => nameof(AngelOne) + "_" + nameof(AngelOneRestClient);
@@ -105,7 +107,7 @@ sealed class AngelOneRestClient : BaseLogReceiver
 			if (_instruments != null)
 				return _instruments;
 
-			await using var stream = await _instrumentClient.GetStreamAsync(_instrumentUrl, cancellationToken);
+			await using var stream = await _instrumentClient.GetStreamAsync(_instrumentEndpoint, cancellationToken);
 			using var streamReader = new StreamReader(stream, Encoding.UTF8);
 			using var jsonReader = new JsonTextReader(streamReader);
 			return _instruments = JsonSerializer.CreateDefault(_jsonSettings).Deserialize<AngelOneInstrument[]>(jsonReader) ?? [];
@@ -181,7 +183,7 @@ sealed class AngelOneRestClient : BaseLogReceiver
 		if (body != null)
 			request.AddStringBody(JsonConvert.SerializeObject(body, _jsonSettings), DataFormat.Json);
 
-		var response = await request.InvokeAsync<AngelOneResponse<TResponse>>(new Uri(new Uri(_apiUrl), path), this, this.AddVerboseLog, cancellationToken)
+		var response = await request.InvokeAsync<AngelOneResponse<TResponse>>(new Uri(_apiEndpoint, path), this, this.AddVerboseLog, cancellationToken)
 			?? throw new InvalidOperationException("Angel One returned an empty response.");
 
 		if (!response.Status)

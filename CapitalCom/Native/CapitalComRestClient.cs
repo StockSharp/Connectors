@@ -23,14 +23,16 @@ internal sealed class CapitalComRestClient : BaseLogReceiver, IDisposable
 	private readonly string _password;
 	private readonly bool _isPasswordEncryptionEnabled;
 	private readonly int _maxAttempts;
+	private readonly string _webSocketEndpoint;
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private string _cst;
 	private string _securityToken;
 	private DateTimeOffset _lastRequest;
 
-	public CapitalComRestClient(bool isDemo, string apiKey, string identifier, string password,
+	public CapitalComRestClient(string restEndpoint, string webSocketEndpoint, string apiKey, string identifier, string password,
 		bool isPasswordEncryptionEnabled, int maxAttempts)
 	{
+		_webSocketEndpoint = webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint));
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
 		_identifier = identifier.ThrowIfEmpty(nameof(identifier));
 		_password = password.ThrowIfEmpty(nameof(password));
@@ -38,9 +40,7 @@ internal sealed class CapitalComRestClient : BaseLogReceiver, IDisposable
 		_maxAttempts = Math.Max(1, maxAttempts);
 		_http = new()
 		{
-			BaseAddress = new(isDemo
-				? "https://demo-api-capital.backend-capital.com/"
-				: "https://api-capital.backend-capital.com/"),
+			BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 	}
@@ -306,9 +306,9 @@ internal sealed class CapitalComRestClient : BaseLogReceiver, IDisposable
 		return values.First();
 	}
 
-	private static string BuildStreamingUrl(string host)
+	private string BuildStreamingUrl(string host)
 	{
-		host = host.IsEmpty("wss://api-streaming-capital.backend-capital.com/");
+		host = host.IsEmpty(_webSocketEndpoint);
 		if (host.TrimEnd('/').EndsWith("/connect", StringComparison.OrdinalIgnoreCase))
 			return host;
 		return $"{host.TrimEnd('/')}/connect";

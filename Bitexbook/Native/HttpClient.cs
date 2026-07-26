@@ -12,13 +12,14 @@ class HttpClient : BaseLogReceiver
 
 	private readonly HashAlgorithm _hasher;
 
-	private const string _baseUrl = "https://api.bitexbook.com/api";
+	private readonly string _baseUrl;
 	private const string _version = "v2";
 
 	private readonly IdGenerator _nonceGen;
 
-	public HttpClient(SecureString key, SecureString secret)
+	public HttpClient(string baseUrl, SecureString key, SecureString secret)
 	{
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 		_key = key;
 		_secret = secret;
 
@@ -143,7 +144,7 @@ class HttpClient : BaseLogReceiver
 		return (long)response.order_id;
 	}
 
-	private static Uri CreateUrl(string methodName, string version = _version)
+	private Uri CreateUrl(string methodName, string version = _version)
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

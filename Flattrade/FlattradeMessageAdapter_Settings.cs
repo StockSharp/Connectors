@@ -16,6 +16,10 @@ namespace StockSharp.Flattrade;
 [OrderCondition(typeof(FlattradeOrderCondition))]
 public partial class FlattradeMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://piconnect.flattrade.in/PiConnectAPI/";
+	private const string _defaultInstrumentEndpoint = "https://flattrade.s3.ap-south-1.amazonaws.com/scripmaster/";
+	private const string _defaultWebSocketEndpoint = "wss://piconnect.flattrade.in/PiConnectWSAPI/";
+
 	/// <summary>Flattrade user identifier.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -64,6 +68,30 @@ public partial class FlattradeMessageAdapter : MessageAdapter, ITokenAdapter
 		Order = 4)]
 	public int ReconnectAttempts { get; set; } = 10;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Instrument master endpoint.</summary>
+	[Display(
+		Name = "Instrument endpoint",
+		Description = "Instrument master endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -73,7 +101,10 @@ public partial class FlattradeMessageAdapter : MessageAdapter, ITokenAdapter
 			.Set(nameof(AccountId), AccountId)
 			.Set(nameof(Token), Token)
 			.Set(nameof(DefaultProduct), DefaultProduct)
-			.Set(nameof(ReconnectAttempts), ReconnectAttempts);
+			.Set(nameof(ReconnectAttempts), ReconnectAttempts)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(InstrumentEndpoint), InstrumentEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -85,5 +116,8 @@ public partial class FlattradeMessageAdapter : MessageAdapter, ITokenAdapter
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
 		ReconnectAttempts = storage.GetValue(nameof(ReconnectAttempts), ReconnectAttempts);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		InstrumentEndpoint = storage.GetValue(nameof(InstrumentEndpoint), InstrumentEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }

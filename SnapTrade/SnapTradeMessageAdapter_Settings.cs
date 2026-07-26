@@ -13,6 +13,8 @@ namespace StockSharp.SnapTrade;
 [OrderCondition(typeof(SnapTradeOrderCondition))]
 public partial class SnapTradeMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.snaptrade.com/api/v1/";
+
 	private TimeSpan _pollingInterval = TimeSpan.FromMinutes(1);
 
 	/// <summary>Partner or Personal API client identifier.</summary>
@@ -80,6 +82,14 @@ public partial class SnapTradeMessageAdapter : MessageAdapter, IKeySecretAdapter
 			: value;
 	}
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -90,7 +100,8 @@ public partial class SnapTradeMessageAdapter : MessageAdapter, IKeySecretAdapter
 			.Set(nameof(UserId), UserId)
 			.Set(nameof(UserSecret), UserSecret)
 			.Set(nameof(AccountId), AccountId)
-			.Set(nameof(PollingInterval), PollingInterval);
+			.Set(nameof(PollingInterval), PollingInterval)
+			.Set(nameof(RestEndpoint), RestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -103,5 +114,6 @@ public partial class SnapTradeMessageAdapter : MessageAdapter, IKeySecretAdapter
 		UserSecret = storage.GetValue<SecureString>(nameof(UserSecret));
 		AccountId = storage.GetValue<string>(nameof(AccountId));
 		PollingInterval = storage.GetValue(nameof(PollingInterval), PollingInterval);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
 	}
 }

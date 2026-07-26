@@ -2,7 +2,6 @@ namespace StockSharp.MotilalOswal.Native;
 
 sealed class MotilalOswalMarketDataClient : BaseLogReceiver
 {
-	private const string _url = "wss://ws1feed.motilaloswal.com/jwebsocket/jwebsocket";
 	private const int _packetLength = 30;
 	private const string _protocolVersion = "VER 2.0";
 
@@ -14,7 +13,7 @@ sealed class MotilalOswalMarketDataClient : BaseLogReceiver
 	private byte[] _pending = [];
 
 	public MotilalOswalMarketDataClient(string clientCode, int maximumSubscriptions,
-		int reconnectAttempts, WorkingTime workingTime)
+		int reconnectAttempts, WorkingTime workingTime, string webSocketEndpoint)
 	{
 		_clientCode = clientCode.ThrowIfEmpty(nameof(clientCode));
 		if (Encoding.ASCII.GetByteCount(_clientCode) > 15)
@@ -22,7 +21,7 @@ sealed class MotilalOswalMarketDataClient : BaseLogReceiver
 		_maximumSubscriptions = maximumSubscriptions > 0 ? maximumSubscriptions : 200;
 
 		_client = new(
-			_url,
+			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

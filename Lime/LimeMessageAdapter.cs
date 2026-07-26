@@ -49,13 +49,13 @@ public partial class LimeMessageAdapter
 		if (_httpClient != null || _accountSocket != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(Login, Password, Key?.UnSecure(), Secret) { Parent = this };
+		_httpClient = new(OAuthEndpoint, RestEndpoint, Login, Password, Key?.UnSecure(), Secret) { Parent = this };
 		await _httpClient.Authenticate(cancellationToken);
 		await EnsureAccounts(cancellationToken);
 
 		if (this.IsTransactional())
 		{
-			_accountSocket = new(_httpClient.AccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_accountSocket = new(WebSocketEndpoint, _httpClient.AccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_accountSocket.BalanceReceived += OnBalanceReceived;
 			_accountSocket.PositionsReceived += OnPositionsReceived;
 			_accountSocket.OrderReceived += OnOrderReceived;

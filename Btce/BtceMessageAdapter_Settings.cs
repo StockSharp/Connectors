@@ -67,6 +67,14 @@ public partial class BtceMessageAdapter : MessageAdapter, IKeySecretAdapter, IAd
 		}
 	}
 
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = "wss://ws-eu.pusher.com/app/ee987526a24ba107824c?client=stocksharp&version=1.0&protocol=7";
+
 	private TimeSpan _balanceCheckInterval;
 
 	/// <summary>
@@ -104,6 +112,7 @@ public partial class BtceMessageAdapter : MessageAdapter, IKeySecretAdapter, IAd
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(BalanceCheckInterval), BalanceCheckInterval);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -115,6 +124,7 @@ public partial class BtceMessageAdapter : MessageAdapter, IKeySecretAdapter, IAd
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		BalanceCheckInterval = storage.GetValue<TimeSpan>(nameof(BalanceCheckInterval));
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

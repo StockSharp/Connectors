@@ -25,6 +25,9 @@ using Ecng.ComponentModel;
 	MessageAdapterCategories.Free | MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 public partial class CoinbaseMessageAdapter : MessageAdapter, IKeySecretAdapter, IPassphraseAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.coinbase.com/api";
+	private const string _defaultWebSocketEndpoint = "wss://advanced-trade-ws.coinbase.com";
+
 	/// <summary>
 	/// API key (Legacy) or CDP API key name.
 	/// </summary>
@@ -61,6 +64,26 @@ public partial class CoinbaseMessageAdapter : MessageAdapter, IKeySecretAdapter,
 	[BasicSetting]
 	public SecureString Passphrase { get; set; }
 
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Coinbase Advanced Trade REST endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Coinbase Advanced Trade WebSocket endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -69,6 +92,8 @@ public partial class CoinbaseMessageAdapter : MessageAdapter, IKeySecretAdapter,
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(Passphrase), Passphrase);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -79,6 +104,8 @@ public partial class CoinbaseMessageAdapter : MessageAdapter, IKeySecretAdapter,
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Passphrase = storage.GetValue<SecureString>(nameof(Passphrase));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

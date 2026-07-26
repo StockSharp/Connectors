@@ -6,10 +6,11 @@ sealed class StandXSigner : Disposable
 	private readonly EthECKey _evmKey;
 	private readonly Account _solanaWallet;
 	private readonly Account _requestSigner;
+	private readonly Uri _signInEndpoint;
 	private readonly JsonSerializerSettings _jsonSettings;
 
 	public StandXSigner(StandXChains chain, string walletAddress,
-		SecureString privateKey, JsonSerializerSettings jsonSettings)
+		SecureString privateKey, string signInEndpoint, JsonSerializerSettings jsonSettings)
 	{
 		if (!Enum.IsDefined(chain))
 			throw new ArgumentOutOfRangeException(nameof(chain), chain,
@@ -17,6 +18,7 @@ sealed class StandXSigner : Disposable
 		if (privateKey.IsEmpty())
 			throw new ArgumentNullException(nameof(privateKey));
 		_chain = chain;
+		_signInEndpoint = new(signInEndpoint.ThrowIfEmpty(nameof(signInEndpoint)));
 		_jsonSettings = jsonSettings ?? throw new ArgumentNullException(
 			nameof(jsonSettings));
 		var secret = privateKey.UnSecure().Trim();
@@ -91,8 +93,8 @@ sealed class StandXSigner : Disposable
 	public void ValidateSignedData(StandXSignedData payload)
 	{
 		ArgumentNullException.ThrowIfNull(payload);
-		if (!payload.Domain.EqualsIgnoreCase("standx.com") ||
-			!payload.Uri.EqualsIgnoreCase("https://standx.com"))
+		if (!payload.Domain.EqualsIgnoreCase(_signInEndpoint.Host) ||
+			!payload.Uri.EqualsIgnoreCase(_signInEndpoint.AbsoluteUri.TrimEnd('/')))
 			throw new CryptographicException(
 				"StandX sign-in challenge has an unexpected domain or URI.");
 		if (!payload.RequestId.Equals(RequestId, StringComparison.Ordinal))

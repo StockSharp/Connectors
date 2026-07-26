@@ -134,8 +134,8 @@ public partial class BitfinexMessageAdapter
 		if (_pusherClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(Key, Secret) { Parent = this };
-		_pusherClient = new(Key, Secret, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_httpClient = new(RestEndpoint, Key, Secret) { Parent = this };
+		_pusherClient = new(PrivateWebSocketEndpoint, PublicWebSocketEndpoint, Key, Secret, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribePusherClient();
 

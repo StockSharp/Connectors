@@ -2,7 +2,6 @@ namespace StockSharp.Shoonya.Native;
 
 sealed class ShoonyaSocketClient : BaseLogReceiver
 {
-	private const string _url = "wss://api.shoonya.com/NorenWSTP/";
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -17,7 +16,7 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 	private TaskCompletionSource<bool> _loginCompletion;
 
 	public ShoonyaSocketClient(string userId, string accountId, SecureString sessionToken, bool subscribeOrders,
-		int reconnectAttempts, WorkingTime workingTime)
+		int reconnectAttempts, WorkingTime workingTime, string webSocketEndpoint)
 	{
 		_userId = userId.ThrowIfEmpty(nameof(userId));
 		_accountId = accountId.ThrowIfEmpty(nameof(accountId));
@@ -25,7 +24,7 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 		_subscribeOrders = subscribeOrders;
 
 		_client = new(
-			_url,
+			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

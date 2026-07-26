@@ -10,7 +10,7 @@ internal sealed class GrowwFeedClient : BaseLogReceiver
 		public void Dispose() => Cancellation.Dispose();
 	}
 
-	private const string _socketUrl = "wss://socket-api.groww.in";
+	private readonly string _socketUrl;
 	private readonly GrowwRestClient _rest;
 	private readonly int _reconnectAttempts;
 	private readonly SynchronizedDictionary<string, Subscription> _subscriptions = new(StringComparer.Ordinal);
@@ -19,8 +19,9 @@ internal sealed class GrowwFeedClient : BaseLogReceiver
 	private KeyPair _keyPair;
 	private bool _wasConnected;
 
-	public GrowwFeedClient(GrowwRestClient rest, int reconnectAttempts)
+	public GrowwFeedClient(string endpoint, GrowwRestClient rest, int reconnectAttempts)
 	{
+		_socketUrl = endpoint.ThrowIfEmpty(nameof(endpoint));
 		_rest = rest ?? throw new ArgumentNullException(nameof(rest));
 		_reconnectAttempts = Math.Max(1, reconnectAttempts);
 	}

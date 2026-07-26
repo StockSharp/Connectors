@@ -38,11 +38,11 @@ class SocketClient : BaseLogReceiver
 			throw new ArgumentNullException(nameof(adapter));
 
 		_baseWsUrl = adapter.IsDemo
-			? "wss://vst-open-api-ws.bingx.com/swap-market"
+			? $"wss://{adapter.DemoFuturesWsDomain}"
 			: $"wss://{adapter.FuturesWsDomain}";
 
 		_restBaseUrl = adapter.IsDemo
-			? "https://open-api-vst.bingx.com"
+			? $"https://{adapter.DemoRestDomain}"
 			: $"https://{adapter.RestDomain}";
 
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));

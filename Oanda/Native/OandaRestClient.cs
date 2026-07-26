@@ -1,9 +1,9 @@
 namespace StockSharp.Oanda.Native;
 
-class OandaRestClient(bool isDemo, SecureString token, bool useCompression)
+class OandaRestClient(string endpoint, SecureString token, bool useCompression)
 {
 	private readonly SecureString _token = token;
-	private readonly string _restUrl = isDemo ? "https://api-fxpractice.oanda.com" : "https://api-fxtrade.oanda.com";
+	private readonly string _restUrl = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/');
 	private readonly bool _useCompression = useCompression;
 
 	public async Task<IEnumerable<TradeData>> GetTradesAsync(string accountId, long? maxId, CancellationToken cancellationToken)

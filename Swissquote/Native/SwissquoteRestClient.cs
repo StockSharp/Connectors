@@ -8,12 +8,9 @@ internal sealed class SwissquoteRestClient : BaseLogReceiver
 		public string NextCursor { get; init; }
 	}
 
-	private static readonly Uri _productionTrading = new("https://bankingapi.swissquote.ch/ow-trading/api/v1/");
-	private static readonly Uri _simulationTrading = new("https://bankingapi.simulator.swissquote.ch/ow-trading/api/v1/");
-	private static readonly Uri _productionCustody = new("https://bankingapi.swissquote.ch/ow-custody/api/v1/");
-
 	private readonly HttpClient _http;
 	private readonly Uri _tradingAddress;
+	private readonly Uri _custodyAddress;
 	private readonly int _maxAttempts;
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()
@@ -22,10 +19,11 @@ internal sealed class SwissquoteRestClient : BaseLogReceiver
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	public SwissquoteRestClient(string token, bool isDemo, int maxAttempts)
+	public SwissquoteRestClient(string token, string tradingEndpoint, string custodyEndpoint, int maxAttempts)
 	{
 		token.ThrowIfEmpty(nameof(token));
-		_tradingAddress = isDemo ? _simulationTrading : _productionTrading;
+		_tradingAddress = new(tradingEndpoint.ThrowIfEmpty(nameof(tradingEndpoint)));
+		_custodyAddress = new(custodyEndpoint.ThrowIfEmpty(nameof(custodyEndpoint)));
 		_maxAttempts = Math.Max(1, maxAttempts);
 		var handler = new HttpClientHandler
 		{
@@ -88,7 +86,7 @@ internal sealed class SwissquoteRestClient : BaseLogReceiver
 				? "customerAccounts?limit=999"
 				: $"customerAccounts/{customerId.DataEscape()}?limit=999";
 			path = AppendCursor(path, cursor);
-			var page = await Send<SwissquoteCustomerOverview[]>(_productionCustody, HttpMethod.Get,
+			var page = await Send<SwissquoteCustomerOverview[]>(_custodyAddress, HttpMethod.Get,
 				path, null, cancellationToken);
 			result.AddRange(page.Value ?? []);
 			cursor = page.NextCursor;
@@ -108,7 +106,7 @@ internal sealed class SwissquoteRestClient : BaseLogReceiver
 			var path = $"accounts/{accountId.ThrowIfEmpty(nameof(accountId)).DataEscape()}/positions" +
 				$"?date={FormatDate(date, utcOffset).DataEscape()}&eodIndicator=false&dateType=valueDate&limit=999";
 			path = AppendCursor(path, cursor);
-			var page = await Send<SwissquoteCustomerPositionsResponse>(_productionCustody,
+			var page = await Send<SwissquoteCustomerPositionsResponse>(_custodyAddress,
 				HttpMethod.Get, path, null, cancellationToken);
 			var account = page.Value?.Customer?.AccountList?.FirstOrDefault(item =>
 				item?.AccountInformation?.AccountIdentification.EqualsIgnoreCase(accountId) == true)
@@ -133,7 +131,7 @@ internal sealed class SwissquoteRestClient : BaseLogReceiver
 
 	public Task<SwissquoteTradingCapacityResponse> GetTradingCapacity(string accountId,
 		string currency, CancellationToken cancellationToken)
-		=> Get<SwissquoteTradingCapacityResponse>(_productionCustody,
+		=> Get<SwissquoteTradingCapacityResponse>(_custodyAddress,
 			$"accounts/{accountId.ThrowIfEmpty(nameof(accountId)).DataEscape()}/trading-capacity/" +
 			currency.ThrowIfEmpty(nameof(currency)).ToUpperInvariant().DataEscape(), cancellationToken);
 
@@ -147,7 +145,7 @@ internal sealed class SwissquoteRestClient : BaseLogReceiver
 			var path = $"accounts/{accountId.ThrowIfEmpty(nameof(accountId)).DataEscape()}/transactions" +
 				$"?date={FormatDate(date, utcOffset).DataEscape()}&dateType=transactionDate&eodIndicator=true&limit=999";
 			path = AppendCursor(path, cursor);
-			var page = await Send<SwissquoteTransactionsResponse>(_productionCustody,
+			var page = await Send<SwissquoteTransactionsResponse>(_custodyAddress,
 				HttpMethod.Get, path, null, cancellationToken);
 			result.AddRange(page.Value?.Transactions ?? []);
 			cursor = page.NextCursor;

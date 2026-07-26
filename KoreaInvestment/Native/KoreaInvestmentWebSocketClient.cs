@@ -2,12 +2,11 @@ namespace StockSharp.KoreaInvestment.Native;
 
 sealed class KoreaInvestmentWebSocketClient : BaseLogReceiver
 {
-	private static readonly Uri _productionUri = new("ws://ops.koreainvestment.com:21000/tryitout");
-	private static readonly Uri _simulationUri = new("ws://ops.koreainvestment.com:31000/tryitout");
 	private const int _maxSubscriptions = 40;
 	private const int _maxMessageSize = 8 * 1024 * 1024;
 
 	private readonly string _approvalKey;
+	private readonly Uri _uri;
 	private readonly bool _isDemo;
 	private readonly int _maxAttempts;
 	private readonly CancellationTokenSource _cancellation = new();
@@ -25,8 +24,9 @@ sealed class KoreaInvestmentWebSocketClient : BaseLogReceiver
 	private ClientWebSocket _socket;
 	private Task _runTask;
 
-	public KoreaInvestmentWebSocketClient(string approvalKey, bool isDemo, int maxAttempts)
+	public KoreaInvestmentWebSocketClient(string endpoint, string approvalKey, bool isDemo, int maxAttempts)
 	{
+		_uri = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_approvalKey = approvalKey.ThrowIfEmpty(nameof(approvalKey));
 		_isDemo = isDemo;
 		_maxAttempts = Math.Max(1, maxAttempts);
@@ -119,7 +119,7 @@ sealed class KoreaInvestmentWebSocketClient : BaseLogReceiver
 				using var socket = new ClientWebSocket();
 				_socket = socket;
 				socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
-				await socket.ConnectAsync(_isDemo ? _simulationUri : _productionUri, cancellationToken);
+				await socket.ConnectAsync(_uri, cancellationToken);
 				await RestoreSubscriptions(socket, cancellationToken);
 				failures = 0;
 				wasConnected = true;

@@ -2,7 +2,7 @@ namespace StockSharp.Etoro.Native;
 
 sealed class EtoroRestClient : BaseLogReceiver
 {
-	private static readonly Uri _apiRoot = new("https://public-api.etoro.com/");
+	private readonly Uri _apiRoot;
 	private const string _instrumentFields = "instrumentId,displayname,instrumentTypeID,instrumentType,exchangeID," +
 		"isOpen,internalSymbolFull,internalExchangeName,internalAssetClassName,isDelisted,isCurrentlyTradable," +
 		"isExchangeOpen,isBuyEnabled,currentRate";
@@ -19,8 +19,9 @@ sealed class EtoroRestClient : BaseLogReceiver
 		Converters = [new StringEnumConverter()],
 	};
 
-	public EtoroRestClient(string apiKey, string userKey, int maxAttempts)
+	public EtoroRestClient(string endpoint, string apiKey, string userKey, int maxAttempts)
 	{
+		_apiRoot = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
 		_userKey = userKey.ThrowIfEmpty(nameof(userKey));
 		_maxAttempts = Math.Max(1, maxAttempts);

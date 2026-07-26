@@ -16,6 +16,9 @@
 [OrderCondition(typeof(CoincheckOrderCondition))]
 public partial class CoincheckMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://coincheck.com/api";
+	private const string _defaultWebSocketEndpoint = "wss://ws-api.coincheck.com/";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -35,6 +38,26 @@ public partial class CoincheckMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
+
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Coincheck REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Coincheck WebSocket API endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	private TimeSpan _balanceCheckInterval;
 
@@ -67,6 +90,8 @@ public partial class CoincheckMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(BalanceCheckInterval), BalanceCheckInterval);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -77,6 +102,8 @@ public partial class CoincheckMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		BalanceCheckInterval = storage.GetValue<TimeSpan>(nameof(BalanceCheckInterval));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

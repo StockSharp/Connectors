@@ -113,6 +113,7 @@ sealed class GMTradeGraphQlWebSocketClient : BaseLogReceiver
 		""";
 
 	private readonly string _endpoint;
+	private readonly string _origin;
 	private readonly WorkingTime _workingTime;
 	private readonly int _reconnectAttempts;
 	private readonly Lock _sync = new();
@@ -133,9 +134,10 @@ sealed class GMTradeGraphQlWebSocketClient : BaseLogReceiver
 	private long _subscriptionId;
 
 	public GMTradeGraphQlWebSocketClient(string endpoint,
-		WorkingTime workingTime, int reconnectAttempts)
+		string origin, WorkingTime workingTime, int reconnectAttempts)
 	{
 		_endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).Trim();
+		_origin = origin.ThrowIfEmpty(nameof(origin));
 		_workingTime = workingTime ?? throw new ArgumentNullException(
 			nameof(workingTime));
 		_reconnectAttempts = reconnectAttempts;
@@ -266,12 +268,12 @@ sealed class GMTradeGraphQlWebSocketClient : BaseLogReceiver
 			Indent = false,
 			SendSettings = _jsonSettings,
 		};
-		client.InitAsync += static (socket, _) =>
+		client.InitAsync += (socket, _) =>
 		{
 			socket.Options.AddSubProtocol("graphql-transport-ws");
 			socket.Options.SetRequestHeader(
 				"User-Agent", "StockSharp-GMTrade-Connector/1.0");
-			socket.Options.SetRequestHeader("Origin", "https://gmtrade.xyz");
+			socket.Options.SetRequestHeader("Origin", _origin);
 			return default;
 		};
 		return client;

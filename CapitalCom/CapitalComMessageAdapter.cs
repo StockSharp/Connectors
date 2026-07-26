@@ -92,7 +92,8 @@ public partial class CapitalComMessageAdapter
 		if (_rest != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_rest = new(IsDemo, ApiKey, Login, Password?.UnSecure(), IsPasswordEncryptionEnabled,
+		var restEndpoint = IsDemo ? DemoRestEndpoint : RestEndpoint;
+		_rest = new(restEndpoint, WebSocketEndpoint, ApiKey, Login, Password?.UnSecure(), IsPasswordEncryptionEnabled,
 			Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 		try
 		{

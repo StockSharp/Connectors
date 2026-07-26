@@ -155,6 +155,7 @@ class PusherClient : BaseLogReceiver
 	private class AccountClient(Authenticator authenticator, string address, PusherClient parent, WorkingTime workingTime) : BaseClient(2, address, parent, workingTime)
 	{
 		private readonly Authenticator _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
+		private readonly Uri _address = new(address, UriKind.Absolute);
 
 		// to get readable name after obfuscation
 		public override string Name => base.Name + "_Account";
@@ -164,7 +165,7 @@ class PusherClient : BaseLogReceiver
 			var timestamp = Authenticator.GetTimestamp();
 
 			var accessKey = _authenticator.Key.UnSecure();
-			var signature = _authenticator.Sign(RestSharp.Method.Get, "api.huobi.pro", "/ws/v2", $"accessKey={accessKey}&signatureMethod={Authenticator.Method}&signatureVersion={Authenticator.Version21}&timestamp={timestamp.EncodeUrl().UrlEncodeToUpperCase()}");
+			var signature = _authenticator.Sign(RestSharp.Method.Get, _address.Authority, _address.AbsolutePath, $"accessKey={accessKey}&signatureMethod={Authenticator.Method}&signatureVersion={Authenticator.Version21}&timestamp={timestamp.EncodeUrl().UrlEncodeToUpperCase()}");
 
 			return Send(new
 			{

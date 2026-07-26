@@ -17,10 +17,10 @@ class PusherClient : BaseLogReceiver
 
 	private readonly WebSocketClient _client;
 
-	public PusherClient(WorkingTime workingTime)
+	public PusherClient(string endpoint, WorkingTime workingTime)
 	{
 		_client = new(
-			"wss://api.upbit.com/websocket/v1",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

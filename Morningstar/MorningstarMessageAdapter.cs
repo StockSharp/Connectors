@@ -36,7 +36,8 @@ public partial class MorningstarMessageAdapter
 		if (Password.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 
-		var client = new MorningstarClient(Region.ToAddress(), Login, Password.UnSecure())
+		var address = RestEndpoint.IsEmpty() ? Region.ToAddress() : new Uri(RestEndpoint);
+		var client = new MorningstarClient(address, Login, Password.UnSecure())
 		{
 			Parent = this,
 		};

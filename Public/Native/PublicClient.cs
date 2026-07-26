@@ -15,12 +15,12 @@ sealed class PublicClient : Disposable
 	private DateTime _tokenExpiresAt;
 	private DateTime _lastRequestAt;
 
-	public PublicClient(SecureString secret)
+	public PublicClient(SecureString secret, string restEndpoint)
 	{
 		_secret = secret.UnSecure();
 		_httpClient = new()
 		{
-			BaseAddress = new Uri("https://api.public.com/"),
+			BaseAddress = new Uri(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 	}

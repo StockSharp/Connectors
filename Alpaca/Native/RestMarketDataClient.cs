@@ -4,8 +4,8 @@ using System.Runtime.CompilerServices;
 
 abstract class RestMarketDataClient : RestAlpacaClient
 {
-	protected RestMarketDataClient(SecureString key, SecureString secret)
-		: base("https://data.alpaca.markets", key, secret)
+	protected RestMarketDataClient(string endpoint, SecureString key, SecureString secret)
+		: base(endpoint, key, secret)
 	{
 	}
 

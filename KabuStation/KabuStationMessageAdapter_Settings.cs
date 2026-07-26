@@ -15,6 +15,11 @@ namespace StockSharp.KabuStation;
 [OrderCondition(typeof(KabuStationOrderCondition))]
 public partial class KabuStationMessageAdapter : MessageAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "http://localhost:18080/kabusapi/";
+	private const string _defaultDemoRestEndpoint = "http://localhost:18081/kabusapi/";
+	private const string _defaultWebSocketEndpoint = "ws://localhost:18080/kabusapi/websocket";
+	private const string _defaultDemoWebSocketEndpoint = "ws://localhost:18081/kabusapi/websocket";
+
 	/// <summary>API password configured in kabu Station.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -53,6 +58,38 @@ public partial class KabuStationMessageAdapter : MessageAdapter, IDemoAdapter
 		Order = 3)]
 	public KabuStationExchanges DefaultStockOrderExchange { get; set; } = KabuStationExchanges.Sor;
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Production WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Production WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>Demo WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "Demo WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 7)]
+	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -61,7 +98,11 @@ public partial class KabuStationMessageAdapter : MessageAdapter, IDemoAdapter
 			.Set(nameof(ApiPassword), ApiPassword)
 			.Set(nameof(IsDemo), IsDemo)
 			.Set(nameof(DefaultAccountType), DefaultAccountType)
-			.Set(nameof(DefaultStockOrderExchange), DefaultStockOrderExchange);
+			.Set(nameof(DefaultStockOrderExchange), DefaultStockOrderExchange)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+			.Set(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -72,5 +113,9 @@ public partial class KabuStationMessageAdapter : MessageAdapter, IDemoAdapter
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 		DefaultAccountType = storage.GetValue(nameof(DefaultAccountType), DefaultAccountType);
 		DefaultStockOrderExchange = storage.GetValue(nameof(DefaultStockOrderExchange), DefaultStockOrderExchange);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		DemoWebSocketEndpoint = storage.GetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 }

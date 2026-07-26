@@ -18,7 +18,7 @@ class HttpClient : BaseLogReceiver
 		if (adapter is null)
 			throw new ArgumentNullException(nameof(adapter));
 
-		_baseUrl = adapter.IsDemo ? "https://fx-api-testnet.gateio.ws" : $"https://{adapter.RestDomain}";
+		_baseUrl = $"https://{(adapter.IsDemo ? adapter.DemoRestDomain : adapter.RestDomain)}";
 		_coin = coin.ThrowIfEmpty(nameof(coin));
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 	}

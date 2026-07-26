@@ -12,6 +12,8 @@ sealed class OpenMarketsClient : Disposable
 	private readonly HttpClient _identity;
 	private readonly HttpClient _oms;
 	private readonly HttpClient _marketData;
+	private readonly string _marketStreamAddress;
+	private readonly string _omsStreamAddress;
 	private readonly SemaphoreSlim _tokenSync = new(1, 1);
 	private readonly SynchronizedDictionary<string, OpenMarketsTokenCache> _tokens =
 		new(StringComparer.Ordinal);
@@ -24,31 +26,38 @@ sealed class OpenMarketsClient : Disposable
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	public OpenMarketsClient(bool isTest, string clientId, string clientSecret)
+	public OpenMarketsClient(bool isTest, string identityEndpoint, string omsEndpoint,
+		string marketDataEndpoint, string marketStreamEndpoint, string omsStreamEndpoint,
+		string clientId, string clientSecret)
 	{
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_clientSecret = clientSecret.ThrowIfEmpty(nameof(clientSecret));
 
-		_identity = CreateClient(isTest
+		var defaultIdentityEndpoint = isTest
 			? "https://stage-identity.openmarkets.com.au/"
-			: "https://identity.openmarkets.com.au/");
-		_oms = CreateClient(isTest
+			: "https://identity.openmarkets.com.au/";
+		var defaultOmsEndpoint = isTest
 			? "https://test-oms-api.openmarkets.com.au/"
-			: "https://oms-api.openmarkets.com.au/");
-		_marketData = CreateClient(isTest
+			: "https://oms-api.openmarkets.com.au/";
+		var defaultMarketDataEndpoint = isTest
 			? "https://test-market-data-api.openmarkets.com.au/"
-			: "https://market-data-api.openmarkets.com.au/");
+			: "https://market-data-api.openmarkets.com.au/";
+		_identity = CreateClient(identityEndpoint.IsEmpty(defaultIdentityEndpoint));
+		_oms = CreateClient(omsEndpoint.IsEmpty(defaultOmsEndpoint));
+		_marketData = CreateClient(marketDataEndpoint.IsEmpty(defaultMarketDataEndpoint));
+		_marketStreamAddress = marketStreamEndpoint.IsEmpty(isTest
+			? "https://test-md-streams-api.openmarkets.com.au/streams"
+			: "https://md-streams-api.openmarkets.com.au/streams");
+		_omsStreamAddress = omsStreamEndpoint.IsEmpty(isTest
+			? "https://test-oms-streams-api.openmarkets.com.au/streams"
+			: "https://oms-streams-api.openmarkets.com.au/streams");
 	}
 
 	public string GetMarketStreamAddress(bool isTest)
-		=> isTest
-			? "https://test-md-streams-api.openmarkets.com.au/streams"
-			: "https://md-streams-api.openmarkets.com.au/streams";
+		=> _marketStreamAddress;
 
 	public string GetOmsStreamAddress(bool isTest)
-		=> isTest
-			? "https://test-oms-streams-api.openmarkets.com.au/streams"
-			: "https://oms-streams-api.openmarkets.com.au/streams";
+		=> _omsStreamAddress;
 
 	public Task<OpenMarketsAccount[]> GetAccounts(CancellationToken cancellationToken)
 		=> Get<OpenMarketsAccount[]>(_oms, OmsScope, "accounts/v1", [], cancellationToken);

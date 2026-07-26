@@ -2,7 +2,7 @@ namespace StockSharp.Etoro.Native;
 
 sealed class EtoroWebSocketClient : BaseLogReceiver
 {
-	private static readonly Uri _uri = new("wss://ws.etoro.com/ws");
+	private readonly Uri _uri;
 	private const int _maxMessageSize = 4 * 1024 * 1024;
 
 	private readonly string _apiKey;
@@ -24,8 +24,9 @@ sealed class EtoroWebSocketClient : BaseLogReceiver
 	private ClientWebSocket _socket;
 	private Task _runTask;
 
-	public EtoroWebSocketClient(string apiKey, string userKey, int maxAttempts)
+	public EtoroWebSocketClient(string endpoint, string apiKey, string userKey, int maxAttempts)
 	{
+		_uri = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
 		_userKey = userKey.ThrowIfEmpty(nameof(userKey));
 		_maxAttempts = Math.Max(1, maxAttempts);

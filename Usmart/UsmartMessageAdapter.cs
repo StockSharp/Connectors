@@ -84,8 +84,16 @@ public partial class UsmartMessageAdapter
 			throw new ArgumentOutOfRangeException(nameof(DefaultMarket), DefaultMarket,
 				"uSMART market must be hk, us, sh, or sz.");
 
-		_rest = new(token, channel, privateKey, IsDemo);
-		_stream = new(IsDemo, token, Math.Max(1, ReConnectionSettings.ReAttemptCount))
+		_rest = new(
+			token,
+			channel,
+			privateKey,
+			(IsDemo ? DemoQuoteEndpoint : QuoteEndpoint).ThrowIfEmpty(IsDemo ? nameof(DemoQuoteEndpoint) : nameof(QuoteEndpoint)),
+			(IsDemo ? DemoTradeEndpoint : TradeEndpoint).ThrowIfEmpty(IsDemo ? nameof(DemoTradeEndpoint) : nameof(TradeEndpoint)));
+		_stream = new(
+			(IsDemo ? DemoWebSocketEndpoint : WebSocketEndpoint).ThrowIfEmpty(IsDemo ? nameof(DemoWebSocketEndpoint) : nameof(WebSocketEndpoint)),
+			token,
+			Math.Max(1, ReConnectionSettings.ReAttemptCount))
 		{
 			Parent = this,
 		};

@@ -27,6 +27,7 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 	private const string _defaultIndexerEndpoint =
 		"https://gmx-solana-sqd.squids.live/gmx-solana-base:prod/api/graphql";
 	private const string _defaultRpcEndpoint = "https://rpc-1.gmtrade.xyz/";
+	private const string _defaultOrigin = "https://gmtrade.xyz";
 
 	/// <summary>Keeper GraphQL HTTP endpoint.</summary>
 	[Display(
@@ -85,12 +86,21 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 		Order = 5)]
 	public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
 
+	/// <summary>Origin header used by GMTrade services.</summary>
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
+	public string Origin { get; set; } = _defaultOrigin;
+
 	/// <summary>Optional read-only Solana wallet address.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		GroupName = LocalizedStrings.ConnectionKey,
-		Order = 6)]
+		Order = 7)]
 	[BasicSetting]
 	public string WalletAddress { get; set; }
 
@@ -102,7 +112,7 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalDataUpdatesKey,
 		GroupName = LocalizedStrings.ConnectionKey,
-		Order = 7)]
+		Order = 8)]
 	public TimeSpan TradePollingInterval
 	{
 		get => _tradePollingInterval;
@@ -120,7 +130,7 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalDataUpdatesKey,
 		GroupName = LocalizedStrings.ConnectionKey,
-		Order = 8)]
+		Order = 9)]
 	public TimeSpan BalancePollingInterval
 	{
 		get => _balancePollingInterval;
@@ -137,7 +147,7 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		GroupName = LocalizedStrings.HistoryKey,
-		Order = 9)]
+		Order = 10)]
 	public int HistoryLimit
 	{
 		get => _historyLimit;
@@ -158,6 +168,7 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 			.Set(nameof(CandleSocketEndpoint), CandleSocketEndpoint)
 			.Set(nameof(IndexerEndpoint), IndexerEndpoint)
 			.Set(nameof(RpcEndpoint), RpcEndpoint)
+			.Set(nameof(Origin), Origin)
 			.Set(nameof(WalletAddress), WalletAddress)
 			.Set(nameof(TradePollingInterval), TradePollingInterval)
 			.Set(nameof(BalancePollingInterval), BalancePollingInterval)
@@ -185,6 +196,8 @@ public partial class GMTradeMessageAdapter : MessageAdapter
 			nameof(IndexerEndpoint));
 		RpcEndpoint = NormalizeEndpoint(storage.GetValue(nameof(RpcEndpoint),
 			RpcEndpoint), false, nameof(RpcEndpoint));
+		Origin = NormalizeEndpoint(storage.GetValue(nameof(Origin), Origin),
+			false, nameof(Origin));
 		WalletAddress = storage.GetValue<string>(nameof(WalletAddress));
 		if (!WalletAddress.IsEmpty())
 			WalletAddress = WalletAddress.NormalizePublicKey(nameof(WalletAddress));

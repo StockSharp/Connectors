@@ -11,12 +11,20 @@ sealed class FivePaisaFeedClient : BaseLogReceiver
 	private readonly string _clientCode;
 	private readonly SynchronizedSet<string> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 
-	public FivePaisaFeedClient(string clientCode, string token, int reconnectAttempts, WorkingTime workingTime)
+	public FivePaisaFeedClient(
+		string endpoint,
+		string endpointA,
+		string endpointB,
+		string clientCode,
+		string token,
+		int reconnectAttempts,
+		WorkingTime workingTime)
 	{
 		_clientCode = clientCode.ThrowIfEmpty(nameof(clientCode));
 		token.ThrowIfEmpty(nameof(token));
-		var host = GetFeedHost(token);
-		var url = $"wss://{host}/feeds/api/chat?Value1={Uri.EscapeDataString(token)}|{Uri.EscapeDataString(clientCode)}";
+		endpoint = ResolveEndpoint(token, endpoint, endpointA, endpointB);
+		var separator = endpoint.Contains('?') ? '&' : '?';
+		var url = $"{endpoint}{separator}Value1={Uri.EscapeDataString(token)}|{Uri.EscapeDataString(clientCode)}";
 
 		_client = new(
 			url,
@@ -130,27 +138,39 @@ sealed class FivePaisaFeedClient : BaseLogReceiver
 			await orderHandler(order, cancellationToken);
 	}
 
-	private static string GetFeedHost(string token)
+	internal static string ResolveEndpoint(
+		string token,
+		string endpoint,
+		string endpointA,
+		string endpointB)
 	{
+		string redirect = null;
+
 		try
 		{
 			var parts = token.Split('.');
 			if (parts.Length < 2)
-				return "openfeed.5paisa.com";
+				return endpoint.ThrowIfEmpty(nameof(endpoint));
+
 			var payload = parts[1].Replace('-', '+').Replace('_', '/');
 			payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
 			var json = Encoding.UTF8.GetString(Convert.FromBase64String(payload));
-			var redirect = JsonConvert.DeserializeObject<FivePaisaTokenPayload>(json)?.RedirectServer?.ToUpperInvariant();
-			return redirect switch
-			{
-				"A" => "aopenfeed.5paisa.com",
-				"B" => "bopenfeed.5paisa.com",
-				_ => "openfeed.5paisa.com",
-			};
+			redirect = JsonConvert.DeserializeObject<FivePaisaTokenPayload>(json)
+				?.RedirectServer?.ToUpperInvariant();
 		}
 		catch (Exception ex) when (ex is FormatException or JsonException)
 		{
-			return "openfeed.5paisa.com";
 		}
+
+		var selected = redirect switch
+		{
+			"A" => endpointA,
+			"B" => endpointB,
+			_ => endpoint,
+		};
+
+		return selected.IsEmpty()
+			? endpoint.ThrowIfEmpty(nameof(endpoint))
+			: selected;
 	}
 }

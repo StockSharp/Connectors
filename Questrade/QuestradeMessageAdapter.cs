@@ -56,7 +56,7 @@ public partial class QuestradeMessageAdapter
 	{
 		if (_client != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
-		_client = new(Token?.UnSecure(), RefreshToken?.UnSecure(), ApiServer) { Parent = this };
+		_client = new(Token?.UnSecure(), RefreshToken?.UnSecure(), ApiServer, OAuthEndpoint) { Parent = this };
 		_client.CredentialsChanged += OnCredentialsChanged;
 		try
 		{

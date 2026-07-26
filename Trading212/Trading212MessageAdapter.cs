@@ -56,7 +56,8 @@ public partial class Trading212MessageAdapter
 
 		var apiKey = Key?.UnSecure().ThrowIfEmpty(nameof(Key));
 		var apiSecret = Secret?.UnSecure().ThrowIfEmpty(nameof(Secret));
-		var client = new Trading212Client(apiKey, apiSecret, IsDemo,
+		var client = new Trading212Client(apiKey, apiSecret,
+			(IsDemo ? DemoRestEndpoint : RestEndpoint).ThrowIfEmpty(IsDemo ? nameof(DemoRestEndpoint) : nameof(RestEndpoint)),
 			Math.Max(1, ReConnectionSettings.ReAttemptCount))
 		{
 			Parent = this,

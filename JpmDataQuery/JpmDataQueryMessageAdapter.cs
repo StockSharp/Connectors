@@ -41,7 +41,7 @@ public partial class JpmDataQueryMessageAdapter
 			throw new InvalidOperationException(
 				$"{LocalizedStrings.Field}: {LocalizedStrings.InvalidValue}.");
 
-		var client = new JpmDataQueryClient(Key?.UnSecure(), Secret.UnSecure()) { Parent = this };
+		var client = new JpmDataQueryClient(RestEndpoint, OAuthEndpoint, Key?.UnSecure(), Secret.UnSecure()) { Parent = this };
 		_client = client;
 		try
 		{

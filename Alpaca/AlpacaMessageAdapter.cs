@@ -96,17 +96,19 @@ partial class AlpacaMessageAdapter
 		if (_socketTradingClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_tradingClient = new(IsDemo, Key, Secret) { Parent = this };
-		_stockClient = new(Key, Secret) { Parent = this };
-		_cryptoClient = new(Key, Secret) { Parent = this };
-		_newsClient = new(Key, Secret) { Parent = this };
+		var tradingRestEndpoint = IsDemo ? DemoTradingRestEndpoint : TradingRestEndpoint;
+		var tradingWebSocketEndpoint = IsDemo ? DemoTradingWebSocketEndpoint : TradingWebSocketEndpoint;
+		_tradingClient = new(tradingRestEndpoint, Key, Secret) { Parent = this };
+		_stockClient = new(MarketDataRestEndpoint, Key, Secret) { Parent = this };
+		_cryptoClient = new(MarketDataRestEndpoint, Key, Secret) { Parent = this };
+		_newsClient = new(MarketDataRestEndpoint, Key, Secret) { Parent = this };
 
 		var attemptsCount = ReConnectionSettings.ReAttemptCount;
 
-		_socketTradingClient = new(IsDemo, Key, Secret, attemptsCount, ReConnectionSettings.WorkingTime) { Parent = this };
-		_socketStockClient = new(IsDemo, StockFeed, Key, Secret, attemptsCount, ReConnectionSettings.WorkingTime) { Parent = this };
-		_socketCryptoClient = new(Key, Secret, attemptsCount, ReConnectionSettings.WorkingTime) { Parent = this };
-		_socketNewsClient = new(Key, Secret, attemptsCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_socketTradingClient = new(tradingWebSocketEndpoint, Key, Secret, attemptsCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_socketStockClient = new(MarketDataWebSocketEndpoint, StockFeed, Key, Secret, attemptsCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_socketCryptoClient = new(MarketDataWebSocketEndpoint, CryptoLocation, Key, Secret, attemptsCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_socketNewsClient = new(MarketDataWebSocketEndpoint, Key, Secret, attemptsCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribeSocketClient(_socketTradingClient);
 		SubscribeSocketClient(_socketStockClient);

@@ -13,7 +13,7 @@ class HttpClient : BaseLogReceiver
 		if (adapter is null)
 			throw new ArgumentNullException(nameof(adapter));
 
-		_baseUrl = adapter.IsDemo ? "https://api.mexc.com" : $"https://{adapter.RestDomain}";
+		_baseUrl = $"https://{adapter.RestDomain}";
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 	}
 

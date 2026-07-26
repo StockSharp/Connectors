@@ -2,19 +2,17 @@ namespace StockSharp.Dhan.Native;
 
 sealed class DhanOrderClient : BaseLogReceiver
 {
-	private const string _url = "wss://api-order-update.dhan.co";
-
 	private readonly WebSocketClient _client;
 	private readonly string _clientId;
 	private readonly string _token;
 
-	public DhanOrderClient(string clientId, string token, int reconnectAttempts, WorkingTime workingTime)
+	public DhanOrderClient(string endpoint, string clientId, string token, int reconnectAttempts, WorkingTime workingTime)
 	{
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_token = token.ThrowIfEmpty(nameof(token));
 
 		_client = new(
-			_url,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

@@ -82,7 +82,11 @@ public partial class ZerodhaMessageAdapter
 
 		var apiKey = Key?.UnSecure().ThrowIfEmpty(nameof(Key));
 		var accessToken = Token?.UnSecure();
-		_rest = new(apiKey, accessToken, Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
+		_rest = new(RestEndpoint.ThrowIfEmpty(nameof(RestEndpoint)), apiKey, accessToken,
+			Math.Max(1, ReConnectionSettings.ReAttemptCount))
+		{
+			Parent = this,
+		};
 		try
 		{
 			if (accessToken.IsEmpty())
@@ -95,7 +99,8 @@ public partial class ZerodhaMessageAdapter
 
 			_profile = await _rest.GetProfile(cancellationToken)
 				?? throw new InvalidDataException("Zerodha returned no user profile.");
-			_stream = new(apiKey, accessToken, Math.Max(1, ReConnectionSettings.ReAttemptCount))
+			_stream = new(WebSocketEndpoint.ThrowIfEmpty(nameof(WebSocketEndpoint)), apiKey, accessToken,
+				Math.Max(1, ReConnectionSettings.ReAttemptCount))
 			{
 				Parent = this,
 			};

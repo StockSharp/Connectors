@@ -49,10 +49,10 @@ class FuturesPusherClient : BaseLogReceiver
 
 	//private DateTime? _nextPing;
 
-	public FuturesPusherClient(WorkingTime workingTime)
+	public FuturesPusherClient(string webSocketEndpoint, WorkingTime workingTime)
 	{
 		_client = new(
-			"wss://ws.kraken.com",
+			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

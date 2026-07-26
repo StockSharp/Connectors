@@ -12,16 +12,14 @@ sealed class MotilalOswalOrderClient : BaseLogReceiver
 	private readonly string _authToken;
 	private readonly string _apiKey;
 
-	public MotilalOswalOrderClient(bool isDemo, string clientCode, SecureString authToken, SecureString apiKey,
+	public MotilalOswalOrderClient(string webSocketEndpoint, string clientCode, SecureString authToken, SecureString apiKey,
 		int reconnectAttempts, WorkingTime workingTime)
 	{
 		_clientCode = clientCode.ThrowIfEmpty(nameof(clientCode));
 		_authToken = authToken.ThrowIfEmpty(nameof(authToken)).UnSecure();
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey)).UnSecure();
-		var url = isDemo ? "wss://openapi.motilaloswaluat.com/ws" : "wss://openapi.motilaloswal.com/ws";
-
 		_client = new(
-			url,
+			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

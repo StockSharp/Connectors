@@ -4,10 +4,10 @@ internal sealed class KabuStationWebSocketClient : BaseLogReceiver
 {
 	private readonly WebSocketClient _client;
 
-	public KabuStationWebSocketClient(bool isDemo, int reconnectAttempts, WorkingTime workingTime)
+	public KabuStationWebSocketClient(string webSocketEndpoint, int reconnectAttempts, WorkingTime workingTime)
 	{
 		_client = new(
-			$"ws://localhost:{(isDemo ? 18081 : 18080)}/kabusapi/websocket",
+			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
 			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
 			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
 			Process,

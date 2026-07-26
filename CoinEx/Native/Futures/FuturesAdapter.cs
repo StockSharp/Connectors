@@ -10,11 +10,11 @@ class FuturesAdapter : NativeAdapter
 	private readonly SocketClient _socketClient;
 	private long _bestTransId;
 
-	public FuturesAdapter(Authenticator authenticator, IdGenerator transIdGen, int attempts, WorkingTime workingTime)
+	public FuturesAdapter(string restEndpoint, string webSocketEndpoint, Authenticator authenticator, IdGenerator transIdGen, int attempts, WorkingTime workingTime)
 		: base(authenticator, transIdGen, BoardCodes.CoinExFT)
 	{
-		_httpClient = new(authenticator) { Parent = this };
-		_socketClient = new(authenticator, attempts, transIdGen, workingTime) { Parent = this };
+		_httpClient = new(restEndpoint, authenticator) { Parent = this };
+		_socketClient = new(webSocketEndpoint, authenticator, attempts, transIdGen, workingTime) { Parent = this };
 
 		SubscribePusherClient();
 	}

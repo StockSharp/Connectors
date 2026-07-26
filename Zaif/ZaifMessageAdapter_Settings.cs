@@ -16,6 +16,10 @@
 [OrderCondition(typeof(ZaifOrderCondition))]
 public partial class ZaifMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultPublicRestEndpoint = "https://api.zaif.jp/api";
+	private const string _defaultPrivateRestEndpoint = "https://api.zaif.jp/tapi";
+	private const string _defaultWebSocketEndpoint = "wss://ws.zaif.jp:8888/stream";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -35,6 +39,30 @@ public partial class ZaifMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
+
+	/// <summary>Public REST API endpoint.</summary>
+	[Display(
+		Name = "Public REST endpoint",
+		Description = "Public REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string PublicRestEndpoint { get; set; } = _defaultPublicRestEndpoint;
+
+	/// <summary>Private REST API endpoint.</summary>
+	[Display(
+		Name = "Private REST endpoint",
+		Description = "Private REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string PrivateRestEndpoint { get; set; } = _defaultPrivateRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	private TimeSpan _balanceCheckInterval;
 
@@ -67,6 +95,9 @@ public partial class ZaifMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(BalanceCheckInterval), BalanceCheckInterval);
+		storage.SetValue(nameof(PublicRestEndpoint), PublicRestEndpoint);
+		storage.SetValue(nameof(PrivateRestEndpoint), PrivateRestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -77,6 +108,9 @@ public partial class ZaifMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		BalanceCheckInterval = storage.GetValue<TimeSpan>(nameof(BalanceCheckInterval));
+		PublicRestEndpoint = storage.GetValue(nameof(PublicRestEndpoint), PublicRestEndpoint);
+		PrivateRestEndpoint = storage.GetValue(nameof(PrivateRestEndpoint), PrivateRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

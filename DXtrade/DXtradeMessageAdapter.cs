@@ -132,7 +132,15 @@ public partial class DXtradeMessageAdapter
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		var address = $"{Address}/dxsca-web/";
+		var host = Address.ThrowIfEmpty(nameof(Address)).Trim().TrimEnd('/');
+
+		if (host.EqualsIgnoreCase(_retiredLiveAddress))
+			throw new InvalidOperationException($"The global DXtrade live address '{_retiredLiveAddress}' is retired. Specify the address provided by the broker.");
+
+		if (!IsDemo && host.EqualsIgnoreCase(_demoAddress))
+			throw new InvalidOperationException("Specify the broker-provided DXtrade address for live trading.");
+
+		var address = $"{host}/dxsca-web/";
 		_httpClient = new($"https://{address}") { Parent = this };
 
 		var reconnectAttempts = ReConnectionSettings.ReAttemptCount;

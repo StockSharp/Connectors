@@ -14,10 +14,10 @@ class PusherClient : BaseLogReceiver
 
 	private readonly WebSocketClient _client;
 
-	public PusherClient(int attemptsCount, WorkingTime workingTime)
+	public PusherClient(string endpoint, int attemptsCount, WorkingTime workingTime)
 	{
 		_client = new(
-			"wss://ws-eu.pusher.com/app/ee987526a24ba107824c?client=stocksharp&version=1.0&protocol=7",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

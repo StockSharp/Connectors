@@ -31,10 +31,16 @@ internal sealed class DukasCopyLiveBridgeClient : Disposable
 	public event Func<Exception, CancellationToken, ValueTask> Error;
 
 	public async Task Connect(string userName, string password, bool isDemo,
+		Uri address,
 		CancellationToken cancellationToken)
 	{
 		if (_tcpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
+		if (address is null || !address.IsAbsoluteUri ||
+			address.Scheme is not ("http" or "https"))
+			throw new ArgumentException(
+				"JForex service address must be an absolute HTTP or HTTPS URI.",
+				nameof(address));
 
 		StartBridge();
 		_tcpClient = new() { NoDelay = true };
@@ -67,6 +73,7 @@ internal sealed class DukasCopyLiveBridgeClient : Disposable
 			UserName = userName,
 			Password = password,
 			IsDemo = isDemo,
+			Address = address.AbsoluteUri,
 		}, cancellationToken);
 	}
 

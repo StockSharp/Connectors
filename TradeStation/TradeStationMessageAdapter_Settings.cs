@@ -18,6 +18,9 @@ using System.ComponentModel.DataAnnotations;
 [OrderCondition(typeof(TradeStationOrderCondition))]
 public partial class TradeStationMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.tradestation.com/v3/";
+	private const string _defaultDemoRestEndpoint = "https://sim-api.tradestation.com/v3/";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -50,6 +53,22 @@ public partial class TradeStationMessageAdapter : MessageAdapter, ITokenAdapter,
 	[BasicSetting]
 	public string DefaultRoute { get; set; } = "Intelligent";
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -57,7 +76,9 @@ public partial class TradeStationMessageAdapter : MessageAdapter, ITokenAdapter,
 		storage
 			.Set(nameof(Token), Token)
 			.Set(nameof(IsDemo), IsDemo)
-			.Set(nameof(DefaultRoute), DefaultRoute);
+			.Set(nameof(DefaultRoute), DefaultRoute)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -67,5 +88,7 @@ public partial class TradeStationMessageAdapter : MessageAdapter, ITokenAdapter,
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
 		DefaultRoute = storage.GetValue(nameof(DefaultRoute), DefaultRoute);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
 	}
 }

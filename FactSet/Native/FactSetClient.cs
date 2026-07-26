@@ -2,9 +2,8 @@ namespace StockSharp.FactSet.Native;
 
 sealed class FactSetClient : BaseLogReceiver, IDisposable
 {
-	private static readonly Uri _apiAddress = new("https://api.factset.com/content/");
-	private static readonly Uri _wellKnownAddress =
-		new("https://auth.factset.com/.well-known/openid-configuration");
+	private readonly Uri _apiAddress;
+	private readonly Uri _wellKnownAddress;
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -23,9 +22,11 @@ sealed class FactSetClient : BaseLogReceiver, IDisposable
 	private string _accessToken;
 	private DateTime _tokenExpires;
 
-	public FactSetClient(FactSetAuthenticationModes authenticationMode,
+	public FactSetClient(string apiEndpoint, string oauthDiscoveryEndpoint, FactSetAuthenticationModes authenticationMode,
 		string login, string password, string oauthConfigFile)
 	{
+		_apiAddress = new(apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint)));
+		_wellKnownAddress = new(oauthDiscoveryEndpoint.ThrowIfEmpty(nameof(oauthDiscoveryEndpoint)));
 		_authenticationMode = authenticationMode;
 		_login = login;
 		_password = password;

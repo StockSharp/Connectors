@@ -5,10 +5,8 @@ sealed class JpmDataQueryClient : BaseLogReceiver, IDisposable
 	private const string _audience = "JPMC:URI:RS-06785-DataQueryExternalApi-PROD";
 	private const int _maxPages = 1000;
 
-	private static readonly Uri _apiAddress =
-		new("https://api-dataquery.jpmchase.com/research/dataquery-authe/api/v2/");
-	private static readonly Uri _authAddress =
-		new("https://authe.jpmorgan.com/as/token.oauth2");
+	private readonly Uri _apiAddress;
+	private readonly Uri _authAddress;
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -22,8 +20,10 @@ sealed class JpmDataQueryClient : BaseLogReceiver, IDisposable
 	private string _accessToken;
 	private DateTime _tokenExpires;
 
-	public JpmDataQueryClient(string clientId, string clientSecret)
+	public JpmDataQueryClient(string apiEndpoint, string oauthEndpoint, string clientId, string clientSecret)
 	{
+		_apiAddress = new(apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint)));
+		_authAddress = new(oauthEndpoint.ThrowIfEmpty(nameof(oauthEndpoint)));
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_clientSecret = clientSecret.ThrowIfEmpty(nameof(clientSecret));
 		_http.DefaultRequestHeaders.Accept.Add(

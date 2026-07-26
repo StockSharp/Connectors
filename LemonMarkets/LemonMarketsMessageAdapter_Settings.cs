@@ -13,6 +13,9 @@ namespace StockSharp.LemonMarkets;
 [OrderCondition(typeof(LemonMarketsOrderCondition))]
 public partial class LemonMarketsMessageAdapter : MessageAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.lemon.markets/v1/";
+	private const string _defaultSandboxRestEndpoint = "https://sandbox.api.lemon.markets/v1/";
+
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Brokerage API key.</summary>
@@ -116,6 +119,22 @@ public partial class LemonMarketsMessageAdapter : MessageAdapter, IDemoAdapter
 			: value;
 	}
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Sandbox REST API endpoint.</summary>
+	[Display(
+		Name = "Sandbox REST endpoint",
+		Description = "Sandbox REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string SandboxRestEndpoint { get; set; } = _defaultSandboxRestEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -130,7 +149,9 @@ public partial class LemonMarketsMessageAdapter : MessageAdapter, IDemoAdapter
 			.Set(nameof(PersonId), PersonId)
 			.Set(nameof(DefaultFeeAmount), DefaultFeeAmount)
 			.Set(nameof(IsAppropriatenessConsentAccepted), IsAppropriatenessConsentAccepted)
-			.Set(nameof(PollingInterval), PollingInterval);
+			.Set(nameof(PollingInterval), PollingInterval)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(SandboxRestEndpoint), SandboxRestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -149,5 +170,7 @@ public partial class LemonMarketsMessageAdapter : MessageAdapter, IDemoAdapter
 		IsAppropriatenessConsentAccepted = storage.GetValue(
 			nameof(IsAppropriatenessConsentAccepted), IsAppropriatenessConsentAccepted);
 		PollingInterval = storage.GetValue(nameof(PollingInterval), PollingInterval);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		SandboxRestEndpoint = storage.GetValue(nameof(SandboxRestEndpoint), SandboxRestEndpoint);
 	}
 }

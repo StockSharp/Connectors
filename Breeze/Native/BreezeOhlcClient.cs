@@ -2,11 +2,10 @@ namespace StockSharp.Breeze.Native;
 
 sealed class BreezeOhlcClient : BreezeSocketClient
 {
-	private const string _url = "wss://breezeapi.icicidirect.com/ohlcvstream/?EIO=4&transport=websocket";
 	private static readonly HashSet<string> _events = new(StringComparer.OrdinalIgnoreCase) { "1SEC", "1MIN", "5MIN", "30MIN" };
 
-	public BreezeOhlcClient(string user, string token, int reconnectAttempts, WorkingTime workingTime)
-		: base(_url, user, token, reconnectAttempts, workingTime) { }
+	public BreezeOhlcClient(string endpoint, string user, string token, int reconnectAttempts, WorkingTime workingTime)
+		: base(endpoint, user, token, reconnectAttempts, workingTime) { }
 
 	public override string Name => nameof(Breeze) + "_" + nameof(BreezeOhlcClient);
 	public event Func<BreezeStreamCandle, CancellationToken, ValueTask> CandleReceived;

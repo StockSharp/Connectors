@@ -2,7 +2,6 @@ namespace StockSharp.KotakNeo.Native;
 
 sealed class KotakNeoMarketDataClient : BaseLogReceiver
 {
-	private const string _url = "wss://mlhsm.kotaksecurities.com";
 	private const int _maxSubscriptions = 3000;
 	private const int _maxPerChannel = 200;
 	private const int _maxPerRequest = 100;
@@ -16,7 +15,7 @@ sealed class KotakNeoMarketDataClient : BaseLogReceiver
 	private int _updatesSinceAcknowledgement;
 	private bool _authenticated;
 
-	public KotakNeoMarketDataClient(KotakNeoSession session, int reconnectAttempts, WorkingTime workingTime)
+	public KotakNeoMarketDataClient(string endpoint, KotakNeoSession session, int reconnectAttempts, WorkingTime workingTime)
 	{
 		if (session == null)
 			throw new ArgumentNullException(nameof(session));
@@ -24,7 +23,7 @@ sealed class KotakNeoMarketDataClient : BaseLogReceiver
 		_sid = session.Sid.ThrowIfEmpty(nameof(session.Sid));
 
 		_client = new(
-			_url,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

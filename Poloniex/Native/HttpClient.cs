@@ -1,8 +1,9 @@
 namespace StockSharp.Poloniex.Native;
 
-class HttpClient(Authenticator authenticator) : BaseLogReceiver
+class HttpClient(string baseUrl, Authenticator authenticator) : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
 	// to get readable name after obfuscation
 	public override string Name => nameof(Poloniex) + "_" + nameof(HttpClient);
@@ -249,12 +250,12 @@ class HttpClient(Authenticator authenticator) : BaseLogReceiver
 		return (long)responce.withdrawalNumber;
 	}
 
-	private static Url CreateUrl(string methodName, string version = "")
+	private Url CreateUrl(string methodName, string version = "")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));
 
-		return new Url($"https://poloniex.com/{version}{methodName}");
+		return new Url($"{_baseUrl}/{version}{methodName}");
 	}
 
 	private static RestRequest CreateRequest(Method method)

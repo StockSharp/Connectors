@@ -19,7 +19,7 @@ sealed class NinjaTraderClient : BaseLogReceiver
 	private SecureString _accessToken;
 	private SecureString _marketDataAccessToken;
 
-	public NinjaTraderClient(bool isDemo, string login, SecureString password, string appId, string appVersion, string deviceId, string clientId, SecureString secret)
+	public NinjaTraderClient(string endpoint, string login, SecureString password, string appId, string appVersion, string deviceId, string clientId, SecureString secret)
 	{
 		_login = login.ThrowIfEmpty(nameof(login));
 		_password = password.ThrowIfEmpty(nameof(password));
@@ -28,7 +28,7 @@ sealed class NinjaTraderClient : BaseLogReceiver
 		_deviceId = deviceId.ThrowIfEmpty(nameof(deviceId));
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_secret = secret.ThrowIfEmpty(nameof(secret));
-		_baseUrl = isDemo ? "https://demo.tradovateapi.com/v1/" : "https://live.tradovateapi.com/v1/";
+		_baseUrl = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/') + "/";
 	}
 
 	public override string Name => nameof(NinjaTrader) + "_" + nameof(NinjaTraderClient);

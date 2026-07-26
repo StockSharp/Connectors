@@ -109,6 +109,54 @@ public partial class NinjaTraderMessageAdapter : MessageAdapter, ILoginPasswordA
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = "https://live.tradovateapi.com/v1/";
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = "https://demo.tradovateapi.com/v1/";
+
+	/// <summary>Production market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Production market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketWebSocketEndpoint { get; set; } = "wss://md.tradovateapi.com/v1/websocket";
+
+	/// <summary>Demo market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo market WebSocket endpoint",
+		Description = "Demo market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoMarketWebSocketEndpoint { get; set; } = "wss://md-demo.tradovateapi.com/v1/websocket";
+
+	/// <summary>Production account WebSocket endpoint.</summary>
+	[Display(
+		Name = "Account WebSocket endpoint",
+		Description = "Production account WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string AccountWebSocketEndpoint { get; set; } = "wss://live.tradovateapi.com/v1/websocket";
+
+	/// <summary>Demo account WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo account WebSocket endpoint",
+		Description = "Demo account WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoAccountWebSocketEndpoint { get; set; } = "wss://demo.tradovateapi.com/v1/websocket";
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -121,7 +169,13 @@ public partial class NinjaTraderMessageAdapter : MessageAdapter, ILoginPasswordA
 			.Set(nameof(AppId), AppId)
 			.Set(nameof(AppVersion), AppVersion)
 			.Set(nameof(DeviceId), DeviceId)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(DemoMarketWebSocketEndpoint), DemoMarketWebSocketEndpoint)
+			.Set(nameof(AccountWebSocketEndpoint), AccountWebSocketEndpoint)
+			.Set(nameof(DemoAccountWebSocketEndpoint), DemoAccountWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -136,5 +190,11 @@ public partial class NinjaTraderMessageAdapter : MessageAdapter, ILoginPasswordA
 		AppVersion = storage.GetValue(nameof(AppVersion), AppVersion);
 		DeviceId = storage.GetValue(nameof(DeviceId), DeviceId);
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		DemoMarketWebSocketEndpoint = storage.GetValue(nameof(DemoMarketWebSocketEndpoint), DemoMarketWebSocketEndpoint);
+		AccountWebSocketEndpoint = storage.GetValue(nameof(AccountWebSocketEndpoint), AccountWebSocketEndpoint);
+		DemoAccountWebSocketEndpoint = storage.GetValue(nameof(DemoAccountWebSocketEndpoint), DemoAccountWebSocketEndpoint);
 	}
 }

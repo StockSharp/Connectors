@@ -75,12 +75,13 @@ public partial class LsSecuritiesMessageAdapter
 		if (_rest != null || _stream != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_rest = new(Key?.UnSecure(), Secret?.UnSecure(),
+		_rest = new(RestEndpoint, Key?.UnSecure(), Secret?.UnSecure(),
 			Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 		try
 		{
 			await _rest.Connect(cancellationToken);
-			_stream = new(_rest.GetAccessToken, IsDemo, Math.Max(1, ReConnectionSettings.ReAttemptCount))
+			var webSocketEndpoint = IsDemo ? DemoWebSocketEndpoint : WebSocketEndpoint;
+			_stream = new(webSocketEndpoint, _rest.GetAccessToken, Math.Max(1, ReConnectionSettings.ReAttemptCount))
 			{
 				Parent = this,
 			};

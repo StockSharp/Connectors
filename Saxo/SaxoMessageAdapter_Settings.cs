@@ -15,6 +15,21 @@ namespace StockSharp.Saxo;
 [OrderCondition(typeof(SaxoOrderCondition))]
 public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
+	private const string _simulationRestEndpoint = "https://gateway.saxobank.com/sim/openapi/";
+	private const string _liveRestEndpoint = "https://gateway.saxobank.com/openapi/";
+	private const string _simulationTokenEndpoint = "https://sim.logonvalidation.net/token";
+	private const string _liveTokenEndpoint = "https://live.logonvalidation.net/token";
+	private const string _simulationStreamAuthorizeEndpoint = "https://sim-streaming.saxobank.com/sim/oapi/streaming/ws/authorize";
+	private const string _liveStreamAuthorizeEndpoint = "https://live-streaming.saxobank.com/oapi/streaming/ws/authorize";
+	private const string _simulationWebSocketEndpoint = "wss://sim-streaming.saxobank.com/sim/oapi/streaming/ws/connect";
+	private const string _liveWebSocketEndpoint = "wss://live-streaming.saxobank.com/oapi/streaming/ws/connect";
+
+	private SaxoEnvironments _environment = SaxoEnvironments.Simulation;
+	private string _restEndpoint = _simulationRestEndpoint;
+	private string _tokenEndpoint = _simulationTokenEndpoint;
+	private string _streamAuthorizeEndpoint = _simulationStreamAuthorizeEndpoint;
+	private string _webSocketEndpoint = _simulationWebSocketEndpoint;
+
 	/// <summary>OAuth access token.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -78,7 +93,70 @@ public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITo
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	[BasicSetting]
-	public SaxoEnvironments Environment { get; set; } = SaxoEnvironments.Simulation;
+	public SaxoEnvironments Environment
+	{
+		get => _environment;
+		set
+		{
+			if (_restEndpoint.EqualsIgnoreCase(GetRestEndpoint(_environment)))
+				_restEndpoint = GetRestEndpoint(value);
+			if (_tokenEndpoint.EqualsIgnoreCase(GetTokenEndpoint(_environment)))
+				_tokenEndpoint = GetTokenEndpoint(value);
+			if (_streamAuthorizeEndpoint.EqualsIgnoreCase(GetStreamAuthorizeEndpoint(_environment)))
+				_streamAuthorizeEndpoint = GetStreamAuthorizeEndpoint(value);
+			if (_webSocketEndpoint.EqualsIgnoreCase(GetWebSocketEndpoint(_environment)))
+				_webSocketEndpoint = GetWebSocketEndpoint(value);
+			_environment = value;
+		}
+	}
+
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 7)]
+	public string RestEndpoint
+	{
+		get => _restEndpoint;
+		set => _restEndpoint = value;
+	}
+
+	/// <summary>OAuth token endpoint.</summary>
+	[Display(
+		Name = "Token endpoint",
+		Description = "OAuth token endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 8)]
+	public string TokenEndpoint
+	{
+		get => _tokenEndpoint;
+		set => _tokenEndpoint = value;
+	}
+
+	/// <summary>Streaming authorization endpoint.</summary>
+	[Display(
+		Name = "Streaming authorization endpoint",
+		Description = "Streaming authorization endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 9)]
+	public string StreamAuthorizeEndpoint
+	{
+		get => _streamAuthorizeEndpoint;
+		set => _streamAuthorizeEndpoint = value;
+	}
+
+	/// <summary>Streaming WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Streaming WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 10)]
+	public string WebSocketEndpoint
+	{
+		get => _webSocketEndpoint;
+		set => _webSocketEndpoint = value;
+	}
 
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
@@ -91,7 +169,11 @@ public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITo
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(RedirectUri), RedirectUri)
 			.Set(nameof(AccountKey), AccountKey)
-			.Set(nameof(Environment), Environment);
+			.Set(nameof(Environment), Environment)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(TokenEndpoint), TokenEndpoint)
+			.Set(nameof(StreamAuthorizeEndpoint), StreamAuthorizeEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -105,5 +187,21 @@ public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITo
 		RedirectUri = storage.GetValue<string>(nameof(RedirectUri));
 		AccountKey = storage.GetValue<string>(nameof(AccountKey));
 		Environment = storage.GetValue(nameof(Environment), Environment);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		TokenEndpoint = storage.GetValue(nameof(TokenEndpoint), TokenEndpoint);
+		StreamAuthorizeEndpoint = storage.GetValue(nameof(StreamAuthorizeEndpoint), StreamAuthorizeEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
+
+	private static string GetRestEndpoint(SaxoEnvironments environment)
+		=> environment == SaxoEnvironments.Simulation ? _simulationRestEndpoint : _liveRestEndpoint;
+
+	private static string GetTokenEndpoint(SaxoEnvironments environment)
+		=> environment == SaxoEnvironments.Simulation ? _simulationTokenEndpoint : _liveTokenEndpoint;
+
+	private static string GetStreamAuthorizeEndpoint(SaxoEnvironments environment)
+		=> environment == SaxoEnvironments.Simulation ? _simulationStreamAuthorizeEndpoint : _liveStreamAuthorizeEndpoint;
+
+	private static string GetWebSocketEndpoint(SaxoEnvironments environment)
+		=> environment == SaxoEnvironments.Simulation ? _simulationWebSocketEndpoint : _liveWebSocketEndpoint;
 }

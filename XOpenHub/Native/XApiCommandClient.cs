@@ -22,9 +22,9 @@ internal sealed class XApiCommandClient : BaseLogReceiver
 	private DateTime _lastRequest;
 	private long _requestId;
 
-	public XApiCommandClient(bool isDemo)
+	public XApiCommandClient(string endpoint)
 	{
-		_uri = new(isDemo ? "wss://ws.xapi.pro/demo" : "wss://ws.xapi.pro/real");
+		_uri = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 	}
 
 	public override string Name => nameof(XOpenHub) + "_Command";

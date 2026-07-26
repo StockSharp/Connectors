@@ -19,10 +19,9 @@ sealed class UsmartWebSocketClient : BaseLogReceiver
 	private DateTime _topicWindow;
 	private int _topicsInWindow;
 
-	public UsmartWebSocketClient(bool isDemo, string accessToken, int maxAttempts)
+	public UsmartWebSocketClient(string webSocketEndpoint, string accessToken, int maxAttempts)
 	{
-		_uri = new(isDemo ? "wss://open-hz-uat.yxzq.com/wss/v1"
-			: "wss://open-hz.usmartsg.com:8443/wss/v1");
+		_uri = new(webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)));
 		_accessToken = accessToken.ThrowIfEmpty(nameof(accessToken));
 		_maxAttempts = Math.Max(1, maxAttempts);
 	}

@@ -10,11 +10,12 @@ class HttpClient : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator;
 
-	private const string _baseUrl = "https://api.coinex.com";
+	private readonly string _baseUrl;
 	private const string _version = "v2";
 
-	public HttpClient(Authenticator authenticator)
+	public HttpClient(string baseUrl, Authenticator authenticator)
 	{
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 	}
 
@@ -131,7 +132,7 @@ class HttpClient : BaseLogReceiver
 		return (long)response.coin_withdraw_id;
 	}
 
-	private static Uri CreateUrl(string methodName)
+	private Uri CreateUrl(string methodName)
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

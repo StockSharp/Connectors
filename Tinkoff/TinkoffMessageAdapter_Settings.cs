@@ -23,6 +23,10 @@ using Ecng.Serialization;
 [OrderCondition(typeof(TinkoffOrderCondition))]
 public partial class TinkoffMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAdapter
 {
+	private const string _defaultEndpoint = "https://invest-public-api.tbank.ru";
+	private const string _defaultDemoEndpoint = "https://sandbox-invest-public-api.tbank.ru";
+	private const string _defaultHistoryEndpoint = "https://invest-public-api.tbank.ru";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -43,6 +47,30 @@ public partial class TinkoffMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
+	/// <summary>Production API endpoint.</summary>
+	[Display(
+		Name = "API endpoint",
+		Description = "Production gRPC API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
+	public string Endpoint { get; set; } = _defaultEndpoint;
+
+	/// <summary>Demo API endpoint.</summary>
+	[Display(
+		Name = "Demo API endpoint",
+		Description = "Demo gRPC API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
+	public string DemoEndpoint { get; set; } = _defaultDemoEndpoint;
+
+	/// <summary>Historical data endpoint.</summary>
+	[Display(
+		Name = "History endpoint",
+		Description = "Historical data endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
+	public string HistoryEndpoint { get; set; } = _defaultHistoryEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -50,7 +78,10 @@ public partial class TinkoffMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 
 		storage
 			.Set(nameof(Token), Token)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(Endpoint), Endpoint)
+			.Set(nameof(DemoEndpoint), DemoEndpoint)
+			.Set(nameof(HistoryEndpoint), HistoryEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -60,6 +91,9 @@ public partial class TinkoffMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
+		Endpoint = storage.GetValue(nameof(Endpoint), Endpoint);
+		DemoEndpoint = storage.GetValue(nameof(DemoEndpoint), DemoEndpoint);
+		HistoryEndpoint = storage.GetValue(nameof(HistoryEndpoint), HistoryEndpoint);
 	}
 
 	/// <inheritdoc />

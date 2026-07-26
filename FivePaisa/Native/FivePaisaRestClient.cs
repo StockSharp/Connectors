@@ -2,10 +2,6 @@ namespace StockSharp.FivePaisa.Native;
 
 sealed class FivePaisaRestClient : BaseLogReceiver
 {
-	private const string _apiUrl = "https://Openapi.5paisa.com/VendorsAPI/Service1.svc/";
-	private const string _historyUrl = "https://openapi.5paisa.com/";
-	private const string _instrumentUrl = _apiUrl + "ScripMaster/segment/all";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -14,13 +10,19 @@ sealed class FivePaisaRestClient : BaseLogReceiver
 	private readonly string _appKey;
 	private readonly string _clientCode;
 	private readonly SecureString _token;
+	private readonly string _apiUrl;
+	private readonly string _historyUrl;
+	private readonly string _instrumentUrl;
 	private readonly HttpClient _instrumentClient;
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private FivePaisaInstrument[] _instruments;
 	private IReadOnlyDictionary<string, FivePaisaInstrument> _instrumentsByKey;
 
-	public FivePaisaRestClient(string appKey, string clientCode, SecureString token)
+	public FivePaisaRestClient(string apiEndpoint, string historyEndpoint, string appKey, string clientCode, SecureString token)
 	{
+		_apiUrl = apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint)).TrimEnd('/') + "/";
+		_historyUrl = historyEndpoint.ThrowIfEmpty(nameof(historyEndpoint)).TrimEnd('/') + "/";
+		_instrumentUrl = _apiUrl + "ScripMaster/segment/all";
 		_appKey = appKey.ThrowIfEmpty(nameof(appKey));
 		_clientCode = clientCode.ThrowIfEmpty(nameof(clientCode));
 		_token = token.ThrowIfEmpty(nameof(token));

@@ -22,7 +22,7 @@ sealed class PhillipPoemsClient : Disposable
 	private string _refreshToken;
 	private DateTime _expiresAt = DateTime.MaxValue;
 
-	public PhillipPoemsClient(bool isDemo, string apiKey, string clientId,
+	public PhillipPoemsClient(string endpoint, string apiKey, string clientId,
 		string clientSecret, string accessToken, string refreshToken)
 	{
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
@@ -32,9 +32,7 @@ sealed class PhillipPoemsClient : Disposable
 		_refreshToken = refreshToken;
 		_http = new()
 		{
-			BaseAddress = new Uri(isDemo
-				? "https://sandboxapi.poems.com.sg/api-gateway/pspl/"
-				: "https://api.poems.com.sg/api-gateway/pspl/"),
+			BaseAddress = new Uri(endpoint.ThrowIfEmpty(nameof(endpoint))),
 			Timeout = TimeSpan.FromSeconds(60),
 		};
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");

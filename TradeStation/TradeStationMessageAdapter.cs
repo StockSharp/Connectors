@@ -51,7 +51,7 @@ public partial class TradeStationMessageAdapter
 		if (_client is not null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_client = new(IsDemo, Token);
+		_client = new(IsDemo ? DemoRestEndpoint : RestEndpoint, Token);
 		_accounts = (await _client.GetAccounts(cancellationToken))?.Accounts ?? [];
 		_streamCts = new CancellationTokenSource();
 

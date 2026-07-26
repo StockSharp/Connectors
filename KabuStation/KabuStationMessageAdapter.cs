@@ -77,11 +77,12 @@ public partial class KabuStationMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 		var attempts = Math.Max(1, ReConnectionSettings.ReAttemptCount);
-		_rest = new(ApiPassword, IsDemo, attempts) { Parent = this };
+		_rest = new(ApiPassword, IsDemo ? DemoRestEndpoint : RestEndpoint, attempts) { Parent = this };
 		try
 		{
 			await _rest.Connect(cancellationToken);
-			_socket = new(IsDemo, attempts, ReConnectionSettings.WorkingTime) { Parent = this };
+			_socket = new(IsDemo ? DemoWebSocketEndpoint : WebSocketEndpoint, attempts,
+				ReConnectionSettings.WorkingTime) { Parent = this };
 			_socket.BoardReceived += OnBoardReceived;
 			_socket.Connected += OnSocketConnected;
 			_socket.Error += SendOutErrorAsync;

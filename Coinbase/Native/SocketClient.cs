@@ -19,12 +19,12 @@ class SocketClient : BaseLogReceiver
 	private readonly WebSocketClient _client;
 	private readonly Authenticator _authenticator;
 
-	public SocketClient(Authenticator authenticator, int reconnectAttempts, WorkingTime workingTime)
+	public SocketClient(string endpoint, Authenticator authenticator, int reconnectAttempts, WorkingTime workingTime)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
 		_client = new(
-			"wss://advanced-trade-ws.coinbase.com",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

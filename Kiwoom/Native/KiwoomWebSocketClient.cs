@@ -6,8 +6,8 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 	private const int _maxMessageSize = 8 * 1024 * 1024;
 
 	private readonly Func<CancellationToken, Task<string>> _tokenProvider;
+	private readonly string _endpoint;
 	private readonly KiwoomAssetClasses _assetClass;
-	private readonly bool _isDemo;
 	private readonly int _maxAttempts;
 	private readonly CancellationTokenSource _cancellation = new();
 	private readonly SemaphoreSlim _sendLock = new(1, 1);
@@ -23,12 +23,12 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 	private ClientWebSocket _socket;
 	private Task _runTask;
 
-	public KiwoomWebSocketClient(Func<CancellationToken, Task<string>> tokenProvider, KiwoomAssetClasses assetClass,
-		bool isDemo, int maxAttempts)
+	public KiwoomWebSocketClient(string endpoint, Func<CancellationToken, Task<string>> tokenProvider, KiwoomAssetClasses assetClass,
+		int maxAttempts)
 	{
+		_endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/');
 		_tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
 		_assetClass = assetClass;
-		_isDemo = isDemo;
 		_maxAttempts = Math.Max(1, maxAttempts);
 	}
 
@@ -313,9 +313,8 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 
 	private Uri GetUri()
 	{
-		var host = _isDemo ? "mockapi.kiwoom.com" : "api.kiwoom.com";
 		var path = _assetClass == KiwoomAssetClasses.DomesticStock ? "/api/dostk/websocket" : "/api/us/websocket";
-		return new($"wss://{host}:10000{path}");
+		return new($"{_endpoint}{path}");
 	}
 
 	private static ValueTask Invoke<T>(Func<T, CancellationToken, ValueTask> handler, T value,

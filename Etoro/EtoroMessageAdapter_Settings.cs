@@ -16,6 +16,9 @@ namespace StockSharp.Etoro;
 [OrderCondition(typeof(EtoroOrderCondition))]
 public partial class EtoroMessageAdapter : MessageAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://public-api.etoro.com/";
+	private const string _defaultWebSocketEndpoint = "wss://ws.etoro.com/ws";
+
 	/// <summary>Public API key created in eToro Trading settings.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -46,6 +49,22 @@ public partial class EtoroMessageAdapter : MessageAdapter, IDemoAdapter
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -53,7 +72,9 @@ public partial class EtoroMessageAdapter : MessageAdapter, IDemoAdapter
 		storage
 			.Set(nameof(PublicApiKey), PublicApiKey)
 			.Set(nameof(UserKey), UserKey)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -63,5 +84,7 @@ public partial class EtoroMessageAdapter : MessageAdapter, IDemoAdapter
 		PublicApiKey = storage.GetValue<SecureString>(nameof(PublicApiKey));
 		UserKey = storage.GetValue<SecureString>(nameof(UserKey));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }

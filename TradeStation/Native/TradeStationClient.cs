@@ -9,11 +9,11 @@ sealed class TradeStationClient : Disposable
 		Converters = { new StringEnumConverter() },
 	};
 
-	public TradeStationClient(bool isDemo, SecureString token)
+	public TradeStationClient(string restEndpoint, SecureString token)
 	{
 		_httpClient = new()
 		{
-			BaseAddress = new Uri(isDemo ? "https://sim-api.tradestation.com/v3/" : "https://api.tradestation.com/v3/"),
+			BaseAddress = new Uri(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 		_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.UnSecure());

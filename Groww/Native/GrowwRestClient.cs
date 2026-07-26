@@ -2,8 +2,8 @@ namespace StockSharp.Groww.Native;
 
 internal sealed class GrowwRestClient : BaseLogReceiver
 {
-	private static readonly Uri _apiRoot = new("https://api.groww.in/v1/");
-	private static readonly Uri _instrumentUri = new("https://growwapi-assets.groww.in/instruments/instrument.csv");
+	private readonly Uri _apiRoot;
+	private readonly Uri _instrumentUri;
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		DateParseHandling = DateParseHandling.None,
@@ -21,8 +21,10 @@ internal sealed class GrowwRestClient : BaseLogReceiver
 	private GrowwInstrument[] _instruments;
 	private string _accessToken;
 
-	public GrowwRestClient(SecureString accessToken, SecureString apiKey, SecureString apiSecret, SecureString totpSecret, int maxAttempts)
+	public GrowwRestClient(string apiEndpoint, string instrumentEndpoint, SecureString accessToken, SecureString apiKey, SecureString apiSecret, SecureString totpSecret, int maxAttempts)
 	{
+		_apiRoot = new(apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint)));
+		_instrumentUri = new(instrumentEndpoint.ThrowIfEmpty(nameof(instrumentEndpoint)));
 		_configuredToken = accessToken?.UnSecure();
 		_apiKey = apiKey?.UnSecure();
 		_apiSecret = apiSecret?.UnSecure();

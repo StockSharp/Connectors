@@ -125,6 +125,46 @@ public partial class OpenMarketsMessageAdapter : MessageAdapter, IKeySecretAdapt
 			: value;
 	}
 
+	/// <summary>Optional identity API endpoint override.</summary>
+	[Display(
+		Name = "Identity endpoint",
+		Description = "Optional identity API endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string IdentityEndpoint { get; set; }
+
+	/// <summary>Optional order management REST endpoint override.</summary>
+	[Display(
+		Name = "OMS endpoint",
+		Description = "Optional order management REST endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OmsEndpoint { get; set; }
+
+	/// <summary>Optional market data REST endpoint override.</summary>
+	[Display(
+		Name = "Market data endpoint",
+		Description = "Optional market data REST endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketDataEndpoint { get; set; }
+
+	/// <summary>Optional market data stream endpoint override.</summary>
+	[Display(
+		Name = "Market stream endpoint",
+		Description = "Optional market data stream endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketStreamEndpoint { get; set; }
+
+	/// <summary>Optional order management stream endpoint override.</summary>
+	[Display(
+		Name = "OMS stream endpoint",
+		Description = "Optional order management stream endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OmsStreamEndpoint { get; set; }
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -140,7 +180,12 @@ public partial class OpenMarketsMessageAdapter : MessageAdapter, IKeySecretAdapt
 			.Set(nameof(OrderGiver), OrderGiver)
 			.Set(nameof(OrderTaker), OrderTaker)
 			.Set(nameof(DefaultPriceMultiplier), DefaultPriceMultiplier)
-			.Set(nameof(DepthPollingInterval), DepthPollingInterval);
+			.Set(nameof(DepthPollingInterval), DepthPollingInterval)
+			.Set(nameof(IdentityEndpoint), IdentityEndpoint)
+			.Set(nameof(OmsEndpoint), OmsEndpoint)
+			.Set(nameof(MarketDataEndpoint), MarketDataEndpoint)
+			.Set(nameof(MarketStreamEndpoint), MarketStreamEndpoint)
+			.Set(nameof(OmsStreamEndpoint), OmsStreamEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -158,5 +203,10 @@ public partial class OpenMarketsMessageAdapter : MessageAdapter, IKeySecretAdapt
 		OrderTaker = storage.GetValue<string>(nameof(OrderTaker));
 		DefaultPriceMultiplier = storage.GetValue(nameof(DefaultPriceMultiplier), DefaultPriceMultiplier);
 		DepthPollingInterval = storage.GetValue(nameof(DepthPollingInterval), DepthPollingInterval);
+		IdentityEndpoint = storage.GetValue<string>(nameof(IdentityEndpoint));
+		OmsEndpoint = storage.GetValue<string>(nameof(OmsEndpoint));
+		MarketDataEndpoint = storage.GetValue<string>(nameof(MarketDataEndpoint));
+		MarketStreamEndpoint = storage.GetValue<string>(nameof(MarketStreamEndpoint));
+		OmsStreamEndpoint = storage.GetValue<string>(nameof(OmsStreamEndpoint));
 	}
 }

@@ -14,6 +14,10 @@ namespace StockSharp.Fugle;
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Futures | MessageAdapterCategories.Options)]
 public partial class FugleMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.fugle.tw/marketdata/v1.0/";
+	private const string _defaultStockWebSocketEndpoint = "wss://api.fugle.tw/marketdata/v1.0/stock/streaming";
+	private const string _defaultFuturesWebSocketEndpoint = "wss://api.fugle.tw/marketdata/v1.0/futopt/streaming";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -33,13 +37,40 @@ public partial class FugleMessageAdapter : MessageAdapter, ITokenAdapter
 		Order = 1)]
 	public int ReconnectAttempts { get; set; } = 10;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Stock WebSocket endpoint.</summary>
+	[Display(
+		Name = "Stock WebSocket endpoint",
+		Description = "Stock WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string StockWebSocketEndpoint { get; set; } = _defaultStockWebSocketEndpoint;
+
+	/// <summary>Futures and options WebSocket endpoint.</summary>
+	[Display(
+		Name = "Futures WebSocket endpoint",
+		Description = "Futures and options WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string FuturesWebSocketEndpoint { get; set; } = _defaultFuturesWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
 		storage
 			.Set(nameof(Token), Token)
-			.Set(nameof(ReconnectAttempts), ReconnectAttempts);
+			.Set(nameof(ReconnectAttempts), ReconnectAttempts)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(StockWebSocketEndpoint), StockWebSocketEndpoint)
+			.Set(nameof(FuturesWebSocketEndpoint), FuturesWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -48,5 +79,8 @@ public partial class FugleMessageAdapter : MessageAdapter, ITokenAdapter
 		base.Load(storage);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		ReconnectAttempts = storage.GetValue(nameof(ReconnectAttempts), ReconnectAttempts);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		StockWebSocketEndpoint = storage.GetValue(nameof(StockWebSocketEndpoint), StockWebSocketEndpoint);
+		FuturesWebSocketEndpoint = storage.GetValue(nameof(FuturesWebSocketEndpoint), FuturesWebSocketEndpoint);
 	}
 }

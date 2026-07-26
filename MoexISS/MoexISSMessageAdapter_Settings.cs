@@ -3,6 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 
 using Ecng.ComponentModel;
+using Ecng.Serialization;
 
 using StockSharp.Localization;
 
@@ -21,6 +22,24 @@ using StockSharp.Localization;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.OrderLog)]
 public partial class MoexISSMessageAdapter : HistoricalMessageAdapter
 {
+	private string _restEndpoint = "https://iss.moex.com/iss/";
+
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint
+	{
+		get => _restEndpoint;
+		set
+		{
+			_restEndpoint = value.ThrowIfEmpty(nameof(value)).TrimEnd('/') + "/";
+			_client.BaseAddress = new(_restEndpoint);
+		}
+	}
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -30,4 +49,18 @@ public partial class MoexISSMessageAdapter : HistoricalMessageAdapter
 		TimeSpan.FromMinutes(10),
 		TimeSpan.FromMinutes(60),
 	];
+
+	/// <inheritdoc />
+	public override void Save(SettingsStorage storage)
+	{
+		base.Save(storage);
+		storage.Set(nameof(RestEndpoint), RestEndpoint);
+	}
+
+	/// <inheritdoc />
+	public override void Load(SettingsStorage storage)
+	{
+		base.Load(storage);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+	}
 }

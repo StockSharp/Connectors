@@ -67,7 +67,23 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
-	private Uri BaseAddress => new(IsDemo ? "https://apisb.etrade.com/" : "https://api.etrade.com/");
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = "https://api.etrade.com/";
+
+	/// <summary>Sandbox REST API endpoint.</summary>
+	[Display(
+		Name = "Sandbox REST endpoint",
+		Description = "Sandbox REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string SandboxRestEndpoint { get; set; } = "https://apisb.etrade.com/";
+
+	private Uri BaseAddress => new(IsDemo ? SandboxRestEndpoint : RestEndpoint);
 
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage message, CancellationToken cancellationToken)
@@ -125,7 +141,7 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage) { base.Save(storage); storage.Set(nameof(Key), Key).Set(nameof(Secret), Secret).Set(nameof(Token), Token).Set(nameof(AccessSecret), AccessSecret).Set(nameof(IsDemo), IsDemo); }
+	public override void Save(SettingsStorage storage) { base.Save(storage); storage.Set(nameof(Key), Key).Set(nameof(Secret), Secret).Set(nameof(Token), Token).Set(nameof(AccessSecret), AccessSecret).Set(nameof(IsDemo), IsDemo).Set(nameof(RestEndpoint), RestEndpoint).Set(nameof(SandboxRestEndpoint), SandboxRestEndpoint); }
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage) { base.Load(storage); Key = storage.GetValue<SecureString>(nameof(Key)); Secret = storage.GetValue<SecureString>(nameof(Secret)); Token = storage.GetValue<SecureString>(nameof(Token)); AccessSecret = storage.GetValue<SecureString>(nameof(AccessSecret)); IsDemo = storage.GetValue<bool>(nameof(IsDemo)); }
+	public override void Load(SettingsStorage storage) { base.Load(storage); Key = storage.GetValue<SecureString>(nameof(Key)); Secret = storage.GetValue<SecureString>(nameof(Secret)); Token = storage.GetValue<SecureString>(nameof(Token)); AccessSecret = storage.GetValue<SecureString>(nameof(AccessSecret)); IsDemo = storage.GetValue<bool>(nameof(IsDemo)); RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint); SandboxRestEndpoint = storage.GetValue(nameof(SandboxRestEndpoint), SandboxRestEndpoint); }
 }

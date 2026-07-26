@@ -47,14 +47,14 @@ public partial class DhanMessageAdapter
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(ClientId, Token) { Parent = this };
+		_restClient = new(RestEndpoint, InstrumentEndpoint, ClientId, Token) { Parent = this };
 
 		if (this.IsTransactional())
 			await _restClient.GetFunds(cancellationToken);
 
 		if (this.IsMarketData())
 		{
-			_marketClient = new(ClientId, Token.UnSecure(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_marketClient = new(MarketWebSocketEndpoint, ClientId, Token.UnSecure(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_marketClient.TickReceived += OnTickReceived;
 			_marketClient.StateChanged += SendOutConnectionStateAsync;
 			_marketClient.Error += SendOutErrorAsync;
@@ -63,7 +63,7 @@ public partial class DhanMessageAdapter
 
 		if (this.IsTransactional())
 		{
-			_orderClient = new(ClientId, Token.UnSecure(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_orderClient = new(OrderWebSocketEndpoint, ClientId, Token.UnSecure(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_orderClient.OrderReceived += OnOrderReceived;
 			_orderClient.StateChanged += SendOutConnectionStateAsync;
 			_orderClient.Error += SendOutErrorAsync;
@@ -150,7 +150,8 @@ public partial class DhanMessageAdapter
 		if (client != null)
 			return client;
 
-		client = new DhanDepthClient(ClientId, Token.UnSecure(), depth, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		var endpoint = depth == 20 ? Depth20WebSocketEndpoint : Depth200WebSocketEndpoint;
+		client = new DhanDepthClient(endpoint, ClientId, Token.UnSecure(), depth, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 		client.DepthReceived += OnDepthReceived;
 		client.Error += SendOutErrorAsync;
 		await client.Connect(cancellationToken);

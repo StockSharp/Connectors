@@ -8,7 +8,7 @@ internal sealed class LsPortfolioSnapshot
 
 internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 {
-	private static readonly Uri _root = new("https://openapi.ls-sec.co.kr:8080/");
+	private readonly Uri _root;
 	private static readonly TimeSpan _koreaOffset = TimeSpan.FromHours(9);
 
 	private readonly HttpClient _http;
@@ -27,8 +27,9 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	private DateTime _lastRequest;
 	private LsInstrument[] _instruments;
 
-	public LsSecuritiesRestClient(string appKey, string appSecret, int maxAttempts)
+	public LsSecuritiesRestClient(string endpoint, string appKey, string appSecret, int maxAttempts)
 	{
+		_root = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_appKey = appKey.ThrowIfEmpty(nameof(appKey));
 		_appSecret = appSecret.ThrowIfEmpty(nameof(appSecret));
 		_maxAttempts = Math.Max(1, maxAttempts);

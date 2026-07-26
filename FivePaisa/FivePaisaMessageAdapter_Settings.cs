@@ -16,6 +16,13 @@ namespace StockSharp.FivePaisa;
 [OrderCondition(typeof(FivePaisaOrderCondition))]
 public partial class FivePaisaMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://Openapi.5paisa.com/VendorsAPI/Service1.svc/";
+	private const string _defaultHistoryEndpoint = "https://openapi.5paisa.com/";
+	private const string _defaultFeedWebSocketEndpoint = "wss://openfeed.5paisa.com/feeds/api/chat";
+	private const string _defaultFeedWebSocketAEndpoint = "wss://aopenfeed.5paisa.com/feeds/api/chat";
+	private const string _defaultFeedWebSocketBEndpoint = "wss://bopenfeed.5paisa.com/feeds/api/chat";
+	private const string _defaultDepthWebSocketEndpoint = "wss://gateway.5paisa.com/openapi/20depth";
+
 	private static readonly TimeSpan[] _timeFrames =
 	[
 		TimeSpan.FromMinutes(1),
@@ -87,6 +94,54 @@ public partial class FivePaisaMessageAdapter : MessageAdapter, ITokenAdapter
 		Order = 5)]
 	public int ReconnectAttempts { get; set; } = 10;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Historical data endpoint.</summary>
+	[Display(
+		Name = "History endpoint",
+		Description = "Historical data endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string HistoryEndpoint { get; set; } = _defaultHistoryEndpoint;
+
+	/// <summary>Default routed market-feed WebSocket endpoint.</summary>
+	[Display(
+		Name = "Feed WebSocket endpoint",
+		Description = "Default routed market-feed WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string FeedWebSocketEndpoint { get; set; } = _defaultFeedWebSocketEndpoint;
+
+	/// <summary>Market-feed WebSocket endpoint for redirect server A.</summary>
+	[Display(
+		Name = "Feed WebSocket A endpoint",
+		Description = "Market-feed WebSocket endpoint for redirect server A.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string FeedWebSocketAEndpoint { get; set; } = _defaultFeedWebSocketAEndpoint;
+
+	/// <summary>Market-feed WebSocket endpoint for redirect server B.</summary>
+	[Display(
+		Name = "Feed WebSocket B endpoint",
+		Description = "Market-feed WebSocket endpoint for redirect server B.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string FeedWebSocketBEndpoint { get; set; } = _defaultFeedWebSocketBEndpoint;
+
+	/// <summary>Market depth WebSocket endpoint.</summary>
+	[Display(
+		Name = "Depth WebSocket endpoint",
+		Description = "Market depth WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DepthWebSocketEndpoint { get; set; } = _defaultDepthWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -97,7 +152,13 @@ public partial class FivePaisaMessageAdapter : MessageAdapter, ITokenAdapter
 			.Set(nameof(Token), Token)
 			.Set(nameof(DefaultProduct), DefaultProduct)
 			.Set(nameof(AlgoId), AlgoId)
-			.Set(nameof(ReconnectAttempts), ReconnectAttempts);
+			.Set(nameof(ReconnectAttempts), ReconnectAttempts)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(HistoryEndpoint), HistoryEndpoint)
+			.Set(nameof(FeedWebSocketEndpoint), FeedWebSocketEndpoint)
+			.Set(nameof(FeedWebSocketAEndpoint), FeedWebSocketAEndpoint)
+			.Set(nameof(FeedWebSocketBEndpoint), FeedWebSocketBEndpoint)
+			.Set(nameof(DepthWebSocketEndpoint), DepthWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -110,5 +171,11 @@ public partial class FivePaisaMessageAdapter : MessageAdapter, ITokenAdapter
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
 		AlgoId = storage.GetValue(nameof(AlgoId), AlgoId);
 		ReconnectAttempts = storage.GetValue(nameof(ReconnectAttempts), ReconnectAttempts);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		HistoryEndpoint = storage.GetValue(nameof(HistoryEndpoint), HistoryEndpoint);
+		FeedWebSocketEndpoint = storage.GetValue(nameof(FeedWebSocketEndpoint), FeedWebSocketEndpoint);
+		FeedWebSocketAEndpoint = storage.GetValue(nameof(FeedWebSocketAEndpoint), FeedWebSocketAEndpoint);
+		FeedWebSocketBEndpoint = storage.GetValue(nameof(FeedWebSocketBEndpoint), FeedWebSocketBEndpoint);
+		DepthWebSocketEndpoint = storage.GetValue(nameof(DepthWebSocketEndpoint), DepthWebSocketEndpoint);
 	}
 }

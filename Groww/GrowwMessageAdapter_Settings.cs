@@ -15,6 +15,10 @@ namespace StockSharp.Groww;
 [OrderCondition(typeof(GrowwOrderCondition))]
 public partial class GrowwMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.groww.in/v1/";
+	private const string _defaultInstrumentEndpoint = "https://growwapi-assets.groww.in/instruments/instrument.csv";
+	private const string _defaultWebSocketEndpoint = "wss://socket-api.groww.in";
+
 	/// <summary>Daily access token generated in Groww settings.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -64,6 +68,30 @@ public partial class GrowwMessageAdapter : MessageAdapter, IKeySecretAdapter, IT
 		Order = 4)]
 	public GrowwProducts DefaultProduct { get; set; } = GrowwProducts.Delivery;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Instrument master endpoint.</summary>
+	[Display(
+		Name = "Instrument endpoint",
+		Description = "Instrument master endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -73,7 +101,10 @@ public partial class GrowwMessageAdapter : MessageAdapter, IKeySecretAdapter, IT
 			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(TotpSecret), TotpSecret)
-			.Set(nameof(DefaultProduct), DefaultProduct);
+			.Set(nameof(DefaultProduct), DefaultProduct)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(InstrumentEndpoint), InstrumentEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -85,5 +116,8 @@ public partial class GrowwMessageAdapter : MessageAdapter, IKeySecretAdapter, IT
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		TotpSecret = storage.GetValue<SecureString>(nameof(TotpSecret));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		InstrumentEndpoint = storage.GetValue(nameof(InstrumentEndpoint), InstrumentEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }

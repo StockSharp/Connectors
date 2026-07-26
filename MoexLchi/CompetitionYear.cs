@@ -18,12 +18,19 @@ using HtmlAgilityPack;
 class CompetitionYear
 {
 	private readonly SynchronizedDictionary<string, int> _memberIds = [];
+	private readonly string _ftpHost;
+	private readonly string _legacyWebEndpoint;
+	private readonly string _webEndpoint;
 
 	//private readonly SynchronizedSet<string> _portfolios = new SynchronizedSet<string>();
 
-	internal CompetitionYear(DateTime year)
+	internal CompetitionYear(DateTime year, string ftpHost, string legacyWebEndpoint,
+		string webEndpoint)
 	{
 		Year = year;
+		_ftpHost = ftpHost.ThrowIfEmpty(nameof(ftpHost));
+		_legacyWebEndpoint = legacyWebEndpoint.ThrowIfEmpty(nameof(legacyWebEndpoint)).TrimEnd('/');
+		_webEndpoint = webEndpoint.ThrowIfEmpty(nameof(webEndpoint)).TrimEnd('/');
 	}
 
 	/// <summary>
@@ -122,7 +129,7 @@ class CompetitionYear
 		{
             using var client = new AsyncFtpClient();
 
-            client.Host = "ftp.moex.com";
+            client.Host = _ftpHost;
             client.Credentials = new NetworkCredential("anonymous", "anonymous");
             client.Config.ReadTimeout = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
 
@@ -174,7 +181,7 @@ class CompetitionYear
         }
 		else
 		{
-			var doc = GetWeb().Load("http://investor.moex.com/ru/statistics/{0}/?act=deals&nick={1}&date={2:yyyyMMdd}".Put(Year.Year, member, date));
+			var doc = GetWeb().Load($"{_legacyWebEndpoint}/ru/statistics/{{0}}/?act=deals&nick={{1}}&date={{2:yyyyMMdd}}".Put(Year.Year, member, date));
 
 			var offset = date.Year >= 2009 ? 1 : 0;
 			var fieldOffset = date.Year >= 2011 ? 1 : 0;
@@ -243,7 +250,7 @@ class CompetitionYear
 		{
             using var client = new AsyncFtpClient();
 
-            client.Host = "ftp.moex.com";
+            client.Host = _ftpHost;
             client.Credentials = new NetworkCredential("anonymous", "anonymous");
 
             await client.Connect(cancellationToken);
@@ -272,7 +279,7 @@ class CompetitionYear
         }
 		else
 		{
-			var doc = GetWeb().Load($"https://investor.moex.com/ru/statistics/{Year.Year}/default.aspx?act=deals");
+			var doc = GetWeb().Load($"{_webEndpoint}/ru/statistics/{Year.Year}/default.aspx?act=deals");
 
 			if (Year.Year == 2012)
 			{

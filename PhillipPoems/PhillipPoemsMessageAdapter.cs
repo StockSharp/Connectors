@@ -98,7 +98,8 @@ public partial class PhillipPoemsMessageAdapter
 			throw new InvalidOperationException(
 				"POEMS client credentials are required when a refresh token is configured.");
 
-		var client = new PhillipPoemsClient(IsDemo,
+		var restEndpoint = IsDemo ? SandboxRestEndpoint : RestEndpoint;
+		var client = new PhillipPoemsClient(restEndpoint,
 			ApiKey?.UnSecure().ThrowIfEmpty(nameof(ApiKey)), Key?.UnSecure(),
 			Secret?.UnSecure(), accessToken, refreshToken);
 		_client = client;

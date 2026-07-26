@@ -57,7 +57,7 @@ class SocketClient : BaseLogReceiver
 		if (adapter is null)
 			throw new ArgumentNullException(nameof(adapter));
 
-		_url = adapter.IsDemo ? "wss://op-ws-testnet.gateio.live/v4/ws" : $"wss://{adapter.OptionsWsDomain}";
+		_url = $"wss://{(adapter.IsDemo ? adapter.DemoOptionsWsDomain : adapter.OptionsWsDomain)}";
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
 		_client = new(

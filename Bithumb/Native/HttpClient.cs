@@ -30,7 +30,7 @@ class HttpClient : BaseLogReceiver
 
 	private readonly string _baseUrl;
 
-	public HttpClient(bool isPrime, SecureString key, SecureString secret)
+	public HttpClient(string baseUrl, SecureString key, SecureString secret)
 	{
 		_key = key;
 		_secret = secret;
@@ -38,7 +38,7 @@ class HttpClient : BaseLogReceiver
 
 		//_nonceGen = new UTCMlsIncrementalIdGenerator();
 
-		_baseUrl = "https://{0}.bithumb.com".Put(isPrime ? "prime" : "api");
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 	}
 
 	protected override void DisposeManaged()

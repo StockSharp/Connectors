@@ -6,7 +6,7 @@ class HttpClient : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator;
 
-	private readonly string _baseUrl = "https://open-api.bingx.com";
+	private readonly string _baseUrl;
 	private const string _version = "v1";
 
 	public HttpClient(BingXMessageAdapter adapter, Authenticator authenticator)

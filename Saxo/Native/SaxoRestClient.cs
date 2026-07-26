@@ -20,8 +20,9 @@ sealed class SaxoRestClient : BaseLogReceiver
 	private string _refreshToken;
 	private DateTimeOffset? _expiresAt;
 
-	public SaxoRestClient(SaxoEnvironments environment, string accessToken, string refreshToken, string clientId,
-		string clientSecret, string redirectUri)
+	public SaxoRestClient(string accessToken, string refreshToken, string clientId,
+		string clientSecret, string redirectUri, string restEndpoint, string tokenEndpoint,
+		string streamAuthorizeEndpoint)
 	{
 		_accessToken = accessToken;
 		_refreshToken = refreshToken;
@@ -29,18 +30,9 @@ sealed class SaxoRestClient : BaseLogReceiver
 		_clientSecret = clientSecret;
 		_redirectUri = redirectUri;
 
-		if (environment == SaxoEnvironments.Simulation)
-		{
-			_apiRoot = new("https://gateway.saxobank.com/sim/openapi/");
-			_tokenUri = new("https://sim.logonvalidation.net/token");
-			_streamAuthorizeUri = new("https://sim-streaming.saxobank.com/sim/oapi/streaming/ws/authorize");
-		}
-		else
-		{
-			_apiRoot = new("https://gateway.saxobank.com/openapi/");
-			_tokenUri = new("https://live.logonvalidation.net/token");
-			_streamAuthorizeUri = new("https://live-streaming.saxobank.com/oapi/streaming/ws/authorize");
-		}
+		_apiRoot = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
+		_tokenUri = new(tokenEndpoint.ThrowIfEmpty(nameof(tokenEndpoint)));
+		_streamAuthorizeUri = new(streamAuthorizeEndpoint.ThrowIfEmpty(nameof(streamAuthorizeEndpoint)));
 
 		_httpClient.DefaultRequestHeaders.Accept.Add(new("application/json"));
 		_httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new("en"));

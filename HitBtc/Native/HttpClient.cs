@@ -2,7 +2,12 @@ namespace StockSharp.HitBtc.Native;
 
 class HttpClient : BaseLogReceiver
 {
-	private const string _baseUrl = "https://api.hitbtc.com/api";
+	private readonly string _baseUrl;
+
+	public HttpClient(string baseUrl)
+	{
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
+	}
 
 	// to get readable name after obfuscation
 	public override string Name => nameof(HitBtc) + "_" + nameof(HttpClient);
@@ -41,7 +46,7 @@ class HttpClient : BaseLogReceiver
 		return MakeRequestAsync<IEnumerable<Ohlc>>(CreateUrl($"public/candles/{instrument}"), request, cancellationToken);
 	}
 
-	private static Uri CreateUrl(string methodName, string version = "2/")
+	private Uri CreateUrl(string methodName, string version = "2/")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

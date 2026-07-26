@@ -2,14 +2,13 @@ namespace StockSharp.Breeze.Native;
 
 sealed class BreezeRestClient : BaseLogReceiver
 {
-	private const string _apiUrl = "https://api.icicidirect.com/breezeapi/api/v1/";
-	private const string _historyUrl = "https://breezeapi.icicidirect.com/api/v2/historicalcharts";
-	private const string _instrumentUrl = "https://directlink.icicidirect.com/MotherAppMaster/SecurityMaster.zip";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new() { NullValueHandling = NullValueHandling.Ignore };
 	private readonly string _apiKey;
 	private readonly SecureString _secretKey;
 	private readonly SecureString _apiSession;
+	private readonly string _apiUrl;
+	private readonly string _historyUrl;
+	private readonly string _instrumentUrl;
 	private readonly HttpClient _httpClient = new();
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private BreezeInstrument[] _instruments;
@@ -19,8 +18,11 @@ sealed class BreezeRestClient : BaseLogReceiver
 	private string _socketUser;
 	private string _socketToken;
 
-	public BreezeRestClient(string apiKey, SecureString secretKey, SecureString apiSession)
+	public BreezeRestClient(string apiEndpoint, string historyEndpoint, string instrumentEndpoint, string apiKey, SecureString secretKey, SecureString apiSession)
 	{
+		_apiUrl = apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint));
+		_historyUrl = historyEndpoint.ThrowIfEmpty(nameof(historyEndpoint));
+		_instrumentUrl = instrumentEndpoint.ThrowIfEmpty(nameof(instrumentEndpoint));
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
 		_secretKey = secretKey.ThrowIfEmpty(nameof(secretKey));
 		_apiSession = apiSession.ThrowIfEmpty(nameof(apiSession));

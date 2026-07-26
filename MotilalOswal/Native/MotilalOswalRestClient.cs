@@ -2,9 +2,6 @@ namespace StockSharp.MotilalOswal.Native;
 
 sealed class MotilalOswalRestClient : BaseLogReceiver
 {
-	private const string _liveUrl = "https://openapi.motilaloswal.com/";
-	private const string _demoUrl = "https://openapi.motilaloswaluat.com/";
-
 	private static readonly string[] _supportedExchanges = ["NSE", "BSE", "NSEFO", "NSECD", "MCX", "NCDEX", "BSEFO", "BSECD"];
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
@@ -28,11 +25,11 @@ sealed class MotilalOswalRestClient : BaseLogReceiver
 	private MotilalOswalInstrument[] _instruments;
 	private IReadOnlyDictionary<string, MotilalOswalInstrument> _instrumentsByKey;
 
-	public MotilalOswalRestClient(bool isDemo, SecureString apiKey, SecureString apiSecret,
+	public MotilalOswalRestClient(string restEndpoint, SecureString apiKey, SecureString apiSecret,
 		SecureString authToken, SecureString accessToken, string clientCode,
 		string localIp, string publicIp, string macAddress, string vendorInfo, string installedAppId)
 	{
-		_baseUri = new(isDemo ? _demoUrl : _liveUrl);
+		_baseUri = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey)).UnSecure();
 		_apiSecret = apiSecret.ThrowIfEmpty(nameof(apiSecret)).UnSecure();
 		_authToken = authToken.ThrowIfEmpty(nameof(authToken)).UnSecure();

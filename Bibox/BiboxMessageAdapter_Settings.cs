@@ -17,6 +17,9 @@ using System.ComponentModel.DataAnnotations;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 public partial class BiboxMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.bibox.com/api";
+	private const string _defaultWebSocketEndpoint = "wss://market-wss.bibox360.com/cbu";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -53,6 +56,28 @@ public partial class BiboxMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Order = 2)]
 	public SecureString AdminPassword { get; set; }
 
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Bibox REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Bibox WebSocket API endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	//private TimeSpan _balanceCheckInterval;
 
 	///// <summary>
@@ -84,6 +109,8 @@ public partial class BiboxMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(AdminPassword), AdminPassword);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 		//storage.SetValue(nameof(BalanceCheckInterval), BalanceCheckInterval);
 	}
 
@@ -95,6 +122,8 @@ public partial class BiboxMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		AdminPassword = storage.GetValue<SecureString>(nameof(AdminPassword));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 		//BalanceCheckInterval = storage.GetValue<TimeSpan>(nameof(BalanceCheckInterval));
 	}
 

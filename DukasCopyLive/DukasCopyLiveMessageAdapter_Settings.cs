@@ -45,6 +45,26 @@ public partial class DukasCopyLiveMessageAdapter : MessageAdapter, ILoginPasswor
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
+	/// <summary>JForex demo service address.</summary>
+	[Display(
+		Name = "Demo service address",
+		Description = "JForex demo service address.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
+	[BasicSetting]
+	public Uri DemoAddress { get; set; } =
+		new("https://platform.dukascopy.com/demo_3/jforex_3.jnlp");
+
+	/// <summary>JForex live service address.</summary>
+	[Display(
+		Name = "Live service address",
+		Description = "JForex live service address.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
+	[BasicSetting]
+	public Uri LiveAddress { get; set; } =
+		new("https://platform.dukascopy.com/live_3/jforex_3.jnlp");
+
 	/// <summary>Loopback TCP port used by the local JForex bridge.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -73,6 +93,8 @@ public partial class DukasCopyLiveMessageAdapter : MessageAdapter, ILoginPasswor
 			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
 			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(DemoAddress), DemoAddress)
+			.Set(nameof(LiveAddress), LiveAddress)
 			.Set(nameof(BridgePort), BridgePort)
 			.Set(nameof(BridgeJarPath), BridgeJarPath);
 	}
@@ -88,6 +110,8 @@ public partial class DukasCopyLiveMessageAdapter : MessageAdapter, ILoginPasswor
 
 		Password = storage.GetValue<SecureString>(nameof(Password));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
+		DemoAddress = storage.GetValue(nameof(DemoAddress), DemoAddress);
+		LiveAddress = storage.GetValue(nameof(LiveAddress), LiveAddress);
 		BridgePort = storage.GetValue(nameof(BridgePort), BridgePort);
 		BridgeJarPath = storage.GetValue<string>(nameof(BridgeJarPath));
 	}

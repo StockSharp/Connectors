@@ -34,7 +34,7 @@ class SocketClient : BaseLogReceiver
 		if (adapter is null)
 			throw new ArgumentNullException(nameof(adapter));
 
-		_publicUrl = adapter.IsDemo ? "wss://wbs-api.mexc.com/ws" : $"wss://{adapter.SpotWsDomain}";
+		_publicUrl = $"wss://{adapter.SpotWsDomain}";
 		_ = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 		_reconnectAttempts = adapter.ReConnectionSettings.ReAttemptCount;
 

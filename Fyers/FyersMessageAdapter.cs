@@ -47,13 +47,13 @@ public partial class FyersMessageAdapter
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(ClientId, Token) { Parent = this };
+		_restClient = new(RestEndpoint, InstrumentEndpoint, TbtWebSocketEndpoint, ClientId, Token) { Parent = this };
 		if (this.IsTransactional())
 			await _restClient.GetProfile(cancellationToken);
 
 		if (this.IsMarketData())
 		{
-			_marketClient = new(ClientId, Token.UnSecure(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_marketClient = new(MarketWebSocketEndpoint, ClientId, Token.UnSecure(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_marketClient.TickReceived += OnTickReceived;
 			_marketClient.StateChanged += SendOutConnectionStateAsync;
 			_marketClient.Error += SendOutErrorAsync;
@@ -62,7 +62,7 @@ public partial class FyersMessageAdapter
 
 		if (this.IsTransactional())
 		{
-			_orderClient = new(ClientId, Token.UnSecure(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_orderClient = new(OrderWebSocketEndpoint, ClientId, Token.UnSecure(), ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_orderClient.OrderReceived += OnOrderReceived;
 			_orderClient.TradeReceived += OnTradeReceived;
 			_orderClient.PositionReceived += OnPositionReceived;

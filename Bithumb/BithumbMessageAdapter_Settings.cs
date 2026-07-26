@@ -16,6 +16,10 @@
 [OrderCondition(typeof(BithumbOrderCondition))]
 public partial class BithumbMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.bithumb.com";
+	private const string _defaultPrimeRestEndpoint = "https://prime.bithumb.com";
+	private const string _defaultWebSocketEndpoint = "wss://pubwss.bithumb.com/pub/ws";
+
 	/// <summary>
 	/// Default value for <see cref="MessageAdapter.HeartbeatInterval"/>.
 	/// </summary>
@@ -40,6 +44,36 @@ public partial class BithumbMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
+
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Bithumb REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// Prime REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "Prime REST endpoint",
+		Description = "Bithumb Prime REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string PrimeRestEndpoint { get; set; } = _defaultPrimeRestEndpoint;
+
+	/// <summary>
+	/// WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Bithumb WebSocket API endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>
 	/// Premium service.
@@ -84,6 +118,9 @@ public partial class BithumbMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(BalanceCheckInterval), BalanceCheckInterval);
 		storage.SetValue(nameof(IsPrime), IsPrime);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(PrimeRestEndpoint), PrimeRestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -95,6 +132,9 @@ public partial class BithumbMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		BalanceCheckInterval = storage.GetValue<TimeSpan>(nameof(BalanceCheckInterval));
 		IsPrime = storage.GetValue<bool>(nameof(IsPrime));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		PrimeRestEndpoint = storage.GetValue(nameof(PrimeRestEndpoint), PrimeRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

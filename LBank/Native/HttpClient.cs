@@ -2,13 +2,13 @@ namespace StockSharp.LBank.Native;
 
 using System.Security.Cryptography;
 
-class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
+class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLogReceiver
 {
 	private readonly SecureString _key = key;
 	private readonly HashAlgorithm _hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());
 	private readonly HashAlgorithm _md5 = MD5.Create();
 
-	private const string _baseUrl = "https://api.lbkex.com/v2";
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
 	private readonly UTCMlsIncrementalIdGenerator _nonceGen = new();
 
@@ -155,7 +155,7 @@ class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
 		return MakeRequestAsync<object>(CreateUrl("subscribe/destroy_key.do"), ApplySecret(request), cancellationToken);
 	}
 
-	private static Uri CreateUrl(string methodName)
+	private Uri CreateUrl(string methodName)
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

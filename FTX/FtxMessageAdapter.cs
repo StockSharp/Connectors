@@ -111,8 +111,8 @@ public partial class FtxMessageAdapter
 		if (_wsClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(Key, Secret) { Parent = this };
-		_wsClient = new(Key, Secret, SubaccountName, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_restClient = new(RestEndpoint, Key, Secret) { Parent = this };
+		_wsClient = new(WebSocketEndpoint, Key, Secret, SubaccountName, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribeWsClient();
 		return _wsClient.Connect(cancellationToken);

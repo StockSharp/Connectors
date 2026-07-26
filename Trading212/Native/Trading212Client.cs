@@ -26,11 +26,11 @@ sealed class Trading212Client : BaseLogReceiver
 	private readonly Trading212RateGate _stopLimitOrderGate = new(TimeSpan.FromSeconds(2));
 	private readonly Trading212RateGate _cancelOrderGate = new(TimeSpan.FromMilliseconds(1200));
 
-	public Trading212Client(string apiKey, string apiSecret, bool isDemo, int maxAttempts)
+	public Trading212Client(string apiKey, string apiSecret, string restEndpoint, int maxAttempts)
 	{
 		apiKey.ThrowIfEmpty(nameof(apiKey));
 		apiSecret.ThrowIfEmpty(nameof(apiSecret));
-		_origin = new(isDemo ? "https://demo.trading212.com/" : "https://live.trading212.com/");
+		_origin = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
 		_authorization = new("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{apiKey}:{apiSecret}")));
 		_maxAttempts = Math.Max(1, maxAttempts);
 	}

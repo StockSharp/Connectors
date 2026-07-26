@@ -17,20 +17,17 @@ sealed class TastyTradeClient : Disposable
 	private string _accessToken;
 	private DateTime _accessTokenExpiresAt;
 
-	public TastyTradeClient(bool isDemo, SecureString refreshToken, SecureString clientSecret, TastyTradeScopes scopes)
+	public TastyTradeClient(string restEndpoint, SecureString refreshToken, SecureString clientSecret, TastyTradeScopes scopes)
 	{
 		_refreshToken = refreshToken;
 		_clientSecret = clientSecret;
 		_scopes = scopes;
 		_httpClient = new()
 		{
-			BaseAddress = new Uri(isDemo ? "https://api.cert.tastyworks.com/" : "https://api.tastyworks.com/"),
+			BaseAddress = new Uri(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 	}
-
-	public string AccountStreamerUrl(bool isDemo)
-		=> isDemo ? "wss://streamer.cert.tastyworks.com" : "wss://streamer.tastyworks.com";
 
 	public async Task<string> GetAuthorization(CancellationToken cancellationToken)
 		=> $"Bearer {await GetAccessToken(cancellationToken)}";

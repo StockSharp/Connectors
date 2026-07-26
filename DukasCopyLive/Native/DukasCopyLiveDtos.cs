@@ -43,6 +43,9 @@ internal sealed class DukasCopyLiveBridgeRequest
 	[JsonProperty("is_demo")]
 	public bool? IsDemo { get; set; }
 
+	[JsonProperty("address")]
+	public string Address { get; set; }
+
 	[JsonProperty("symbols")]
 	public string[] Symbols { get; set; }
 

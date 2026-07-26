@@ -2,11 +2,11 @@ namespace StockSharp.LATOKEN.Native;
 
 using Currency = StockSharp.LATOKEN.Native.Model.Currency;
 
-class HttpClient(Authenticator authenticator) : BaseLogReceiver
+class HttpClient(string baseUrl, Authenticator authenticator) : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
-	private const string _baseUrl = "https://api.latoken.com/v2";
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
 	private readonly UTCMlsIncrementalIdGenerator _nonceGen = new();
 
@@ -110,7 +110,7 @@ class HttpClient(Authenticator authenticator) : BaseLogReceiver
 		return (string)response.withdrawalId;
 	}
 
-	private static Uri CreateUrl(string methodName)
+	private Uri CreateUrl(string methodName)
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

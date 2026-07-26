@@ -16,6 +16,11 @@
 [OrderCondition(typeof(OandaOrderCondition))]
 public partial class OandaMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://api-fxtrade.oanda.com";
+	private const string _defaultDemoRestEndpoint = "https://api-fxpractice.oanda.com";
+	private const string _defaultStreamingEndpoint = "https://stream-fxtrade.oanda.com";
+	private const string _defaultDemoStreamingEndpoint = "https://stream-fxpractice.oanda.com";
+
 	/// <summary>
 	/// Default value for <see cref="MessageAdapter.HeartbeatInterval"/>.
 	/// </summary>
@@ -63,6 +68,38 @@ public partial class OandaMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 		Order = 3)]
 	public bool LogOnlyTransactions { get; set; }
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Production streaming endpoint.</summary>
+	[Display(
+		Name = "Streaming endpoint",
+		Description = "Production streaming endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string StreamingEndpoint { get; set; } = _defaultStreamingEndpoint;
+
+	/// <summary>Demo streaming endpoint.</summary>
+	[Display(
+		Name = "Demo streaming endpoint",
+		Description = "Demo streaming endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoStreamingEndpoint { get; set; } = _defaultDemoStreamingEndpoint;
+
 	private static readonly HashSet<TimeSpan> _timeFrames = new(new[]
 	{
 		TimeSpan.FromSeconds(5),
@@ -103,7 +140,11 @@ public partial class OandaMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 			.Set(nameof(Token), Token)
 			.Set(nameof(UseCompression), UseCompression)
 			.Set(nameof(LogOnlyTransactions), LogOnlyTransactions)
-		;
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(StreamingEndpoint), StreamingEndpoint)
+			.Set(nameof(DemoStreamingEndpoint), DemoStreamingEndpoint)
+			;
 	}
 
 	/// <inheritdoc />
@@ -115,5 +156,9 @@ public partial class OandaMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		UseCompression = storage.GetValue<bool>(nameof(UseCompression));
 		LogOnlyTransactions = storage.GetValue<bool>(nameof(LogOnlyTransactions));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		StreamingEndpoint = storage.GetValue(nameof(StreamingEndpoint), StreamingEndpoint);
+		DemoStreamingEndpoint = storage.GetValue(nameof(DemoStreamingEndpoint), DemoStreamingEndpoint);
 	}
 }

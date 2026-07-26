@@ -33,7 +33,9 @@ partial class WebullMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 		_client = new() { BaseAddress = BaseAddress };
-		_mqtt = new(IsDemo ? "data-api.sandbox.webull.com" : "data-api.webull.com", 1883, Key.UnSecure(), _streamSessionId);
+		var marketDataHost = (IsDemo ? DemoMarketDataHost : MarketDataHost)
+			.ThrowIfEmpty(IsDemo ? nameof(DemoMarketDataHost) : nameof(MarketDataHost));
+		_mqtt = new(marketDataHost, MarketDataPort, Key.UnSecure(), _streamSessionId);
 		_mqtt.MessageReceived += OnMqttMessage;
 		_mqtt.Error += OnStreamError;
 		await _mqtt.ConnectAsync(cancellationToken);
@@ -47,7 +49,9 @@ partial class WebullMessageAdapter
 
 		if (accounts.Length > 0)
 		{
-			_events = new(IsDemo ? "https://events-api.sandbox.webull.com" : "https://events-api.webull.com", Key.UnSecure(), Secret.UnSecure(), accounts);
+			var eventsEndpoint = (IsDemo ? DemoEventsEndpoint : EventsEndpoint)
+				.ThrowIfEmpty(IsDemo ? nameof(DemoEventsEndpoint) : nameof(EventsEndpoint));
+			_events = new(eventsEndpoint, Key.UnSecure(), Secret.UnSecure(), accounts);
 			_events.EventReceived += OnTradeEvent;
 			_events.Error += OnStreamError;
 			_events.Start();

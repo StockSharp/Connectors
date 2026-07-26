@@ -46,11 +46,21 @@ public partial class FivePaisaMessageAdapter
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(AppKey, ClientCode, Token) { Parent = this };
+		_restClient = new(RestEndpoint, HistoryEndpoint, AppKey, ClientCode, Token) { Parent = this };
 		if (this.IsTransactional())
 			await _restClient.GetMargin(cancellationToken);
 
-		_feedClient = new(ClientCode, Token.UnSecure(), ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
+		_feedClient = new(
+			FeedWebSocketEndpoint,
+			FeedWebSocketAEndpoint,
+			FeedWebSocketBEndpoint,
+			ClientCode,
+			Token.UnSecure(),
+			ReconnectAttempts,
+			ReConnectionSettings.WorkingTime)
+		{
+			Parent = this,
+		};
 		_feedClient.MarketDataReceived += OnMarketDataReceived;
 		_feedClient.OrderReceived += OnOrderReceived;
 		_feedClient.StateChanged += SendOutConnectionStateAsync;
@@ -129,7 +139,7 @@ public partial class FivePaisaMessageAdapter
 		if (_depthClient != null)
 			return _depthClient;
 
-		var client = new FivePaisaDepthClient(Token.UnSecure(), ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
+		var client = new FivePaisaDepthClient(DepthWebSocketEndpoint, Token.UnSecure(), ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
 		client.DepthReceived += OnDepthReceived;
 		client.Error += SendOutErrorAsync;
 		await client.Connect(cancellationToken);

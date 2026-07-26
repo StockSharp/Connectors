@@ -26,13 +26,13 @@ class SocketClient : BaseLogReceiver
 	private readonly IdGenerator _transIdGen;
 	private DateTime? _nextPing;
 
-	public SocketClient(Authenticator authenticator, int attempts, IdGenerator transIdGen, WorkingTime workingTime)
+	public SocketClient(string endpoint, Authenticator authenticator, int attempts, IdGenerator transIdGen, WorkingTime workingTime)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 		_transIdGen = transIdGen ?? throw new ArgumentNullException(nameof(transIdGen));
 
 		_client = new(
-			"wss://socket.coinex.com/v2/spot",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

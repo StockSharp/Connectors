@@ -37,16 +37,18 @@ class PusherClient : BaseLogReceiver
 	private readonly SynchronizedDictionary<long, Requests> _requests = new();
 
 	private readonly SecureString _key;
+	private readonly string _restEndpoint;
 	//private readonly SecureString _secret;
 	private readonly HashAlgorithm _hasher;
 
-	public PusherClient(SecureString key, SecureString secret, WorkingTime workingTime)
+	public PusherClient(string restEndpoint, string webSocketEndpoint, SecureString key, SecureString secret, WorkingTime workingTime)
 	{
+		_restEndpoint = restEndpoint.ThrowIfEmpty(nameof(restEndpoint)).TrimEnd('/');
 		_key = key;
 		_hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().ASCII());
 
 		_client = new(
-			"wss://api.hitbtc.com/api/2/ws",
+			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
@@ -418,7 +420,7 @@ class PusherClient : BaseLogReceiver
 		if (info.Type != WithdrawTypes.Crypto)
 			throw new NotSupportedException(LocalizedStrings.WithdrawTypeNotSupported.Put(info.Type));
 
-		var url = "https://api.hitbtc.com/api/2/account/crypto/withdraw".To<Uri>();
+		var url = $"{_restEndpoint}/2/account/crypto/withdraw".To<Uri>();
 
 		var request = new RestRequest((string)null, Method.Post);
 

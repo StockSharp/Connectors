@@ -17,6 +17,13 @@ using System.ComponentModel.DataAnnotations;
 [OrderCondition(typeof(BreezeOrderCondition))]
 public partial class BreezeMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.icicidirect.com/breezeapi/api/v1/";
+	private const string _defaultHistoryEndpoint = "https://breezeapi.icicidirect.com/api/v2/historicalcharts";
+	private const string _defaultInstrumentEndpoint = "https://directlink.icicidirect.com/MotherAppMaster/SecurityMaster.zip";
+	private const string _defaultMarketWebSocketEndpoint = "wss://livestream.icicidirect.com/socket.io/?EIO=4&transport=websocket";
+	private const string _defaultOhlcWebSocketEndpoint = "wss://breezeapi.icicidirect.com/ohlcvstream/?EIO=4&transport=websocket";
+	private const string _defaultOrderWebSocketEndpoint = "wss://livefeeds.icicidirect.com/socket.io/?EIO=4&transport=websocket";
+
 	private static readonly TimeSpan[] _timeFrames =
 	[
 		TimeSpan.FromSeconds(1),
@@ -59,6 +66,54 @@ public partial class BreezeMessageAdapter : MessageAdapter, IKeySecretAdapter
 	[BasicSetting]
 	public SecureString ApiSession { get; set; }
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Historical data endpoint.</summary>
+	[Display(
+		Name = "History endpoint",
+		Description = "Historical data endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string HistoryEndpoint { get; set; } = _defaultHistoryEndpoint;
+
+	/// <summary>Instrument master endpoint.</summary>
+	[Display(
+		Name = "Instrument endpoint",
+		Description = "Instrument master endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
+
+	/// <summary>Market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
+
+	/// <summary>OHLC WebSocket endpoint.</summary>
+	[Display(
+		Name = "OHLC WebSocket endpoint",
+		Description = "OHLC WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OhlcWebSocketEndpoint { get; set; } = _defaultOhlcWebSocketEndpoint;
+
+	/// <summary>Order WebSocket endpoint.</summary>
+	[Display(
+		Name = "Order WebSocket endpoint",
+		Description = "Order WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -66,7 +121,13 @@ public partial class BreezeMessageAdapter : MessageAdapter, IKeySecretAdapter
 		storage
 			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
-			.Set(nameof(ApiSession), ApiSession);
+			.Set(nameof(ApiSession), ApiSession)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(HistoryEndpoint), HistoryEndpoint)
+			.Set(nameof(InstrumentEndpoint), InstrumentEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(OhlcWebSocketEndpoint), OhlcWebSocketEndpoint)
+			.Set(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -76,5 +137,11 @@ public partial class BreezeMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		ApiSession = storage.GetValue<SecureString>(nameof(ApiSession));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		HistoryEndpoint = storage.GetValue(nameof(HistoryEndpoint), HistoryEndpoint);
+		InstrumentEndpoint = storage.GetValue(nameof(InstrumentEndpoint), InstrumentEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		OhlcWebSocketEndpoint = storage.GetValue(nameof(OhlcWebSocketEndpoint), OhlcWebSocketEndpoint);
+		OrderWebSocketEndpoint = storage.GetValue(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint);
 	}
 }

@@ -16,7 +16,6 @@ class PusherClient : BaseLogReceiver
 	private readonly WebSocketClient _client;
 	private readonly Lock _sync = new();
 
-	private const string _socketUrl = "wss://s.yobit.biz";
 	private const string _realm = "restricted_realm";
 
 	private const int _msgTypeHello = 1;
@@ -51,10 +50,10 @@ class PusherClient : BaseLogReceiver
 		public SortedDictionary<decimal, decimal> Asks { get; } = new();
 	}
 
-	public PusherClient(WorkingTime workingTime)
+	public PusherClient(string endpoint, WorkingTime workingTime)
 	{
 		_client = new(
-			_socketUrl,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			async (state, token) =>
 			{
 				await OnStateChangedAsync(state, token);

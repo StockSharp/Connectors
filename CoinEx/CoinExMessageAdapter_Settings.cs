@@ -49,6 +49,10 @@ public enum CoinExSections
 [OrderCondition(typeof(CoinExOrderCondition))]
 public partial class CoinExMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.coinex.com";
+	private const string _defaultSpotWebSocketEndpoint = "wss://socket.coinex.com/v2/spot";
+	private const string _defaultFuturesWebSocketEndpoint = "wss://socket.coinex.com/v2/futures";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -73,6 +77,36 @@ public partial class CoinExMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Order = 1)]
 	[BasicSetting]
 	public SecureString Secret { get; set; }
+
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "CoinEx REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// Spot WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "Spot WebSocket endpoint",
+		Description = "CoinEx spot WebSocket endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string SpotWebSocketEndpoint { get; set; } = _defaultSpotWebSocketEndpoint;
+
+	/// <summary>
+	/// Futures WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "Futures WebSocket endpoint",
+		Description = "CoinEx futures WebSocket endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string FuturesWebSocketEndpoint { get; set; } = _defaultFuturesWebSocketEndpoint;
 
 	private IEnumerable<CoinExSections> _sections = Enumerator.GetValues<CoinExSections>();
 
@@ -113,6 +147,9 @@ public partial class CoinExMessageAdapter : MessageAdapter, IKeySecretAdapter
 			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(Sections), Sections.Select(s => s.To<string>()).JoinComma())
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(SpotWebSocketEndpoint), SpotWebSocketEndpoint)
+			.Set(nameof(FuturesWebSocketEndpoint), FuturesWebSocketEndpoint)
 		;
 	}
 
@@ -124,6 +161,9 @@ public partial class CoinExMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Sections = storage.GetValue<string>(nameof(Sections)).SplitByComma().Select(s => s.To<CoinExSections>()).ToArray();
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		SpotWebSocketEndpoint = storage.GetValue(nameof(SpotWebSocketEndpoint), SpotWebSocketEndpoint);
+		FuturesWebSocketEndpoint = storage.GetValue(nameof(FuturesWebSocketEndpoint), FuturesWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

@@ -47,7 +47,8 @@ public partial class UniswapMessageAdapter
                 }
                 else
                 {
-                    _graphClient = new(GraphApiKey, SubgraphId)
+                    _graphClient = new(GraphApiKey, GraphGatewayEndpoint,
+                        SubgraphId)
                     {
                         Parent = this,
                     };

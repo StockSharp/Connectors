@@ -84,7 +84,7 @@ public partial class MiraeSharekhanMessageAdapter
 		if (this.IsTransactional())
 			CustomerId.ThrowIfEmpty(nameof(CustomerId));
 
-		_rest = new(apiKey, accessToken, VendorKey, Math.Max(1, ReConnectionSettings.ReAttemptCount))
+		_rest = new(RestEndpoint, apiKey, accessToken, VendorKey, Math.Max(1, ReConnectionSettings.ReAttemptCount))
 		{
 			Parent = this,
 		};
@@ -92,7 +92,7 @@ public partial class MiraeSharekhanMessageAdapter
 		{
 			if (this.IsMarketData())
 			{
-				_stream = new(apiKey, accessToken, Math.Max(1, ReConnectionSettings.ReAttemptCount))
+				_stream = new(WebSocketEndpoint, apiKey, accessToken, Math.Max(1, ReConnectionSettings.ReAttemptCount))
 				{
 					Parent = this,
 				};

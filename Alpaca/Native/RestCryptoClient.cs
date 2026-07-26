@@ -2,8 +2,8 @@
 
 class RestCryptoClient : RestMarketDataClient
 {
-	public RestCryptoClient(SecureString key, SecureString secret)
-		: base(key, secret)
+	public RestCryptoClient(string endpoint, SecureString key, SecureString secret)
+		: base(endpoint, key, secret)
 	{
 	}
 

@@ -8,7 +8,7 @@ class HttpClient : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator;
 
-	private readonly string _baseUrl = "https://api.gateio.ws";
+	private readonly string _baseUrl;
 	private const string _version = "v4";
 
 	public HttpClient(GateIOMessageAdapter adapter, Authenticator authenticator)

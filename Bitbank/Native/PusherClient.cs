@@ -15,10 +15,10 @@ class PusherClient : BaseLogReceiver
 
 	private readonly WebSocketClient _client;
 
-	public PusherClient(WorkingTime workingTime)
+	public PusherClient(string endpoint, WorkingTime workingTime)
 	{
 		_client = new(
-			"wss://stream.bitbank.cc/socket.io/?EIO=4&transport=websocket",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

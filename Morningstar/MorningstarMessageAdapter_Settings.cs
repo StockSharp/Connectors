@@ -80,6 +80,14 @@ public partial class MorningstarMessageAdapter : MessageAdapter, ILoginPasswordA
 		Order = 6)]
 	public string Currency { get; set; } = "BASE";
 
+	/// <summary>Optional REST API endpoint override.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Optional REST API endpoint override for the selected region.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; }
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -91,7 +99,8 @@ public partial class MorningstarMessageAdapter : MessageAdapter, ILoginPasswordA
 			.Set(nameof(InvestmentSource), InvestmentSource)
 			.Set(nameof(Universe), Universe)
 			.Set(nameof(IdentifierType), IdentifierType)
-			.Set(nameof(Currency), Currency);
+			.Set(nameof(Currency), Currency)
+			.Set(nameof(RestEndpoint), RestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -105,5 +114,6 @@ public partial class MorningstarMessageAdapter : MessageAdapter, ILoginPasswordA
 		Universe = storage.GetValue<string>(nameof(Universe));
 		IdentifierType = storage.GetValue(nameof(IdentifierType), IdentifierType);
 		Currency = storage.GetValue(nameof(Currency), Currency);
+		RestEndpoint = storage.GetValue<string>(nameof(RestEndpoint));
 	}
 }

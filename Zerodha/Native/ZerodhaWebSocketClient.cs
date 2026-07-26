@@ -22,12 +22,13 @@ internal sealed class ZerodhaWebSocketClient : BaseLogReceiver
 	private ClientWebSocket _socket;
 	private Task _runTask;
 
-	public ZerodhaWebSocketClient(string apiKey, string accessToken, int maxAttempts)
+	public ZerodhaWebSocketClient(string webSocketEndpoint, string apiKey, string accessToken, int maxAttempts)
 	{
 		apiKey.ThrowIfEmpty(nameof(apiKey));
 		accessToken.ThrowIfEmpty(nameof(accessToken));
 		_maxAttempts = Math.Max(1, maxAttempts);
-		_uri = new($"wss://ws.kite.trade?api_key={Uri.EscapeDataString(apiKey)}&access_token=" +
+		var endpoint = webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint));
+		_uri = new($"{endpoint}{(endpoint.Contains('?') ? '&' : '?')}api_key={Uri.EscapeDataString(apiKey)}&access_token=" +
 			Uri.EscapeDataString(accessToken));
 	}
 

@@ -2,8 +2,7 @@ namespace StockSharp.Kiwoom.Native;
 
 sealed class KiwoomRestClient : BaseLogReceiver
 {
-	private static readonly Uri _productionRoot = new("https://api.kiwoom.com/");
-	private static readonly Uri _simulationRoot = new("https://mockapi.kiwoom.com/");
+	private readonly Uri _root;
 
 	private readonly HttpClient _http = new();
 	private readonly string _appKey;
@@ -22,8 +21,9 @@ sealed class KiwoomRestClient : BaseLogReceiver
 	private DateTime _accessTokenExpiry;
 	private DateTime _nextRequestAt;
 
-	public KiwoomRestClient(string appKey, string appSecret, bool isDemo, int maxAttempts)
+	public KiwoomRestClient(string endpoint, string appKey, string appSecret, bool isDemo, int maxAttempts)
 	{
+		_root = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_appKey = appKey.ThrowIfEmpty(nameof(appKey));
 		_appSecret = appSecret.ThrowIfEmpty(nameof(appSecret));
 		_isDemo = isDemo;
@@ -553,7 +553,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 	private static string ToLocalDate(DateTime time, KiwoomSecurityInfo security)
 		=> TimeZoneInfo.ConvertTimeFromUtc(time.UtcKind(), security.TimeZone).ToString("yyyyMMdd", CultureInfo.InvariantCulture);
 
-	private Uri Root => _isDemo ? _simulationRoot : _productionRoot;
+	private Uri Root => _root;
 
 	private static bool IsOrderMutation(string apiId)
 		=> apiId is KiwoomRoutes.DomesticBuy or KiwoomRoutes.DomesticSell or KiwoomRoutes.DomesticReplace or

@@ -89,6 +89,8 @@ public partial class UniswapMessageAdapter : MessageAdapter, ITokenAdapter
 {
     private const string _defaultTradingEndpoint =
         "https://trade-api.gateway.uniswap.org/v1";
+    private const string _defaultGraphGatewayEndpoint =
+        "https://gateway.thegraph.com/api";
     private const string _defaultV3SubgraphId =
         "5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV";
     private const string _defaultMarkets =
@@ -196,6 +198,16 @@ public partial class UniswapMessageAdapter : MessageAdapter, ITokenAdapter
         Order = 2)]
     public string SubgraphId { get; set; } = _defaultV3SubgraphId;
 
+    /// <summary>The Graph gateway endpoint.</summary>
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AddressKey,
+        Description = LocalizedStrings.ServerAddressKey,
+        GroupName = LocalizedStrings.AddressesKey,
+        Order = 3)]
+    public string GraphGatewayEndpoint { get; set; } =
+        _defaultGraphGatewayEndpoint;
+
     /// <summary>
     /// Semicolon-separated <c>pool|base token|quote token</c> definitions.
     /// </summary>
@@ -295,6 +307,7 @@ public partial class UniswapMessageAdapter : MessageAdapter, ITokenAdapter
             .Set(nameof(RpcEndpoint), RpcEndpoint)
             .Set(nameof(TradingEndpoint), TradingEndpoint)
             .Set(nameof(SubgraphId), SubgraphId)
+            .Set(nameof(GraphGatewayEndpoint), GraphGatewayEndpoint)
             .Set(nameof(Markets), Markets)
             .Set(nameof(MaximumDiscoveredPools), MaximumDiscoveredPools)
             .Set(nameof(ProbeVolume), ProbeVolume)
@@ -319,6 +332,9 @@ public partial class UniswapMessageAdapter : MessageAdapter, ITokenAdapter
             nameof(TradingEndpoint), TradingEndpoint),
             _defaultTradingEndpoint);
         SubgraphId = storage.GetValue(nameof(SubgraphId), SubgraphId);
+        GraphGatewayEndpoint = NormalizeEndpoint(storage.GetValue(
+            nameof(GraphGatewayEndpoint), GraphGatewayEndpoint),
+            _defaultGraphGatewayEndpoint);
         Markets = storage.GetValue(nameof(Markets), Markets);
         MaximumDiscoveredPools = storage.GetValue(
             nameof(MaximumDiscoveredPools), MaximumDiscoveredPools);

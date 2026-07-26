@@ -15,6 +15,9 @@
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 public partial class CexMessageAdapter : IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://cex.io/api";
+	private const string _defaultWebSocketEndpoint = "wss://ws.cex.io/ws";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -40,6 +43,26 @@ public partial class CexMessageAdapter : IKeySecretAdapter
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "CEX.IO REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>
+	/// WebSocket API endpoint.
+	/// </summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "CEX.IO WebSocket API endpoint.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -47,6 +70,8 @@ public partial class CexMessageAdapter : IKeySecretAdapter
 
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 		//storage.SetValue(nameof(ClientId), ClientId);
 	}
 
@@ -57,6 +82,8 @@ public partial class CexMessageAdapter : IKeySecretAdapter
 
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 		//ClientId = storage.GetValue<string>(nameof(ClientId));
 	}
 

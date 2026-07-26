@@ -16,6 +16,11 @@ namespace StockSharp.KoreaInvestment;
 [OrderCondition(typeof(KoreaInvestmentOrderCondition))]
 public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://openapi.koreainvestment.com:9443/";
+	private const string _defaultDemoRestEndpoint = "https://openapivts.koreainvestment.com:29443/";
+	private const string _defaultWebSocketEndpoint = "ws://ops.koreainvestment.com:21000/tryitout";
+	private const string _defaultDemoWebSocketEndpoint = "ws://ops.koreainvestment.com:31000/tryitout";
+
 	/// <summary>Application key issued by KIS Developers.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -76,6 +81,38 @@ public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapte
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Production WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Production WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>Demo WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "Demo WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -86,7 +123,11 @@ public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapte
 			.Set(nameof(AccountNumber), AccountNumber)
 			.Set(nameof(ProductCode), ProductCode)
 			.Set(nameof(HtsId), HtsId)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+			.Set(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -99,5 +140,9 @@ public partial class KoreaInvestmentMessageAdapter : MessageAdapter, IDemoAdapte
 		ProductCode = storage.GetValue(nameof(ProductCode), ProductCode);
 		HtsId = storage.GetValue<string>(nameof(HtsId));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		DemoWebSocketEndpoint = storage.GetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 }

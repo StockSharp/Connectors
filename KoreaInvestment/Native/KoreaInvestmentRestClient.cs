@@ -2,8 +2,7 @@ namespace StockSharp.KoreaInvestment.Native;
 
 sealed class KoreaInvestmentRestClient : BaseLogReceiver
 {
-	private static readonly Uri _productionRoot = new("https://openapi.koreainvestment.com:9443/");
-	private static readonly Uri _simulationRoot = new("https://openapivts.koreainvestment.com:29443/");
+	private readonly Uri _root;
 
 	private readonly HttpClient _http = new();
 	private readonly string _appKey;
@@ -22,9 +21,10 @@ sealed class KoreaInvestmentRestClient : BaseLogReceiver
 	private string _accessToken;
 	private DateTime _accessTokenExpiry;
 
-	public KoreaInvestmentRestClient(string appKey, string appSecret, string accountNumber, string productCode,
+	public KoreaInvestmentRestClient(string endpoint, string appKey, string appSecret, string accountNumber, string productCode,
 		bool isDemo, int maxAttempts)
 	{
+		_root = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_appKey = appKey.ThrowIfEmpty(nameof(appKey));
 		_appSecret = appSecret.ThrowIfEmpty(nameof(appSecret));
 		_accountNumber = accountNumber;
@@ -528,7 +528,7 @@ sealed class KoreaInvestmentRestClient : BaseLogReceiver
 		_productCode.ThrowIfEmpty(nameof(_productCode));
 	}
 
-	private Uri Root => _isDemo ? _simulationRoot : _productionRoot;
+	private Uri Root => _root;
 
 	private static TimeSpan GetRetryDelay(HttpResponseMessage response, int attempt)
 	{

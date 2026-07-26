@@ -20,6 +20,11 @@ using System.ComponentModel.DataAnnotations;
 [OrderCondition(typeof(AngelOneOrderCondition))]
 public partial class AngelOneMessageAdapter : MessageAdapter, ILoginPasswordAdapter
 {
+	private const string _defaultRestEndpoint = "https://apiconnect.angelone.in";
+	private const string _defaultInstrumentEndpoint = "https://margincalculator.angelone.in/OpenAPI_File/files/OpenAPIScripMaster.json";
+	private const string _defaultMarketWebSocketEndpoint = "wss://smartapisocket.angelone.in/smart-stream";
+	private const string _defaultOrderWebSocketEndpoint = "wss://tns.angelone.in/smart-order-update";
+
 	private static readonly TimeSpan[] _timeFrames =
 	[
 		TimeSpan.FromMinutes(1),
@@ -112,6 +117,38 @@ public partial class AngelOneMessageAdapter : MessageAdapter, ILoginPasswordAdap
 		Order = 7)]
 	public AngelOneProducts DefaultProduct { get; set; } = AngelOneProducts.Delivery;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 8)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Instrument file endpoint.</summary>
+	[Display(
+		Name = "Instrument endpoint",
+		Description = "Instrument file endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 9)]
+	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
+
+	/// <summary>Market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 10)]
+	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
+
+	/// <summary>Order WebSocket endpoint.</summary>
+	[Display(
+		Name = "Order WebSocket endpoint",
+		Description = "Order WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 11)]
+	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -124,7 +161,11 @@ public partial class AngelOneMessageAdapter : MessageAdapter, ILoginPasswordAdap
 			.Set(nameof(ClientLocalIp), ClientLocalIp)
 			.Set(nameof(ClientPublicIp), ClientPublicIp)
 			.Set(nameof(MacAddress), MacAddress)
-			.Set(nameof(DefaultProduct), DefaultProduct);
+			.Set(nameof(DefaultProduct), DefaultProduct)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(InstrumentEndpoint), InstrumentEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -139,5 +180,9 @@ public partial class AngelOneMessageAdapter : MessageAdapter, ILoginPasswordAdap
 		ClientPublicIp = storage.GetValue(nameof(ClientPublicIp), ClientPublicIp);
 		MacAddress = storage.GetValue(nameof(MacAddress), MacAddress);
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		InstrumentEndpoint = storage.GetValue(nameof(InstrumentEndpoint), InstrumentEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		OrderWebSocketEndpoint = storage.GetValue(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint);
 	}
 }

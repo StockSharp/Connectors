@@ -80,6 +80,10 @@ partial class LmaxMessageAdapter
 		_authenticator = new Authenticator(Key, Secret);
 
 		var (accountApiUrl, marketDataApiUrl, marketDataWsUrl, accountWsUrl) = GetUrls();
+		accountApiUrl = AccountRestEndpoint.IsEmpty(accountApiUrl);
+		marketDataApiUrl = MarketDataRestEndpoint.IsEmpty(marketDataApiUrl);
+		marketDataWsUrl = MarketDataWebSocketEndpoint.IsEmpty(marketDataWsUrl);
+		accountWsUrl = AccountWebSocketEndpoint.IsEmpty(accountWsUrl);
 
 		_httpClient = new(_authenticator, accountApiUrl, marketDataApiUrl)
 		{

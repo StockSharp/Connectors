@@ -14,7 +14,7 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	public MiraeSharekhanRestClient(string apiKey, string accessToken, string vendorKey, int maxAttempts)
+	public MiraeSharekhanRestClient(string endpoint, string apiKey, string accessToken, string vendorKey, int maxAttempts)
 	{
 		apiKey.ThrowIfEmpty(nameof(apiKey));
 		accessToken.ThrowIfEmpty(nameof(accessToken));
@@ -26,7 +26,7 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 		};
 		_http = new(handler)
 		{
-			BaseAddress = new("https://api.sharekhan.com/skapi/services/"),
+			BaseAddress = new(endpoint.ThrowIfEmpty(nameof(endpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("api-key", apiKey);

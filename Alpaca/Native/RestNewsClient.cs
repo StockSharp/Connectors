@@ -2,8 +2,8 @@
 
 class RestNewsClient : RestMarketDataClient
 {
-	public RestNewsClient(SecureString key, SecureString secret)
-		: base(key, secret)
+	public RestNewsClient(string endpoint, SecureString key, SecureString secret)
+		: base(endpoint, key, secret)
 	{
 	}
 

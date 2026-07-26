@@ -310,7 +310,7 @@ partial class OkexHistoryMessageAdapter
 			}
 
 			// Candles use different URL: static.okx.com with "candlesticks" path
-			var url = $"https://static.okx.com/cdn/okex/traderecords/candlesticks/daily/{date:yyyyMMdd}/{secId}-candlesticks-{date:yyyy-MM-dd}.zip";
+			var url = $"https://{ArchiveAddress}/cdn/okex/traderecords/candlesticks/daily/{date:yyyyMMdd}/{secId}-candlesticks-{date:yyyy-MM-dd}.zip";
 
 			Stream zipStream;
 			try
@@ -491,7 +491,7 @@ partial class OkexHistoryMessageAdapter
 		for (var date = from.Date; date <= to.Date; date = date.AddDays(1))
 		{
 			// URL format: https://static.okx.com/cdn/okx/match/orderbook/L2/400lv/daily/{yyyyMMdd}/{secId}-L2orderbook-400lv-{yyyy-MM-dd}.tar.gz
-			var url = $"https://static.okx.com/cdn/okx/match/orderbook/L2/400lv/daily/{date:yyyyMMdd}/{secId}-L2orderbook-400lv-{date:yyyy-MM-dd}.tar.gz";
+			var url = $"https://{ArchiveAddress}/cdn/okx/match/orderbook/L2/400lv/daily/{date:yyyyMMdd}/{secId}-L2orderbook-400lv-{date:yyyy-MM-dd}.tar.gz";
 
 			Stream networkStream;
 			try

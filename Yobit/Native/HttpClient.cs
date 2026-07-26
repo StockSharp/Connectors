@@ -4,14 +4,15 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 
-class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
+class HttpClient(string publicUrl, string tradeUrl, string tradePageUrl, SecureString key, SecureString secret) : BaseLogReceiver
 {
 	private readonly SecureString _key = key;
 
 	private readonly HashAlgorithm _hasher = secret.IsEmpty() ? null : new HMACSHA512(secret.UnSecure().ASCII());
 
-	private const string _publicUrl = "https://yobit.net/api";
-	private const string _tradeUrl = "https://yobit.net/tapi";
+	private readonly string _publicUrl = publicUrl.ThrowIfEmpty(nameof(publicUrl)).TrimEnd('/');
+	private readonly string _tradeUrl = tradeUrl.ThrowIfEmpty(nameof(tradeUrl)).TrimEnd('/');
+	private readonly string _tradePageUrl = tradePageUrl.ThrowIfEmpty(nameof(tradePageUrl)).TrimEnd('/');
 	private static readonly Regex _pairIdRegex = new(@"var\s+pair_id\s*=\s*'(?<id>\d+)'", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 	private readonly UTCIncrementalIdGenerator _nonceGen = new();
@@ -52,7 +53,7 @@ class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
 		if (parts.Length != 2)
 			throw new ArgumentOutOfRangeException(nameof(symbol), symbol, LocalizedStrings.InvalidValue);
 
-		var tradeUrl = $"https://yobit.net/en/trade/{parts[0].ToUpperInvariant()}/{parts[1].ToUpperInvariant()}";
+		var tradeUrl = $"{_tradePageUrl}/{parts[0].ToUpperInvariant()}/{parts[1].ToUpperInvariant()}";
 		string html;
 
 		using (var client = new System.Net.Http.HttpClient())

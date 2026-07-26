@@ -4,6 +4,7 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 {
 	private const int _maximumMessageBytes = 16 * 1024 * 1024;
 	private readonly Uri _endpoint;
+	private readonly string _origin;
 	private readonly SemaphoreSlim _sendGate = new(1, 1);
 	private readonly Lock _sync = new();
 	private readonly JsonSerializerSettings _settings = new()
@@ -20,7 +21,7 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 	private long _requestId;
 	private bool _isDisconnecting;
 
-	public SynFuturesSocketClient(string endpoint)
+	public SynFuturesSocketClient(string endpoint, string origin)
 	{
 		endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).Trim();
 		if (!Uri.TryCreate(endpoint, UriKind.Absolute, out _endpoint) ||
@@ -28,6 +29,7 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 			throw new ArgumentException(
 				"SynFutures WebSocket endpoint must use WS or WSS.",
 				nameof(endpoint));
+		_origin = origin.ThrowIfEmpty(nameof(origin));
 	}
 
 	public override string Name => "SynFutures_WebSocket";
@@ -383,7 +385,7 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 	{
 		var socket = new ClientWebSocket();
 		socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
-		socket.Options.SetRequestHeader("Origin", "https://app.synfutures.com");
+		socket.Options.SetRequestHeader("Origin", _origin);
 		socket.Options.SetRequestHeader("User-Agent",
 			"Mozilla/5.0 (compatible; StockSharp-SynFutures/1.0)");
 		return socket;

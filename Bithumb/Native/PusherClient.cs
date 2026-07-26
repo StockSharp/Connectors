@@ -13,10 +13,10 @@ class PusherClient : BaseLogReceiver
 	// to get readable name after obfuscation
 	public override string Name => nameof(Bithumb) + "_" + nameof(PusherClient);
 
-	public PusherClient(int attemptsCount, WorkingTime workingTime)
+	public PusherClient(string endpoint, int attemptsCount, WorkingTime workingTime)
 	{
 		_client = new(
-			"wss://pubwss.bithumb.com/pub/ws",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

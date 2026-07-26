@@ -22,8 +22,6 @@ partial class AlphaVantageMessageAdapter
 
 		this.AddSupportedCandleTimeFrames(AllTimeFrames);
 
-		_alphaClient = new() { Parent = this };
-
 		IterationInterval = TimeSpan.FromSeconds(1);
 	}
 
@@ -35,6 +33,8 @@ partial class AlphaVantageMessageAdapter
 	{
 		if (Token.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.TokenNotSpecified);
+
+		_alphaClient = new(QueryEndpoint) { Parent = this };
 
 		return base.ConnectAsync(msg, token);
 	}

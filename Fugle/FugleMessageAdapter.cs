@@ -59,7 +59,7 @@ public partial class FugleMessageAdapter
 		if (ReconnectAttempts < 0)
 			throw new ArgumentOutOfRangeException(nameof(ReconnectAttempts), ReconnectAttempts, "Reconnect attempts cannot be negative.");
 
-		_restClient = new(Token) { Parent = this };
+		_restClient = new(RestEndpoint, Token) { Parent = this };
 		try
 		{
 			await _restClient.Validate(cancellationToken);
@@ -122,7 +122,10 @@ public partial class FugleMessageAdapter
 			if (socket != null)
 				return socket;
 
-			socket = new(kind, Token, ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
+			var endpoint = kind == FugleAssetKinds.Stock
+				? StockWebSocketEndpoint
+				: FuturesWebSocketEndpoint;
+			socket = new(kind, endpoint, Token, ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
 			socket.DataReceived += OnDataReceived;
 			socket.Error += SendOutErrorAsync;
 			try

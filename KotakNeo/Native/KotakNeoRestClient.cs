@@ -2,8 +2,6 @@ namespace StockSharp.KotakNeo.Native;
 
 sealed class KotakNeoRestClient : BaseLogReceiver
 {
-	private const string _loginUrl = "https://mis.kotaksecurities.com/login/1.0/tradeApiLogin";
-	private const string _validateUrl = "https://mis.kotaksecurities.com/login/1.0/tradeApiValidate";
 	private const string _finKey = "neotradeapi";
 
 	private static readonly JsonSerializerSettings _jsonSettings = new()
@@ -12,6 +10,8 @@ sealed class KotakNeoRestClient : BaseLogReceiver
 	};
 
 	private readonly string _consumerKey;
+	private readonly Uri _loginUrl;
+	private readonly Uri _validateUrl;
 	private readonly HttpClient _fileClient = new();
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private KotakNeoSession _session;
@@ -19,8 +19,10 @@ sealed class KotakNeoRestClient : BaseLogReceiver
 	private IReadOnlyDictionary<string, KotakNeoInstrument> _instrumentsByKey;
 	private IReadOnlyDictionary<string, KotakNeoInstrument> _instrumentsByTradingSymbol;
 
-	public KotakNeoRestClient(string consumerKey)
+	public KotakNeoRestClient(string loginEndpoint, string validationEndpoint, string consumerKey)
 	{
+		_loginUrl = new(loginEndpoint.ThrowIfEmpty(nameof(loginEndpoint)));
+		_validateUrl = new(validationEndpoint.ThrowIfEmpty(nameof(validationEndpoint)));
 		_consumerKey = consumerKey.ThrowIfEmpty(nameof(consumerKey));
 	}
 
@@ -49,7 +51,7 @@ sealed class KotakNeoRestClient : BaseLogReceiver
 				Totp = totp.ThrowIfEmpty(nameof(totp)),
 			}, _jsonSettings), DataFormat.Json);
 
-		var view = await loginRequest.InvokeAsync<KotakNeoLoginResponse>(new Uri(_loginUrl), this, this.AddVerboseLog, cancellationToken);
+		var view = await loginRequest.InvokeAsync<KotakNeoLoginResponse>(_loginUrl, this, this.AddVerboseLog, cancellationToken);
 		EnsureLogin(view, "TOTP login");
 
 		var validateRequest = new RestRequest((string)null, Method.Post)
@@ -63,7 +65,7 @@ sealed class KotakNeoRestClient : BaseLogReceiver
 				Mpin = mpin.ThrowIfEmpty(nameof(mpin)).UnSecure(),
 			}, _jsonSettings), DataFormat.Json);
 
-		var trade = await validateRequest.InvokeAsync<KotakNeoLoginResponse>(new Uri(_validateUrl), this, this.AddVerboseLog, cancellationToken);
+		var trade = await validateRequest.InvokeAsync<KotakNeoLoginResponse>(_validateUrl, this, this.AddVerboseLog, cancellationToken);
 		EnsureLogin(trade, "MPIN validation");
 		if (!Uri.TryCreate(trade.Data.BaseUrl, UriKind.Absolute, out _))
 			throw new InvalidOperationException("Kotak Neo MPIN validation did not return a valid baseUrl.");

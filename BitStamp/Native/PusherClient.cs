@@ -23,10 +23,10 @@ class PusherClient : BaseLogReceiver
 
 	private readonly WebSocketClient _client;
 
-	public PusherClient(int attemptsCount, WorkingTime workingTime)
+	public PusherClient(string endpoint, int attemptsCount, WorkingTime workingTime)
 	{
 		_client = new(
-			"wss://ws.bitstamp.net",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

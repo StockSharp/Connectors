@@ -9,6 +9,7 @@ public partial class MoexISSMessageAdapter
 	public MoexISSMessageAdapter(IdGenerator transactionIdGenerator)
 		: base(transactionIdGenerator)
 	{
+		_client.BaseAddress = new(RestEndpoint);
 		this.AddMarketDataSupport();
 
 		this.AddSupportedMarketDataType(DataType.Level1);

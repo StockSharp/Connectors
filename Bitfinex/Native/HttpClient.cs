@@ -8,12 +8,13 @@ class HttpClient : BaseLogReceiver
 	private readonly SecureString _key;
 	private readonly HashAlgorithm _hasher;
 
-	private const string _baseUrl = "https://api.bitfinex.com";
+	private readonly string _baseUrl;
 
 	private readonly IdGenerator _nonceGen;
 
-	public HttpClient(SecureString key, SecureString secret)
+	public HttpClient(string baseUrl, SecureString key, SecureString secret)
 	{
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 		_key = key;
 		_hasher = secret.IsEmpty() ? null : new HMACSHA384(secret.UnSecure().ASCII());
 
@@ -247,7 +248,7 @@ class HttpClient : BaseLogReceiver
 		throw new InvalidOperationException((string)response.message);
 	}
 
-	private static Uri CreateUrl(string methodName, string version = "v2/")
+	private Uri CreateUrl(string methodName, string version = "v2/")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

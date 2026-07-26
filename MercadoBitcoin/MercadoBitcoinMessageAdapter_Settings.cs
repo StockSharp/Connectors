@@ -23,6 +23,8 @@ public partial class MercadoBitcoinMessageAdapter : MessageAdapter,
         "https://api.mercadobitcoin.net/api/v4";
     private const string _defaultWebSocketEndpoint =
         "wss://ws.mercadobitcoin.net/ws";
+    private const string _defaultWebSocketOrigin =
+        "https://www.mercadobitcoin.com.br";
 
     /// <summary>
     /// Supported historical candle time frames.
@@ -86,6 +88,17 @@ public partial class MercadoBitcoinMessageAdapter : MessageAdapter,
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
+    /// <summary>
+    /// Public WebSocket origin header.
+    /// </summary>
+    [Display(
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AddressKey,
+        Description = LocalizedStrings.ServerAddressKey,
+        GroupName = LocalizedStrings.WebSocketAddressesKey,
+        Order = 1)]
+    public string WebSocketOrigin { get; set; } = _defaultWebSocketOrigin;
+
     /// <inheritdoc />
     public override void Save(SettingsStorage storage)
     {
@@ -95,7 +108,8 @@ public partial class MercadoBitcoinMessageAdapter : MessageAdapter,
             .Set(nameof(Secret), Secret)
             .Set(nameof(AccountId), AccountId)
             .Set(nameof(RestEndpoint), RestEndpoint)
-            .Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
+            .Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+            .Set(nameof(WebSocketOrigin), WebSocketOrigin);
     }
 
     /// <inheritdoc />
@@ -110,6 +124,9 @@ public partial class MercadoBitcoinMessageAdapter : MessageAdapter,
         WebSocketEndpoint = NormalizeEndpoint(storage.GetValue(
             nameof(WebSocketEndpoint), WebSocketEndpoint),
             _defaultWebSocketEndpoint, "wss");
+        WebSocketOrigin = NormalizeEndpoint(storage.GetValue(
+            nameof(WebSocketOrigin), WebSocketOrigin),
+            _defaultWebSocketOrigin, "https");
     }
 
     private static string NormalizeEndpoint(string endpoint, string fallback,

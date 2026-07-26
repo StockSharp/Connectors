@@ -2,18 +2,18 @@ namespace StockSharp.Fugle.Native;
 
 sealed class FugleRestClient : BaseLogReceiver
 {
-	private const string _baseUrl = "https://api.fugle.tw/marketdata/v1.0/";
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	private readonly HttpClient _httpClient = new() { BaseAddress = new(_baseUrl) };
+	private readonly HttpClient _httpClient;
 	private readonly SemaphoreSlim _securitiesLock = new(1, 1);
 	private FugleSecurityInfo[] _securities;
 
-	public FugleRestClient(SecureString apiKey)
+	public FugleRestClient(string endpoint, SecureString apiKey)
 	{
+		_httpClient = new() { BaseAddress = new(endpoint.ThrowIfEmpty(nameof(endpoint))) };
 		_httpClient.DefaultRequestHeaders.Add("X-API-KEY", apiKey.ThrowIfEmpty(nameof(apiKey)).UnSecure());
 		_httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 		_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Fugle/1.0");

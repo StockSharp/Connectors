@@ -2,7 +2,6 @@ namespace StockSharp.Fyers.Native;
 
 sealed class FyersMarketDataClient : BaseLogReceiver
 {
-	private const string _url = "wss://socket.fyers.in/hsm/v1-5/prod";
 	private const string _source = "StockSharp-FYERS-v3";
 	private const int _channel = 11;
 	private const int _symbolLimit = 5000;
@@ -18,7 +17,7 @@ sealed class FyersMarketDataClient : BaseLogReceiver
 	private int _acknowledgementFrequency;
 	private int _updatesSinceAcknowledgement;
 
-	public FyersMarketDataClient(string clientId, string token, int reconnectAttempts, WorkingTime workingTime)
+	public FyersMarketDataClient(string endpoint, string clientId, string token, int reconnectAttempts, WorkingTime workingTime)
 	{
 		clientId.ThrowIfEmpty(nameof(clientId));
 		_accessToken = token.ThrowIfEmpty(nameof(token));
@@ -26,7 +25,7 @@ sealed class FyersMarketDataClient : BaseLogReceiver
 		_hsmKey = DecodeToken(_accessToken);
 
 		_client = new(
-			_url,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

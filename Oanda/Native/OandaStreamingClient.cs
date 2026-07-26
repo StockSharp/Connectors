@@ -10,7 +10,7 @@ static class OandaStreamingNames
 	public const string Transactions = "transactions";
 }
 
-class OandaStreamingClient(bool isDemo, SecureString token, bool useCompression) : Disposable
+class OandaStreamingClient(string endpoint, SecureString token, bool useCompression) : Disposable
 {
 	private class StreamingWorker<TResponse>
 		where TResponse : IStreamingResponse
@@ -210,7 +210,7 @@ class OandaStreamingClient(bool isDemo, SecureString token, bool useCompression)
 		}
 	}
 
-	private readonly string _streamingUrl = isDemo ? "https://stream-fxpractice.oanda.com" : "https://stream-fxtrade.oanda.com";
+	private readonly string _streamingUrl = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/');
 
 	private readonly Dictionary<string, HashSet<string>> _instruments = new(StringComparer.InvariantCultureIgnoreCase);
 	private readonly Dictionary<string, StreamingWorker<StreamingPricingResponse>> _pricesWorkers = new(StringComparer.InvariantCultureIgnoreCase);

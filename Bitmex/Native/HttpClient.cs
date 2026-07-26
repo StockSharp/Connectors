@@ -10,10 +10,10 @@ class HttpClient : BaseLogReceiver
 
 	private readonly Authenticator _authenticator;
 
-	public HttpClient(Authenticator authenticator, string subDomain)
+	public HttpClient(Authenticator authenticator, string baseUrl)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
-		_baseUrl = $"https://{subDomain}.bitmex.com/api/v1";
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 	}
 
 	// to get readable name after obfuscation

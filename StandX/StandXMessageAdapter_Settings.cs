@@ -39,6 +39,7 @@ public partial class StandXMessageAdapter : MessageAdapter
 		"wss://perps.standx.com/ws-stream/v1";
 	private const string _defaultOrderSocketEndpoint =
 		"wss://perps.standx.com/ws-api/v1";
+	private const string _defaultSignInEndpoint = "https://standx.com";
 
 	/// <summary>Public and private REST endpoint.</summary>
 	[Display(
@@ -78,6 +79,15 @@ public partial class StandXMessageAdapter : MessageAdapter
 		Order = 3)]
 	public string OrderSocketEndpoint { get; set; } =
 		_defaultOrderSocketEndpoint;
+
+	/// <summary>Expected sign-in challenge endpoint.</summary>
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
+	public string SignInEndpoint { get; set; } = _defaultSignInEndpoint;
 
 	private StandXChains _chain;
 
@@ -176,6 +186,7 @@ public partial class StandXMessageAdapter : MessageAdapter
 			.Set(nameof(AuthEndpoint), AuthEndpoint)
 			.Set(nameof(MarketSocketEndpoint), MarketSocketEndpoint)
 			.Set(nameof(OrderSocketEndpoint), OrderSocketEndpoint)
+			.Set(nameof(SignInEndpoint), SignInEndpoint)
 			.Set(nameof(Chain), Chain)
 			.Set(nameof(WalletAddress), WalletAddress)
 			.Set(nameof(PrivateKey), PrivateKey)
@@ -198,6 +209,9 @@ public partial class StandXMessageAdapter : MessageAdapter
 		OrderSocketEndpoint = NormalizeEndpoint(storage.GetValue(
 			nameof(OrderSocketEndpoint), OrderSocketEndpoint), true,
 			nameof(OrderSocketEndpoint));
+		SignInEndpoint = NormalizeEndpoint(storage.GetValue(
+			nameof(SignInEndpoint), SignInEndpoint), false,
+			nameof(SignInEndpoint));
 		Chain = storage.GetValue(nameof(Chain), Chain);
 		WalletAddress = storage.GetValue<string>(nameof(WalletAddress));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));

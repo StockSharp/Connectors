@@ -459,6 +459,7 @@ public partial class IQFeedMessageAdapter : MessageAdapter
 		{
 			this.AddInfoLog("downloading symbols...");
 			securities = IQFeedSecurityParser.ParseFromUrlAsync(
+				url: SecuritiesUrl.ThrowIfEmpty(nameof(SecuritiesUrl)),
 				securityTypes: securityTypes,
 				maxCount: lookupMsg.Count is > 0
 					? checked(lookupMsg.Count.Value + (lookupMsg.Skip ?? 0))

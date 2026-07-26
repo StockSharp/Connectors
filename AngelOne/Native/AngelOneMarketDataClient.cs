@@ -2,8 +2,6 @@ namespace StockSharp.AngelOne.Native;
 
 sealed class AngelOneMarketDataClient : BaseLogReceiver
 {
-	private const string _url = "wss://smartapisocket.angelone.in/smart-stream";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -17,7 +15,7 @@ sealed class AngelOneMarketDataClient : BaseLogReceiver
 	private readonly SynchronizedDictionary<string, AngelOneFeedModes> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 
 	public AngelOneMarketDataClient(string jwtToken, string apiKey, string clientCode, string feedToken,
-		int reconnectAttempts, WorkingTime workingTime)
+		int reconnectAttempts, WorkingTime workingTime, string webSocketEndpoint)
 	{
 		_jwtToken = jwtToken.ThrowIfEmpty(nameof(jwtToken));
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
@@ -25,7 +23,7 @@ sealed class AngelOneMarketDataClient : BaseLogReceiver
 		_feedToken = feedToken.ThrowIfEmpty(nameof(feedToken));
 
 		_client = new(
-			_url,
+			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
 			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
 			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
 			Process,

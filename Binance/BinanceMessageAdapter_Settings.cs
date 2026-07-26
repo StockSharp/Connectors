@@ -140,10 +140,16 @@ public partial class BinanceMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 	private const string _defaultHostWebSocketSpot         = "stream.binance.com";
 	private const string _defaultHostWebSocketFuture       = "fstream.binance.com";
 	private const string _defaultHostWebSocketFutureCoin   = "dstream.binance.com";
+	private const string _defaultDemoHostWebSocketSpot     = "testnet.binance.vision";
+	private const string _defaultDemoHostWebSocketFuture   = "stream.binancefuture.com";
+	private const string _defaultDemoHostWebSocketFutureCoin = "dstream.binancefuture.com";
 
 	private const string _defaultHostRestSpot              = "api.binance.com";
 	private const string _defaultHostRestFuture            = "fapi.binance.com";
 	private const string _defaultHostRestFutureCoin        = "dapi.binance.com";
+	private const string _defaultDemoHostRestSpot          = "testnet.binance.vision";
+	private const string _defaultDemoHostRestFuture        = "testnet.binancefuture.com";
+	private const string _defaultDemoHostRestFutureCoin    = "testnet.binancefuture.com";
 
 	/// <summary>
 	/// Websocket host for spot/margin.
@@ -178,6 +184,30 @@ public partial class BinanceMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 		Order = 3)]
 	public string HostWebSocketFutureCoin { get; set; } = _defaultHostWebSocketFutureCoin;
 
+	/// <summary>Demo websocket host for spot.</summary>
+	[Display(
+		Name = "Demo spot",
+		Description = "Demo spot WebSocket host.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 4)]
+	public string DemoHostWebSocketSpot { get; set; } = _defaultDemoHostWebSocketSpot;
+
+	/// <summary>Demo websocket host for futures.</summary>
+	[Display(
+		Name = "Demo futures",
+		Description = "Demo futures WebSocket host.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 5)]
+	public string DemoHostWebSocketFuture { get; set; } = _defaultDemoHostWebSocketFuture;
+
+	/// <summary>Demo websocket host for coin futures.</summary>
+	[Display(
+		Name = "Demo coin futures",
+		Description = "Demo coin futures WebSocket host.",
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 6)]
+	public string DemoHostWebSocketFutureCoin { get; set; } = _defaultDemoHostWebSocketFutureCoin;
+
 	/// <summary>
 	/// REST host for spot/margin.
 	/// </summary>
@@ -211,6 +241,30 @@ public partial class BinanceMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 		Order = 3)]
 	public string HostRestFutureCoin { get; set; } = _defaultHostRestFutureCoin;
 
+	/// <summary>Demo REST host for spot.</summary>
+	[Display(
+		Name = "Demo spot",
+		Description = "Demo spot REST host.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
+	public string DemoHostRestSpot { get; set; } = _defaultDemoHostRestSpot;
+
+	/// <summary>Demo REST host for futures.</summary>
+	[Display(
+		Name = "Demo futures",
+		Description = "Demo futures REST host.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
+	public string DemoHostRestFuture { get; set; } = _defaultDemoHostRestFuture;
+
+	/// <summary>Demo REST host for coin futures.</summary>
+	[Display(
+		Name = "Demo coin futures",
+		Description = "Demo coin futures REST host.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
+	public string DemoHostRestFutureCoin { get; set; } = _defaultDemoHostRestFutureCoin;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -226,10 +280,16 @@ public partial class BinanceMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 			.Set(nameof(HostWebSocketSpot), HostWebSocketSpot)
 			.Set(nameof(HostWebSocketFuture), HostWebSocketFuture)
 			.Set(nameof(HostWebSocketFutureCoin), HostWebSocketFutureCoin)
+			.Set(nameof(DemoHostWebSocketSpot), DemoHostWebSocketSpot)
+			.Set(nameof(DemoHostWebSocketFuture), DemoHostWebSocketFuture)
+			.Set(nameof(DemoHostWebSocketFutureCoin), DemoHostWebSocketFutureCoin)
 
 			.Set(nameof(HostRestSpot), HostRestSpot)
 			.Set(nameof(HostRestFuture), HostRestFuture)
 			.Set(nameof(HostRestFutureCoin), HostRestFutureCoin)
+			.Set(nameof(DemoHostRestSpot), DemoHostRestSpot)
+			.Set(nameof(DemoHostRestFuture), DemoHostRestFuture)
+			.Set(nameof(DemoHostRestFutureCoin), DemoHostRestFutureCoin)
 		;
 	}
 
@@ -246,10 +306,16 @@ public partial class BinanceMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 		HostWebSocketSpot = storage.GetValue(nameof(HostWebSocketSpot), HostWebSocketSpot);
 		HostWebSocketFuture = storage.GetValue(nameof(HostWebSocketFuture), HostWebSocketFuture);
 		HostWebSocketFutureCoin = storage.GetValue(nameof(HostWebSocketFutureCoin), HostWebSocketFutureCoin);
+		DemoHostWebSocketSpot = storage.GetValue(nameof(DemoHostWebSocketSpot), DemoHostWebSocketSpot);
+		DemoHostWebSocketFuture = storage.GetValue(nameof(DemoHostWebSocketFuture), DemoHostWebSocketFuture);
+		DemoHostWebSocketFutureCoin = storage.GetValue(nameof(DemoHostWebSocketFutureCoin), DemoHostWebSocketFutureCoin);
 
 		HostRestSpot = storage.GetValue(nameof(HostRestSpot), HostRestSpot);
 		HostRestFuture = storage.GetValue(nameof(HostRestFuture), HostRestFuture);
 		HostRestFutureCoin = storage.GetValue(nameof(HostRestFutureCoin), HostRestFutureCoin);
+		DemoHostRestSpot = storage.GetValue(nameof(DemoHostRestSpot), DemoHostRestSpot);
+		DemoHostRestFuture = storage.GetValue(nameof(DemoHostRestFuture), DemoHostRestFuture);
+		DemoHostRestFutureCoin = storage.GetValue(nameof(DemoHostRestFutureCoin), DemoHostRestFutureCoin);
 
 		Sections = storage.GetValue<string>(nameof(Sections)).SplitByComma().Select(s => s.To<BinanceSections>()).ToArray();
 	}

@@ -51,8 +51,8 @@ public partial class AlorMessageAdapter
 		if (_orderSocketClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		var domainPrefix = IsDemo ? "dev" : string.Empty;
-		var domain = $"api{domainPrefix}.alor.ru";
+		var restEndpoint = IsDemo ? DemoRestEndpoint : RestEndpoint;
+		var webSocketEndpoint = IsDemo ? DemoWebSocketEndpoint : WebSocketEndpoint;
 
 		var token = Token;
 		SecureString jwtToken;
@@ -71,7 +71,8 @@ public partial class AlorMessageAdapter
 		}
 		else
 		{
-			var url = $"https://oauth{domainPrefix}.alor.ru/refresh?token={token.UnSecure()}".To<Uri>();
+			var oauthEndpoint = IsDemo ? DemoOAuthEndpoint : OAuthEndpoint;
+			var url = $"{oauthEndpoint.ThrowIfEmpty(nameof(oauthEndpoint))}?token={token.UnSecure()}".To<Uri>();
 
 			var jwnTokenRequest = new RestRequest { Method = Method.Post };
 
@@ -91,9 +92,9 @@ public partial class AlorMessageAdapter
 
 		_pfNames.AddRange(extractPortfolios(jwtToken.UnSecure()));
 
-		_httpClient = new(domain, jwtToken) { Parent = this };
+		_httpClient = new(restEndpoint, jwtToken) { Parent = this };
 
-		_dataSocketClient = new(domain, jwtToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_dataSocketClient = new(webSocketEndpoint, jwtToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 		_dataSocketClient.Response += OnResponse;
 		_dataSocketClient.InstrumentStatus += OnInstrumentStatus;
 		_dataSocketClient.Ohlc += OnOhlc;
@@ -108,7 +109,7 @@ public partial class AlorMessageAdapter
 		_dataSocketClient.SpectraRisk += OnSpectraRisk;
 		_dataSocketClient.StopOrder += OnStopOrder;
 
-		_orderSocketClient = new(domain, jwtToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_orderSocketClient = new(webSocketEndpoint, jwtToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		_orderSocketClient.OrderCreated += OnOrderCreated;
 		_orderSocketClient.TransError += OnTransError;

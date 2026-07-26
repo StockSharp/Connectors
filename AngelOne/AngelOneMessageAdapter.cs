@@ -44,13 +44,15 @@ public partial class AngelOneMessageAdapter
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(Login, Password, ApiKey, TotpSecret, ClientLocalIp, ClientPublicIp, MacAddress) { Parent = this };
+		_restClient = new(Login, Password, ApiKey, TotpSecret, ClientLocalIp, ClientPublicIp,
+			MacAddress, RestEndpoint, InstrumentEndpoint) { Parent = this };
 		await _restClient.Login(cancellationToken);
 
 		if (this.IsMarketData())
 		{
 			_marketClient = new(_restClient.JwtToken, ApiKey.UnSecure(), Login, _restClient.FeedToken,
-				ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+				ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime,
+				MarketWebSocketEndpoint) { Parent = this };
 			_marketClient.TickReceived += OnTickReceived;
 			_marketClient.StateChanged += SendOutConnectionStateAsync;
 			_marketClient.Error += SendOutErrorAsync;
@@ -60,7 +62,8 @@ public partial class AngelOneMessageAdapter
 		if (this.IsTransactional())
 		{
 			_orderClient = new(_restClient.JwtToken, ApiKey.UnSecure(), Login, _restClient.FeedToken,
-				ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+				ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime,
+				OrderWebSocketEndpoint) { Parent = this };
 			_orderClient.OrderReceived += OnOrderReceived;
 			_orderClient.StateChanged += SendOutConnectionStateAsync;
 			_orderClient.Error += SendOutErrorAsync;

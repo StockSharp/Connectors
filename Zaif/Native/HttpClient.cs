@@ -2,14 +2,14 @@ namespace StockSharp.Zaif.Native;
 
 using System.Security.Cryptography;
 
-class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
+class HttpClient(string baseUrl, string privateUrl, SecureString key, SecureString secret) : BaseLogReceiver
 {
 	private readonly SecureString _key = key;
 
 	private readonly HashAlgorithm _hasher = secret.IsEmpty() ? null : new HMACSHA512(secret.UnSecure().UTF8());
 
-	private const string _baseUrl = "https://api.zaif.jp/api";
-	private static readonly Uri _privateUrl = "https://api.zaif.jp/tapi".To<Uri>();
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
+	private readonly Uri _privateUrl = privateUrl.ThrowIfEmpty(nameof(privateUrl)).To<Uri>();
 
 	private readonly UTCIncrementalIdGenerator _nonceGen = new();
 
@@ -141,7 +141,7 @@ class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
 		return MakeRequestAsync<object>(_privateUrl, ApplySecret(request, "withdraw"), cancellationToken);
 	}
 
-	private static Uri CreateUrl(string methodName, string version = "1/")
+	private Uri CreateUrl(string methodName, string version = "1/")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

@@ -22,12 +22,12 @@ class PusherClient : BaseLogReceiver
 	private const string _subscribe = "addChannel";
 	private const string _unsubscribe = "removeChannel";
 
-	public PusherClient(Authenticator authenticator, WorkingTime workingTime)
+	public PusherClient(string endpoint, Authenticator authenticator, WorkingTime workingTime)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
 		_client = new(
-			"wss://api.zb.cn/websocket",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

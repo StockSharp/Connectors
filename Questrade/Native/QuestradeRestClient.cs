@@ -2,7 +2,7 @@ namespace StockSharp.Questrade.Native;
 
 sealed class QuestradeRestClient : BaseLogReceiver
 {
-	private static readonly Uri _tokenUri = new("https://login.questrade.com/oauth2/token");
+	private readonly Uri _tokenUri;
 	private readonly HttpClient _http = new();
 	private readonly SemaphoreSlim _tokenLock = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()
@@ -15,10 +15,11 @@ sealed class QuestradeRestClient : BaseLogReceiver
 	private Uri _apiRoot;
 	private DateTimeOffset _expiresAt;
 
-	public QuestradeRestClient(string accessToken, string refreshToken, string apiServer)
+	public QuestradeRestClient(string accessToken, string refreshToken, string apiServer, string oauthEndpoint)
 	{
 		_accessToken = accessToken;
 		_refreshToken = refreshToken;
+		_tokenUri = new(oauthEndpoint.ThrowIfEmpty(nameof(oauthEndpoint)));
 		if (!apiServer.IsEmpty())
 			_apiRoot = NormalizeApiRoot(apiServer);
 		if (!_accessToken.IsEmpty())

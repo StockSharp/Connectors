@@ -4,13 +4,14 @@ using System.Dynamic;
 
 class HttpClient : BaseLogReceiver
 {
-	private const string _baseUrl = "https://api.bibox.com/api";
 	private const string _version = "v4";
 
+	private readonly string _baseUrl;
 	private readonly Authenticator _authenticator;
 
-	public HttpClient(Authenticator authenticator)
+	public HttpClient(string baseUrl, Authenticator authenticator)
 	{
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 	}
 
@@ -127,7 +128,7 @@ class HttpClient : BaseLogReceiver
 		}, _serializerSettings);
 	}
 
-	private static Uri CreateUrl(string methodName)
+	private Uri CreateUrl(string methodName)
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

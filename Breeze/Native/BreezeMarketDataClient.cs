@@ -2,11 +2,10 @@ namespace StockSharp.Breeze.Native;
 
 sealed class BreezeMarketDataClient : BreezeSocketClient
 {
-	private const string _url = "wss://livestream.icicidirect.com/socket.io/?EIO=4&transport=websocket";
 	private readonly SynchronizedDictionary<string, BreezeInstrumentKinds> _instruments = new(StringComparer.OrdinalIgnoreCase);
 
-	public BreezeMarketDataClient(string user, string token, int reconnectAttempts, WorkingTime workingTime)
-		: base(_url, user, token, reconnectAttempts, workingTime) { }
+	public BreezeMarketDataClient(string endpoint, string user, string token, int reconnectAttempts, WorkingTime workingTime)
+		: base(endpoint, user, token, reconnectAttempts, workingTime) { }
 
 	public override string Name => nameof(Breeze) + "_" + nameof(BreezeMarketDataClient);
 	public event Func<BreezeMarketTick, CancellationToken, ValueTask> TickReceived;

@@ -588,7 +588,9 @@ public partial class TinkoffMessageAdapter
 
 		while (curr < to)
 		{
-			using var response = await _historyClient.GetAsync($"https://{_domainAddr}/history-data?figi={figi}&year={curr.Year}", cancellationToken);
+			using var response = await _historyClient.GetAsync(
+				$"{HistoryEndpoint.ThrowIfEmpty(nameof(HistoryEndpoint)).TrimEnd('/')}/history-data?figi={figi}&year={curr.Year}",
+				cancellationToken);
 			response.EnsureSuccessStatusCode();
 
 			using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -804,7 +806,7 @@ public partial class TinkoffMessageAdapter
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var url = $"https://{_domainAddr}/history-trades/{curr:yyyy-MM-dd}";
+			var url = $"{HistoryEndpoint.ThrowIfEmpty(nameof(HistoryEndpoint)).TrimEnd('/')}/history-trades/{curr:yyyy-MM-dd}";
 			
 			if (!instrumentId.IsEmpty())
 				url += "?instrumentId={instrumentId}";

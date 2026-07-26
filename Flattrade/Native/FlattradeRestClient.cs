@@ -2,8 +2,6 @@ namespace StockSharp.Flattrade.Native;
 
 sealed class FlattradeRestClient : BaseLogReceiver
 {
-	private const string _apiUrl = "https://piconnect.flattrade.in/PiConnectAPI/";
-	private const string _instrumentBaseUrl = "https://flattrade.s3.ap-south-1.amazonaws.com/scripmaster/";
 	private static readonly string[] _instrumentFiles =
 	[
 		"NSE_Equity.csv",
@@ -23,14 +21,17 @@ sealed class FlattradeRestClient : BaseLogReceiver
 	private readonly string _userId;
 	private readonly string _accountId;
 	private readonly string _sessionToken;
-	private readonly HttpClient _httpClient = new() { BaseAddress = new(_apiUrl) };
+	private readonly HttpClient _httpClient;
+	private readonly string _instrumentBaseUrl;
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private FlattradeInstrument[] _instruments;
 	private IReadOnlyDictionary<string, FlattradeInstrument> _instrumentsByKey;
 	private IReadOnlyDictionary<string, FlattradeInstrument> _instrumentsBySymbol;
 
-	public FlattradeRestClient(string userId, string accountId, SecureString sessionToken)
+	public FlattradeRestClient(string apiEndpoint, string instrumentEndpoint, string userId, string accountId, SecureString sessionToken)
 	{
+		_httpClient = new() { BaseAddress = new(apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint))) };
+		_instrumentBaseUrl = instrumentEndpoint.ThrowIfEmpty(nameof(instrumentEndpoint)).TrimEnd('/') + "/";
 		_userId = userId.ThrowIfEmpty(nameof(userId));
 		_accountId = accountId.ThrowIfEmpty(nameof(accountId));
 		_sessionToken = sessionToken.ThrowIfEmpty(nameof(sessionToken)).UnSecure();

@@ -59,9 +59,9 @@ public partial class CoinigyMessageAdapter
 		if (_pusherClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new HttpClient(Key, Secret) { Parent = this };
+		_httpClient = new HttpClient(RestEndpoint, Key, Secret) { Parent = this };
 
-		_pusherClient = new PusherClient(Key, Secret, WebSocketId, ReConnectionSettings.WorkingTime) { Parent = this };
+		_pusherClient = new PusherClient(WebSocketEndpoint, Key, Secret, WebSocketId, ReConnectionSettings.WorkingTime) { Parent = this };
 		SubscribePusherClient();
 
 		await _pusherClient.ConnectAsync(cancellationToken);

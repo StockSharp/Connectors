@@ -37,7 +37,7 @@ class SocketClient : BaseLogReceiver
 		if (adapter is null)
 			throw new ArgumentNullException(nameof(adapter));
 
-		_url = adapter.IsDemo ? "wss://contract.mexc.com/edge" : $"wss://{adapter.FuturesWsDomain}";
+		_url = $"wss://{adapter.FuturesWsDomain}";
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
 		_client = new(

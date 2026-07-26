@@ -99,8 +99,8 @@ public partial class CexMessageAdapter : MessageAdapter
 
 		_authenticator = new Authenticator(this.IsTransactional(), Key, Secret);
 
-		_httpClient = new HttpClient { Parent = this };
-		_pusherClient = new PusherClient(_authenticator, ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_httpClient = new HttpClient(RestEndpoint) { Parent = this };
+		_pusherClient = new PusherClient(WebSocketEndpoint, _authenticator, ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);

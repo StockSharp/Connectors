@@ -21,9 +21,9 @@ internal sealed class XApiStreamClient : BaseLogReceiver
 	private bool _trades;
 	private bool _tradeStatus;
 
-	public XApiStreamClient(bool isDemo, string sessionId, int maxAttempts)
+	public XApiStreamClient(string endpoint, string sessionId, int maxAttempts)
 	{
-		_uri = new(isDemo ? "wss://ws.xapi.pro/demoStream" : "wss://ws.xapi.pro/realStream");
+		_uri = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_sessionId = sessionId.ThrowIfEmpty(nameof(sessionId));
 		_maxAttempts = Math.Max(1, maxAttempts);
 	}

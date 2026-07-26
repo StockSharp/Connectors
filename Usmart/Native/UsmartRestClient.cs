@@ -2,14 +2,10 @@ namespace StockSharp.Usmart.Native;
 
 sealed class UsmartRestClient : Disposable
 {
-	private const string _quoteLive = "https://open-hz.usmartsg.com:8443/";
-	private const string _quoteDemo = "https://open-hz-uat.yxzq.com/";
-	private const string _tradeLive = "https://open-jy.yxzq.com/";
-	private const string _tradeDemo = "http://open-jy-uat.yxzq.com/";
-
 	private readonly string _accessToken;
 	private readonly string _channelId;
-	private readonly bool _isDemo;
+	private readonly Uri _quoteEndpoint;
+	private readonly Uri _tradeEndpoint;
 	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(60) };
 	private readonly RSA _rsa = RSA.Create();
 	private readonly JsonSerializerSettings _jsonSettings = new()
@@ -21,11 +17,12 @@ sealed class UsmartRestClient : Disposable
 	private long _requestSequence;
 
 	public UsmartRestClient(string accessToken, string channelId, string privateKey,
-		bool isDemo)
+		string quoteEndpoint, string tradeEndpoint)
 	{
 		_accessToken = accessToken.ThrowIfEmpty(nameof(accessToken));
 		_channelId = channelId.ThrowIfEmpty(nameof(channelId));
-		_isDemo = isDemo;
+		_quoteEndpoint = new(quoteEndpoint.ThrowIfEmpty(nameof(quoteEndpoint)));
+		_tradeEndpoint = new(tradeEndpoint.ThrowIfEmpty(nameof(tradeEndpoint)));
 		_rsa.ImportFromPem(privateKey.ThrowIfEmpty(nameof(privateKey)));
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "StockSharp-uSMART");
@@ -120,13 +117,13 @@ sealed class UsmartRestClient : Disposable
 	private Task<TResponse> PostQuote<TRequest, TResponse>(string path, TRequest request,
 		CancellationToken cancellationToken)
 		where TResponse : UsmartResponse
-		=> Post<TRequest, TResponse>(new Uri(new Uri(_isDemo ? _quoteDemo : _quoteLive), path),
+		=> Post<TRequest, TResponse>(new Uri(_quoteEndpoint, path),
 			request, true, true, cancellationToken);
 
 	private Task<TResponse> PostTrade<TRequest, TResponse>(string path, TRequest request,
 		bool isRetryable, CancellationToken cancellationToken)
 		where TResponse : UsmartResponse
-		=> Post<TRequest, TResponse>(new Uri(new Uri(_isDemo ? _tradeDemo : _tradeLive), path),
+		=> Post<TRequest, TResponse>(new Uri(_tradeEndpoint, path),
 			request, false, isRetryable, cancellationToken);
 
 	private async Task<TResponse> Post<TRequest, TResponse>(Uri uri, TRequest request,

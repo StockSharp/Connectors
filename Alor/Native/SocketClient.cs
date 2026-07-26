@@ -32,9 +32,9 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 	private readonly string _address;
 	private readonly SecureString _token;
 
-	protected BaseSocketClient(string domain, string path, SecureString token, int reconnectAttempts, WorkingTime workingTime)
+	protected BaseSocketClient(string endpoint, string path, SecureString token, int reconnectAttempts, WorkingTime workingTime)
 	{
-		_address = $"wss://{domain.ThrowIfEmpty(nameof(domain))}/{path}";
+		_address = $"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/')}/{path}";
 		_token = token.ThrowIfEmpty(nameof(token));
 
 		_client = new(
@@ -122,8 +122,8 @@ class DataSocketClient : BaseSocketClient
 
 	public event Func<long, RequestResponse, CancellationToken, ValueTask> Response;
 
-	public DataSocketClient(string domain, SecureString token, int reconnectAttempts, WorkingTime workingTime)
-		: base(domain, "ws", token, reconnectAttempts, workingTime)
+	public DataSocketClient(string endpoint, SecureString token, int reconnectAttempts, WorkingTime workingTime)
+		: base(endpoint, "ws", token, reconnectAttempts, workingTime)
 	{
 	}
 
@@ -358,8 +358,8 @@ class OrderSocketClient : BaseSocketClient
 {
 	private Guid _authId;
 
-	public OrderSocketClient(string domain, SecureString token, int reconnectAttempts, WorkingTime workingTime)
-		: base(domain, "cws", token, reconnectAttempts, workingTime)
+	public OrderSocketClient(string endpoint, SecureString token, int reconnectAttempts, WorkingTime workingTime)
+		: base(endpoint, "cws", token, reconnectAttempts, workingTime)
 	{
 	}
 

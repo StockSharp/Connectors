@@ -2,7 +2,6 @@ namespace StockSharp.AliceBlue.Native;
 
 sealed class AliceBlueOrderClient : BaseLogReceiver
 {
-	private const string _url = "wss://a3.aliceblueonline.com/open-api/order-notify/websocket";
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -13,13 +12,13 @@ sealed class AliceBlueOrderClient : BaseLogReceiver
 	private readonly string _orderToken;
 	private TaskCompletionSource<bool> _loginCompletion;
 
-	public AliceBlueOrderClient(string userId, string orderToken, int reconnectAttempts, WorkingTime workingTime)
+	public AliceBlueOrderClient(string endpoint, string userId, string orderToken, int reconnectAttempts, WorkingTime workingTime)
 	{
 		_userId = userId.ThrowIfEmpty(nameof(userId));
 		_orderToken = orderToken.ThrowIfEmpty(nameof(orderToken));
 
 		_client = new(
-			_url,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

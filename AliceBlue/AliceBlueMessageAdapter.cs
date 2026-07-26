@@ -65,7 +65,7 @@ public partial class AliceBlueMessageAdapter
 
 		UserId.ThrowIfEmpty(nameof(UserId));
 		Token.ThrowIfEmpty(nameof(Token));
-		_restClient = new(UserId, Token) { Parent = this };
+		_restClient = new(RestEndpoint, InstrumentEndpoint, UserId, Token) { Parent = this };
 
 		try
 		{
@@ -76,7 +76,7 @@ public partial class AliceBlueMessageAdapter
 			{
 				await _restClient.CreateMarketSession(cancellationToken);
 				_isMarketSessionCreated = true;
-				_marketClient = new(_resolvedClientId, Token, ReconnectAttempts,
+				_marketClient = new(MarketWebSocketEndpoint, _resolvedClientId, Token, ReconnectAttempts,
 					ReConnectionSettings.WorkingTime) { Parent = this };
 				_marketClient.MarketDataReceived += OnMarketDataReceived;
 				_marketClient.Error += SendOutErrorAsync;
@@ -87,7 +87,7 @@ public partial class AliceBlueMessageAdapter
 			if (this.IsTransactional())
 			{
 				var orderToken = await _restClient.GetOrderToken(cancellationToken);
-				_orderClient = new(UserId, orderToken, ReconnectAttempts,
+				_orderClient = new(OrderWebSocketEndpoint, UserId, orderToken, ReconnectAttempts,
 					ReConnectionSettings.WorkingTime) { Parent = this };
 				_orderClient.OrderReceived += OnOrderReceived;
 				_orderClient.Error += SendOutErrorAsync;

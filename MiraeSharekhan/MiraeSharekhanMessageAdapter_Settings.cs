@@ -17,6 +17,9 @@ namespace StockSharp.MiraeSharekhan;
 [OrderCondition(typeof(MiraeSharekhanOrderCondition))]
 public partial class MiraeSharekhanMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.sharekhan.com/skapi/services/";
+	private const string _defaultWebSocketEndpoint = "wss://stream.sharekhan.com/skstream/api/stream";
+
 	/// <summary>Trading API key.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -65,6 +68,22 @@ public partial class MiraeSharekhanMessageAdapter : MessageAdapter, ITokenAdapte
 		Order = 4)]
 	public MiraeSharekhanProducts DefaultProduct { get; set; } = MiraeSharekhanProducts.Investment;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -74,7 +93,9 @@ public partial class MiraeSharekhanMessageAdapter : MessageAdapter, ITokenAdapte
 			.Set(nameof(Token), Token)
 			.Set(nameof(VendorKey), VendorKey)
 			.Set(nameof(CustomerId), CustomerId)
-			.Set(nameof(DefaultProduct), DefaultProduct);
+			.Set(nameof(DefaultProduct), DefaultProduct)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -86,5 +107,7 @@ public partial class MiraeSharekhanMessageAdapter : MessageAdapter, ITokenAdapte
 		VendorKey = storage.GetValue<string>(nameof(VendorKey));
 		CustomerId = storage.GetValue<string>(nameof(CustomerId));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }

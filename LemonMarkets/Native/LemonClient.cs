@@ -16,16 +16,14 @@ sealed class LemonClient : BaseLogReceiver
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	public LemonClient(string apiKey, bool isDemo, string privacyPrincipal,
+	public LemonClient(string endpoint, string apiKey, string privacyPrincipal,
 		string privacyJustification, int maxAttempts)
 	{
 		apiKey.ThrowIfEmpty(nameof(apiKey));
 		privacyPrincipal.ThrowIfEmpty(nameof(privacyPrincipal));
 		privacyJustification.ThrowIfEmpty(nameof(privacyJustification));
 
-		_origin = new(isDemo
-			? "https://sandbox.api.lemon.markets/v1/"
-			: "https://api.lemon.markets/v1/");
+		_origin = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_authorization = new("Bearer", apiKey);
 		_privacyPrincipal = privacyPrincipal;
 		_privacyJustification = privacyJustification;

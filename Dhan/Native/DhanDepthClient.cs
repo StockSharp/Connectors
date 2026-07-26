@@ -18,14 +18,13 @@ sealed class DhanDepthClient : BaseLogReceiver
 	private readonly SynchronizedSet<string> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 	private readonly SynchronizedDictionary<string, DepthBook> _books = new(StringComparer.OrdinalIgnoreCase);
 
-	public DhanDepthClient(string clientId, string token, int depth, int reconnectAttempts, WorkingTime workingTime)
+	public DhanDepthClient(string endpoint, string clientId, string token, int depth, int reconnectAttempts, WorkingTime workingTime)
 	{
 		if (depth is not 20 and not 200)
 			throw new ArgumentOutOfRangeException(nameof(depth), depth, "Dhan full depth supports 20 or 200 levels.");
 
 		_depth = depth;
-		var endpoint = depth == 20 ? "wss://depth-api-feed.dhan.co/twentydepth" : "wss://full-depth-api.dhan.co/twohundreddepth";
-		var url = $"{endpoint}?token={Uri.EscapeDataString(token.ThrowIfEmpty(nameof(token)))}&clientId={Uri.EscapeDataString(clientId.ThrowIfEmpty(nameof(clientId)))}&authType=2";
+		var url = $"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('?')}?token={Uri.EscapeDataString(token.ThrowIfEmpty(nameof(token)))}&clientId={Uri.EscapeDataString(clientId.ThrowIfEmpty(nameof(clientId)))}&authType=2";
 
 		_client = new(
 			url,

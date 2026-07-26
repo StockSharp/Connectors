@@ -2,24 +2,25 @@ namespace StockSharp.Upstox.Native;
 
 sealed class UpstoxRestClient : BaseLogReceiver
 {
-	private const string _apiUrl = "https://api.upstox.com";
-	private const string _instrumentUrl = "https://assets.upstox.com/market-quote/instruments/exchange/complete.json.gz";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
 	private readonly SecureString _token;
+	private readonly string _apiUrl;
+	private readonly string _instrumentUrl;
 	private readonly string _orderUrl;
 	private readonly System.Net.Http.HttpClient _instrumentClient = new();
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private UpstoxInstrument[] _instruments;
 
-	public UpstoxRestClient(bool isDemo, SecureString token)
+	public UpstoxRestClient(string apiUrl, string instrumentUrl, string orderUrl, SecureString token)
 	{
 		_token = token.ThrowIfEmpty(nameof(token));
-		_orderUrl = isDemo ? "https://api-sandbox.upstox.com" : "https://api-hft.upstox.com";
+		_apiUrl = apiUrl.ThrowIfEmpty(nameof(apiUrl));
+		_instrumentUrl = instrumentUrl.ThrowIfEmpty(nameof(instrumentUrl));
+		_orderUrl = orderUrl.ThrowIfEmpty(nameof(orderUrl));
 	}
 
 	public override string Name => nameof(Upstox) + "_" + nameof(UpstoxRestClient);

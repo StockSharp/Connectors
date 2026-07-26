@@ -72,7 +72,8 @@ public partial class FxcmMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 		_token = Token?.UnSecure().ThrowIfEmpty(nameof(Token));
-		_stream = new(IsDemo, _token, Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
+		var webSocketEndpoint = IsDemo ? DemoWebSocketEndpoint : WebSocketEndpoint;
+		_stream = new(webSocketEndpoint, _token, Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 		_stream.SessionConnected += OnSessionConnected;
 		_stream.PriceReceived += ProcessPrice;
 		_stream.OrderReceived += ProcessOrderUpdate;
@@ -124,7 +125,8 @@ public partial class FxcmMessageAdapter
 
 	private async ValueTask OnSessionConnected(string sessionId, CancellationToken cancellationToken)
 	{
-		var rest = new FxcmRestClient(IsDemo, sessionId + _token,
+		var restEndpoint = IsDemo ? DemoRestEndpoint : RestEndpoint;
+		var rest = new FxcmRestClient(restEndpoint, sessionId + _token,
 			Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
 		var old = Interlocked.Exchange(ref _rest, rest);
 		old?.Dispose();

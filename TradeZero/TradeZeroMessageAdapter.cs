@@ -50,18 +50,22 @@ public partial class TradeZeroMessageAdapter
 		if (_httpClient != null || _portfolioSocket != null || _pnlSocket != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(Key.UnSecure(), Secret) { Parent = this };
+		_httpClient = new(Key.UnSecure(), Secret, RestEndpoint) { Parent = this };
 		await _httpClient.GetAccounts(cancellationToken);
 
 		if (this.IsTransactional())
 		{
-			_portfolioSocket = new(TradeZeroStreamKinds.Portfolio, Key.UnSecure(), Secret, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_portfolioSocket = new(TradeZeroStreamKinds.Portfolio, Key.UnSecure(), Secret,
+				WebSocketEndpoint, ReConnectionSettings.ReAttemptCount,
+				ReConnectionSettings.WorkingTime) { Parent = this };
 			_portfolioSocket.PortfolioReceived += OnPortfolioReceived;
 			_portfolioSocket.Error += OnSocketError;
 			_portfolioSocket.StateChanged += SendOutConnectionStateAsync;
 			await _portfolioSocket.ConnectAsync(cancellationToken);
 
-			_pnlSocket = new(TradeZeroStreamKinds.Pnl, Key.UnSecure(), Secret, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_pnlSocket = new(TradeZeroStreamKinds.Pnl, Key.UnSecure(), Secret,
+				WebSocketEndpoint, ReConnectionSettings.ReAttemptCount,
+				ReConnectionSettings.WorkingTime) { Parent = this };
 			_pnlSocket.PnlReceived += OnPnlReceived;
 			_pnlSocket.Error += OnSocketError;
 			_pnlSocket.StateChanged += SendOutConnectionStateAsync;

@@ -13,11 +13,9 @@ sealed class SaxoStreamingClient : BaseLogReceiver
 	private ulong _lastMessageId;
 	private bool _terminal;
 
-	public SaxoStreamingClient(SaxoEnvironments environment, Func<string> accessTokenProvider, int maxAttempts)
+	public SaxoStreamingClient(string webSocketEndpoint, Func<string> accessTokenProvider, int maxAttempts)
 	{
-		_streamUri = environment == SaxoEnvironments.Simulation
-			? new("wss://sim-streaming.saxobank.com/sim/oapi/streaming/ws/connect")
-			: new("wss://live-streaming.saxobank.com/oapi/streaming/ws/connect");
+		_streamUri = new(webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)));
 		_accessTokenProvider = accessTokenProvider ?? throw new ArgumentNullException(nameof(accessTokenProvider));
 		_maxAttempts = Math.Max(1, maxAttempts);
 		ContextId = "Saxo" + Guid.NewGuid().ToString("N");

@@ -46,7 +46,7 @@ partial class TradeOgreMessageAdapter
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new HttpClient(Key, Secret) { Parent = this };
+		_httpClient = new HttpClient(RestEndpoint, Key, Secret) { Parent = this };
 
 		await SendOutMessageAsync(new ConnectMessage(), cancellationToken);
 	}

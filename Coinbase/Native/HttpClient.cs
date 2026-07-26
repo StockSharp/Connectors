@@ -9,10 +9,11 @@ class HttpClient : BaseLogReceiver
 {
 	private readonly Authenticator _authenticator;
 
-	private const string _baseUrl = "https://api.coinbase.com/api";
+	private readonly string _baseUrl;
 
-	public HttpClient(Authenticator authenticator)
+	public HttpClient(string baseUrl, Authenticator authenticator)
 	{
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 	}
 
@@ -224,7 +225,7 @@ class HttpClient : BaseLogReceiver
 		return (await MakeRequest<Withdraw>(url, ApplySecret(request, url, (object)body), cancellationToken)).Id;
 	}
 
-	private static Uri CreateUrl(string methodName, string version = "v3")
+	private Uri CreateUrl(string methodName, string version = "v3")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

@@ -70,7 +70,7 @@ public partial class FlattradeMessageAdapter
 		UserId.ThrowIfEmpty(nameof(UserId));
 		Token.ThrowIfEmpty(nameof(Token));
 		_resolvedAccountId = AccountId.IsEmpty() ? UserId : AccountId;
-		_restClient = new(UserId, _resolvedAccountId, Token) { Parent = this };
+		_restClient = new(RestEndpoint, InstrumentEndpoint, UserId, _resolvedAccountId, Token) { Parent = this };
 
 		try
 		{
@@ -79,7 +79,7 @@ public partial class FlattradeMessageAdapter
 
 			if (this.IsMarketData() || this.IsTransactional())
 			{
-				_socketClient = new(UserId, _resolvedAccountId, Token, this.IsTransactional(),
+				_socketClient = new(WebSocketEndpoint, UserId, _resolvedAccountId, Token, this.IsTransactional(),
 					ReconnectAttempts, ReConnectionSettings.WorkingTime) { Parent = this };
 				_socketClient.MarketDataReceived += OnMarketDataReceived;
 				_socketClient.OrderReceived += OnOrderReceived;

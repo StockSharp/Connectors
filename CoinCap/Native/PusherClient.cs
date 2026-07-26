@@ -8,7 +8,7 @@ abstract class BasePusherClient<TData> : BaseLogReceiver
 	private readonly WebSocketClient _client;
 	private readonly string _url;
 
-	protected BasePusherClient(string url, int attemptsCount, WorkingTime workingTime)
+	protected BasePusherClient(string endpoint, string url, int attemptsCount, WorkingTime workingTime)
 	{
 		if (url.IsEmpty())
 			throw new ArgumentNullException(nameof(url));
@@ -16,7 +16,7 @@ abstract class BasePusherClient<TData> : BaseLogReceiver
 		_url = url;
 
 		_client = new(
-			$"wss://ws.coincap.io/{_url}",
+			$"{endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/')}/{_url}",
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
@@ -75,7 +75,7 @@ abstract class BasePusherClient<TData> : BaseLogReceiver
 	protected abstract ValueTask OnProcess(TData recv, CancellationToken cancellationToken);
 }
 
-class TradesPusherClient(string exchange, int attemptsCount, WorkingTime workingTime) : BasePusherClient<Trade>($"trades/{exchange}", attemptsCount, workingTime)
+class TradesPusherClient(string endpoint, string exchange, int attemptsCount, WorkingTime workingTime) : BasePusherClient<Trade>(endpoint, $"trades/{exchange}", attemptsCount, workingTime)
 {
 	// to get readable name after obfuscation
 	public override string Name => nameof(CoinCap) + "_" + nameof(TradesPusherClient);
@@ -90,7 +90,7 @@ class TradesPusherClient(string exchange, int attemptsCount, WorkingTime working
 	}
 }
 
-class PricesPusherClient(IEnumerable<string> assets, int attemptsCount, WorkingTime workingTime) : BasePusherClient<IDictionary<string, double>>($"prices?assets={assets.JoinComma()}", attemptsCount, workingTime)
+class PricesPusherClient(string endpoint, IEnumerable<string> assets, int attemptsCount, WorkingTime workingTime) : BasePusherClient<IDictionary<string, double>>(endpoint, $"prices?assets={assets.JoinComma()}", attemptsCount, workingTime)
 {
 	// to get readable name after obfuscation
 	public override string Name => nameof(CoinCap) + "_" + nameof(PricesPusherClient);

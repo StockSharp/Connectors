@@ -14,6 +14,9 @@ namespace StockSharp.TradeLocker;
 [OrderCondition(typeof(TradeLockerOrderCondition))]
 public partial class TradeLockerMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://live.tradelocker.com/backend-api/";
+	private const string _defaultDemoRestEndpoint = "https://demo.tradelocker.com/backend-api/";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -82,13 +85,30 @@ public partial class TradeLockerMessageAdapter : MessageAdapter, ILoginPasswordA
 		Order = 6)]
 	public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(2);
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 7)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 8)]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
 		storage.Set(nameof(Login), Login).Set(nameof(Password), Password).Set(nameof(Server), Server)
 			.Set(nameof(AccountId), AccountId).Set(nameof(IsDemo), IsDemo)
-			.Set(nameof(DeveloperApiKey), DeveloperApiKey).Set(nameof(PollingInterval), PollingInterval);
+			.Set(nameof(DeveloperApiKey), DeveloperApiKey).Set(nameof(PollingInterval), PollingInterval)
+			.Set(nameof(RestEndpoint), RestEndpoint).Set(nameof(DemoRestEndpoint), DemoRestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -102,5 +122,7 @@ public partial class TradeLockerMessageAdapter : MessageAdapter, ILoginPasswordA
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 		DeveloperApiKey = storage.GetValue<SecureString>(nameof(DeveloperApiKey));
 		PollingInterval = storage.GetValue(nameof(PollingInterval), PollingInterval);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
 	}
 }

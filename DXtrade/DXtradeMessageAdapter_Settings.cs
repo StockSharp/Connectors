@@ -19,6 +19,9 @@ using Ecng.ComponentModel;
 	MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
 public partial class DXtradeMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IDemoAdapter, IAddressAdapter<string>
 {
+	private const string _demoAddress = "demo.dx.trade";
+	private const string _retiredLiveAddress = "api.dx.trade";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -66,7 +69,7 @@ public partial class DXtradeMessageAdapter : MessageAdapter, ILoginPasswordAdapt
 		}
 	}
 
-	private bool _isDemo;
+	private bool _isDemo = true;
 
 	/// <inheritdoc />
 	[Display(
@@ -81,12 +84,19 @@ public partial class DXtradeMessageAdapter : MessageAdapter, ILoginPasswordAdapt
 		get => _isDemo;
 		set
 		{
+			if (_isDemo == value)
+				return;
+
 			_isDemo = value;
-			Address = IsDemo ? "demo.dx.trade" : "api.dx.trade";
+
+			if (IsDemo)
+				Address = _demoAddress;
+
+			OnPropertyChanged(nameof(IsDemo));
 		}
 	}
 
-	private string _address = "api.dx.trade";
+	private string _address = _demoAddress;
 
 	/// <inheritdoc />
 	[Display(

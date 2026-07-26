@@ -46,6 +46,14 @@ public partial class CoinCapMessageAdapter : MessageAdapter, ITokenAdapter, IAdd
 		set => _address = value.ThrowIfEmpty(nameof(value));
 	}
 
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = "wss://ws.coincap.io";
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -53,7 +61,8 @@ public partial class CoinCapMessageAdapter : MessageAdapter, ITokenAdapter, IAdd
 
 		storage
 			.Set(nameof(Token), Token)
-			.Set(nameof(Address), Address);
+			.Set(nameof(Address), Address)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -63,5 +72,6 @@ public partial class CoinCapMessageAdapter : MessageAdapter, ITokenAdapter, IAdd
 
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		Address = storage.GetValue(nameof(Address), Address);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }

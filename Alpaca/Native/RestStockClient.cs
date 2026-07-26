@@ -2,8 +2,8 @@
 
 class RestStockClient : RestMarketDataClient
 {
-	public RestStockClient(SecureString key, SecureString secret)
-		: base(key, secret)
+	public RestStockClient(string endpoint, SecureString key, SecureString secret)
+		: base(endpoint, key, secret)
 	{
 	}
 

@@ -141,7 +141,7 @@ public partial class CoinCapMessageAdapter
 		if (_pricesAssets.Count == 0)
 			return;
 
-		_pricesPusher = new PricesPusherClient(_pricesAssets.Keys, ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_pricesPusher = new PricesPusherClient(WebSocketEndpoint, _pricesAssets.Keys, ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 		_pricesPusher.PricesChanged += PricesPusherOnPricesChanged;
 		await _pricesPusher.ConnectAsync(cancellationToken);
 	}
@@ -175,7 +175,7 @@ public partial class CoinCapMessageAdapter
 		{
 			if (!_tradesPushers.ContainsKey(exchange))
 			{
-				var pusher = new TradesPusherClient(exchange, ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+				var pusher = new TradesPusherClient(WebSocketEndpoint, exchange, ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 				_tradesPushers.Add(exchange, pusher);
 
 				pusher.NewTrade += PusherOnNewTrade;

@@ -9,14 +9,15 @@ class FuturesHttpClient : BaseLogReceiver
 	private readonly SecureString _key;
 	private readonly HashAlgorithm _hasher;
 	private readonly SHA256 _sha256 = SHA256.Create();
+	private readonly string _baseUrl;
 
 	private long _nonce;
-	private const string _baseUrl = "https://api.kraken.com";
 
-	public FuturesHttpClient(SecureString key, SecureString secret)
+	public FuturesHttpClient(SecureString key, SecureString secret, string restEndpoint)
 	{
 		_key = key;
 		_hasher = secret.IsEmpty() ? null : new HMACSHA512(secret.UnSecure().Base64());
+		_baseUrl = restEndpoint.ThrowIfEmpty(nameof(restEndpoint)).TrimEnd('/');
 
 		_nonce = DateTime.UtcNow.Ticks;
 	}
@@ -268,7 +269,7 @@ class FuturesHttpClient : BaseLogReceiver
 		return (string)response.refid;
 	}
 
-	private static Url CreateUrl(string methodName, string version = "0/")
+	private Url CreateUrl(string methodName, string version = "0/")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

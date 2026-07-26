@@ -47,7 +47,14 @@ public partial class UpstoxMessageAdapter
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(IsDemo, Token) { Parent = this };
+		_restClient = new(
+			RestEndpoint.ThrowIfEmpty(nameof(RestEndpoint)),
+			InstrumentEndpoint.ThrowIfEmpty(nameof(InstrumentEndpoint)),
+			(IsDemo ? DemoOrderEndpoint : OrderEndpoint).ThrowIfEmpty(IsDemo ? nameof(DemoOrderEndpoint) : nameof(OrderEndpoint)),
+			Token)
+		{
+			Parent = this,
+		};
 
 		if (!IsDemo && this.IsMarketData())
 		{

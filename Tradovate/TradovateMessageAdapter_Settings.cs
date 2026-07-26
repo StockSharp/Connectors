@@ -19,6 +19,12 @@ using Ecng.ComponentModel;
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Level1 | MessageAdapterCategories.MarketDepth)]
 public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IDemoAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://live.tradovateapi.com/v1/";
+	private const string _defaultDemoRestEndpoint = "https://demo.tradovateapi.com/v1/";
+	private const string _defaultMarketWebSocketEndpoint = "wss://md.tradovateapi.com/v1/websocket";
+	private const string _defaultAccountWebSocketEndpoint = "wss://live.tradovateapi.com/v1/websocket";
+	private const string _defaultDemoAccountWebSocketEndpoint = "wss://demo.tradovateapi.com/v1/websocket";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -109,6 +115,46 @@ public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAda
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 8)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 9)]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 10)]
+	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
+
+	/// <summary>Production account WebSocket endpoint.</summary>
+	[Display(
+		Name = "Account WebSocket endpoint",
+		Description = "Production account WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 11)]
+	public string AccountWebSocketEndpoint { get; set; } = _defaultAccountWebSocketEndpoint;
+
+	/// <summary>Demo account WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo account WebSocket endpoint",
+		Description = "Demo account WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 12)]
+	public string DemoAccountWebSocketEndpoint { get; set; } = _defaultDemoAccountWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -121,7 +167,12 @@ public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAda
 			.Set(nameof(AppId), AppId)
 			.Set(nameof(AppVersion), AppVersion)
 			.Set(nameof(DeviceId), DeviceId)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(AccountWebSocketEndpoint), AccountWebSocketEndpoint)
+			.Set(nameof(DemoAccountWebSocketEndpoint), DemoAccountWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -136,5 +187,10 @@ public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAda
 		AppVersion = storage.GetValue(nameof(AppVersion), AppVersion);
 		DeviceId = storage.GetValue(nameof(DeviceId), DeviceId);
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		AccountWebSocketEndpoint = storage.GetValue(nameof(AccountWebSocketEndpoint), AccountWebSocketEndpoint);
+		DemoAccountWebSocketEndpoint = storage.GetValue(nameof(DemoAccountWebSocketEndpoint), DemoAccountWebSocketEndpoint);
 	}
 }

@@ -8,11 +8,13 @@ using Newtonsoft.Json.Linq;
 
 class FtxRestClient : BaseLogReceiver
 {
+	private readonly string _baseUrl;
 	private readonly SecureString _key;
 	private readonly HMACSHA256 _hasher;
 
-	public FtxRestClient(SecureString key, SecureString secret)
+	public FtxRestClient(string baseUrl, SecureString key, SecureString secret)
 	{
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 		_key = key;
 		_hasher = secret.IsEmpty() ? null : new(secret.UnSecure().UTF8());
 	}
@@ -113,9 +115,9 @@ class FtxRestClient : BaseLogReceiver
 		return (long)time.ToUnix();
 	}
 
-	private static Uri GetUri(string endpoint)
+	private Uri GetUri(string endpoint)
 	{
-		return new Uri($"https://ftx.com/{endpoint}");
+		return new Uri($"{_baseUrl}/{endpoint}");
 	}
 
 	private Task<dynamic> ProcessRequest(Method method, string endpoint, string jsonBody, CancellationToken cancellationToken)

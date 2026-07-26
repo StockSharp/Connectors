@@ -58,7 +58,7 @@ sealed class PancakeSwapGraphClient : BaseLogReceiver
 	};
 	private DateTime _nextSend;
 
-	public PancakeSwapGraphClient(SecureString apiKey, string source,
+	public PancakeSwapGraphClient(SecureString apiKey, string gatewayEndpoint, string source,
 		PancakeSwapPoolVersions poolVersion)
 	{
 		source = source?.Trim();
@@ -85,7 +85,7 @@ sealed class PancakeSwapGraphClient : BaseLogReceiver
 					"A The Graph API key is required for a deployment ID.",
 					nameof(apiKey));
 			_endpoint = new Uri(
-				$"https://gateway.thegraph.com/api/" +
+				$"{gatewayEndpoint.ThrowIfEmpty(nameof(gatewayEndpoint)).TrimEnd('/')}/" +
 				$"{Uri.EscapeDataString(key)}/subgraphs/id/" +
 				Uri.EscapeDataString(source));
 		}

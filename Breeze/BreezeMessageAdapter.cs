@@ -47,13 +47,13 @@ public partial class BreezeMessageAdapter
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(Key?.UnSecure(), Secret, ApiSession) { Parent = this };
+		_restClient = new(RestEndpoint, HistoryEndpoint, InstrumentEndpoint, Key?.UnSecure(), Secret, ApiSession) { Parent = this };
 		var customer = await _restClient.Authenticate(cancellationToken);
 		_portfolioName = customer.UserId.IsEmpty() ? _restClient.SocketUser : customer.UserId;
 
 		if (this.IsMarketData())
 		{
-			_marketClient = new(_restClient.SocketUser, _restClient.SocketToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_marketClient = new(MarketWebSocketEndpoint, _restClient.SocketUser, _restClient.SocketToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_marketClient.TickReceived += OnTickReceived;
 			_marketClient.DepthReceived += OnDepthReceived;
 			_marketClient.StateChanged += SendOutConnectionStateAsync;
@@ -63,7 +63,7 @@ public partial class BreezeMessageAdapter
 
 		if (this.IsTransactional())
 		{
-			_orderClient = new(_restClient.SocketUser, _restClient.SocketToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_orderClient = new(OrderWebSocketEndpoint, _restClient.SocketUser, _restClient.SocketToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_orderClient.OrderReceived += OnOrderReceived;
 			_orderClient.StateChanged += SendOutConnectionStateAsync;
 			_orderClient.Error += SendOutErrorAsync;
@@ -148,7 +148,7 @@ public partial class BreezeMessageAdapter
 	{
 		if (_ohlcClient != null)
 			return _ohlcClient;
-		var client = new BreezeOhlcClient(_restClient.SocketUser, _restClient.SocketToken,
+		var client = new BreezeOhlcClient(OhlcWebSocketEndpoint, _restClient.SocketUser, _restClient.SocketToken,
 			ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 		client.CandleReceived += OnCandleReceived;
 		client.Error += SendOutErrorAsync;

@@ -6,6 +6,7 @@ sealed class MercadoBitcoinSocketClient : BaseLogReceiver
         MercadoBitcoinSocketTopics Topic, string Id);
 
     private readonly string _endpoint;
+    private readonly string _origin;
     private readonly WorkingTime _workingTime;
     private readonly int _reconnectAttempts;
     private readonly Lock _sync = new();
@@ -24,10 +25,11 @@ sealed class MercadoBitcoinSocketClient : BaseLogReceiver
     private CancellationTokenSource _heartbeatCancellation;
     private Task _heartbeatTask;
 
-    public MercadoBitcoinSocketClient(string endpoint, WorkingTime workingTime,
+    public MercadoBitcoinSocketClient(string endpoint, string origin, WorkingTime workingTime,
         int reconnectAttempts)
     {
         _endpoint = ValidateEndpoint(endpoint);
+        _origin = origin.ThrowIfEmpty(nameof(origin));
         _workingTime = workingTime ?? throw new ArgumentNullException(
             nameof(workingTime));
         _reconnectAttempts = reconnectAttempts;
@@ -128,7 +130,7 @@ sealed class MercadoBitcoinSocketClient : BaseLogReceiver
             socket.Options.SetRequestHeader("User-Agent",
                 "StockSharp-MercadoBitcoin-Connector/1.0");
             socket.Options.SetRequestHeader("Origin",
-                "https://www.mercadobitcoin.com.br");
+                _origin);
             return default;
         };
         return client;

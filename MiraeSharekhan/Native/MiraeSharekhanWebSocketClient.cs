@@ -23,12 +23,12 @@ internal sealed class MiraeSharekhanWebSocketClient : BaseLogReceiver
 	private Task _runTask;
 	private bool _binaryWarningSent;
 
-	public MiraeSharekhanWebSocketClient(string apiKey, string accessToken, int maxAttempts)
+	public MiraeSharekhanWebSocketClient(string endpoint, string apiKey, string accessToken, int maxAttempts)
 	{
 		apiKey.ThrowIfEmpty(nameof(apiKey));
 		accessToken.ThrowIfEmpty(nameof(accessToken));
 		_maxAttempts = Math.Max(1, maxAttempts);
-		_uri = new("wss://stream.sharekhan.com/skstream/api/stream?ACCESS_TOKEN=" +
+		_uri = new(endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('?') + "?ACCESS_TOKEN=" +
 			Uri.EscapeDataString(accessToken) + "&API_KEY=" + Uri.EscapeDataString(apiKey));
 	}
 

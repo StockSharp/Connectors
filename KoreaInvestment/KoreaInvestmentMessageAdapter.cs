@@ -97,11 +97,13 @@ public partial class KoreaInvestmentMessageAdapter
 		}
 
 		var attempts = Math.Max(1, ReConnectionSettings.ReAttemptCount);
-		_rest = new(appKey, appSecret, AccountNumber, ProductCode, IsDemo, attempts) { Parent = this };
+		var restEndpoint = IsDemo ? DemoRestEndpoint : RestEndpoint;
+		_rest = new(restEndpoint, appKey, appSecret, AccountNumber, ProductCode, IsDemo, attempts) { Parent = this };
 		try
 		{
 			await _rest.Connect(cancellationToken);
-			_stream = new(_rest.ApprovalKey, IsDemo, attempts) { Parent = this };
+			var webSocketEndpoint = IsDemo ? DemoWebSocketEndpoint : WebSocketEndpoint;
+			_stream = new(webSocketEndpoint, _rest.ApprovalKey, IsDemo, attempts) { Parent = this };
 			_stream.EventReceived += OnRealtimeEvent;
 			_stream.Error += SendOutErrorAsync;
 			_stream.StateChanged += SendOutConnectionStateAsync;

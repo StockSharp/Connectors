@@ -16,6 +16,9 @@ namespace StockSharp.JpmDataQuery;
 	MessageAdapterCategories.Paid)]
 public partial class JpmDataQueryMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api-dataquery.jpmchase.com/research/dataquery-authe/api/v2/";
+	private const string _defaultOAuthEndpoint = "https://authe.jpmorgan.com/as/token.oauth2";
+
 	private const string _defaultAttribute = "MIDPRC";
 
 	/// <summary>OAuth application client identifier.</summary>
@@ -76,6 +79,22 @@ public partial class JpmDataQueryMessageAdapter : MessageAdapter, IKeySecretAdap
 		Order = 5)]
 	public SecurityTypes? SecurityType { get; set; }
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>OAuth token endpoint.</summary>
+	[Display(
+		Name = "OAuth endpoint",
+		Description = "OAuth token endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -86,7 +105,9 @@ public partial class JpmDataQueryMessageAdapter : MessageAdapter, IKeySecretAdap
 			.Set(nameof(GroupId), GroupId)
 			.Set(nameof(Attribute), Attribute)
 			.Set(nameof(ValueField), ValueField)
-			.Set(nameof(SecurityType), SecurityType);
+			.Set(nameof(SecurityType), SecurityType)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(OAuthEndpoint), OAuthEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -99,5 +120,7 @@ public partial class JpmDataQueryMessageAdapter : MessageAdapter, IKeySecretAdap
 		Attribute = storage.GetValue(nameof(Attribute), _defaultAttribute);
 		ValueField = storage.GetValue(nameof(ValueField), ValueField);
 		SecurityType = storage.GetValue<SecurityTypes?>(nameof(SecurityType));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		OAuthEndpoint = storage.GetValue(nameof(OAuthEndpoint), OAuthEndpoint);
 	}
 }

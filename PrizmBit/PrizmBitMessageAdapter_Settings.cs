@@ -16,6 +16,9 @@ namespace StockSharp.PrizmBit;
 [OrderCondition(typeof(PrizmBitOrderCondition))]
 public partial class PrizmBitMessageAdapter : MessageAdapter, IKeySecretAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.prizmbit.com/api/po";
+	private const string _defaultWebSocketEndpoint = "wss://wss.prizmbit.com";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -51,6 +54,22 @@ public partial class PrizmBitMessageAdapter : MessageAdapter, IKeySecretAdapter,
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -59,6 +78,8 @@ public partial class PrizmBitMessageAdapter : MessageAdapter, IKeySecretAdapter,
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
 		storage.SetValue(nameof(IsDemo), IsDemo);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -69,6 +90,8 @@ public partial class PrizmBitMessageAdapter : MessageAdapter, IKeySecretAdapter,
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

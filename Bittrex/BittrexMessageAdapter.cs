@@ -81,9 +81,9 @@ public partial class BittrexMessageAdapter
 
 		var authenticator = new Authenticator(Key, Secret);
 
-		_httpClient = new HttpClient(authenticator) { Parent = this };
+		_httpClient = new HttpClient(RestEndpoint, authenticator) { Parent = this };
 
-		_pusherClient = new PusherClient(authenticator, canSign) { Parent = this };
+		_pusherClient = new PusherClient(SignalREndpoint, authenticator, canSign) { Parent = this };
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);
 	}

@@ -92,8 +92,8 @@ public partial class BitStampMessageAdapter : MessageAdapter
 		if (_pusherClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(Key, Secret) { Parent = this };
-		_pusherClient = new(ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_httpClient = new(RestEndpoint, Key, Secret) { Parent = this };
+		_pusherClient = new(WebSocketEndpoint, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribePusherClient();
 

@@ -2,8 +2,6 @@ namespace StockSharp.AliceBlue.Native;
 
 sealed class AliceBlueRestClient : BaseLogReceiver
 {
-	private const string _apiUrl = "https://a3.aliceblueonline.com/";
-	private const string _masterUrl = "https://v2api.aliceblueonline.com/restpy/static/contract_master/V2/";
 	private static readonly string[] _segments = ["NSE", "BSE", "NFO", "BFO", "CDS", "BCD", "MCX", "INDICES"];
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
@@ -12,14 +10,17 @@ sealed class AliceBlueRestClient : BaseLogReceiver
 
 	private readonly string _userId;
 	private readonly string _sessionToken;
-	private readonly HttpClient _httpClient = new() { BaseAddress = new(_apiUrl) };
+	private readonly HttpClient _httpClient;
+	private readonly string _masterUrl;
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private AliceBlueInstrument[] _instruments;
 	private IReadOnlyDictionary<string, AliceBlueInstrument> _instrumentsByKey;
 	private IReadOnlyDictionary<string, AliceBlueInstrument> _instrumentsBySymbol;
 
-	public AliceBlueRestClient(string userId, SecureString sessionToken)
+	public AliceBlueRestClient(string apiEndpoint, string instrumentEndpoint, string userId, SecureString sessionToken)
 	{
+		_httpClient = new() { BaseAddress = new(apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint))) };
+		_masterUrl = instrumentEndpoint.ThrowIfEmpty(nameof(instrumentEndpoint)).TrimEnd('/') + "/";
 		_userId = userId.ThrowIfEmpty(nameof(userId));
 		_sessionToken = NormalizeToken(sessionToken.ThrowIfEmpty(nameof(sessionToken)).UnSecure());
 		_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _sessionToken);

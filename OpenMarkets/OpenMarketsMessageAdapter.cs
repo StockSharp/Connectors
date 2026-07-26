@@ -71,7 +71,8 @@ public partial class OpenMarketsMessageAdapter
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 		ClearState();
-		var client = new OpenMarketsClient(IsTest,
+		var client = new OpenMarketsClient(IsTest, IdentityEndpoint, OmsEndpoint, MarketDataEndpoint,
+			MarketStreamEndpoint, OmsStreamEndpoint,
 			Key?.UnSecure().ThrowIfEmpty(nameof(Key)),
 			Secret?.UnSecure().ThrowIfEmpty(nameof(Secret)));
 		_client = client;

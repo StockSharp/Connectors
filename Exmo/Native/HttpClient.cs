@@ -2,14 +2,14 @@ namespace StockSharp.Exmo.Native;
 
 using System.Security.Cryptography;
 
-class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
+class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLogReceiver
 {
 	private readonly SecureString _key = key;
 
 	private readonly HashAlgorithm _hasher = secret.IsEmpty() ? null : new HMACSHA512(secret.UnSecure().UTF8());
 
 	//private volatile int _nonce;
-	private const string _baseUrl = " https://api.exmo.com";
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
 	private readonly UTCIncrementalIdGenerator _nonceGen = new();
 
@@ -171,7 +171,7 @@ class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
 		return (long)response.task_id;
 	}
 
-	private static Uri CreateUrl(string methodName, string version = "v1/")
+	private Uri CreateUrl(string methodName, string version = "v1/")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

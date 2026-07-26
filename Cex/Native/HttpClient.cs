@@ -1,8 +1,8 @@
 namespace StockSharp.Cex.Native;
 
-    class HttpClient : BaseLogReceiver
+    class HttpClient(string baseUrl) : BaseLogReceiver
 {
-	private const string _baseUrl = "https://cex.io/api";
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
 	// to get readable name after obfuscation
 	public override string Name => nameof(Cex) + "_" + nameof(HttpClient);
@@ -50,7 +50,7 @@ namespace StockSharp.Cex.Native;
 		return dict;
 	}
 
-	private static Uri CreateUrl(string methodName, string version = "")
+	private Uri CreateUrl(string methodName, string version = "")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

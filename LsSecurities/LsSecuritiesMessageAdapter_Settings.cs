@@ -16,6 +16,10 @@ namespace StockSharp.LsSecurities;
 [OrderCondition(typeof(LsSecuritiesOrderCondition))]
 public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://openapi.ls-sec.co.kr:8080/";
+	private const string _defaultWebSocketEndpoint = "wss://openapi.ls-sec.co.kr:9443/websocket";
+	private const string _defaultDemoWebSocketEndpoint = "wss://openapi.ls-sec.co.kr:29443/websocket";
+
 	/// <summary>Application key issued by LS Securities.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -56,6 +60,30 @@ public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, 
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Production WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Production WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>Demo WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "Demo WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -64,7 +92,10 @@ public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, 
 			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(Account), Account)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+			.Set(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -75,5 +106,8 @@ public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, 
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Account = storage.GetValue<string>(nameof(Account));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		DemoWebSocketEndpoint = storage.GetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
 	}
 }

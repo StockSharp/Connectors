@@ -14,10 +14,10 @@ class PusherClient : BaseLogReceiver
 
 	private readonly WebSocketClient _client;
 
-	public PusherClient(WorkingTime workingTime)
+	public PusherClient(string endpoint, WorkingTime workingTime)
 	{
 		_client = new(
-			"wss://ws-api.coincheck.com/",
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)

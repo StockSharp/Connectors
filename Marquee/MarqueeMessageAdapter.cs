@@ -37,7 +37,9 @@ public partial class MarqueeMessageAdapter
 		if (Secret.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.SecretNotSpecified);
 
-		var client = new MarqueeClient(Key?.UnSecure(), Secret.UnSecure(), IsDemo) { Parent = this };
+		var restEndpoint = IsDemo ? DemoRestEndpoint : RestEndpoint;
+		var oauthEndpoint = IsDemo ? DemoOAuthEndpoint : OAuthEndpoint;
+		var client = new MarqueeClient(restEndpoint, oauthEndpoint, Key?.UnSecure(), Secret.UnSecure()) { Parent = this };
 		_client = client;
 		try
 		{

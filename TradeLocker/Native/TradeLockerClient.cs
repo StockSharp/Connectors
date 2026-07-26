@@ -27,7 +27,7 @@ internal sealed class TradeLockerClient : BaseLogReceiver, IDisposable
 	private long _accountId;
 	private TradeLockerConfig _config;
 
-	public TradeLockerClient(bool isDemo, string email, string password, string server,
+	public TradeLockerClient(string restEndpoint, string email, string password, string server,
 		string developerApiKey, int maxAttempts)
 	{
 		_email = email.ThrowIfEmpty(nameof(email));
@@ -37,9 +37,7 @@ internal sealed class TradeLockerClient : BaseLogReceiver, IDisposable
 		_maxAttempts = Math.Max(1, maxAttempts);
 		_http = new()
 		{
-			BaseAddress = new(isDemo
-				? "https://demo.tradelocker.com/backend-api/"
-				: "https://live.tradelocker.com/backend-api/"),
+			BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 	}

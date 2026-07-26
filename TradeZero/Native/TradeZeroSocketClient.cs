@@ -15,14 +15,15 @@ sealed class TradeZeroSocketClient : BaseLogReceiver
 	private readonly SynchronizedSet<string> _accounts = new(StringComparer.OrdinalIgnoreCase);
 	private readonly TaskCompletionSource _authorization = AsyncHelper.CreateTaskCompletionSource();
 
-	public TradeZeroSocketClient(TradeZeroStreamKinds kind, string apiKey, SecureString apiSecret, int reconnectAttempts, WorkingTime workingTime)
+	public TradeZeroSocketClient(TradeZeroStreamKinds kind, string apiKey, SecureString apiSecret,
+		string webSocketEndpoint, int reconnectAttempts, WorkingTime workingTime)
 	{
 		_kind = kind;
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
 		_apiSecret = apiSecret.ThrowIfEmpty(nameof(apiSecret));
 		var stream = kind == TradeZeroStreamKinds.Portfolio ? "portfolio" : "pnl";
 		_client = new(
-			$"wss://webapi.tradezero.com/stream/{stream}",
+			$"{webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)).TrimEnd('/')}/{stream}",
 			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
 			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
 			Process,

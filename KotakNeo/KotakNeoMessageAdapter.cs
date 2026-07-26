@@ -44,14 +44,14 @@ public partial class KotakNeoMessageAdapter
 		if (_restClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_restClient = new(ConsumerKey.ThrowIfEmpty(nameof(ConsumerKey)).UnSecure()) { Parent = this };
+		_restClient = new(LoginEndpoint, ValidationEndpoint, ConsumerKey.ThrowIfEmpty(nameof(ConsumerKey)).UnSecure()) { Parent = this };
 		var session = await _restClient.Login(MobileNumber, UserCode,
 			KotakNeoTotp.Generate(TotpSecret.ThrowIfEmpty(nameof(TotpSecret)).UnSecure(), DateTime.UtcNow),
 			Mpin, cancellationToken);
 
 		if (this.IsMarketData())
 		{
-			_marketClient = new(session, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_marketClient = new(MarketWebSocketEndpoint, session, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_marketClient.UpdateReceived += OnMarketUpdate;
 			_marketClient.StateChanged += SendOutConnectionStateAsync;
 			_marketClient.Error += SendOutErrorAsync;
@@ -60,7 +60,7 @@ public partial class KotakNeoMessageAdapter
 
 		if (this.IsTransactional())
 		{
-			_orderClient = new(session, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_orderClient = new(OrderWebSocketEndpointTemplate, session, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_orderClient.OrderReceived += OnOrderReceived;
 			_orderClient.StateChanged += SendOutConnectionStateAsync;
 			_orderClient.Error += SendOutErrorAsync;

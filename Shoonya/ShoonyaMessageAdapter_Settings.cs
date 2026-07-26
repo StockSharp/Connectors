@@ -16,6 +16,10 @@ namespace StockSharp.Shoonya;
 [OrderCondition(typeof(ShoonyaOrderCondition))]
 public partial class ShoonyaMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.shoonya.com/NorenWClientTP/";
+	private const string _defaultInstrumentEndpointTemplate = "https://api.shoonya.com/{0}_symbols.txt.zip";
+	private const string _defaultWebSocketEndpoint = "wss://api.shoonya.com/NorenWSTP/";
+
 	/// <summary>Shoonya user identifier.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -64,6 +68,30 @@ public partial class ShoonyaMessageAdapter : MessageAdapter, ITokenAdapter
 		Order = 4)]
 	public int ReconnectAttempts { get; set; } = 10;
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 5)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Instrument file endpoint template.</summary>
+	[Display(
+		Name = "Instrument endpoint template",
+		Description = "Instrument file endpoint template.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 6)]
+	public string InstrumentEndpointTemplate { get; set; } = _defaultInstrumentEndpointTemplate;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 7)]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -73,7 +101,10 @@ public partial class ShoonyaMessageAdapter : MessageAdapter, ITokenAdapter
 			.Set(nameof(AccountId), AccountId)
 			.Set(nameof(Token), Token)
 			.Set(nameof(DefaultProduct), DefaultProduct)
-			.Set(nameof(ReconnectAttempts), ReconnectAttempts);
+			.Set(nameof(ReconnectAttempts), ReconnectAttempts)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(InstrumentEndpointTemplate), InstrumentEndpointTemplate)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -85,5 +116,8 @@ public partial class ShoonyaMessageAdapter : MessageAdapter, ITokenAdapter
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
 		ReconnectAttempts = storage.GetValue(nameof(ReconnectAttempts), ReconnectAttempts);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		InstrumentEndpointTemplate = storage.GetValue(nameof(InstrumentEndpointTemplate), InstrumentEndpointTemplate);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }

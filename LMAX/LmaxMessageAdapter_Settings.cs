@@ -121,6 +121,38 @@ public partial class LmaxMessageAdapter : MessageAdapter, IKeySecretAdapter, IDe
 	[BasicSetting]
 	public LmaxLocations Location { get; set; } = LmaxLocations.London;
 
+	/// <summary>Optional account REST API endpoint override.</summary>
+	[Display(
+		Name = "Account REST endpoint",
+		Description = "Optional account REST API endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string AccountRestEndpoint { get; set; }
+
+	/// <summary>Optional market data REST API endpoint override.</summary>
+	[Display(
+		Name = "Market data REST endpoint",
+		Description = "Optional market data REST API endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketDataRestEndpoint { get; set; }
+
+	/// <summary>Optional market data WebSocket endpoint override.</summary>
+	[Display(
+		Name = "Market data WebSocket endpoint",
+		Description = "Optional market data WebSocket endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketDataWebSocketEndpoint { get; set; }
+
+	/// <summary>Optional account WebSocket endpoint override.</summary>
+	[Display(
+		Name = "Account WebSocket endpoint",
+		Description = "Optional account WebSocket endpoint override.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string AccountWebSocketEndpoint { get; set; }
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -131,7 +163,11 @@ public partial class LmaxMessageAdapter : MessageAdapter, IKeySecretAdapter, IDe
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(IsDemo), IsDemo)
 			.Set(nameof(Location), Location)
-		;
+			.Set(nameof(AccountRestEndpoint), AccountRestEndpoint)
+			.Set(nameof(MarketDataRestEndpoint), MarketDataRestEndpoint)
+			.Set(nameof(MarketDataWebSocketEndpoint), MarketDataWebSocketEndpoint)
+			.Set(nameof(AccountWebSocketEndpoint), AccountWebSocketEndpoint)
+			;
 	}
 
 	/// <inheritdoc />
@@ -143,6 +179,10 @@ public partial class LmaxMessageAdapter : MessageAdapter, IKeySecretAdapter, IDe
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
 		Location = storage.GetValue(nameof(Location), Location);
+		AccountRestEndpoint = storage.GetValue<string>(nameof(AccountRestEndpoint));
+		MarketDataRestEndpoint = storage.GetValue<string>(nameof(MarketDataRestEndpoint));
+		MarketDataWebSocketEndpoint = storage.GetValue<string>(nameof(MarketDataWebSocketEndpoint));
+		AccountWebSocketEndpoint = storage.GetValue<string>(nameof(AccountWebSocketEndpoint));
 	}
 
 	/// <inheritdoc />

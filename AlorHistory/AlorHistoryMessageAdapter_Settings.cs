@@ -20,6 +20,8 @@ using Ecng.ComponentModel;
 	MessageAdapterCategories.Free)]
 public partial class AlorHistoryMessageAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.alor.ru";
+
 	private string[] _exchanges = ["MOEX"];
 
 	/// <summary>
@@ -38,12 +40,22 @@ public partial class AlorHistoryMessageAdapter
 		set => _exchanges = value.ThrowIfEmpty(nameof(value)).SplitByComma(true);
 	}
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
 
-		storage.Set(nameof(Exchanges), Exchanges);
+		storage
+			.Set(nameof(Exchanges), Exchanges)
+			.Set(nameof(RestEndpoint), RestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -52,6 +64,7 @@ public partial class AlorHistoryMessageAdapter
 		base.Load(storage);
 
 		Exchanges = storage.GetValue(nameof(Exchanges), Exchanges);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
 	}
 
 	/// <inheritdoc />

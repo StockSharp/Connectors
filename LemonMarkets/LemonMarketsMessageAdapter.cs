@@ -72,7 +72,8 @@ public partial class LemonMarketsMessageAdapter
 		var apiKey = ApiKey?.UnSecure().ThrowIfEmpty(nameof(ApiKey));
 		var principal = DataPrivacyPrincipal.ThrowIfEmpty(nameof(DataPrivacyPrincipal));
 		var justification = DataPrivacyJustification.ThrowIfEmpty(nameof(DataPrivacyJustification));
-		var client = new LemonClient(apiKey, IsDemo, principal, justification,
+		var restEndpoint = IsDemo ? SandboxRestEndpoint : RestEndpoint;
+		var client = new LemonClient(restEndpoint, apiKey, principal, justification,
 			Math.Max(1, ReConnectionSettings.ReAttemptCount))
 		{
 			Parent = this,

@@ -73,8 +73,8 @@ public partial class EtoroMessageAdapter
 		var userKey = UserKey?.UnSecure().ThrowIfEmpty(nameof(UserKey));
 		var attempts = Math.Max(1, ReConnectionSettings.ReAttemptCount);
 
-		_rest = new(apiKey, userKey, attempts) { Parent = this };
-		_stream = new(apiKey, userKey, attempts) { Parent = this };
+		_rest = new(RestEndpoint, apiKey, userKey, attempts) { Parent = this };
+		_stream = new(WebSocketEndpoint, apiKey, userKey, attempts) { Parent = this };
 		_stream.MessageReceived += OnStreamMessage;
 		_stream.Error += SendOutErrorAsync;
 		_stream.StateChanged += SendOutConnectionStateAsync;

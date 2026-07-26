@@ -69,9 +69,9 @@ partial class UpbitMessageAdapter
 		if (_pusherClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new HttpClient(Key, Secret) { Parent = this };
+		_httpClient = new HttpClient(RestEndpoint, Key, Secret) { Parent = this };
 
-		_pusherClient = new PusherClient(ReConnectionSettings.WorkingTime) { Parent = this };
+		_pusherClient = new PusherClient(WebSocketEndpoint, ReConnectionSettings.WorkingTime) { Parent = this };
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);
 

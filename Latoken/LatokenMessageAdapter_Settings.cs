@@ -16,6 +16,9 @@
 [OrderCondition(typeof(LatokenOrderCondition))]
 public partial class LatokenMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.latoken.com/v2";
+	private const string _defaultWebSocketEndpoint = "wss://api.latoken.com/stomp";
+
 	///// <summary>
 	///// Possible time-frames.
 	///// </summary>
@@ -41,6 +44,22 @@ public partial class LatokenMessageAdapter : MessageAdapter, IKeySecretAdapter
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
+	/// <summary>REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -48,6 +67,8 @@ public partial class LatokenMessageAdapter : MessageAdapter, IKeySecretAdapter
 
 		storage.SetValue(nameof(Key), Key);
 		storage.SetValue(nameof(Secret), Secret);
+		storage.SetValue(nameof(RestEndpoint), RestEndpoint);
+		storage.SetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -57,6 +78,8 @@ public partial class LatokenMessageAdapter : MessageAdapter, IKeySecretAdapter
 
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />

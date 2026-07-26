@@ -19,13 +19,13 @@ sealed class StandXRestClient : BaseLogReceiver
 	private DateTime _nextRequestTime;
 	private TimeSpan _serverTimeOffset;
 
-	public StandXRestClient(string endpoint, string authEndpoint,
+	public StandXRestClient(string endpoint, string authEndpoint, string signInEndpoint,
 		StandXChains chain, string walletAddress, SecureString privateKey)
 	{
 		_endpoint = CreateEndpoint(endpoint, nameof(endpoint));
 		_authEndpoint = CreateEndpoint(authEndpoint, nameof(authEndpoint));
 		if (!privateKey.IsEmpty())
-			_signer = new(chain, walletAddress, privateKey, _jsonSettings);
+			_signer = new(chain, walletAddress, privateKey, signInEndpoint, _jsonSettings);
 		_http = new(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,

@@ -18,6 +18,8 @@ using System.ComponentModel.DataAnnotations;
 [OrderCondition(typeof(PublicOrderCondition))]
 public partial class PublicMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.public.com/";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -40,13 +42,24 @@ public partial class PublicMessageAdapter : MessageAdapter, ITokenAdapter
 	[BasicSetting]
 	public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(2);
 
+	/// <summary>
+	/// REST API endpoint.
+	/// </summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 2)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
 		storage
 			.Set(nameof(Token), Token)
-			.Set(nameof(PollingInterval), PollingInterval);
+			.Set(nameof(PollingInterval), PollingInterval)
+			.Set(nameof(RestEndpoint), RestEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -55,5 +68,6 @@ public partial class PublicMessageAdapter : MessageAdapter, ITokenAdapter
 		base.Load(storage);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		PollingInterval = storage.GetValue(nameof(PollingInterval), PollingInterval);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
 	}
 }

@@ -48,8 +48,9 @@ public partial class SaxoMessageAdapter
 		if (accessToken.IsEmpty() && refreshToken.IsEmpty())
 			throw new InvalidOperationException("Saxo Token or RefreshToken is required.");
 
-		_client = new(Environment, accessToken, refreshToken, Key?.UnSecure(), Secret?.UnSecure(), RedirectUri,
-			Math.Max(1, ReConnectionSettings.ReAttemptCount)) { Parent = this };
+		_client = new(accessToken, refreshToken, Key?.UnSecure(), Secret?.UnSecure(), RedirectUri,
+			Math.Max(1, ReConnectionSettings.ReAttemptCount), RestEndpoint, TokenEndpoint,
+			StreamAuthorizeEndpoint, WebSocketEndpoint) { Parent = this };
 		_client.PriceReceived += OnPriceReceived;
 		_client.CandleReceived += OnCandleReceived;
 		_client.BalanceReceived += OnBalanceReceived;

@@ -115,8 +115,8 @@ public partial class BitexbookMessageAdapter
 		if (_pusherClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(Key, Secret) { Parent = this };
-		_pusherClient = new(ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+		_httpClient = new(RestEndpoint, Key, Secret) { Parent = this };
+		_pusherClient = new(WebSocketEndpoint, ReConnectionSettings.AttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 
 		SubscribePusherClient();
 

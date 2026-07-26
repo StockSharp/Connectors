@@ -84,8 +84,6 @@ public final class BridgeMain {
     }
 
     private static final class BridgeSession implements IStrategy {
-        private static final String DEMO_URL = "http://platform.dukascopy.com/demo_3/jforex_3.jnlp";
-        private static final String LIVE_URL = "http://platform.dukascopy.com/live_3/jforex_3.jnlp";
         private static final int MAX_HISTORY_ITEMS = 100000;
 
         private final Socket socket;
@@ -157,6 +155,9 @@ public final class BridgeMain {
             if (isBlank(request.userName) || isBlank(request.password)) {
                 throw new IllegalArgumentException("JForex user name and password are required.");
             }
+            if (isBlank(request.address)) {
+                throw new IllegalArgumentException("JForex service address is required.");
+            }
 
             client = ClientFactory.getDefaultInstance();
             client.setSystemListener(new ISystemListener() {
@@ -185,8 +186,7 @@ public final class BridgeMain {
                 }
             });
 
-            client.connect(Boolean.TRUE.equals(request.isDemo) ? DEMO_URL : LIVE_URL,
-                    request.userName, request.password);
+            client.connect(request.address, request.userName, request.password);
             if (!connected.await(60, TimeUnit.SECONDS) || !client.isConnected()) {
                 throw new IOException("Timed out while connecting to the JForex trading server.");
             }
@@ -579,6 +579,7 @@ public final class BridgeMain {
         public String userName;
         public String password;
         public Boolean isDemo;
+        public String address;
         public List<String> symbols;
         public String symbol;
         public String period;

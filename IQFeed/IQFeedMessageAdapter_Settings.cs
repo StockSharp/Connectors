@@ -141,6 +141,15 @@ partial class IQFeedMessageAdapter : ILoginPasswordAdapter
 		Order = 2)]
 	public bool IsDownloadSecurityFromSite { get; set; }
 
+	/// <summary>URL of the IQFeed security archive.</summary>
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
+	public string SecuritiesUrl { get; set; } = IQFeedSecurityParser.DefaultSecuritiesUrl;
+
 	/// <summary>
 	/// Path to file with IQFeed list of securities, downloaded from the website. If path is specified, then secondary download from website does not occur, and only the local copy gets parsed.
 	/// </summary>
@@ -230,6 +239,7 @@ partial class IQFeedMessageAdapter : ILoginPasswordAdapter
 		Version = storage.GetValue(nameof(Version), Version);
 
 		IsDownloadSecurityFromSite = storage.GetValue<bool>(nameof(IsDownloadSecurityFromSite));
+		SecuritiesUrl = storage.GetValue(nameof(SecuritiesUrl), SecuritiesUrl);
 		SecuritiesFile = storage.GetValue<string>(nameof(SecuritiesFile));
 		IsOffline = storage.GetValue(nameof(IsOffline), IsOffline);
 
@@ -258,6 +268,7 @@ partial class IQFeedMessageAdapter : ILoginPasswordAdapter
 		storage.SetValue(nameof(Version), Version.To<string>());
 
 		storage.SetValue(nameof(IsDownloadSecurityFromSite), IsDownloadSecurityFromSite);
+		storage.SetValue(nameof(SecuritiesUrl), SecuritiesUrl);
 		storage.SetValue(nameof(SecuritiesFile), SecuritiesFile);
 		storage.SetValue(nameof(IsOffline), IsOffline);
 

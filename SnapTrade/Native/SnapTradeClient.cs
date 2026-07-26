@@ -10,7 +10,7 @@ sealed class SnapTradeClient : BaseLogReceiver
 				.OrderBy(property => property.PropertyName, StringComparer.Ordinal)];
 	}
 
-	private static readonly Uri _origin = new("https://api.snaptrade.com/api/v1/");
+	private readonly Uri _origin;
 	private readonly string _clientId;
 	private readonly string _consumerKey;
 	private readonly string _userId;
@@ -27,7 +27,7 @@ sealed class SnapTradeClient : BaseLogReceiver
 	};
 
 	public SnapTradeClient(string clientId, string consumerKey, string userId,
-		string userSecret, int maxAttempts)
+		string userSecret, int maxAttempts, string restEndpoint)
 	{
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_consumerKey = consumerKey.ThrowIfEmpty(nameof(consumerKey));
@@ -36,6 +36,7 @@ sealed class SnapTradeClient : BaseLogReceiver
 		_userId = userId;
 		_userSecret = userSecret;
 		_maxAttempts = Math.Max(1, maxAttempts);
+		_origin = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
 		_http.Timeout = TimeSpan.FromSeconds(60);
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "StockSharp-SnapTrade");

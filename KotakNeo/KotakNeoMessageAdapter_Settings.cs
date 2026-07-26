@@ -17,6 +17,11 @@ using System.ComponentModel.DataAnnotations;
 [OrderCondition(typeof(KotakNeoOrderCondition))]
 public partial class KotakNeoMessageAdapter : MessageAdapter
 {
+	private const string _defaultLoginEndpoint = "https://mis.kotaksecurities.com/login/1.0/tradeApiLogin";
+	private const string _defaultValidationEndpoint = "https://mis.kotaksecurities.com/login/1.0/tradeApiValidate";
+	private const string _defaultMarketWebSocketEndpoint = "wss://mlhsm.kotaksecurities.com";
+	private const string _defaultOrderWebSocketEndpointTemplate = "wss://{0}.kotaksecurities.com/realtime";
+
 	/// <summary>Consumer token generated in Kotak Neo.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -76,6 +81,38 @@ public partial class KotakNeoMessageAdapter : MessageAdapter
 		Order = 5)]
 	public KotakNeoProducts DefaultProduct { get; set; } = KotakNeoProducts.Intraday;
 
+	/// <summary>Login API endpoint.</summary>
+	[Display(
+		Name = "Login endpoint",
+		Description = "Login API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string LoginEndpoint { get; set; } = _defaultLoginEndpoint;
+
+	/// <summary>Validation API endpoint.</summary>
+	[Display(
+		Name = "Validation endpoint",
+		Description = "Session validation API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string ValidationEndpoint { get; set; } = _defaultValidationEndpoint;
+
+	/// <summary>Market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
+
+	/// <summary>Order WebSocket endpoint template.</summary>
+	[Display(
+		Name = "Order WebSocket template",
+		Description = "Order WebSocket endpoint template where {0} is the data-center host.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OrderWebSocketEndpointTemplate { get; set; } = _defaultOrderWebSocketEndpointTemplate;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -86,7 +123,11 @@ public partial class KotakNeoMessageAdapter : MessageAdapter
 			.Set(nameof(UserCode), UserCode)
 			.Set(nameof(Mpin), Mpin)
 			.Set(nameof(TotpSecret), TotpSecret)
-			.Set(nameof(DefaultProduct), DefaultProduct);
+			.Set(nameof(DefaultProduct), DefaultProduct)
+			.Set(nameof(LoginEndpoint), LoginEndpoint)
+			.Set(nameof(ValidationEndpoint), ValidationEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(OrderWebSocketEndpointTemplate), OrderWebSocketEndpointTemplate);
 	}
 
 	/// <inheritdoc />
@@ -99,5 +140,9 @@ public partial class KotakNeoMessageAdapter : MessageAdapter
 		Mpin = storage.GetValue<SecureString>(nameof(Mpin));
 		TotpSecret = storage.GetValue<SecureString>(nameof(TotpSecret));
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
+		LoginEndpoint = storage.GetValue(nameof(LoginEndpoint), LoginEndpoint);
+		ValidationEndpoint = storage.GetValue(nameof(ValidationEndpoint), ValidationEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		OrderWebSocketEndpointTemplate = storage.GetValue(nameof(OrderWebSocketEndpointTemplate), OrderWebSocketEndpointTemplate);
 	}
 }

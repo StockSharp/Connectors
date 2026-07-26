@@ -63,7 +63,7 @@ public partial class SnapTradeMessageAdapter
 		var consumerKey = Secret?.UnSecure().ThrowIfEmpty(nameof(Secret));
 		var userSecret = UserSecret?.UnSecure();
 		var client = new SnapTradeClient(clientId, consumerKey, UserId, userSecret,
-			Math.Max(1, ReConnectionSettings.ReAttemptCount))
+			Math.Max(1, ReConnectionSettings.ReAttemptCount), RestEndpoint)
 		{
 			Parent = this,
 		};

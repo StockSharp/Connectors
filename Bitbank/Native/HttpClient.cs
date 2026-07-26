@@ -10,13 +10,17 @@ class HttpClient : BaseLogReceiver
 
 	private readonly HashAlgorithm _hasher;
 
-	private const string _publicBaseUrl = "https://public.bitbank.cc";
-	private const string _privateBaseUrl = "https://api.bitbank.cc/v1";
+	private readonly string _publicBaseUrl;
+	private readonly string _privateBaseUrl;
+	private readonly string _privateHost;
 
 	private readonly UTCMlsIncrementalIdGenerator _nonceGen;
 
-	public HttpClient(SecureString key, SecureString secret)
+	public HttpClient(string publicBaseUrl, string privateBaseUrl, SecureString key, SecureString secret)
 	{
+		_publicBaseUrl = publicBaseUrl.ThrowIfEmpty(nameof(publicBaseUrl)).TrimEnd('/');
+		_privateBaseUrl = privateBaseUrl.ThrowIfEmpty(nameof(privateBaseUrl)).TrimEnd('/');
+		_privateHost = new Uri(_privateBaseUrl).GetLeftPart(UriPartial.Authority);
 		_key = key;
 		_hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());
 
@@ -205,7 +209,7 @@ class HttpClient : BaseLogReceiver
 		return (string)response.uuid;
 	}
 
-	private static Uri CreateUrl(bool isPublic, string methodName)
+	private Uri CreateUrl(bool isPublic, string methodName)
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));
@@ -224,7 +228,7 @@ class HttpClient : BaseLogReceiver
 		if (request == null)
 			throw new ArgumentNullException(nameof(request));
 
-		var data = url.ToString().Remove("https://api.bitbank.cc");
+		var data = url.ToString().Remove(_privateHost);
 
 		if (request.Method == Method.Get)
 		{

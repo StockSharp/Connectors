@@ -97,11 +97,11 @@ public partial class GrowwMessageAdapter
 			throw new InvalidOperationException("Set either a Groww access token or API key credentials.");
 
 		var attempts = Math.Max(1, ReConnectionSettings.ReAttemptCount);
-		_rest = new(Token, Key, Secret, TotpSecret, attempts) { Parent = this };
+		_rest = new(RestEndpoint, InstrumentEndpoint, Token, Key, Secret, TotpSecret, attempts) { Parent = this };
 		try
 		{
 			await _rest.Connect(cancellationToken);
-			_feed = new(_rest, attempts) { Parent = this };
+			_feed = new(WebSocketEndpoint, _rest, attempts) { Parent = this };
 			_feed.DataReceived += OnFeedData;
 			_feed.Error += SendOutErrorAsync;
 			_feed.StateChanged += SendOutConnectionStateAsync;

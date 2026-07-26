@@ -21,6 +21,13 @@ using Ecng.ComponentModel;
 [OrderCondition(typeof(AlorOrderCondition))]
 public partial class AlorMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.alor.ru";
+	private const string _defaultDemoRestEndpoint = "https://apidev.alor.ru";
+	private const string _defaultWebSocketEndpoint = "wss://api.alor.ru";
+	private const string _defaultDemoWebSocketEndpoint = "wss://apidev.alor.ru";
+	private const string _defaultOAuthEndpoint = "https://oauth.alor.ru/refresh";
+	private const string _defaultDemoOAuthEndpoint = "https://oauthdev.alor.ru/refresh";
+
 	/// <summary>
 	/// Possible time-frames.
 	/// </summary>
@@ -64,6 +71,54 @@ public partial class AlorMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAd
 		set => _exchanges = value.ThrowIfEmpty(nameof(value)).SplitByComma(true);
 	}
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Production WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Production WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
+	/// <summary>Demo WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "Demo WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
+
+	/// <summary>Production OAuth refresh endpoint.</summary>
+	[Display(
+		Name = "OAuth endpoint",
+		Description = "Production OAuth refresh endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;
+
+	/// <summary>Demo OAuth refresh endpoint.</summary>
+	[Display(
+		Name = "Demo OAuth endpoint",
+		Description = "Demo OAuth refresh endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoOAuthEndpoint { get; set; } = _defaultDemoOAuthEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -73,7 +128,13 @@ public partial class AlorMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAd
 			.Set(nameof(Token), Token)
 			.Set(nameof(IsDemo), IsDemo)
 			.Set(nameof(Exchanges), Exchanges)
-		;
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+			.Set(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint)
+			.Set(nameof(OAuthEndpoint), OAuthEndpoint)
+			.Set(nameof(DemoOAuthEndpoint), DemoOAuthEndpoint)
+			;
 	}
 
 	/// <inheritdoc />
@@ -84,6 +145,12 @@ public partial class AlorMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAd
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		Exchanges = storage.GetValue(nameof(Exchanges), Exchanges);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
+		DemoWebSocketEndpoint = storage.GetValue(nameof(DemoWebSocketEndpoint), DemoWebSocketEndpoint);
+		OAuthEndpoint = storage.GetValue(nameof(OAuthEndpoint), OAuthEndpoint);
+		DemoOAuthEndpoint = storage.GetValue(nameof(DemoOAuthEndpoint), DemoOAuthEndpoint);
 	}
 
 	/// <inheritdoc />

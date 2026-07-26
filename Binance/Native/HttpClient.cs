@@ -436,7 +436,7 @@ class HttpClient : BaseLogReceiver
 		request = ApplTimestamp(request, ParameterType.QueryString);
 
 		var adapter = (BinanceMessageAdapter)Parent;
-		var hostSpot = adapter.HostRestSpot;
+		var hostSpot = adapter.IsDemo ? adapter.DemoHostRestSpot : adapter.HostRestSpot;
 		hostSpot.CheckHostName(nameof(adapter.HostRestSpot));
 
 		dynamic response = await MakeRequest<object>(new Url($"https://{hostSpot}/sapi/v1/capital/withdraw/apply"), ApplySecret(request, true, true), cancellationToken);
@@ -455,6 +455,13 @@ class HttpClient : BaseLogReceiver
 		var hostSpot = adapter.HostRestSpot;
 		var hostFuture = adapter.HostRestFuture;
 		var hostFutureCoin = adapter.HostRestFutureCoin;
+
+		if (_isDemo)
+		{
+			hostSpot = adapter.DemoHostRestSpot;
+			hostFuture = adapter.DemoHostRestFuture;
+			hostFutureCoin = adapter.DemoHostRestFutureCoin;
+		}
 
 		switch (section)
 		{
@@ -480,15 +487,8 @@ class HttpClient : BaseLogReceiver
 				if (version.IsEmpty())
 					version = "v1";
 
-				if (_isDemo)
-				{
-					baseUrl = $"https://testnet.binancefuture.com/fapi/{version}";
-				}
-				else
-				{
-					hostFuture.CheckHostName(nameof(adapter.HostRestFuture));
-					baseUrl = $"https://{hostFuture}/fapi/{version}";
-				}
+				hostFuture.CheckHostName(nameof(adapter.HostRestFuture));
+				baseUrl = $"https://{hostFuture}/fapi/{version}";
 
 				break;
 			case BinanceSections.FuturesCoin:
@@ -498,15 +498,8 @@ class HttpClient : BaseLogReceiver
 				if (version.IsEmpty())
 					version = "v1";
 
-				if (_isDemo)
-				{
-					baseUrl = $"https://testnet.binancefuture.com/dapi/{version}";
-				}
-				else
-				{
-					hostFutureCoin.CheckHostName(nameof(adapter.HostRestFutureCoin));
-					baseUrl = $"https://{hostFutureCoin}/dapi/{version}";
-				}
+				hostFutureCoin.CheckHostName(nameof(adapter.HostRestFutureCoin));
+				baseUrl = $"https://{hostFutureCoin}/dapi/{version}";
 
 				break;
 			default:

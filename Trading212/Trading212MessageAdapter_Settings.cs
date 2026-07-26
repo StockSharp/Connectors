@@ -13,6 +13,9 @@ namespace StockSharp.Trading212;
 [OrderCondition(typeof(Trading212OrderCondition))]
 public partial class Trading212MessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://live.trading212.com/";
+	private const string _defaultDemoRestEndpoint = "https://demo.trading212.com/";
+
 	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(10);
 
 	/// <summary>Trading 212 Public API key.</summary>
@@ -45,13 +48,29 @@ public partial class Trading212MessageAdapter : MessageAdapter, IDemoAdapter, IK
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 3)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 4)]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
 	/// <summary>Polling interval for account and transaction updates.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.Trading212PollingIntervalKey,
 		Description = LocalizedStrings.Trading212PollingIntervalDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
-		Order = 3)]
+		Order = 5)]
 	public TimeSpan PollingInterval
 	{
 		get => _pollingInterval;
@@ -68,6 +87,8 @@ public partial class Trading212MessageAdapter : MessageAdapter, IDemoAdapter, IK
 			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
 			.Set(nameof(PollingInterval), PollingInterval);
 	}
 
@@ -78,6 +99,8 @@ public partial class Trading212MessageAdapter : MessageAdapter, IDemoAdapter, IK
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
 		PollingInterval = storage.GetValue(nameof(PollingInterval), PollingInterval);
 	}
 }

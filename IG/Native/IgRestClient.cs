@@ -12,7 +12,7 @@ internal sealed class IgRestClient : BaseLogReceiver, IDisposable
 	private string _cst;
 	private string _securityToken;
 
-	public IgRestClient(IgEnvironments environment, string apiKey, string identifier, string password,
+	public IgRestClient(string endpoint, string apiKey, string identifier, string password,
 		bool encryptPassword, int maxAttempts)
 	{
 		_apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
@@ -22,9 +22,7 @@ internal sealed class IgRestClient : BaseLogReceiver, IDisposable
 		_maxAttempts = Math.Max(1, maxAttempts);
 		_http = new()
 		{
-			BaseAddress = new(environment == IgEnvironments.Demo
-				? "https://demo-api.ig.com/gateway/deal/"
-				: "https://api.ig.com/gateway/deal/"),
+			BaseAddress = new(endpoint.ThrowIfEmpty(nameof(endpoint))),
 			Timeout = TimeSpan.FromSeconds(30),
 		};
 	}

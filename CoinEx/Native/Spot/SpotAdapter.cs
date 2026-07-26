@@ -10,11 +10,11 @@ class SpotAdapter : NativeAdapter
 	private readonly SocketClient _socketClient;
 	private long _bestTransId;
 
-	public SpotAdapter(Authenticator authenticator, IdGenerator transIdGen, int attempts, WorkingTime workingTime)
+	public SpotAdapter(string restEndpoint, string webSocketEndpoint, Authenticator authenticator, IdGenerator transIdGen, int attempts, WorkingTime workingTime)
 		: base(authenticator, transIdGen, BoardCodes.CoinEx)
     {
-		_httpClient = new(authenticator) { Parent = this };
-		_socketClient = new(authenticator, attempts, transIdGen, workingTime) { Parent = this };
+		_httpClient = new(restEndpoint, authenticator) { Parent = this };
+		_socketClient = new(webSocketEndpoint, authenticator, attempts, transIdGen, workingTime) { Parent = this };
 
 		SubscribePusherClient();
 	}

@@ -17,7 +17,6 @@ using DataType = StockSharp.Messages.DataType;
 
 partial class BarChartMessageAdapter
 {
-	private const string _baseUrl = "https://ondemand.websol.barchart.com";
 	private const string _defaultTimeFormatRequest = "yyyyMMddHHmmss";
 	private HttpClient _httpClient;
 
@@ -89,7 +88,7 @@ partial class BarChartMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
 		
-		var url = new Url($"{_baseUrl}/getInstrumentDefinition.json");
+		var url = new Url($"{RestEndpoint.ThrowIfEmpty(nameof(RestEndpoint)).TrimEnd('/')}/getInstrumentDefinition.json");
 
 		url.QueryString.Append("apikey", Token.UnSecure());
 
@@ -151,7 +150,7 @@ partial class BarChartMessageAdapter
 
 		if (mdMsg.IsSubscribe && (mdMsg.Count != null || mdMsg.From != null || mdMsg.To != null))
 		{
-			var url = new Url($"{_baseUrl}/getHistory.json");
+			var url = new Url($"{RestEndpoint.ThrowIfEmpty(nameof(RestEndpoint)).TrimEnd('/')}/getHistory.json");
 
 			url.QueryString
 				.Append("apikey", Token.UnSecure())
@@ -234,7 +233,7 @@ partial class BarChartMessageAdapter
 		else
 			throw new InvalidOperationException(LocalizedStrings.InvalidTimeFrame);
 
-		var url = new Url($"{_baseUrl}/getHistory.json");
+			var url = new Url($"{RestEndpoint.ThrowIfEmpty(nameof(RestEndpoint)).TrimEnd('/')}/getHistory.json");
 
 		url.QueryString
 			.Append("apikey", Token.UnSecure())

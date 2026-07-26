@@ -24,6 +24,7 @@ public partial class OkexHistoryMessageAdapter : IAddressAdapter<string>
 	public static IEnumerable<TimeSpan> AllTimeFrames => _timeFrames.CachedKeys;
 
 	private string _address = "www.okx.com";
+	private string _archiveAddress = "static.okx.com";
 
 	/// <inheritdoc />
 	[Display(
@@ -37,6 +38,19 @@ public partial class OkexHistoryMessageAdapter : IAddressAdapter<string>
 	{
 		get => _address;
 		set => _address = value.ThrowIfEmpty(nameof(value));
+	}
+
+	/// <summary>Address of the public historical data archive.</summary>
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey + LocalizedStrings.Dot,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
+	public string ArchiveAddress
+	{
+		get => _archiveAddress;
+		set => _archiveAddress = value.ThrowIfEmpty(nameof(value));
 	}
 
 	/// <summary>
@@ -58,6 +72,7 @@ public partial class OkexHistoryMessageAdapter : IAddressAdapter<string>
 
 		storage
 			.Set(nameof(Address), Address)
+			.Set(nameof(ArchiveAddress), ArchiveAddress)
 			.Set(nameof(CheckDates), CheckDates)
 		;
 	}
@@ -68,6 +83,7 @@ public partial class OkexHistoryMessageAdapter : IAddressAdapter<string>
 		base.Load(storage);
 
 		Address = storage.GetValue(nameof(Address), Address);
+		ArchiveAddress = storage.GetValue(nameof(ArchiveAddress), ArchiveAddress);
 		CheckDates = storage.GetValue(nameof(CheckDates), CheckDates);
 	}
 }

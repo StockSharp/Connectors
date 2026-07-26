@@ -50,12 +50,17 @@ public partial class TradovateMessageAdapter
 		if (_httpClient != null || _marketSocket != null || _accountSocket != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(IsDemo, Login, Password, AppId, AppVersion, DeviceId, Key?.UnSecure(), Secret) { Parent = this };
+		_httpClient = new(
+			(IsDemo ? DemoRestEndpoint : RestEndpoint).ThrowIfEmpty(IsDemo ? nameof(DemoRestEndpoint) : nameof(RestEndpoint)),
+			Login, Password, AppId, AppVersion, DeviceId, Key?.UnSecure(), Secret)
+		{
+			Parent = this,
+		};
 		await _httpClient.Authenticate(cancellationToken);
 
 		if (this.IsMarketData())
 		{
-			_marketSocket = new("wss://md.tradovateapi.com/v1/websocket", _httpClient.AccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_marketSocket = new(MarketWebSocketEndpoint.ThrowIfEmpty(nameof(MarketWebSocketEndpoint)), _httpClient.AccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_marketSocket.QuoteReceived += OnQuoteReceived;
 			_marketSocket.DomReceived += OnDomReceived;
 			_marketSocket.ChartReceived += OnChartReceived;
@@ -66,8 +71,9 @@ public partial class TradovateMessageAdapter
 
 		if (this.IsTransactional())
 		{
-			var environment = IsDemo ? "demo" : "live";
-			_accountSocket = new($"wss://{environment}.tradovateapi.com/v1/websocket", _httpClient.AccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			var accountEndpoint = (IsDemo ? DemoAccountWebSocketEndpoint : AccountWebSocketEndpoint)
+				.ThrowIfEmpty(IsDemo ? nameof(DemoAccountWebSocketEndpoint) : nameof(AccountWebSocketEndpoint));
+			_accountSocket = new(accountEndpoint, _httpClient.AccessToken, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_accountSocket.EntityReceived += OnEntityReceived;
 			_accountSocket.Error += OnSocketError;
 			_accountSocket.StateChanged += SendOutConnectionStateAsync;

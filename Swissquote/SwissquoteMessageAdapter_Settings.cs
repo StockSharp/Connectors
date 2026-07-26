@@ -13,6 +13,10 @@ namespace StockSharp.Swissquote;
 [OrderCondition(typeof(SwissquoteOrderCondition))]
 public partial class SwissquoteMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAdapter
 {
+	private const string _defaultTradingEndpoint = "https://bankingapi.swissquote.ch/ow-trading/api/v1/";
+	private const string _defaultDemoTradingEndpoint = "https://bankingapi.simulator.swissquote.ch/ow-trading/api/v1/";
+	private const string _defaultCustodyEndpoint = "https://bankingapi.swissquote.ch/ow-custody/api/v1/";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -88,6 +92,30 @@ public partial class SwissquoteMessageAdapter : MessageAdapter, ITokenAdapter, I
 		Order = 7)]
 	public bool IsBestEffort { get; set; }
 
+	/// <summary>Production trading REST endpoint.</summary>
+	[Display(
+		Name = "Trading REST endpoint",
+		Description = "Production trading REST endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 8)]
+	public string TradingEndpoint { get; set; } = _defaultTradingEndpoint;
+
+	/// <summary>Simulation trading REST endpoint.</summary>
+	[Display(
+		Name = "Demo trading REST endpoint",
+		Description = "Simulation trading REST endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 9)]
+	public string DemoTradingEndpoint { get; set; } = _defaultDemoTradingEndpoint;
+
+	/// <summary>Custody REST endpoint.</summary>
+	[Display(
+		Name = "Custody REST endpoint",
+		Description = "Custody REST endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 10)]
+	public string CustodyEndpoint { get; set; } = _defaultCustodyEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -100,7 +128,10 @@ public partial class SwissquoteMessageAdapter : MessageAdapter, ITokenAdapter, I
 			.Set(nameof(AccountCurrency), AccountCurrency)
 			.Set(nameof(IsDemo), IsDemo)
 			.Set(nameof(IsDryRun), IsDryRun)
-			.Set(nameof(IsBestEffort), IsBestEffort);
+			.Set(nameof(IsBestEffort), IsBestEffort)
+			.Set(nameof(TradingEndpoint), TradingEndpoint)
+			.Set(nameof(DemoTradingEndpoint), DemoTradingEndpoint)
+			.Set(nameof(CustodyEndpoint), CustodyEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -115,5 +146,8 @@ public partial class SwissquoteMessageAdapter : MessageAdapter, ITokenAdapter, I
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 		IsDryRun = storage.GetValue(nameof(IsDryRun), IsDryRun);
 		IsBestEffort = storage.GetValue(nameof(IsBestEffort), IsBestEffort);
+		TradingEndpoint = storage.GetValue(nameof(TradingEndpoint), TradingEndpoint);
+		DemoTradingEndpoint = storage.GetValue(nameof(DemoTradingEndpoint), DemoTradingEndpoint);
+		CustodyEndpoint = storage.GetValue(nameof(CustodyEndpoint), CustodyEndpoint);
 	}
 }

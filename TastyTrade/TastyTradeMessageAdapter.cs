@@ -55,7 +55,7 @@ public partial class TastyTradeMessageAdapter
 		if (_client is not null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_client = new(IsDemo, Token, ClientSecret, Scopes);
+		_client = new(IsDemo ? DemoRestEndpoint : RestEndpoint, Token, ClientSecret, Scopes);
 		_accounts = (await _client.GetAccounts(cancellationToken)).Select(a => a.Account).Where(a => a is not null && !a.IsClosed).ToArray();
 
 		if (this.IsMarketData())
@@ -71,7 +71,9 @@ public partial class TastyTradeMessageAdapter
 
 		if (this.IsTransactional() && _accounts.Length > 0)
 		{
-			_accountStreamer = new(_client, _client.AccountStreamerUrl(IsDemo), _accounts.Select(a => a.AccountNumber), ReConnectionSettings.WorkingTime, ReConnectionSettings.AttemptCount) { Parent = this };
+			_accountStreamer = new(_client, IsDemo ? DemoAccountWebSocketEndpoint : AccountWebSocketEndpoint,
+				_accounts.Select(a => a.AccountNumber), ReConnectionSettings.WorkingTime,
+				ReConnectionSettings.AttemptCount) { Parent = this };
 			_accountStreamer.OrderReceived += ProcessOrder;
 			_accountStreamer.PositionReceived += ProcessPosition;
 			_accountStreamer.BalanceReceived += ProcessBalance;

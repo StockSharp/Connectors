@@ -2,12 +2,14 @@ namespace StockSharp.Bittrex.Native;
 
 class HttpClient : BaseLogReceiver
 {
+	private readonly string _baseUrl;
 	private readonly Authenticator _authenticator;
 
 	private readonly UTCIncrementalIdGenerator _nonceGen;
 
-	public HttpClient(Authenticator authenticator)
+	public HttpClient(string baseUrl, Authenticator authenticator)
 	{
+		_baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 		_nonceGen = new UTCIncrementalIdGenerator();
 	}
@@ -131,12 +133,12 @@ class HttpClient : BaseLogReceiver
 		}
 	}
 
-	private static Url CreateUrl(string methodName, string version = "v1.1/")
+	private Url CreateUrl(string methodName, string version = "v1.1/")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));
 
-		return new Url($"https://bittrex.com/api/{version}{methodName}");
+		return new Url($"{_baseUrl}/{version}{methodName}");
 	}
 
 	private static RestRequest CreateRequest()

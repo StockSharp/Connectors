@@ -17,7 +17,7 @@ sealed class SynFuturesApiClient : BaseLogReceiver
 	};
 	private DateTime _nextRequest;
 
-	public SynFuturesApiClient(string endpoint)
+	public SynFuturesApiClient(string endpoint, string origin)
 	{
 		endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/');
 		if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) ||
@@ -40,7 +40,7 @@ sealed class SynFuturesApiClient : BaseLogReceiver
 		_http.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip");
 		_http.DefaultRequestHeaders.AcceptEncoding.ParseAdd("deflate");
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("Origin",
-			"https://app.synfutures.com");
+			origin.ThrowIfEmpty(nameof(origin)));
 	}
 
 	public override string Name => "SynFutures_REST";

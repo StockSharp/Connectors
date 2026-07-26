@@ -23,7 +23,12 @@ using StockSharp.Messages;
 
 class AlphaClient : BaseLogReceiver
 {
+	private readonly Uri _baseUrl;
 
+	public AlphaClient(string endpoint)
+	{
+		_baseUrl = endpoint.ThrowIfEmpty(nameof(endpoint)).To<Uri>();
+	}
 
 	///// <summary>
 	///// Possible functions of Alpha Vantage API
@@ -107,9 +112,6 @@ class AlphaClient : BaseLogReceiver
 	//	SECTOR
 	//}
 
-	// https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=1min&apikey=demo
-	private const string _baseUrl = "https://www.alphavantage.co/query";
-
 	// to get readable name after obfuscation
 	public override string Name => nameof(AlphaVantage) + "_" + nameof(AlphaClient);
 
@@ -124,7 +126,7 @@ class AlphaClient : BaseLogReceiver
 			.AddQueryParameter("function", "SYMBOL_SEARCH")
 			.AddQueryParameter("keywords", symbolLike);
 
-		dynamic response = await MakeRequest<object>(_baseUrl.To<Uri>(), ApplySecret(request, token), cancellationToken);
+		dynamic response = await MakeRequest<object>(_baseUrl, ApplySecret(request, token), cancellationToken);
 
 		var matches = response.bestMatches;
 
@@ -225,7 +227,7 @@ class AlphaClient : BaseLogReceiver
 
 		var candles = new Dictionary<DateTime, Ohlc>();
 
-		var response = await MakeRequest<JObject>(_baseUrl.To<Uri>(), ApplySecret(request, token), cancellationToken);
+		var response = await MakeRequest<JObject>(_baseUrl, ApplySecret(request, token), cancellationToken);
 
 		var property = response.Properties().Last();
 

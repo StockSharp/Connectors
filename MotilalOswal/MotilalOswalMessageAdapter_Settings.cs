@@ -16,6 +16,12 @@ namespace StockSharp.MotilalOswal;
 [OrderCondition(typeof(MotilalOswalOrderCondition))]
 public partial class MotilalOswalMessageAdapter : MessageAdapter, IKeySecretAdapter, ITokenAdapter, IDemoAdapter
 {
+	private const string _defaultRestEndpoint = "https://openapi.motilaloswal.com/";
+	private const string _defaultDemoRestEndpoint = "https://openapi.motilaloswaluat.com/";
+	private const string _defaultMarketWebSocketEndpoint = "wss://ws1feed.motilaloswal.com/jwebsocket/jwebsocket";
+	private const string _defaultOrderWebSocketEndpoint = "wss://openapi.motilaloswal.com/ws";
+	private const string _defaultDemoOrderWebSocketEndpoint = "wss://openapi.motilaloswaluat.com/ws";
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -148,6 +154,46 @@ public partial class MotilalOswalMessageAdapter : MessageAdapter, IKeySecretAdap
 		Order = 13)]
 	public int ReconnectAttempts { get; set; } = 10;
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 14)]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 15)]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Market data WebSocket endpoint.</summary>
+	[Display(
+		Name = "Market WebSocket endpoint",
+		Description = "Market data WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 16)]
+	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
+
+	/// <summary>Production order WebSocket endpoint.</summary>
+	[Display(
+		Name = "Order WebSocket endpoint",
+		Description = "Production order WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 17)]
+	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;
+
+	/// <summary>Demo order WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo order WebSocket endpoint",
+		Description = "Demo order WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 18)]
+	public string DemoOrderWebSocketEndpoint { get; set; } = _defaultDemoOrderWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -166,7 +212,12 @@ public partial class MotilalOswalMessageAdapter : MessageAdapter, IKeySecretAdap
 			.Set(nameof(IsDemo), IsDemo)
 			.Set(nameof(DefaultProduct), DefaultProduct)
 			.Set(nameof(AlgoId), AlgoId)
-			.Set(nameof(ReconnectAttempts), ReconnectAttempts);
+			.Set(nameof(ReconnectAttempts), ReconnectAttempts)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint)
+			.Set(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint)
+			.Set(nameof(DemoOrderWebSocketEndpoint), DemoOrderWebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -187,5 +238,10 @@ public partial class MotilalOswalMessageAdapter : MessageAdapter, IKeySecretAdap
 		DefaultProduct = storage.GetValue(nameof(DefaultProduct), DefaultProduct);
 		AlgoId = storage.GetValue<string>(nameof(AlgoId));
 		ReconnectAttempts = storage.GetValue(nameof(ReconnectAttempts), ReconnectAttempts);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		MarketWebSocketEndpoint = storage.GetValue(nameof(MarketWebSocketEndpoint), MarketWebSocketEndpoint);
+		OrderWebSocketEndpoint = storage.GetValue(nameof(OrderWebSocketEndpoint), OrderWebSocketEndpoint);
+		DemoOrderWebSocketEndpoint = storage.GetValue(nameof(DemoOrderWebSocketEndpoint), DemoOrderWebSocketEndpoint);
 	}
 }

@@ -131,13 +131,45 @@ public partial class KalshiMessageAdapter
 				"Kalshi market depth must be between one and 100.");
 	}
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 7)]
+	public string ProductionRestEndpoint { get; set; } = _productionRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 8)]
+	public string DemoRestEndpoint { get; set; } = _demoRestEndpoint;
+
+	/// <summary>Production WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Production WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 9)]
+	public string ProductionSocketEndpoint { get; set; } = _productionSocketEndpoint;
+
+	/// <summary>Demo WebSocket endpoint.</summary>
+	[Display(
+		Name = "Demo WebSocket endpoint",
+		Description = "Demo WebSocket endpoint.",
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 10)]
+	public string DemoSocketEndpoint { get; set; } = _demoSocketEndpoint;
+
 	private string RestEndpoint => IsDemo
-		? _demoRestEndpoint
-		: _productionRestEndpoint;
+		? DemoRestEndpoint
+		: ProductionRestEndpoint;
 
 	private string SocketEndpoint => IsDemo
-		? _demoSocketEndpoint
-		: _productionSocketEndpoint;
+		? DemoSocketEndpoint
+		: ProductionSocketEndpoint;
 
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
@@ -151,7 +183,11 @@ public partial class KalshiMessageAdapter
 			.Set(nameof(PollingInterval), PollingInterval)
 			.Set(nameof(HistoryLimit), HistoryLimit)
 			.Set(nameof(SecurityLookupLimit), SecurityLookupLimit)
-			.Set(nameof(MarketDepth), MarketDepth);
+			.Set(nameof(MarketDepth), MarketDepth)
+			.Set(nameof(ProductionRestEndpoint), ProductionRestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(ProductionSocketEndpoint), ProductionSocketEndpoint)
+			.Set(nameof(DemoSocketEndpoint), DemoSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -167,6 +203,10 @@ public partial class KalshiMessageAdapter
 		SecurityLookupLimit = storage.GetValue(nameof(SecurityLookupLimit),
 			SecurityLookupLimit);
 		MarketDepth = storage.GetValue(nameof(MarketDepth), MarketDepth);
+		ProductionRestEndpoint = storage.GetValue(nameof(ProductionRestEndpoint), ProductionRestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		ProductionSocketEndpoint = storage.GetValue(nameof(ProductionSocketEndpoint), ProductionSocketEndpoint);
+		DemoSocketEndpoint = storage.GetValue(nameof(DemoSocketEndpoint), DemoSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -181,6 +221,10 @@ public partial class KalshiMessageAdapter
 			HistoryLimit = HistoryLimit,
 			SecurityLookupLimit = SecurityLookupLimit,
 			MarketDepth = MarketDepth,
+			ProductionRestEndpoint = ProductionRestEndpoint,
+			DemoRestEndpoint = DemoRestEndpoint,
+			ProductionSocketEndpoint = ProductionSocketEndpoint,
+			DemoSocketEndpoint = DemoSocketEndpoint,
 		};
 
 	/// <inheritdoc />

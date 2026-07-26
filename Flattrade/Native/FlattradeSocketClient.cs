@@ -2,7 +2,6 @@ namespace StockSharp.Flattrade.Native;
 
 sealed class FlattradeSocketClient : BaseLogReceiver
 {
-	private const string _url = "wss://piconnect.flattrade.in/PiConnectWSAPI/";
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -16,7 +15,7 @@ sealed class FlattradeSocketClient : BaseLogReceiver
 	private readonly SynchronizedDictionary<string, bool> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 	private TaskCompletionSource<bool> _loginCompletion;
 
-	public FlattradeSocketClient(string userId, string accountId, SecureString sessionToken, bool subscribeTransactions,
+	public FlattradeSocketClient(string endpoint, string userId, string accountId, SecureString sessionToken, bool subscribeTransactions,
 		int reconnectAttempts, WorkingTime workingTime)
 	{
 		_userId = userId.ThrowIfEmpty(nameof(userId));
@@ -25,7 +24,7 @@ sealed class FlattradeSocketClient : BaseLogReceiver
 		_subscribeTransactions = subscribeTransactions;
 
 		_client = new(
-			_url,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

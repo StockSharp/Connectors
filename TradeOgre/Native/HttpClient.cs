@@ -2,12 +2,12 @@ namespace StockSharp.TradeOgre.Native;
 
 using RestSharp.Authenticators;
 
-class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
+class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLogReceiver
 {
 	private readonly SecureString _key = key;
 	private readonly SecureString _secret = secret;
 
-	private const string _baseUrl = "https://tradeogre.com/api";
+	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
 	// to get readable name after obfuscation
 	public override string Name => nameof(TradeOgre) + "_" + nameof(HttpClient);
@@ -86,7 +86,7 @@ class HttpClient(SecureString key, SecureString secret) : BaseLogReceiver
 		await MakeRequestAsync<object>(CreateUrl("order/cancel"), request, true, cancellationToken);
 	}
 
-	private static Uri CreateUrl(string methodName, string version = "v1/")
+	private Uri CreateUrl(string methodName, string version = "v1/")
 	{
 		if (methodName.IsEmpty())
 			throw new ArgumentNullException(nameof(methodName));

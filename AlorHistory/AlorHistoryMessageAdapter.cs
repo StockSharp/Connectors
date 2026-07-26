@@ -30,7 +30,7 @@ public partial class AlorHistoryMessageAdapter : MessageAdapter
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new("api.alor.ru") { Parent = this };
+		_httpClient = new(RestEndpoint) { Parent = this };
 
 		SendOutMessageAsync(new ConnectMessage(), cancellationToken);
 		return default;

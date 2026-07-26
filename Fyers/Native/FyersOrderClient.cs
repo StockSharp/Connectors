@@ -2,8 +2,6 @@ namespace StockSharp.Fyers.Native;
 
 sealed class FyersOrderClient : BaseLogReceiver
 {
-	private const string _url = "wss://socket.fyers.in/trade/v3";
-
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -12,11 +10,11 @@ sealed class FyersOrderClient : BaseLogReceiver
 	private readonly WebSocketClient _client;
 	private readonly string _authorization;
 
-	public FyersOrderClient(string clientId, string token, int reconnectAttempts, WorkingTime workingTime)
+	public FyersOrderClient(string endpoint, string clientId, string token, int reconnectAttempts, WorkingTime workingTime)
 	{
 		_authorization = $"{clientId.ThrowIfEmpty(nameof(clientId))}:{token.ThrowIfEmpty(nameof(token))}";
 		_client = new(
-			_url,
+			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
 			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
 			Process,

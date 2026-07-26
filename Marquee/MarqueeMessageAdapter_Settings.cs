@@ -15,6 +15,11 @@ namespace StockSharp.Marquee;
 	MessageAdapterCategories.Paid)]
 public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter, IKeySecretAdapter
 {
+	private const string _defaultRestEndpoint = "https://api.gs.com/v1/";
+	private const string _defaultDemoRestEndpoint = "https://api.marquee-qa.gs.com/v1/";
+	private const string _defaultOAuthEndpoint = "https://idfs.gs.com/as/token.oauth2";
+	private const string _defaultDemoOAuthEndpoint = "https://idfs-qa.gs.com/as/token.oauth2";
+
 	/// <summary>OAuth application client identifier.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -45,6 +50,38 @@ public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter, IKeyS
 	[BasicSetting]
 	public bool IsDemo { get; set; }
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Production OAuth endpoint.</summary>
+	[Display(
+		Name = "OAuth endpoint",
+		Description = "Production OAuth endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;
+
+	/// <summary>Demo OAuth endpoint.</summary>
+	[Display(
+		Name = "Demo OAuth endpoint",
+		Description = "Demo OAuth endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoOAuthEndpoint { get; set; } = _defaultDemoOAuthEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -52,7 +89,11 @@ public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter, IKeyS
 		storage
 			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
-			.Set(nameof(IsDemo), IsDemo);
+			.Set(nameof(IsDemo), IsDemo)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(OAuthEndpoint), OAuthEndpoint)
+			.Set(nameof(DemoOAuthEndpoint), DemoOAuthEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -62,5 +103,9 @@ public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter, IKeyS
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		OAuthEndpoint = storage.GetValue(nameof(OAuthEndpoint), OAuthEndpoint);
+		DemoOAuthEndpoint = storage.GetValue(nameof(DemoOAuthEndpoint), DemoOAuthEndpoint);
 	}
 }

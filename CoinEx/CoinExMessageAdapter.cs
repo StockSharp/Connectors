@@ -128,7 +128,7 @@ public partial class CoinExMessageAdapter
 
 		if (Sections.Contains(CoinExSections.Spot))
 		{
-			_spot = new(_authenticator, TransactionIdGenerator, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_spot = new(RestEndpoint, SpotWebSocketEndpoint, _authenticator, TransactionIdGenerator, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_spot.NewOutMessage += NativeAdapterOutMessageAsync;
 
 			_traker.Add(_spot);
@@ -136,7 +136,7 @@ public partial class CoinExMessageAdapter
 
 		if (Sections.Contains(CoinExSections.Futures))
 		{
-			_futures = new(_authenticator, TransactionIdGenerator, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
+			_futures = new(RestEndpoint, FuturesWebSocketEndpoint, _authenticator, TransactionIdGenerator, ReConnectionSettings.ReAttemptCount, ReConnectionSettings.WorkingTime) { Parent = this };
 			_futures.NewOutMessage += NativeAdapterOutMessageAsync;
 
 			_traker.Add(_futures);

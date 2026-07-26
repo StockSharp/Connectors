@@ -86,7 +86,8 @@ public partial class DukasCopyLiveMessageAdapter
 
 		try
 		{
-			await _client.Connect(userName, password, IsDemo, cancellationToken);
+			await _client.Connect(userName, password, IsDemo,
+				IsDemo ? DemoAddress : LiveAddress, cancellationToken);
 			await base.ConnectAsync(connectMsg, cancellationToken);
 		}
 		catch

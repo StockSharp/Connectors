@@ -14,6 +14,10 @@ namespace StockSharp.CapitalCom;
 [OrderCondition(typeof(CapitalComOrderCondition))]
 public partial class CapitalComMessageAdapter : MessageAdapter, IDemoAdapter, ILoginPasswordAdapter
 {
+	private const string _defaultRestEndpoint = "https://api-capital.backend-capital.com/";
+	private const string _defaultDemoRestEndpoint = "https://demo-api-capital.backend-capital.com/";
+	private const string _defaultWebSocketEndpoint = "wss://api-streaming-capital.backend-capital.com/";
+
 	/// <summary>API key generated in Capital.com API integrations.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -71,6 +75,30 @@ public partial class CapitalComMessageAdapter : MessageAdapter, IDemoAdapter, IL
 		Order = 5)]
 	public bool IsPasswordEncryptionEnabled { get; set; }
 
+	/// <summary>Production REST API endpoint.</summary>
+	[Display(
+		Name = "REST endpoint",
+		Description = "Production REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
+
+	/// <summary>Demo REST API endpoint.</summary>
+	[Display(
+		Name = "Demo REST endpoint",
+		Description = "Demo REST API endpoint.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
+
+	/// <summary>Fallback WebSocket endpoint.</summary>
+	[Display(
+		Name = "WebSocket endpoint",
+		Description = "Fallback WebSocket endpoint used when login does not return one.",
+		GroupName = LocalizedStrings.AddressesKey)]
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
+
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
 	{
@@ -81,7 +109,10 @@ public partial class CapitalComMessageAdapter : MessageAdapter, IDemoAdapter, IL
 			.Set(nameof(Password), Password)
 			.Set(nameof(AccountId), AccountId)
 			.Set(nameof(IsDemo), IsDemo)
-			.Set(nameof(IsPasswordEncryptionEnabled), IsPasswordEncryptionEnabled);
+			.Set(nameof(IsPasswordEncryptionEnabled), IsPasswordEncryptionEnabled)
+			.Set(nameof(RestEndpoint), RestEndpoint)
+			.Set(nameof(DemoRestEndpoint), DemoRestEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 
 	/// <inheritdoc />
@@ -94,5 +125,8 @@ public partial class CapitalComMessageAdapter : MessageAdapter, IDemoAdapter, IL
 		AccountId = storage.GetValue<string>(nameof(AccountId));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 		IsPasswordEncryptionEnabled = storage.GetValue(nameof(IsPasswordEncryptionEnabled), IsPasswordEncryptionEnabled);
+		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
+		DemoRestEndpoint = storage.GetValue(nameof(DemoRestEndpoint), DemoRestEndpoint);
+		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
 	}
 }
