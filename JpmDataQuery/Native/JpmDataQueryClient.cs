@@ -22,7 +22,8 @@ sealed class JpmDataQueryClient : BaseLogReceiver, IDisposable
 
 	public JpmDataQueryClient(string apiEndpoint, string oauthEndpoint, string clientId, string clientSecret)
 	{
-		_apiAddress = new(apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint)));
+		var apiAddress = new Uri(apiEndpoint.ThrowIfEmpty(nameof(apiEndpoint)));
+		_apiAddress = new(apiAddress.AbsoluteUri.TrimEnd('/') + "/");
 		_authAddress = new(oauthEndpoint.ThrowIfEmpty(nameof(oauthEndpoint)));
 		_clientId = clientId.ThrowIfEmpty(nameof(clientId));
 		_clientSecret = clientSecret.ThrowIfEmpty(nameof(clientSecret));
@@ -103,13 +104,51 @@ sealed class JpmDataQueryClient : BaseLogReceiver, IDisposable
 			var next = page.GetNextLink();
 			if (next.IsEmpty())
 				yield break;
-			address = Uri.TryCreate(next, UriKind.Absolute, out var absolute)
-				? absolute
-				: new Uri(_apiAddress, next);
+			address = ResolveNextAddress(next);
 		}
 
 		throw new InvalidOperationException(
 			$"J.P. Morgan DataQuery pagination exceeded {_maxPages} pages.");
+	}
+
+	private Uri ResolveNextAddress(string next)
+	{
+		next = next?.Trim();
+		next.ThrowIfEmpty(nameof(next));
+
+		Uri address;
+		if (next.StartsWith("//", StringComparison.Ordinal))
+		{
+			address = new Uri(_apiAddress, next);
+		}
+		else if (Uri.TryCreate(next, UriKind.Absolute, out var absolute))
+		{
+			address = absolute;
+		}
+		else
+		{
+			var contextPath = _apiAddress.AbsolutePath.TrimEnd('/');
+			var relativeContextPath = contextPath.TrimStart('/');
+			var hasContextPath =
+				next.EqualsIgnoreCase(contextPath) ||
+				next.StartsWith(contextPath + "/", StringComparison.OrdinalIgnoreCase) ||
+				next.EqualsIgnoreCase(relativeContextPath) ||
+				next.StartsWith(relativeContextPath + "/", StringComparison.OrdinalIgnoreCase);
+
+			address = hasContextPath
+				? new Uri(_apiAddress.GetLeftPart(UriPartial.Authority) + "/" + next.TrimStart('/'))
+				: new Uri(_apiAddress.AbsoluteUri + next.TrimStart('/'));
+		}
+
+		if (!_apiAddress.Scheme.EqualsIgnoreCase(address.Scheme) ||
+			!_apiAddress.IdnHost.EqualsIgnoreCase(address.IdnHost) ||
+			_apiAddress.Port != address.Port)
+		{
+			throw new InvalidOperationException(
+				$"J.P. Morgan DataQuery pagination link points to a different origin: '{address}'.");
+		}
+
+		return address;
 	}
 
 	private async Task<T> Get<T>(Uri address, CancellationToken cancellationToken)
