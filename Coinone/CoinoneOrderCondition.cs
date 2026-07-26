@@ -14,12 +14,12 @@ public class CoinoneOrderCondition : OrderCondition, IStopLossOrderCondition
     /// Stop-limit activation price.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.TriggerKey,
-        Description = LocalizedStrings.TriggerFieldKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerKey,
+		Description = LocalizedStrings.TriggerFieldKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? TriggerPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -30,12 +30,12 @@ public class CoinoneOrderCondition : OrderCondition, IStopLossOrderCondition
     /// Quote-currency amount for a market buy order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AmountKey,
-        Description = LocalizedStrings.AmountKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
+		Description = LocalizedStrings.AmountKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
     public decimal? QuoteAmount
     {
         get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));
@@ -46,12 +46,12 @@ public class CoinoneOrderCondition : OrderCondition, IStopLossOrderCondition
     /// Maximum buy price or minimum sell price for a market order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.PriceKey,
-        Description = LocalizedStrings.PriceKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceKey,
+		Description = LocalizedStrings.PriceKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
     public decimal? LimitPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(LimitPrice));

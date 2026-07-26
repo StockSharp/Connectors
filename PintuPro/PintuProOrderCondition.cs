@@ -6,20 +6,20 @@ namespace StockSharp.PintuPro;
 [Serializable]
 [DataContract]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.PintuProKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.PintuProKey)]
 public class PintuProOrderCondition : OrderCondition
 {
     /// <summary>
     /// Quote-currency amount to spend for a market buy order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AmountKey,
-        Description = LocalizedStrings.AmountKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
+		Description = LocalizedStrings.AmountKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? QuoteAmount
     {
         get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));

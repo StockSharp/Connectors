@@ -6,20 +6,20 @@ namespace StockSharp.Indodax;
 [Serializable]
 [DataContract]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.IndodaxKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.IndodaxKey)]
 public class IndodaxOrderCondition : OrderCondition
 {
     /// <summary>
     /// Quote-currency amount to spend for a market buy order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AmountKey,
-        Description = LocalizedStrings.AmountKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
+		Description = LocalizedStrings.AmountKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? QuoteAmount
     {
         get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));

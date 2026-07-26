@@ -6,10 +6,10 @@ namespace StockSharp.MercadoBitcoin;
 [MediaIcon(Media.MediaNames.mercadobitcoin)]
 [Doc("topics/api/connectors/crypto_exchanges/mercado_bitcoin.html")]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.MercadoBitcoinKey,
-    Description = LocalizedStrings.CryptoConnectorKey,
-    GroupName = LocalizedStrings.CryptocurrencyKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.MercadoBitcoinKey,
+	Description = LocalizedStrings.CryptoConnectorKey,
+	GroupName = LocalizedStrings.CryptocurrencyKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Crypto |
     MessageAdapterCategories.RealTime | MessageAdapterCategories.Free |
     MessageAdapterCategories.Ticks | MessageAdapterCategories.MarketDepth |
@@ -33,70 +33,70 @@ public partial class MercadoBitcoinMessageAdapter : MessageAdapter,
         MercadoBitcoinExtensions.TimeFrames;
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.KeyKey,
-        Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SecretKey,
-        Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.SecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
     /// <summary>
     /// Default account identifier. Leave empty when the API key has one account.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AccountKey,
-        Description = LocalizedStrings.AccountKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
+		Description = LocalizedStrings.AccountKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
     [BasicSetting]
     public string AccountId { get; set; }
 
     /// <summary>
     /// REST API endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AddressKey,
-        Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
     /// <summary>
     /// Public WebSocket endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.WebSocketKey,
-        Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
     /// <summary>
     /// Public WebSocket origin header.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AddressKey,
-        Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 1)]
     public string WebSocketOrigin { get; set; } = _defaultWebSocketOrigin;
 
     /// <inheritdoc />

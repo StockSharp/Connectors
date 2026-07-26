@@ -6,8 +6,8 @@ namespace StockSharp.BTCMarkets;
 [Serializable]
 [DataContract]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.BTCMarketsKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.BTCMarketsKey)]
 public class BTCMarketsOrderCondition : OrderCondition, IStopLossOrderCondition,
     ITakeProfitOrderCondition
 {
@@ -15,12 +15,12 @@ public class BTCMarketsOrderCondition : OrderCondition, IStopLossOrderCondition,
     /// Price that activates a stop or take-profit order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.TriggerKey,
-        Description = LocalizedStrings.TriggerFieldKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerKey,
+		Description = LocalizedStrings.TriggerFieldKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? TriggerPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -31,12 +31,12 @@ public class BTCMarketsOrderCondition : OrderCondition, IStopLossOrderCondition,
     /// Use a take-profit trigger instead of a stop trigger.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.TakeProfitKey,
-        Description = LocalizedStrings.TakeProfitKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
+		Description = LocalizedStrings.TakeProfitKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
     public bool IsTakeProfit
     {
         get => (bool?)Parameters.TryGetValue(nameof(IsTakeProfit)) ?? false;
@@ -47,12 +47,12 @@ public class BTCMarketsOrderCondition : OrderCondition, IStopLossOrderCondition,
     /// Desired quote-currency outcome for a market order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.TargetKey,
-        Description = LocalizedStrings.TargetKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TargetKey,
+		Description = LocalizedStrings.TargetKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
     public decimal? TargetAmount
     {
         get => (decimal?)Parameters.TryGetValue(nameof(TargetAmount));
@@ -63,12 +63,12 @@ public class BTCMarketsOrderCondition : OrderCondition, IStopLossOrderCondition,
     /// Prevent the new order from trading against an existing own order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.ModeKey,
-        Description = LocalizedStrings.ModeKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ModeKey,
+		Description = LocalizedStrings.ModeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
     public bool IsSelfTradePrevented
     {
         get => (bool?)Parameters.TryGetValue(

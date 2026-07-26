@@ -6,10 +6,10 @@ namespace StockSharp.OSL;
 [MediaIcon(Media.MediaNames.osl)]
 [Doc("topics/api/connectors/crypto_exchanges/osl.html")]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.OSLKey,
-    Description = LocalizedStrings.CryptoConnectorKey,
-    GroupName = LocalizedStrings.CryptocurrencyKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.OSLKey,
+	Description = LocalizedStrings.CryptoConnectorKey,
+	GroupName = LocalizedStrings.CryptocurrencyKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Crypto |
     MessageAdapterCategories.RealTime | MessageAdapterCategories.Paid |
     MessageAdapterCategories.Ticks | MessageAdapterCategories.MarketDepth |
@@ -35,56 +35,56 @@ public partial class OSLMessageAdapter : MessageAdapter, IKeySecretAdapter,
         OSLExtensions.TimeFrames;
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.KeyKey,
-        Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SecretKey,
-        Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.SecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.PassphraseKey,
-        Description = LocalizedStrings.PassphraseKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PassphraseKey,
+		Description = LocalizedStrings.PassphraseKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
     [BasicSetting]
     public SecureString Passphrase { get; set; }
 
     /// <summary>
     /// REST API endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AddressKey,
-        Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
     /// <summary>
     /// Public SPOT WebSocket endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.WebSocketKey,
-        Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string PublicWsEndpoint { get; set; } =
         _defaultPublicWsEndpoint;
@@ -92,12 +92,12 @@ public partial class OSLMessageAdapter : MessageAdapter, IKeySecretAdapter,
     /// <summary>
     /// Private SPOT WebSocket endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.WebSocketKey,
-        Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 1)]
     [BasicSetting]
     public string PrivateWsEndpoint { get; set; } =
         _defaultPrivateWsEndpoint;
@@ -105,12 +105,12 @@ public partial class OSLMessageAdapter : MessageAdapter, IKeySecretAdapter,
     /// <summary>
     /// Public candlestick WebSocket endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.WebSocketKey,
-        Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 2)]
     [BasicSetting]
     public string CandleWsEndpoint { get; set; } =
         _defaultCandleWsEndpoint;

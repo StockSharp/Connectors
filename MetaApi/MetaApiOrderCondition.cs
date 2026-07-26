@@ -3,7 +3,9 @@ namespace StockSharp.MetaApi;
 /// <summary>MetaApi pending-order and protection parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MetaApiKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.MetaApiKey)]
 public sealed class MetaApiOrderCondition : OrderCondition,
 	IStopLossOrderCondition, ITakeProfitOrderCondition
 {

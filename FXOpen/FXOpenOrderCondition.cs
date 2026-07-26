@@ -4,19 +4,19 @@ namespace StockSharp.FXOpen;
 [Serializable]
 [DataContract]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.FXOpenKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.FXOpenKey)]
 public sealed class FXOpenOrderCondition : BaseWithdrawOrderCondition,
     IStopLossOrderCondition, ITakeProfitOrderCondition
 {
     /// <summary>Activation price for stop and stop-limit pending orders.</summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.ActivationPriceKey,
-        Description = LocalizedStrings.StopPriceDescKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ActivationPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? StopPrice
     {
         get => Parameters.TryGetValue(nameof(StopPrice))?.To<decimal?>();
@@ -25,12 +25,12 @@ public sealed class FXOpenOrderCondition : BaseWithdrawOrderCondition,
 
     /// <summary>Protective stop-loss price.</summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.StopLossKey,
-        Description = LocalizedStrings.StopPriceDescKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
     public decimal? StopLoss
     {
         get => Parameters.TryGetValue(nameof(StopLoss))?.To<decimal?>();
@@ -39,12 +39,12 @@ public sealed class FXOpenOrderCondition : BaseWithdrawOrderCondition,
 
     /// <summary>Protective take-profit price.</summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.TakeProfitKey,
-        Description = LocalizedStrings.TakeProfitDescKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitKey,
+		Description = LocalizedStrings.TakeProfitDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
     public decimal? TakeProfit
     {
         get => Parameters.TryGetValue(nameof(TakeProfit))?.To<decimal?>();
@@ -53,12 +53,12 @@ public sealed class FXOpenOrderCondition : BaseWithdrawOrderCondition,
 
     /// <summary>Native trade identifier used for a full or partial position close.</summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.PositionKey,
-        Description = LocalizedStrings.IdentifierKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.IdentifierKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
     public long? PositionId
     {
         get => Parameters.TryGetValue(nameof(PositionId))?.To<long?>();
@@ -67,12 +67,12 @@ public sealed class FXOpenOrderCondition : BaseWithdrawOrderCondition,
 
     /// <summary>Opposite native position identifier for a close-by operation.</summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.PositionKey,
-        Description = LocalizedStrings.IdentifierKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.IdentifierKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 4)]
     public long? CloseByPositionId
     {
         get => Parameters.TryGetValue(nameof(CloseByPositionId))?.To<long?>();
@@ -81,12 +81,12 @@ public sealed class FXOpenOrderCondition : BaseWithdrawOrderCondition,
 
     /// <summary>Maximum allowed slippage for market-with-slippage execution.</summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SlippageKey,
-        Description = LocalizedStrings.SlippageSizeKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SlippageKey,
+		Description = LocalizedStrings.SlippageSizeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 5)]
     public decimal? Slippage
     {
         get => Parameters.TryGetValue(nameof(Slippage))?.To<decimal?>();
@@ -95,12 +95,12 @@ public sealed class FXOpenOrderCondition : BaseWithdrawOrderCondition,
 
     /// <summary>Comment stored with the native trade.</summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.CommentKey,
-        Description = LocalizedStrings.OrderConditionDescKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CommentKey,
+		Description = LocalizedStrings.OrderConditionDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 6)]
     public string Comment
     {
         get => Parameters.TryGetValue(nameof(Comment))?.To<string>();

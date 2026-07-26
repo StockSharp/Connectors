@@ -4,10 +4,10 @@ namespace StockSharp.ChainlinkDataStreams;
 [MediaIcon(Media.MediaNames.chainlinkdatastreams)]
 [Doc("topics/api/connectors/crypto_exchanges/chainlink_data_streams.html")]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.ChainlinkDataStreamsKey,
-    Description = LocalizedStrings.MarketDataConnectorKey,
-    GroupName = LocalizedStrings.MarketDataKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.ChainlinkDataStreamsKey,
+	Description = LocalizedStrings.MarketDataConnectorKey,
+	GroupName = LocalizedStrings.MarketDataKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Stock |
     MessageAdapterCategories.FX | MessageAdapterCategories.Crypto |
     MessageAdapterCategories.Futures | MessageAdapterCategories.Commodities |

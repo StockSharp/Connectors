@@ -6,8 +6,8 @@ namespace StockSharp.MercadoBitcoin;
 [Serializable]
 [DataContract]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.MercadoBitcoinKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.MercadoBitcoinKey)]
 public class MercadoBitcoinOrderCondition : OrderCondition,
     IStopLossOrderCondition
 {
@@ -15,12 +15,12 @@ public class MercadoBitcoinOrderCondition : OrderCondition,
     /// Price that activates a native stop-limit order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.TriggerKey,
-        Description = LocalizedStrings.TriggerFieldKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerKey,
+		Description = LocalizedStrings.TriggerFieldKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? StopPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(StopPrice));
@@ -31,12 +31,12 @@ public class MercadoBitcoinOrderCondition : OrderCondition,
     /// Quote-currency amount to spend for a market buy order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AmountKey,
-        Description = LocalizedStrings.AmountKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
+		Description = LocalizedStrings.AmountKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
     public decimal? QuoteCost
     {
         get => (decimal?)Parameters.TryGetValue(nameof(QuoteCost));

@@ -4,10 +4,10 @@ namespace StockSharp.VeloData;
 [MediaIcon(Media.MediaNames.velodata)]
 [Doc("topics/api/connectors/crypto_exchanges/velo_data.html")]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.VeloDataKey,
-    Description = LocalizedStrings.MarketDataConnectorKey,
-    GroupName = LocalizedStrings.CryptocurrencyKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.VeloDataKey,
+	Description = LocalizedStrings.MarketDataConnectorKey,
+	GroupName = LocalizedStrings.CryptocurrencyKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Crypto |
     MessageAdapterCategories.RealTime | MessageAdapterCategories.History |
     MessageAdapterCategories.Paid | MessageAdapterCategories.Level1 |

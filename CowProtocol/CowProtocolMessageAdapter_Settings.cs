@@ -29,10 +29,10 @@ public enum CowProtocolChains
 [MediaIcon(Media.MediaNames.cow_protocol)]
 [Doc("topics/api/connectors/crypto_exchanges/cow_protocol.html")]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.CowProtocolKey,
-    Description = LocalizedStrings.CryptoConnectorKey,
-    GroupName = LocalizedStrings.CryptocurrencyKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.CowProtocolKey,
+	Description = LocalizedStrings.CryptoConnectorKey,
+	GroupName = LocalizedStrings.CryptocurrencyKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Crypto |
     MessageAdapterCategories.RealTime | MessageAdapterCategories.Free |
     MessageAdapterCategories.Ticks | MessageAdapterCategories.Level1 |
@@ -45,53 +45,53 @@ public partial class CowProtocolMessageAdapter : MessageAdapter
         CowProtocolExtensions.TimeFrames;
 
     /// <summary>Production network.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.BoardKey,
-        Description = LocalizedStrings.BoardKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BoardKey,
+		Description = LocalizedStrings.BoardKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
     [BasicSetting]
     public CowProtocolChains Chain { get; set; } =
         CowProtocolChains.Ethereum;
 
     /// <summary>Public wallet address used for quotes and balances.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.WalletAddressKey,
-        Description = LocalizedStrings.WalletAddressKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WalletAddressKey,
+		Description = LocalizedStrings.WalletAddressKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
     [BasicSetting]
     public string WalletAddress { get; set; }
 
     /// <summary>Optional private key used to sign orders and approvals.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.PrivateKey,
-        Description = LocalizedStrings.PrivateKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrivateKey,
+		Description = LocalizedStrings.PrivateKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
     [BasicSetting]
     public SecureString PrivateKey { get; set; }
 
     /// <summary>Optional custom CoW Protocol Order Book API endpoint.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AddressKey,
-        Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string ApiEndpoint { get; set; }
 
     /// <summary>Optional custom EVM HTTP JSON-RPC endpoint.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AddressKey,
-        Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 1)]
     [BasicSetting]
     public string RpcEndpoint { get; set; }
 
@@ -100,23 +100,23 @@ public partial class CowProtocolMessageAdapter : MessageAdapter
     /// base-token|quote-token|security-code format. The security code is
     /// optional.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SecuritiesKey,
-        Description = LocalizedStrings.SecuritiesKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecuritiesKey,
+		Description = LocalizedStrings.SecuritiesKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
     public string Markets { get; set; }
 
     private int _historyBlockRange = 2_000;
 
     /// <summary>Maximum block range requested by one log query.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.CountKey,
-        Description = LocalizedStrings.CountKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 4)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CountKey,
+		Description = LocalizedStrings.CountKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
     public int HistoryBlockRange
     {
         get => _historyBlockRange;
@@ -131,12 +131,12 @@ public partial class CowProtocolMessageAdapter : MessageAdapter
     /// <summary>
     /// Number of recent blocks searched when history has no start time.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.CountKey,
-        Description = LocalizedStrings.CountKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 5)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CountKey,
+		Description = LocalizedStrings.CountKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 5)]
     public int HistoryBlockCount
     {
         get => _historyBlockCount;
@@ -149,12 +149,12 @@ public partial class CowProtocolMessageAdapter : MessageAdapter
     private decimal _probeVolume = 0.01m;
 
     /// <summary>Base-token amount used for bid and ask quote probes.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.VolumeKey,
-        Description = LocalizedStrings.VolumeKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 6)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VolumeKey,
+		Description = LocalizedStrings.VolumeKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 6)]
     public decimal ProbeVolume
     {
         get => _probeVolume;
@@ -167,12 +167,12 @@ public partial class CowProtocolMessageAdapter : MessageAdapter
     private TimeSpan _orderValidity = TimeSpan.FromMinutes(5);
 
     /// <summary>Default lifetime for submitted orders.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.TimeKey,
-        Description = LocalizedStrings.TimeKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 7)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeKey,
+		Description = LocalizedStrings.TimeKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 7)]
     public TimeSpan OrderValidity
     {
         get => _orderValidity;
@@ -186,12 +186,12 @@ public partial class CowProtocolMessageAdapter : MessageAdapter
     private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
     /// <summary>Polling interval for quotes, trades, balances, and orders.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.IntervalKey,
-        Description = LocalizedStrings.IntervalKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 8)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IntervalKey,
+		Description = LocalizedStrings.IntervalKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 8)]
     public TimeSpan PollingInterval
     {
         get => _pollingInterval;
@@ -202,12 +202,12 @@ public partial class CowProtocolMessageAdapter : MessageAdapter
     }
 
     /// <summary>Automatically approve the VaultRelayer when required.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AutoKey,
-        Description = LocalizedStrings.AutoKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 9)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AutoKey,
+		Description = LocalizedStrings.AutoKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 9)]
     public bool IsAutoApprove { get; set; } = true;
 
     /// <inheritdoc />

@@ -6,20 +6,20 @@ namespace StockSharp.NDAX;
 [Serializable]
 [DataContract]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.NDAXKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.NDAXKey)]
 public class NDAXOrderCondition : OrderCondition
 {
     /// <summary>
     /// Stop trigger price.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.StopPriceKey,
-        Description = LocalizedStrings.StopPriceKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? TriggerPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(TriggerPrice));
@@ -30,12 +30,12 @@ public class NDAXOrderCondition : OrderCondition
     /// Optional one-cancels-the-other order identifier.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.OrderIdKey,
-        Description = LocalizedStrings.OrderIdKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderIdKey,
+		Description = LocalizedStrings.OrderIdKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
     public long? OcoOrderId
     {
         get => (long?)Parameters.TryGetValue(nameof(OcoOrderId));

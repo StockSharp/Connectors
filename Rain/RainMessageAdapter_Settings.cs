@@ -6,10 +6,10 @@ namespace StockSharp.Rain;
 [MediaIcon(Media.MediaNames.rain)]
 [Doc("topics/api/connectors/crypto_exchanges/rain.html")]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.RainKey,
-    Description = LocalizedStrings.CryptoConnectorKey,
-    GroupName = LocalizedStrings.CryptocurrencyKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.RainKey,
+	Description = LocalizedStrings.CryptoConnectorKey,
+	GroupName = LocalizedStrings.CryptocurrencyKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Crypto |
     MessageAdapterCategories.RealTime | MessageAdapterCategories.Free |
     MessageAdapterCategories.Ticks | MessageAdapterCategories.MarketDepth |
@@ -29,58 +29,58 @@ public partial class RainMessageAdapter : MessageAdapter, IKeySecretAdapter, ITo
         RainExtensions.TimeFrames;
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.KeyKey,
-        Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SecretKey,
-        Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.SecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
     /// <summary>
     /// Rain account access token.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.TokenKey,
-        Description = LocalizedStrings.AccessTokenKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenKey,
+		Description = LocalizedStrings.AccessTokenKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
     [BasicSetting]
     public SecureString Token { get; set; }
 
     /// <summary>
     /// REST API endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AddressKey,
-        Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
     /// <summary>
     /// WebSocket API endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.WebSocketKey,
-        Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } =
         _defaultWebSocketEndpoint;

@@ -11,27 +11,27 @@ public enum WhiteBitSections
     /// Spot markets.
     /// </summary>
     [EnumMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SpotKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SpotKey)]
     Spot,
 
     /// <summary>
     /// Collateral spot markets.
     /// </summary>
     [EnumMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.MarginKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey)]
     Margin,
 
     /// <summary>
     /// Perpetual futures markets.
     /// </summary>
     [EnumMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.FuturesKey)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FuturesKey)]
     Futures,
 }
 
@@ -41,10 +41,10 @@ public enum WhiteBitSections
 [MediaIcon(Media.MediaNames.whitebit)]
 [Doc("topics/api/connectors/crypto_exchanges/whitebit.html")]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.WhiteBITKey,
-    Description = LocalizedStrings.CryptoConnectorKey,
-    GroupName = LocalizedStrings.CryptocurrencyKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.WhiteBITKey,
+	Description = LocalizedStrings.CryptoConnectorKey,
+	GroupName = LocalizedStrings.CryptocurrencyKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Crypto | MessageAdapterCategories.RealTime |
     MessageAdapterCategories.Free | MessageAdapterCategories.Ticks | MessageAdapterCategories.MarketDepth |
     MessageAdapterCategories.Level1 | MessageAdapterCategories.Transactions)]
@@ -60,22 +60,22 @@ public partial class WhiteBitMessageAdapter : MessageAdapter, IKeySecretAdapter
     public static IEnumerable<TimeSpan> AllTimeFrames => [.. WhiteBitExtensions.TimeFrames.Keys];
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.KeyKey,
-        Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SecretKey,
-        Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.SecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
@@ -84,12 +84,12 @@ public partial class WhiteBitMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// <summary>
     /// Enabled market sections.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SectionsKey,
-        Description = LocalizedStrings.SectionsDescKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SectionsKey,
+		Description = LocalizedStrings.SectionsDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
     [BasicSetting]
     [ItemsSource(typeof(WhiteBitSections))]
     public IEnumerable<WhiteBitSections> Sections
@@ -111,24 +111,24 @@ public partial class WhiteBitMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// <summary>
     /// REST API endpoint. Use <c>https://whitebit.eu</c> for an EU account.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AddressKey,
-        Description = LocalizedStrings.AddressKey,
-        GroupName = LocalizedStrings.AddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.AddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
     /// <summary>
     /// Public and private WebSocket endpoint.
     /// </summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.WebSocketKey,
-        Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string WsEndpoint { get; set; } = _defaultWsEndpoint;
 

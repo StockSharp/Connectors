@@ -3,7 +3,9 @@ namespace StockSharp.StocksTrader;
 /// <summary>StocksTrader protective order parameters.</summary>
 [Serializable]
 [DataContract]
-[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StocksTraderKey)]
+[Display(
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.StocksTraderKey)]
 public sealed class StocksTraderOrderCondition : OrderCondition,
 	IStopLossOrderCondition, ITakeProfitOrderCondition
 {

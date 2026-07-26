@@ -14,12 +14,12 @@ public class WhiteBitOrderCondition : OrderCondition, IStopLossOrderCondition, I
     /// Trigger price.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.StopPriceKey,
-        Description = LocalizedStrings.StopPriceDescKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopPriceKey,
+		Description = LocalizedStrings.StopPriceDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? ActivationPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(ActivationPrice));
@@ -30,12 +30,12 @@ public class WhiteBitOrderCondition : OrderCondition, IStopLossOrderCondition, I
     /// Limit price used after activation. A null value selects a market trigger order.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.ClosingPriceKey,
-        Description = LocalizedStrings.ClosingPriceKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClosingPriceKey,
+		Description = LocalizedStrings.ClosingPriceKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
     public decimal? ClosePositionPrice
     {
         get => (decimal?)Parameters.TryGetValue(nameof(ClosePositionPrice));
@@ -46,12 +46,12 @@ public class WhiteBitOrderCondition : OrderCondition, IStopLossOrderCondition, I
     /// Position side for hedge-mode collateral accounts.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.PositionKey,
-        Description = LocalizedStrings.PositionKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 2)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionKey,
+		Description = LocalizedStrings.PositionKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 2)]
     public WhiteBitPositionSides PositionSide
     {
         get => (WhiteBitPositionSides?)Parameters.TryGetValue(nameof(PositionSide)) ?? WhiteBitPositionSides.Both;
@@ -62,12 +62,12 @@ public class WhiteBitOrderCondition : OrderCondition, IStopLossOrderCondition, I
     /// Reduce-only flag for collateral orders.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.PosConditionReduceOnlyKey,
-        Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PosConditionReduceOnlyKey,
+		Description = LocalizedStrings.PosConditionReduceOnlyDetailsKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 3)]
     public bool IsReduceOnly
     {
         get => (bool?)Parameters.TryGetValue(nameof(IsReduceOnly)) ?? false;

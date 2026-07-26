@@ -8,63 +8,63 @@ public partial class ChainlinkDataStreamsMessageAdapter
         "wss://ws.dataengine.chain.link/";
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.KeyKey,
-        Description = LocalizedStrings.KeyKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeyKey,
+		Description = LocalizedStrings.KeyKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 0)]
     [BasicSetting]
     public SecureString Key { get; set; }
 
     /// <inheritdoc />
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.SecretKey,
-        Description = LocalizedStrings.SecretDescKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecretKey,
+		Description = LocalizedStrings.SecretDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 1)]
     [BasicSetting]
     public SecureString Secret { get; set; }
 
     /// <summary>Chainlink Data Streams REST API root.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AddressKey,
-        Description = LocalizedStrings.ServerAddressKey,
-        GroupName = LocalizedStrings.AddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressKey,
+		Description = LocalizedStrings.ServerAddressKey,
+		GroupName = LocalizedStrings.AddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
     /// <summary>Chainlink Data Streams WebSocket API root.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.WebSocketKey,
-        Description = LocalizedStrings.WsEndpointKey,
-        GroupName = LocalizedStrings.WebSocketAddressesKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketKey,
+		Description = LocalizedStrings.WsEndpointKey,
+		GroupName = LocalizedStrings.WebSocketAddressesKey,
+		Order = 0)]
     [BasicSetting]
     public string WebSocketEndpoint { get; set; } =
         _defaultWebSocketEndpoint;
 
     /// <summary>Whether all origins advertised by Chainlink are used.</summary>
-    [Display(
-        Name = "High availability",
-        Description = "Connect to all origins advertised by Chainlink and deduplicate reports.",
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 2)]
+	[Display(
+		Name = "High availability",
+		Description = "Connect to all origins advertised by Chainlink and deduplicate reports.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 2)]
     public bool IsHighAvailability { get; set; } = true;
 
     private TimeSpan _requestInterval = TimeSpan.FromMilliseconds(100);
 
     /// <summary>Minimum delay between REST requests.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.IntervalKey,
-        Description = LocalizedStrings.IntervalKey,
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 3)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IntervalKey,
+		Description = LocalizedStrings.IntervalKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
     public TimeSpan RequestInterval
     {
         get => _requestInterval;
@@ -78,10 +78,10 @@ public partial class ChainlinkDataStreamsMessageAdapter
     private int _maximumFeeds = 10000;
 
     /// <summary>Maximum number of entitled feeds cached at connection.</summary>
-    [Display(
-        Name = "Maximum feeds",
-        GroupName = LocalizedStrings.ConnectionKey,
-        Order = 4)]
+	[Display(
+		Name = "Maximum feeds",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
     public int MaximumFeeds
     {
         get => _maximumFeeds;
@@ -94,12 +94,12 @@ public partial class ChainlinkDataStreamsMessageAdapter
     private int _historyLimit = 10000;
 
     /// <summary>Maximum number of historical reports per subscription.</summary>
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.CountKey,
-        Description = LocalizedStrings.CountKey,
-        GroupName = LocalizedStrings.HistoryKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CountKey,
+		Description = LocalizedStrings.CountKey,
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 0)]
     public int HistoryLimit
     {
         get => _historyLimit;
@@ -112,11 +112,11 @@ public partial class ChainlinkDataStreamsMessageAdapter
     private TimeSpan _historyLookback = TimeSpan.FromHours(3);
 
     /// <summary>Default range when historical data has no start time.</summary>
-    [Display(
-        Name = "History lookback",
-        Description = "Default range used when history has no start time.",
-        GroupName = LocalizedStrings.HistoryKey,
-        Order = 1)]
+	[Display(
+		Name = "History lookback",
+		Description = "Default range used when history has no start time.",
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 1)]
     public TimeSpan HistoryLookback
     {
         get => _historyLookback;
@@ -130,11 +130,11 @@ public partial class ChainlinkDataStreamsMessageAdapter
     private int _reportsPerPage = 1000;
 
     /// <summary>Maximum reports requested from one page.</summary>
-    [Display(
-        Name = "Reports per page",
-        Description = "Maximum number of reports requested from one REST page.",
-        GroupName = LocalizedStrings.HistoryKey,
-        Order = 2)]
+	[Display(
+		Name = "Reports per page",
+		Description = "Maximum number of reports requested from one REST page.",
+		GroupName = LocalizedStrings.HistoryKey,
+		Order = 2)]
     public int ReportsPerPage
     {
         get => _reportsPerPage;

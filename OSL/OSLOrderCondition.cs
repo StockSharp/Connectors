@@ -31,20 +31,20 @@ public enum OSLSelfTradePrevention
 [Serializable]
 [DataContract]
 [Display(
-    ResourceType = typeof(LocalizedStrings),
-    Name = LocalizedStrings.OSLKey)]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.OSLKey)]
 public class OSLOrderCondition : OrderCondition
 {
     /// <summary>
     /// Quote-currency amount used for a market buy.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.AmountKey,
-        Description = LocalizedStrings.AmountKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 0)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AmountKey,
+		Description = LocalizedStrings.AmountKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 0)]
     public decimal? QuoteAmount
     {
         get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));
@@ -55,12 +55,12 @@ public class OSLOrderCondition : OrderCondition
     /// Self-trade prevention policy.
     /// </summary>
     [DataMember]
-    [Display(
-        ResourceType = typeof(LocalizedStrings),
-        Name = LocalizedStrings.ModeKey,
-        Description = LocalizedStrings.ModeKey,
-        GroupName = LocalizedStrings.ParametersKey,
-        Order = 1)]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ModeKey,
+		Description = LocalizedStrings.ModeKey,
+		GroupName = LocalizedStrings.ParametersKey,
+		Order = 1)]
     public OSLSelfTradePrevention SelfTradePrevention
     {
         get => (OSLSelfTradePrevention?)Parameters.TryGetValue(
