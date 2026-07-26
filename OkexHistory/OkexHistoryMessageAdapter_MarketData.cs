@@ -4,10 +4,14 @@ using System.Text;
 using System.IO;
 using System.IO.Compression;
 using System.Formats.Tar;
+using System.Globalization;
+using System.Linq;
 
 using Ecng.IO;
 using Ecng.IO.Compression;
 using Ecng.Logging;
+
+using StockSharp.OkexHistory.Native;
 
 partial class OkexHistoryMessageAdapter
 {
@@ -27,7 +31,7 @@ partial class OkexHistoryMessageAdapter
 		var endpoints = new Dictionary<string, (SecurityTypes, string)>
 		{
 			{ "SPOT", (SecurityTypes.CryptoCurrency, BoardCodes.Okex) },
-			{ "SWAP", (SecurityTypes.Future, BoardCodes.Okex) },
+			{ "SWAP", (SecurityTypes.Swap, BoardCodes.Okex) },
 			{ "FUTURES", (SecurityTypes.Future, BoardCodes.Okex) },
 		};
 
@@ -39,25 +43,21 @@ partial class OkexHistoryMessageAdapter
 			try
 			{
 				var json = await _client.GetStringAsync($"https://{Address}/api/v5/public/instruments?instType={nativeType}", token);
+				var response = DeserializeResponse<OkxInstrument>(json);
 
-				dynamic doc = json.DeserializeObject<object>();
-
-				foreach (var item in doc.data)
+				foreach (var item in response)
 				{
 					token.ThrowIfCancellationRequested();
 
-					var instId = (string)item.instId; // e.g. "BTC-USDT"
+					var instId = item.Id; // e.g. "BTC-USDT"
 
 					if (!secCodeLike.IsEmpty() && !instId.ContainsIgnoreCase(secCodeLike))
 						continue;
 
-					// optional fields from OKX instruments:
-					// tickSz, lotSz, listTime, expTime, uly
-					decimal? tickSize = ((string)item.tickSz)?.To<decimal?>();
-					decimal? lotSize = ((string)item.lotSz)?.To<decimal?>();
-					var listTime = ((string)item.listTime)?.To<long?>();
-					var expTime = ((string)item.expTime)?.To<long?>();
-					var underlying = (string)item.uly;
+					var tickSize = item.TickSize.To<decimal?>();
+					var lotSize = item.LotSize.To<decimal?>();
+					var listTime = item.ListingTime.To<long?>();
+					var expTime = item.ExpiryTime.To<long?>();
 
 					var secMsg = new SecurityMessage
 					{
@@ -69,7 +69,7 @@ partial class OkexHistoryMessageAdapter
 						VolumeStep = lotSize,
 						IssueDate = listTime is { } lt ? lt.FromUnixAuto() : null,
 						ExpiryDate = expTime is { } et ? et.FromUnixAuto() : null,
-					}.TryFillUnderlyingId(underlying);
+					}.TryFillUnderlyingId(item.Underlying);
 
 					if (!secMsg.IsMatch(lookupMsg, secTypes))
 						continue;
@@ -94,69 +94,192 @@ partial class OkexHistoryMessageAdapter
 		await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, token);
 	}
 
-	private async Task<ISet<DateTime>> GetAvailableDatesAsync(string dataType, CancellationToken token)
+	private static T[] DeserializeResponse<T>(string json)
+	{
+		var response = json.DeserializeObject<OkxResponse<T>>()
+			?? throw new InvalidOperationException("Empty OKX response.");
+
+		if (response.Code != "0")
+			throw new InvalidOperationException(response.Message.IsEmpty()
+				? $"OKX request failed with code {response.Code}."
+				: response.Message);
+
+		return response.Data ?? [];
+	}
+
+	private static OkxInstrumentTypes GetInstrumentType(MarketDataMessage mdMsg, string secId)
+	{
+		if (mdMsg.SecurityType == SecurityTypes.Swap || secId.EndsWithIgnoreCase("-SWAP"))
+			return OkxInstrumentTypes.Swap;
+
+		if (mdMsg.SecurityType == SecurityTypes.Option)
+			return OkxInstrumentTypes.Option;
+
+		if (mdMsg.SecurityType == SecurityTypes.Future)
+			return OkxInstrumentTypes.Futures;
+
+		return OkxInstrumentTypes.Spot;
+	}
+
+	private static string GetInstrumentFamily(string secId, OkxInstrumentTypes instrumentType)
+	{
+		if (instrumentType == OkxInstrumentTypes.Swap && secId.EndsWithIgnoreCase("-SWAP"))
+			return secId[..^5];
+
+		var parts = secId.Split('-');
+
+		if (instrumentType == OkxInstrumentTypes.Option && parts.Length > 4)
+			return parts.Take(parts.Length - 3).Join("-");
+
+		if (instrumentType == OkxInstrumentTypes.Futures &&
+			parts.Length > 2 && parts[^1].Length == 6 && parts[^1].All(char.IsDigit))
+			return parts.Take(parts.Length - 1).Join("-");
+
+		return secId;
+	}
+
+	private static string GetNativeSecurityId(MarketDataMessage mdMsg)
+	{
+		var secId = mdMsg.SecurityId.SecurityCode;
+
+		if (mdMsg.SecurityType == SecurityTypes.Swap)
+		{
+			if (!secId.EndsWithIgnoreCase("-SWAP"))
+				secId += "-SWAP";
+		}
+		else if (mdMsg.SecurityType == SecurityTypes.Option)
+		{
+			if (!secId.EndsWithIgnoreCase("-C") && !secId.EndsWithIgnoreCase("-P"))
+				secId += $"-{mdMsg.ExpiryDate:yyMMdd}-{mdMsg.Strike}-{(mdMsg.OptionType == OptionTypes.Call ? "C" : "P")}";
+		}
+		else if (mdMsg.SecurityType == SecurityTypes.Future && mdMsg.ExpiryDate is not null)
+		{
+			var expirySuffix = $"-{mdMsg.ExpiryDate:yyMMdd}";
+
+			if (!secId.EndsWithIgnoreCase(expirySuffix))
+				secId += expirySuffix;
+		}
+
+		return secId;
+	}
+
+	private static QuoteChange[] ParseQuotes(string[][] quotes, int maxDepth)
+	{
+		if (quotes is null)
+			return [];
+
+		var result = new List<QuoteChange>();
+
+		foreach (var quote in quotes.Take(maxDepth))
+		{
+			if (quote is null || quote.Length < 2)
+				continue;
+
+			var price = quote[0].To<decimal?>();
+			var size = quote[1].To<decimal?>();
+
+			if (price is null || size is null)
+				continue;
+
+			var ordersCount = quote.Length > 2 ? quote[2].To<int?>() : null;
+			result.Add(new(price.Value, size.Value, ordersCount));
+		}
+
+		return [.. result];
+	}
+
+	private async Task<ISet<DateTime>> GetAvailableDatesAsync(
+		OkxHistoryModules module,
+		MarketDataMessage mdMsg,
+		string secId,
+		DateTime from,
+		DateTime to,
+		CancellationToken token)
 	{
 		if (!CheckDates)
 			return null;
 
 		var now = DateTime.UtcNow;
+		var firstAvailable = module switch
+		{
+			OkxHistoryModules.Trades => new DateTime(2021, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+			OkxHistoryModules.Candles => new DateTime(2023, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+			_ => DateTime.MinValue.UtcKind(),
+		};
 
-		if (_datesCache.TryGetValue(dataType, out var cached) && cached.till > now)
+		var rangeFrom = (from.Date < firstAvailable ? firstAvailable : from.Date).UtcKind();
+		var rangeTo = (to.Date > now.Date ? now.Date : to.Date).UtcKind();
+
+		if (rangeFrom > rangeTo)
+			return new SynchronizedSet<DateTime>();
+
+		var instrumentType = GetInstrumentType(mdMsg, secId);
+		var filterName = instrumentType == OkxInstrumentTypes.Spot ? "instIdList" : "instFamilyList";
+		var filterValue = instrumentType == OkxInstrumentTypes.Spot
+			? secId
+			: GetInstrumentFamily(secId, instrumentType);
+		var cacheKey = $"{module}:{instrumentType}:{secId}:{rangeFrom:yyyyMMdd}:{rangeTo:yyyyMMdd}";
+
+		if (_datesCache.TryGetValue(cacheKey, out var cached) && cached.till > now)
 			return cached.dates;
 
 		var result = new SynchronizedSet<DateTime>();
 
-		var marker = string.Empty; // first page
-		const int pageSize = 300;
-
-		for (var i = 0; i < 100; i++)
+		for (var chunkFrom = rangeFrom; chunkFrom <= rangeTo; chunkFrom = chunkFrom.AddDays(20))
 		{
 			token.ThrowIfCancellationRequested();
 
-			var path = $"cdn/okex/traderecords/{dataType}/daily";
-			var url = $"https://{Address}/priapi/v5/broker/public/v2/orderRecord?path={path.DataEscape()}&nextMarker={marker.DataEscape()}&size={pageSize}&t={(long)DateTime.UtcNow.ToUnix(false)}";
+			var chunkTo = chunkFrom.AddDays(19);
+			if (chunkTo > rangeTo)
+				chunkTo = rangeTo;
 
-			string json;
+			var url = $"https://{Address}/api/v5/public/market-data-history" +
+				$"?module={(int)module}" +
+				$"&instType={instrumentType.ToString().ToUpperInvariant()}" +
+				$"&{filterName}={filterValue.DataEscape()}" +
+				$"&dateAggrType=daily" +
+				$"&begin={(long)chunkFrom.ToUnix(false)}" +
+				$"&end={(long)chunkTo.ToUnix(false)}";
 
 			try
 			{
-				json = await _client.GetStringAsync(url, token);
+				var json = await _client.GetStringAsync(url, token);
+
+				foreach (var batch in DeserializeResponse<OkxHistoryBatch>(json))
+				{
+					foreach (var group in batch.Details ?? [])
+					{
+						foreach (var file in group.Files ?? [])
+						{
+							if (!file.FileName.StartsWithIgnoreCase(secId + "-"))
+								continue;
+
+							var name = Path.GetFileNameWithoutExtension(file.FileName);
+							if (name.Length < 10)
+								continue;
+
+							if (DateTime.TryParseExact(
+								name[^10..],
+								"yyyy-MM-dd",
+								CultureInfo.InvariantCulture,
+								DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+								out var date))
+								result.Add(date.Date);
+						}
+					}
+				}
 			}
 			catch (Exception ex)
 			{
 				this.AddWarningLog("OKX range request failed: {0}", ex);
-				break;
+				return null;
 			}
 
-			dynamic doc = json.DeserializeObject<object>();
-
-			if ((string)doc.code != "0")
-				break;
-
-			dynamic data = doc.data;
-
-			foreach (var rec in data.recordFileList)
-			{
-				var fileName = (string)rec.fileName;
-				if (fileName.Length != 8)
-					continue;
-
-				if (!DateTime.TryParseExact(fileName, "yyyyMMdd", null, System.Globalization.DateTimeStyles.AssumeUniversal, out var d))
-					continue;
-
-				result.Add(d.Date);
-			}
-
-			var isTruncate = (bool)data.isTruncate;
-			if (!isTruncate)
-				break;
-
-			marker = (string)data.nextMarker ?? string.Empty;
-			if (marker.IsEmpty())
-				break;
+			if (chunkTo < rangeTo)
+				await Task.Delay(TimeSpan.FromMilliseconds(400), token);
 		}
 
-		_datesCache[dataType] = (now.AddMinutes(30), result);
+		_datesCache[cacheKey] = (now.AddMinutes(30), result);
 		return result;
 	}
 
@@ -175,33 +298,14 @@ partial class OkexHistoryMessageAdapter
 		var left = mdMsg.Count ?? long.MaxValue;
 
 		const string dataType = "trades";
-
-		var availableDates = await GetAvailableDatesAsync(dataType, cancellationToken);
-
-		var secCode = mdMsg.SecurityId.SecurityCode;
+		var secId = GetNativeSecurityId(mdMsg);
+		var availableDates = await GetAvailableDatesAsync(
+			OkxHistoryModules.Trades, mdMsg, secId, from, to, cancellationToken);
 
 		foreach (var date in from.Date.Range(to.Date, TimeSpan.FromDays(1)))
 		{
 			if (availableDates?.Contains(date.Date) == false)
 				continue;
-
-			var secId = secCode;
-
-			if (mdMsg.SecurityType == SecurityTypes.Swap)
-				secId += "-SWAP";
-			else if (mdMsg.SecurityType == SecurityTypes.Option)
-			{
-				// BTC-USD-250806-102000-P
-				secId += $"-{mdMsg.ExpiryDate:yyMMdd}-{mdMsg.Strike}-{(mdMsg.OptionType == OptionTypes.Call ? "C" : "P")}";
-			}
-			else if (mdMsg.SecurityType == SecurityTypes.Future)
-			{
-				if (mdMsg.ExpiryDate is not null)
-				{
-					// BTC-USD-250806
-					secId += $"-{mdMsg.ExpiryDate:yyMMdd}";
-				}
-			}
 
 			if (!await ProcessOkxZip(secId, dataType, date, async reader =>
 			{
@@ -283,31 +387,14 @@ partial class OkexHistoryMessageAdapter
 		var to = mdMsg.To ?? DateTime.UtcNow;
 		var from = mdMsg.From ?? DateTime.MinValue;
 		var left = mdMsg.Count ?? long.MaxValue;
-
-		// Use "trades" dates - if trades exist, candles likely exist too
-		var availableDates = await GetAvailableDatesAsync("trades", cancellationToken);
-
-		var secCode = mdMsg.SecurityId.SecurityCode;
+		var secId = GetNativeSecurityId(mdMsg);
+		var availableDates = await GetAvailableDatesAsync(
+			OkxHistoryModules.Candles, mdMsg, secId, from, to, cancellationToken);
 
 		foreach (var date in from.Date.Range(to.Date, TimeSpan.FromDays(1)))
 		{
 			if (availableDates?.Contains(date.Date) == false)
 				continue;
-
-			var secId = secCode;
-
-			if (mdMsg.SecurityType == SecurityTypes.Swap)
-				secId += "-SWAP";
-			else if (mdMsg.SecurityType == SecurityTypes.Option)
-				secId += $"-{mdMsg.ExpiryDate:yyMMdd}-{mdMsg.Strike}-{(mdMsg.OptionType == OptionTypes.Call ? "C" : "P")}";
-			else if (mdMsg.SecurityType == SecurityTypes.Future)
-			{
-				if (mdMsg.ExpiryDate is not null)
-				{
-					// BTC-USD-250806
-					secId += $"-{mdMsg.ExpiryDate:yyMMdd}";
-				}
-			}
 
 			// Candles use different URL: static.okx.com with "candlesticks" path
 			var url = $"https://{ArchiveAddress}/cdn/okex/traderecords/candlesticks/daily/{date:yyyyMMdd}/{secId}-candlesticks-{date:yyyy-MM-dd}.zip";
@@ -405,7 +492,7 @@ partial class OkexHistoryMessageAdapter
 	{
 		Stream zipStream;
 
-		var url = $"https://{Address}/cdn/okex/traderecords/{dataType}/daily/{date:yyyyMMdd}/{secId}-{dataType}-{date:yyyy-MM-dd}.zip";
+		var url = $"https://{ArchiveAddress}/cdn/okex/traderecords/{dataType}/daily/{date:yyyyMMdd}/{secId}-{dataType}-{date:yyyy-MM-dd}.zip";
 
 		try
 		{
@@ -471,21 +558,7 @@ partial class OkexHistoryMessageAdapter
 		var left = mdMsg.Count ?? long.MaxValue;
 		var maxDepth = mdMsg.MaxDepth ?? 400;
 
-		var secCode = mdMsg.SecurityId.SecurityCode;
-		var secId = secCode;
-
-		if (mdMsg.SecurityType == SecurityTypes.Swap)
-			secId += "-SWAP";
-		else if (mdMsg.SecurityType == SecurityTypes.Option)
-			secId += $"-{mdMsg.ExpiryDate:yyMMdd}-{mdMsg.Strike}-{(mdMsg.OptionType == OptionTypes.Call ? "C" : "P")}";
-		else if (mdMsg.SecurityType == SecurityTypes.Future)
-		{
-			if (mdMsg.ExpiryDate is not null)
-			{
-				// BTC-USD-250806
-				secId += $"-{mdMsg.ExpiryDate:yyMMdd}";
-			}
-		}
+		var secId = GetNativeSecurityId(mdMsg);
 
 		// Iterate from start date to end date inclusive
 		for (var date = from.Date; date <= to.Date; date = date.AddDays(1))
@@ -526,10 +599,11 @@ partial class OkexHistoryMessageAdapter
 
 					try
 					{
-						dynamic doc = line.DeserializeObject<object>();
-
-						var ts = ((string)doc.ts)?.To<long>() ?? 0;
-						var time = ts.FromUnixAuto();
+						var book = line.DeserializeObject<OkxOrderBook>()
+							?? throw new InvalidOperationException("Empty OKX order book record.");
+						var timestamp = book.Timestamp.To<long?>()
+							?? throw new InvalidOperationException("OKX order book timestamp is missing.");
+						var time = timestamp.FromUnixAuto();
 
 						if (time < from)
 							continue;
@@ -540,34 +614,8 @@ partial class OkexHistoryMessageAdapter
 							break;
 						}
 
-						var action = (string)doc.action;
-						var isSnapshot = action.EqualsIgnoreCase("snapshot");
-
-						static QuoteChange[] ParseQuotes(dynamic quotes, int maxDepth)
-						{
-							if (quotes is null)
-								return [];
-
-							var result = new List<QuoteChange>();
-							var count = 0;
-
-							foreach (var q in quotes)
-							{
-								if (++count > maxDepth)
-									break;
-
-								var price = ((string)q[0])?.To<decimal?>() ?? 0;
-								var size = ((string)q[1])?.To<decimal?>() ?? 0;
-								var ordersCount = ((string)q[2])?.To<int?>();
-
-								result.Add(new(price, size, ordersCount));
-							}
-
-							return [.. result];
-						}
-
-						var bids = ParseQuotes(doc.bids, maxDepth);
-						var asks = ParseQuotes(doc.asks, maxDepth);
+						var bids = ParseQuotes(book.Bids, maxDepth);
+						var asks = ParseQuotes(book.Asks, maxDepth);
 
 						await SendOutMessageAsync(new QuoteChangeMessage
 						{
@@ -576,7 +624,9 @@ partial class OkexHistoryMessageAdapter
 							ServerTime = time,
 							Bids = bids,
 							Asks = asks,
-							State = isSnapshot ? QuoteChangeStates.SnapshotComplete : QuoteChangeStates.Increment,
+							State = book.Action == OkxBookActions.Snapshot
+								? QuoteChangeStates.SnapshotComplete
+								: QuoteChangeStates.Increment,
 						}, cancellationToken);
 
 						if (--left <= 0)
