@@ -47,7 +47,7 @@
     <ProjectReference Include="..\Digifinex\Digifinex.csproj" />
     <ProjectReference Include="..\Drift\Drift.csproj" />
     <ProjectReference Include="..\DydxChain\DydxChain.csproj" />
-    <ProjectReference Include="..\edgeX\edgeX.csproj" />
+    <ProjectReference Include="..\edgeX\EdgeX.csproj" />
     <ProjectReference Include="..\Exmo\Exmo.csproj" />
     <ProjectReference Include="..\Extended\Extended.csproj" />
     <ProjectReference Include="..\FivePaisa\FivePaisa.csproj" />
