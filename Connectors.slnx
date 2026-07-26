@@ -175,6 +175,7 @@
     <Project Path="Rithmic/Rithmic.csproj" />
     <Project Path="Robinhood/Robinhood.csproj" />
     <Project Path="Rss/Rss.csproj" />
+    <Project Path="Rupeezy/Rupeezy.csproj" />
     <Project Path="Saxo/Saxo.csproj" />
     <Project Path="Schwab/Schwab.csproj" />
     <Project Path="Shioaji/Shioaji.csproj" />

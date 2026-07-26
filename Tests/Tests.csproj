@@ -114,6 +114,7 @@
     <ProjectReference Include="..\QFEX\QFEX.csproj" />
     <ProjectReference Include="..\Raydium\Raydium.csproj" />
     <ProjectReference Include="..\Reya\Reya.csproj" />
+    <ProjectReference Include="..\Rupeezy\Rupeezy.csproj" />
     <ProjectReference Include="..\StandX\StandX.csproj" />
     <ProjectReference Include="..\StocksTrader\StocksTrader.csproj" />
     <ProjectReference Include="..\SunIo\SunIo.csproj" />
