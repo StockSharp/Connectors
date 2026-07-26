@@ -170,7 +170,7 @@ static class Extensions
 	public static decimal GetPositionSize(this double? size, string holdSide)
 	{
 		if (size == null) return 0;
-		
+
 		return holdSide?.ToLowerInvariant() switch
 		{
 			"long" => (decimal)size.Value,

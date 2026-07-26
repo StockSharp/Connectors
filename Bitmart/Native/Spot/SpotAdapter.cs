@@ -22,7 +22,7 @@ class SpotAdapter : BaseNativeAdapter
 	private readonly string _portfolioName;
 
 	public SpotAdapter(IdGenerator transIdGen, Authenticator authenticator, ILogReceiver logs, string publicWsAddress, string privateWsAddress)
-    {
+	{
 		_transIdGen = transIdGen ?? throw new ArgumentNullException(nameof(transIdGen));
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 		_logs = logs ?? throw new ArgumentNullException(nameof(logs));

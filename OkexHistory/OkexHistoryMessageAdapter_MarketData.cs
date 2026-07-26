@@ -23,7 +23,7 @@ partial class OkexHistoryMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken token)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, token);
-		
+
 		var secCodeLike = lookupMsg.SecurityId.SecurityCode;
 		var secTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;

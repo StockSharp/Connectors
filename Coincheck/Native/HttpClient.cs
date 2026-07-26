@@ -11,7 +11,7 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 
 	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
-        protected override void DisposeManaged()
+		protected override void DisposeManaged()
 	{
 		_hasher?.Dispose();
 		base.DisposeManaged();

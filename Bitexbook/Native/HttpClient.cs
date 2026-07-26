@@ -171,9 +171,9 @@ class HttpClient : BaseLogReceiver
 		encodedArgs += $"nonce={_nonceGen.GetNextId()}&secret_key={_secret.UnSecure()}";
 
 		var signature = _hasher
-		    .ComputeHash(encodedArgs.UTF8())
-		    .Digest()
-		    .ToLowerInvariant();
+			.ComputeHash(encodedArgs.UTF8())
+			.Digest()
+			.ToLowerInvariant();
 
 		request
 			.AddHeader("sign", signature);

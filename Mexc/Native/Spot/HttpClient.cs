@@ -72,7 +72,7 @@ class HttpClient : BaseLogReceiver
 		return MakeRequest<Order[]>(url, ApplySecret(request, url), cancellationToken);
 	}
 
-	public Task<OrderResponse> PlaceOrder(string symbol, string side, string type, string timeInForce, 
+	public Task<OrderResponse> PlaceOrder(string symbol, string side, string type, string timeInForce,
 		decimal quantity, decimal? price, string clientOrderId, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("order");

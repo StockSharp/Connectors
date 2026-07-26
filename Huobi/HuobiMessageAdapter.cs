@@ -161,10 +161,10 @@ partial class HuobiMessageAdapter
 	/// <inheritdoc />
 	public override ValueTask SendInMessageAsync(Message msg, CancellationToken cancellationToken)
 	{
-        return msg.Type switch
-        {
-            MessageTypes.ProcessSuspended => _underlying.SuspendedAsync((ProcessSuspendedMessage)msg, cancellationToken),
-            _ => base.SendInMessageAsync(msg, cancellationToken),
-        };
-    }
+		return msg.Type switch
+		{
+			MessageTypes.ProcessSuspended => _underlying.SuspendedAsync((ProcessSuspendedMessage)msg, cancellationToken),
+			_ => base.SendInMessageAsync(msg, cancellationToken),
+		};
+	}
 }

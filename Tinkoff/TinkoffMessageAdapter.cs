@@ -140,7 +140,7 @@ public partial class TinkoffMessageAdapter
 									isInFailure = true;
 									await SendOutConnectionStateAsync(ConnectionStates.Reconnecting, cancellationToken);
 								}
-								
+
 								break;
 						}
 					}

@@ -27,97 +27,97 @@ public enum ScannerFilterStockExcludes
 public enum ScannerFilterTypes
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_OPT_VOL_PUT_CALL_RATIO")]
 	LowOptVolPutCallRatio,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_OPT_IMP_VOLAT_OVER_HIST")]
 	HighOptImpVolatOverHist,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_OPT_IMP_VOLAT_OVER_HIST")]
 	LowOptImpVolatOverHist,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_OPT_IMP_VOLAT")]
 	HighOptImpVolat,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_OPT_IMP_VOLAT_GAIN")]
 	TopOptImpVolatGain,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_OPT_IMP_VOLAT_LOSE")]
 	TopOptImpVolatLose,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_OPT_VOLUME_PUT_CALL_RATIO")]
 	HighOptVolumePutCallRatio,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_OPT_VOLUME_PUT_CALL_RATIO")]
 	LowOptVolumePutCallRatio,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("OPT_VOLUME_MOST_ACTIVE")]
 	OptVolumeMostActive,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HOT_BY_OPT_VOLUME")]
 	HotByOptVolume,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_OPT_OPEN_INTEREST_PUT_CALL_RATIO")]
 	HighOptOpenInterestPutCallRatio,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_OPT_OPEN_INTEREST_PUT_CALL_RATIO")]
 	LowOptOpenInterestPutCallRatio,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_PERC_GAIN")]
 	TopPercGain,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("MOST_ACTIVE")]
 	MostActive,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_PERC_LOSE")]
 	TopPercLose,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HOT_BY_VOLUME")]
 	HotByVolume,
@@ -126,85 +126,85 @@ public enum ScannerFilterTypes
 	//TOP_PERC_GAIN,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HOT_BY_PRICE")]
 	HotByPrice,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_TRADE_COUNT")]
 	TopTradeCount,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_TRADE_RATE")]
 	TopTradeRate,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_PRICE_RANGE")]
 	TopPriceRange,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HOT_BY_PRICE_RANGE")]
 	HotByPriceRange,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_VOLUME_RATE")]
 	TopVolumeRate,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_OPT_IMP_VOLAT")]
 	LowOptImpVolat,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("OPT_OPEN_INTEREST_MOST_ACTIVE")]
 	OptOpenInterestMostActive,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("NOT_OPEN")]
 	NotOpen,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HALTED")]
 	Halted,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_OPEN_PERC_GAIN")]
 	TopOpenPercGain,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("TOP_OPEN_PERC_LOSE")]
 	TopOpenPercLose,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_OPEN_GAP")]
 	HighOpenGap,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_OPEN_GAP")]
 	LowOpenGap,
@@ -219,49 +219,49 @@ public enum ScannerFilterTypes
 	//TOP_OPT_IMP_VOLAT_LOSE,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_VS_13W_HL")]
 	HighVs13WHl,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_VS_13W_HL")]
 	LowVs13WHl,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_VS_26W_HL")]
 	HighVs26WHl,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_VS_26W_HL")]
 	LowVs26WHl,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_VS_52W_HL")]
 	HighVs52WHl,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_VS_52W_HL")]
 	LowVs52WHl,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("HIGH_SYNTH_BID_REV_NAT_YIELD")]
 	HighSynthBidRevNatYield,
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[NativeValue("LOW_SYNTH_BID_REV_NAT_YIELD")]
 	LowSynthBidRevNatYield,

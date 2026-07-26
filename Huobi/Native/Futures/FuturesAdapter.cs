@@ -18,7 +18,7 @@ class FuturesAdapter(HuobiMessageAdapter parent, Authenticator authenticator, st
 	private readonly SynchronizedDictionary<string, (string, ContractTypes)> _contractInfo = new(StringComparer.InvariantCultureIgnoreCase);
 	private static readonly string[] _coins = ["BTC", "ETH"];
 
-    private static ContractTypes ToContractType(string type)
+	private static ContractTypes ToContractType(string type)
 	{
 		return type switch
 		{

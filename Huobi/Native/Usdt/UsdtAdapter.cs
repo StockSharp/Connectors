@@ -10,7 +10,7 @@ class UsdtAdapter(HuobiMessageAdapter parent, Authenticator authenticator, strin
 	//private readonly SynchronizedDictionary<string, (string, ContractTypes)> _contractInfo = new(StringComparer.InvariantCultureIgnoreCase);
 	private static readonly string[] _symbols = ["BTC-USDT", "ETH-USDT"];
 
-    private void SubscribePusherClient()
+	private void SubscribePusherClient()
 	{
 		_pusherClient.StateChanged += SendOutConnectionStateAsync;
 		_pusherClient.Error += SessionOnPusherError;

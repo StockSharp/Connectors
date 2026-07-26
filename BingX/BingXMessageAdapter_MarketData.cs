@@ -9,7 +9,7 @@ public partial class BingXMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		var secTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -40,7 +40,7 @@ public partial class BingXMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
-		
+
 		var adapter = EnsureGetAdapter(mdMsg.SecurityId);
 		await adapter.Level1(mdMsg, cancellationToken);
 	}

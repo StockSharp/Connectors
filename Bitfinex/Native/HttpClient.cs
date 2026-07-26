@@ -103,7 +103,7 @@ class HttpClient : BaseLogReceiver
 	//	obj.price = price.To<string>();
 	//	obj.side = side;
 	//	obj.type = type;
-		
+
 	//	if (isHidden)
 	//		obj.is_hidden = true;
 
@@ -125,7 +125,7 @@ class HttpClient : BaseLogReceiver
 	//	var url = CreateUrl("order/cancel/all", "v1/");
 
 	//	var response = MakeRequest<BaseResponse>(url, (RestRequest)ApplySecret(CreateRequest(Method.Post), url, (dynamic)new ExpandoObject()));
-		
+
 	//	if (response.Result != "All orders cancelled" && response.Result != "None to cancel")
 	//		throw new InvalidOperationException(response.Result);
 	//}
@@ -234,7 +234,7 @@ class HttpClient : BaseLogReceiver
 		}
 
 		dynamic response = await MakeRequest<object>(url, (RestRequest)ApplySecret(CreateRequest(Method.Post), url, obj), cancellationToken);
-		
+
 		if (((JToken)response).Type == JTokenType.Array)
 		{
 			var item = (dynamic)((JArray)response)[0];
@@ -244,7 +244,7 @@ class HttpClient : BaseLogReceiver
 
 			return (long)item.withdrawal_id;
 		}
-		
+
 		throw new InvalidOperationException((string)response.message);
 	}
 
@@ -276,7 +276,7 @@ class HttpClient : BaseLogReceiver
 			.ComputeHash(payload.UTF8())
 			.Digest()
 			.ToLowerInvariant();
-	
+
 		request
 			.AddHeader("X-BFX-APIKEY", _key.UnSecure())
 			.AddHeader("X-BFX-PAYLOAD", payload)

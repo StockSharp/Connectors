@@ -50,7 +50,7 @@ public partial class CoinCapMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		await EnsureInitAsync(cancellationToken);
 
 		var secTypes = lookupMsg.GetSecurityTypes();

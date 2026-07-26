@@ -160,7 +160,7 @@ class PusherClient : BaseLogReceiver
 		// to get readable name after obfuscation
 		public override string Name => base.Name + "_Account";
 
-        public ValueTask Sign(CancellationToken cancellationToken)
+		public ValueTask Sign(CancellationToken cancellationToken)
 		{
 			var timestamp = Authenticator.GetTimestamp();
 

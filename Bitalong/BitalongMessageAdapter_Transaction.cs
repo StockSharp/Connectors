@@ -120,8 +120,8 @@ public partial class BitalongMessageAdapter
 
 				// Skip USD and stablecoins as they are base currencies
 				if (p.Key.EqualsIgnoreCase("USD") ||
-				    p.Key.EqualsIgnoreCase("USDT") ||
-				    p.Key.EqualsIgnoreCase("USDC"))
+					p.Key.EqualsIgnoreCase("USDT") ||
+					p.Key.EqualsIgnoreCase("USDC"))
 					continue;
 
 				// Check Side filter - spot balances are always long positions

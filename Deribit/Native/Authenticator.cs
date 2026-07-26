@@ -40,10 +40,10 @@ class Authenticator : Disposable
 		var paramsString = $"{timestamp}\n{nonce}\n{data}";
 
 		var signature = _hasher
-		                .ComputeHash(_iso.GetBytes(paramsString))
-		                .Digest()
-		                .ToLowerInvariant();
-		
+						.ComputeHash(_iso.GetBytes(paramsString))
+						.Digest()
+						.ToLowerInvariant();
+
 		return signature;
 	}
 }

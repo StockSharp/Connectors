@@ -209,7 +209,7 @@ public partial class ByBitMessageAdapter
 			addSocket(client);
 			return client;
 		}
-		
+
 		_spotClient = tryPublic(ByBitSections.Spot);
 		_linearClient = tryPublic(ByBitSections.Linear);
 		_inverseClient = tryPublic(ByBitSections.Inverse);

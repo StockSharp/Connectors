@@ -23,7 +23,7 @@ partial class LmaxMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		var response = await _httpClient.GetInstrumentDataAsync(cancellationToken);
 
 		foreach (var instrument in response.Instruments)

@@ -164,12 +164,12 @@ static class Extensions
 			.FirstOrDefault(p => p.Type == ParameterType.RequestBody)?.Value?.ToString() ?? string.Empty;
 
 		var payload = $"{request.Method.ToString().ToUpperInvariant()}&{url.PathAndQuery}&timestamp={timestamp}{queryString}";
-		
+
 		if (!body.IsEmpty())
 			payload += $"&{body}";
 
 		var signature = authenticator.Sign(payload);
-		
+
 		request
 			.AddQueryParameter("timestamp", timestamp.ToString())
 			.AddQueryParameter("signature", signature)

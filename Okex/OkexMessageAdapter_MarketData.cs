@@ -9,7 +9,7 @@ public partial class OkexMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken token)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, token);
-		
+
 		var secTypes = lookupMsg.GetSecurityTypes();
 
 		if (secTypes.IsEmpty())

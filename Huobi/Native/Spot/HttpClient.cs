@@ -7,8 +7,8 @@ class HttpClient(Authenticator authenticator, string domain) : BaseLogReceiver
 	private readonly string _baseUrl = $"https://{domain}";
 	private readonly Authenticator _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 
-    // to get readable name after obfuscation
-    public override string Name => nameof(Huobi) + "_" + nameof(Spot) + "_" + nameof(HttpClient);
+	// to get readable name after obfuscation
+	public override string Name => nameof(Huobi) + "_" + nameof(Spot) + "_" + nameof(HttpClient);
 
 	public Task<IEnumerable<Symbol>> GetSymbolsAsync(CancellationToken cancellationToken)
 	{

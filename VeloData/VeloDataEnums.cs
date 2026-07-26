@@ -2,37 +2,37 @@ namespace StockSharp.VeloData;
 
 enum VeloDataMarketTypes
 {
-    Unknown,
+	Unknown,
 
-    [EnumMember(Value = "futures")]
-    Futures,
+	[EnumMember(Value = "futures")]
+	Futures,
 
-    [EnumMember(Value = "options")]
-    Options,
+	[EnumMember(Value = "options")]
+	Options,
 
-    [EnumMember(Value = "spot")]
-    Spot,
+	[EnumMember(Value = "spot")]
+	Spot,
 }
 
 enum VeloDataColumns
 {
-    Unknown,
-    Time,
-    Exchange,
-    Coin,
-    Product,
-    Begin,
-    Depth,
-    OpenPrice,
-    HighPrice,
-    LowPrice,
-    ClosePrice,
-    CoinVolume,
-    TotalTrades,
-    CoinOpenInterestClose,
-    DvolOpen,
-    DvolHigh,
-    DvolLow,
-    DvolClose,
-    IndexPrice,
+	Unknown,
+	Time,
+	Exchange,
+	Coin,
+	Product,
+	Begin,
+	Depth,
+	OpenPrice,
+	HighPrice,
+	LowPrice,
+	ClosePrice,
+	CoinVolume,
+	TotalTrades,
+	CoinOpenInterestClose,
+	DvolOpen,
+	DvolHigh,
+	DvolLow,
+	DvolClose,
+	IndexPrice,
 }

@@ -13,7 +13,7 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 
 	private readonly UTCIncrementalIdGenerator _nonceGen = new();
 
-    protected override void DisposeManaged()
+	protected override void DisposeManaged()
 	{
 		_hasher?.Dispose();
 		base.DisposeManaged();
@@ -167,7 +167,7 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 			request.AddParameter("invoice", info.PaymentId);
 
 		dynamic response = await MakeRequestAsync<object>(CreateUrl("withdraw_crypt"), ApplySecret(request), cancellationToken);
-		
+
 		return (long)response.task_id;
 	}
 

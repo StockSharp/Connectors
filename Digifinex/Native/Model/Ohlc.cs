@@ -4,7 +4,7 @@ namespace StockSharp.Digifinex.Native.Model;
 class Ohlc
 {
 	public long Time { get; set; }
-	
+
 	public double Volume { get; set; }
 
 	public double Close { get; set; }

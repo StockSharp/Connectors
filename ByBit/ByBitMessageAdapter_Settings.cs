@@ -102,7 +102,7 @@ public partial class ByBitMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 	public bool IsDemo { get; set; }
 
 	private static readonly ByBitSections[] _allSections = Enumerator.GetValues<ByBitSections>().ToArray();
-	
+
 	private IEnumerable<ByBitSections> _sections = _allSections;
 
 	/// <summary>
@@ -177,8 +177,8 @@ public partial class ByBitMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 		Order = 5)]
 	public int TimeStampOffset { get; set; } = -5000;
 
-    /// <inheritdoc />
-    public override void Save(SettingsStorage storage)
+	/// <inheritdoc />
+	public override void Save(SettingsStorage storage)
 	{
 		base.Save(storage);
 

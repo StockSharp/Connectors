@@ -172,7 +172,7 @@ class PusherClient : BaseLogReceiver
 		// to get readable name after obfuscation
 		public override string Name => base.Name + "_Account";
 
-        public ValueTask Sign(CancellationToken cancellationToken)
+		public ValueTask Sign(CancellationToken cancellationToken)
 		{
 			var timestamp = Authenticator.GetTimestamp();
 
@@ -335,7 +335,7 @@ class PusherClient : BaseLogReceiver
 		// to get readable name after obfuscation
 		public override string Name => base.Name + "_MarketData_" + Type;
 
-        private static class Channels
+		private static class Channels
 		{
 			public const string Ticker = "market.{0}.detail";
 			public const string Best = "market.{0}.bbo";

@@ -30,8 +30,8 @@ class Authenticator : Disposable
 			throw new InvalidOperationException();
 
 		return _hasher
-            .ComputeHash(data.UTF8())
-            .Digest()
-            .ToUpperInvariant();
+			.ComputeHash(data.UTF8())
+			.Digest()
+			.ToUpperInvariant();
 	}
 }

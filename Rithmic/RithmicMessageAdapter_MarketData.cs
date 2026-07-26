@@ -52,7 +52,7 @@ public partial class RithmicMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		var secCode = lookupMsg.SecurityId.SecurityCode;
 
 		if (secCode.IsEmpty() || secCode == "*")

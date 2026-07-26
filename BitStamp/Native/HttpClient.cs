@@ -258,26 +258,26 @@ class HttpClient : BaseLogReceiver
 		var timeStamp = ((long)TimeHelper.UnixNowMls).To<string>();
 
 		var payload = request
-	 		.Parameters
+			.Parameters
 			.Where(p => p.Type == ParameterType.GetOrPost && p.Value != null)
 			.OrderBy(p => p.Name)
 			.ToQueryString(false);
 
 		var str = apiKey +
-			        request.Method.ToString().ToUpperInvariant() +
-			        url.Host +
-			        url.PathAndQuery.Remove(url.Query, true) +
-			        url.Query +
-			        "application/json" +
-			        nonce +
-			        timeStamp +
-			        version +
-			        payload;
+					request.Method.ToString().ToUpperInvariant() +
+					url.Host +
+					url.PathAndQuery.Remove(url.Query, true) +
+					url.Query +
+					"application/json" +
+					nonce +
+					timeStamp +
+					version +
+					payload;
 
 		var signature = _hasher
-			            .ComputeHash(str.UTF8())
-			            .Digest()
-			            .ToUpperInvariant();
+						.ComputeHash(str.UTF8())
+						.Digest()
+						.ToUpperInvariant();
 
 		request
 			.AddHeader("X-Auth", apiKey)

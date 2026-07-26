@@ -35,7 +35,7 @@ static class Extensions
 		}
 
 		isExchange = type.StartsWithIgnoreCase("exchange");
-		
+
 		switch (type.Remove("exchange ", true).ToUpperInvariant())
 		{
 			case "LIMIT":
@@ -188,7 +188,7 @@ static class Extensions
 
 		if (regMsg.PostOnly == true)
 			flags |= Flags.PostOnly;
-		
+
 		if (condition?.Close == true)
 			flags |= Flags.Close;
 

@@ -59,7 +59,7 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 			: base(new[] { "sip", "iex", "otc" })
 		{
 		}
-	}	
+	}
 
 	private class CryptoLocationSource : ItemsSourceBase<string>
 	{

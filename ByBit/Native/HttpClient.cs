@@ -10,8 +10,8 @@ class HttpClient(string baseMdUrl, string baseTsUrl, Authenticator authenticator
 	private readonly int _recvWindow = recvWindow;
 	private readonly int _timeStampOffset = timeStampOffset;
 
-    // to get readable name after obfuscation
-    public override string Name => nameof(ByBit) + "_" + nameof(HttpClient);
+	// to get readable name after obfuscation
+	public override string Name => nameof(ByBit) + "_" + nameof(HttpClient);
 
 	public IAsyncEnumerable<Instrument> GetInstruments(string category, string symbol, string baseCoin, string status, CancellationToken cancellationToken)
 	{

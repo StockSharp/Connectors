@@ -12,7 +12,7 @@ class Authenticator : Disposable
 	private readonly SecureString _passphrase;
 
 	public Authenticator(SecureString key, SecureString secret, SecureString passphrase)
-    {
+	{
 		_passphrase = passphrase;
 		_key = key;
 		_hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());

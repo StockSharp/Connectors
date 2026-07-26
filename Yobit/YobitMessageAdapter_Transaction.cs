@@ -83,7 +83,7 @@ partial class YobitMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
-		
+
 		if (message != null)
 		{
 			if (!message.IsSubscribe)
@@ -142,7 +142,7 @@ partial class YobitMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
-		
+
 		if (message == null)
 		{
 			if (_orderInfo.Count == 0)

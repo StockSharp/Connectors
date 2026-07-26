@@ -15,17 +15,17 @@ class OpenClient : Disposable
 	private TcpClient _tcpClient;
 	private SslStream _sslStream;
 
-    public OpenClient(EndPoint address)
+	public OpenClient(EndPoint address)
 		: this(address.GetHost(), (uint)address.GetPort())
-    {
-    }
+	{
+	}
 
-    /// <summary>
-    /// Creates an instance of OpenClient which is not connected yet
-    /// </summary>
-    /// <param name="host">The host name of API endpoint</param>
-    /// <param name="port">The host port number</param>
-    public OpenClient(string host, uint port)
+	/// <summary>
+	/// Creates an instance of OpenClient which is not connected yet
+	/// </summary>
+	/// <param name="host">The host name of API endpoint</param>
+	/// <param name="port">The host port number</param>
+	public OpenClient(string host, uint port)
 	{
 		Host = host.ThrowIfEmpty(nameof(host));
 		Port = port;

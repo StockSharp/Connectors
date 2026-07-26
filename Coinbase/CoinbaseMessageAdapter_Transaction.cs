@@ -139,8 +139,8 @@ public partial class CoinbaseMessageAdapter
 
 				// Skip USD and stablecoins as they are base currencies
 				if (account.Currency.EqualsIgnoreCase("USD") ||
-				    account.Currency.EqualsIgnoreCase("USDT") ||
-				    account.Currency.EqualsIgnoreCase("USDC"))
+					account.Currency.EqualsIgnoreCase("USDT") ||
+					account.Currency.EqualsIgnoreCase("USDC"))
 					continue;
 
 				// Check Side filter - spot balances are always long positions

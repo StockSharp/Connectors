@@ -4,7 +4,7 @@ enum RequestMessages
 {
 	SubscribeMarketData = 1,
 	UnSubscribeMarketData = 2,
-	
+
 	RegisterOrder = 3,
 	CancelOrder = 4,
 	RequestOpenOrders = 5,
@@ -12,29 +12,29 @@ enum RequestMessages
 	RequestTrades = 7,
 	RequestIds = 8,
 	RequestContractData = 9,
-	
+
 	SubscribeMarketDepth = 10,
 	UnSubscribeMarketDepth = 11,
-	
+
 	SubscribeNewsBulletins = 12,
 	UnSubscribeNewsBulletins = 13,
-	
+
 	SetServerLogLevel = 14,
 	RequestAutoOpenOrders = 15,
 	RequestAllOpenOrders = 16,
 	RequestPortfolios = 17,
-	
+
 	RequestFinancialAdvisor = 18,
 	ReplaceFinancialAdvisor = 19,
 
 	SubscribeHistoricalData = 20,
-	
+
 	ExerciseOptions = 21,
-	
+
 	SubscribeScanner = 22,
 	UnSubscribeScanner = 23,
 	RequestScannerParameters = 24,
-	
+
 	UnSubscribeHistoricalData = 25,
 
 	RequestCurrentTime = 49,

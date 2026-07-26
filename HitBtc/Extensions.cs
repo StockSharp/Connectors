@@ -100,7 +100,7 @@ static class Extensions
 			{
 				if (type == OrderTypes.Market)
 					return null;
-					
+
 				if (tillDate == null)
 					return "GTC";
 				else if (tillDate.Value.IsToday())

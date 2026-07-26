@@ -25,8 +25,8 @@ class Authenticator : Disposable
 	public string MakeSign(string input)
 	{
 		return _hasher
-		       .ComputeHash(input.UTF8())
-		       .Digest()
-		       .ToLowerInvariant();
+			   .ComputeHash(input.UTF8())
+			   .Digest()
+			   .ToLowerInvariant();
 	}
 }

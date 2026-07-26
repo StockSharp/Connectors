@@ -122,7 +122,7 @@ class PusherClient : BaseLogReceiver
 		_isLogout = true;
 		this.AddInfoLog("Logout");
 		await Send(id, Actions.Logout, null, cancellationToken);
-		
+
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
 		await _client.DisconnectAsync(cancellationToken);
 	}

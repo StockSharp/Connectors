@@ -253,8 +253,8 @@ public partial class BitmexMessageAdapter
 		var orderType = order.OrdType.ToOrderType(out var condition);
 
 		if (orderType != OrderTypes.Conditional &&
-		    (order.StopPx != null || !order.ContingencyType.IsEmpty() || order.PegOffsetValue != null
-		     || !order.PegPriceType.IsEmpty() || !order.ClOrdLinkId.IsEmpty() || !order.ExecInst.IsEmpty()))
+			(order.StopPx != null || !order.ContingencyType.IsEmpty() || order.PegOffsetValue != null
+			 || !order.PegPriceType.IsEmpty() || !order.ClOrdLinkId.IsEmpty() || !order.ExecInst.IsEmpty()))
 		{
 			condition = new BitmexOrderCondition();
 		}

@@ -26,7 +26,7 @@ class Authenticator : Disposable
 	public SecureString Key => _key;
 	public bool CanSign => _hasher is not null;
 
-    protected override void DisposeManaged()
+	protected override void DisposeManaged()
 	{
 		_hasher?.Dispose();
 		base.DisposeManaged();

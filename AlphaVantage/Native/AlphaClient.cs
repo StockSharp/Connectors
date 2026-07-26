@@ -44,16 +44,16 @@ class AlphaClient : BaseLogReceiver
 	//	TIME_SERIES_MONTHLY,
 	//	TIME_SERIES_MONTHLY_ADJUSTED,
 	//	BATCH_STOCK_QUOTES,
-        
+
 	//	// Foreign Exchange (FX)
 	//	CURRENCY_EXCHANGE_RATE,
-        
+
 	//	// Digital & Crypto Currencies
 	//	DIGITAL_CURRENCY_INTRADAY,
 	//	DIGITAL_CURRENCY_DAILY,
 	//	DIGITAL_CURRENCY_WEEKLY,
 	//	DIGITAL_CURRENCY_MONTHLY,
-        
+
 	//	// Stock Technical Indicators
 	//	SMA,
 	//	EMA,
@@ -107,7 +107,7 @@ class AlphaClient : BaseLogReceiver
 	//	HT_DCPERIOD,
 	//	HT_DCPHASE,
 	//	HT_PHASOR,
-        
+
 	//	// Sector Performances
 	//	SECTOR
 	//}
@@ -191,7 +191,7 @@ class AlphaClient : BaseLogReceiver
 
 				if (!month.IsEmpty())
 					request.AddQueryParameter(nameof(month), month);
-				
+
 				request.AddQueryParameter("outputsize", "full");
 
 				break;

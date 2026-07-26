@@ -11,222 +11,222 @@ namespace StockSharp.Lfj;
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Crypto |
-    MessageAdapterCategories.RealTime | MessageAdapterCategories.Free |
-    MessageAdapterCategories.Ticks | MessageAdapterCategories.Level1 |
-    MessageAdapterCategories.Candles | MessageAdapterCategories.History |
-    MessageAdapterCategories.Transactions)]
+	MessageAdapterCategories.RealTime | MessageAdapterCategories.Free |
+	MessageAdapterCategories.Ticks | MessageAdapterCategories.Level1 |
+	MessageAdapterCategories.Candles | MessageAdapterCategories.History |
+	MessageAdapterCategories.Transactions)]
 public partial class LfjMessageAdapter : MessageAdapter
 {
-    private const string _defaultRpcEndpoint =
-        "https://api.avax.network/ext/bc/C/rpc";
-    private const string _defaultWebSocketEndpoint =
-        "wss://api.avax.network/ext/bc/C/ws";
-    private const string _defaultPools =
-        "0x864d4e5ee7318e97483db7eb0912e09f161516ea|" +
-        LfjExtensions.WrappedAvaxAddress + "|" +
-        LfjExtensions.UsdcAddress + "|WAVAX-USDC-LB10";
+	private const string _defaultRpcEndpoint =
+		"https://api.avax.network/ext/bc/C/rpc";
+	private const string _defaultWebSocketEndpoint =
+		"wss://api.avax.network/ext/bc/C/ws";
+	private const string _defaultPools =
+		"0x864d4e5ee7318e97483db7eb0912e09f161516ea|" +
+		LfjExtensions.WrappedAvaxAddress + "|" +
+		LfjExtensions.UsdcAddress + "|WAVAX-USDC-LB10";
 
-    /// <summary>Supported candle intervals.</summary>
-    public static IEnumerable<TimeSpan> AllTimeFrames =>
-        LfjExtensions.TimeFrames;
+	/// <summary>Supported candle intervals.</summary>
+	public static IEnumerable<TimeSpan> AllTimeFrames =>
+		LfjExtensions.TimeFrames;
 
-    /// <summary>Public wallet address used for balances.</summary>
+	/// <summary>Public wallet address used for balances.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WalletAddressKey,
 		Description = LocalizedStrings.WalletAddressKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
-    [BasicSetting]
-    public string WalletAddress { get; set; }
+	[BasicSetting]
+	public string WalletAddress { get; set; }
 
-    /// <summary>Optional private key used to sign on-chain transactions.</summary>
+	/// <summary>Optional private key used to sign on-chain transactions.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.PrivateKey,
 		Description = LocalizedStrings.PrivateKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
-    [BasicSetting]
-    public SecureString PrivateKey { get; set; }
+	[BasicSetting]
+	public SecureString PrivateKey { get; set; }
 
-    /// <summary>Avalanche C-Chain HTTP JSON-RPC endpoint.</summary>
+	/// <summary>Avalanche C-Chain HTTP JSON-RPC endpoint.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
-    [BasicSetting]
-    public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
+	[BasicSetting]
+	public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
 
-    /// <summary>Avalanche C-Chain WebSocket JSON-RPC endpoint.</summary>
+	/// <summary>Avalanche C-Chain WebSocket JSON-RPC endpoint.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.ServerAddressKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
-    [BasicSetting]
-    public string WebSocketEndpoint { get; set; } =
-        _defaultWebSocketEndpoint;
+	[BasicSetting]
+	public string WebSocketEndpoint { get; set; } =
+		_defaultWebSocketEndpoint;
 
-    /// <summary>
-    /// Semicolon-separated pool definitions. Each item is a pool address and
-    /// may include base address, quote address, and security code.
-    /// </summary>
+	/// <summary>
+	/// Semicolon-separated pool definitions. Each item is a pool address and
+	/// may include base address, quote address, and security code.
+	/// </summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecuritiesKey,
 		Description = LocalizedStrings.SecuritiesKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
-    public string Pools { get; set; } = _defaultPools;
+	public string Pools { get; set; } = _defaultPools;
 
-    private int _historyBlockRange = 2_000;
+	private int _historyBlockRange = 2_000;
 
-    /// <summary>Maximum block range requested by one log query.</summary>
+	/// <summary>Maximum block range requested by one log query.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
-    public int HistoryBlockRange
-    {
-        get => _historyBlockRange;
-        set => _historyBlockRange = value is >= 1 and <= 50_000
-            ? value
-            : throw new ArgumentOutOfRangeException(nameof(value), value,
-                "History block range must be between 1 and 50000.");
-    }
+	public int HistoryBlockRange
+	{
+		get => _historyBlockRange;
+		set => _historyBlockRange = value is >= 1 and <= 50_000
+			? value
+			: throw new ArgumentOutOfRangeException(nameof(value), value,
+				"History block range must be between 1 and 50000.");
+	}
 
-    private int _historyBlockCount = 250_000;
+	private int _historyBlockCount = 250_000;
 
-    /// <summary>
-    /// Number of recent blocks searched when history has no start time.
-    /// </summary>
+	/// <summary>
+	/// Number of recent blocks searched when history has no start time.
+	/// </summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CountKey,
 		Description = LocalizedStrings.CountKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
-    public int HistoryBlockCount
-    {
-        get => _historyBlockCount;
-        set => _historyBlockCount = value is >= 1 and <= 10_000_000
-            ? value
-            : throw new ArgumentOutOfRangeException(nameof(value), value,
-                "History block count must be between 1 and 10000000.");
-    }
+	public int HistoryBlockCount
+	{
+		get => _historyBlockCount;
+		set => _historyBlockCount = value is >= 1 and <= 10_000_000
+			? value
+			: throw new ArgumentOutOfRangeException(nameof(value), value,
+				"History block count must be between 1 and 10000000.");
+	}
 
-    private decimal _probeVolume = 1m;
+	private decimal _probeVolume = 1m;
 
-    /// <summary>Base-token amount used for bid and ask quote probes.</summary>
+	/// <summary>Base-token amount used for bid and ask quote probes.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.VolumeKey,
 		Description = LocalizedStrings.VolumeKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
-    public decimal ProbeVolume
-    {
-        get => _probeVolume;
-        set => _probeVolume = value > 0
-            ? value
-            : throw new ArgumentOutOfRangeException(nameof(value), value,
-                "Quote probe volume must be positive.");
-    }
+	public decimal ProbeVolume
+	{
+		get => _probeVolume;
+		set => _probeVolume = value > 0
+			? value
+			: throw new ArgumentOutOfRangeException(nameof(value), value,
+				"Quote probe volume must be positive.");
+	}
 
-    private decimal _slippageTolerance = 0.5m;
+	private decimal _slippageTolerance = 0.5m;
 
-    /// <summary>Swap slippage tolerance in percent.</summary>
+	/// <summary>Swap slippage tolerance in percent.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SlippageKey,
 		Description = LocalizedStrings.SlippageKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
-    public decimal SlippageTolerance
-    {
-        get => _slippageTolerance;
-        set => _slippageTolerance = value is > 0 and <= 50 &&
-            decimal.Round(value, 2) == value
-            ? value
-            : throw new ArgumentOutOfRangeException(nameof(value), value,
-                "Slippage tolerance must be greater than zero and no more " +
-                "than 50 percent, with at most two decimal places.");
-    }
+	public decimal SlippageTolerance
+	{
+		get => _slippageTolerance;
+		set => _slippageTolerance = value is > 0 and <= 50 &&
+			decimal.Round(value, 2) == value
+			? value
+			: throw new ArgumentOutOfRangeException(nameof(value), value,
+				"Slippage tolerance must be greater than zero and no more " +
+				"than 50 percent, with at most two decimal places.");
+	}
 
-    private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
+	private TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
 
-    /// <summary>Fallback polling interval for quotes, logs, and receipts.</summary>
+	/// <summary>Fallback polling interval for quotes, logs, and receipts.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.IntervalKey,
 		Description = LocalizedStrings.IntervalKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 7)]
-    public TimeSpan PollingInterval
-    {
-        get => _pollingInterval;
-        set => _pollingInterval = value >= TimeSpan.FromSeconds(1)
-            ? value
-            : throw new ArgumentOutOfRangeException(nameof(value), value,
-                "Polling interval cannot be less than one second.");
-    }
+	public TimeSpan PollingInterval
+	{
+		get => _pollingInterval;
+		set => _pollingInterval = value >= TimeSpan.FromSeconds(1)
+			? value
+			: throw new ArgumentOutOfRangeException(nameof(value), value,
+				"Polling interval cannot be less than one second.");
+	}
 
-    /// <inheritdoc />
-    public override void Save(SettingsStorage storage)
-    {
-        base.Save(storage);
-        storage
-            .Set(nameof(WalletAddress), WalletAddress)
-            .Set(nameof(PrivateKey), PrivateKey)
-            .Set(nameof(RpcEndpoint), RpcEndpoint)
-            .Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
-            .Set(nameof(Pools), Pools)
-            .Set(nameof(HistoryBlockRange), HistoryBlockRange)
-            .Set(nameof(HistoryBlockCount), HistoryBlockCount)
-            .Set(nameof(ProbeVolume), ProbeVolume)
-            .Set(nameof(SlippageTolerance), SlippageTolerance)
-            .Set(nameof(PollingInterval), PollingInterval);
-    }
+	/// <inheritdoc />
+	public override void Save(SettingsStorage storage)
+	{
+		base.Save(storage);
+		storage
+			.Set(nameof(WalletAddress), WalletAddress)
+			.Set(nameof(PrivateKey), PrivateKey)
+			.Set(nameof(RpcEndpoint), RpcEndpoint)
+			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
+			.Set(nameof(Pools), Pools)
+			.Set(nameof(HistoryBlockRange), HistoryBlockRange)
+			.Set(nameof(HistoryBlockCount), HistoryBlockCount)
+			.Set(nameof(ProbeVolume), ProbeVolume)
+			.Set(nameof(SlippageTolerance), SlippageTolerance)
+			.Set(nameof(PollingInterval), PollingInterval);
+	}
 
-    /// <inheritdoc />
-    public override void Load(SettingsStorage storage)
-    {
-        base.Load(storage);
-        WalletAddress = storage.GetValue<string>(nameof(WalletAddress));
-        PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));
-        RpcEndpoint = NormalizeEndpoint(storage.GetValue(
-            nameof(RpcEndpoint), RpcEndpoint), "https");
-        WebSocketEndpoint = NormalizeEndpoint(storage.GetValue(
-            nameof(WebSocketEndpoint), WebSocketEndpoint), "wss");
-        Pools = storage.GetValue(nameof(Pools), Pools);
-        HistoryBlockRange = storage.GetValue(nameof(HistoryBlockRange),
-            HistoryBlockRange);
-        HistoryBlockCount = storage.GetValue(nameof(HistoryBlockCount),
-            HistoryBlockCount);
-        ProbeVolume = storage.GetValue(nameof(ProbeVolume), ProbeVolume);
-        SlippageTolerance = storage.GetValue(nameof(SlippageTolerance),
-            SlippageTolerance);
-        PollingInterval = storage.GetValue(nameof(PollingInterval),
-            PollingInterval);
-    }
+	/// <inheritdoc />
+	public override void Load(SettingsStorage storage)
+	{
+		base.Load(storage);
+		WalletAddress = storage.GetValue<string>(nameof(WalletAddress));
+		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));
+		RpcEndpoint = NormalizeEndpoint(storage.GetValue(
+			nameof(RpcEndpoint), RpcEndpoint), "https");
+		WebSocketEndpoint = NormalizeEndpoint(storage.GetValue(
+			nameof(WebSocketEndpoint), WebSocketEndpoint), "wss");
+		Pools = storage.GetValue(nameof(Pools), Pools);
+		HistoryBlockRange = storage.GetValue(nameof(HistoryBlockRange),
+			HistoryBlockRange);
+		HistoryBlockCount = storage.GetValue(nameof(HistoryBlockCount),
+			HistoryBlockCount);
+		ProbeVolume = storage.GetValue(nameof(ProbeVolume), ProbeVolume);
+		SlippageTolerance = storage.GetValue(nameof(SlippageTolerance),
+			SlippageTolerance);
+		PollingInterval = storage.GetValue(nameof(PollingInterval),
+			PollingInterval);
+	}
 
-    private static string NormalizeEndpoint(string endpoint, string scheme)
-    {
-        endpoint = endpoint?.Trim();
-        if (endpoint.IsEmpty())
-            return endpoint;
-        if (!endpoint.Contains("://", StringComparison.Ordinal))
-            endpoint = $"{scheme}://{endpoint.TrimStart('/')}";
-        return endpoint.TrimEnd('/');
-    }
+	private static string NormalizeEndpoint(string endpoint, string scheme)
+	{
+		endpoint = endpoint?.Trim();
+		if (endpoint.IsEmpty())
+			return endpoint;
+		if (!endpoint.Contains("://", StringComparison.Ordinal))
+			endpoint = $"{scheme}://{endpoint.TrimStart('/')}";
+		return endpoint.TrimEnd('/');
+	}
 
-    /// <inheritdoc />
-    public override string ToString()
-        => base.ToString() + $": Avalanche, Wallet={WalletAddress}";
+	/// <inheritdoc />
+	public override string ToString()
+		=> base.ToString() + $": Avalanche, Wallet={WalletAddress}";
 }

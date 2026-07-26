@@ -57,7 +57,7 @@ static class Extensions
 			symbol = symbol.Insert(symbol.IndexOfIgnoreCase("usd"), "/");
 		else// if (symbol.Length == 6)
 			symbol = symbol.Insert(3, "/");
-		
+
 		return new SecurityId
 		{
 			SecurityCode = symbol.ToUpperInvariant(),

@@ -253,9 +253,9 @@ class HttpClient : BaseLogReceiver
 		var nonce = _nonceGen.GetNextId();
 
 		var signature = _hasher
-		    .ComputeHash($"{nonce}{data}".UTF8())
-		    .Digest()
-		    .ToLowerInvariant();
+			.ComputeHash($"{nonce}{data}".UTF8())
+			.Digest()
+			.ToLowerInvariant();
 
 		request
 			.AddHeader("ACCESS-KEY", _key.UnSecure())

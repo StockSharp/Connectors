@@ -5,7 +5,7 @@ abstract class NativeAdapter : BaseLogReceiver, IConnection
 	private readonly string _boardCode;
 
 	protected NativeAdapter(Authenticator authenticator, IdGenerator transIdGen, string boardCode)
-    {
+	{
 		Authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 		TransIdGen = transIdGen ?? throw new ArgumentNullException(nameof(transIdGen));
 		_boardCode = boardCode;

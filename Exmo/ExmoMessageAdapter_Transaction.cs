@@ -128,7 +128,7 @@ partial class ExmoMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
-		
+
 		if (message != null)
 		{
 			if (!message.IsSubscribe)
@@ -177,7 +177,7 @@ partial class ExmoMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
-		
+
 		if (message == null)
 		{
 			var portfolioRefresh = false;
@@ -331,7 +331,7 @@ partial class ExmoMessageAdapter
 					}
 				}
 			}
-		
+
 			await SendSubscriptionResultAsync(message, cancellationToken);
 		}
 	}

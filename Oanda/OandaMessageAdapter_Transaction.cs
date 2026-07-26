@@ -195,7 +195,7 @@ partial class OandaMessageAdapter
 				//	break;
 
 				_orderBalance.Remove(transactionId);
-			
+
 				await SendOutMessageAsync(FillOrderInfo(new ExecutionMessage
 				{
 					DataTypeEx = DataType.Transactions,
@@ -296,7 +296,7 @@ partial class OandaMessageAdapter
 				// "userID":6072173,"accountID":"101-004-6072173-001","batchID":"18","requestID":"42309834544154917","time":"1497516042.338921688"}
 
 				var trades = new List<TradeData>();
-				
+
 				if (transaction.TradesClosed != null)
 					trades.AddRange(transaction.TradesClosed);
 
@@ -333,7 +333,7 @@ partial class OandaMessageAdapter
 
 					if (!_isPositionsStreaming)
 						continue;
-					
+
 					if (!_currentPositions.TryGetValue(transaction.AccountId, out var currentPositions))
 						continue;
 
@@ -374,7 +374,7 @@ partial class OandaMessageAdapter
 						OrderState = balance.Value > 0 ? OrderStates.Active : OrderStates.Done,
 					}, cancellationToken);
 				}
-				
+
 				break;
 			}
 

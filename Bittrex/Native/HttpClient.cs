@@ -161,7 +161,7 @@ class HttpClient : BaseLogReceiver
 			.ToQueryString();
 
 		var signature = _authenticator.MakeSign(url + "?" + qs);
-	
+
 		request
 			.AddHeader("apisign", signature);
 

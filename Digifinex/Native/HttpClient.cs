@@ -106,7 +106,7 @@ class HttpClient : BaseLogReceiver
 
 		//if (page != null)
 		//	request.AddParameter("page", page.Value);
-		
+
 		return MakeRequest<IEnumerable<Order>>(CreateUrl($"{market}/order/current"), ApplySecret(request), cancellationToken);
 	}
 
@@ -190,9 +190,9 @@ class HttpClient : BaseLogReceiver
 			.ToQueryString(false);
 
 		var signature = _hasher
-		    .ComputeHash(str.UTF8())
-		    .Digest()
-		    .ToLowerInvariant();
+			.ComputeHash(str.UTF8())
+			.Digest()
+			.ToLowerInvariant();
 
 		request.AddHeader("ACCESS-KEY", _key.UnSecure());
 		request.AddHeader("ACCESS-SIGN", signature);

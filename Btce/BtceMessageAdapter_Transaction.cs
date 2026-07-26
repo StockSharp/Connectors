@@ -179,8 +179,8 @@ partial class BtceMessageAdapter
 
 				// Skip base currencies (USD, EUR, RUR)
 				if (secId.SecurityCode.EqualsIgnoreCase("USD") ||
-				    secId.SecurityCode.EqualsIgnoreCase("EUR") ||
-				    secId.SecurityCode.EqualsIgnoreCase("RUR"))
+					secId.SecurityCode.EqualsIgnoreCase("EUR") ||
+					secId.SecurityCode.EqualsIgnoreCase("RUR"))
 					continue;
 
 				// Check Side filter - spot balances are always long positions

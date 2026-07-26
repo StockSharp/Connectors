@@ -142,7 +142,7 @@ class PublicSocketClient(string url, int reconnectAttempts, WorkingTime workingT
 
 	private readonly ByBitSections _section = section;
 
-    protected override async ValueTask OnProcess(string topic, WebSocketResponse response, CancellationToken cancellationToken)
+	protected override async ValueTask OnProcess(string topic, WebSocketResponse response, CancellationToken cancellationToken)
 	{
 		var parts = topic.SplitByDot();
 
@@ -219,7 +219,7 @@ abstract class AuthSocketClient(string url, int reconnectAttempts, WorkingTime w
 	private readonly Authenticator _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 	private readonly int _recvWindow = recvWindow;
 
-    protected override ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
+	protected override ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
 	{
 		var expires = (long)DateTime.UtcNow.AddMilliseconds(_recvWindow).ToUnix(false);
 		var signature = _authenticator.Sign($"GET/realtime{expires}");
@@ -257,7 +257,7 @@ class PrivateSocketClient(string url, int reconnectAttempts, WorkingTime working
 	public event Func<IEnumerable<Order>, CancellationToken, ValueTask> OrdersReceived;
 	public event Func<IEnumerable<WebSocketExecution>, CancellationToken, ValueTask> ExecutionsReceived;
 
-    protected override async ValueTask OnProcess(string topic, WebSocketResponse response, CancellationToken cancellationToken)
+	protected override async ValueTask OnProcess(string topic, WebSocketResponse response, CancellationToken cancellationToken)
 	{
 		T getData<T>()
 			=> response.Data.DeserializeObject<T>();

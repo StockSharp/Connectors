@@ -174,7 +174,7 @@ public partial class BitfinexMessageAdapter
 		.TryAdd(PositionChangeTypes.RealizedPnL, pnl, true)
 		.TryAdd(PositionChangeTypes.Leverage, leverage, true)
 		.TryAdd(PositionChangeTypes.AveragePrice, beginPrice, true)
-	    .TryAdd(PositionChangeTypes.LiquidationPrice, priceLiq, true), cancellationToken);
+		.TryAdd(PositionChangeTypes.LiquidationPrice, priceLiq, true), cancellationToken);
 	}
 
 	private ValueTask SessionOnNewWallet(string name, string currency, decimal balance, decimal unsettledInterest, CancellationToken cancellationToken)

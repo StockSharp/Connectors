@@ -282,10 +282,10 @@ class HttpClient : BaseLogReceiver
 		if (request.Method == Method.Get)
 		{
 			var qs = request
-			    .Parameters
-			    .Where(p => p.Type == ParameterType.QueryString && p.Value != null)
-			    .Select(p => $"{p.Name}={p.Value.ToString().EncodeUrl().UrlEncodeToUpperCase()}")
-			    .JoinAnd();
+				.Parameters
+				.Where(p => p.Type == ParameterType.QueryString && p.Value != null)
+				.Select(p => $"{p.Name}={p.Value.ToString().EncodeUrl().UrlEncodeToUpperCase()}")
+				.JoinAnd();
 
 			if (!qs.IsEmpty())
 				urlStr += "?" + qs;

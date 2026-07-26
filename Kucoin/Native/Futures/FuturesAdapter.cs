@@ -20,7 +20,7 @@ class FuturesAdapter : BaseNativeAdapter
 
 	public FuturesAdapter(KucoinMessageAdapter adapter, Func<Message, CancellationToken, ValueTask> outMessage)
 		: base(adapter, BoardCodes.KucoinFT, outMessage)
-    {
+	{
 	}
 
 	private void SubscribePublicClient()

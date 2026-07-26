@@ -105,7 +105,7 @@ static class Extensions
 		transId = 0;
 		if (requestId.IsEmpty() || !requestId.StartsWithIgnoreCase("spot-"))
 			return false;
-		
+
 		return long.TryParse(requestId.Remove("spot-"), out transId);
 	}
 

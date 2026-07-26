@@ -4,23 +4,23 @@ static class Extensions
 {
 	public static string ToNative(this Sides side)
 	{
-            return side switch
-            {
-                Sides.Buy => "buy",
-                Sides.Sell => "sell",
-                _ => throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue),
-            };
-        }
+			return side switch
+			{
+				Sides.Buy => "buy",
+				Sides.Sell => "sell",
+				_ => throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue),
+			};
+		}
 
 	public static Sides ToSide(this string side)
 	{
-            return side switch
-            {
-                "bid" or "buy" => Sides.Buy,
-                "ask" or "sell" => Sides.Sell,
-                _ => throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue),
-            };
-        }
+			return side switch
+			{
+				"bid" or "buy" => Sides.Buy,
+				"ask" or "sell" => Sides.Sell,
+				_ => throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue),
+			};
+		}
 
 	public static readonly PairSet<TimeSpan, string> TimeFrames = new()
 	{

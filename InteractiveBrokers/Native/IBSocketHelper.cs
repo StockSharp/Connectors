@@ -111,7 +111,7 @@ static class IBSocketHelper
 	public static IBSocket SendOptionType(this IBSocket socket, OptionTypes? type)
 	{
 		return socket.Send(type == null
-			            ? string.Empty
+						? string.Empty
 						: type == OptionTypes.Call ? "C" : "P");
 	}
 
@@ -266,25 +266,25 @@ static class IBSocketHelper
 
 	public static IBSocket SendLevel1Field(this IBSocket socket, Level1Fields field)
 	{
-        return field switch
-        {
-            CandleDataTypes.Trades => socket.Send("TRADES"),
-            CandleDataTypes.Midpoint => socket.Send("MIDPOINT"),
-            CandleDataTypes.Bid => socket.Send("BID"),
-            CandleDataTypes.Ask => socket.Send("ASK"),
-            CandleDataTypes.BidAsk => socket.Send("BID_ASK"),
-            CandleDataTypes.AdjustedLast => socket.Send("ADJUSTED_LAST"),
-            CandleDataTypes.HistoricalVolatility => socket.Send("HISTORICAL_VOLATILITY"),
-            CandleDataTypes.ImpliedVolatility => socket.Send("OPTION_IMPLIED_VOLATILITY"),
-            CandleDataTypes.RebateRate => socket.Send("REBATE_RATE"),
-            CandleDataTypes.FeeRate => socket.Send("FEE_RATE"),
-            CandleDataTypes.YieldAsk => socket.Send("YIELD_ASK"),
-            CandleDataTypes.YieldBid => socket.Send("YIELD_BID"),
-            CandleDataTypes.YieldBidAsk => socket.Send("YIELD_BID_ASK"),
-            CandleDataTypes.YieldLast => socket.Send("YIELD_LAST"),
-            _ => throw new ArgumentOutOfRangeException(nameof(field), field, LocalizedStrings.InvalidValue),
-        };
-    }
+		return field switch
+		{
+			CandleDataTypes.Trades => socket.Send("TRADES"),
+			CandleDataTypes.Midpoint => socket.Send("MIDPOINT"),
+			CandleDataTypes.Bid => socket.Send("BID"),
+			CandleDataTypes.Ask => socket.Send("ASK"),
+			CandleDataTypes.BidAsk => socket.Send("BID_ASK"),
+			CandleDataTypes.AdjustedLast => socket.Send("ADJUSTED_LAST"),
+			CandleDataTypes.HistoricalVolatility => socket.Send("HISTORICAL_VOLATILITY"),
+			CandleDataTypes.ImpliedVolatility => socket.Send("OPTION_IMPLIED_VOLATILITY"),
+			CandleDataTypes.RebateRate => socket.Send("REBATE_RATE"),
+			CandleDataTypes.FeeRate => socket.Send("FEE_RATE"),
+			CandleDataTypes.YieldAsk => socket.Send("YIELD_ASK"),
+			CandleDataTypes.YieldBid => socket.Send("YIELD_BID"),
+			CandleDataTypes.YieldBidAsk => socket.Send("YIELD_BID_ASK"),
+			CandleDataTypes.YieldLast => socket.Send("YIELD_LAST"),
+			_ => throw new ArgumentOutOfRangeException(nameof(field), field, LocalizedStrings.InvalidValue),
+		};
+	}
 
 	public static IBSocket SendFundamental(this IBSocket socket, FundamentalReports? report)
 	{
@@ -311,7 +311,7 @@ static class IBSocketHelper
 	}
 
 	public static IBSocket SendComboLeg(this IBSocket socket, SecurityId innerId, decimal weight)
-		=> 
+		=>
 			socket
 				.SendContractId(innerId)
 				.Send((int)weight.Abs())
@@ -353,24 +353,24 @@ static class IBSocketHelper
 		if (str.IsEmpty())
 			return null;
 
-        return str switch
-        {
-            "?" or "0" => null,
-            "C" => (OptionTypes?)OptionTypes.Call,
-            "P" => (OptionTypes?)OptionTypes.Put,
-            _ => throw new InvalidOperationException(str),
-        };
-    }
+		return str switch
+		{
+			"?" or "0" => null,
+			"C" => (OptionTypes?)OptionTypes.Call,
+			"P" => (OptionTypes?)OptionTypes.Put,
+			_ => throw new InvalidOperationException(str),
+		};
+	}
 
 	public static async ValueTask<Sides?> ReadTradeSideAsync(this IBSocket socket, CancellationToken cancellationToken)
 	{
-        return (await socket.ReadStringAsync(cancellationToken).NoWait()) switch
-        {
-            "BOT" => (Sides?)Sides.Buy,
-            "SLD" => (Sides?)Sides.Sell,
-            _ => null,
-        };
-    }
+		return (await socket.ReadStringAsync(cancellationToken).NoWait()) switch
+		{
+			"BOT" => (Sides?)Sides.Buy,
+			"SLD" => (Sides?)Sides.Sell,
+			_ => null,
+		};
+	}
 
 	public static SecurityTypes? ToSecurityType(this string str, ILogReceiver logs, out SecurityTypes? underlyingSecurityType)
 	{
@@ -431,18 +431,18 @@ static class IBSocketHelper
 
 	public static OrderStatus ToOrderStatus(this string str)
 	{
-        return str switch
-        {
-            "PendingSubmit" => OrderStatus.SentToServer,
-            "PendingCancel" => OrderStatus.SentToCanceled,
-            "PreSubmitted" => OrderStatus.ReceiveByServer,
-            "Submitted" => OrderStatus.Accepted,
-            "Cancelled" => OrderStatus.Cancelled,
-            "Filled" => OrderStatus.Matched,
-            "Inactive" => OrderStatus.GateError,
-            _ => throw new ArgumentOutOfRangeException(nameof(str), str, LocalizedStrings.InvalidValue),
-        };
-    }
+		return str switch
+		{
+			"PendingSubmit" => OrderStatus.SentToServer,
+			"PendingCancel" => OrderStatus.SentToCanceled,
+			"PreSubmitted" => OrderStatus.ReceiveByServer,
+			"Submitted" => OrderStatus.Accepted,
+			"Cancelled" => OrderStatus.Cancelled,
+			"Filled" => OrderStatus.Matched,
+			"Inactive" => OrderStatus.GateError,
+			_ => throw new ArgumentOutOfRangeException(nameof(str), str, LocalizedStrings.InvalidValue),
+		};
+	}
 
 	public static async ValueTask<OrderStatus> ReadOrderStatusAsync(this IBSocket socket, CancellationToken cancellationToken)
 	{
@@ -803,13 +803,13 @@ static class IBSocketHelper
 		if (str.IsEmpty())
 			return null;
 
-        return str switch
-        {
-            "D" => InteractiveBrokersOrderCondition.HedgeTypes.Delta,
-            "B" => InteractiveBrokersOrderCondition.HedgeTypes.Beta,
-            "F" => InteractiveBrokersOrderCondition.HedgeTypes.FX,
-            "P" => InteractiveBrokersOrderCondition.HedgeTypes.Pair,
-            _ => throw new InvalidOperationException(LocalizedStrings.UnknownType.Put(str)),
-        };
-    }
+		return str switch
+		{
+			"D" => InteractiveBrokersOrderCondition.HedgeTypes.Delta,
+			"B" => InteractiveBrokersOrderCondition.HedgeTypes.Beta,
+			"F" => InteractiveBrokersOrderCondition.HedgeTypes.FX,
+			"P" => InteractiveBrokersOrderCondition.HedgeTypes.Pair,
+			_ => throw new InvalidOperationException(LocalizedStrings.UnknownType.Put(str)),
+		};
+	}
 }

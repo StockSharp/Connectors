@@ -203,8 +203,8 @@ partial class IQFeedMessageAdapter : ILoginPasswordAdapter
 	public IQFeedLevel1ColumnRegistry Level1ColumnRegistry { get; }
 
 	private static readonly HashSet<TimeSpan> _timeFrames = new(
-    [
-        TimeSpan.FromMinutes(1),
+	[
+		TimeSpan.FromMinutes(1),
 		TimeSpan.FromMinutes(5),
 		TimeSpan.FromMinutes(10),
 		TimeSpan.FromMinutes(15),

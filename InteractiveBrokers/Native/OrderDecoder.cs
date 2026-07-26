@@ -524,7 +524,7 @@ class OrderDecoder
 			_condition.Combo.BasisPointsType = await _socket.ReadNullIntAsync(cancellationToken);
 		}
 	}
-   
+
 	public async ValueTask ReadComboLegs(CancellationToken cancellationToken)
 	{
 		if (_msgVersion >= ServerVersions.V14)

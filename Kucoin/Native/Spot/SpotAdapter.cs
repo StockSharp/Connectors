@@ -21,7 +21,7 @@ class SpotAdapter : BaseNativeAdapter
 
 	public SpotAdapter(KucoinMessageAdapter adapter, Func<Message, CancellationToken, ValueTask> outMessage)
 		: base(adapter, BoardCodes.Kucoin, outMessage)
-    {
+	{
 	}
 
 	private void SubscribePublicClient()

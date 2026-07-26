@@ -58,5 +58,5 @@ public static class RssAddresses
 
 class RssAddressesSource : ItemsSourceBase<string>
 {
-    protected override IEnumerable<string> GetValues() => RssAddresses.All;
+	protected override IEnumerable<string> GetValues() => RssAddresses.All;
 }

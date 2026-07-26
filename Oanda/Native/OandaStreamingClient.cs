@@ -280,7 +280,7 @@ class OandaStreamingClient(string endpoint, SecureString token, bool useCompress
 	public void UnSubscribeTransactionsStreaming(string accountId)
 	{
 		var worker = _transactionsWorkers.TryGetValue(accountId);
-		
+
 		if (worker == null)
 			return;
 

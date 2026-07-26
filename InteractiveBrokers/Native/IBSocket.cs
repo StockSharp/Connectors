@@ -145,7 +145,7 @@ class IBSocket : BaseLogReceiver
 		{
 			SafeGetStream().WriteRaw(bytes);
 		}
-		
+
 		return this;
 	}
 
@@ -243,7 +243,7 @@ class IBSocket : BaseLogReceiver
 		var stream = SafeGetStream();
 
 		var buf = new StringBuilder();
-		
+
 		while (true)
 		{
 			if (UseV100Plus)

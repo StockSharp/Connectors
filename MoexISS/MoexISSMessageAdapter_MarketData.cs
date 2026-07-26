@@ -12,7 +12,7 @@ public partial class MoexISSMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken token)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, token);
-		
+
 		var secTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 

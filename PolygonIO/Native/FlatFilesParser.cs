@@ -11,7 +11,7 @@ static class FlatFilesParser
 	{
 		var sr = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1 << 16, leaveOpen: true);
 		var reader = new FastCsvReader(sr, StringHelper.N) { ColumnSeparator = ',' };
-		
+
 		if (!await reader.NextLineAsync(cancellationToken))
 			return null;
 

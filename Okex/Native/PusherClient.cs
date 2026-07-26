@@ -273,7 +273,7 @@ class PublicPusherClient : BasePusherClient
 
 	public ValueTask UnsubscribeInstruments(long originTransId, CancellationToken cancellationToken)
 		=> Unsubscribe(originTransId, _instrumentsSubscriptionArg, cancellationToken);
-	
+
 	public ValueTask SubscribeDepth(long transId, string instrumentId, int? depth, CancellationToken cancellationToken)
 		=> Subscribe(transId, depth <= 5 ? PusherChannels.Depth5 : PusherChannels.Depth, arg => arg.instId = instrumentId, cancellationToken);
 
@@ -338,7 +338,7 @@ class PrivatePusherClient : BaseAuthPusherClient
 	}
 
 	public override string Name => nameof(Okex) + "_" + nameof(PrivatePusherClient);
-	
+
 	protected override async ValueTask<bool> OnProcessImpl(dynamic obj, CancellationToken cancellationToken)
 	{
 		if(await base.OnProcessImpl((object)obj, cancellationToken))

@@ -31,7 +31,7 @@ partial class LatokenMessageAdapter
 					HasOrderInfo = true,
 					OrderStringId = withdrawId,
 				}, cancellationToken);
-				
+
 				return;
 			}
 			default:

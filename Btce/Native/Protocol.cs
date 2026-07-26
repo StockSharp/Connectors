@@ -86,19 +86,19 @@ internal class InfoReply
 
 /*
 	{
- 		"success":1,
- 		"return": {
- 			"384619137": {
- 				"type":1,
- 				"amount":0.02437489,
- 				"currency":"BTC",
- 				"desc":"BTC-E CODE redeemed",
- 				"status":2,
- 				"timestamp":1394099618
- 			}
- 		}
+		"success":1,
+		"return": {
+			"384619137": {
+				"type":1,
+				"amount":0.02437489,
+				"currency":"BTC",
+				"desc":"BTC-E CODE redeemed",
+				"status":2,
+				"timestamp":1394099618
+			}
+		}
 		"error":"no transactions"
-	}	 
+	}
 */
 
 [Obfuscation(Feature = "renaming", ApplyToMembers = true)]

@@ -78,8 +78,8 @@ public partial class IQFeedMessageAdapter : MessageAdapter
 		Level1ColumnRegistry = IQFeedLevel1ColumnRegistry.Instance;
 
 		_level1Columns =
-            [
-                Level1ColumnRegistry.OpenInterest,
+			[
+				Level1ColumnRegistry.OpenInterest,
 			Level1ColumnRegistry.Open,
 			Level1ColumnRegistry.High,
 			Level1ColumnRegistry.Low,

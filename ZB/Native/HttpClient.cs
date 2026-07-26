@@ -51,7 +51,7 @@ class HttpClient(string publicEndpoint, string privateEndpoint, Authenticator au
 			.Append("reqTime", _nonceGen.GetNextId());
 
 		var response = await MakeRequestAsync<dynamic>(url, CreateRequest(Method.Get), cancellationToken);
-		
+
 		return (string)response.id;
 	}
 

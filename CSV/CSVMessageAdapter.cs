@@ -53,7 +53,7 @@ public partial class CSVMessageAdapter : MessageAdapter
 		{
 			var settings = pair.Key;
 			var info = pair.Value;
-			
+
 			var subscription = info.Subscription;
 
 			if (settings.DataType == DataType.PositionChanges)

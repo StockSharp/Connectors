@@ -1,6 +1,6 @@
 namespace StockSharp.Cex.Native;
 
-    class HttpClient(string baseUrl) : BaseLogReceiver
+	class HttpClient(string baseUrl) : BaseLogReceiver
 {
 	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 

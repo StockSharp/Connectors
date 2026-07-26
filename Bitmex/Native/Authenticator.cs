@@ -35,9 +35,9 @@ class Authenticator : Disposable
 			throw new InvalidOperationException();
 
 		var signature = _hasher
-		                .ComputeHash((method.ToString().ToUpperInvariant() + url + nonce + args).UTF8())
-		                .Digest()
-		                .ToLowerInvariant();
+						.ComputeHash((method.ToString().ToUpperInvariant() + url + nonce + args).UTF8())
+						.Digest()
+						.ToLowerInvariant();
 
 		return signature;
 	}

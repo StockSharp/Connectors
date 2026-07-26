@@ -214,7 +214,7 @@ public partial class InteractiveBrokersMessageAdapter : MessageAdapter, IAddress
 		ClientId = storage.GetValue<int>(nameof(ClientId));
 		MarketDataType = storage.GetValue<InteractiveBrokersMarketDataTypes>(nameof(MarketDataType));
 		ServerLogLevel = storage.GetValue<ServerLogLevels>(nameof(ServerLogLevel));
-		
+
 		ExtraAuth = storage.GetValue<bool>(nameof(ExtraAuth));
 		OptionalCapabilities = storage.GetValue<string>(nameof(OptionalCapabilities));
 		UseV100Plus = storage.GetValue(nameof(UseV100Plus), UseV100Plus);

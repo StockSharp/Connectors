@@ -23,7 +23,7 @@ abstract class BaseNativeAdapter : Disposable, INativeAdapter
 	private readonly Func<Message, CancellationToken, ValueTask> _outMessage;
 
 	protected BaseNativeAdapter(KucoinMessageAdapter adapter, string boardCode, Func<Message, CancellationToken, ValueTask> outMessage)
-    {
+	{
 		Adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
 		BoardCode = boardCode.ThrowIfEmpty(nameof(boardCode));
 		_outMessage = outMessage ?? throw new ArgumentNullException(nameof(outMessage));

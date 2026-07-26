@@ -155,9 +155,9 @@ class HttpClient : BaseLogReceiver
 		}
 
 		var signature = _hasher
-		    .ComputeHash(bodyStr.UTF8())
-		    .Digest()
-		    .ToLowerInvariant();
+			.ComputeHash(bodyStr.UTF8())
+			.Digest()
+			.ToLowerInvariant();
 
 		request
 			.AddHeader("KEY", _key.UnSecure())

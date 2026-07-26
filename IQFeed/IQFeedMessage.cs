@@ -9,10 +9,10 @@ static class ExtendedMessageTypes
 
 class IQFeedSystemMessage(IQFeed feed, string value) : Message(ExtendedMessageTypes.System)
 {
-    public IQFeed Feed { get; } = feed ?? throw new ArgumentNullException(nameof(feed));
-    public string Value { get; } = value;
+	public IQFeed Feed { get; } = feed ?? throw new ArgumentNullException(nameof(feed));
+	public string Value { get; } = value;
 
-    public override Message Clone()
+	public override Message Clone()
 	{
 		return new IQFeedSystemMessage(Feed, Value);
 	}
@@ -20,11 +20,11 @@ class IQFeedSystemMessage(IQFeed feed, string value) : Message(ExtendedMessageTy
 
 class IQFeedSecurityTypeMessage(int id, string code, string name) : Message(ExtendedMessageTypes.SecurityType)
 {
-    public int Id { get; } = id;
-    public string Code { get; } = code;
-    public string Name { get; } = name;
+	public int Id { get; } = id;
+	public string Code { get; } = code;
+	public string Name { get; } = name;
 
-    public override Message Clone()
+	public override Message Clone()
 	{
 		return new IQFeedSecurityTypeMessage(Id, Code, Name);
 	}
@@ -32,12 +32,12 @@ class IQFeedSecurityTypeMessage(int id, string code, string name) : Message(Exte
 
 class IQFeedListedMarketMessage(int id, string code, string name, int parentId) : Message(ExtendedMessageTypes.ListedMarket)
 {
-    public int Id { get; } = id;
-    public int ParentId { get; } = parentId;
-    public string Code { get; } = code;
-    public string Name { get; } = name;
+	public int Id { get; } = id;
+	public int ParentId { get; } = parentId;
+	public string Code { get; } = code;
+	public string Name { get; } = name;
 
-    public override Message Clone() => new IQFeedListedMarketMessage(Id, Code, Name, ParentId);
+	public override Message Clone() => new IQFeedListedMarketMessage(Id, Code, Name, ParentId);
 }
 
 sealed class IQFeedTradeCorrection
@@ -60,8 +60,8 @@ class IQFeedMessage
 	[AttributeUsage(AttributeTargets.Field)]
 	private class StrValAttribute(string val) : Attribute
 	{
-        public string Val { get; } = val;
-    }
+		public string Val { get; } = val;
+	}
 
 	static readonly Dictionary<string, IQFeedMessage.MsgType> _msgTypes = [];
 
@@ -208,23 +208,23 @@ static class IQFeedMessageHelper
 {
 	public static bool IsErrorMessage(this IQFeedMessage.MsgType mt)
 	{
-        return mt switch
-        {
-            IQFeedMessage.MsgType.NotFound or IQFeedMessage.MsgType.Error => true,
-            _ => false,
-        };
-    }
+		return mt switch
+		{
+			IQFeedMessage.MsgType.NotFound or IQFeedMessage.MsgType.Error => true,
+			_ => false,
+		};
+	}
 
 	public static bool IsLastMessage(this IQFeedMessage.MsgType mt)
 	{
-        return mt switch
-        {
-            IQFeedMessage.MsgType.NotFound or IQFeedMessage.MsgType.Error or
+		return mt switch
+		{
+			IQFeedMessage.MsgType.NotFound or IQFeedMessage.MsgType.Error or
 			IQFeedMessage.MsgType.End or IQFeedMessage.MsgType.NoData
 			=> true,
-            _ => false,
-        };
-    }
+			_ => false,
+		};
+	}
 
 	public static string CreateRequestId(this long numRequestId) => $"#{numRequestId}#";
 

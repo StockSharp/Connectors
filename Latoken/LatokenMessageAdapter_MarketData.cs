@@ -75,7 +75,7 @@ partial class LatokenMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		await EnsureCurrencyIdsAsync(cancellationToken);
 
 		var secTypes = lookupMsg.GetSecurityTypes();

@@ -150,7 +150,7 @@ class SpotAdapter(HuobiMessageAdapter parent, Authenticator authenticator, strin
 	private HttpClient _httpClient;
 	private PusherClient _pusherClient;
 
-    private void SubscribePusherClient()
+	private void SubscribePusherClient()
 	{
 		_pusherClient.StateChanged += SendOutConnectionStateAsync;
 		_pusherClient.Error += SessionOnPusherError;

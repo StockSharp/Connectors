@@ -188,7 +188,7 @@ public partial class TinkoffMessageAdapter
 				{
 					if (cancellationToken.IsCancellationRequested)
 						break;
-					
+
 					this.AddErrorLog(ex);
 
 					try
@@ -807,7 +807,7 @@ public partial class TinkoffMessageAdapter
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var url = $"{HistoryEndpoint.ThrowIfEmpty(nameof(HistoryEndpoint)).TrimEnd('/')}/history-trades/{curr:yyyy-MM-dd}";
-			
+
 			if (!instrumentId.IsEmpty())
 				url += "?instrumentId={instrumentId}";
 

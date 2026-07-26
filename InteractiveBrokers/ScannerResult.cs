@@ -9,7 +9,7 @@ public class ScannerResult : IPersistable
 	/// Security ID.
 	/// </summary>
 	public SecurityId SecurityId { get; set; }
-	
+
 	/// <summary>
 	/// Rank.
 	/// </summary>

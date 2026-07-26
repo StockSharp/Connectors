@@ -537,14 +537,14 @@ class HttpClient : BaseLogReceiver
 		if (applySignature)
 		{
 			var encodedArgs = request
-			                  .Parameters
-			                  .Where(p => isQuery ? p.Type == ParameterType.QueryString : p.Type == ParameterType.GetOrPost && p.Value != null)
-			                  .ToQueryString();
+							  .Parameters
+							  .Where(p => isQuery ? p.Type == ParameterType.QueryString : p.Type == ParameterType.GetOrPost && p.Value != null)
+							  .ToQueryString();
 
 			var signature = _hasher
-			                .ComputeHash(encodedArgs.UTF8())
-			                .Digest()
-			                .ToLowerInvariant();
+							.ComputeHash(encodedArgs.UTF8())
+							.Digest()
+							.ToLowerInvariant();
 
 			if (isQuery)
 				request.AddQueryParameter("signature", signature);

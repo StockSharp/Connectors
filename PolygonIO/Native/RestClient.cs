@@ -16,7 +16,7 @@ class RestClient : RestBaseApiClient
 	private async Task<Response<T>> Do<T>(TimeSpan delay, Uri url, CancellationToken cancellationToken)
 	{
 		var diff = _lastCallTime is null ? TimeSpan.Zero : delay - (DateTime.UtcNow - _lastCallTime.Value);
-		
+
 		if (diff > TimeSpan.Zero)
 			await diff.Delay(cancellationToken);
 
@@ -64,7 +64,7 @@ class RestClient : RestBaseApiClient
 
 		if (!ticker.IsEmpty())
 			qs.Append(nameof(ticker), ticker);
-			
+
 		qs
 			.Append(nameof(order), order)
 			.Append("sort", "published_utc")

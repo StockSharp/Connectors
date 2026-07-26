@@ -151,7 +151,7 @@ static class Extensions
 
 			case "Market":
 				return OrderTypes.Market;
-			
+
 			case "StopMarket":
 			case "StopLimit":
 			case "TrailingStopLimit":

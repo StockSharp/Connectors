@@ -63,16 +63,16 @@ public partial class KrakenMessageAdapter : MessageAdapter, IKeySecretAdapter
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
-    ///// <summary>
-    ///// Is margin enabled.
-    ///// </summary>
-    //[Display(
-    //    ResourceType = typeof(LocalizedStrings),
-    //    Name = LocalizedStrings.MarginLeverageKey,
-    //    Description = LocalizedStrings.MarginLeverageKey,
-    //    GroupName = LocalizedStrings.ConnectionKey,
-    //    Order = 1)]
-    //public bool IsMarginEnabled { get; set; } = true;
+	///// <summary>
+	///// Is margin enabled.
+	///// </summary>
+	//[Display(
+	//    ResourceType = typeof(LocalizedStrings),
+	//    Name = LocalizedStrings.MarginLeverageKey,
+	//    Description = LocalizedStrings.MarginLeverageKey,
+	//    GroupName = LocalizedStrings.ConnectionKey,
+	//    Order = 1)]
+	//public bool IsMarginEnabled { get; set; } = true;
 
 	private TimeSpan _balanceCheckInterval;
 

@@ -6,7 +6,7 @@ partial class OandaMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		var instruments = await _restClient.GetInstrumentsAsync(GetDefaultAccount(),
 			lookupMsg.SecurityId == default
 				? []

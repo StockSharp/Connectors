@@ -74,7 +74,7 @@ class HttpClient : BaseLogReceiver
 	{
 		var args = $"method=TradeHistory&from_id={fromId}";
 		var res = await MakePrivateRequest<MyTradesReply>(args, cancellationToken);
-		
+
 		if (!res.Success)
 		{
 			if (res.ErrorText.EqualsIgnoreCase("no trades"))
@@ -118,7 +118,7 @@ class HttpClient : BaseLogReceiver
 			if (res.ErrorText.EqualsIgnoreCase("no orders"))
 				res.Success = true;
 			else
-				throw new InvalidOperationException(res.ErrorText);	
+				throw new InvalidOperationException(res.ErrorText);
 		}
 
 		return res;

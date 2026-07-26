@@ -12,7 +12,7 @@ class SpotAdapter : NativeAdapter
 
 	public SpotAdapter(string restEndpoint, string webSocketEndpoint, Authenticator authenticator, IdGenerator transIdGen, int attempts, WorkingTime workingTime)
 		: base(authenticator, transIdGen, BoardCodes.CoinEx)
-    {
+	{
 		_httpClient = new(restEndpoint, authenticator) { Parent = this };
 		_socketClient = new(webSocketEndpoint, authenticator, attempts, transIdGen, workingTime) { Parent = this };
 

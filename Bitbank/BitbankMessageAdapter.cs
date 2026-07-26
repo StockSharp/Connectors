@@ -141,7 +141,7 @@ public partial class BitbankMessageAdapter : MessageAdapter
 		}
 
 		if (BalanceCheckInterval > TimeSpan.Zero &&
-		    (_lastTimeBalanceCheck == null || (CurrentTime - _lastTimeBalanceCheck) > BalanceCheckInterval))
+			(_lastTimeBalanceCheck == null || (CurrentTime - _lastTimeBalanceCheck) > BalanceCheckInterval))
 		{
 			await PortfolioLookupAsync(null, cancellationToken);
 		}

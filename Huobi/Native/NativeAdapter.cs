@@ -5,11 +5,11 @@ abstract class NativeAdapter(HuobiMessageAdapter parent, Authenticator authentic
 	private readonly SynchronizedSet<long> _extraMdRequests = [];
 	private readonly SynchronizedSet<long> _isAlgo = [];
 
-    protected HuobiMessageAdapter Parent { get; } = parent ?? throw new ArgumentNullException(nameof(parent));
-    protected Authenticator Authenticator { get; } = authenticator;
-    protected string Domain { get; } = domain.ThrowIfEmpty(nameof(domain));
+	protected HuobiMessageAdapter Parent { get; } = parent ?? throw new ArgumentNullException(nameof(parent));
+	protected Authenticator Authenticator { get; } = authenticator;
+	protected string Domain { get; } = domain.ThrowIfEmpty(nameof(domain));
 
-    public event Func<Message, CancellationToken, ValueTask> NewOutMessage;
+	public event Func<Message, CancellationToken, ValueTask> NewOutMessage;
 
 	protected ValueTask SendOutMessageAsync(Message message, CancellationToken cancellationToken)
 	{

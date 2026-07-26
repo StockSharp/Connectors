@@ -144,7 +144,7 @@ public partial class DXtradeMessageAdapter
 		_httpClient = new($"https://{address}") { Parent = this };
 
 		var reconnectAttempts = ReConnectionSettings.ReAttemptCount;
-		
+
 		var sessionToken = await _httpClient.CreateSessionToken(Login, DomainAddress, Password.UnSecure(), cancellationToken);
 
 		_tracker = new();

@@ -28,7 +28,7 @@ class SocketClient : BaseLogReceiver
 	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
 
 	private readonly SecureString _token;
-	
+
 	private readonly WebSocketClient _client;
 
 	public SocketClient(string address, SecureString token, WorkingTime workingTime)

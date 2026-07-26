@@ -20,7 +20,7 @@ abstract class BaseRequest<TResponse>
 	{
 		var fullUrl = _url;
 		Debug.WriteLine(fullUrl);
-		
+
 		return JsonConvert.DeserializeObject<TResponse>(await _client.GetStringAsync(fullUrl, token));
 	}
 

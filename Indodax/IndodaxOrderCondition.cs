@@ -10,27 +10,27 @@ namespace StockSharp.Indodax;
 	Name = LocalizedStrings.IndodaxKey)]
 public class IndodaxOrderCondition : OrderCondition
 {
-    /// <summary>
-    /// Quote-currency amount to spend for a market buy order.
-    /// </summary>
-    [DataMember]
+	/// <summary>
+	/// Quote-currency amount to spend for a market buy order.
+	/// </summary>
+	[DataMember]
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AmountKey,
 		Description = LocalizedStrings.AmountKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 0)]
-    public decimal? QuoteAmount
-    {
-        get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));
-        set => Parameters[nameof(QuoteAmount)] = value;
-    }
+	public decimal? QuoteAmount
+	{
+		get => (decimal?)Parameters.TryGetValue(nameof(QuoteAmount));
+		set => Parameters[nameof(QuoteAmount)] = value;
+	}
 
-    /// <inheritdoc />
-    public override OrderCondition Clone()
-    {
-        var clone = new IndodaxOrderCondition();
-        clone.Parameters.AddRange(Parameters);
-        return clone;
-    }
+	/// <inheritdoc />
+	public override OrderCondition Clone()
+	{
+		var clone = new IndodaxOrderCondition();
+		clone.Parameters.AddRange(Parameters);
+		return clone;
+	}
 }

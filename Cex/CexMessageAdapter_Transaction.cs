@@ -47,7 +47,7 @@ public partial class CexMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
-		
+
 		if (message == null)
 			throw new ArgumentNullException(nameof(message));
 

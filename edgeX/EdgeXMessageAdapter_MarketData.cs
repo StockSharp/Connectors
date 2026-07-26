@@ -6,7 +6,7 @@ public partial class EdgeXMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		EnsureConnected();
 
 		var secTypes = lookupMsg.GetSecurityTypes();
@@ -26,7 +26,7 @@ public partial class EdgeXMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
-		
+
 		EnsureConnected();
 		await EnsureGetAdapter(mdMsg.SecurityId).Level1SubscriptionAsync(mdMsg, cancellationToken);
 	}
@@ -35,7 +35,7 @@ public partial class EdgeXMessageAdapter
 	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
-		
+
 		EnsureConnected();
 		await EnsureGetAdapter(mdMsg.SecurityId).TicksSubscriptionAsync(mdMsg, cancellationToken);
 	}
@@ -44,7 +44,7 @@ public partial class EdgeXMessageAdapter
 	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
-		
+
 		EnsureConnected();
 		await EnsureGetAdapter(mdMsg.SecurityId).MarketDepthSubscriptionAsync(mdMsg, cancellationToken);
 	}
@@ -53,7 +53,7 @@ public partial class EdgeXMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
-		
+
 		EnsureConnected();
 		await EnsureGetAdapter(mdMsg.SecurityId).TFCandlesSubscriptionAsync(mdMsg, cancellationToken);
 	}

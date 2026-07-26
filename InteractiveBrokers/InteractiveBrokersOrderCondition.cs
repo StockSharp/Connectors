@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCondition
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public abstract class ExtraOrderCondition
 	{
@@ -32,7 +32,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		public abstract PeggedOrderConditionTypes Type { get; }
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public bool IsConjunctionConnection { get; set; }
 
@@ -84,7 +84,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	}
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public enum PeggedOrderConditionTypes
 	{
@@ -320,12 +320,12 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		LimitIfTouched,
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		PeggedBench,
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		PeggedMid
 	}
@@ -1318,7 +1318,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		{
 			get => TryGetValue<string>(_prefix + nameof(Param));
 			set => SetValue(_prefix + nameof(Param), value);
-		} 
+		}
 	}
 
 	/// <summary>
@@ -1954,7 +1954,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(IsOptionsOverride)) ?? false;
 		set => Parameters[nameof(IsOptionsOverride)] = value;
-	} 
+	}
 
 	/// <summary>
 	/// Condition for GTC orders.
@@ -1963,7 +1963,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	public ActiveCondition Active { get; }
 
 	/// <summary>
-	/// Regulatory attribute that applies to all US Commodity (Futures) Exchanges, 
+	/// Regulatory attribute that applies to all US Commodity (Futures) Exchanges,
 	/// provided to allow client to comply with CFTC Tag 50 Rules.
 	/// </summary>
 	[Display(
@@ -2041,7 +2041,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	}
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public decimal? TriggerPrice
 	{
@@ -2050,7 +2050,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	}
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public decimal? LimitPriceOffset
 	{
@@ -2143,7 +2143,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		get => (string)Parameters.TryGetValue(nameof(Mifid2DecisionMaker));
 		set => Parameters[nameof(Mifid2DecisionMaker)] = value;
 	}
-	
+
 	/// <summary>
 	/// Identifies the algorithm responsible for investment decisions within the firm. Orders covered under MiFID 2 must include either <see cref="Mifid2DecisionMaker"/> or <see cref="Mifid2DecisionAlgo"/>, but cannot have both.
 	/// </summary>
@@ -2152,7 +2152,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		get => (string)Parameters.TryGetValue(nameof(Mifid2DecisionAlgo));
 		set => Parameters[nameof(Mifid2DecisionAlgo)] = value;
 	}
-	
+
 	/// <summary>
 	/// For MiFID 2 reporting: identifies a person as the responsible party for the execution of a transaction within the firm.
 	/// </summary>
@@ -2161,7 +2161,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		get => (string)Parameters.TryGetValue(nameof(Mifid2ExecutionTrader));
 		set => Parameters[nameof(Mifid2ExecutionTrader)] = value;
 	}
-			 
+
 	/// <summary>
 	/// For MiFID 2 reporting: identifies the algorithm responsible for the execution of a transaction within the firm.
 	/// </summary>
@@ -2210,13 +2210,13 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	/// <summary>
 	/// Auto cancel date.
 	/// </summary>
-	public string AutoCancelDate 
+	public string AutoCancelDate
 	{
 		get => (string)Parameters.TryGetValue(nameof(AutoCancelDate));
 		set => Parameters[nameof(AutoCancelDate)] = value;
 	}
 
-	//public decimal? FilledQuantity 
+	//public decimal? FilledQuantity
 	//{
 	//	get => (decimal?)Parameters.TryGetValue(nameof(FilledQuantity));
 	//	set => Parameters[nameof(FilledQuantity)] = value;
@@ -2225,7 +2225,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	/// <summary>
 	/// Futures contract id.
 	/// </summary>
-	public int? RefFuturesContractId 
+	public int? RefFuturesContractId
 	{
 		get => (int?)Parameters.TryGetValue(nameof(RefFuturesContractId));
 		set => Parameters[nameof(RefFuturesContractId)] = value;
@@ -2234,7 +2234,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	/// <summary>
 	/// Auto cancel parent.
 	/// </summary>
-	public bool? AutoCancelParent 
+	public bool? AutoCancelParent
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(AutoCancelParent));
 		set => Parameters[nameof(AutoCancelParent)] = value;
@@ -2261,7 +2261,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	/// <summary>
 	/// Shareholder.
 	/// </summary>
-	public string Shareholder 
+	public string Shareholder
 	{
 		get => (string)Parameters.TryGetValue(nameof(Shareholder));
 		set => Parameters[nameof(Shareholder)] = value;
@@ -2270,7 +2270,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	/// <summary>
 	/// Imbalance only.
 	/// </summary>
-	public bool? ImbalanceOnly 
+	public bool? ImbalanceOnly
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(ImbalanceOnly));
 		set => Parameters[nameof(ImbalanceOnly)] = value;
@@ -2279,7 +2279,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	/// <summary>
 	/// Route marketable to bbo.
 	/// </summary>
-	public bool? RouteMarketableToBbo 
+	public bool? RouteMarketableToBbo
 	{
 		get => (bool?)Parameters.TryGetValue(nameof(RouteMarketableToBbo));
 		set => Parameters[nameof(RouteMarketableToBbo)] = value;
@@ -2288,7 +2288,7 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 	/// <summary>
 	/// Parent perm id.
 	/// </summary>
-	public long? ParentPermId 
+	public long? ParentPermId
 	{
 		get => (long?)Parameters.TryGetValue(nameof(ParentPermId));
 		set => Parameters[nameof(ParentPermId)] = value;

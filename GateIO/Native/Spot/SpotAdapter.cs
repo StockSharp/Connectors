@@ -21,7 +21,7 @@ class SpotAdapter : NativeAdapter
 
 		_httpClient = new(adapter, authenticator) { Parent = this };
 		_socketClient = new(adapter, authenticator, adapter.ReConnectionSettings.WorkingTime) { Parent = this };
-	
+
 		SubscribePusherClient();
 	}
 
@@ -275,7 +275,7 @@ class SpotAdapter : NativeAdapter
 		if (replaceMsg.OldOrderId == null)
 			throw new InvalidOperationException(LocalizedStrings.OrderNoExchangeId.Put(replaceMsg.OriginalTransactionId));
 
-		return _socketClient.OrderAmend(replaceMsg.TransactionId.ToRequestId(), 
+		return _socketClient.OrderAmend(replaceMsg.TransactionId.ToRequestId(),
 			replaceMsg.SecurityId.ToSymbol(), replaceMsg.OldOrderId.Value,
 			replaceMsg.Volume, replaceMsg.Price, cancellationToken);
 	}

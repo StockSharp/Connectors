@@ -37,10 +37,10 @@ static class Extensions
 
 	public static string ToNative(this TimeSpan timeFrame)
 	{
-            return TimeFrames.TryGetValue(timeFrame) ?? throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, LocalizedStrings.InvalidValue);
-        }
+			return TimeFrames.TryGetValue(timeFrame) ?? throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, LocalizedStrings.InvalidValue);
+		}
 
-        public static TimeSpan ToTimeFrame(this string name)
+		public static TimeSpan ToTimeFrame(this string name)
 	{
 		return TimeFrames.TryGetKey2(name) ?? throw new ArgumentOutOfRangeException(nameof(name), name, LocalizedStrings.InvalidValue);
 	}

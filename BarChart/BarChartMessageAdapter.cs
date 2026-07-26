@@ -87,7 +87,7 @@ partial class BarChartMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		var url = new Url($"{RestEndpoint.ThrowIfEmpty(nameof(RestEndpoint)).TrimEnd('/')}/getInstrumentDefinition.json");
 
 		url.QueryString.Append("apikey", Token.UnSecure());

@@ -185,8 +185,8 @@ partial class FtxMessageAdapter
 
 					// Skip USD and stablecoins as they are base currencies
 					if (balance.Coin.EqualsIgnoreCase("USD") ||
-					    balance.Coin.EqualsIgnoreCase("USDT") ||
-					    balance.Coin.EqualsIgnoreCase("USDC"))
+						balance.Coin.EqualsIgnoreCase("USDT") ||
+						balance.Coin.EqualsIgnoreCase("USDC"))
 						continue;
 
 					// Check Side filter - spot balances are always long positions

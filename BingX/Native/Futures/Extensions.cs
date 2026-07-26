@@ -134,7 +134,7 @@ static class Extensions
 		transId = 0;
 		if (requestId.IsEmpty() || !requestId.StartsWithIgnoreCase("futures-"))
 			return false;
-		
+
 		return long.TryParse(requestId.Remove("futures-"), out transId);
 	}
 

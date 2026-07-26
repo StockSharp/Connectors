@@ -2,8 +2,8 @@
 
 abstract class NativeAdapter : BaseLogReceiver, IConnection
 {
-    protected NativeAdapter(Authenticator authenticator, IdGenerator transIdGen, string boardCode, SecurityTypes secType)
-    {
+	protected NativeAdapter(Authenticator authenticator, IdGenerator transIdGen, string boardCode, SecurityTypes secType)
+	{
 		Authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
 		TransIdGen = transIdGen ?? throw new ArgumentNullException(nameof(transIdGen));
 		SecType = secType;

@@ -6,7 +6,7 @@ public partial class BtceMessageAdapter
 	private HttpClient _httpClient;
 	private PusherClient _pusherClient;
 	private DateTime? _lastTimeBalanceCheck;
-	
+
 	/// <summary>
 	/// Initializes a new instance of the <see cref="BtceMessageAdapter"/>.
 	/// </summary>

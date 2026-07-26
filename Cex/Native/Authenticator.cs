@@ -36,10 +36,10 @@ class Authenticator : Disposable
 		var timestamp = (long)DateTime.UtcNow.ToUnix();
 
 		var signature = _hasher
-		                .ComputeHash((timestamp + keyStr).UTF8())
-		                .Digest()
-		                .ToLowerInvariant();
-		
+						.ComputeHash((timestamp + keyStr).UTF8())
+						.Digest()
+						.ToLowerInvariant();
+
 		return new
 		{
 			key = keyStr,

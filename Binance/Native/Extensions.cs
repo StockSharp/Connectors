@@ -103,7 +103,7 @@ static class Extensions
 		{
 			null or TimeInForce.PutInQueue
 				=> section.IsCommonFutures() && postOnly == true ? "GTX" : "GTC",
-			
+
 			TimeInForce.CancelBalance => "IOC",
 			TimeInForce.MatchOrCancel => "FOK",
 
@@ -262,7 +262,7 @@ static class Extensions
 
 			"FILLED" or "CANCELED" or "EXPIRED" or "REPLACED" or "STOPPED"
 				=> OrderStates.Done,
-			
+
 			"REJECTED" => OrderStates.Failed,
 
 			_ => throw new ArgumentOutOfRangeException(nameof(status), status, LocalizedStrings.InvalidValue),

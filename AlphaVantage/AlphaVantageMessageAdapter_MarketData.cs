@@ -21,7 +21,7 @@ partial class AlphaVantageMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
-		
+
 		var secTypes = lookupMsg.GetSecurityTypes();
 
 		if (secTypes.IsEmpty())

@@ -20,7 +20,7 @@ static class Extensions
 	{
 		if (side.IsEmpty())
 			return null;
-		
+
 		if (!_sidesMap.TryGetKey(side.ToUpperInvariant(), out var stockSharpSide))
 			throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue);
 
@@ -37,7 +37,7 @@ static class Extensions
 	{
 		if (!_positionEffectsMap.TryGetValue(positionEffect, out var nativeEffect))
 			throw new ArgumentOutOfRangeException(nameof(positionEffect), positionEffect, LocalizedStrings.InvalidValue);
-		
+
 		return nativeEffect;
 	}
 
@@ -45,7 +45,7 @@ static class Extensions
 	{
 		if (positionEffect.IsEmpty())
 			return null;
-		
+
 		if (!_positionEffectsMap.TryGetKey(positionEffect.ToUpperInvariant(), out var stockSharpEffect))
 			throw new ArgumentOutOfRangeException(nameof(positionEffect), positionEffect, LocalizedStrings.InvalidValue);
 
