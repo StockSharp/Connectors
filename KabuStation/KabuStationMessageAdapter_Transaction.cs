@@ -159,8 +159,14 @@ public partial class KabuStationMessageAdapter
 	private KabuStationDerivativeOrderRequest CreateDerivativeOrder(OrderRegisterMessage message,
 		KabuStationSecurityInfo security, KabuStationOrderCondition condition)
 	{
-		if (security.Exchange is not (2 or 23 or 24))
-			throw new ArgumentOutOfRangeException(nameof(security), security.Exchange, "A derivative order requires an Osaka session exchange.");
+		var exchange = (int)(condition?.Exchange ?? (KabuStationExchanges)security.Exchange);
+		var isSupportedExchange = security.SecurityType == SecurityTypes.Future
+			? exchange is 2 or 23 or 24 or 32 or 33 or 34
+			: exchange is 2 or 23 or 24;
+		if (!isSupportedExchange)
+			throw new ArgumentOutOfRangeException(nameof(condition), exchange,
+				$"Exchange {exchange} is not supported for a kabu Station {security.SecurityType} order.");
+
 		var isStop = condition?.StopPrice is > 0;
 		var orderType = message.OrderType ?? OrderTypes.Limit;
 		var closePositions = condition?.ClosePositionId.IsEmpty() == false
@@ -176,7 +182,7 @@ public partial class KabuStationMessageAdapter
 		return new()
 		{
 			Symbol = security.Symbol,
-			Exchange = (int)(condition?.Exchange ?? (KabuStationExchanges)security.Exchange),
+			Exchange = exchange,
 			TradeType = (int)tradeType,
 			TimeInForce = (int)nativeTimeInForce,
 			Side = message.Side.ToKabuSide(),
@@ -302,7 +308,7 @@ public partial class KabuStationMessageAdapter
 		foreach (var position in await _rest.GetPositions(cancellationToken))
 		{
 			var type = position.NativeSecurityType == 0
-				? position.Exchange is 2 or 23 or 24 ? SecurityTypes.Future : SecurityTypes.Stock
+				? position.Exchange is 2 or 23 or 24 or 32 or 33 or 34 ? SecurityTypes.Future : SecurityTypes.Stock
 				: position.NativeSecurityType.ToSecurityType();
 			var security = FindSecurity(position.Symbol, position.Exchange, type);
 			var quantity = position.HoldQuantity ?? position.LeavesQuantity ?? 0;

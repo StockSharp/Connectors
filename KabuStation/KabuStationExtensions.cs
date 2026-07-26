@@ -16,6 +16,9 @@ internal static class KabuStationExtensions
 			(int)KabuStationExchanges.OsakaDay => "OSE-DAY",
 			(int)KabuStationExchanges.OsakaNight => "OSE-NIGHT",
 			(int)KabuStationExchanges.TokyoPlus => "TSEPLUS",
+			(int)KabuStationExchanges.OsakaSorAll => "OSE-SOR",
+			(int)KabuStationExchanges.OsakaSorDay => "OSE-SOR-DAY",
+			(int)KabuStationExchanges.OsakaSorNight => "OSE-SOR-NIGHT",
 			_ => $"KABU-{exchange}",
 		};
 
@@ -35,6 +38,9 @@ internal static class KabuStationExtensions
 			"OSE-DAY" => 23,
 			"OSE-NIGHT" => 24,
 			"TSEPLUS" => 27,
+			"OSE-SOR" => 32,
+			"OSE-SOR-DAY" => 33,
+			"OSE-SOR-NIGHT" => 34,
 			_ when securityType is SecurityTypes.Future or SecurityTypes.Option => 2,
 			_ => 1,
 		};

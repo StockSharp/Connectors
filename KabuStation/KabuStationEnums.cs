@@ -21,6 +21,12 @@ public enum KabuStationExchanges
 	OsakaNight = 24,
 	/// <summary>Tokyo Stock Exchange Plus route.</summary>
 	TokyoPlus = 27,
+	/// <summary>Osaka futures smart order routing, day and night sessions.</summary>
+	OsakaSorAll = 32,
+	/// <summary>Osaka futures smart order routing, day session.</summary>
+	OsakaSorDay = 33,
+	/// <summary>Osaka futures smart order routing, night session.</summary>
+	OsakaSorNight = 34,
 }
 
 /// <summary>kabu Station account types.</summary>
