@@ -28,15 +28,15 @@ class HttpClient(string baseUrl, Authenticator authenticator) : BaseLogReceiver
 		var request = CreateRequest(Method.Get);
 		var url = CreateUrl("auth/account");
 
+		request.AddQueryParameter("zeros", "false");
+
 		return MakeRequestAsync<IEnumerable<Balance>>(url, ApplySecret(request, url), cancellationToken);
 	}
 
 	public Task<Order> GetOrderAsync(string orderId, CancellationToken cancellationToken)
 	{
 		var request = CreateRequest(Method.Get);
-		var url = CreateUrl("auth/order");
-
-		request.AddParameter("id", orderId);
+		var url = CreateUrl($"auth/order/getOrder/{orderId.ThrowIfEmpty(nameof(orderId)).EncodeUrl()}");
 
 		return MakeRequestAsync<Order>(url, ApplySecret(request, url), cancellationToken);
 	}
@@ -49,38 +49,47 @@ class HttpClient(string baseUrl, Authenticator authenticator) : BaseLogReceiver
 		return MakeRequestAsync<IEnumerable<Order>>(url, ApplySecret(request, url), cancellationToken);
 	}
 
+	public async Task<string> GetUserIdAsync(CancellationToken cancellationToken)
+	{
+		var request = CreateRequest(Method.Get);
+		var url = CreateUrl("auth/user");
+		var user = await MakeRequestAsync<LatokenUser>(url, ApplySecret(request, url), cancellationToken);
+
+		return user.Id.ThrowIfEmpty(nameof(user.Id));
+	}
+
 	public async Task<string> RegisterOrderAsync(long transId, string baseCurrencyId, string quoteCurrencyId,
 		string side, string condition, string type, decimal? price, decimal volume, CancellationToken cancellationToken)
 	{
-		var request = CreateRequest(Method.Post);
 		var url = CreateUrl("auth/order/place");
+		var body = new LatokenOrderRequest
+		{
+			BaseCurrency = baseCurrencyId,
+			QuoteCurrency = quoteCurrencyId,
+			Side = side,
+			Condition = condition,
+			Type = type,
+			ClientOrderId = transId.To<string>(),
+			Price = price?.To<string>(),
+			Quantity = volume.To<string>(),
+			Timestamp = _nonceGen.GetNextId(),
+		};
+		var request = CreateRequest(Method.Post, body);
+		var response = await MakeRequestAsync<LatokenOrderReply>(url, ApplySecret(request, url, body), cancellationToken);
 
-		request
-			.AddParameter("baseCurrency", baseCurrencyId)
-			.AddParameter("quoteCurrency", quoteCurrencyId)
-			.AddParameter("side", side)
-			.AddParameter("condition", condition)
-			.AddParameter("type", type)
-			.AddParameter("clientOrderId", transId.To<string>())
-			.AddParameter("quantity", volume)
-			.AddParameter("timestamp", _nonceGen.GetNextId());
-
-		if (price != null)
-			request.AddParameter("price", price.Value);
-
-		dynamic response = await MakeRequestAsync<object>(url, ApplySecret(request, url), cancellationToken);
-
-		return (string)response.id;
+		return response.Id.ThrowIfEmpty(nameof(response.Id));
 	}
 
 	public Task CancelOrderAsync(string orderId, CancellationToken cancellationToken)
 	{
-		var request = CreateRequest(Method.Post);
 		var url = CreateUrl("auth/order/cancel");
+		var body = new LatokenOrderIdRequest
+		{
+			Id = orderId.ThrowIfEmpty(nameof(orderId)),
+		};
+		var request = CreateRequest(Method.Post, body);
 
-		request.AddParameter("id", orderId);
-
-		return MakeRequestAsync<object>(url, ApplySecret(request, url), cancellationToken);
+		return MakeRequestAsync<LatokenOrderReply>(url, ApplySecret(request, url, body), cancellationToken);
 	}
 
 	public async Task<string> WithdrawAsync(string currencyId, decimal amount, WithdrawInfo info, CancellationToken cancellationToken)
@@ -91,23 +100,19 @@ class HttpClient(string baseUrl, Authenticator authenticator) : BaseLogReceiver
 		if (info.Type != WithdrawTypes.Crypto)
 			throw new NotSupportedException(LocalizedStrings.WithdrawTypeNotSupported.Put(info.Type));
 
-		var request = CreateRequest(Method.Post);
 		var url = CreateUrl("auth/transaction/withdraw");
+		var body = new LatokenWithdrawalRequest
+		{
+			TwoFaCode = info.PaymentId.IsEmpty() ? null : info.PaymentId,
+			CurrencyBinding = currencyId,
+			Amount = amount.To<string>(),
+			RecipientAddress = info.CryptoAddress,
+			Memo = info.Comment.IsEmpty() ? null : info.Comment,
+		};
+		var request = CreateRequest(Method.Post, body);
+		var response = await MakeRequestAsync<LatokenWithdrawalReply>(url, ApplySecret(request, url, body), cancellationToken);
 
-		if (!info.PaymentId.IsEmpty())
-			request.AddParameter("twoFaCode", info.PaymentId);
-
-		request
-			.AddParameter("currencyBinding", currencyId)
-			.AddParameter("amount", amount.To<string>())
-			.AddParameter("recipientAddress", info.CryptoAddress);
-
-		if (!info.Comment.IsEmpty())
-			request.AddParameter("memo", info.Comment);
-
-		dynamic response = await MakeRequestAsync<object>(url, ApplySecret(request, url), cancellationToken);
-
-		return (string)response.withdrawalId;
+		return response.WithdrawalId.ThrowIfEmpty(nameof(response.WithdrawalId));
 	}
 
 	private Uri CreateUrl(string methodName)
@@ -118,40 +123,51 @@ class HttpClient(string baseUrl, Authenticator authenticator) : BaseLogReceiver
 		return $"{_baseUrl}/{methodName}".To<Uri>();
 	}
 
-	private static RestRequest CreateRequest(Method method)
+	private static RestRequest CreateRequest(Method method, object body = null)
 	{
-		return new RestRequest((string)null, method);
+		var request = new RestRequest((string)null, method);
+
+		if (body != null)
+			request.AddBodyAsStr(JsonConvert.SerializeObject(body, Formatting.None));
+
+		return request;
 	}
 
-	private RestRequest ApplySecret(RestRequest request, Uri uri)
+	private RestRequest ApplySecret(RestRequest request, Uri uri, object body = null)
 	{
 		if (request == null)
 			throw new ArgumentNullException(nameof(request));
 
-		var bodyStr = request
-			.Parameters
-			.Where(p => p.Type == ParameterType.GetOrPost && p.Value != null)
-			.OrderBy(p => p.Name)
-			.ToQueryString();
+		IEnumerable<(string key, object value)> parameters;
+
+		if (body == null)
+		{
+			parameters = request.Parameters
+				.Where(p => p.Type is ParameterType.GetOrPost or ParameterType.QueryString && p.Value != null)
+				.Select(p => (p.Name, p.Value));
+		}
+		else
+		{
+			parameters = body.GetType().GetProperties()
+				.Select(property => (
+					property,
+					attribute: property.GetAttribute<JsonPropertyAttribute>(),
+					value: property.GetValue(body)))
+				.Where(item => item.attribute != null && item.value != null)
+				.OrderBy(item => item.attribute.Order)
+				.Select(item => (item.attribute.PropertyName, item.value));
+		}
+
+		var paramsStr = parameters.ToQueryString(true);
 
 		request
 			.AddHeader("X-LA-APIKEY", _authenticator.Key.UnSecure())
-			.AddHeader("X-LA-SIGNATURE", _authenticator.MakeSign($"{request.Method.To<string>().ToUpperInvariant()}{uri.PathAndQuery}{bodyStr}"))
+			.AddHeader("X-LA-SIGNATURE", _authenticator.MakeSign($"{request.Method.To<string>().ToUpperInvariant()}{uri.PathAndQuery}{paramsStr}"))
 			.AddHeader("X-LA-DIGEST", Authenticator.HashAlgo);
 
 		return request;
 	}
 
-	private async Task<T> MakeRequestAsync<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
-	{
-		dynamic obj = await request.InvokeAsync(url, this, this.AddVerboseLog, cancellationToken);
-
-		if (obj is JObject)
-		{
-			if (obj.success == 0)
-				throw new InvalidOperationException((string)obj.error);
-		}
-
-		return ((JToken)obj).DeserializeObject<T>();
-	}
+	private Task<T> MakeRequestAsync<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
+		=> request.InvokeAsync<T>(url, this, this.AddVerboseLog, cancellationToken);
 }

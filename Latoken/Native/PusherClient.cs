@@ -1,6 +1,5 @@
 namespace StockSharp.LATOKEN.Native;
 
-using System.Net.WebSockets;
 using System.Text;
 
 /// <summary>
@@ -29,12 +28,15 @@ class PusherClient : BaseLogReceiver
 
 	private readonly WebSocketClient _client;
 	private readonly Authenticator _authenticator;
+	private readonly string _userId;
 	private readonly SynchronizedDictionary<string, long> _subscriptions = new(StringComparer.InvariantCultureIgnoreCase);
+	private readonly SynchronizedDictionary<string, long> _subscriptionNonces = new(StringComparer.InvariantCultureIgnoreCase);
 	private long _nextSubscriptionId;
 
-	public PusherClient(string endpoint, Authenticator authenticator, WorkingTime workingTime)
+	public PusherClient(string endpoint, Authenticator authenticator, string userId, WorkingTime workingTime)
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
+		_userId = userId;
 
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
@@ -60,44 +62,46 @@ class PusherClient : BaseLogReceiver
 		};
 
 		_client.PostConnect += OnPostConnect;
-
-		if (_authenticator.CanSign)
-			_client.InitAsync += OnInit;
 	}
 
 	protected override void DisposeManaged()
 	{
 		_client.PostConnect -= OnPostConnect;
 
-		if (_authenticator.CanSign)
-			_client.InitAsync -= OnInit;
-
 		_client.Dispose();
 		base.DisposeManaged();
-	}
-
-	private ValueTask OnInit(ClientWebSocket s, CancellationToken _)
-	{
-		var signData = ((long)TimeHelper.UnixNowS).ToString();
-
-		s.Options.SetRequestHeader("X-LA-APIKEY", _authenticator.Key.UnSecure());
-		s.Options.SetRequestHeader("X-LA-DIGEST", Authenticator.HashAlgo);
-		s.Options.SetRequestHeader("X-LA-SIGNATURE", _authenticator.MakeSign(signData));
-		s.Options.SetRequestHeader("X-LA-SIGDATA", signData);
-		return default;
 	}
 
 	// the session has to be opened with a STOMP handshake before any destination can be subscribed,
 	// and it has to be repeated after every reconnection
 	private ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
 	{
-		_ = reconnect;
+		if (reconnect)
+		{
+			using (_subscriptions.EnterScope())
+			{
+				foreach (var destination in _subscriptions.Keys)
+					_subscriptionNonces[destination] = -1;
+			}
+		}
 
-		return _client.SendAsync(CreateFrame("CONNECT", new()
+		var headers = new Dictionary<string, string>
 		{
 			{ "accept-version", "1.1" },
 			{ "heart-beat", "0,0" },
-		}), cancellationToken);
+		};
+
+		if (_authenticator.CanSign)
+		{
+			var signData = ((long)TimeHelper.UnixNowMls).ToString();
+
+			headers.Add("X-LA-APIKEY", _authenticator.Key.UnSecure());
+			headers.Add("X-LA-DIGEST", Authenticator.HashAlgo);
+			headers.Add("X-LA-SIGNATURE", _authenticator.MakeSign(signData));
+			headers.Add("X-LA-SIGDATA", signData);
+		}
+
+		return _client.SendAsync(CreateFrame("CONNECT", headers), cancellationToken);
 	}
 
 	public ValueTask ConnectAsync(CancellationToken cancellationToken)
@@ -110,6 +114,7 @@ class PusherClient : BaseLogReceiver
 	{
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
 		_subscriptions.Clear();
+		_subscriptionNonces.Clear();
 		return _client.DisconnectAsync(cancellationToken);
 	}
 
@@ -140,34 +145,23 @@ class PusherClient : BaseLogReceiver
 	public ValueTask UnSubscribeOrderBook(string code, string board, CancellationToken cancellationToken)
 		=> UnsubscribeAsync(CreateDestination(Channels.Book, code, board), cancellationToken);
 
-	// the private destinations are addressed by the LATOKEN user id, which the adapter does not
-	// know yet, so the account streams stay unimplemented
 	public ValueTask SubscribeOrders(CancellationToken cancellationToken)
-	{
-		_ = cancellationToken;
-		return default;
-	}
+		=> SubscribeAsync(CreatePrivateDestination(Channels.Order), cancellationToken);
 
 	public ValueTask UnSubscribeOrders(CancellationToken cancellationToken)
-	{
-		_ = cancellationToken;
-		return default;
-	}
+		=> UnsubscribeAsync(CreatePrivateDestination(Channels.Order), cancellationToken);
 
 	public ValueTask SubscribeAccounts(CancellationToken cancellationToken)
-	{
-		_ = cancellationToken;
-		return default;
-	}
+		=> SubscribeAsync(CreatePrivateDestination(Channels.Account), cancellationToken);
 
 	public ValueTask UnSubscribeAccounts(CancellationToken cancellationToken)
-	{
-		_ = cancellationToken;
-		return default;
-	}
+		=> UnsubscribeAsync(CreatePrivateDestination(Channels.Account), cancellationToken);
 
 	private static string CreateDestination(string channel, string baseCurrencyId, string quoteCurrencyId)
 		=> $"/v1/{channel}/{baseCurrencyId.ThrowIfEmpty(nameof(baseCurrencyId))}/{quoteCurrencyId.ThrowIfEmpty(nameof(quoteCurrencyId))}";
+
+	private string CreatePrivateDestination(string channel)
+		=> $"/user/{_userId.ThrowIfEmpty(nameof(_userId))}/v1/{channel}";
 
 	private ValueTask SubscribeAsync(string destination, CancellationToken cancellationToken)
 	{
@@ -180,6 +174,7 @@ class PusherClient : BaseLogReceiver
 
 			subId = ++_nextSubscriptionId;
 			_subscriptions.Add(destination, subId);
+			_subscriptionNonces[destination] = -1;
 		}
 
 		// a positive id keeps the frame in the resend list, so the subscription is restored
@@ -188,6 +183,7 @@ class PusherClient : BaseLogReceiver
 		{
 			{ "id", subId.To<string>() },
 			{ "destination", destination },
+			{ "ack", "auto" },
 		}), cancellationToken, subId);
 	}
 
@@ -201,12 +197,41 @@ class PusherClient : BaseLogReceiver
 				return default;
 
 			_subscriptions.Remove(destination);
+			_subscriptionNonces.Remove(destination);
 		}
 
 		return _client.SendAsync(CreateFrame("UNSUBSCRIBE", new()
 		{
 			{ "id", subId.To<string>() },
 		}), cancellationToken, -subId);
+	}
+
+	private async ValueTask<bool> ValidateNonceAsync(string destination, long? nonce, CancellationToken cancellationToken)
+	{
+		if (nonce is null)
+			return true;
+
+		long expected;
+
+		using (_subscriptions.EnterScope())
+		{
+			if (!_subscriptionNonces.TryGetValue(destination, out var previous))
+				return false;
+
+			expected = previous + 1;
+
+			if (nonce == expected)
+			{
+				_subscriptionNonces[destination] = nonce.Value;
+				return true;
+			}
+		}
+
+		this.AddErrorLog("Subscription '{0}' nonce mismatch: expected {1}, received {2}.", destination, expected, nonce);
+
+		await UnsubscribeAsync(destination, cancellationToken);
+		await SubscribeAsync(destination, cancellationToken);
+		return false;
 	}
 
 	private static string CreateFrame(string command, Dictionary<string, string> headers)
@@ -256,48 +281,76 @@ class PusherClient : BaseLogReceiver
 		if (channel.IsEmpty() || body.IsEmpty())
 			return;
 
-		var envelope = JObject.Parse(body);
-		var payload = envelope["payload"];
-
-		if (payload is null || payload.Type == JTokenType.Null)
-			return;
-
 		switch (channel)
 		{
 			case Channels.Ticker:
-				await (TickerChanged?.Invoke(payload.DeserializeObject<Ticker>(), cancellationToken) ?? default);
+			{
+				var envelope = body.DeserializeObject<LatokenSubscriptionMessage<Ticker>>();
+
+				if (envelope?.Payload is not { } ticker || !await ValidateNonceAsync(destination, envelope.Nonce, cancellationToken))
+					break;
+
+				await (TickerChanged?.Invoke(ticker, cancellationToken) ?? default);
 				break;
+			}
 
 			case Channels.Book:
 			{
+				var envelope = body.DeserializeObject<LatokenSubscriptionMessage<OrderBook>>();
+
+				if (envelope?.Payload is not { } book || !await ValidateNonceAsync(destination, envelope.Nonce, cancellationToken))
+					break;
+
 				// the very first message of a destination carries the whole book, the ones after
 				// it carry the changed price levels only
-				var isSnapshot = (envelope["nonce"]?.Value<long?>() ?? 0) == 0;
-				await (OrderBookChanged?.Invoke(baseCurrencyId, quoteCurrencyId, payload.DeserializeObject<OrderBook>(), isSnapshot, cancellationToken) ?? default);
+				var isSnapshot = (envelope.Nonce ?? 0) == 0;
+				await (OrderBookChanged?.Invoke(baseCurrencyId, quoteCurrencyId, book, isSnapshot, cancellationToken) ?? default);
 				break;
 			}
 
 			case Channels.Trade:
 			{
+				var envelope = body.DeserializeObject<LatokenSubscriptionMessage<Trade[]>>();
+
+				if (envelope?.Payload is not { } trades || !await ValidateNonceAsync(destination, envelope.Nonce, cancellationToken))
+					break;
+
 				if (NewTrade is not { } tradeHandler)
 					break;
 
-				foreach (var trade in payload.DeserializeObject<Trade[]>() ?? [])
+				foreach (var trade in trades)
 					await tradeHandler(trade, cancellationToken);
 
 				break;
 			}
 
 			case Channels.Order:
-				await (OrderChanged?.Invoke(payload.DeserializeObject<Order>(), cancellationToken) ?? default);
+			{
+				var envelope = body.DeserializeObject<LatokenSubscriptionMessage<Order[]>>();
+
+				if (envelope?.Payload is not { } orders || !await ValidateNonceAsync(destination, envelope.Nonce, cancellationToken))
+					break;
+
+				if (OrderChanged is not { } orderHandler)
+					break;
+
+				foreach (var order in orders)
+					await orderHandler(order, cancellationToken);
+
 				break;
+			}
 
 			case Channels.Account:
 			{
+				var envelope = body.DeserializeObject<LatokenSubscriptionMessage<Balance[]>>();
+
+				if (envelope?.Payload is not { } balances || !await ValidateNonceAsync(destination, envelope.Nonce, cancellationToken))
+					break;
+
 				if (BalanceChanged is not { } balanceHandler)
 					break;
 
-				foreach (var balance in payload.DeserializeObject<Balance[]>() ?? [])
+				foreach (var balance in balances)
 					await balanceHandler(balance, cancellationToken);
 
 				break;
