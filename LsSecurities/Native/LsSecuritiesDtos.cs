@@ -9,6 +9,14 @@ internal abstract class LsResponse
 	public string ResponseMessage { get; set; }
 }
 
+internal sealed class LsResponsePage<TResponse>
+	where TResponse : LsResponse
+{
+	public TResponse Data { get; init; }
+	public bool HasMore { get; init; }
+	public string ContinuationKey { get; init; }
+}
+
 internal sealed class LsTokenRequest
 {
 	public string GrantType { get; set; } = "client_credentials";

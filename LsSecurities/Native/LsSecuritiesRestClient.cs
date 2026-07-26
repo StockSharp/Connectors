@@ -14,6 +14,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	private readonly HttpClient _http;
 	private readonly string _appKey;
 	private readonly string _appSecret;
+	private readonly string _macAddress;
 	private readonly int _maxAttempts;
 	private readonly SemaphoreSlim _authenticationLock = new(1, 1);
 	private readonly SemaphoreSlim _requestLock = new(1, 1);
@@ -27,11 +28,13 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	private DateTime _lastRequest;
 	private LsInstrument[] _instruments;
 
-	public LsSecuritiesRestClient(string endpoint, string appKey, string appSecret, int maxAttempts)
+	public LsSecuritiesRestClient(string endpoint, string appKey, string appSecret, string macAddress,
+		int maxAttempts)
 	{
 		_root = new(endpoint.ThrowIfEmpty(nameof(endpoint)));
 		_appKey = appKey.ThrowIfEmpty(nameof(appKey));
 		_appSecret = appSecret.ThrowIfEmpty(nameof(appSecret));
+		_macAddress = macAddress;
 		_maxAttempts = Math.Max(1, maxAttempts);
 		var handler = new HttpClientHandler
 		{
@@ -62,15 +65,15 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	{
 		if (_instruments != null)
 			return _instruments;
-		var response = await Send<LsInstrumentRequest, LsInstrumentResponse>("stock/etc", "t8436",
-			new(), true, null, cancellationToken);
+		var response = (await Send<LsInstrumentRequest, LsInstrumentResponse>("stock/etc", "t8436",
+			new(), true, null, cancellationToken)).Data;
 		return _instruments = response.Instruments ?? [];
 	}
 
 	public async Task<LsQuote> GetQuote(string code, CancellationToken cancellationToken)
 	{
-		var response = await Send<LsQuoteRequest, LsQuoteResponse>("stock/market-data", "t1101",
-			new() { Data = new() { Code = code.NormalizeCode() } }, true, null, cancellationToken);
+		var response = (await Send<LsQuoteRequest, LsQuoteResponse>("stock/market-data", "t1101",
+			new() { Data = new() { Code = code.NormalizeCode() } }, true, null, cancellationToken)).Data;
 		return response.Quote ?? throw new InvalidDataException("LS Securities returned no quote.");
 	}
 
@@ -78,10 +81,11 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 		long? count, CancellationToken cancellationToken)
 	{
 		var result = new List<LsHistoricalTick>();
-		var continuation = string.Empty;
+		var continuationTime = string.Empty;
+		var continuationKey = string.Empty;
 		for (var page = 0; page < 20; page++)
 		{
-			var response = await Send<LsTickHistoryRequest, LsTickHistoryResponse>("stock/market-data",
+			var responsePage = await Send<LsTickHistoryRequest, LsTickHistoryResponse>("stock/market-data",
 				"t1301", new()
 				{
 					Data = new()
@@ -89,14 +93,19 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 						Code = code.NormalizeCode(),
 						StartTime = ToKorea(from, "HHmmss"),
 						EndTime = ToKorea(to, "HHmmss"),
-						ContinuationTime = continuation,
+						ContinuationTime = continuationTime,
 					},
-				}, true, continuation, cancellationToken);
+				}, true, continuationKey, cancellationToken);
+			var response = responsePage.Data;
 			result.AddRange(response.Ticks ?? []);
-			var next = response.Continuation?.Time?.Trim();
-			if (next.IsEmpty() || next == continuation || count is > 0 && result.Count >= count.Value)
+			var nextTime = response.Continuation?.Time?.Trim();
+			var nextKey = responsePage.ContinuationKey?.Trim();
+			if (!responsePage.HasMore || nextTime.IsEmpty() || nextKey.IsEmpty() ||
+				nextTime == continuationTime || nextKey == continuationKey ||
+				count is > 0 && result.Count >= count.Value)
 				break;
-			continuation = next;
+			continuationTime = nextTime;
+			continuationKey = nextKey;
 		}
 
 		var koreaDate = (to.ToUniversalTime() + _koreaOffset).ToString("yyyyMMdd", CultureInfo.InvariantCulture);
@@ -129,10 +138,10 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 		var result = new List<LsCandle>();
 		var continuationDate = string.Empty;
 		var continuationTime = string.Empty;
+		var continuationKey = string.Empty;
 		for (var page = 0; page < 20; page++)
 		{
-			var continuationKey = continuationDate + continuationTime;
-			var response = await Send<LsMinuteChartRequest, LsMinuteChartResponse>("stock/chart", "t8412",
+			var responsePage = await Send<LsMinuteChartRequest, LsMinuteChartResponse>("stock/chart", "t8412",
 				new()
 				{
 					Data = new()
@@ -147,14 +156,18 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 						ContinuationTime = continuationTime,
 					},
 				}, true, continuationKey, cancellationToken);
+			var response = responsePage.Data;
 			result.AddRange(response.Candles ?? []);
 			var nextDate = response.Continuation?.Date?.Trim();
 			var nextTime = response.Continuation?.Time?.Trim();
-			if (nextDate.IsEmpty() || nextDate + nextTime == continuationKey ||
+			var nextKey = responsePage.ContinuationKey?.Trim();
+			if (!responsePage.HasMore || nextDate.IsEmpty() || nextKey.IsEmpty() ||
+				nextDate + nextTime == continuationDate + continuationTime || nextKey == continuationKey ||
 				count is > 0 && result.Count >= count.Value)
 				break;
 			continuationDate = nextDate;
 			continuationTime = nextTime;
+			continuationKey = nextKey;
 		}
 		return result;
 	}
@@ -164,9 +177,10 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	{
 		var result = new List<LsCandle>();
 		var continuationDate = string.Empty;
+		var continuationKey = string.Empty;
 		for (var page = 0; page < 20; page++)
 		{
-			var response = await Send<LsDayChartRequest, LsDayChartResponse>("stock/chart", "t8410",
+			var responsePage = await Send<LsDayChartRequest, LsDayChartResponse>("stock/chart", "t8410",
 				new()
 				{
 					Data = new()
@@ -177,12 +191,17 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 						EndDate = ToKorea(to, "yyyyMMdd"),
 						ContinuationDate = continuationDate,
 					},
-				}, true, continuationDate, cancellationToken);
+				}, true, continuationKey, cancellationToken);
+			var response = responsePage.Data;
 			result.AddRange(response.Candles ?? []);
-			var next = response.Continuation?.Date?.Trim();
-			if (next.IsEmpty() || next == continuationDate || count is > 0 && result.Count >= count.Value)
+			var nextDate = response.Continuation?.Date?.Trim();
+			var nextKey = responsePage.ContinuationKey?.Trim();
+			if (!responsePage.HasMore || nextDate.IsEmpty() || nextKey.IsEmpty() ||
+				nextDate == continuationDate || nextKey == continuationKey ||
+				count is > 0 && result.Count >= count.Value)
 				break;
-			continuationDate = next;
+			continuationDate = nextDate;
+			continuationKey = nextKey;
 		}
 		return result;
 	}
@@ -190,24 +209,24 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	public async Task<LsOrderResult> PlaceOrder(LsPlaceOrderRequest request,
 		CancellationToken cancellationToken)
 	{
-		var response = await Send<LsPlaceOrderRequest, LsPlaceOrderResponse>("stock/order",
-			"CSPAT00601", request, false, null, cancellationToken);
+		var response = (await Send<LsPlaceOrderRequest, LsPlaceOrderResponse>("stock/order",
+			"CSPAT00601", request, false, null, cancellationToken)).Data;
 		return response.Result ?? throw new InvalidDataException("LS Securities returned no order result.");
 	}
 
 	public async Task<LsOrderResult> ReplaceOrder(LsReplaceOrderRequest request,
 		CancellationToken cancellationToken)
 	{
-		var response = await Send<LsReplaceOrderRequest, LsReplaceOrderResponse>("stock/order",
-			"CSPAT00701", request, false, null, cancellationToken);
+		var response = (await Send<LsReplaceOrderRequest, LsReplaceOrderResponse>("stock/order",
+			"CSPAT00701", request, false, null, cancellationToken)).Data;
 		return response.Result ?? throw new InvalidDataException("LS Securities returned no replace result.");
 	}
 
 	public async Task<LsOrderResult> CancelOrder(LsCancelOrderRequest request,
 		CancellationToken cancellationToken)
 	{
-		var response = await Send<LsCancelOrderRequest, LsCancelOrderResponse>("stock/order",
-			"CSPAT00801", request, false, null, cancellationToken);
+		var response = (await Send<LsCancelOrderRequest, LsCancelOrderResponse>("stock/order",
+			"CSPAT00801", request, false, null, cancellationToken)).Data;
 		return response.Result ?? throw new InvalidDataException("LS Securities returned no cancel result.");
 	}
 
@@ -215,18 +234,23 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	{
 		var positions = new List<LsPosition>();
 		LsPortfolioSummary summary = null;
-		var continuation = string.Empty;
+		var continuationCode = string.Empty;
+		var continuationKey = string.Empty;
 		for (var page = 0; page < 20; page++)
 		{
-			var response = await Send<LsPositionsRequest, LsPositionsResponse>("stock/accno", "t0424",
-				new() { Data = new() { ContinuationCode = continuation } }, true, continuation,
+			var responsePage = await Send<LsPositionsRequest, LsPositionsResponse>("stock/accno", "t0424",
+				new() { Data = new() { ContinuationCode = continuationCode } }, true, continuationKey,
 				cancellationToken);
+			var response = responsePage.Data;
 			summary ??= response.Summary;
 			positions.AddRange(response.Positions ?? []);
-			var next = response.Summary?.ContinuationCode?.Trim();
-			if (next.IsEmpty() || next == continuation)
+			var nextCode = response.Summary?.ContinuationCode?.Trim();
+			var nextKey = responsePage.ContinuationKey?.Trim();
+			if (!responsePage.HasMore || nextCode.IsEmpty() || nextKey.IsEmpty() ||
+				nextCode == continuationCode || nextKey == continuationKey)
 				break;
-			continuation = next;
+			continuationCode = nextCode;
+			continuationKey = nextKey;
 		}
 		return new() { Summary = summary, Positions = [.. positions] };
 	}
@@ -234,17 +258,23 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	public async Task<LsOrder[]> GetOrders(CancellationToken cancellationToken)
 	{
 		var orders = new List<LsOrder>();
-		var continuation = string.Empty;
+		var continuationOrderNumber = string.Empty;
+		var continuationKey = string.Empty;
 		for (var page = 0; page < 20; page++)
 		{
-			var response = await Send<LsOrdersRequest, LsOrdersResponse>("stock/accno", "t0425",
-				new() { Data = new() { ContinuationOrderNumber = continuation } }, true, continuation,
+			var responsePage = await Send<LsOrdersRequest, LsOrdersResponse>("stock/accno", "t0425",
+				new() { Data = new() { ContinuationOrderNumber = continuationOrderNumber } }, true,
+				continuationKey,
 				cancellationToken);
+			var response = responsePage.Data;
 			orders.AddRange(response.Orders ?? []);
-			var next = response.Summary?.ContinuationOrderNumber?.Trim();
-			if (next.IsEmpty() || next == continuation)
+			var nextOrderNumber = response.Summary?.ContinuationOrderNumber?.Trim();
+			var nextKey = responsePage.ContinuationKey?.Trim();
+			if (!responsePage.HasMore || nextOrderNumber.IsEmpty() || nextKey.IsEmpty() ||
+				nextOrderNumber == continuationOrderNumber || nextKey == continuationKey)
 				break;
-			continuation = next;
+			continuationOrderNumber = nextOrderNumber;
+			continuationKey = nextKey;
 		}
 		return [.. orders];
 	}
@@ -282,7 +312,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 		}
 	}
 
-	private async Task<TResponse> Send<TRequest, TResponse>(string path, string transactionCode,
+	private async Task<LsResponsePage<TResponse>> Send<TRequest, TResponse>(string path, string transactionCode,
 		TRequest requestData, bool isSafe, string continuationKey, CancellationToken cancellationToken)
 		where TRequest : class
 		where TResponse : LsResponse
@@ -303,6 +333,8 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 				request.Headers.TryAddWithoutValidation("tr_cd", transactionCode);
 				request.Headers.TryAddWithoutValidation("tr_cont", continuationKey.IsEmpty() ? "N" : "Y");
 				request.Headers.TryAddWithoutValidation("tr_cont_key", continuationKey.IsEmpty() ? string.Empty : continuationKey);
+				if (!_macAddress.IsEmpty())
+					request.Headers.TryAddWithoutValidation("mac_address", _macAddress);
 				try
 				{
 					using var response = await _http.SendAsync(request, cancellationToken);
@@ -316,7 +348,12 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 					if (!result.ResponseCode.IsEmpty() && !result.ResponseCode.StartsWith("00", StringComparison.Ordinal))
 						throw new InvalidOperationException($"LS Securities {transactionCode}: " +
 							$"{result.ResponseCode} {result.ResponseMessage}");
-					return result;
+					return new()
+					{
+						Data = result,
+						HasMore = GetHeader(response, "tr_cont").EqualsIgnoreCase("Y"),
+						ContinuationKey = GetHeader(response, "tr_cont_key"),
+					};
 				}
 				catch (Exception ex) when (isSafe && attempt < _maxAttempts && IsTransient(ex))
 				{
@@ -350,10 +387,20 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 	}
 
 	private static bool IsTransient(Exception exception)
-		=> exception is HttpRequestException { StatusCode: null or HttpStatusCode.RequestTimeout or
+		=> exception is HttpRequestException { StatusCode: null or HttpStatusCode.Unauthorized or
+			HttpStatusCode.RequestTimeout or
 			HttpStatusCode.TooManyRequests or HttpStatusCode.InternalServerError or
 			HttpStatusCode.BadGateway or HttpStatusCode.ServiceUnavailable or HttpStatusCode.GatewayTimeout }
 			or TaskCanceledException;
+
+	private static string GetHeader(HttpResponseMessage response, string name)
+	{
+		if (response.Headers.TryGetValues(name, out var values))
+			return values.FirstOrDefault()?.Trim();
+		if (response.Content.Headers.TryGetValues(name, out values))
+			return values.FirstOrDefault()?.Trim();
+		return null;
+	}
 
 	private static string ToKorea(DateTime value, string format)
 		=> (value.ToUniversalTime() + _koreaOffset).ToString(format, CultureInfo.InvariantCulture);

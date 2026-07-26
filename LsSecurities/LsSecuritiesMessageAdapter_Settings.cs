@@ -50,13 +50,22 @@ public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, 
 	[BasicSetting]
 	public string Account { get; set; }
 
+	/// <summary>MAC address required for corporate accounts.</summary>
+	[Display(
+		Name = "MAC address",
+		Description = "MAC address required for corporate accounts.",
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 3)]
+	[BasicSetting]
+	public string MacAddress { get; set; }
+
 	/// <inheritdoc />
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DemoKey,
 		Description = LocalizedStrings.DemoTradingConnectKey,
 		GroupName = LocalizedStrings.ConnectionKey,
-		Order = 3)]
+		Order = 4)]
 	[BasicSetting]
 	public bool IsDemo { get; set; } = true;
 
@@ -92,6 +101,7 @@ public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, 
 			.Set(nameof(Key), Key)
 			.Set(nameof(Secret), Secret)
 			.Set(nameof(Account), Account)
+			.Set(nameof(MacAddress), MacAddress)
 			.Set(nameof(IsDemo), IsDemo)
 			.Set(nameof(RestEndpoint), RestEndpoint)
 			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
@@ -105,6 +115,7 @@ public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, 
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		Account = storage.GetValue<string>(nameof(Account));
+		MacAddress = storage.GetValue<string>(nameof(MacAddress));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 		RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint);
 		WebSocketEndpoint = storage.GetValue(nameof(WebSocketEndpoint), WebSocketEndpoint);
