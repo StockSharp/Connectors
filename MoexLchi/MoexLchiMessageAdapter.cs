@@ -23,7 +23,7 @@ public partial class MoexLchiMessageAdapter : HistoricalMessageAdapter
 	static MoexLchiMessageAdapter()
 	{
 		const int beginYear = 2013;
-		const int endYear = 2015;
+		const int endYear = 2023;
 
 		_allYears = new DateTime[endYear - beginYear + 1];
 
@@ -105,7 +105,8 @@ public partial class MoexLchiMessageAdapter : HistoricalMessageAdapter
 		if (to == null)
 			to = DateTime.UtcNow;
 
-		var years = from.Value.Range(to.Value, TimeSpan.FromDays(1));
+		var years = AllYears.Where(year =>
+			year.Year >= from.Value.Year && year.Year <= to.Value.Year);
 
 		foreach (var year in years)
 		{
