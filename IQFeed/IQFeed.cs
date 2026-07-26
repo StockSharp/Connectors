@@ -999,6 +999,10 @@ class IQFeedLevel1(IQFeedMessageAdapter parent) : IQFeed(parent, "Level1")
 					break;
 				}
 
+				case ExecutionMessage:
+					await raise(msg, ticksSub);
+					break;
+
 				default:
 					_feed.AddWarningLog("l1 sub unhandled msg type: " + msg?.GetType().Name);
 					break;
@@ -1124,6 +1128,7 @@ class IQFeedLevel1(IQFeedMessageAdapter parent) : IQFeed(parent, "Level1")
 		static bool filter(IQFeedMessage m) =>
 			m.Type is IQFeedMessage.MsgType.L1Summary
 				   or IQFeedMessage.MsgType.L1Update
+				   or IQFeedMessage.MsgType.TradeCorrection
 				   or IQFeedMessage.MsgType.Fundamental
 				   or IQFeedMessage.MsgType.End;
 
@@ -1150,6 +1155,12 @@ class IQFeedLevel1(IQFeedMessageAdapter parent) : IQFeed(parent, "Level1")
 				case IQFeedMessage.MsgType.L1Update:
 					foreach (var msg in ToLevel1(m, bidask, secId))
 						await sub.RaiseAsync(msg, token);
+					break;
+
+				case IQFeedMessage.MsgType.TradeCorrection:
+					var correction = ToTradeCorrection(m, secId);
+					if (correction != null)
+						await sub.RaiseAsync(correction, token);
 					break;
 
 				case IQFeedMessage.MsgType.NotFound:
@@ -1202,6 +1213,81 @@ class IQFeedLevel1(IQFeedMessageAdapter parent) : IQFeed(parent, "Level1")
 		.Concat(a.Level1Columns);
 
 		await SetLevel1FieldSet(columns, token);
+	}
+
+	private ExecutionMessage ToTradeCorrection(IQFeedMessage message, SecurityId securityId)
+	{
+		static decimal? parseDecimal(string value)
+			=> decimal.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var result)
+				? result
+				: null;
+
+		static long? parseLong(string value, NumberStyles style = NumberStyles.Integer)
+			=> long.TryParse(value, style, CultureInfo.InvariantCulture, out var result)
+				? result
+				: null;
+
+		static int? parseInt(string value)
+			=> int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var result)
+				? result
+				: null;
+
+		string part(int index)
+			=> index >= 0 && index < message.Count ? message[index] : null;
+
+		var symbol = part(0);
+		var correctionType = part(1)?.Trim().ToUpperInvariant();
+		if (symbol.IsEmpty() || correctionType is not ("I" or "X" or "A" or "D"))
+		{
+			this.AddWarningLog("Invalid IQFeed trade correction: {0}", message.Message);
+			return null;
+		}
+
+		if (!symbol.EqualsIgnoreCase(securityId.SecurityCode))
+			return null;
+
+		var tradeType = part(2)?.Trim().ToUpperInvariant();
+		var hasTradeType = tradeType is "C" or "E" or "O";
+		var dataOffset = hasTradeType ? 1 : 0;
+		var dateText = part(2 + dataOffset);
+		var date = dateText.IsEmpty() ? null : dateText.TryToDateTime("MM/dd/yyyy");
+		var timeText = part(3 + dataOffset);
+		var time = timeText.IsEmpty()
+			? null
+			: timeText.TryToTimeSpan("hh\\:mm\\:ss\\.ffffff")
+				?? timeText.TryToTimeSpan("hh\\:mm\\:ss\\.fff");
+		var correction = new IQFeedTradeCorrection
+		{
+			Symbol = symbol,
+			CorrectionType = correctionType,
+			TradeType = hasTradeType ? tradeType : null,
+			Time = date is not null && time is not null
+				? (date.Value.Date + time.Value).FromEst()
+				: null,
+			Price = parseDecimal(part(4 + dataOffset)),
+			Volume = parseDecimal(part(5 + dataOffset)),
+			TickId = parseLong(part(6 + dataOffset)),
+			Conditions = parseLong(part(7 + dataOffset), NumberStyles.HexNumber),
+			MarketCenter = parseInt(part(8 + dataOffset)),
+		};
+
+		if (correction.TickId is null && correction.Price is null && correction.Volume is null)
+		{
+			this.AddWarningLog("Incomplete IQFeed trade correction: {0}", message.Message);
+			return null;
+		}
+
+		return new()
+		{
+			SecurityId = securityId,
+			DataTypeEx = DataType.Ticks,
+			ServerTime = correction.Time ?? CurrentTime,
+			TradeId = correction.TickId,
+			TradePrice = correction.Price,
+			TradeVolume = correction.Volume,
+			TradeStatus = correction.Conditions,
+			IsCancellation = correction.IsCancellation,
+		};
 	}
 
 	private IEnumerable<Message> ToSecurityMessages(IQFeedMessage m, SecurityId secId)

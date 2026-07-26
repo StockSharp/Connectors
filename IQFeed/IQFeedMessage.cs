@@ -40,6 +40,21 @@ class IQFeedListedMarketMessage(int id, string code, string name, int parentId) 
     public override Message Clone() => new IQFeedListedMarketMessage(Id, Code, Name, ParentId);
 }
 
+sealed class IQFeedTradeCorrection
+{
+	public string Symbol { get; init; }
+	public string CorrectionType { get; init; }
+	public string TradeType { get; init; }
+	public DateTime? Time { get; init; }
+	public decimal? Price { get; init; }
+	public decimal? Volume { get; init; }
+	public long? TickId { get; init; }
+	public long? Conditions { get; init; }
+	public int? MarketCenter { get; init; }
+
+	public bool IsCancellation => CorrectionType is "X" or "D";
+}
+
 class IQFeedMessage
 {
 	[AttributeUsage(AttributeTargets.Field)]
@@ -86,6 +101,7 @@ class IQFeedMessage
 		[StrVal("F")] Fundamental,
 		[StrVal("P")] L1Summary,
 		[StrVal("Q")] L1Update,
+		[StrVal("C")] TradeCorrection,
 
 		[StrVal("0")] L2PriceLevel,
 
@@ -116,6 +132,8 @@ class IQFeedMessage
 	public long RequestId { get; }
 
 	public string Message { get; }
+
+	public int Count => _data.Length - _offset;
 
 	public string this[int idx] => _data[idx + _offset];
 
