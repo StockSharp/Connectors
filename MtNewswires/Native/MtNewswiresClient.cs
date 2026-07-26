@@ -45,12 +45,15 @@ sealed class MtNewswiresClient : BaseLogReceiver
 	}
 
 	public Task<MtNewswiresArticle[]> GetRange(string dataSource,
-		string datasetId, string symbol, DateTime from, DateTime to,
+		string datasetId, string symbol, DateTime from, DateTime to, int count,
 		CancellationToken cancellationToken)
 	{
 		if (from > to)
 			throw new ArgumentOutOfRangeException(nameof(from), from, null);
-		var query = $"from={from:yyyy-MM-dd}&to={to:yyyy-MM-dd}";
+		if (count <= 0)
+			throw new ArgumentOutOfRangeException(nameof(count), count, null);
+		var query = $"from={from:yyyy-MM-dd}&to={to:yyyy-MM-dd}" +
+			$"&limit={count.ToString(CultureInfo.InvariantCulture)}&sort=ASC";
 		return Get(dataSource, datasetId, symbol, query, cancellationToken);
 	}
 

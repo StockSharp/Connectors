@@ -20,7 +20,7 @@ public partial class MtNewswiresMessageAdapter
 		}
 
 		var requestedSecurity = NormalizeSecurityId(mdMsg.SecurityId);
-		var symbol = requestedSecurity.NormalizeSymbol();
+		var symbol = requestedSecurity.NormalizeIdentifier();
 		var from = mdMsg.From?.ToUtc();
 		var to = mdMsg.To?.ToUtc();
 		if (from != null && to != null && from > to)
@@ -46,7 +46,7 @@ public partial class MtNewswiresMessageAdapter
 			else
 			{
 				response = await SafeClient().GetRange(DataSource, DatasetId,
-					symbol, queryFrom, queryTo, cancellationToken);
+					symbol, queryFrom, queryTo, target, cancellationToken);
 			}
 
 			var articles = Normalize(response, queryFrom, queryTo, target, from == null);
@@ -122,7 +122,8 @@ public partial class MtNewswiresMessageAdapter
 
 	private static SecurityId NormalizeSecurityId(SecurityId securityId)
 	{
-		if (!securityId.SecurityCode.IsEmpty() || !securityId.Isin.IsEmpty())
+		if (!securityId.SecurityCode.IsEmpty() || !securityId.Bloomberg.IsEmpty() ||
+			!securityId.Isin.IsEmpty())
 		{
 			securityId.BoardCode = securityId.BoardCode
 				.IsEmpty(MtNewswiresExtensions.BoardCode);

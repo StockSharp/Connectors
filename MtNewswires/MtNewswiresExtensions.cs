@@ -44,27 +44,30 @@ static class MtNewswiresExtensions
 	{
 		var code = article.Key.IsEmpty(requested.SecurityCode)?.Trim();
 		var isin = article.Isin.IsEmpty(requested.Isin)?.Trim();
-		if (code.IsEmpty() && isin.IsEmpty())
+		if (code.IsEmpty() && isin.IsEmpty() && requested.Bloomberg.IsEmpty())
 			return default;
 		return new()
 		{
 			SecurityCode = code,
 			BoardCode = requested.BoardCode.IsEmpty(BoardCode),
 			Isin = isin,
+			Bloomberg = requested.Bloomberg,
 		};
 	}
 
-	public static string NormalizeSymbol(this SecurityId securityId)
+	public static string NormalizeIdentifier(this SecurityId securityId)
 	{
-		var symbol = securityId.SecurityCode?.Trim();
-		if (symbol.IsEmpty())
+		var identifier = securityId.SecurityCode
+			.IsEmpty(securityId.Bloomberg)
+			.IsEmpty(securityId.Isin)?.Trim();
+		if (identifier.IsEmpty())
 			return null;
-		if (symbol.Any(character => char.IsControl(character) ||
+		if (identifier.Any(character => char.IsControl(character) ||
 			character is '/' or '\\' or '?' or '#'))
 		{
 			throw new ArgumentException(
-				$"MT Newswires symbol '{symbol}' is invalid.", nameof(securityId));
+				$"MT Newswires identifier '{identifier}' is invalid.", nameof(securityId));
 		}
-		return symbol;
+		return identifier;
 	}
 }
