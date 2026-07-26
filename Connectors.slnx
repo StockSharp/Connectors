@@ -140,6 +140,7 @@
     <Project Path="Copper/Copper.csproj" />
     <Project Path="Anchorage/Anchorage.csproj" />
     <Project Path="Paxos/Paxos.csproj" />
+    <Project Path="PaytmMoney/PaytmMoney.csproj" />
     <Project Path="CoinGecko/CoinGecko.csproj" />
     <Project Path="CoinMarketCap/CoinMarketCap.csproj" />
     <Project Path="Kaiko/Kaiko.csproj" />

@@ -101,6 +101,7 @@
     <ProjectReference Include="..\Ourbit\Ourbit.csproj" />
     <ProjectReference Include="..\Pacifica\Pacifica.csproj" />
     <ProjectReference Include="..\Paxos\Paxos.csproj" />
+    <ProjectReference Include="..\PaytmMoney\PaytmMoney.csproj" />
     <ProjectReference Include="..\Phemex\Phemex.csproj" />
     <ProjectReference Include="..\Pionex\Pionex.csproj" />
     <ProjectReference Include="..\Polymarket\Polymarket.csproj" />
