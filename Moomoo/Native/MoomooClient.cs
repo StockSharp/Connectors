@@ -97,7 +97,7 @@ sealed class MoomooClient : Disposable
 			.SetIsRegOrUnRegPush(isSubscribe)
 			.SetIsFirstPush(isSubscribe)
 			.SetExtendedTime(isExtended)
-			.SetSession((int)Common.Session.Session_ALL)
+			.SetSession((int)(isExtended ? Common.Session.Session_ALL : Common.Session.Session_RTH))
 			.Build();
 		var response = await Send<QotSub.Response>(() => _quote.Sub(QotSub.Request.CreateBuilder().SetC2S(c2s).Build()), cancellationToken);
 		Validate(response.RetType, response.RetMsg);
@@ -113,11 +113,11 @@ sealed class MoomooClient : Disposable
 				.SetRehabType((int)QotCommon.RehabType.RehabType_Forward)
 				.SetKlType((int)candleType)
 				.SetSecurity(CreateSecurity(code))
-				.SetBeginTime(from.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture))
-				.SetEndTime(to.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture))
+				.SetBeginTime(ToMarketTime(from, "yyyy-MM-dd"))
+				.SetEndTime(ToMarketTime(to, "yyyy-MM-dd"))
 				.SetMaxAckKLNum(1000)
 				.SetExtendedTime(isExtended)
-				.SetSession((int)Common.Session.Session_ALL);
+				.SetSession((int)(isExtended ? Common.Session.Session_ALL : Common.Session.Session_RTH));
 			if (nextKey is not null)
 				builder.SetNextReqKey(nextKey);
 
@@ -173,10 +173,9 @@ sealed class MoomooClient : Disposable
 			return response.HasS2C ? response.S2C.OrderListList.ToArray() : [];
 		}
 
-		var history = TrdGetHistoryOrderList.C2S.CreateBuilder().SetHeader(CreateHeader(account));
-		var filter = CreateFilter(from, to);
-		if (filter is not null)
-			history.SetFilterConditions(filter);
+		var history = TrdGetHistoryOrderList.C2S.CreateBuilder()
+			.SetHeader(CreateHeader(account))
+			.SetFilterConditions(CreateFilter(from, to));
 		var historyResponse = await Send<TrdGetHistoryOrderList.Response>(() => _trade.GetHistoryOrderList(TrdGetHistoryOrderList.Request.CreateBuilder().SetC2S(history.Build()).Build()), cancellationToken);
 		Validate(historyResponse.RetType, historyResponse.RetMsg);
 		return historyResponse.HasS2C ? historyResponse.S2C.OrderListList.ToArray() : [];
@@ -192,10 +191,9 @@ sealed class MoomooClient : Disposable
 			return response.HasS2C ? response.S2C.OrderFillListList.ToArray() : [];
 		}
 
-		var history = TrdGetHistoryOrderFillList.C2S.CreateBuilder().SetHeader(CreateHeader(account));
-		var filter = CreateFilter(from, to);
-		if (filter is not null)
-			history.SetFilterConditions(filter);
+		var history = TrdGetHistoryOrderFillList.C2S.CreateBuilder()
+			.SetHeader(CreateHeader(account))
+			.SetFilterConditions(CreateFilter(from, to));
 		var historyResponse = await Send<TrdGetHistoryOrderFillList.Response>(() => _trade.GetHistoryOrderFillList(TrdGetHistoryOrderFillList.Request.CreateBuilder().SetC2S(history.Build()).Build()), cancellationToken);
 		Validate(historyResponse.RetType, historyResponse.RetMsg);
 		return historyResponse.HasS2C ? historyResponse.S2C.OrderFillListList.ToArray() : [];
@@ -214,12 +212,11 @@ sealed class MoomooClient : Disposable
 			.SetSecMarket((int)TrdCommon.TrdSecMarket.TrdSecMarket_US)
 			.SetRemark(remark)
 			.SetTimeInForce((int)timeInForce)
-			.SetFillOutsideRTH(session != Common.Session.Session_RTH)
 			.SetSession((int)session);
 		if (stopPrice is decimal stop)
 			builder.SetAuxPrice((double)stop);
 		if (expiry is DateTime expiryDate)
-			builder.SetExpireTime(expiryDate.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+			builder.SetExpireTime(ToMarketTime(expiryDate, "yyyy-MM-dd"));
 
 		var response = await Send<TrdPlaceOrder.Response>(() => _trade.PlaceOrder(TrdPlaceOrder.Request.CreateBuilder().SetC2S(builder.Build()).Build()), cancellationToken);
 		Validate(response.RetType, response.RetMsg);
@@ -259,15 +256,24 @@ sealed class MoomooClient : Disposable
 
 	private static TrdCommon.TrdFilterConditions CreateFilter(DateTime? from, DateTime? to)
 	{
-		if (from is null && to is null)
-			return null;
-		var builder = TrdCommon.TrdFilterConditions.CreateBuilder().SetFilterMarket((int)TrdCommon.TrdMarket.TrdMarket_US);
-		if (from is DateTime start)
-			builder.SetBeginTime(start.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
-		if (to is DateTime end)
-			builder.SetEndTime(end.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
-		return builder.Build();
+		var start = from?.ToUniversalTime();
+		var end = to?.ToUniversalTime();
+
+		if (start is null)
+			start = (end ?? DateTime.UtcNow).AddDays(-90);
+		if (end is null)
+			end = start.Value.AddDays(90);
+
+		return TrdCommon.TrdFilterConditions.CreateBuilder()
+			.SetBeginTime(ToMarketTime(start.Value, "yyyy-MM-dd HH:mm:ss"))
+			.SetEndTime(ToMarketTime(end.Value, "yyyy-MM-dd HH:mm:ss"))
+			.SetFilterMarket((int)TrdCommon.TrdMarket.TrdMarket_US)
+			.Build();
 	}
+
+	private static string ToMarketTime(DateTime value, string format)
+		=> TimeZoneInfo.ConvertTimeFromUtc(value.ToUniversalTime(), TimeHelper.Est)
+			.ToString(format, CultureInfo.InvariantCulture);
 
 	private async Task<TResponse> Send<TResponse>(Func<uint> sender, CancellationToken cancellationToken)
 	{
