@@ -21,11 +21,21 @@ sealed class UsmartRestClient : Disposable
 	{
 		_accessToken = accessToken.ThrowIfEmpty(nameof(accessToken));
 		_channelId = channelId.ThrowIfEmpty(nameof(channelId));
-		_quoteEndpoint = new(quoteEndpoint.ThrowIfEmpty(nameof(quoteEndpoint)));
-		_tradeEndpoint = new(tradeEndpoint.ThrowIfEmpty(nameof(tradeEndpoint)));
+		_quoteEndpoint = CreateSecureEndpoint(quoteEndpoint, nameof(quoteEndpoint));
+		_tradeEndpoint = CreateSecureEndpoint(tradeEndpoint, nameof(tradeEndpoint));
 		_rsa.ImportFromPem(privateKey.ThrowIfEmpty(nameof(privateKey)));
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
 		_http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "StockSharp-uSMART");
+	}
+
+	private static Uri CreateSecureEndpoint(string endpoint, string paramName)
+	{
+		var uri = new Uri(endpoint.ThrowIfEmpty(paramName), UriKind.Absolute);
+
+		if (!uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+			throw new ArgumentException("uSMART REST endpoints must use HTTPS.", paramName);
+
+		return uri;
 	}
 
 	public Task<UsmartResponse<UsmartMarketState>> GetMarketState(string market,
