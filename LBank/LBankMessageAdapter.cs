@@ -46,24 +46,24 @@ partial class LBankMessageAdapter
 	{
 		_pusherClient.StateChanged += SendOutConnectionStateAsync;
 		_pusherClient.Error += SendOutErrorAsync;
-		_pusherClient.PingReceived += SessionOnPingReceived;
 		_pusherClient.TickerChanged += SessionOnTickerChanged;
 		_pusherClient.OrderBookChanged += SessionOnOrderBookChanged;
 		_pusherClient.NewTrade += SessionOnNewTrade;
 		_pusherClient.NewCandle += SessionOnNewCandle;
 		_pusherClient.OrderUpdated += SessionOnOrderUpdated;
+		_pusherClient.BalanceUpdated += SessionOnBalanceUpdated;
 	}
 
 	private void UnsubscribePusherClient()
 	{
 		_pusherClient.StateChanged -= SendOutConnectionStateAsync;
 		_pusherClient.Error -= SendOutErrorAsync;
-		_pusherClient.PingReceived -= SessionOnPingReceived;
 		_pusherClient.TickerChanged -= SessionOnTickerChanged;
 		_pusherClient.OrderBookChanged -= SessionOnOrderBookChanged;
 		_pusherClient.NewTrade -= SessionOnNewTrade;
 		_pusherClient.NewCandle -= SessionOnNewCandle;
 		_pusherClient.OrderUpdated -= SessionOnOrderUpdated;
+		_pusherClient.BalanceUpdated -= SessionOnBalanceUpdated;
 	}
 
 	/// <inheritdoc />
@@ -93,6 +93,10 @@ partial class LBankMessageAdapter
 			catch (Exception ex)
 			{
 				await SendOutErrorAsync(ex, cancellationToken);
+			}
+			finally
+			{
+				_pusherClient.Dispose();
 			}
 
 			_pusherClient = null;
@@ -130,8 +134,13 @@ partial class LBankMessageAdapter
 
 		if (this.IsTransactional())
 		{
+			await _httpClient.SyncTimeAsync(cancellationToken);
 			_authKey = await _httpClient.GetAuthKeyAsync(cancellationToken);
-			_authKeyLastTimeRefresh = DateTime.Now;
+
+			if (_authKey.IsEmpty())
+				throw new InvalidOperationException("LBank returned an empty subscription key.");
+
+			_authKeyLastTimeRefresh = DateTime.UtcNow;
 		}
 
 		_pusherClient = new PusherClient(WebSocketEndpoint, ReConnectionSettings.WorkingTime) { Parent = this };
@@ -171,23 +180,11 @@ partial class LBankMessageAdapter
 			await PortfolioLookupAsync(null, cancellationToken);
 		}
 
-		if (!timeMsg.OriginalTransactionId.IsEmpty())
-			await _pusherClient.Pong(timeMsg.OriginalTransactionId, cancellationToken);
-
-		if (_authKeyLastTimeRefresh != null && (DateTime.Now - _authKeyLastTimeRefresh.Value).TotalMinutes > 50)
+		if (_authKeyLastTimeRefresh != null && (DateTime.UtcNow - _authKeyLastTimeRefresh.Value).TotalMinutes > 50)
 		{
+			await _httpClient.SyncTimeAsync(cancellationToken);
 			await _httpClient.RefreshAuthKeyAsync(_authKey, cancellationToken);
-			_authKeyLastTimeRefresh = DateTime.Now;
+			_authKeyLastTimeRefresh = DateTime.UtcNow;
 		}
-	}
-
-	private ValueTask SessionOnPingReceived(string id, CancellationToken cancellationToken)
-	{
-		return SendOutMessageAsync(new TimeMessage
-		{
-			TransactionId = TransactionIdGenerator.GetNextId(),
-			OriginalTransactionId = id,
-			BackMode = MessageBackModes.Direct,
-		}, cancellationToken);
 	}
 }

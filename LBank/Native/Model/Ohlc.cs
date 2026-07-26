@@ -26,6 +26,7 @@ class SocketOhlc
 	public double Close { get; set; }
 
 	[JsonProperty("t")]
+	[JsonConverter(typeof(LBankChinaDateTimeConverter))]
 	public DateTime Time { get; set; }
 
 	[JsonProperty("v")]

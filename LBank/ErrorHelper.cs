@@ -15,6 +15,8 @@ static class ErrorHelper
 		{ 10008, "Invalid Trading Pair" },
 		{ 10009, "Price and/or Amount are required for limit order" },
 		{ 10010, "Price and/or Amount must be more than 0" },
+		{ 10011, "Price is required for a market buy order" },
+		{ 10012, "Amount is required for a market sell order" },
 		{ 10013, "The amount is too small" },
 		{ 10014, "Insufficient amount of money in account" },
 		{ 10015, "Invalid order type" },
@@ -33,22 +35,61 @@ static class ErrorHelper
 		{ 10028, "Wrong query time" },
 		{ 10029, "'from' is not in the query time" },
 		{ 10030, "'from' do not match the transaction type of inqury" },
+		{ 10031, "Invalid echostr" },
+		{ 10032, "Order does not exist" },
+		{ 10033, "Failed to create order" },
+		{ 10034, "The currency cannot be withdrawn" },
+		{ 10035, "Invalid withdrawal address" },
+		{ 10036, "Duplicate custom_id" },
+		{ 10037, "The order has been cancelled or completed" },
+		{ 10038, "Order cancellation failed" },
+		{ 10039, "Order timed out and was cancelled" },
+		{ 10066, "Invalid chain name" },
+		{ 10067, "The account does not have permission" },
 		{ 10100, "Has no privilege to withdraw" },
 		{ 10101, "Invalid fee rate to withdraw" },
 		{ 10102, "Too little to withdraw" },
 		{ 10103, "Exceed daily limitation of withdraw" },
 		{ 10104, "Cancel was rejected" },
 		{ 10105, "Request has been cancelled" },
+		{ 10106, "Trading is unavailable outside trading hours" },
+		{ 10107, "Invalid opening price data" },
+		{ 10108, "Order price exceeds the allowed range" },
+		{ 10109, "Invalid wallet address" },
+		{ 10110, "Transfer fee does not match" },
+		{ 10111, "Withdrawal amount must be greater than zero" },
+		{ 10112, "Withdrawal fee is too low" },
+		{ 10113, "Transfer fee range is unavailable" },
+		{ 10114, "Invalid withdrawal quantity precision" },
+		{ 10116, "Service is being upgraded" },
+		{ 10117, "Internal account transfers are disabled" },
+		{ 10118, "Withdrawal must be initiated on the website in this region" },
+		{ 10119, "The withdrawal endpoint has been upgraded" },
+		{ 10120, "Amount is below the minimum transaction amount" },
+		{ 10121, "Order amount exceeds the single-order limit" },
+		{ 10122, "Order price exceeds the upper limit" },
+		{ 10123, "Order price is below the lower limit" },
+		{ 10125, "Order rejected due to high market volatility" },
+		{ 10126, "Minimum order amount is not met" },
+		{ 10127, "Minimum quantity precision is not met" },
+		{ 10128, "Order quantity exceeds the single-order limit" },
+		{ 10132, "Invalid regional recipient information" },
+		{ 10200, "Invalid broker information" },
+		{ 10201, "api_key and sign are required" },
+		{ 10202, "timestamp, signature_method and echostr are required" },
+		{ 10203, "Invalid signature method" },
+		{ 10205, "Service is unavailable due to regional compliance requirements" },
+		{ 10600, "Request timestamp is outside the allowed window" },
+		{ 10601, "Endpoint is unavailable" },
+		{ 10606, "Maximum query range is seven days" },
+		{ 10607, "Only the last 90 days can be queried" },
+		{ 10701, "Invalid asset code" },
+		{ 10702, "Deposits are unavailable" },
+		{ 10703, "Deposit address limit has been reached" },
+		{ 10704, "Failed to create a deposit address" },
+		{ 10801, "Withdrawal address whitelist verification failed" },
 	};
 
 	public static string ToErrorText(this int errorCode)
-	{
-		//if (errorCode.IsEmpty())
-		//	throw new ArgumentNullException(nameof(errorCode));
-
-		//if (!int.TryParse(errorCode, out var id))
-		//	return errorCode;
-
-		return _errorsIds.TryGetValue(errorCode) ?? errorCode.ToString();
-	}
+		=> _errorsIds.TryGetValue(errorCode) ?? errorCode.ToString();
 }

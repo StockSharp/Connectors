@@ -46,6 +46,8 @@ partial class LBankMessageAdapter
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
+		else
+			await _pusherClient.SubscribeTicker(false, pair, cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -62,6 +64,8 @@ partial class LBankMessageAdapter
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
+		else
+			await _pusherClient.SubscribeOrderBook(false, pair, mdMsg.MaxDepth ?? SupportedOrderBookDepths.Max(), cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -74,19 +78,20 @@ partial class LBankMessageAdapter
 
 		if (mdMsg.IsSubscribe)
 		{
-			if (mdMsg.To != null)
+			if (mdMsg.IsHistoryOnly() || mdMsg.From != null || mdMsg.To != null)
 			{
-				const int size = 600;
+				const int size = 500;
+				var from = mdMsg.From is null ? (long?)null : (long)mdMsg.From.Value.ToUnix(false);
 
-				foreach (var trade in (await _httpClient.GetTradesAsync(pair, size, (long)mdMsg.From.Value.ToUnix(), cancellationToken: cancellationToken))
+				foreach (var trade in (await _httpClient.GetTradesAsync(pair, size, from, cancellationToken))
 					.Where(t =>
 					{
 						var time = t.Time;
 
-						if (time < mdMsg.From.Value)
+						if (mdMsg.From != null && time < mdMsg.From.Value)
 							return false;
 
-						if (time > mdMsg.To.Value)
+						if (mdMsg.To != null && time > mdMsg.To.Value)
 							return false;
 
 						return true;
@@ -97,9 +102,9 @@ partial class LBankMessageAdapter
 						DataTypeEx = DataType.Ticks,
 						SecurityId = secId,
 						ServerTime = trade.Time,
-						TradePrice = (decimal)trade.Price,
-						TradeVolume = (decimal)trade.Amount,
-						OriginSide = trade.Type.ToSide(),
+						TradePrice = trade.Price,
+						TradeVolume = trade.Amount,
+						OriginSide = trade.IsBuyerMaker ? Sides.Sell : Sides.Buy,
 					}, cancellationToken);
 				}
 			}
@@ -134,7 +139,7 @@ partial class LBankMessageAdapter
 
 				while (true)
 				{
-					var candles = (await _httpClient.GetCandlesAsync(pair, tf.ToNative(false), 2880, (long)from.ToUnix(), cancellationToken)).ToArray();
+					var candles = (await _httpClient.GetCandlesAsync(pair, tf.ToNative(false), 2000, (long)from.ToUnix(), cancellationToken)).ToArray();
 
 					if (candles.Length == 0)
 						break;
@@ -249,8 +254,8 @@ partial class LBankMessageAdapter
 		{
 			SecurityId = secId,
 			ServerTime = time,
-			Bids = book.Bids.Select(ToQuoteChange).ToArray(),
-			Asks = book.Asks.Select(ToQuoteChange).ToArray(),
+			Bids = (book.Bids ?? []).Select(ToQuoteChange).ToArray(),
+			Asks = (book.Asks ?? []).Select(ToQuoteChange).ToArray(),
 		}, cancellationToken);
 	}
 
@@ -262,7 +267,7 @@ partial class LBankMessageAdapter
 		{
 			DataTypeEx = DataType.Ticks,
 			SecurityId = secId,
-			ServerTime = time,
+			ServerTime = trade.Time == default ? time : trade.Time,
 			TradePrice = (decimal)trade.Price,
 			TradeVolume = (decimal)trade.Volume,
 			OriginSide = trade.Direction.ToSide(),

@@ -2,21 +2,21 @@ namespace StockSharp.LBank.Native.Model;
 
 class Trade
 {
-	[JsonProperty("tid")]
+	[JsonProperty("id")]
 	public string Id { get; set; }
 
 	[JsonProperty("price")]
-	public double Price { get; set; }
+	public decimal Price { get; set; }
 
-	[JsonProperty("amount")]
-	public double Amount { get; set; }
+	[JsonProperty("qty")]
+	public decimal Amount { get; set; }
 
-	[JsonProperty("date_ms")]
+	[JsonProperty("time")]
 	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
 	public DateTime Time { get; set; }
 
-	[JsonProperty("type")]
-	public string Type { get; set; }
+	[JsonProperty("isBuyerMaker")]
+	public bool IsBuyerMaker { get; set; }
 }
 
 class SocketTrade
@@ -34,5 +34,6 @@ class SocketTrade
 	public string Direction { get; set; }
 
 	[JsonProperty("TS")]
+	[JsonConverter(typeof(LBankChinaDateTimeConverter))]
 	public DateTime Time { get; set; }
 }

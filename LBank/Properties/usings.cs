@@ -5,6 +5,7 @@ global using global::System.Threading.Tasks;
 global using global::System.Linq;
 global using global::System.Security;
 global using global::System.ComponentModel.DataAnnotations;
+global using global::System.Globalization;
 global using global::System.Runtime.Serialization;
 
 global using global::Ecng.Common;
@@ -15,7 +16,6 @@ global using global::Ecng.ComponentModel;
 global using global::Ecng.Logging;
 
 global using global::Newtonsoft.Json;
-global using global::Newtonsoft.Json.Linq;
 
 global using global::RestSharp;
 

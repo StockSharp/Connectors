@@ -10,11 +10,13 @@ class PusherClient : BaseLogReceiver
 	public event Func<string, DateTime, SocketTrade, CancellationToken, ValueTask> NewTrade;
 	public event Func<string, DateTime, SocketOhlc, CancellationToken, ValueTask> NewCandle;
 	public event Func<string, DateTime, SocketOrder, CancellationToken, ValueTask> OrderUpdated;
+	public event Func<SocketBalance, CancellationToken, ValueTask> BalanceUpdated;
 	public event Func<Exception, CancellationToken, ValueTask> Error;
 	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
-	public event Func<string, CancellationToken, ValueTask> PingReceived;
 
 	private readonly WebSocketClient _client;
+	private readonly SynchronizedDictionary<string, long> _subscriptions = new(StringComparer.InvariantCultureIgnoreCase);
+	private long _nextSubscriptionId;
 
 	public PusherClient(string endpoint, WorkingTime workingTime)
 	{
@@ -24,13 +26,16 @@ class PusherClient : BaseLogReceiver
 			{
 				if (StateChanged is { } handler)
 					return handler(state, token);
+
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
+
 				if (Error is { } handler)
 					return handler(error, token);
+
 				return default;
 			},
 			OnProcess,
@@ -62,48 +67,94 @@ class PusherClient : BaseLogReceiver
 
 	private async ValueTask OnProcess(WebSocketMessage msg, CancellationToken cancellationToken)
 	{
-		var obj = msg.AsObject();
+		var json = msg.AsString();
+		var header = json.DeserializeObject<LBankSocketMessage>();
 
-		var type = (string)obj.type;
-		var pair = (string)obj.pair;
+		if (header == null)
+			return;
 
-		switch (type)
+		if (header.Action.EqualsIgnoreCase(Commands.Ping))
 		{
-			case Commands.Ping:
-				if (PingReceived is { } pingHandler)
-					await pingHandler((string)obj.ping, cancellationToken);
-				break;
+			await _client.SendAsync(new LBankSocketPongRequest
+			{
+				Action = Commands.Pong,
+				Pong = header.Ping,
+			}, cancellationToken);
 
-			case Commands.Pong:
-				break;
+			return;
+		}
 
+		if (header.Action is Commands.Subscribe or Commands.Unsubscribe or Commands.Pong)
+			return;
+
+		switch (header.Type)
+		{
 			case Channels.Bar:
-				if (NewCandle is { } candleHandler)
-					await candleHandler(pair, (DateTime)obj.TS, ((JToken)obj.kbar).DeserializeObject<SocketOhlc>(), cancellationToken);
+			{
+				var response = json.DeserializeObject<LBankSocketKlineMessage>();
+
+				if (response?.Kline is { } candle && NewCandle is { } handler)
+					await handler(response.Pair, response.Timestamp, candle, cancellationToken);
+
 				break;
+			}
 
 			case Channels.Depth:
-				if (OrderBookChanged is { } bookHandler)
-					await bookHandler(pair, (DateTime)obj.TS, ((JToken)obj.depth).DeserializeObject<OrderBook>(), cancellationToken);
+			{
+				var response = json.DeserializeObject<LBankSocketDepthMessage>();
+
+				if (response?.Depth is { } depth && OrderBookChanged is { } handler)
+					await handler(response.Pair, response.Timestamp, depth, cancellationToken);
+
 				break;
+			}
 
 			case Channels.Trade:
-				if (NewTrade is { } tradeHandler)
-					await tradeHandler(pair, (DateTime)obj.TS, ((JToken)obj.trade).DeserializeObject<SocketTrade>(), cancellationToken);
+			{
+				var response = json.DeserializeObject<LBankSocketTradeMessage>();
+
+				if (response?.Trade is { } trade && NewTrade is { } handler)
+					await handler(response.Pair, response.Timestamp, trade, cancellationToken);
+
 				break;
+			}
 
 			case Channels.Ticker:
-				if (TickerChanged is { } tickerHandler)
-					await tickerHandler(pair, (DateTime)obj.TS, ((JToken)obj.tick).DeserializeObject<SocketTicker>(), cancellationToken);
+			{
+				var response = json.DeserializeObject<LBankSocketTickerMessage>();
+
+				if (response?.Ticker is { } ticker && TickerChanged is { } handler)
+					await handler(response.Pair, response.Timestamp, ticker, cancellationToken);
+
 				break;
+			}
 
 			case Channels.OrderUpdate:
-				if (OrderUpdated is { } orderHandler)
-					await orderHandler(pair, (DateTime)obj.TS, ((JToken)obj.orderUpdate).DeserializeObject<SocketOrder>(), cancellationToken);
+			{
+				var response = json.DeserializeObject<LBankSocketOrderMessage>();
+
+				if (response?.Order is { } order && OrderUpdated is { } handler)
+					await handler(response.Pair, response.Timestamp, order, cancellationToken);
+
+				break;
+			}
+
+			case Channels.AssetUpdate:
+			{
+				var response = json.DeserializeObject<LBankSocketAssetMessage>();
+
+				if (response?.Balance is { } balance && BalanceUpdated is { } handler)
+					await handler(balance, cancellationToken);
+
+				break;
+			}
+
+			case null:
+			case "":
 				break;
 
 			default:
-				this.AddErrorLog(LocalizedStrings.UnknownEvent, type);
+				this.AddErrorLog(LocalizedStrings.UnknownEvent, header.Type);
 				break;
 		}
 	}
@@ -115,76 +166,88 @@ class PusherClient : BaseLogReceiver
 		public const string Ticker = "tick";
 		public const string Bar = "kbar";
 		public const string OrderUpdate = "orderUpdate";
+		public const string AssetUpdate = "assetUpdate";
 	}
 
 	private static class Commands
 	{
 		public const string Subscribe = "subscribe";
 		public const string Unsubscribe = "unsubscribe";
-
 		public const string Ping = "ping";
 		public const string Pong = "pong";
 	}
 
 	public ValueTask SubscribeTicker(bool isSubscribe, string pair, CancellationToken cancellationToken)
-	{
-		return _client.SendAsync(new
+		=> ChangeSubscription(isSubscribe, $"{Channels.Ticker}:{pair}", new()
 		{
-			action = isSubscribe ? Commands.Subscribe : Commands.Unsubscribe,
-			subscribe = Channels.Ticker,
-			pair
+			Subscribe = Channels.Ticker,
+			Pair = pair,
 		}, cancellationToken);
-	}
 
 	public ValueTask SubscribeTrades(bool isSubscribe, string pair, CancellationToken cancellationToken)
-	{
-		return _client.SendAsync(new
+		=> ChangeSubscription(isSubscribe, $"{Channels.Trade}:{pair}", new()
 		{
-			action = isSubscribe ? Commands.Subscribe : Commands.Unsubscribe,
-			subscribe = Channels.Trade,
-			pair
+			Subscribe = Channels.Trade,
+			Pair = pair,
 		}, cancellationToken);
-	}
 
 	public ValueTask SubscribeOrderBook(bool isSubscribe, string pair, int depth, CancellationToken cancellationToken)
-	{
-		return _client.SendAsync(new
+		=> ChangeSubscription(isSubscribe, $"{Channels.Depth}:{pair}", new()
 		{
-			action = isSubscribe ? Commands.Subscribe : Commands.Unsubscribe,
-			subscribe = Channels.Depth,
-			depth,
-			pair
+			Subscribe = Channels.Depth,
+			Depth = depth,
+			Pair = pair,
 		}, cancellationToken);
-	}
 
-	public ValueTask SubscribeCandles(bool isSubscribe, string pair, string kbar, CancellationToken cancellationToken)
-	{
-		return _client.SendAsync(new
+	public ValueTask SubscribeCandles(bool isSubscribe, string pair, string kline, CancellationToken cancellationToken)
+		=> ChangeSubscription(isSubscribe, $"{Channels.Bar}:{pair}:{kline}", new()
 		{
-			action = isSubscribe ? Commands.Subscribe : Commands.Unsubscribe,
-			subscribe = Channels.Bar,
-			kbar,
-			pair
+			Subscribe = Channels.Bar,
+			Kline = kline,
+			Pair = pair,
 		}, cancellationToken);
-	}
-
-	public ValueTask Pong(string pong, CancellationToken cancellationToken)
-	{
-		return _client.SendAsync(new
-		{
-			action = Commands.Pong,
-			pong
-		}, cancellationToken);
-	}
 
 	public ValueTask SubscribeOrders(bool isSubscribe, string subscribeKey, CancellationToken cancellationToken)
-	{
-		return _client.SendAsync(new
+		=> ChangeSubscription(isSubscribe, Channels.OrderUpdate, new()
 		{
-			action = isSubscribe ? Commands.Subscribe : Commands.Unsubscribe,
-			subscribe = Channels.OrderUpdate,
-			subscribeKey,
-			pair = "all"
+			Subscribe = Channels.OrderUpdate,
+			SubscribeKey = subscribeKey,
+			Pair = "all",
 		}, cancellationToken);
+
+	public ValueTask SubscribeBalances(bool isSubscribe, string subscribeKey, CancellationToken cancellationToken)
+		=> ChangeSubscription(isSubscribe, Channels.AssetUpdate, new()
+		{
+			Subscribe = Channels.AssetUpdate,
+			SubscribeKey = subscribeKey,
+		}, cancellationToken);
+
+	private ValueTask ChangeSubscription(
+		bool isSubscribe,
+		string key,
+		LBankSocketSubscriptionRequest request,
+		CancellationToken cancellationToken)
+	{
+		long subscriptionId;
+
+		using (_subscriptions.EnterScope())
+		{
+			if (isSubscribe)
+			{
+				if (_subscriptions.ContainsKey(key))
+					return default;
+
+				subscriptionId = ++_nextSubscriptionId;
+				_subscriptions.Add(key, subscriptionId);
+			}
+			else
+			{
+				if (!_subscriptions.TryGetAndRemove(key, out subscriptionId))
+					return default;
+			}
+		}
+
+		request.Action = isSubscribe ? Commands.Subscribe : Commands.Unsubscribe;
+		return _client.SendAsync(request, cancellationToken, isSubscribe ? subscriptionId : -subscriptionId);
 	}
 }

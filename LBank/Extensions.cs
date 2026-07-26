@@ -14,13 +14,17 @@ static class Extensions
 
 	public static Sides ToSide(this string side)
 	{
-		return side switch
-		{
-			"buy" => Sides.Buy,
-			"sell" => Sides.Sell,
-			_ => throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue),
-		};
+		if (side.StartsWithIgnoreCase("buy"))
+			return Sides.Buy;
+
+		if (side.StartsWithIgnoreCase("sell"))
+			return Sides.Sell;
+
+		throw new ArgumentOutOfRangeException(nameof(side), side, LocalizedStrings.InvalidValue);
 	}
+
+	public static OrderTypes ToOrderType(this string type)
+		=> type.EndsWithIgnoreCase("_market") ? OrderTypes.Market : OrderTypes.Limit;
 
 	public static readonly PairSet<TimeSpan, Tuple<string, string>> TimeFrames = new()
 	{
@@ -85,7 +89,7 @@ static class Extensions
 		if (order == null)
 			throw new ArgumentNullException(nameof(order));
 
-		return (decimal)(order.Volume - order.DealVolume);
+		return order.Volume - order.DealVolume;
 	}
 
 	public static OrderStates? ToOrderState(this int status)

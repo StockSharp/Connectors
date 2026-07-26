@@ -7,12 +7,14 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 	private readonly SecureString _key = key;
 	private readonly HashAlgorithm _hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());
 	private readonly HashAlgorithm _md5 = MD5.Create();
+	private readonly Lock _signSync = new();
 
 	private readonly string _baseUrl = baseUrl.ThrowIfEmpty(nameof(baseUrl)).TrimEnd('/');
 
 	private readonly UTCMlsIncrementalIdGenerator _nonceGen = new();
+	private long _serverTimeOffset;
 
-    protected override void DisposeManaged()
+	protected override void DisposeManaged()
 	{
 		_hasher?.Dispose();
 		_md5.Dispose();
@@ -22,10 +24,17 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 	// to get readable name after obfuscation
 	public override string Name => nameof(LBank) + "_" + nameof(HttpClient);
 
-	public Task<IEnumerable<Symbol>> GetSymbolsAsync(CancellationToken cancellationToken)
+	public async Task SyncTimeAsync(CancellationToken cancellationToken)
 	{
-		return MakeRequestAsync<IEnumerable<Symbol>>(CreateUrl("accuracy.do"), CreateRequest(Method.Get), cancellationToken);
+		var localBefore = (long)TimeHelper.UnixNowMls;
+		var serverTime = await MakeRequestAsync<long>(CreateUrl("timestamp.do"), CreateRequest(Method.Get), cancellationToken);
+		var localAfter = (long)TimeHelper.UnixNowMls;
+
+		Interlocked.Exchange(ref _serverTimeOffset, serverTime - (localBefore + localAfter) / 2);
 	}
+
+	public Task<IEnumerable<Symbol>> GetSymbolsAsync(CancellationToken cancellationToken)
+		=> MakeRequestAsync<IEnumerable<Symbol>>(CreateUrl("accuracy.do"), CreateRequest(Method.Get), cancellationToken);
 
 	public Task<IEnumerable<Ohlc>> GetCandlesAsync(string symbol, string type, int size, long from, CancellationToken cancellationToken)
 	{
@@ -51,20 +60,16 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 		if (from != null)
 			request.AddParameter("time", from.Value);
 
-		return MakeRequestAsync<IEnumerable<Trade>>(CreateUrl("trades.do"), request, cancellationToken);
+		return MakeRequestAsync<IEnumerable<Trade>>(CreateUrl("supplement/trades.do"), request, cancellationToken);
 	}
 
-	public async Task<Tuple<IDictionary<string, double>, IDictionary<string, double>>> GetUserInfoAsync(CancellationToken cancellationToken)
-	{
-		dynamic response = await MakeRequestAsync<object>(CreateUrl("user_info.do"), ApplySecret(CreateRequest(Method.Post)), cancellationToken);
+	public Task<LBankAccount> GetUserInfoAsync(CancellationToken cancellationToken)
+		=> MakeRequestAsync<LBankAccount>(
+			CreateUrl("supplement/user_info_account.do"),
+			ApplySecret(CreateRequest(Method.Post)),
+			cancellationToken);
 
-		var freeze = ((JToken)response.freeze).DeserializeObject<IDictionary<string, double>>();
-		var free = ((JToken)response.free).DeserializeObject<IDictionary<string, double>>();
-
-		return Tuple.Create(freeze, free);
-	}
-
-	public async Task<IEnumerable<Order>> GetOrdersAsync(string symbol, int page, CancellationToken cancellationToken)
+	public Task<LBankOrdersPage> GetOrdersAsync(string symbol, int page, CancellationToken cancellationToken)
 	{
 		var request = CreateRequest(Method.Post);
 
@@ -73,9 +78,10 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 			.AddParameter("current_page", page)
 			.AddParameter("page_length", 200);
 
-		dynamic response = await MakeRequestAsync<object>(CreateUrl("orders_info_no_deal.do"), ApplySecret(request), cancellationToken);
-
-		return ((JToken)response.orders).DeserializeObject<IEnumerable<Order>>();
+		return MakeRequestAsync<LBankOrdersPage>(
+			CreateUrl("supplement/orders_info_no_deal.do"),
+			ApplySecret(request),
+			cancellationToken);
 	}
 
 	public async Task<string> RegisterOrderAsync(long transactionId, string symbol, string type, decimal? price, decimal volume, CancellationToken cancellationToken)
@@ -84,28 +90,42 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 
 		request
 			.AddParameter("symbol", symbol)
-			.AddParameter("type", type);
+			.AddParameter("type", type)
+			.AddParameter("custom_id", transactionId);
 
-		if (price != null)
-			request.AddParameter("price", price.Value);
+		if (type.EqualsIgnoreCase("buy_market"))
+			request.AddParameter("price", volume);
+		else
+		{
+			if (price != null)
+				request.AddParameter("price", price.Value);
 
-		request
-			.AddParameter("amount", volume);
+			request.AddParameter("amount", volume);
+		}
 
-		dynamic response = await MakeRequestAsync<object>(CreateUrl("create_order.do"), ApplySecret(request), cancellationToken);
+		var response = await MakeRequestAsync<LBankCreateOrderReply>(
+			CreateUrl("supplement/create_order.do"),
+			ApplySecret(request),
+			cancellationToken);
 
-		return (string)response.order_id;
+		if (response?.OrderId.IsEmpty() != false)
+			throw new InvalidOperationException("LBank returned an empty order identifier.");
+
+		return response.OrderId;
 	}
 
-	public Task CancelOrderAsync(string symbol, string orderId, CancellationToken cancellationToken)
+	public async Task CancelOrderAsync(string symbol, string orderId, CancellationToken cancellationToken)
 	{
 		var request = CreateRequest(Method.Post);
 
 		request
 			.AddParameter("symbol", symbol)
-			.AddParameter("order_id", orderId);
+			.AddParameter("orderId", orderId);
 
-		return MakeRequestAsync<object>(CreateUrl("cancel_order.do"), ApplySecret(request), cancellationToken);
+		await MakeRequestAsync<LBankCancelOrderReply>(
+			CreateUrl("supplement/cancel_order.do"),
+			ApplySecret(request),
+			cancellationToken);
 	}
 
 	public async Task<(long, decimal?)> WithdrawAsync(string symbol, decimal volume, WithdrawInfo info, CancellationToken cancellationToken)
@@ -116,43 +136,77 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 		if (info.Type != WithdrawTypes.Crypto)
 			throw new NotSupportedException(LocalizedStrings.WithdrawTypeNotSupported.Put(info.Type));
 
+		if (info.ChargeFee == null)
+			throw new InvalidOperationException("LBank requires the withdrawal fee.");
+
+		var coin = symbol.Split('_')[0];
 		var request = CreateRequest(Method.Post);
 
 		request
-			.AddParameter("assetCode", symbol)
-			.AddParameter("account", info.CryptoAddress)
+			.AddParameter("coin", coin)
+			.AddParameter("address", info.CryptoAddress)
 			.AddParameter("amount", volume)
-			.AddParameter("memo", info.PaymentId)
-			.AddParameter("mark", info.Comment);
+			.AddParameter("fee", info.ChargeFee.Value);
 
-		dynamic response = await MakeRequestAsync<object>(CreateUrl("withdraw.do"), ApplySecret(request), cancellationToken);
+		if (!info.PaymentId.IsEmpty())
+			request.AddParameter("memo", info.PaymentId);
 
-		return ((long)response.withdrawId, (decimal?)response.fee);
+		if (!info.Comment.IsEmpty())
+			request.AddParameter("mark", info.Comment);
+
+		var response = await request.InvokeAsync<LBankWithdrawResponse>(
+			CreateUrl("spot/wallet/withdraw.do"),
+			this,
+			this.AddVerboseLog,
+			cancellationToken);
+
+		ThrowIfError(response?.Result, response?.ErrorCode ?? 0, response?.Message);
+
+		var data = response?.Data;
+		var result = data == null
+			? (response?.WithdrawId ?? 0, response?.Fee)
+			: (data.WithdrawId, data.Fee);
+
+		if (result.Item1 == 0)
+			throw new InvalidOperationException("LBank returned an empty withdrawal identifier.");
+
+		return result;
 	}
 
-	public Task<string> GetAuthKeyAsync(CancellationToken cancellationToken)
+	public async Task<string> GetAuthKeyAsync(CancellationToken cancellationToken)
 	{
-		return MakeRequestAsync<string>(CreateUrl("subscribe/get_key.do"), ApplySecret(CreateRequest(Method.Post)), cancellationToken);
+		var response = await ApplySecret(CreateRequest(Method.Post)).InvokeAsync<LBankAuthKeyResponse>(
+			CreateUrl("subscribe/get_key.do"),
+			this,
+			this.AddVerboseLog,
+			cancellationToken);
+
+		ThrowIfError(response?.Result, response?.ErrorCode ?? 0, response?.Message);
+		return response?.Data.IsEmpty() == false ? response.Data : response?.Key;
 	}
 
-	public Task RefreshAuthKeyAsync(string subscribeKey, CancellationToken cancellationToken)
+	public async Task RefreshAuthKeyAsync(string subscribeKey, CancellationToken cancellationToken)
 	{
 		var request = CreateRequest(Method.Post);
 
-		request
-			.AddParameter("subscribeKey", subscribeKey);
+		request.AddParameter("subscribeKey", subscribeKey);
 
-		return MakeRequestAsync<object>(CreateUrl("subscribe/refresh_key.do"), ApplySecret(request), cancellationToken);
+		await MakeRequestAsync<LBankEmpty>(
+			CreateUrl("subscribe/refresh_key.do"),
+			ApplySecret(request),
+			cancellationToken);
 	}
 
-	public Task DestroyAuthKeyAsync(string subscribeKey, CancellationToken cancellationToken)
+	public async Task DestroyAuthKeyAsync(string subscribeKey, CancellationToken cancellationToken)
 	{
 		var request = CreateRequest(Method.Post);
 
-		request
-			.AddParameter("subscribeKey", subscribeKey);
+		request.AddParameter("subscribeKey", subscribeKey);
 
-		return MakeRequestAsync<object>(CreateUrl("subscribe/destroy_key.do"), ApplySecret(request), cancellationToken);
+		await MakeRequestAsync<LBankEmpty>(
+			CreateUrl("subscribe/destroy_key.do"),
+			ApplySecret(request),
+			cancellationToken);
 	}
 
 	private Uri CreateUrl(string methodName)
@@ -164,9 +218,7 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 	}
 
 	private static RestRequest CreateRequest(Method method)
-	{
-		return new RestRequest((string)null, method);
-	}
+		=> new((string)null, method);
 
 	private RestRequest ApplySecret(RestRequest request)
 	{
@@ -175,23 +227,26 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 
 		request.AddParameter("api_key", _key.UnSecure());
 
-		var dict = new SortedDictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+		var parameters = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
 		foreach (var parameter in request.Parameters)
-		{
-			dict.Add(parameter.Name, parameter.Value.ToString());
-		}
+			parameters.Add(parameter.Name, parameter.Value?.To<string>() ?? string.Empty);
 
 		const string signMethod = "HmacSHA256";
-		var timestamp = _nonceGen.GetNextId().To<string>();
-		var echoStr = Guid.NewGuid().ToString().Remove("-");
+		var timestamp = (_nonceGen.GetNextId() + Interlocked.Read(ref _serverTimeOffset)).To<string>();
+		var echoStr = Guid.NewGuid().ToString("N");
 
-		dict.Add("signature_method", signMethod);
-		dict.Add("echostr", echoStr);
-		dict.Add("timestamp", timestamp);
+		parameters.Add("signature_method", signMethod);
+		parameters.Add("echostr", echoStr);
+		parameters.Add("timestamp", timestamp);
 
-		var signature = _hasher
-			.ComputeHash(_md5.ComputeHash(dict.ToQueryString().UTF8()).Digest().ToUpperInvariant().UTF8());
+		byte[] signature;
+
+		using (_signSync.EnterScope())
+		{
+			var source = _md5.ComputeHash(parameters.ToQueryString().UTF8()).Digest().ToUpperInvariant();
+			signature = _hasher.ComputeHash(source.UTF8());
+		}
 
 		request.AddParameter("sign", signature.Digest().ToLowerInvariant());
 
@@ -205,17 +260,23 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 
 	private async Task<T> MakeRequestAsync<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
 	{
-		dynamic obj = await request.InvokeAsync(url, this, this.AddVerboseLog, cancellationToken);
+		var response = await request.InvokeAsync<LBankResponse<T>>(url, this, this.AddVerboseLog, cancellationToken);
 
-		if (obj is JObject)
-		{
-			if (obj.result != null && (bool)obj.result == false)
-				throw new InvalidOperationException(((int)obj.error_code).ToErrorText());
+		if (response == null)
+			throw new InvalidOperationException("LBank returned an empty response.");
 
-			if (obj.data != null)
-				obj = obj.data;
-		}
+		ThrowIfError(response.Result, response.ErrorCode, response.Message);
+		return response.Data;
+	}
 
-		return ((JToken)obj).DeserializeObject<T>();
+	private static void ThrowIfError(bool? result, int errorCode, string message)
+	{
+		if (result != false)
+			return;
+
+		if (message.IsEmpty())
+			message = errorCode.ToErrorText();
+
+		throw new InvalidOperationException($"LBank error {errorCode}: {message}");
 	}
 }

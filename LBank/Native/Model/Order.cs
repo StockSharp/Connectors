@@ -2,7 +2,7 @@ namespace StockSharp.LBank.Native.Model;
 
 class Order
 {
-	[JsonProperty("order_id")]
+	[JsonProperty("orderId")]
 	public string Id { get; set; }
 
 	[JsonProperty("symbol")]
@@ -12,22 +12,22 @@ class Order
 	public string Type { get; set; }
 
 	[JsonProperty("price")]
-	public double? Price { get; set; }
+	public decimal? Price { get; set; }
 
-	[JsonProperty("avg_price")]
-	public double? AvgPrice { get; set; }
+	[JsonProperty("avgPrice")]
+	public decimal? AvgPrice { get; set; }
 
-	[JsonProperty("amount")]
-	public double Volume { get; set; }
+	[JsonProperty("origQty")]
+	public decimal Volume { get; set; }
 
-	[JsonProperty("deal_amount")]
-	public double DealVolume { get; set; }
+	[JsonProperty("executedQty")]
+	public decimal DealVolume { get; set; }
 
-	[JsonProperty("create_time")]
+	[JsonProperty("time")]
 	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
 	public DateTime CreatedTimestamp { get; set; }
 
-	[JsonProperty("customer_id")]
+	[JsonProperty("clientOrderId")]
 	public string CustomerId { get; set; }
 
 	[JsonProperty("status")]
@@ -37,16 +37,16 @@ class Order
 class SocketOrder
 {
 	[JsonProperty("amount")]
-	public double Amount { get; set; }
+	public decimal Amount { get; set; }
 
 	[JsonProperty("orderStatus")]
 	public int Status { get; set; }
 
 	[JsonProperty("price")]
-	public double? Price { get; set; }
+	public decimal? Price { get; set; }
 
 	[JsonProperty("role")]
-	public double Role { get; set; }
+	public string Role { get; set; }
 
 	[JsonProperty("updateTime")]
 	[JsonConverter(typeof(JsonDateTimeMlsConverter))]
@@ -59,5 +59,29 @@ class SocketOrder
 	public string TxUuid { get; set; }
 
 	[JsonProperty("volumePrice")]
-	public double VolumePrice { get; set; }
+	public decimal VolumePrice { get; set; }
+
+	[JsonProperty("symbol")]
+	public string Symbol { get; set; }
+
+	[JsonProperty("type")]
+	public string Type { get; set; }
+
+	[JsonProperty("customerID")]
+	public string CustomerId { get; set; }
+
+	[JsonProperty("orderPrice")]
+	public decimal? OrderPrice { get; set; }
+
+	[JsonProperty("orderAmt")]
+	public decimal OrderAmount { get; set; }
+
+	[JsonProperty("avgPrice")]
+	public decimal? AveragePrice { get; set; }
+
+	[JsonProperty("accAmt")]
+	public decimal AccumulatedAmount { get; set; }
+
+	[JsonProperty("remainAmt")]
+	public decimal RemainingAmount { get; set; }
 }
