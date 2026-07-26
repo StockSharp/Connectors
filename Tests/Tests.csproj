@@ -50,6 +50,7 @@
     <ProjectReference Include="..\Drift\Drift.csproj" />
     <ProjectReference Include="..\DydxChain\DydxChain.csproj" />
     <ProjectReference Include="..\edgeX\EdgeX.csproj" />
+    <ProjectReference Include="..\Exante\Exante.csproj" />
     <ProjectReference Include="..\Exmo\Exmo.csproj" />
     <ProjectReference Include="..\Extended\Extended.csproj" />
     <ProjectReference Include="..\FivePaisa\FivePaisa.csproj" />

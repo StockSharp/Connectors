@@ -62,6 +62,7 @@
     <Project Path="ETrade/ETrade.csproj" />
     <Project Path="Etoro/Etoro.csproj" />
     <Project Path="edgeX/EdgeX.csproj" />
+    <Project Path="Exante/Exante.csproj" />
     <Project Path="Exegy/Exegy.csproj" />
     <Project Path="Exmo/Exmo.csproj" />
     <Project Path="FactSet/FactSet.csproj" />
