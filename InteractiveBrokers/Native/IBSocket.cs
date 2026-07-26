@@ -1,5 +1,6 @@
 namespace StockSharp.InteractiveBrokers.Native;
 
+using System.Buffers.Binary;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -208,8 +209,8 @@ class IBSocket : BaseLogReceiver
 		if (count == 0)
 			throw new InvalidOperationException("count == 0");
 
-		var lenBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(count));
-		lenBytes.AsSpan().Reverse();
+		var lenBytes = new byte[sizeof(int)];
+		BinaryPrimitives.WriteInt32BigEndian(lenBytes, count);
 
 		await stream.WriteAsync(lenBytes.AsMemory(), cancellationToken).NoWait();
 		await stream.WriteAsync(_sendBuffer.Buffer.AsMemory(0, count), cancellationToken).NoWait();
@@ -223,20 +224,16 @@ class IBSocket : BaseLogReceiver
 		const int intSize = sizeof(int);
 		var lenBuf = new byte[intSize];
 
-		var read = await stream.ReadAsync(lenBuf.AsMemory(), cancellationToken).NoWait();
+		await stream.ReadExactlyAsync(lenBuf.AsMemory(), cancellationToken).NoWait();
 
-		if (read != intSize)
-			throw new EndOfStreamException();
+		var msgSize = BinaryPrimitives.ReadInt32BigEndian(lenBuf);
 
-		var msgSize = IPAddress.NetworkToHostOrder(lenBuf.ChangeOrder(intSize, BitConverter.IsLittleEndian).To<int>());
-		if (msgSize > 0x00FFFFFF)
-			throw new InvalidOperationException();
+		if (msgSize <= 0 || msgSize > 0x00FFFFFF)
+			throw new InvalidDataException($"Invalid IB message length {msgSize}.");
+
 		_readBuffer.Count = msgSize;
 
-		var readMsg = await stream.ReadAsync(_readBuffer.Buffer.AsMemory(0, msgSize), cancellationToken).NoWait();
-
-		if (readMsg != msgSize)
-			throw new EndOfStreamException();
+		await stream.ReadExactlyAsync(_readBuffer.Buffer.AsMemory(0, msgSize), cancellationToken).NoWait();
 
 		_readBufferOffset = 0;
 	}
@@ -251,13 +248,15 @@ class IBSocket : BaseLogReceiver
 		{
 			if (UseV100Plus)
 			{
-				var b = _readBuffer[_readBufferOffset];
+				if (_readBufferOffset >= _readBuffer.Count)
+					throw new EndOfStreamException();
+
+				var b = _readBuffer[_readBufferOffset++];
 
 				if (b == 0)
 					break;
 
 				buf.Append((char)b);
-				_readBufferOffset++;
 			}
 			else
 			{
