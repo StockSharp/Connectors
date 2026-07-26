@@ -9,6 +9,7 @@
     <ProjectReference Include="..\Avantis\Avantis.csproj" />
     <ProjectReference Include="..\Backpack\Backpack.csproj" />
     <ProjectReference Include="..\Balancer\Balancer.csproj" />
+    <ProjectReference Include="..\Bcs\Bcs.csproj" />
     <ProjectReference Include="..\Binance\Binance.csproj" />
     <ProjectReference Include="..\BingX\BingX.csproj" />
     <ProjectReference Include="..\Bitbank\Bitbank.csproj" />
