@@ -146,6 +146,8 @@ sealed class KiwoomDomesticOrderRow
 	public string ExchangeType { get; set; }
 	[JsonProperty("stex_tp_txt")]
 	public string ExchangeName { get; set; }
+	[JsonProperty("sor_yn")]
+	public string IsSor { get; set; }
 }
 
 sealed class KiwoomUsOpenOrdersRequest

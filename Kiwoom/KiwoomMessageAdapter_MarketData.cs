@@ -163,7 +163,7 @@ public partial class KiwoomMessageAdapter
 		=> security.AssetClass switch
 		{
 			KiwoomAssetClasses.DomesticStock => _domesticStream ?? throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk),
-			KiwoomAssetClasses.UsStock => _usStream ?? throw new NotSupportedException("Kiwoom mock trading supports domestic KRX data only."),
+			KiwoomAssetClasses.UsStock => _usStream ?? throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk),
 			_ => throw new ArgumentOutOfRangeException(nameof(security), security.AssetClass, null),
 		};
 

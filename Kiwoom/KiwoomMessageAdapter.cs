@@ -96,11 +96,8 @@ public partial class KiwoomMessageAdapter
 			await _rest.Connect(cancellationToken);
 			_domesticStream = CreateStream(KiwoomAssetClasses.DomesticStock, attempts);
 			await _domesticStream.Connect(cancellationToken);
-			if (!IsDemo)
-			{
-				_usStream = CreateStream(KiwoomAssetClasses.UsStock, attempts);
-				await _usStream.Connect(cancellationToken);
-			}
+			_usStream = CreateStream(KiwoomAssetClasses.UsStock, attempts);
+			await _usStream.Connect(cancellationToken);
 
 			if (this.IsTransactional())
 			{
@@ -217,14 +214,29 @@ public partial class KiwoomMessageAdapter
 		var code = message.Data.Item.IsEmpty(message.Data.Values?.SecurityCode);
 		if (!code.IsEmpty())
 		{
-			code = code.TrimStart('A');
-			var match = _securityInfos.Values.FirstOrDefault(item => item.Code.EqualsIgnoreCase(code) && item.AssetClass == message.AssetClass);
+			if (message.AssetClass == KiwoomAssetClasses.DomesticStock &&
+				code.Length > 1 && code[0] == 'A' && char.IsDigit(code[1]))
+				code = code[1..];
+
+			var match = _securityInfos.Values.FirstOrDefault(item =>
+				item.AssetClass == message.AssetClass &&
+				(message.AssetClass == KiwoomAssetClasses.DomesticStock
+					? item.MarketDataCode.EqualsIgnoreCase(code)
+					: item.Code.EqualsIgnoreCase(code)));
 			if (match != null)
 				return match;
 		}
 		if (message.AssetClass == KiwoomAssetClasses.DomesticStock)
-			return KiwoomSecurityInfo.Create(code.ThrowIfEmpty(nameof(code)), KiwoomMarkets.Krx);
-		var exchange = message.Data.Values?.ExchangeCode;
+		{
+			var domesticMarket = code?.EndsWith("_NX", StringComparison.OrdinalIgnoreCase) == true
+				? KiwoomMarkets.Nxt
+				: code?.EndsWith("_AL", StringComparison.OrdinalIgnoreCase) == true
+					? KiwoomMarkets.Sor
+					: KiwoomMarkets.Krx;
+			return KiwoomSecurityInfo.Create(code.ThrowIfEmpty(nameof(code)), domesticMarket);
+		}
+
+		var exchange = message.Data.ExchangeType.IsEmpty(message.Data.Values?.ExchangeCode);
 		var market = exchange?.ToUpperInvariant() switch
 		{
 			"NY" or "NYSE" => KiwoomMarkets.Nyse,

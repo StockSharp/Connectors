@@ -68,6 +68,9 @@ sealed class KiwoomStreamData
 	[JsonProperty("item")]
 	public string Item { get; set; }
 
+	[JsonProperty("stexTp")]
+	public string ExchangeType { get; set; }
+
 	[JsonProperty("values")]
 	public KiwoomStreamValues Values { get; set; }
 }

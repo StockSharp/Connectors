@@ -83,7 +83,10 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 		type.ThrowIfEmpty(nameof(type));
 		if (security.AssetClass != _assetClass)
 			throw new ArgumentException($"{security.AssetClass} cannot be registered on {_assetClass} WebSocket.", nameof(security));
-		var subscription = new KiwoomStreamSubscription(_assetClass, security.Code, security.ExchangeCode, type);
+		var code = security.AssetClass == KiwoomAssetClasses.DomesticStock
+			? security.MarketDataCode
+			: security.Code;
+		var subscription = new KiwoomStreamSubscription(_assetClass, code, security.ExchangeCode, type);
 		lock (_sync)
 		{
 			if (isSubscribe)
@@ -92,7 +95,7 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 					return;
 				var symbolCount = _subscriptions.Keys.Where(item => item.Code != "_")
 					.Select(item => $"{item.ExchangeCode}:{item.Code}").Distinct(StringComparer.OrdinalIgnoreCase).Count();
-				if (security.Code != "_" && symbolCount >= _maxSymbols)
+				if (code != "_" && symbolCount >= _maxSymbols)
 					throw new InvalidOperationException($"Kiwoom WebSocket supports at most {_maxSymbols} symbols per session.");
 				_subscriptions.Add(subscription, security);
 			}

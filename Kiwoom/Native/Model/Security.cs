@@ -18,8 +18,25 @@ sealed record KiwoomSecurityInfo(
 	private static readonly TimeZoneInfo _korea = FindTimeZone("Korea Standard Time", "Asia/Seoul", TimeSpan.FromHours(9));
 	private static readonly TimeZoneInfo _newYork = FindTimeZone("Eastern Standard Time", "America/New_York", TimeSpan.FromHours(-5));
 
+	public string MarketDataCode
+		=> Market switch
+		{
+			KiwoomMarkets.Nxt => Code + "_NX",
+			KiwoomMarkets.Sor => Code + "_AL",
+			_ => Code,
+		};
+
 	public static KiwoomSecurityInfo Create(string code, KiwoomMarkets market)
-		=> market switch
+	{
+		code = code.ThrowIfEmpty(nameof(code)).Trim();
+		if (market is KiwoomMarkets.Krx or KiwoomMarkets.Nxt or KiwoomMarkets.Sor)
+		{
+			if (code.EndsWith("_NX", StringComparison.OrdinalIgnoreCase) ||
+				code.EndsWith("_AL", StringComparison.OrdinalIgnoreCase))
+				code = code[..^3];
+		}
+
+		return market switch
 		{
 			KiwoomMarkets.Krx => new(code, market, KiwoomAssetClasses.DomesticStock, "KRX", "KRX", CurrencyTypes.KRW, _korea),
 			KiwoomMarkets.Nxt => new(code, market, KiwoomAssetClasses.DomesticStock, "NXT", "NXT", CurrencyTypes.KRW, _korea),
@@ -29,6 +46,7 @@ sealed record KiwoomSecurityInfo(
 			KiwoomMarkets.Amex => Us(code, market, "NA", "AMEX"),
 			_ => throw new ArgumentOutOfRangeException(nameof(market), market, null),
 		};
+	}
 
 	private static KiwoomSecurityInfo Us(string code, KiwoomMarkets market, string exchangeCode, string boardCode)
 		=> new(code, market, KiwoomAssetClasses.UsStock, exchangeCode, boardCode, CurrencyTypes.USD, _newYork);

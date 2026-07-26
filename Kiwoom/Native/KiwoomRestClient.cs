@@ -20,6 +20,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 	private string _accessToken;
 	private DateTime _accessTokenExpiry;
 	private DateTime _nextRequestAt;
+	private DateTime _nextUsStockListAt;
 
 	public KiwoomRestClient(string endpoint, string appKey, string appSecret, bool isDemo, int maxAttempts)
 	{
@@ -59,8 +60,10 @@ sealed class KiwoomRestClient : BaseLogReceiver
 				{
 					if (item.Code.IsEmpty())
 						continue;
-					var info = KiwoomSecurityInfo.Create(item.Code, KiwoomMarkets.Krx);
-					result.Add(new(info, item.Name.IsEmpty(item.Code), item.Name.IsEmpty(item.Code), InferDomesticType(marketType, item)));
+					var name = item.Name.IsEmpty(item.Code);
+					var type = InferDomesticType(marketType, item);
+					foreach (var market in GetDomesticMarkets(item))
+						result.Add(new(KiwoomSecurityInfo.Create(item.Code, market), name, name, type));
 				}
 				if (!IsContinuation(page))
 					break;
@@ -98,7 +101,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 		{
 			var quote = (await Send<KiwoomDomesticSecurityRequest, KiwoomDomesticQuoteResponse>(
 				KiwoomRoutes.DomesticStockInfo, KiwoomRoutes.DomesticSecurityInfo,
-				new() { SecurityCode = security.Code }, null, null, cancellationToken)).Body;
+				new() { SecurityCode = security.MarketDataCode }, null, null, cancellationToken)).Body;
 			var depth = await GetDepth(security, cancellationToken);
 			return new(quote.LastPrice.ToPrice(), quote.OpenPrice.ToPrice(), quote.HighPrice.ToPrice(), quote.LowPrice.ToPrice(),
 				quote.PreviousClose.ToPrice(), quote.Volume.ToDecimal(), null,
@@ -122,7 +125,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 		{
 			var depth = (await Send<KiwoomDomesticSecurityRequest, KiwoomDomesticDepthResponse>(
 				KiwoomRoutes.DomesticMarket, KiwoomRoutes.DomesticDepth,
-				new() { SecurityCode = security.Code }, null, null, cancellationToken)).Body;
+				new() { SecurityCode = security.MarketDataCode }, null, null, cancellationToken)).Body;
 			return new(ToPrices(depth.BidPrices), ToValues(depth.BidVolumes), ToPrices(depth.AskPrices), ToValues(depth.AskVolumes),
 				string.Empty.ToKiwoomUtc(depth.Time, security));
 		}
@@ -281,7 +284,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 			{
 				var typed = await Send<KiwoomDomesticDailyCandleRequest, KiwoomDomesticDailyCandleResponse>(
 					KiwoomRoutes.DomesticChart, KiwoomRoutes.DomesticDailyCandles,
-					new() { SecurityCode = security.Code, BaseDate = ToLocalDate(to, security) }, continuation, nextKey, cancellationToken);
+					new() { SecurityCode = security.MarketDataCode, BaseDate = ToLocalDate(to, security) }, continuation, nextKey, cancellationToken);
 				page = new(typed.Body, typed.Continuation, typed.NextKey);
 				candles = typed.Body.Candles ?? [];
 			}
@@ -289,7 +292,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 			{
 				var typed = await Send<KiwoomDomesticMinuteCandleRequest, KiwoomDomesticMinuteCandleResponse>(
 					KiwoomRoutes.DomesticChart, KiwoomRoutes.DomesticMinuteCandles,
-					new() { SecurityCode = security.Code, BaseDate = ToLocalDate(to, security), Interval = ((int)timeFrame.TotalMinutes).ToString(CultureInfo.InvariantCulture) },
+					new() { SecurityCode = security.MarketDataCode, BaseDate = ToLocalDate(to, security), Interval = ((int)timeFrame.TotalMinutes).ToString(CultureInfo.InvariantCulture) },
 					continuation, nextKey, cancellationToken);
 				page = new(typed.Body, typed.Continuation, typed.NextKey);
 				candles = typed.Body.Candles ?? [];
@@ -357,7 +360,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 		await EnsureAuthenticated(cancellationToken);
 		for (var attempt = 0; ; attempt++)
 		{
-			await WaitRateLimit(cancellationToken);
+			await WaitRateLimit(apiId, cancellationToken);
 			using var message = new HttpRequestMessage(HttpMethod.Post, new Uri(Root, path));
 			message.Headers.TryAddWithoutValidation("authorization", $"Bearer {_accessToken}");
 			message.Headers.TryAddWithoutValidation("api-id", apiId);
@@ -422,7 +425,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 			if (token.ReturnCode != 0)
 				throw new InvalidOperationException($"Kiwoom OAuth error {token.ReturnCode}: {token.ReturnMessage}");
 			_accessToken = token.Token.ThrowIfEmpty(nameof(token.Token));
-			_accessTokenExpiry = DateTime.UtcNow.AddHours(23);
+			_accessTokenExpiry = ParseTokenExpiry(token.ExpiresAt);
 		}
 		finally
 		{
@@ -430,20 +433,50 @@ sealed class KiwoomRestClient : BaseLogReceiver
 		}
 	}
 
-	private async Task WaitRateLimit(CancellationToken cancellationToken)
+	private async Task WaitRateLimit(string apiId, CancellationToken cancellationToken)
 	{
 		await _rateLock.WaitAsync(cancellationToken);
 		try
 		{
-			var delay = _nextRequestAt - DateTime.UtcNow;
+			var nextRequestAt = _nextRequestAt;
+			if (apiId == KiwoomRoutes.UsStockList && _nextUsStockListAt > nextRequestAt)
+				nextRequestAt = _nextUsStockListAt;
+
+			var delay = nextRequestAt - DateTime.UtcNow;
 			if (delay > TimeSpan.Zero)
 				await Task.Delay(delay, cancellationToken);
-			_nextRequestAt = DateTime.UtcNow + (_isDemo ? TimeSpan.FromSeconds(1) : TimeSpan.FromMilliseconds(200));
+
+			var now = DateTime.UtcNow;
+			_nextRequestAt = now + GetRequestInterval(apiId, now);
+			if (apiId == KiwoomRoutes.UsStockList)
+				_nextUsStockListAt = now + TimeSpan.FromSeconds(12);
 		}
 		finally
 		{
 			_rateLock.Release();
 		}
+	}
+
+	private TimeSpan GetRequestInterval(string apiId, DateTime utcNow)
+	{
+		if (_isDemo)
+			return TimeSpan.FromSeconds(1);
+
+		var koreaHour = utcNow.AddHours(9).Hour;
+		return apiId.StartsWith("us", StringComparison.OrdinalIgnoreCase) && koreaHour == 9
+			? TimeSpan.FromMilliseconds(350)
+			: TimeSpan.FromMilliseconds(200);
+	}
+
+	private static DateTime ParseTokenExpiry(string value)
+	{
+		if (DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture,
+			DateTimeStyles.None, out var koreaTime))
+		{
+			return DateTime.SpecifyKind(koreaTime - TimeSpan.FromHours(9), DateTimeKind.Utc);
+		}
+
+		return DateTime.UtcNow.AddHours(23);
 	}
 
 	private T Deserialize<T>(string content)
@@ -491,8 +524,15 @@ sealed class KiwoomRestClient : BaseLogReceiver
 
 	private static KiwoomOrderExecution ConvertDomesticOrder(KiwoomDomesticOrderRow item)
 	{
-		var market = item.ExchangeType.EqualsIgnoreCase("NXT") || item.ExchangeName?.Contains("NXT", StringComparison.OrdinalIgnoreCase) == true
-			? KiwoomMarkets.Nxt : KiwoomMarkets.Krx;
+		var market =
+			item.IsSor.EqualsIgnoreCase("Y") ||
+			item.ExchangeType.EqualsIgnoreCase("SOR") ||
+			item.ExchangeName?.Contains("SOR", StringComparison.OrdinalIgnoreCase) == true
+				? KiwoomMarkets.Sor
+				: item.ExchangeType.EqualsIgnoreCase("NXT") ||
+					item.ExchangeName?.Contains("NXT", StringComparison.OrdinalIgnoreCase) == true
+					? KiwoomMarkets.Nxt
+					: KiwoomMarkets.Krx;
 		var info = KiwoomSecurityInfo.Create(CleanDomesticCode(item.SecurityCode), market);
 		var side = item.SideName?.Contains("매수", StringComparison.Ordinal) == true ? Sides.Buy : Sides.Sell;
 		return new(item.OrderNumber, item.OriginalOrderNumber, info, side, item.OrderQuantity.ToDecimal() ?? 0,
@@ -522,6 +562,11 @@ sealed class KiwoomRestClient : BaseLogReceiver
 			_ when item.ProductName?.Contains("ETF", StringComparison.OrdinalIgnoreCase) == true => SecurityTypes.Etf,
 			_ => SecurityTypes.Stock,
 		};
+
+	private KiwoomMarkets[] GetDomesticMarkets(KiwoomDomesticStock item)
+		=> !_isDemo && item.IsNxtEnabled.EqualsIgnoreCase("Y")
+			? [KiwoomMarkets.Krx, KiwoomMarkets.Nxt, KiwoomMarkets.Sor]
+			: [KiwoomMarkets.Krx];
 
 	private static decimal[] ToPrices(IEnumerable<string> values)
 		=> [.. values.Select(value => value.ToPrice() ?? 0)];
