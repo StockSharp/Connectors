@@ -343,8 +343,8 @@ sealed class CoinWFuturesCandleConverter : JsonConverter<CoinWFuturesCandle>
 		var candle = new CoinWFuturesCandle
 		{
 			OpenTime = CoinWJson.ReadInt64(reader, "futures candle time"),
-			HighPrice = CoinWJson.ReadWireString(reader, "futures candle high"),
 			OpenPrice = CoinWJson.ReadWireString(reader, "futures candle open"),
+			HighPrice = CoinWJson.ReadWireString(reader, "futures candle high"),
 			LowPrice = CoinWJson.ReadWireString(reader, "futures candle low"),
 			ClosePrice = CoinWJson.ReadWireString(reader, "futures candle close"),
 			Volume = CoinWJson.ReadWireString(reader, "futures candle volume"),
