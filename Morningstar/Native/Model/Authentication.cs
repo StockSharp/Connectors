@@ -14,6 +14,9 @@ sealed class MorningstarTokenResponse
 
 sealed class MorningstarErrorResponse
 {
+	[JsonProperty("error_message")]
+	public string AuthenticationMessage { get; set; }
+
 	[JsonProperty("statusCode")]
 	public string StatusCode { get; set; }
 
@@ -28,7 +31,7 @@ sealed class MorningstarErrorResponse
 
 	public string GetMessage()
 	{
-		var message = Message.IsEmpty(ErrorCode);
+		var message = Message.IsEmpty(AuthenticationMessage).IsEmpty(ErrorCode);
 		if (!RequestId.IsEmpty())
 			message = $"{message} Request ID: {RequestId}.";
 		return message;

@@ -65,9 +65,8 @@ public partial class MorningstarMessageAdapter
 				nameof(mdMsg.From), from, "The start date is after the end date.");
 
 		var (identifier, identifierType) = GetIdentifier(mdMsg.SecurityId);
-		var response = await SafeClient().GetDailyOhlcv(identifier, identifierType,
-			mdMsg.SecurityId.BoardCode, from, to, Currency, cancellationToken);
-		var investment = SelectInvestment(response, identifier, identifierType);
+		var investment = await GetDailyOhlcv(identifier, identifierType,
+			mdMsg.SecurityId.BoardCode, from, to, cancellationToken);
 		IEnumerable<MorningstarDailyOhlcv> points = investment.TimeSeries?.Data ?? [];
 		points = points.Where(point => point.GetTime() != null)
 			.OrderBy(point => point.GetTime());
@@ -123,9 +122,8 @@ public partial class MorningstarMessageAdapter
 				nameof(mdMsg.From), from, "The start date is after the end date.");
 
 		var (identifier, identifierType) = GetIdentifier(mdMsg.SecurityId);
-		var response = await SafeClient().GetDailyOhlcv(identifier, identifierType,
-			mdMsg.SecurityId.BoardCode, from, to, Currency, cancellationToken);
-		var investment = SelectInvestment(response, identifier, identifierType);
+		var investment = await GetDailyOhlcv(identifier, identifierType,
+			mdMsg.SecurityId.BoardCode, from, to, cancellationToken);
 		IEnumerable<MorningstarDailyOhlcv> points = investment.TimeSeries?.Data ?? [];
 		points = points.Where(point => point.HasOhlc && point.GetTime() != null)
 			.OrderBy(point => point.GetTime());
@@ -162,10 +160,49 @@ public partial class MorningstarMessageAdapter
 		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
 
+	private async Task<MorningstarDailyOhlcvInvestment> GetDailyOhlcv(
+		string identifier, MorningstarIdentifierTypes identifierType, string boardCode,
+		DateTime from, DateTime to, CancellationToken cancellationToken)
+	{
+		MorningstarDailyOhlcvInvestment result = null;
+		var data = new List<MorningstarDailyOhlcv>();
+		var warning = default(string);
+
+		for (var chunkFrom = from; chunkFrom <= to;)
+		{
+			var maximumEnd = chunkFrom.AddMonths(6).AddDays(-1);
+			var chunkTo = maximumEnd < to ? maximumEnd : to;
+			var response = await SafeClient().GetDailyOhlcv(identifier, identifierType,
+				boardCode, chunkFrom, chunkTo, Currency, cancellationToken);
+			var investment = SelectInvestment(response, identifier, identifierType, out var responseWarning);
+			if (investment is not null)
+			{
+				result ??= investment;
+				data.AddRange(investment.TimeSeries.Data ?? []);
+			}
+			else if (!responseWarning.IsEmpty())
+				warning = responseWarning;
+
+			if (chunkTo >= to)
+				break;
+			chunkFrom = chunkTo.AddDays(1);
+		}
+
+		if (result is null)
+			throw new InvalidOperationException($"Morningstar: {warning.IsEmpty("No entitled investment matched the request.")}");
+
+		result.TimeSeries.Data = [.. data
+			.Where(point => point is not null)
+			.GroupBy(point => point.Date, StringComparer.Ordinal)
+			.Select(group => group.Last())];
+		return result;
+	}
+
 	private static MorningstarDailyOhlcvInvestment SelectInvestment(
 		MorningstarDailyOhlcvResponse response, string identifier,
-		MorningstarIdentifierTypes identifierType)
+		MorningstarIdentifierTypes identifierType, out string warning)
 	{
+		warning = response.Metadata?.Messages?.Message;
 		var investments = (response.Investments ?? [])
 			.Where(investment => investment?.TimeSeries?.Data != null)
 			.ToArray();
@@ -178,11 +215,7 @@ public partial class MorningstarMessageAdapter
 				$"Morningstar identifier '{identifier}' is ambiguous. Specify its MIC board or Performance ID.");
 		if (investments.Length == 1)
 			return investments[0];
-
-		var warning = response.Metadata?.Messages?.Message;
-		if (warning.IsEmpty())
-			warning = "No entitled investment matched the request.";
-		throw new InvalidOperationException($"Morningstar: {warning}");
+		return null;
 	}
 
 	private static SecurityId GetResultSecurityId(SecurityId requested,
