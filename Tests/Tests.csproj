@@ -132,6 +132,7 @@
     <ProjectReference Include="..\Upbit\Upbit.csproj" />
     <ProjectReference Include="..\VALR\VALR.csproj" />
     <ProjectReference Include="..\VariationalOmni\VariationalOmni.csproj" />
+    <ProjectReference Include="..\Ventura\Ventura.csproj" />
     <ProjectReference Include="..\Weex\Weex.csproj" />
     <ProjectReference Include="..\WhiteBit\WhiteBit.csproj" />
     <ProjectReference Include="..\WooX\WooX.csproj" />
