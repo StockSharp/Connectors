@@ -8,22 +8,22 @@ public enum KoreanFscDataSets
 {
     /// <summary>KRX-listed stocks.</summary>
     [EnumMember]
-    [Display(Name = "Stocks")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.StocksKey)]
     Stocks,
 
     /// <summary>Listed beneficiary and income securities.</summary>
     [EnumMember]
-    [Display(Name = "Income securities")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IncomeSecuritiesKey)]
     IncomeSecurities,
 
     /// <summary>Listed preemptive-right securities.</summary>
     [EnumMember]
-    [Display(Name = "Preemptive-right securities")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PreemptiveRightSecuritiesKey)]
     PreemptiveRightSecurities,
 
     /// <summary>Listed preemptive-right certificates.</summary>
     [EnumMember]
-    [Display(Name = "Preemptive-right certificates")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PreemptiveRightCertificatesKey)]
     PreemptiveRightCertificates,
 }
 
@@ -35,21 +35,21 @@ public enum KoreanFscMarkets
 {
     /// <summary>All markets.</summary>
     [EnumMember]
-    [Display(Name = "All markets")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AllMarketsKey)]
     All,
 
     /// <summary>KOSPI.</summary>
     [EnumMember]
-    [Display(Name = "KOSPI")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KospiKey)]
     Kospi,
 
     /// <summary>KOSDAQ.</summary>
     [EnumMember]
-    [Display(Name = "KOSDAQ")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KosdaqKey)]
     Kosdaq,
 
     /// <summary>KONEX.</summary>
     [EnumMember]
-    [Display(Name = "KONEX")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KonexKey)]
     Konex,
 }

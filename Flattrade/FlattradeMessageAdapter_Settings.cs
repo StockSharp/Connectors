@@ -70,24 +70,27 @@ public partial class FlattradeMessageAdapter : MessageAdapter, ITokenAdapter
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Instrument master endpoint.</summary>
 	[Display(
-		Name = "Instrument endpoint",
-		Description = "Instrument master endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InstrumentEndpointKey,
+		Description = LocalizedStrings.InstrumentMasterEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
 
 	/// <summary>WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.WebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

@@ -34,8 +34,9 @@ public partial class PaytmMoneyMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "API key",
-        Description = "API key created in the Paytm Money developer portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiKeyKey,
+        Description = LocalizedStrings.ApiKeyCreatedInThePaytmMoneyDeveloperPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -43,8 +44,9 @@ public partial class PaytmMoneyMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "API secret",
-        Description = "API secret created in the Paytm Money developer portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiSecretKey,
+        Description = LocalizedStrings.ApiSecretCreatedInThePaytmMoneyDeveloperPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -52,8 +54,9 @@ public partial class PaytmMoneyMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "Access token",
-        Description = "Trading access token returned by the session endpoint.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccessTokenKey,
+        Description = LocalizedStrings.TradingAccessTokenReturnedByTheSessionEndpointDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -63,8 +66,9 @@ public partial class PaytmMoneyMessageAdapter :
     /// Read-only access token.
     /// </summary>
     [Display(
-        Name = "Read access token",
-        Description = "Read-only token used for account and historical data.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReadAccessTokenKey,
+        Description = LocalizedStrings.ReadOnlyTokenUsedForAccountAndHistoricalDataDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -74,8 +78,9 @@ public partial class PaytmMoneyMessageAdapter :
     /// Public market-data access token.
     /// </summary>
     [Display(
-        Name = "Public access token",
-        Description = "Public token used by the market-data WebSocket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PublicAccessTokenKey,
+        Description = LocalizedStrings.PublicTokenUsedByTheMarketDataWebSocketDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -85,8 +90,9 @@ public partial class PaytmMoneyMessageAdapter :
     /// One-time request token used to generate a session.
     /// </summary>
     [Display(
-        Name = "Request token",
-        Description = "One-time token returned by the browser login flow.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RequestTokenKey,
+        Description = LocalizedStrings.OneTimeTokenReturnedByTheBrowserLoginFlowDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public SecureString RequestToken { get; set; }
@@ -95,8 +101,9 @@ public partial class PaytmMoneyMessageAdapter :
     /// Default product used for new orders.
     /// </summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Paytm Money product for new orders.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultPaytmMoneyProductForNewOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 6)]
     public PaytmMoneyProducts DefaultProduct { get; set; } =
@@ -106,8 +113,9 @@ public partial class PaytmMoneyMessageAdapter :
     /// Portfolio name emitted by the connector.
     /// </summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the Paytm Money user id is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyThePaytmMoneyUserIdIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 7)]
     public string PortfolioName { get; set; }
@@ -116,8 +124,9 @@ public partial class PaytmMoneyMessageAdapter :
     /// REST API root address.
     /// </summary>
     [Display(
-        Name = "API address",
-        Description = "Paytm Money REST API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiAddressKey,
+        Description = LocalizedStrings.PaytmMoneyRestApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 8)]
     public Uri Address { get; set; } = _defaultAddress;
@@ -126,8 +135,9 @@ public partial class PaytmMoneyMessageAdapter :
     /// Market-data WebSocket address.
     /// </summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Paytm Money broadcast WebSocket address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.PaytmMoneyBroadcastWebSocketAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 9)]
     public Uri WebSocketAddress { get; set; } =
@@ -137,8 +147,9 @@ public partial class PaytmMoneyMessageAdapter :
     /// Security master file name.
     /// </summary>
     [Display(
-        Name = "Security master file",
-        Description = "File name requested from the public scrip master endpoint.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SecurityMasterFileKey,
+        Description = LocalizedStrings.FileNameRequestedFromThePublicScripMasterEndpointDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 10)]
     public string SecurityMasterFile { get; set; } =

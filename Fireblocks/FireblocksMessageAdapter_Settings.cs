@@ -19,8 +19,9 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 
 	/// <summary>Fireblocks workspace cloud environment.</summary>
 	[Display(
-		Name = "Environment",
-		Description = "Fireblocks workspace cloud environment.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
+		Description = LocalizedStrings.FireblocksWorkspaceCloudEnvironmentDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -93,8 +94,9 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 
 	/// <summary>Vault accounts requested per API page.</summary>
 	[Display(
-		Name = "Vault page size",
-		Description = "Vault accounts requested per Fireblocks API page.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VaultPageSizeKey,
+		Description = LocalizedStrings.VaultAccountsRequestedPerFireblocksApiPageDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public int VaultPageSize
@@ -110,8 +112,9 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 
 	/// <summary>Maximum vault accounts loaded from the workspace.</summary>
 	[Display(
-		Name = "Maximum vault accounts",
-		Description = "Maximum vault accounts loaded from the workspace.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumVaultAccountsKey,
+		Description = LocalizedStrings.MaximumVaultAccountsLoadedFromTheWorkspaceDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public int MaximumVaultAccounts
@@ -127,8 +130,9 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 
 	/// <summary>Maximum assets returned by an unbounded lookup.</summary>
 	[Display(
-		Name = "Security lookup limit",
-		Description = "Maximum Fireblocks assets returned by one lookup.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecurityLookupLimitKey,
+		Description = LocalizedStrings.MaximumFireblocksAssetsReturnedByOneLookupDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 7)]
 	public int SecurityLookupLimit

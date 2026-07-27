@@ -39,9 +39,10 @@ public partial class FmpMessageAdapter : MessageAdapter, ITokenAdapter, IAddress
 
 	/// <summary>FMP US equity WebSocket address.</summary>
 	[Display(
-		Name = "Stock WebSocket",
-		Description = "FMP US equity realtime endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockWebSocketKey,
+		Description = LocalizedStrings.FmpUsEquityRealtimeEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public Uri StockWebSocketAddress { get; set; } =
@@ -49,9 +50,10 @@ public partial class FmpMessageAdapter : MessageAdapter, ITokenAdapter, IAddress
 
 	/// <summary>FMP forex WebSocket address.</summary>
 	[Display(
-		Name = "Forex WebSocket",
-		Description = "FMP forex realtime endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForexWebSocketKey,
+		Description = LocalizedStrings.FmpForexRealtimeEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
 	public Uri ForexWebSocketAddress { get; set; } =
@@ -59,9 +61,10 @@ public partial class FmpMessageAdapter : MessageAdapter, ITokenAdapter, IAddress
 
 	/// <summary>FMP crypto WebSocket address.</summary>
 	[Display(
-		Name = "Crypto WebSocket",
-		Description = "FMP crypto realtime endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoWebSocketKey,
+		Description = LocalizedStrings.FmpCryptoRealtimeEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	[BasicSetting]
 	public Uri CryptoWebSocketAddress { get; set; } =
@@ -69,25 +72,28 @@ public partial class FmpMessageAdapter : MessageAdapter, ITokenAdapter, IAddress
 
 	/// <summary>Optional exchange filter and qualifier for stock symbols.</summary>
 	[Display(
-		Name = "Stock exchange",
-		Description = "Optional FMP exchange code used for stock lookup and manual identifiers.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockExchangeKey,
+		Description = LocalizedStrings.OptionalFmpExchangeCodeUsedForStockLookupAndManualIdentifiersDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 5)]
 	public string StockExchange { get; set; }
 
 	/// <summary>End-of-day stock price adjustment.</summary>
 	[Display(
-		Name = "EOD adjustment",
-		Description = "Price adjustment used by the FMP daily stock history endpoint.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EodAdjustmentKey,
+		Description = LocalizedStrings.PriceAdjustmentUsedByTheFmpDailyStockHistoryEndpointDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 6)]
 	public FmpEodAdjustments EodAdjustment { get; set; }
 
 	/// <summary>Time zone used to interpret offset-free intraday timestamps.</summary>
 	[Display(
-		Name = "Intraday time zone",
-		Description = "System time-zone identifier used for FMP intraday date strings.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IntradayTimeZoneKey,
+		Description = LocalizedStrings.SystemTimeZoneIdentifierUsedForFmpIntradayDateStringsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 7)]
 	public string IntradayTimeZoneId { get; set; } = TimeZoneInfo.Utc.Id;
 

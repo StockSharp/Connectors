@@ -27,7 +27,7 @@ public partial class FinraMessageAdapter :
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.KeyKey,
-		Description = "FINRA API Client ID.",
+		Description = LocalizedStrings.FinraApiClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -37,7 +37,7 @@ public partial class FinraMessageAdapter :
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.SecretKey,
-		Description = "FINRA API Client Secret.",
+		Description = LocalizedStrings.FinraApiClientSecretDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -47,15 +47,16 @@ public partial class FinraMessageAdapter :
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.TokenKey,
-		Description = "Optional existing FINRA OAuth access token. Client credentials are used when empty.",
+		Description = LocalizedStrings.OptionalExistingFinraOAuthAccessTokenClientCredentialsAreUsedWhenEmptyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	public SecureString Token { get; set; }
 
 	/// <inheritdoc />
 	[Display(
-		Name = "Mock data",
-		Description = "Append Mock to the dataset name for a FINRA mock credential.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MockDataKey,
+		Description = LocalizedStrings.AppendMockToTheDatasetNameForAFinraMockCredentialDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
@@ -63,8 +64,9 @@ public partial class FinraMessageAdapter :
 
 	/// <summary>FINRA equity dataset exposed as Level 1 history.</summary>
 	[Display(
-		Name = "Dataset",
-		Description = "Public FINRA equity dataset projected into StockSharp Level 1 fields.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DatasetKey,
+		Description = LocalizedStrings.PublicFinraEquityDatasetProjectedIntoStockSharpLevel1FieldsDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 4)]
 	[BasicSetting]
@@ -75,8 +77,9 @@ public partial class FinraMessageAdapter :
 	/// Optional weekly-summary tier such as T1, T2, OTCE, or NA.
 	/// </summary>
 	[Display(
-		Name = "Weekly tier",
-		Description = "Optional weeklySummary tierIdentifier filter (T1, T2, OTCE, or NA).",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WeeklyTierKey,
+		Description = LocalizedStrings.OptionalWeeklySummaryTierIdentifierFilterT1T2OtceOrNaDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 5)]
 	public string WeeklyTierIdentifier { get; set; }
@@ -85,32 +88,36 @@ public partial class FinraMessageAdapter :
 	/// Optional weekly summary type, for example ATS_W_SMBL or OTC_W_SMBL.
 	/// </summary>
 	[Display(
-		Name = "Weekly summary type",
-		Description = "Optional weeklySummary summaryTypeCode filter, such as ATS_W_SMBL or OTC_W_SMBL.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WeeklySummaryTypeKey,
+		Description = LocalizedStrings.OptionalWeeklySummarySummaryTypeCodeFilterSuchAsAtsWSmblOrOtcWSmblDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 6)]
 	public string WeeklySummaryTypeCode { get; set; } = "ATS_W_SMBL";
 
 	/// <summary>Maximum records requested in one synchronous page.</summary>
 	[Display(
-		Name = "Page size",
-		Description = "FINRA synchronous page size from 1 to 5000.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PageSizeKey,
+		Description = LocalizedStrings.FinraSynchronousPageSizeFrom1To5000DescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 7)]
 	public int PageSize { get; set; } = 5000;
 
 	/// <summary>Maximum raw records loaded by one subscription.</summary>
 	[Display(
-		Name = "Maximum records",
-		Description = "Safety limit for raw records loaded by one lookup or history request.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumRecordsKey,
+		Description = LocalizedStrings.SafetyLimitForRawRecordsLoadedByOneLookupOrHistoryRequestDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 8)]
 	public int MaxRecords { get; set; } = 100000;
 
 	/// <summary>Requested FINRA dataset schema version.</summary>
 	[Display(
-		Name = "Data version",
-		Description = "Value sent in the FINRA data-version request header.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataVersionKey,
+		Description = LocalizedStrings.ValueSentInTheFinraDataVersionRequestHeaderDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 9)]
 	public int DataVersion { get; set; } = 1;
@@ -119,7 +126,7 @@ public partial class FinraMessageAdapter :
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
-		Description = "FINRA Query API base address.",
+		Description = LocalizedStrings.FinraQueryApiBaseAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public Uri Address { get; set; } =
@@ -127,8 +134,9 @@ public partial class FinraMessageAdapter :
 
 	/// <summary>FINRA Identity Platform OAuth token address.</summary>
 	[Display(
-		Name = "OAuth address",
-		Description = "FINRA Identity Platform client-credentials token endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthAddressKey,
+		Description = LocalizedStrings.FinraIdentityPlatformClientCredentialsTokenEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 11)]
 	public Uri AuthAddress { get; set; } = new(

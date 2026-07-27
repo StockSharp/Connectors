@@ -31,8 +31,9 @@ public partial class WisdomCapitalMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "Interactive app key",
-        Description = "Interactive API application key created in the Wisdom Capital developer dashboard.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.InteractiveAppKeyKey,
+        Description = LocalizedStrings.InteractiveApiApplicationKeyCreatedInTheWisdomCapitalDeveloperDashboardDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -40,8 +41,9 @@ public partial class WisdomCapitalMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "Interactive app secret",
-        Description = "Interactive API application secret.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.InteractiveAppSecretKey,
+        Description = LocalizedStrings.InteractiveApiApplicationSecretDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -49,24 +51,27 @@ public partial class WisdomCapitalMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "Interactive token",
-        Description = "Existing interactive API token. When empty, the connector logs in with the app key and secret.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.InteractiveTokenKey,
+        Description = LocalizedStrings.ExistingInteractiveApiTokenWhenEmptyTheConnectorLogsInWithTheAppKeyAndSecretDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     public SecureString Token { get; set; }
 
     /// <summary>Interactive XTS user ID.</summary>
     [Display(
-        Name = "Interactive user ID",
-        Description = "XTS user ID returned by interactive login. Required with a pre-issued interactive token.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.InteractiveUserIdKey,
+        Description = LocalizedStrings.XtsUserIdReturnedByInteractiveLoginRequiredWithAPreIssuedInteractiveTokenDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public string UserId { get; set; }
 
     /// <summary>Market-data API application key.</summary>
     [Display(
-        Name = "Market-data app key",
-        Description = "Separate market-data application key created in the Wisdom Capital developer dashboard.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketDataAppKeyKey,
+        Description = LocalizedStrings.SeparateMarketDataApplicationKeyCreatedInTheWisdomCapitalDeveloperDashboardDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -74,8 +79,9 @@ public partial class WisdomCapitalMessageAdapter : MessageAdapter,
 
     /// <summary>Market-data API application secret.</summary>
     [Display(
-        Name = "Market-data app secret",
-        Description = "Separate market-data application secret.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketDataAppSecretKey,
+        Description = LocalizedStrings.SeparateMarketDataApplicationSecretDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     [BasicSetting]
@@ -83,32 +89,36 @@ public partial class WisdomCapitalMessageAdapter : MessageAdapter,
 
     /// <summary>Existing market-data token.</summary>
     [Display(
-        Name = "Market-data token",
-        Description = "Existing market-data token. When empty, the connector logs in with the market-data app key and secret.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketDataTokenKey,
+        Description = LocalizedStrings.ExistingMarketDataTokenWhenEmptyTheConnectorLogsInWithTheMarketDataAppKeyAndSecretDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     public SecureString MarketDataToken { get; set; }
 
     /// <summary>Market-data XTS user ID.</summary>
     [Display(
-        Name = "Market-data user ID",
-        Description = "XTS user ID returned by market-data login. Required with a pre-issued market-data token.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketDataUserIdKey,
+        Description = LocalizedStrings.XtsUserIdReturnedByMarketDataLoginRequiredWithAPreIssuedMarketDataTokenDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 7)]
     public string MarketDataUserId { get; set; }
 
     /// <summary>Portfolio name emitted by the connector.</summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the interactive user ID is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyTheInteractiveUserIdIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 8)]
     public string PortfolioName { get; set; }
 
     /// <summary>Default product used for new orders.</summary>
     [Display(
-        Name = "Default product",
-        Description = "Default XTS product used when an order condition does not specify one.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultXtsProductUsedWhenAnOrderConditionDoesNotSpecifyOneDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 9)]
     public WisdomCapitalProducts DefaultProduct { get; set; } =
@@ -116,8 +126,9 @@ public partial class WisdomCapitalMessageAdapter : MessageAdapter,
 
     /// <summary>XTS application source.</summary>
     [Display(
-        Name = "Source",
-        Description = "Application source passed to both XTS login endpoints.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SourceKey,
+        Description = LocalizedStrings.ApplicationSourcePassedToBothXtsLoginEndpointsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 10)]
     public string Source { get; set; } = "WebAPI";
@@ -134,24 +145,27 @@ public partial class WisdomCapitalMessageAdapter : MessageAdapter,
 
     /// <summary>Maximum number of Socket.IO reconnect attempts.</summary>
     [Display(
-        Name = "Reconnect attempts",
-        Description = "Maximum number of Socket.IO reconnect attempts.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+        Description = LocalizedStrings.MaximumNumberOfSocketIoReconnectAttemptsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 12)]
     public int ReconnectAttempts { get; set; } = 10;
 
     /// <summary>Socket.IO Engine.IO protocol version.</summary>
     [Display(
-        Name = "Engine.IO version",
-        Description = "Engine.IO protocol version used by the Wisdom Capital Socket.IO endpoints.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.EngineIoVersionKey,
+        Description = LocalizedStrings.EngineIoProtocolVersionUsedByTheWisdomCapitalSocketIoEndpointsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 13)]
     public int EngineIoVersion { get; set; } = 4;
 
     /// <summary>REST and Socket.IO server root.</summary>
     [Display(
-        Name = "API address",
-        Description = "Wisdom Capital XTS server root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiAddressKey,
+        Description = LocalizedStrings.WisdomCapitalXtsServerRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 14)]
     public Uri RestAddress { get; set; } = _defaultRestAddress;

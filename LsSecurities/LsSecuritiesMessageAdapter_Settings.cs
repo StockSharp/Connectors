@@ -52,8 +52,9 @@ public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, 
 
 	/// <summary>MAC address required for corporate accounts.</summary>
 	[Display(
-		Name = "MAC address",
-		Description = "MAC address required for corporate accounts.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MacAddressKey,
+		Description = LocalizedStrings.MacAddressRequiredForCorporateAccountsDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
@@ -71,24 +72,27 @@ public partial class LsSecuritiesMessageAdapter : MessageAdapter, IDemoAdapter, 
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Production WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Production WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>Demo WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo WebSocket endpoint",
-		Description = "Demo WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;

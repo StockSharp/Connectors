@@ -25,7 +25,7 @@ public partial class TpexMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Taipei Exchange website and OpenAPI root.",
+        Description = LocalizedStrings.TaipeiExchangeWebsiteAndOpenAPIRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 0)]
     [BasicSetting]
@@ -34,8 +34,9 @@ public partial class TpexMessageAdapter :
 
     /// <summary>TPEx equity market selection.</summary>
     [Display(
-        Name = "Market",
-        Description = "Mainboard, Emerging Stock Board, or both equity markets.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketKey,
+        Description = LocalizedStrings.MainboardEmergingStockBoardOrBothEquityMarketsDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 1)]
     [BasicSetting]
@@ -44,34 +45,38 @@ public partial class TpexMessageAdapter :
 
     /// <summary>Include warrants and other listed derivatives.</summary>
     [Display(
-        Name = "Include listed derivatives",
-        Description = "Include Mainboard warrants and other non-equity listings. Funds and ETFs remain included when disabled.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeListedDerivativesKey,
+        Description = LocalizedStrings.IncludeMainboardWarrantsAndOtherNonEquityListingsFundsAndETFsRemainIncludedWhenDisabledDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 2)]
     public bool IncludeListedDerivatives { get; set; }
 
     /// <summary>Load current Mainboard valuation ratios.</summary>
     [Display(
-        Name = "Include valuations",
-        Description = "Load current Mainboard price-to-earnings, dividend-yield, and price-to-book ratios.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeValuationsKey,
+        Description = LocalizedStrings.LoadCurrentMainboardPriceToEarningsDividendYieldAndPriceToBookRatiosDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 3)]
     public bool IncludeValuations { get; set; } = true;
 
     /// <summary>Duration for which the current snapshot is reused.</summary>
     [Display(
-        Name = "Cache timeout",
-        Description = "Duration for which downloaded TPEx current data is reused. Zero disables caching.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CacheTimeoutKey,
+        Description = LocalizedStrings.DurationForWhichDownloadedTPExCurrentDataIsReusedZeroDisablesCachingDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public TimeSpan CacheTimeout { get; set; } =
         TimeSpan.FromMinutes(5);
 
     /// <summary>Maximum calendar months in one history request.</summary>
     [Display(
-        Name = "Maximum history months",
-        Description = "Maximum number of monthly public-history requests issued for one subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumHistoryMonthsKey,
+        Description = LocalizedStrings.MaximumNumberOfMonthlyPublicHistoryRequestsIssuedForOneSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int MaxHistoryMonths { get; set; } = 120;
 

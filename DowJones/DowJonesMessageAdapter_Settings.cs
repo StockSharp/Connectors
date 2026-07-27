@@ -36,9 +36,10 @@ public partial class DowJonesMessageAdapter : MessageAdapter, ITokenAdapter,
 
 	/// <summary>OAuth client identifier for service-account authentication.</summary>
 	[Display(
-		Name = "Client ID",
-		Description = "Dow Jones OAuth client identifier.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClientIdKey,
+		Description = LocalizedStrings.DowJonesOAuthClientIdentifierDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public string ClientId { get; set; }
@@ -75,9 +76,10 @@ public partial class DowJonesMessageAdapter : MessageAdapter, ITokenAdapter,
 
 	/// <summary>Dow Jones OAuth token address.</summary>
 	[Display(
-		Name = "OAuth address",
-		Description = "Dow Jones OAuth token address.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthAddressKey,
+		Description = LocalizedStrings.DowJonesOAuthTokenAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	[BasicSetting]
 	public Uri OAuthAddress { get; set; } =
@@ -85,49 +87,55 @@ public partial class DowJonesMessageAdapter : MessageAdapter, ITokenAdapter,
 
 	/// <summary>Optional Unified Query Language filter applied to every request.</summary>
 	[Display(
-		Name = "News query",
-		Description = "Optional Unified Query Language filter applied to every request.",
-		GroupName = "News",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NewsQueryKey,
+		Description = LocalizedStrings.OptionalUnifiedQueryLanguageFilterAppliedToEveryRequestDescKey,
+		GroupName = LocalizedStrings.NewsKey,
 		Order = 7)]
 	public string NewsQuery { get; set; }
 
 	/// <summary>Retrieve full licensed article text through the Content API.</summary>
 	[Display(
-		Name = "Full article text",
-		Description = "Retrieve full licensed article text through the Content API.",
-		GroupName = "News",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FullArticleTextKey,
+		Description = LocalizedStrings.RetrieveFullLicensedArticleTextThroughTheContentApiDescKey,
+		GroupName = LocalizedStrings.NewsKey,
 		Order = 8)]
 	public bool IsFullTextEnabled { get; set; } = true;
 
 	/// <summary>Interval between Real-Time API polls.</summary>
 	[Display(
-		Name = "Polling interval",
-		Description = "Interval between Real-Time API polls for live news.",
-		GroupName = "News",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PollingIntervalKey,
+		Description = LocalizedStrings.IntervalBetweenRealTimeApiPollsForLiveNewsDescKey,
+		GroupName = LocalizedStrings.NewsKey,
 		Order = 9)]
 	public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(5);
 
 	/// <summary>Maximum records requested from one API page.</summary>
 	[Display(
-		Name = "Page limit",
-		Description = "Maximum records requested from one Real-Time API page.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PageLimitKey,
+		Description = LocalizedStrings.MaximumRecordsRequestedFromOneRealTimeApiPageDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 10)]
 	public int PageLimit { get; set; } = 100;
 
 	/// <summary>Maximum news records emitted by one history request or live poll.</summary>
 	[Display(
-		Name = "News limit",
-		Description = "Maximum records emitted by one history request or live poll.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NewsLimitKey,
+		Description = LocalizedStrings.MaximumRecordsEmittedByOneHistoryRequestOrLivePollDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 11)]
 	public int MaxNewsItems { get; set; } = 10000;
 
 	/// <summary>Lookback used for history without an explicit start time.</summary>
 	[Display(
-		Name = "Default history lookback",
-		Description = "Lookback used for history without an explicit start time.",
-		GroupName = "History",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DefaultHistoryLookbackKey,
+		Description = LocalizedStrings.LookbackUsedForHistoryWithoutAnExplicitStartTimeDescKey,
+		GroupName = LocalizedStrings.HistoryKey,
 		Order = 12)]
 	public TimeSpan DefaultHistoryLookback { get; set; } = TimeSpan.FromDays(1);
 

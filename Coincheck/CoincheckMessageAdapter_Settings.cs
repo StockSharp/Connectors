@@ -43,8 +43,9 @@ public partial class CoincheckMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Coincheck REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.CoincheckRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -53,8 +54,9 @@ public partial class CoincheckMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Coincheck WebSocket API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.CoincheckWebSocketApiEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

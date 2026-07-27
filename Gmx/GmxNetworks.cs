@@ -15,6 +15,7 @@ public enum GmxNetworks
 	/// <summary>MegaETH Mainnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "MegaETH")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MegaETHKey)]
 	MegaEth,
 }

@@ -119,32 +119,36 @@ public partial class AngelOneMessageAdapter : MessageAdapter, ILoginPasswordAdap
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 8)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Instrument file endpoint.</summary>
 	[Display(
-		Name = "Instrument endpoint",
-		Description = "Instrument file endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InstrumentEndpointKey,
+		Description = LocalizedStrings.InstrumentFileEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 9)]
 	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
 
 	/// <summary>Market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market WebSocket endpoint",
-		Description = "Market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketEndpointKey,
+		Description = LocalizedStrings.MarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
 
 	/// <summary>Order WebSocket endpoint.</summary>
 	[Display(
-		Name = "Order WebSocket endpoint",
-		Description = "Order WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderWebSocketEndpointKey,
+		Description = LocalizedStrings.OrderWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 11)]
 	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;

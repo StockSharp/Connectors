@@ -10,7 +10,8 @@ public partial class AnchorageMessageAdapter
 
 	/// <summary>Anchorage API environment.</summary>
 	[Display(
-		Name = "Environment",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -51,7 +52,8 @@ public partial class AnchorageMessageAdapter
 
 	/// <summary>Anchorage REST API root ending in /v2.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	[BasicSetting]
@@ -63,7 +65,8 @@ public partial class AnchorageMessageAdapter
 
 	/// <summary>Anchorage trading WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	[BasicSetting]
@@ -75,15 +78,17 @@ public partial class AnchorageMessageAdapter
 
 	/// <summary>Optional account ID or exact name for scoped market data.</summary>
 	[Display(
-		Name = "Market data account",
-		Description = "Optional trading account ID or exact name for customer-specific market data.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataAccountKey,
+		Description = LocalizedStrings.OptionalTradingAccountIdOrExactNameForCustomerSpecificMarketDataDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public string MarketDataAccount { get; set; }
 
 	/// <summary>Optional RIA subaccount ID for scoped market data.</summary>
 	[Display(
-		Name = "Market data subaccount",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataSubaccountKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public string MarketDataSubaccount { get; set; }
@@ -111,7 +116,8 @@ public partial class AnchorageMessageAdapter
 
 	/// <summary>REST market-data interval when no signing key is configured.</summary>
 	[Display(
-		Name = "Market polling interval",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketPollingIntervalKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 8)]
 	public TimeSpan MarketPollingInterval
@@ -128,7 +134,8 @@ public partial class AnchorageMessageAdapter
 
 	/// <summary>REST page size.</summary>
 	[Display(
-		Name = "Page size",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PageSizeKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 9)]
 	public int PageSize
@@ -144,7 +151,8 @@ public partial class AnchorageMessageAdapter
 
 	/// <summary>Maximum reference-data items loaded.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 10)]
 	public int MaximumItems

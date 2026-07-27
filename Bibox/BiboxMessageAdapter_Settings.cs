@@ -60,8 +60,9 @@ public partial class BiboxMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Bibox REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.BiboxRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	[BasicSetting]
@@ -71,8 +72,9 @@ public partial class BiboxMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Bibox WebSocket API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.BiboxWebSocketApiEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey,
 		Order = 0)]
 	[BasicSetting]

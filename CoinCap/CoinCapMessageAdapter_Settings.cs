@@ -48,8 +48,9 @@ public partial class CoinCapMessageAdapter : MessageAdapter, ITokenAdapter, IAdd
 
 	/// <summary>WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.WebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = "wss://ws.coincap.io";

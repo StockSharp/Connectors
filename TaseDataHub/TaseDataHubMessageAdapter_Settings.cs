@@ -24,8 +24,9 @@ public partial class TaseDataHubMessageAdapter :
 {
     /// <inheritdoc />
     [Display(
-        Name = "OAuth client ID",
-        Description = "Client ID generated for a TASE Data Hub application.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthClientIdKey,
+        Description = LocalizedStrings.ClientIdGeneratedForATaseDataHubApplicationDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -33,8 +34,9 @@ public partial class TaseDataHubMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "OAuth client secret",
-        Description = "Client secret generated for the TASE Data Hub application.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthClientSecretKey,
+        Description = LocalizedStrings.ClientSecretGeneratedForTheTaseDataHubApplicationDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -44,7 +46,7 @@ public partial class TaseDataHubMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official TASE Data Hub gateway root.",
+        Description = LocalizedStrings.OfficialTaseDataHubGatewayRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 2)]
     public Uri Address { get; set; } =
@@ -52,25 +54,28 @@ public partial class TaseDataHubMessageAdapter :
 
     /// <summary>OAuth2 scope assigned to the application.</summary>
     [Display(
-        Name = "OAuth scope",
-        Description = "OAuth2 application scope documented by the selected TASE products.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthScopeKey,
+        Description = LocalizedStrings.OAuth2ApplicationScopeDocumentedByTheSelectedTaseProductsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public string Scope { get; set; } = "tase";
 
     /// <summary>Maximum calendar days searched for a security-list snapshot.</summary>
     [Display(
-        Name = "Security lookup days",
-        Description = "Maximum calendar days walked backwards to find the latest traded-securities list.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SecurityLookupDaysKey,
+        Description = LocalizedStrings.MaximumCalendarDaysWalkedBackwardsToFindTheLatestTradedSecuritiesListDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int SecurityLookupDays { get; set; } = 10;
 
     /// <summary>Duration for which security reference data is reused.</summary>
     [Display(
-        Name = "Reference cache timeout",
-        Description = "Duration for which the security list and type dictionary are reused.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReferenceCacheTimeoutKey,
+        Description = LocalizedStrings.DurationForWhichTheSecurityListAndTypeDictionaryAreReusedDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public TimeSpan ReferenceCacheTimeout { get; set; } =
         TimeSpan.FromHours(1);

@@ -34,7 +34,7 @@ public partial class SecApiMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official SEC-API.io production API root.",
+        Description = LocalizedStrings.OfficialSecApiIoProductionApiRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -43,34 +43,38 @@ public partial class SecApiMessageAdapter :
 
     /// <summary>Whether delisted securities are excluded from lookup.</summary>
     [Display(
-        Name = "Active securities only",
-        Description = "Exclude mappings marked as delisted.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ActiveSecuritiesOnlyKey,
+        Description = LocalizedStrings.ExcludeMappingsMarkedAsDelistedDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 2)]
     public bool ActiveOnly { get; set; } = true;
 
     /// <summary>Default exchange for an empty security lookup.</summary>
     [Display(
-        Name = "Default exchange",
-        Description = "SEC-API.io exchange name used for an empty security lookup.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultExchangeKey,
+        Description = LocalizedStrings.SecApiIoExchangeNameUsedForAnEmptySecurityLookupDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 3)]
     public string DefaultExchange { get; set; } = "NASDAQ";
 
     /// <summary>Default EDGAR form types.</summary>
     [Display(
-        Name = "Form types",
-        Description = "Comma-separated EDGAR form types used for filing and news requests.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.FormTypesKey,
+        Description = LocalizedStrings.CommaSeparatedEdgarFormTypesUsedForFilingAndNewsRequestsDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 4)]
     public string FormTypes { get; set; } =
         "10-K,10-Q,8-K,6-K,20-F,40-F";
 
     /// <summary>Maximum records requested from an API search.</summary>
     [Display(
-        Name = "Result limit",
-        Description = "Maximum records requested per SEC-API.io search; the API permits up to 50.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ResultLimitKey,
+        Description = LocalizedStrings.MaximumRecordsRequestedPerSecApiIoSearchTheApiPermitsUpTo50DescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int ResultLimit { get; set; } = 50;
 

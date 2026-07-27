@@ -47,8 +47,9 @@ public partial class DukasCopyLiveMessageAdapter : MessageAdapter, ILoginPasswor
 
 	/// <summary>JForex demo service address.</summary>
 	[Display(
-		Name = "Demo service address",
-		Description = "JForex demo service address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoServiceAddressKey,
+		Description = LocalizedStrings.JForexDemoServiceAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	[BasicSetting]
@@ -57,8 +58,9 @@ public partial class DukasCopyLiveMessageAdapter : MessageAdapter, ILoginPasswor
 
 	/// <summary>JForex live service address.</summary>
 	[Display(
-		Name = "Live service address",
-		Description = "JForex live service address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LiveServiceAddressKey,
+		Description = LocalizedStrings.JForexLiveServiceAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]

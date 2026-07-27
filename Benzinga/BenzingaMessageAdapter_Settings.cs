@@ -36,9 +36,10 @@ public partial class BenzingaMessageAdapter : MessageAdapter, ITokenAdapter, IAd
 
 	/// <summary>Official Benzinga real-time news stream address.</summary>
 	[Display(
-		Name = "News WebSocket address",
-		Description = "Official Benzinga real-time news stream address.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NewsWebSocketAddressKey,
+		Description = LocalizedStrings.OfficialBenzingaRealTimeNewsStreamAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public Uri WebSocketAddress { get; set; } =
@@ -46,33 +47,37 @@ public partial class BenzingaMessageAdapter : MessageAdapter, ITokenAdapter, IAd
 
 	/// <summary>Trading session requested from the Bars API.</summary>
 	[Display(
-		Name = "Bars session",
-		Description = "Trading session requested from the historical Bars API.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BarsSessionKey,
+		Description = LocalizedStrings.TradingSessionRequestedFromTheHistoricalBarsApiDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	public BenzingaSessions BarsSession { get; set; } = BenzingaSessions.Any;
 
 	/// <summary>Optional comma-separated Benzinga news channel filter.</summary>
 	[Display(
-		Name = "News channels",
-		Description = "Optional comma-separated channel filter for REST and streaming news.",
-		GroupName = "News",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NewsChannelsKey,
+		Description = LocalizedStrings.OptionalCommaSeparatedChannelFilterForRestAndStreamingNewsDescKey,
+		GroupName = LocalizedStrings.NewsKey,
 		Order = 4)]
 	public string NewsChannels { get; set; }
 
 	/// <summary>Maximum number of news items returned by one history request.</summary>
 	[Display(
-		Name = "News limit",
-		Description = "Maximum number of items returned by one REST news request.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NewsLimitKey,
+		Description = LocalizedStrings.MaximumNumberOfItemsReturnedByOneRestNewsRequestDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 5)]
 	public int MaxNewsItems { get; set; } = 1000;
 
 	/// <summary>Maximum number of candles emitted by one Bars API request.</summary>
 	[Display(
-		Name = "Bars limit",
-		Description = "Maximum number of candles emitted by one historical Bars request.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BarsLimitKey,
+		Description = LocalizedStrings.MaximumNumberOfCandlesEmittedByOneHistoricalBarsRequestDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 6)]
 	public int MaxBars { get; set; } = 10000;
 

@@ -8,8 +8,9 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Copper Platform environment.</summary>
 	[Display(
-		Name = "Environment",
-		Description = "Copper Platform environment.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
+		Description = LocalizedStrings.CopperPlatformEnvironmentDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -82,8 +83,9 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Maximum objects requested per REST page.</summary>
 	[Display(
-		Name = "Page size",
-		Description = "Maximum objects requested per Copper REST page.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PageSizeKey,
+		Description = LocalizedStrings.MaximumObjectsRequestedPerCopperRestPageDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public int PageSize
@@ -99,8 +101,9 @@ public partial class CopperMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Maximum portfolios or wallets loaded from Copper.</summary>
 	[Display(
-		Name = "Maximum items",
-		Description = "Maximum portfolios or wallets loaded from Copper.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
+		Description = LocalizedStrings.MaximumPortfoliosOrWalletsLoadedFromCopperDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public int MaximumItems

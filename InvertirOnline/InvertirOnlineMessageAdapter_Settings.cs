@@ -35,7 +35,7 @@ public partial class InvertirOnlineMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.LoginKey,
-        Description = "IOL account username.",
+        Description = LocalizedStrings.IolAccountUsernameDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -45,7 +45,7 @@ public partial class InvertirOnlineMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PasswordKey,
-        Description = "IOL account password.",
+        Description = LocalizedStrings.IolAccountPasswordDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -53,16 +53,18 @@ public partial class InvertirOnlineMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "Access token",
-        Description = "Existing IOL bearer token. Empty authenticates with the username and password.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccessTokenKey,
+        Description = LocalizedStrings.ExistingIolBearerTokenEmptyAuthenticatesWithTheUsernameAndPasswordDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     public SecureString Token { get; set; }
 
     /// <summary>Token used to renew an expired bearer session.</summary>
     [Display(
-        Name = "Refresh token",
-        Description = "Existing IOL refresh token. It is updated after authentication.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RefreshTokenKey,
+        Description = LocalizedStrings.ExistingIolRefreshTokenItIsUpdatedAfterAuthenticationDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public SecureString RefreshToken { get; set; }
@@ -71,7 +73,7 @@ public partial class InvertirOnlineMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.DemoKey,
-        Description = "Use the official IOL sandbox environment.",
+        Description = LocalizedStrings.UseTheOfficialIolSandboxEnvironmentDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -83,7 +85,7 @@ public partial class InvertirOnlineMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PortfolioNameKey,
-        Description = "Portfolio name. Empty uses the first IOL account number.",
+        Description = LocalizedStrings.PortfolioNameEmptyUsesTheFirstIolAccountNumberDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     [BasicSetting]
@@ -91,8 +93,9 @@ public partial class InvertirOnlineMessageAdapter :
 
     /// <summary>Country used when security metadata is absent.</summary>
     [Display(
-        Name = "Default country",
-        Description = "IOL country used for manually entered securities.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultCountryKey,
+        Description = LocalizedStrings.IolCountryUsedForManuallyEnteredSecuritiesDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 6)]
     public InvertirOnlineCountries DefaultCountry { get; set; } =
@@ -100,24 +103,27 @@ public partial class InvertirOnlineMessageAdapter :
 
     /// <summary>Market used when security metadata is absent.</summary>
     [Display(
-        Name = "Default market",
-        Description = "IOL market code used for manually entered securities.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultMarketKey,
+        Description = LocalizedStrings.IolMarketCodeUsedForManuallyEnteredSecuritiesDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 7)]
     public string DefaultMarket { get; set; } = "BCBA";
 
     /// <summary>Instrument group used when security metadata is absent.</summary>
     [Display(
-        Name = "Default instrument type",
-        Description = "IOL quote group, for example acciones or cedears.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultInstrumentTypeKey,
+        Description = LocalizedStrings.IolQuoteGroupForExampleAccionesOrCedearsDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 8)]
     public string DefaultInstrumentType { get; set; } = "acciones";
 
     /// <summary>Settlement used for quotes and new orders.</summary>
     [Display(
-        Name = "Default settlement",
-        Description = "IOL settlement term used for quotes and new orders.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultSettlementKey,
+        Description = LocalizedStrings.IolSettlementTermUsedForQuotesAndNewOrdersDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 9)]
     public InvertirOnlineSettlements DefaultSettlement { get; set; } =
@@ -125,16 +131,18 @@ public partial class InvertirOnlineMessageAdapter :
 
     /// <summary>Request adjusted daily history.</summary>
     [Display(
-        Name = "Adjusted history",
-        Description = "Request split-adjusted daily price history.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AdjustedHistoryKey,
+        Description = LocalizedStrings.RequestSplitAdjustedDailyPriceHistoryDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 10)]
     public bool AdjustedHistory { get; set; } = true;
 
     /// <summary>Interval for grouped quote polling.</summary>
     [Display(
-        Name = "Market data polling interval",
-        Description = "Interval for grouped quote requests. IOL includes 25,000 API calls per month without an extra charge.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketDataPollingIntervalKey,
+        Description = LocalizedStrings.IntervalForGroupedQuoteRequestsIolIncludes25000ApiCallsPerMonthWithoutAnExtraChargeDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 11)]
     public TimeSpan MarketDataPollingInterval { get; set; } =
@@ -142,8 +150,9 @@ public partial class InvertirOnlineMessageAdapter :
 
     /// <summary>Interval for order and portfolio polling.</summary>
     [Display(
-        Name = "Account polling interval",
-        Description = "Interval for order, balance, and position requests.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountPollingIntervalKey,
+        Description = LocalizedStrings.IntervalForOrderBalanceAndPositionRequestsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 12)]
     public TimeSpan AccountPollingInterval { get; set; } =
@@ -153,24 +162,27 @@ public partial class InvertirOnlineMessageAdapter :
     /// Maximum number of securities emitted by an unrestricted lookup.
     /// </summary>
     [Display(
-        Name = "Lookup limit",
-        Description = "Maximum instruments emitted by one unrestricted lookup.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LookupLimitKey,
+        Description = LocalizedStrings.MaximumInstrumentsEmittedByOneUnrestrictedLookupDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 13)]
     public int LookupLimit { get; set; } = 5000;
 
     /// <summary>Production API root.</summary>
     [Display(
-        Name = "REST address",
-        Description = "IOL production API root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.IolProductionApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 14)]
     public Uri RestAddress { get; set; } = _productionAddress;
 
     /// <summary>Official sandbox API root.</summary>
     [Display(
-        Name = "Sandbox REST address",
-        Description = "IOL official sandbox API root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SandboxRestAddressKey,
+        Description = LocalizedStrings.IolOfficialSandboxApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 15)]
     public Uri SandboxRestAddress { get; set; } = _sandboxAddress;

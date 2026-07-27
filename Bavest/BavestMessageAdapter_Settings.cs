@@ -38,7 +38,7 @@ public partial class BavestMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official Bavest production API root.",
+        Description = LocalizedStrings.OfficialBavestProductionApiRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -47,82 +47,92 @@ public partial class BavestMessageAdapter :
 
     /// <summary>Optional target currency.</summary>
     [Display(
-        Name = "Currency",
-        Description = "Optional target currency used for quote, candle, metric, and screener requests.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CurrencyKey,
+        Description = LocalizedStrings.OptionalTargetCurrencyUsedForQuoteCandleMetricAndScreenerRequestsDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 2)]
     public string Currency { get; set; }
 
     /// <summary>Optional exchange for market-data requests.</summary>
     [Display(
-        Name = "Exchange",
-        Description = "Optional exchange identifier for quote and candle requests.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ExchangeKey,
+        Description = LocalizedStrings.OptionalExchangeIdentifierForQuoteAndCandleRequestsDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 3)]
     public string Exchange { get; set; }
 
     /// <summary>Optional exchange code for security lists.</summary>
     [Display(
-        Name = "Exchange code",
-        Description = "Optional exchange short code used for stock and ETF lists.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ExchangeCodeKey,
+        Description = LocalizedStrings.OptionalExchangeShortCodeUsedForStockAndEtfListsDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 4)]
     public string ExchangeCode { get; set; }
 
     /// <summary>Financial statement frequency.</summary>
     [Display(
-        Name = "Statement frequency",
-        Description = "Frequency used for financial statement datasets.",
-        GroupName = "Financials",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.StatementFrequencyKey,
+        Description = LocalizedStrings.FrequencyUsedForFinancialStatementDatasetsDescKey,
+        GroupName = LocalizedStrings.FinancialsKey,
         Order = 5)]
     public BavestFinancialFrequencies FinancialFrequency { get; set; } =
         BavestFinancialFrequencies.Annual;
 
     /// <summary>Whether ETF metric lineage is requested.</summary>
     [Display(
-        Name = "ETF metric trace",
-        Description = "Include formula, inputs, and lineage with ETF metrics.",
-        GroupName = "Financials",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.EtfMetricTraceKey,
+        Description = LocalizedStrings.IncludeFormulaInputsAndLineageWithEtfMetricsDescKey,
+        GroupName = LocalizedStrings.FinancialsKey,
         Order = 6)]
     public bool TraceEtfMetrics { get; set; }
 
     /// <summary>JSON array of Bavest screener conditions.</summary>
     [Display(
-        Name = "Screener query",
-        Description = "JSON array of Bavest v2 screener filter conditions.",
-        GroupName = "Screener",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ScreenerQueryKey,
+        Description = LocalizedStrings.JsonArrayOfBavestV2ScreenerFilterConditionsDescKey,
+        GroupName = LocalizedStrings.ScreenerKey,
         Order = 7)]
     public string ScreenerQuery { get; set; } = "[]";
 
     /// <summary>Rows requested per listing request.</summary>
     [Display(
-        Name = "Page size",
-        Description = "Rows requested per stock, ETF, or search page.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageSizeKey,
+        Description = LocalizedStrings.RowsRequestedPerStockEtfOrSearchPageDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 8)]
     public int PageSize { get; set; } = 1000;
 
     /// <summary>Maximum pages requested for a security lookup.</summary>
     [Display(
-        Name = "Page limit",
-        Description = "Safety limit for paginated security lookups.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageLimitKey,
+        Description = LocalizedStrings.SafetyLimitForPaginatedSecurityLookupsDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 9)]
     public int MaxPages { get; set; } = 100;
 
     /// <summary>Maximum news articles returned per subscription.</summary>
     [Display(
-        Name = "News limit",
-        Description = "Maximum news articles returned per subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsLimitKey,
+        Description = LocalizedStrings.MaximumNewsArticlesReturnedPerSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 10)]
     public int NewsLimit { get; set; } = 100;
 
     /// <summary>Maximum rows requested for a custom dataset.</summary>
     [Display(
-        Name = "Dataset limit",
-        Description = "Maximum rows requested from a paginated dataset.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatasetLimitKey,
+        Description = LocalizedStrings.MaximumRowsRequestedFromAPaginatedDatasetDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 11)]
     public int DatasetLimit { get; set; } = 1000;
 

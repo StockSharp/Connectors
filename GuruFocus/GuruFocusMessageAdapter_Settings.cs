@@ -38,7 +38,7 @@ public partial class GuruFocusMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official GuruFocus Data API production root.",
+        Description = LocalizedStrings.OfficialGuruFocusDataApiProductionRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -47,57 +47,64 @@ public partial class GuruFocusMessageAdapter :
 
     /// <summary>Region used for stock-list lookup.</summary>
     [Display(
-        Name = "Region code",
-        Description = "Stock-list region: U, A, E, B, C, O, F, S, or I.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RegionCodeKey,
+        Description = LocalizedStrings.StockListRegionUAEBCOFSOrIDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 2)]
     public string RegionCode { get; set; } = "U";
 
     /// <summary>Records requested per paginated API call.</summary>
     [Display(
-        Name = "Page size",
-        Description = "Records per stock, ETF, news, or insider page.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageSizeKey,
+        Description = LocalizedStrings.RecordsPerStockEtfNewsOrInsiderPageDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 3)]
     public int PageSize { get; set; } = 100;
 
     /// <summary>Maximum pages visited during a security lookup.</summary>
     [Display(
-        Name = "Lookup page limit",
-        Description = "Safety limit for paginated stock and ETF lookups.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LookupPageLimitKey,
+        Description = LocalizedStrings.SafetyLimitForPaginatedStockAndEtfLookupsDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int MaxLookupPages { get; set; } = 1000;
 
     /// <summary>Maximum records requested for a custom dataset.</summary>
     [Display(
-        Name = "Dataset limit",
-        Description = "Maximum records requested for paginated custom datasets.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatasetLimitKey,
+        Description = LocalizedStrings.MaximumRecordsRequestedForPaginatedCustomDatasetsDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int DatasetLimit { get; set; } = 100;
 
     /// <summary>Maximum news articles requested per subscription.</summary>
     [Display(
-        Name = "News limit",
-        Description = "Maximum stock-news or market-headline records.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsLimitKey,
+        Description = LocalizedStrings.MaximumStockNewsOrMarketHeadlineRecordsDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 6)]
     public int NewsLimit { get; set; } = 200;
 
     /// <summary>Optional SEC filing form filter.</summary>
     [Display(
-        Name = "SEC form type",
-        Description = "Optional SEC form type such as 10-K or 10-Q.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SecFormTypeKey,
+        Description = LocalizedStrings.OptionalSecFormTypeSuchAs10KOr10QDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 7)]
     public string FilingFormType { get; set; }
 
     /// <summary>Optional GuruFocus guru-trade action filter.</summary>
     [Display(
-        Name = "Guru trade actions",
-        Description = "Comma-separated buy, sell, add, and reduce actions.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.GuruTradeActionsKey,
+        Description = LocalizedStrings.CommaSeparatedBuySellAddAndReduceActionsDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 8)]
     public string GuruTradeActions { get; set; }
 

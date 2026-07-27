@@ -37,7 +37,7 @@ public partial class MarketauxMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official Marketaux production API root.",
+        Description = LocalizedStrings.OfficialMarketauxProductionApiRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -46,74 +46,83 @@ public partial class MarketauxMessageAdapter :
 
     /// <summary>Comma-separated news language codes.</summary>
     [Display(
-        Name = "Languages",
-        Description = "Comma-separated language codes used for news and analytics.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LanguagesKey,
+        Description = LocalizedStrings.CommaSeparatedLanguageCodesUsedForNewsAndAnalyticsDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 2)]
     public string Languages { get; set; } = "en";
 
     /// <summary>Comma-separated entity types.</summary>
     [Display(
-        Name = "Entity types",
-        Description = "Comma-separated Marketaux entity types included in requests.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.EntityTypesKey,
+        Description = LocalizedStrings.CommaSeparatedMarketauxEntityTypesIncludedInRequestsDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 3)]
     public string EntityTypes { get; set; } =
         "equity,etf,mutualfund";
 
     /// <summary>Optional comma-separated country codes.</summary>
     [Display(
-        Name = "Countries",
-        Description = "Optional comma-separated ISO country codes.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CountriesKey,
+        Description = LocalizedStrings.OptionalCommaSeparatedIsoCountryCodesDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 4)]
     public string Countries { get; set; }
 
     /// <summary>Whether articles must contain identified entities.</summary>
     [Display(
-        Name = "Require entities",
-        Description = "Return only articles with identified market entities.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RequireEntitiesKey,
+        Description = LocalizedStrings.ReturnOnlyArticlesWithIdentifiedMarketEntitiesDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 5)]
     public bool MustHaveEntities { get; set; } = true;
 
     /// <summary>Whether similar articles are grouped.</summary>
     [Display(
-        Name = "Group similar",
-        Description = "Group similar news articles into one result.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.GroupSimilarKey,
+        Description = LocalizedStrings.GroupSimilarNewsArticlesIntoOneResultDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 6)]
     public bool GroupSimilar { get; set; } = true;
 
     /// <summary>Rows requested per news page.</summary>
     [Display(
-        Name = "News page size",
-        Description = "Articles requested per page, subject to the account plan.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsPageSizeKey,
+        Description = LocalizedStrings.ArticlesRequestedPerPageSubjectToTheAccountPlanDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 7)]
     public int NewsPageSize { get; set; } = 50;
 
     /// <summary>Maximum API pages requested per subscription.</summary>
     [Display(
-        Name = "Page limit",
-        Description = "Safety limit for paginated entity and news requests.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageLimitKey,
+        Description = LocalizedStrings.SafetyLimitForPaginatedEntityAndNewsRequestsDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 8)]
     public int MaxPages { get; set; } = 20;
 
     /// <summary>Maximum rows requested for an analytics dataset.</summary>
     [Display(
-        Name = "Dataset limit",
-        Description = "Maximum rows requested from an analytics endpoint.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatasetLimitKey,
+        Description = LocalizedStrings.MaximumRowsRequestedFromAnAnalyticsEndpointDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 9)]
     public int DatasetLimit { get; set; } = 100;
 
     /// <summary>Sentiment time-series interval.</summary>
     [Display(
-        Name = "Sentiment interval",
-        Description = "Aggregation interval for sentiment time-series requests.",
-        GroupName = "Analytics",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SentimentIntervalKey,
+        Description = LocalizedStrings.AggregationIntervalForSentimentTimeSeriesRequestsDescKey,
+        GroupName = LocalizedStrings.AnalyticsKey,
         Order = 10)]
     public MarketauxIntervals SentimentInterval { get; set; } =
         MarketauxIntervals.Day;

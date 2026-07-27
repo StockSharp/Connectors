@@ -8,13 +8,15 @@ public enum ThetaDataStockVenues
 	/// <summary>Nasdaq Basic BBO and trades.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Nasdaq Basic")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NasdaqBasicKey)]
 	NasdaqBasic,
 
 	/// <summary>Merged UTP and CTA SIP data.</summary>
 	[EnumMember]
 	[Display(
-		Name = "UTP + CTA")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UtpCtaKey)]
 	UtpCta,
 }
 

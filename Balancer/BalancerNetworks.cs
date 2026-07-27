@@ -7,7 +7,8 @@ public enum BalancerNetworks
 	/// <summary>Ethereum mainnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Ethereum")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EthereumKey)]
 	Ethereum = 1,
 
 	/// <summary>Arbitrum One.</summary>

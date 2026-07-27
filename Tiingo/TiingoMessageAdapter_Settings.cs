@@ -37,45 +37,50 @@ public partial class TiingoMessageAdapter : MessageAdapter, ITokenAdapter, IAddr
 
 	/// <summary>Tiingo IEX WebSocket address.</summary>
 	[Display(
-		Name = "IEX WebSocket address",
-		Description = "Tiingo US equity stream endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IexWebSocketAddressKey,
+		Description = LocalizedStrings.TiingoUsEquityStreamEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public Uri IexWebSocketAddress { get; set; } = new("wss://api.tiingo.com/iex");
 
 	/// <summary>Tiingo forex WebSocket address.</summary>
 	[Display(
-		Name = "Forex WebSocket address",
-		Description = "Tiingo forex stream endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForexWebSocketAddressKey,
+		Description = LocalizedStrings.TiingoForexStreamEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
 	public Uri ForexWebSocketAddress { get; set; } = new("wss://api.tiingo.com/fx");
 
 	/// <summary>Tiingo crypto WebSocket address.</summary>
 	[Display(
-		Name = "Crypto WebSocket address",
-		Description = "Tiingo crypto stream endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoWebSocketAddressKey,
+		Description = LocalizedStrings.TiingoCryptoStreamEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	[BasicSetting]
 	public Uri CryptoWebSocketAddress { get; set; } = new("wss://api.tiingo.com/crypto");
 
 	/// <summary>Official supported daily-tickers CSV address.</summary>
 	[Display(
-		Name = "Supported tickers address",
-		Description = "Official Tiingo daily supported-tickers CSV.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SupportedTickersAddressKey,
+		Description = LocalizedStrings.OfficialTiingoDailySupportedTickersCsvDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public Uri SupportedTickersAddress { get; set; } =
 		new("https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.csv");
 
 	/// <summary>Equity real-time feed mode.</summary>
 	[Display(
-		Name = "Equity stream",
-		Description = "US equity WebSocket entitlement and fidelity.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EquityStreamKey,
+		Description = LocalizedStrings.UsEquityWebSocketEntitlementAndFidelityDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 6)]
 	[BasicSetting]
 	public TiingoEquityStreamingModes EquityStreamingMode { get; set; } =
@@ -83,33 +88,37 @@ public partial class TiingoMessageAdapter : MessageAdapter, ITokenAdapter, IAddr
 
 	/// <summary>Optional crypto exchange used to select a venue-specific quote.</summary>
 	[Display(
-		Name = "Crypto exchange",
-		Description = "Optional venue filter. Empty uses the trade-only consolidated firehose.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoExchangeKey,
+		Description = LocalizedStrings.OptionalVenueFilterEmptyUsesTheTradeOnlyConsolidatedFirehoseDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 7)]
 	public string CryptoExchange { get; set; }
 
 	/// <summary>Historical end-of-day adjustment policy.</summary>
 	[Display(
-		Name = "Price adjustment",
-		Description = "Raw or split- and dividend-adjusted end-of-day candles.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceAdjustmentKey,
+		Description = LocalizedStrings.RawOrSplitAndDividendAdjustedEndOfDayCandlesDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 8)]
 	public TiingoPriceAdjustments PriceAdjustment { get; set; } = TiingoPriceAdjustments.Raw;
 
 	/// <summary>Include eligible US extended-hours intraday data.</summary>
 	[Display(
-		Name = "Extended hours",
-		Description = "Include eligible pre-market and post-market intraday data.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExtendedHoursKey,
+		Description = LocalizedStrings.IncludeEligiblePreMarketAndPostMarketIntradayDataDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 9)]
 	public bool IsAfterHours { get; set; }
 
 	/// <summary>Request Tiingo gap filling for intraday equity candles.</summary>
 	[Display(
-		Name = "Force fill",
-		Description = "Fill missing intraday equity intervals.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForceFillKey,
+		Description = LocalizedStrings.FillMissingIntradayEquityIntervalsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 10)]
 	public bool IsForceFill { get; set; }
 

@@ -38,8 +38,9 @@ public partial class AvantisMessageAdapter : MessageAdapter
 
 	/// <summary>Official Avantis pair-metadata endpoint.</summary>
 	[Display(
-		Name = "Market metadata",
-		Description = "Official Avantis pair and risk metadata endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketMetadataKey,
+		Description = LocalizedStrings.OfficialAvantisPairAndRiskMetadataEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string MarketDataEndpoint { get; set; } =
@@ -47,24 +48,27 @@ public partial class AvantisMessageAdapter : MessageAdapter
 
 	/// <summary>Official Avantis account API endpoint.</summary>
 	[Display(
-		Name = "Core API",
-		Description = "Official Avantis account-data endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CoreApiKey,
+		Description = LocalizedStrings.OfficialAvantisAccountDataEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string CoreApiEndpoint { get; set; } = _defaultCoreApiEndpoint;
 
 	/// <summary>Official Avantis price-update-data endpoint.</summary>
 	[Display(
-		Name = "Feed V3",
-		Description = "Official Avantis oracle price endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FeedV3Key,
+		Description = LocalizedStrings.OfficialAvantisOraclePriceEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string FeedEndpoint { get; set; } = _defaultFeedEndpoint;
 
 	/// <summary>Pyth Lazer realtime SSE endpoint used by Avantis.</summary>
 	[Display(
-		Name = "Pyth Lazer",
-		Description = "Realtime Pyth Lazer SSE endpoint used by Avantis.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PythLazerKey,
+		Description = LocalizedStrings.RealtimePythLazerSseEndpointUsedByAvantisDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string LazerEndpoint { get; set; } = _defaultLazerEndpoint;
@@ -73,7 +77,7 @@ public partial class AvantisMessageAdapter : MessageAdapter
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
-		Description = "Pyth Hermes fallback for pairs without Lazer.",
+		Description = LocalizedStrings.PythHermesFallbackForPairsWithoutLazerDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string HermesEndpoint { get; set; } = _defaultHermesEndpoint;
@@ -134,7 +138,8 @@ public partial class AvantisMessageAdapter : MessageAdapter
 
 	/// <summary>Default keeper execution fee in ETH.</summary>
 	[Display(
-		Name = "Execution fee",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExecutionFeeKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 10)]
 	public decimal ExecutionFee
@@ -148,7 +153,8 @@ public partial class AvantisMessageAdapter : MessageAdapter
 
 	/// <summary>Automatically approve USDC when allowance is insufficient.</summary>
 	[Display(
-		Name = "Auto approve USDC",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AutoApproveUsdcKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 11)]
 	public bool IsAutoApprove { get; set; } = true;
@@ -157,7 +163,8 @@ public partial class AvantisMessageAdapter : MessageAdapter
 
 	/// <summary>USDC allowance requested by automatic approval.</summary>
 	[Display(
-		Name = "USDC approval",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsdcApprovalKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 12)]
 	public decimal ApprovalAmount
@@ -173,7 +180,8 @@ public partial class AvantisMessageAdapter : MessageAdapter
 
 	/// <summary>Maximum time to wait for a Base transaction receipt.</summary>
 	[Display(
-		Name = "Transaction timeout",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TransactionTimeoutKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 13)]
 	public TimeSpan TransactionTimeout
@@ -190,7 +198,8 @@ public partial class AvantisMessageAdapter : MessageAdapter
 
 	/// <summary>Polling interval for official Avantis account data.</summary>
 	[Display(
-		Name = "Account refresh",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountRefreshKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 14)]
 	public TimeSpan AccountRefreshInterval

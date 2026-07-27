@@ -12,8 +12,9 @@ public sealed class ChoiceFinXOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Product",
-        Description = "Choice FinX delivery or intraday product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ProductKey,
+        Description = LocalizedStrings.ChoiceFinXDeliveryOrIntradayProductDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public ChoiceFinXProducts? Product
     {
@@ -27,8 +28,9 @@ public sealed class ChoiceFinXOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Trigger price",
-        Description = "Trigger price for a stop-limit or stop-market order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TriggerPriceKey,
+        Description = LocalizedStrings.TriggerPriceForAStopLimitOrStopMarketOrderDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public decimal? TriggerPrice
     {
@@ -42,8 +44,9 @@ public sealed class ChoiceFinXOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Disclosed volume",
-        Description = "Quantity disclosed to the exchange.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DisclosedVolumeKey,
+        Description = LocalizedStrings.QuantityDisclosedToTheExchangeDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public decimal? DisclosedVolume
     {
@@ -57,8 +60,9 @@ public sealed class ChoiceFinXOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "After market",
-        Description = "Submit the order as an after-market order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AfterMarketKey,
+        Description = LocalizedStrings.SubmitTheOrderAsAnAfterMarketOrderDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public bool IsAfterMarket
     {
@@ -72,8 +76,9 @@ public sealed class ChoiceFinXOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "EDIS required",
-        Description = "Request EDIS authorization when the account has no power of attorney.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.EdisRequiredKey,
+        Description = LocalizedStrings.RequestEdisAuthorizationWhenTheAccountHasNoPowerOfAttorneyDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public bool IsEdisRequired
     {
@@ -87,8 +92,9 @@ public sealed class ChoiceFinXOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Remarks",
-        Description = "Free-form remark sent with the order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RemarksKey,
+        Description = LocalizedStrings.FreeFormRemarkSentWithTheOrderDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public string Remarks
     {

@@ -12,24 +12,27 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 
 	/// <summary>Polymarket CLOB REST endpoint.</summary>
 	[Display(
-		Name = "CLOB endpoint",
-		Description = "Polymarket CLOB REST endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClobEndpointKey,
+		Description = LocalizedStrings.PolymarketClobRestEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string ClobEndpoint { get; set; } = _defaultClobEndpoint;
 
 	/// <summary>Polymarket Data API endpoint.</summary>
 	[Display(
-		Name = "Data endpoint",
-		Description = "Polymarket positions Data API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataEndpointKey,
+		Description = LocalizedStrings.PolymarketPositionsDataApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string DataEndpoint { get; set; } = _defaultDataEndpoint;
 
 	/// <summary>Polymarket market WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market WebSocket",
-		Description = "Polymarket public market WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketKey,
+		Description = LocalizedStrings.PolymarketPublicMarketWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string MarketSocketEndpoint { get; set; } =
@@ -37,8 +40,9 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 
 	/// <summary>Polymarket user WebSocket endpoint.</summary>
 	[Display(
-		Name = "User WebSocket",
-		Description = "Polymarket authenticated user WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UserWebSocketKey,
+		Description = LocalizedStrings.PolymarketAuthenticatedUserWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string UserSocketEndpoint { get; set; } = _defaultUserSocketEndpoint;
@@ -75,8 +79,9 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 
 	/// <summary>EOA address used to authenticate API requests.</summary>
 	[Display(
-		Name = "Signer address",
-		Description = "EOA address associated with the API credentials.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SignerAddressKey,
+		Description = LocalizedStrings.EoaAddressAssociatedWithTheApiCredentialsDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
@@ -84,8 +89,9 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 
 	/// <summary>Wallet holding collateral and conditional tokens.</summary>
 	[Display(
-		Name = "Funder address",
-		Description = "Polymarket proxy, Safe or deposit wallet holding funds.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FunderAddressKey,
+		Description = LocalizedStrings.PolymarketProxySafeOrDepositWalletHoldingFundsDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	[BasicSetting]
@@ -103,8 +109,9 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 
 	/// <summary>Polymarket wallet signature type.</summary>
 	[Display(
-		Name = "Signature type",
-		Description = "Polymarket wallet and order signature type.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SignatureTypeKey,
+		Description = LocalizedStrings.PolymarketWalletAndOrderSignatureTypeDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	[BasicSetting]
@@ -112,8 +119,9 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 
 	/// <summary>Optional registered Polymarket builder code.</summary>
 	[Display(
-		Name = "Builder code",
-		Description = "Optional registered bytes32 builder code.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BuilderCodeKey,
+		Description = LocalizedStrings.OptionalRegisteredBytes32BuilderCodeDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 0)]
 	public string BuilderCode { get; set; }

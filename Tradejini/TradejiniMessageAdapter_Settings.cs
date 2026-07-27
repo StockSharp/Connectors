@@ -32,8 +32,9 @@ public partial class TradejiniMessageAdapter : MessageAdapter, ITokenAdapter
     /// developer portal.
     /// </summary>
     [Display(
-        Name = "API key",
-        Description = "API key for a Tradejini individual app. The app requires a whitelisted static IP.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiKeyKey,
+        Description = LocalizedStrings.ApiKeyForATradejiniIndividualAppTheAppRequiresAWhitelistedStaticIpDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -43,8 +44,9 @@ public partial class TradejiniMessageAdapter : MessageAdapter, ITokenAdapter
     /// Tradejini account password used by the individual-token flow.
     /// </summary>
     [Display(
-        Name = "Password",
-        Description = "Tradejini account password used to obtain a 24-hour access token.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PasswordKey,
+        Description = LocalizedStrings.TradejiniAccountPasswordUsedToObtainA24HourAccessTokenDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -54,8 +56,9 @@ public partial class TradejiniMessageAdapter : MessageAdapter, ITokenAdapter
     /// Current OTP or TOTP code used by the individual-token flow.
     /// </summary>
     [Display(
-        Name = "Two-factor code",
-        Description = "Current SMS/email OTP or authenticator TOTP used to obtain an access token.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TwoFactorCodeKey,
+        Description = LocalizedStrings.CurrentSmsEmailOtpOrAuthenticatorTotpUsedToObtainAnAccessTokenDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -65,8 +68,9 @@ public partial class TradejiniMessageAdapter : MessageAdapter, ITokenAdapter
     /// Type of the supplied two-factor code.
     /// </summary>
     [Display(
-        Name = "Two-factor type",
-        Description = "Select OTP for an SMS/email code or TOTP for an authenticator code.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TwoFactorTypeKey,
+        Description = LocalizedStrings.SelectOtpForAnSmsEmailCodeOrTotpForAnAuthenticatorCodeDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -75,8 +79,9 @@ public partial class TradejiniMessageAdapter : MessageAdapter, ITokenAdapter
 
     /// <inheritdoc />
     [Display(
-        Name = "Access token",
-        Description = "Tradejini access token. Tokens are valid for 24 hours; when supplied, password and 2FA are not used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccessTokenKey,
+        Description = LocalizedStrings.TradejiniAccessTokenTokensAreValidFor24HoursWhenSuppliedPasswordAnd2faAreNotUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -86,8 +91,9 @@ public partial class TradejiniMessageAdapter : MessageAdapter, ITokenAdapter
     /// Portfolio name emitted by the connector.
     /// </summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the Tradejini user identifier is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyTheTradejiniUserIdentifierIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public string PortfolioName { get; set; }
@@ -96,8 +102,9 @@ public partial class TradejiniMessageAdapter : MessageAdapter, ITokenAdapter
     /// Default product used for new orders.
     /// </summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Tradejini order product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultTradejiniOrderProductDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 6)]
     public TradejiniProducts DefaultProduct { get; set; } =
@@ -107,8 +114,9 @@ public partial class TradejiniMessageAdapter : MessageAdapter, ITokenAdapter
     /// REST API root address.
     /// </summary>
     [Display(
-        Name = "REST address",
-        Description = "Tradejini API v2 REST root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.TradejiniApiV2RestRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 7)]
     public Uri Address { get; set; } = _defaultAddress;

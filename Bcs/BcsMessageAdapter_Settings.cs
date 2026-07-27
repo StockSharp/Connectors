@@ -25,8 +25,9 @@ public partial class BcsMessageAdapter : MessageAdapter, ITokenAdapter
 
 	/// <inheritdoc />
 	[Display(
-		Name = "Refresh token",
-		Description = "Refresh token issued in the BCS account.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RefreshTokenKey,
+		Description = LocalizedStrings.RefreshTokenIssuedInTheBcsAccountDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -36,8 +37,9 @@ public partial class BcsMessageAdapter : MessageAdapter, ITokenAdapter
 	/// Whether the token has read-only permissions.
 	/// </summary>
 	[Display(
-		Name = "Read-only token",
-		Description = "Use the trade-api-read OAuth client instead of trade-api-write.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReadOnlyTokenKey,
+		Description = LocalizedStrings.UseTheTradeApiReadOAuthClientInsteadOfTradeApiWriteDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -71,8 +73,9 @@ public partial class BcsMessageAdapter : MessageAdapter, ITokenAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "BCS REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.BcsRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -81,8 +84,9 @@ public partial class BcsMessageAdapter : MessageAdapter, ITokenAdapter
 	/// Market-data WebSocket endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "BCS market-data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.BcsMarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

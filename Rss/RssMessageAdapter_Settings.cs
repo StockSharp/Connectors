@@ -16,14 +16,12 @@ using StockSharp.Messages;
 [Doc("topics/api/connectors/common/rss.html")]
 [Display(
 	ResourceType = typeof(LocalizedStrings),
-	Name = _rss,
+	Name = LocalizedStrings.RssKey,
 	Description = LocalizedStrings.RssAdapterKey,
 	GroupName = LocalizedStrings.AmericaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.News)]
 partial class RssMessageAdapter : HistoricalMessageAdapter, IAddressAdapter<string>
 {
-	private const string _rss = "Rss";
-
 	private string _address = RssAddresses.Reuters;
 
 	/// <summary>
@@ -33,7 +31,7 @@ partial class RssMessageAdapter : HistoricalMessageAdapter, IAddressAdapter<stri
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.AddressKey,
 		Description = LocalizedStrings.RssAddressKey,
-		GroupName = _rss,
+		GroupName = LocalizedStrings.RssKey,
 		Order = 0)]
 	[ItemsSource(typeof(RssAddressesSource), IsEditable = true)]
 	[BasicSetting]
@@ -50,7 +48,7 @@ partial class RssMessageAdapter : HistoricalMessageAdapter, IAddressAdapter<stri
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.DatesFormatKey,
 		Description = LocalizedStrings.DatesFormatDescKey,
-		GroupName = _rss,
+		GroupName = LocalizedStrings.RssKey,
 		Order = 1)]
 	public string CustomDateFormat { get; set; }
 

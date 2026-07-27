@@ -28,7 +28,7 @@ public partial class EuronextWebServicesMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
-        Description = "Authentication key supplied with the subscribed Euronext Web Services products.",
+        Description = LocalizedStrings.AuthenticationKeySuppliedWithTheSubscribedEuronextWebServicesProductsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -38,7 +38,7 @@ public partial class EuronextWebServicesMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official Euronext Web Services gateway API root.",
+        Description = LocalizedStrings.OfficialEuronextWebServicesGatewayApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 1)]
     public Uri Address { get; set; } =
@@ -46,8 +46,9 @@ public partial class EuronextWebServicesMessageAdapter :
 
     /// <summary>Requested real-time or delayed data quality.</summary>
     [Display(
-        Name = "Session quality",
-        Description = "Request real-time or delayed market data according to the subscribed license.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SessionQualityKey,
+        Description = LocalizedStrings.RequestRealTimeOrDelayedMarketDataAccordingToTheSubscribedLicenseDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 2)]
     public EuronextSessionQualities SessionQuality { get; set; } =
@@ -55,8 +56,9 @@ public partial class EuronextWebServicesMessageAdapter :
 
     /// <summary>Number of trading sessions requested for intraday data.</summary>
     [Display(
-        Name = "Intraday depth",
-        Description = "One requests the current trading session; two also requests the previous session.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IntradayDepthKey,
+        Description = LocalizedStrings.OneRequestsTheCurrentTradingSessionTwoAlsoRequestsThePreviousSessionDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 3)]
     public int IntradayDepth { get; set; } = 1;

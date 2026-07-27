@@ -27,7 +27,8 @@ public class AvantisOrderCondition : OrderCondition
 	/// <summary>Required take-profit price for a newly opened trade.</summary>
 	[DataMember]
 	[Display(
-		Name = "Take profit",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitLabelKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 1)]
 	public decimal TakeProfitPrice
@@ -39,7 +40,8 @@ public class AvantisOrderCondition : OrderCondition
 	/// <summary>Optional stop-loss price. Zero disables stop loss.</summary>
 	[DataMember]
 	[Display(
-		Name = "Stop loss",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossLabelKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 2)]
 	public decimal StopLossPrice
@@ -51,7 +53,8 @@ public class AvantisOrderCondition : OrderCondition
 	/// <summary>Use Avantis zero-fee perpetual execution.</summary>
 	[DataMember]
 	[Display(
-		Name = "Zero-fee perpetual",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ZeroFeePerpetualKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 3)]
 	public bool IsZeroFee
@@ -63,7 +66,8 @@ public class AvantisOrderCondition : OrderCondition
 	/// <summary>Use a stop-limit trigger instead of a regular limit order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Stop limit",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLimitLabelKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 4)]
 	public bool IsStopLimit
@@ -77,7 +81,8 @@ public class AvantisOrderCondition : OrderCondition
 	/// </summary>
 	[DataMember]
 	[Display(
-		Name = "Close position",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClosePositionKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 5)]
 	public bool IsClosePosition
@@ -89,7 +94,8 @@ public class AvantisOrderCondition : OrderCondition
 	/// <summary>Per-pair Avantis position index used for closing.</summary>
 	[DataMember]
 	[Display(
-		Name = "Position index",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionIndexKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 6)]
 	public int? PositionIndex
@@ -104,7 +110,8 @@ public class AvantisOrderCondition : OrderCondition
 	/// </summary>
 	[DataMember]
 	[Display(
-		Name = "Execution fee",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExecutionFeeKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public decimal? ExecutionFee

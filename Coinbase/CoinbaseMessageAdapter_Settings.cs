@@ -68,8 +68,9 @@ public partial class CoinbaseMessageAdapter : MessageAdapter, IKeySecretAdapter,
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Coinbase Advanced Trade REST endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.CoinbaseAdvancedTradeRestEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -78,8 +79,9 @@ public partial class CoinbaseMessageAdapter : MessageAdapter, IKeySecretAdapter,
 	/// WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Coinbase Advanced Trade WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.CoinbaseAdvancedTradeWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

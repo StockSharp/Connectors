@@ -25,7 +25,7 @@ public partial class EdinetMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
-        Description = "Free EDINET API v2 subscription key.",
+        Description = LocalizedStrings.FreeEdinetApiV2SubscriptionKeyDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -35,7 +35,7 @@ public partial class EdinetMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official EDINET API v2 root.",
+        Description = LocalizedStrings.OfficialEdinetApiV2RootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 1)]
     public Uri Address { get; set; } =
@@ -43,8 +43,9 @@ public partial class EdinetMessageAdapter :
 
     /// <summary>Public English EDINET company-code archive.</summary>
     [Display(
-        Name = "Company code address",
-        Description = "Official public English EDINET company-code ZIP archive.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CompanyCodeAddressKey,
+        Description = LocalizedStrings.OfficialPublicEnglishEdinetCompanyCodeZipArchiveDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 2)]
     public Uri CodeListAddress { get; set; } =
@@ -52,8 +53,9 @@ public partial class EdinetMessageAdapter :
 
     /// <summary>Public EDINET disclosure search page.</summary>
     [Display(
-        Name = "Viewer address",
-        Description = "Public EDINET disclosure search page used for news links.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ViewerAddressKey,
+        Description = LocalizedStrings.PublicEdinetDisclosureSearchPageUsedForNewsLinksDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 3)]
     public Uri ViewerAddress { get; set; } =
@@ -61,8 +63,9 @@ public partial class EdinetMessageAdapter :
 
     /// <summary>Disclosure filter used for news subscriptions.</summary>
     [Display(
-        Name = "Disclosure type",
-        Description = "Optional EDINET document-type filter.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DisclosureTypeKey,
+        Description = LocalizedStrings.OptionalEdinetDocumentTypeFilterDescKey,
         GroupName = LocalizedStrings.NewsKey,
         Order = 4)]
     public EdinetDisclosureTypes DisclosureType { get; set; } =
@@ -70,66 +73,74 @@ public partial class EdinetMessageAdapter :
 
     /// <summary>Whether only listed submitters are returned.</summary>
     [Display(
-        Name = "Listed companies only",
-        Description = "Return only companies with a Japanese securities identification code.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ListedCompaniesOnlyKey,
+        Description = LocalizedStrings.ReturnOnlyCompaniesWithAJapaneseSecuritiesIdentificationCodeDescKey,
         GroupName = LocalizedStrings.SecuritiesKey,
         Order = 5)]
     public bool ListedOnly { get; set; } = true;
 
     /// <summary>Whether withdrawn document records are returned.</summary>
     [Display(
-        Name = "Include withdrawn",
-        Description = "Include withdrawn documents and withdrawal records.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeWithdrawnKey,
+        Description = LocalizedStrings.IncludeWithdrawnDocumentsAndWithdrawalRecordsDescKey,
         GroupName = LocalizedStrings.NewsKey,
         Order = 6)]
     public bool IncludeWithdrawn { get; set; }
 
     /// <summary>Whether unavailable document records are returned.</summary>
     [Display(
-        Name = "Include unavailable",
-        Description = "Include hidden records and records without downloadable files.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeUnavailableKey,
+        Description = LocalizedStrings.IncludeHiddenRecordsAndRecordsWithoutDownloadableFilesDescKey,
         GroupName = LocalizedStrings.NewsKey,
         Order = 7)]
     public bool IncludeUnavailable { get; set; }
 
     /// <summary>Default history length when only an end date is supplied.</summary>
     [Display(
-        Name = "Default lookup days",
-        Description = "Calendar days requested when a news subscription has an end date but no start date.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultLookupDaysKey,
+        Description = LocalizedStrings.CalendarDaysRequestedWhenANewsSubscriptionHasAnEndDateButNoStartDateDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 8)]
     public int DefaultLookupDays { get; set; } = 7;
 
     /// <summary>Maximum calendar days requested by one subscription.</summary>
     [Display(
-        Name = "Maximum days",
-        Description = "Maximum calendar days downloaded by one news subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumDaysKey,
+        Description = LocalizedStrings.MaximumCalendarDaysDownloadedByOneNewsSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 9)]
     public int MaxDays { get; set; } = 366;
 
     /// <summary>Minimum delay between daily document-list requests.</summary>
     [Display(
-        Name = "Request interval",
-        Description = "Delay between consecutive EDINET daily-list requests.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RequestIntervalKey,
+        Description = LocalizedStrings.DelayBetweenConsecutiveEdinetDailyListRequestsDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 10)]
     public TimeSpan RequestInterval { get; set; } =
         TimeSpan.FromMilliseconds(500);
 
     /// <summary>Maximum downloaded document size in megabytes.</summary>
     [Display(
-        Name = "Maximum document size",
-        Description = "Maximum PDF or ZIP document size in megabytes.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumDocumentSizeKey,
+        Description = LocalizedStrings.MaximumPdfOrZipDocumentSizeInMegabytesDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 11)]
     public int MaxDocumentSizeMb { get; set; } = 100;
 
     /// <summary>Company-code list cache lifetime.</summary>
     [Display(
-        Name = "Company cache lifetime",
-        Description = "How long the downloaded EDINET company-code list remains cached.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CompanyCacheLifetimeKey,
+        Description = LocalizedStrings.HowLongTheDownloadedEdinetCompanyCodeListRemainsCachedDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 12)]
     public TimeSpan CodeListCacheTimeout { get; set; } =
         TimeSpan.FromDays(1);

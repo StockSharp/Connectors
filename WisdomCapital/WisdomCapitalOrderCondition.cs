@@ -5,8 +5,9 @@ public class WisdomCapitalOrderCondition : BaseWithdrawOrderCondition
 {
     /// <summary>Trading product.</summary>
     [Display(
-        Name = "Product",
-        Description = "Wisdom Capital XTS trading product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ProductKey,
+        Description = LocalizedStrings.WisdomCapitalXtsTradingProductDescKey,
         GroupName = LocalizedStrings.GeneralKey,
         Order = 0)]
     public WisdomCapitalProducts Product { get; set; } =
@@ -14,24 +15,27 @@ public class WisdomCapitalOrderCondition : BaseWithdrawOrderCondition
 
     /// <summary>Stop trigger price.</summary>
     [Display(
-        Name = "Trigger price",
-        Description = "Stop-market or stop-limit trigger price.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TriggerPriceKey,
+        Description = LocalizedStrings.StopMarketOrStopLimitTriggerPriceDescKey,
         GroupName = LocalizedStrings.GeneralKey,
         Order = 1)]
     public decimal? TriggerPrice { get; set; }
 
     /// <summary>Quantity disclosed to the exchange.</summary>
     [Display(
-        Name = "Disclosed quantity",
-        Description = "Quantity disclosed publicly for the order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DisclosedQuantityKey,
+        Description = LocalizedStrings.QuantityDisclosedPubliclyForTheOrderDescKey,
         GroupName = LocalizedStrings.GeneralKey,
         Order = 2)]
     public decimal? DisclosedVolume { get; set; }
 
     /// <summary>Client-generated idempotency and audit identifier.</summary>
     [Display(
-        Name = "Unique identifier",
-        Description = "Order identifier passed to XTS for audit and duplicate tracking.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.UniqueIdentifierKey,
+        Description = LocalizedStrings.OrderIdentifierPassedToXtsForAuditAndDuplicateTrackingDescKey,
         GroupName = LocalizedStrings.GeneralKey,
         Order = 3)]
     public string UniqueIdentifier { get; set; }

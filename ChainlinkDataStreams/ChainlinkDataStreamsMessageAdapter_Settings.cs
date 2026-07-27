@@ -50,8 +50,9 @@ public partial class ChainlinkDataStreamsMessageAdapter
 
 	/// <summary>Whether all origins advertised by Chainlink are used.</summary>
 	[Display(
-		Name = "High availability",
-		Description = "Connect to all origins advertised by Chainlink and deduplicate reports.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HighAvailabilityKey,
+		Description = LocalizedStrings.ConnectToAllOriginsAdvertisedByChainlinkAndDeduplicateReportsDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	public bool IsHighAvailability { get; set; } = true;
@@ -79,7 +80,8 @@ public partial class ChainlinkDataStreamsMessageAdapter
 
 	/// <summary>Maximum number of entitled feeds cached at connection.</summary>
 	[Display(
-		Name = "Maximum feeds",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumFeedsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public int MaximumFeeds
@@ -113,8 +115,9 @@ public partial class ChainlinkDataStreamsMessageAdapter
 
 	/// <summary>Default range when historical data has no start time.</summary>
 	[Display(
-		Name = "History lookback",
-		Description = "Default range used when history has no start time.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLookbackKey,
+		Description = LocalizedStrings.DefaultRangeUsedWhenHistoryHasNoStartTimeDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 1)]
 	public TimeSpan HistoryLookback
@@ -131,8 +134,9 @@ public partial class ChainlinkDataStreamsMessageAdapter
 
 	/// <summary>Maximum reports requested from one page.</summary>
 	[Display(
-		Name = "Reports per page",
-		Description = "Maximum number of reports requested from one REST page.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReportsPerPageKey,
+		Description = LocalizedStrings.MaximumNumberOfReportsRequestedFromOneRestPageDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 2)]
 	public int ReportsPerPage

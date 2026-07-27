@@ -14,7 +14,8 @@ public partial class GlassnodeMessageAdapter
 
 	/// <summary>Glassnode REST API v1 root.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
@@ -24,8 +25,9 @@ public partial class GlassnodeMessageAdapter
 
 	/// <summary>Interval used for Level 1 closing-price history.</summary>
 	[Display(
-		Name = "Price interval",
-		Description = "Glassnode interval used for Level 1 close values.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceIntervalKey,
+		Description = LocalizedStrings.GlassnodeIntervalUsedForLevel1CloseValuesDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 0)]
 	[BasicSetting]
@@ -62,7 +64,8 @@ public partial class GlassnodeMessageAdapter
 
 	/// <summary>Maximum number of assets returned by a lookup.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public int MaximumItems
@@ -96,8 +99,9 @@ public partial class GlassnodeMessageAdapter
 
 	/// <summary>Default range when a request has no start time.</summary>
 	[Display(
-		Name = "History lookback",
-		Description = "Default range used when history has no start time.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLookbackKey,
+		Description = LocalizedStrings.DefaultRangeUsedWhenHistoryHasNoStartTimeDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 1)]
 	public TimeSpan HistoryLookback

@@ -8,41 +8,41 @@ public enum KrxDataSets
 {
     /// <summary>KOSPI-listed stocks.</summary>
     [EnumMember]
-    [Display(Name = "KOSPI stocks")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KospiStocksKey)]
     KospiStocks,
 
     /// <summary>KOSDAQ-listed stocks.</summary>
     [EnumMember]
-    [Display(Name = "KOSDAQ stocks")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KosdaqStocksKey)]
     KosdaqStocks,
 
     /// <summary>KONEX-listed stocks.</summary>
     [EnumMember]
-    [Display(Name = "KONEX stocks")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KonexStocksKey)]
     KonexStocks,
 
     /// <summary>Exchange-traded funds.</summary>
     [EnumMember]
-    [Display(Name = "ETF")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.EtfKey)]
     Etf,
 
     /// <summary>Exchange-traded notes.</summary>
     [EnumMember]
-    [Display(Name = "ETN")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.EtnKey)]
     Etn,
 
     /// <summary>KRX index family.</summary>
     [EnumMember]
-    [Display(Name = "KRX indices")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KrxIndicesKey)]
     KrxIndices,
 
     /// <summary>KOSPI index family.</summary>
     [EnumMember]
-    [Display(Name = "KOSPI indices")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KospiIndicesKey)]
     KospiIndices,
 
     /// <summary>KOSDAQ index family.</summary>
     [EnumMember]
-    [Display(Name = "KOSDAQ indices")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.KosdaqIndicesKey)]
     KosdaqIndices,
 }

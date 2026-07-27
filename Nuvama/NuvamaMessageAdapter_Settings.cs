@@ -44,8 +44,9 @@ public partial class NuvamaMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "API key",
-        Description = "Application key created in the Nuvama API Connect portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiKeyKey,
+        Description = LocalizedStrings.ApplicationKeyCreatedInTheNuvamaApiConnectPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -53,8 +54,9 @@ public partial class NuvamaMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "API secret",
-        Description = "Application secret created in the Nuvama API Connect portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiSecretKey,
+        Description = LocalizedStrings.ApplicationSecretCreatedInTheNuvamaApiConnectPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -62,8 +64,9 @@ public partial class NuvamaMessageAdapter : MessageAdapter,
 
     /// <summary>Request ID returned by the Nuvama OAuth redirect.</summary>
     [Display(
-        Name = "Request ID",
-        Description = "Request ID returned after login at the Nuvama API Connect authorization URL.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RequestIdKey,
+        Description = LocalizedStrings.RequestIdReturnedAfterLoginAtTheNuvamaApiConnectAuthorizationUrlDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -71,24 +74,27 @@ public partial class NuvamaMessageAdapter : MessageAdapter,
 
     /// <summary>Vendor session returned by loginvendor.</summary>
     [Display(
-        Name = "Vendor session",
-        Description = "SourceToken returned by loginvendor. Supply it to reuse a direct session.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.VendorSessionKey,
+        Description = LocalizedStrings.SourceTokenReturnedByLoginvendorSupplyItToReuseADirectSessionDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public SecureString VendorToken { get; set; }
 
     /// <inheritdoc />
     [Display(
-        Name = "Authorization",
-        Description = "User Authorization token returned by logindata. Supply it to reuse a direct session.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizationKey,
+        Description = LocalizedStrings.UserAuthorizationTokenReturnedByLogindataSupplyItToReuseADirectSessionDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public SecureString Token { get; set; }
 
     /// <summary>Rotating Nuvama application identifier key.</summary>
     [Display(
-        Name = "AppIdKey",
-        Description = "Rotating AppIdKey supplied by Nuvama. It is refreshed from every API response.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AppIdKeyLabelKey,
+        Description = LocalizedStrings.RotatingAppIdKeySuppliedByNuvamaItIsRefreshedFromEveryApiResponseDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     [BasicSetting]
@@ -96,32 +102,36 @@ public partial class NuvamaMessageAdapter : MessageAdapter,
 
     /// <summary>Nuvama trading account identifier.</summary>
     [Display(
-        Name = "Account ID",
-        Description = "Trading account ID. It is populated automatically by logindata.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountIdKey,
+        Description = LocalizedStrings.TradingAccountIdItIsPopulatedAutomaticallyByLogindataDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     public string AccountId { get; set; }
 
     /// <summary>Nuvama user identifier.</summary>
     [Display(
-        Name = "User ID",
-        Description = "Nuvama user ID. It is populated automatically by logindata.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.UserIdLabelKey,
+        Description = LocalizedStrings.NuvamaUserIdItIsPopulatedAutomaticallyByLogindataDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 7)]
     public string UserId { get; set; }
 
     /// <summary>Nuvama account type.</summary>
     [Display(
-        Name = "Account type",
-        Description = "Nuvama account type used by streaming, such as EQ, CO, or COMEQ.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountTypeKey,
+        Description = LocalizedStrings.NuvamaAccountTypeUsedByStreamingSuchAsEqCoOrComeqDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 8)]
     public string AccountType { get; set; } = "EQ";
 
     /// <summary>Registered static public IP address.</summary>
     [Display(
-        Name = "Static public IP",
-        Description = "Static public IP registered with Nuvama. When empty, the configured IP lookup service is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.StaticPublicIpKey,
+        Description = LocalizedStrings.StaticPublicIpRegisteredWithNuvamaWhenEmptyTheConfiguredIpLookupServiceIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 9)]
     [BasicSetting]
@@ -129,24 +139,27 @@ public partial class NuvamaMessageAdapter : MessageAdapter,
 
     /// <summary>Employee or dependent flag returned by logindata.</summary>
     [Display(
-        Name = "Employee or dependent",
-        Description = "Optional empOrDependent order field returned by logindata.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.EmployeeOrDependentKey,
+        Description = LocalizedStrings.OptionalEmpOrDependentOrderFieldReturnedByLogindataDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 10)]
     public string EmployeeOrDependent { get; set; }
 
     /// <summary>Portfolio name emitted by the connector.</summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the Nuvama account ID is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyTheNuvamaAccountIdIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 11)]
     public string PortfolioName { get; set; }
 
     /// <summary>Default product used for new orders.</summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Nuvama product used for new orders.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultNuvamaProductUsedForNewOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 12)]
     public NuvamaProducts DefaultProduct { get; set; } = NuvamaProducts.Cnc;
@@ -162,48 +175,54 @@ public partial class NuvamaMessageAdapter : MessageAdapter,
 
     /// <summary>Maximum number of streaming reconnect attempts.</summary>
     [Display(
-        Name = "Reconnect attempts",
-        Description = "Maximum number of attempts to reconnect the Nuvama JSON stream.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+        Description = LocalizedStrings.MaximumNumberOfAttemptsToReconnectTheNuvamaJsonStreamDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 14)]
     public int ReconnectAttempts { get; set; } = 10;
 
     /// <summary>REST API root address.</summary>
     [Display(
-        Name = "REST address",
-        Description = "Nuvama REST API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.NuvamaRestApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 15)]
     public Uri RestAddress { get; set; } = _defaultRestAddress;
 
     /// <summary>Public instrument ZIP address.</summary>
     [Display(
-        Name = "Instrument address",
-        Description = "Nuvama public instruments.zip address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.InstrumentAddressKey,
+        Description = LocalizedStrings.NuvamaPublicInstrumentsZipAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 16)]
     public Uri InstrumentAddress { get; set; } = _defaultInstrumentAddress;
 
     /// <summary>Public IP lookup address.</summary>
     [Display(
-        Name = "IP lookup address",
-        Description = "Address used to discover the public IP when Static public IP is empty.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IpLookupAddressKey,
+        Description = LocalizedStrings.AddressUsedToDiscoverThePublicIpWhenStaticPublicIpIsEmptyDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 17)]
     public Uri IpAddressService { get; set; } = _defaultIpAddressService;
 
     /// <summary>Streaming host.</summary>
     [Display(
-        Name = "Streaming host",
-        Description = "Nuvama newline-delimited JSON streaming host.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.StreamingHostKey,
+        Description = LocalizedStrings.NuvamaNewlineDelimitedJsonStreamingHostDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 18)]
     public string StreamHost { get; set; } = "ncst.nuvamawealth.com";
 
     /// <summary>Streaming TCP port.</summary>
     [Display(
-        Name = "Streaming port",
-        Description = "Nuvama newline-delimited JSON streaming TCP port.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.StreamingPortKey,
+        Description = LocalizedStrings.NuvamaNewlineDelimitedJsonStreamingTcpPortDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 19)]
     public int StreamPort { get; set; } = 9443;

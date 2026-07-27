@@ -22,8 +22,9 @@ public partial class OstiumMessageAdapter : MessageAdapter
 
 	/// <summary>Ostium deployment environment.</summary>
 	[Display(
-		Name = "Environment",
-		Description = "Ostium network environment.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
+		Description = LocalizedStrings.OstiumNetworkEnvironmentDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -31,15 +32,17 @@ public partial class OstiumMessageAdapter : MessageAdapter
 
 	/// <summary>Optional JSON-RPC endpoint override.</summary>
 	[Display(
-		Name = "JSON-RPC",
-		Description = "Optional Arbitrum JSON-RPC endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.JsonRpcKey,
+		Description = LocalizedStrings.OptionalArbitrumJsonRpcEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string RpcEndpoint { get; set; }
 
 	/// <summary>Official Ostium Builder API endpoint.</summary>
 	[Display(
-		Name = "Builder API",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BuilderApiKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string BuilderEndpoint { get; set; } = _defaultBuilderEndpoint;
@@ -48,7 +51,7 @@ public partial class OstiumMessageAdapter : MessageAdapter
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.WebSocketKey,
-		Description = "Official Ostium realtime price stream.",
+		Description = LocalizedStrings.OfficialOstiumRealtimePriceStreamDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string PriceStreamEndpoint { get; set; } =
@@ -56,8 +59,9 @@ public partial class OstiumMessageAdapter : MessageAdapter
 
 	/// <summary>Optional Ostium subgraph endpoint override.</summary>
 	[Display(
-		Name = "Subgraph",
-		Description = "Optional official Ostium subgraph endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SubgraphKey,
+		Description = LocalizedStrings.OptionalOfficialOstiumSubgraphEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string SubgraphEndpoint { get; set; }
@@ -101,7 +105,8 @@ public partial class OstiumMessageAdapter : MessageAdapter
 
 	/// <summary>Maximum execution slippage in basis points.</summary>
 	[Display(
-		Name = "Slippage (bps)",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SlippageBpsKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 8)]
 	public int SlippageBps
@@ -115,7 +120,8 @@ public partial class OstiumMessageAdapter : MessageAdapter
 
 	/// <summary>Automatically approve USDC when allowance is insufficient.</summary>
 	[Display(
-		Name = "Auto approve USDC",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AutoApproveUsdcKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 9)]
 	public bool IsAutoApprove { get; set; } = true;
@@ -124,7 +130,8 @@ public partial class OstiumMessageAdapter : MessageAdapter
 
 	/// <summary>USDC allowance requested by automatic approval.</summary>
 	[Display(
-		Name = "USDC approval",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsdcApprovalKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 10)]
 	public decimal ApprovalAmount
@@ -140,7 +147,8 @@ public partial class OstiumMessageAdapter : MessageAdapter
 
 	/// <summary>Maximum time to wait for an Arbitrum transaction receipt.</summary>
 	[Display(
-		Name = "Transaction timeout",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TransactionTimeoutKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 11)]
 	public TimeSpan TransactionTimeout
@@ -157,7 +165,8 @@ public partial class OstiumMessageAdapter : MessageAdapter
 
 	/// <summary>Polling interval for Ostium account data.</summary>
 	[Display(
-		Name = "Account refresh",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountRefreshKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 12)]
 	public TimeSpan AccountRefreshInterval

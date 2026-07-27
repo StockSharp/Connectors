@@ -8,16 +8,16 @@ public enum TpexMarkets
 {
     /// <summary>TPEx Mainboard.</summary>
     [EnumMember]
-    [Display(Name = "Mainboard")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MainboardKey)]
     Mainboard,
 
     /// <summary>Emerging Stock Board.</summary>
     [EnumMember]
-    [Display(Name = "Emerging Stock Board")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.EmergingStockBoardKey)]
     Emerging,
 
     /// <summary>Both TPEx equity markets.</summary>
     [EnumMember]
-    [Display(Name = "All equity markets")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AllEquityMarketsKey)]
     All,
 }

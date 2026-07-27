@@ -19,7 +19,7 @@ public partial class GleifMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official GLEIF production API root.",
+        Description = LocalizedStrings.OfficialGleifProductionApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 0)]
     [BasicSetting]
@@ -28,33 +28,37 @@ public partial class GleifMessageAdapter :
 
     /// <summary>Whether inactive legal entities are excluded.</summary>
     [Display(
-        Name = "Active entities only",
-        Description = "Request only legal entities whose GLEIF entity status is ACTIVE.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ActiveEntitiesOnlyKey,
+        Description = LocalizedStrings.RequestOnlyLegalEntitiesWhoseGleifEntityStatusIsActiveDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 1)]
     public bool ActiveOnly { get; set; } = true;
 
     /// <summary>Whether LEI results are expanded into mapped ISINs.</summary>
     [Display(
-        Name = "Expand mapped ISINs",
-        Description = "Return mapped ISIN securities in addition to the legal-entity LEI record.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ExpandMappedISINsKey,
+        Description = LocalizedStrings.ReturnMappedIsinSecuritiesInAdditionToTheLegalEntityLeiRecordDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 2)]
     public bool ExpandIsins { get; set; }
 
     /// <summary>JSON:API page size.</summary>
     [Display(
-        Name = "Page size",
-        Description = "Number of GLEIF records requested per page.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageSizeKey,
+        Description = LocalizedStrings.NumberOfGleifRecordsRequestedPerPageDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 3)]
     public int PageSize { get; set; } = 50;
 
     /// <summary>Maximum pages per lookup.</summary>
     [Display(
-        Name = "Maximum pages",
-        Description = "Maximum pages downloaded by one LEI or ISIN lookup.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumPagesKey,
+        Description = LocalizedStrings.MaximumPagesDownloadedByOneLeiOrIsinLookupDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int MaxPages { get; set; } = 10;
 

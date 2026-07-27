@@ -53,8 +53,9 @@ public partial class NubraMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 
 	/// <inheritdoc />
 	[Display(
-		Name = "Session token",
-		Description = "Bearer session token returned by Nubra login. When empty, TOTP login settings are used.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SessionTokenKey,
+		Description = LocalizedStrings.BearerSessionTokenReturnedByNubraLoginWhenEmptyTotpLoginSettingsAreUsedDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -62,32 +63,36 @@ public partial class NubraMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 
 	/// <summary>Registered Nubra phone number.</summary>
 	[Display(
-		Name = "Phone",
-		Description = "Registered phone number used for automated TOTP login.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PhoneKey,
+		Description = LocalizedStrings.RegisteredPhoneNumberUsedForAutomatedTotpLoginDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	public string Phone { get; set; }
 
 	/// <summary>Nubra MPIN.</summary>
 	[Display(
-		Name = "MPIN",
-		Description = "Nubra MPIN used after TOTP verification.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MpinKey,
+		Description = LocalizedStrings.NubraMpinUsedAfterTotpVerificationDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	public SecureString Mpin { get; set; }
 
 	/// <summary>Base32 TOTP secret enabled in the Nubra account.</summary>
 	[Display(
-		Name = "TOTP secret",
-		Description = "Base32 secret generated when TOTP authentication is enabled in Nubra.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TotpSecretKey,
+		Description = LocalizedStrings.Base32SecretGeneratedWhenTotpAuthenticationIsEnabledInNubraDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public SecureString TotpSecret { get; set; }
 
 	/// <summary>Device identifier bound to the login session.</summary>
 	[Display(
-		Name = "Device ID",
-		Description = "Stable device identifier sent in the x-device-id header.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DeviceIdKey,
+		Description = LocalizedStrings.StableDeviceIdentifierSentInTheXDeviceIdHeaderDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	[BasicSetting]
@@ -105,16 +110,18 @@ public partial class NubraMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 
 	/// <summary>Portfolio name emitted by the connector.</summary>
 	[Display(
-		Name = "Portfolio name",
-		Description = "Portfolio name. When empty, the Nubra client code is used.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PortfolioNameLabelKey,
+		Description = LocalizedStrings.PortfolioNameWhenEmptyTheNubraClientCodeIsUsedDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public string PortfolioName { get; set; }
 
 	/// <summary>Default delivery product used for new orders.</summary>
 	[Display(
-		Name = "Default product",
-		Description = "Default Nubra delivery product used for new orders.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DefaultProductKey,
+		Description = LocalizedStrings.DefaultNubraDeliveryProductUsedForNewOrdersDescKey,
 		GroupName = LocalizedStrings.OrderKey,
 		Order = 7)]
 	public NubraProducts DefaultProduct { get; set; } = NubraProducts.Cnc;
@@ -130,32 +137,36 @@ public partial class NubraMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 
 	/// <summary>Maximum number of WebSocket reconnect attempts.</summary>
 	[Display(
-		Name = "Reconnect attempts",
-		Description = "Maximum number of Nubra market-data WebSocket reconnect attempts.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+		Description = LocalizedStrings.MaximumNumberOfNubraMarketDataWebSocketReconnectAttemptsDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 9)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <summary>Production REST API address.</summary>
 	[Display(
-		Name = "REST address",
-		Description = "Nubra production REST API root.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestAddressKey,
+		Description = LocalizedStrings.NubraProductionRestApiRootDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public Uri RestAddress { get; set; } = _productionRestAddress;
 
 	/// <summary>UAT REST API address.</summary>
 	[Display(
-		Name = "UAT REST address",
-		Description = "Nubra UAT REST API root.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UatRestAddressKey,
+		Description = LocalizedStrings.NubraUatRestApiRootDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 11)]
 	public Uri UatRestAddress { get; set; } = _uatRestAddress;
 
 	/// <summary>Production market-data WebSocket address.</summary>
 	[Display(
-		Name = "Market data address",
-		Description = "Nubra production batch market-data WebSocket.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataAddressKey,
+		Description = LocalizedStrings.NubraProductionBatchMarketDataWebSocketDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 12)]
 	public Uri MarketDataAddress { get; set; } =
@@ -163,8 +174,9 @@ public partial class NubraMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 
 	/// <summary>UAT market-data WebSocket address.</summary>
 	[Display(
-		Name = "UAT market data address",
-		Description = "Nubra UAT batch market-data WebSocket.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UatMarketDataAddressKey,
+		Description = LocalizedStrings.NubraUatBatchMarketDataWebSocketDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 13)]
 	public Uri UatMarketDataAddress { get; set; } =

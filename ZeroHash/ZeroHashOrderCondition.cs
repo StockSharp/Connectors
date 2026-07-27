@@ -11,8 +11,9 @@ public sealed class ZeroHashOrderCondition : OrderCondition
 	/// <summary>Optional stop trigger price.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trigger price",
-		Description = "Stop trigger price for Zero Hash stop and stop-limit orders.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerPriceKey,
+		Description = LocalizedStrings.StopTriggerPriceForZeroHashStopAndStopLimitOrdersDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 0)]
 	public decimal? TriggerPrice
@@ -24,8 +25,9 @@ public sealed class ZeroHashOrderCondition : OrderCondition
 	/// <summary>Stop trigger source.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trigger method",
-		Description = "Price source used to trigger a Zero Hash stop order.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerMethodKey,
+		Description = LocalizedStrings.PriceSourceUsedToTriggerAZeroHashStopOrderDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 1)]
 	public ZeroHashTriggerMethods TriggerMethod
@@ -38,8 +40,9 @@ public sealed class ZeroHashOrderCondition : OrderCondition
 	/// <summary>Self-match prevention instruction.</summary>
 	[DataMember]
 	[Display(
-		Name = "Self-match prevention",
-		Description = "Action taken when the order would self-match.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SelfMatchPreventionKey,
+		Description = LocalizedStrings.ActionTakenWhenTheOrderWouldSelfMatchDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 2)]
 	public ZeroHashSelfMatchPreventionInstructions SelfMatchPreventionInstruction
@@ -53,8 +56,9 @@ public sealed class ZeroHashOrderCondition : OrderCondition
 	/// <summary>Regulatory order capacity.</summary>
 	[DataMember]
 	[Display(
-		Name = "Order capacity",
-		Description = "Regulatory capacity in which the order is submitted.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderCapacityKey,
+		Description = LocalizedStrings.RegulatoryCapacityInWhichTheOrderIsSubmittedDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 3)]
 	public ZeroHashOrderCapacities OrderCapacity
@@ -67,8 +71,9 @@ public sealed class ZeroHashOrderCondition : OrderCondition
 	/// <summary>Require the entire quantity to execute.</summary>
 	[DataMember]
 	[Display(
-		Name = "All or none",
-		Description = "Require the complete quantity to execute.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AllOrNoneKey,
+		Description = LocalizedStrings.RequireTheCompleteQuantityToExecuteDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 4)]
 	public bool IsAllOrNone
@@ -80,8 +85,9 @@ public sealed class ZeroHashOrderCondition : OrderCondition
 	/// <summary>Use the best same-side limit.</summary>
 	[DataMember]
 	[Display(
-		Name = "Best limit",
-		Description = "Enter the order at the current best same-side price.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BestLimitKey,
+		Description = LocalizedStrings.EnterTheOrderAtTheCurrentBestSameSidePriceDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 5)]
 	public bool IsBestLimit
@@ -93,8 +99,9 @@ public sealed class ZeroHashOrderCondition : OrderCondition
 	/// <summary>Require strict limit-price handling.</summary>
 	[DataMember]
 	[Display(
-		Name = "Strict limit",
-		Description = "Require execution at the supplied limit price.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StrictLimitKey,
+		Description = LocalizedStrings.RequireExecutionAtTheSuppliedLimitPriceDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 6)]
 	public bool IsStrictLimit
@@ -106,8 +113,9 @@ public sealed class ZeroHashOrderCondition : OrderCondition
 	/// <summary>Bypass exchange price-validity checks when entitled.</summary>
 	[DataMember]
 	[Display(
-		Name = "Ignore price checks",
-		Description = "Request bypass of price-validity checks when permitted.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IgnorePriceChecksKey,
+		Description = LocalizedStrings.RequestBypassOfPriceValidityChecksWhenPermittedDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 7)]
 	public bool IsIgnorePriceValidityChecks

@@ -7,13 +7,15 @@ public enum BluefinEnvironments
 	/// <summary>Mainnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Mainnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MainnetKey)]
 	Mainnet,
 
 	/// <summary>Staging testnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Testnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TestnetKey)]
 	Testnet,
 }
 
@@ -21,9 +23,10 @@ public partial class BluefinMessageAdapter
 {
 	/// <summary>Bluefin environment.</summary>
 	[Display(
-		Name = "Environment",
-		Description = "Bluefin API environment.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
+		Description = LocalizedStrings.BluefinApiEnvironmentDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
 	public BluefinEnvironments Environment { get; set; }
@@ -50,41 +53,46 @@ public partial class BluefinMessageAdapter
 
 	/// <summary>Optional exchange REST endpoint override.</summary>
 	[Display(
-		Name = "Exchange endpoint",
-		Description = "Optional Bluefin exchange and account-data REST endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeEndpointKey,
+		Description = LocalizedStrings.OptionalBluefinExchangeAndAccountDataRestEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string ExchangeEndpoint { get; set; }
 
 	/// <summary>Optional trading REST endpoint override.</summary>
 	[Display(
-		Name = "Trade endpoint",
-		Description = "Optional Bluefin trading REST endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradeEndpointKey,
+		Description = LocalizedStrings.OptionalBluefinTradingRestEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string TradeEndpoint { get; set; }
 
 	/// <summary>Optional authentication REST endpoint override.</summary>
 	[Display(
-		Name = "Authentication endpoint",
-		Description = "Optional Bluefin authentication REST endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AuthenticationEndpointKey,
+		Description = LocalizedStrings.OptionalBluefinAuthenticationRestEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string AuthEndpoint { get; set; }
 
 	/// <summary>Optional market WebSocket endpoint override.</summary>
 	[Display(
-		Name = "Market WebSocket endpoint",
-		Description = "Optional Bluefin market WebSocket endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketEndpointKey,
+		Description = LocalizedStrings.OptionalBluefinMarketWebSocketEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string MarketSocketEndpoint { get; set; }
 
 	/// <summary>Optional account WebSocket endpoint override.</summary>
 	[Display(
-		Name = "Account WebSocket endpoint",
-		Description = "Optional Bluefin account WebSocket endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountWebSocketEndpointKey,
+		Description = LocalizedStrings.OptionalBluefinAccountWebSocketEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string AccountSocketEndpoint { get; set; }
 
@@ -146,9 +154,10 @@ public partial class BluefinMessageAdapter
 
 	/// <summary>Default order expiry when no expiry is supplied.</summary>
 	[Display(
-		Name = "Order expiry",
-		Description = "Default lifetime for signed Bluefin orders.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderExpiryKey,
+		Description = LocalizedStrings.DefaultLifetimeForSignedBluefinOrdersDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public TimeSpan OrderExpiry
 	{

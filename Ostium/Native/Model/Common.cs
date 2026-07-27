@@ -7,13 +7,15 @@ public enum OstiumEnvironments
 	/// <summary>Arbitrum One.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Mainnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MainnetKey)]
 	Mainnet,
 
 	/// <summary>Arbitrum Sepolia.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Testnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TestnetKey)]
 	Testnet,
 }
 

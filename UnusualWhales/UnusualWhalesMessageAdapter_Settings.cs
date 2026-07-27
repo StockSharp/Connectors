@@ -39,7 +39,7 @@ public partial class UnusualWhalesMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official Unusual Whales production API root.",
+        Description = LocalizedStrings.OfficialUnusualWhalesProductionApiRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -48,57 +48,64 @@ public partial class UnusualWhalesMessageAdapter :
 
     /// <summary>Maximum candles requested per subscription.</summary>
     [Display(
-        Name = "Candle limit",
-        Description = "Maximum candles requested from the OHLC endpoint.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CandleLimitKey,
+        Description = LocalizedStrings.MaximumCandlesRequestedFromTheOhlcEndpointDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 2)]
     public int CandleLimit { get; set; } = 2500;
 
     /// <summary>Maximum news headlines returned per subscription.</summary>
     [Display(
-        Name = "News limit",
-        Description = "Maximum news headlines returned per subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsLimitKey,
+        Description = LocalizedStrings.MaximumNewsHeadlinesReturnedPerSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 3)]
     public int NewsLimit { get; set; } = 500;
 
     /// <summary>Maximum pages requested for news history.</summary>
     [Display(
-        Name = "Page limit",
-        Description = "Safety limit for paginated news requests.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageLimitKey,
+        Description = LocalizedStrings.SafetyLimitForPaginatedNewsRequestsDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int MaxPages { get; set; } = 10;
 
     /// <summary>Maximum rows requested for a custom dataset.</summary>
     [Display(
-        Name = "Dataset limit",
-        Description = "Maximum rows requested for a custom REST dataset.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatasetLimitKey,
+        Description = LocalizedStrings.MaximumRowsRequestedForACustomRestDatasetDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int DatasetLimit { get; set; } = 500;
 
     /// <summary>Whether the official unusual-flow preset is applied.</summary>
     [Display(
-        Name = "Unusual flow only",
-        Description = "Apply the official unusual options-flow preset.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.UnusualFlowOnlyKey,
+        Description = LocalizedStrings.ApplyTheOfficialUnusualOptionsFlowPresetDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 6)]
     public bool UnusualFlowOnly { get; set; } = true;
 
     /// <summary>Whether market tide includes only OTM options.</summary>
     [Display(
-        Name = "OTM market tide",
-        Description = "Request only out-of-the-money market-tide activity.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OtmMarketTideKey,
+        Description = LocalizedStrings.RequestOnlyOutOfTheMoneyMarketTideActivityDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 7)]
     public bool OtmMarketTide { get; set; }
 
     /// <summary>Whether market tide is aggregated into five-minute rows.</summary>
     [Display(
-        Name = "Five-minute market tide",
-        Description = "Request five-minute instead of one-minute market-tide rows.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.FiveMinuteMarketTideKey,
+        Description = LocalizedStrings.RequestFiveMinuteInsteadOfOneMinuteMarketTideRowsDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 8)]
     public bool FiveMinuteMarketTide { get; set; }
 

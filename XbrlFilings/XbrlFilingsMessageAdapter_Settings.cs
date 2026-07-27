@@ -24,7 +24,7 @@ public partial class XbrlFilingsMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official filings.xbrl.org JSON:API root.",
+        Description = LocalizedStrings.OfficialFilingsXbrlOrgJsonApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 0)]
     [BasicSetting]
@@ -33,8 +33,9 @@ public partial class XbrlFilingsMessageAdapter :
 
     /// <summary>Public filing-content address.</summary>
     [Display(
-        Name = "Public address",
-        Description = "Official public root used for filing viewer, report, package, and xBRL-JSON links.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PublicAddressKey,
+        Description = LocalizedStrings.OfficialPublicRootUsedForFilingViewerReportPackageAndXbrlJsonLinksDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 1)]
     public Uri PublicAddress { get; set; } =
@@ -42,25 +43,28 @@ public partial class XbrlFilingsMessageAdapter :
 
     /// <summary>Optional ISO 3166-1 alpha-2 filing-country filter.</summary>
     [Display(
-        Name = "Country",
-        Description = "Optional two-letter filing country, for example GB, FR, DE, or UA.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CountryKey,
+        Description = LocalizedStrings.OptionalTwoLetterFilingCountryForExampleGbFrDeOrUaDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 2)]
     public string Country { get; set; }
 
     /// <summary>Number of resources requested per API page.</summary>
     [Display(
-        Name = "Page size",
-        Description = "Number of JSON:API resources requested per page.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageSizeKey,
+        Description = LocalizedStrings.NumberOfJsonApiResourcesRequestedPerPageDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 3)]
     public int PageSize { get; set; } = 100;
 
     /// <summary>Maximum pages downloaded by one subscription.</summary>
     [Display(
-        Name = "Maximum pages",
-        Description = "Maximum JSON:API pages downloaded by one lookup or news subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumPagesKey,
+        Description = LocalizedStrings.MaximumJsonApiPagesDownloadedByOneLookupOrNewsSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int MaxPages { get; set; } = 20;
 

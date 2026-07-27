@@ -27,7 +27,8 @@ public class ReyaOrderCondition : OrderCondition
 	/// <summary>Conditional-order trigger price.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trigger price",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerPriceKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 1)]
 	public decimal? TriggerPrice
@@ -39,7 +40,8 @@ public class ReyaOrderCondition : OrderCondition
 	/// <summary>Conditional-order trigger kind.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trigger type",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerTypeKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 2)]
 	public ReyaTriggerOrderTypes TriggerType

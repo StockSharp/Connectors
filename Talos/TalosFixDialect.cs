@@ -3,7 +3,8 @@ namespace StockSharp.Talos;
 /// <summary>Talos FIX 4.4 protocol profile.</summary>
 [MediaIcon(Media.MediaNames.talos)]
 [Display(
-	Name = "Talos")]
+	ResourceType = typeof(LocalizedStrings),
+	Name = LocalizedStrings.TalosKey)]
 public sealed class TalosFixDialect : DefaultFixDialect
 {
 	/// <summary>Initializes the Talos FIX profile.</summary>

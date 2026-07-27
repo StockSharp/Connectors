@@ -60,8 +60,9 @@ public partial class CoinigyMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Coinigy REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.CoinigyRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -70,8 +71,9 @@ public partial class CoinigyMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Coinigy WebSocket API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.CoinigyWebSocketApiEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

@@ -7,7 +7,8 @@ public partial class CoinGeckoMessageAdapter
 
 	/// <summary>CoinGecko API tier.</summary>
 	[Display(
-		Name = "API tier",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ApiTierKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -35,7 +36,8 @@ public partial class CoinGeckoMessageAdapter
 
 	/// <summary>CoinGecko REST API root ending in /api/v3.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -47,7 +49,8 @@ public partial class CoinGeckoMessageAdapter
 
 	/// <summary>CoinGecko Pro WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	[BasicSetting]
@@ -55,8 +58,9 @@ public partial class CoinGeckoMessageAdapter
 
 	/// <summary>Default quote currency for aggregated coins.</summary>
 	[Display(
-		Name = "Quote currency",
-		Description = "CoinGecko supported quote-currency ID.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuoteCurrencyKey,
+		Description = LocalizedStrings.CoinGeckoSupportedQuoteCurrencyIdDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 0)]
 	[BasicSetting]
@@ -64,16 +68,18 @@ public partial class CoinGeckoMessageAdapter
 
 	/// <summary>Optional GeckoTerminal network filter for pool lookup.</summary>
 	[Display(
-		Name = "On-chain network",
-		Description = "Optional GeckoTerminal network ID used for pool search.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OnChainNetworkKey,
+		Description = LocalizedStrings.OptionalGeckoTerminalNetworkIdUsedForPoolSearchDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 1)]
 	public string OnchainNetwork { get; set; }
 
 	/// <summary>Use the paid CoinGecko WebSocket for live subscriptions.</summary>
 	[Display(
-		Name = "Streaming",
-		Description = "Use CoinGecko Pro WebSocket (Analyst plan or above).",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StreamingKey,
+		Description = LocalizedStrings.UseCoinGeckoProWebSocketAnalystPlanOrAboveDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 2)]
 	[BasicSetting]
@@ -102,7 +108,8 @@ public partial class CoinGeckoMessageAdapter
 
 	/// <summary>Maximum number of securities returned by a lookup.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public int MaximumItems
@@ -118,7 +125,8 @@ public partial class CoinGeckoMessageAdapter
 
 	/// <summary>Maximum number of 20-item on-chain search pages.</summary>
 	[Display(
-		Name = "Pool search pages",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PoolSearchPagesKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public int PoolSearchPages

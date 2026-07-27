@@ -48,8 +48,9 @@ public partial class DirectaMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "Trading address",
-        Description = "Local Darwin trading and portfolio socket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TradingAddressKey,
+        Description = LocalizedStrings.LocalDarwinTradingAndPortfolioSocketDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 0)]
     [BasicSetting]
@@ -59,8 +60,9 @@ public partial class DirectaMessageAdapter :
     /// Realtime market-data socket.
     /// </summary>
     [Display(
-        Name = "Datafeed address",
-        Description = "Local Darwin realtime datafeed socket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatafeedAddressKey,
+        Description = LocalizedStrings.LocalDarwinRealtimeDatafeedSocketDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 1)]
     [BasicSetting]
@@ -71,8 +73,9 @@ public partial class DirectaMessageAdapter :
     /// Historical-data socket.
     /// </summary>
     [Display(
-        Name = "History address",
-        Description = "Local Darwin historical calls socket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.HistoryAddressKey,
+        Description = LocalizedStrings.LocalDarwinHistoricalCallsSocketDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 2)]
     [BasicSetting]
@@ -83,8 +86,9 @@ public partial class DirectaMessageAdapter :
     /// Timeout for a block response from Darwin.
     /// </summary>
     [Display(
-        Name = "Request timeout",
-        Description = "Maximum wait for a Darwin list or history response.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RequestTimeoutKey,
+        Description = LocalizedStrings.MaximumWaitForADarwinListOrHistoryResponseDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public TimeSpan RequestTimeout { get; set; } =
@@ -94,8 +98,9 @@ public partial class DirectaMessageAdapter :
     /// Automatically send CONFORD when Darwin requests confirmation.
     /// </summary>
     [Display(
-        Name = "Auto-confirm orders",
-        Description = "Automatically confirm orders already submitted through this connector.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AutoConfirmOrdersKey,
+        Description = LocalizedStrings.AutomaticallyConfirmOrdersAlreadySubmittedThroughThisConnectorDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public bool AutoConfirmOrders { get; set; } = true;
@@ -104,8 +109,9 @@ public partial class DirectaMessageAdapter :
     /// Maximum requested order-book depth.
     /// </summary>
     [Display(
-        Name = "Maximum market depth",
-        Description = "Maximum Darwin order-book depth from 1 to 20.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumMarketDepthKey,
+        Description = LocalizedStrings.MaximumDarwinOrderBookDepthFrom1To20DescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 5)]
     public int MaxMarketDepth { get; set; } = 20;
@@ -114,8 +120,9 @@ public partial class DirectaMessageAdapter :
     /// Time zone used by Darwin timestamps without an offset.
     /// </summary>
     [Display(
-        Name = "Darwin time zone",
-        Description = "IANA or Windows time-zone identifier for socket timestamps.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DarwinTimeZoneKey,
+        Description = LocalizedStrings.IanaOrWindowsTimeZoneIdentifierForSocketTimestampsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     public string TimeZoneId { get; set; } = "Europe/Rome";

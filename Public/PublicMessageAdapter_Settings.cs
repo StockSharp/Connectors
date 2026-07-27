@@ -46,8 +46,9 @@ public partial class PublicMessageAdapter : MessageAdapter, ITokenAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;

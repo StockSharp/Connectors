@@ -69,48 +69,54 @@ public partial class DhanMessageAdapter : MessageAdapter, ITokenAdapter
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Instrument master endpoint.</summary>
 	[Display(
-		Name = "Instrument endpoint",
-		Description = "Instrument master endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InstrumentEndpointKey,
+		Description = LocalizedStrings.InstrumentMasterEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
 
 	/// <summary>Market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market WebSocket endpoint",
-		Description = "Market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketEndpointKey,
+		Description = LocalizedStrings.MarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
 
 	/// <summary>Order WebSocket endpoint.</summary>
 	[Display(
-		Name = "Order WebSocket endpoint",
-		Description = "Order WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderWebSocketEndpointKey,
+		Description = LocalizedStrings.OrderWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;
 
 	/// <summary>20-level depth WebSocket endpoint.</summary>
 	[Display(
-		Name = "Depth 20 WebSocket endpoint",
-		Description = "20-level depth WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.Depth20WebSocketEndpointKey,
+		Description = LocalizedStrings.Text20LevelDepthWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string Depth20WebSocketEndpoint { get; set; } = _defaultDepth20WebSocketEndpoint;
 
 	/// <summary>200-level depth WebSocket endpoint.</summary>
 	[Display(
-		Name = "Depth 200 WebSocket endpoint",
-		Description = "200-level depth WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.Depth200WebSocketEndpointKey,
+		Description = LocalizedStrings.Text200LevelDepthWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string Depth200WebSocketEndpoint { get; set; } = _defaultDepth200WebSocketEndpoint;

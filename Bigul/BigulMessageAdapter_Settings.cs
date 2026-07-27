@@ -45,8 +45,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Application key generated in Bigul Connect.
     /// </summary>
     [Display(
-        Name = "API key",
-        Description = "Application key generated in Bigul Connect.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiKeyKey,
+        Description = LocalizedStrings.ApplicationKeyGeneratedInBigulConnectDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -56,8 +57,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Application secret generated in Bigul Connect.
     /// </summary>
     [Display(
-        Name = "API secret",
-        Description = "Application secret generated in Bigul Connect.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiSecretKey,
+        Description = LocalizedStrings.ApplicationSecretGeneratedInBigulConnectDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -67,8 +69,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Current six-digit authenticator value.
     /// </summary>
     [Display(
-        Name = "TOTP",
-        Description = "Current six-digit TOTP used by the Bigul client login endpoint.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TotpKey,
+        Description = LocalizedStrings.CurrentSixDigitTotpUsedByTheBigulClientLoginEndpointDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -88,8 +91,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Source code assigned to the application.
     /// </summary>
     [Display(
-        Name = "Source",
-        Description = "Source code assigned by Bigul Connect. The individual-client default is B2C.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SourceKey,
+        Description = LocalizedStrings.SourceCodeAssignedByBigulConnectTheIndividualClientDefaultIsB2cDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     [BasicSetting]
@@ -99,8 +103,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Portfolio name emitted by the connector.
     /// </summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the Bigul client code is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyTheBigulClientCodeIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     public string PortfolioName { get; set; }
@@ -109,8 +114,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Default product used for new orders.
     /// </summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Bigul delivery, intraday, or normal product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultBigulDeliveryIntradayOrNormalProductDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 7)]
     public BigulProducts DefaultProduct { get; set; } = BigulProducts.Delivery;
@@ -119,8 +125,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Default market-protection value. Zero disables protection.
     /// </summary>
     [Display(
-        Name = "Market protection",
-        Description = "Default Bigul market-protection value. Zero disables protection.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketProtectionKey,
+        Description = LocalizedStrings.DefaultBigulMarketProtectionValueZeroDisablesProtectionDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 8)]
     public decimal MarketProtection { get; set; }
@@ -129,8 +136,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Maximum number of streaming reconnect attempts.
     /// </summary>
     [Display(
-        Name = "Reconnect attempts",
-        Description = "Maximum number of attempts to reconnect the Bigul WebSocket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+        Description = LocalizedStrings.MaximumNumberOfAttemptsToReconnectTheBigulWebSocketDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 9)]
     public int ReconnectAttempts { get; set; } = 10;
@@ -139,8 +147,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// REST API root address.
     /// </summary>
     [Display(
-        Name = "REST address",
-        Description = "Bigul Connect client REST API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.BigulConnectClientRestApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 10)]
     public Uri Address { get; set; } = _defaultAddress;
@@ -149,8 +158,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Public daily instrument-master archive.
     /// </summary>
     [Display(
-        Name = "Master address",
-        Description = "Public Bigul daily instrument-master ZIP address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MasterAddressKey,
+        Description = LocalizedStrings.PublicBigulDailyInstrumentMasterZipAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 11)]
     public Uri MasterAddress { get; set; } = _defaultMasterAddress;
@@ -159,8 +169,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     /// Market-data WebSocket address.
     /// </summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Bigul market-data WebSocket address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.BigulMarketDataWebSocketAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 12)]
     public Uri WebSocketAddress { get; set; } = _defaultWebSocketAddress;

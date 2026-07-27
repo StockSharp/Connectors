@@ -22,7 +22,7 @@ public partial class EsmaFirdsMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official ESMA registers API root.",
+        Description = LocalizedStrings.OfficialEsmaRegistersApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 0)]
     [BasicSetting]
@@ -33,9 +33,10 @@ public partial class EsmaFirdsMessageAdapter :
     /// Comma-separated first letters of included ISO 10962 CFI categories.
     /// </summary>
     [Display(
-        Name = "CFI categories",
-        Description = "Comma-separated ISO 10962 CFI category letters. E and C select equities and collective investment vehicles.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CfiCategoriesKey,
+        Description = LocalizedStrings.CommaSeparatedIso10962CfiCategoryLettersEAndCSelectEquitiesAndCollectiveInvestmentVehiclesDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 1)]
     public string CfiCategories { get; set; } = "E,C";
 
@@ -43,17 +44,19 @@ public partial class EsmaFirdsMessageAdapter :
     /// Whether instruments with a past termination date are excluded.
     /// </summary>
     [Display(
-        Name = "Active instruments only",
-        Description = "Exclude instruments whose trading termination date is in the past.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ActiveInstrumentsOnlyKey,
+        Description = LocalizedStrings.ExcludeInstrumentsWhoseTradingTerminationDateIsInThePastDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 2)]
     public bool ActiveOnly { get; set; } = true;
 
     /// <summary>Maximum records returned by one lookup.</summary>
     [Display(
-        Name = "Maximum results",
-        Description = "Maximum number of FIRDS instrument records returned by one lookup.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumResultsKey,
+        Description = LocalizedStrings.MaximumNumberOfFirdsInstrumentRecordsReturnedByOneLookupDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 3)]
     public int MaxResults { get; set; } = 100;
 

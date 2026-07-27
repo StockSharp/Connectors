@@ -42,24 +42,27 @@ public partial class ZaifMessageAdapter : MessageAdapter, IKeySecretAdapter
 
 	/// <summary>Public REST API endpoint.</summary>
 	[Display(
-		Name = "Public REST endpoint",
-		Description = "Public REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PublicRestEndpointKey,
+		Description = LocalizedStrings.PublicRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string PublicRestEndpoint { get; set; } = _defaultPublicRestEndpoint;
 
 	/// <summary>Private REST API endpoint.</summary>
 	[Display(
-		Name = "Private REST endpoint",
-		Description = "Private REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrivateRestEndpointKey,
+		Description = LocalizedStrings.PrivateRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string PrivateRestEndpoint { get; set; } = _defaultPrivateRestEndpoint;
 
 	/// <summary>WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.WebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

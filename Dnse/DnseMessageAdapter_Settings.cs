@@ -34,7 +34,7 @@ public partial class DnseMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.KeyKey,
-        Description = "API key created in DNSE Entrade X.",
+        Description = LocalizedStrings.ApiKeyCreatedInDnseEntradeXDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -44,7 +44,7 @@ public partial class DnseMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecretKey,
-        Description = "API secret displayed once when the DNSE API key is created.",
+        Description = LocalizedStrings.ApiSecretDisplayedOnceWhenTheDnseApiKeyIsCreatedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -54,8 +54,9 @@ public partial class DnseMessageAdapter :
     /// Eight-hour token required for order-changing operations.
     /// </summary>
     [Display(
-        Name = "Trading token",
-        Description = "Eight-hour DNSE token obtained by Email OTP or Smart OTP. Read-only access works without it.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TradingTokenKey,
+        Description = LocalizedStrings.EightHourDnseTokenObtainedByEmailOtpOrSmartOtpReadOnlyAccessWorksWithoutItDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -63,8 +64,9 @@ public partial class DnseMessageAdapter :
 
     /// <summary>Second-factor method used to obtain a trading token.</summary>
     [Display(
-        Name = "OTP type",
-        Description = "Second-factor method registered for the DNSE account.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OtpTypeKey,
+        Description = LocalizedStrings.SecondFactorMethodRegisteredForTheDnseAccountDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public DnseOtpTypes OtpType { get; set; } = DnseOtpTypes.Email;
@@ -74,8 +76,9 @@ public partial class DnseMessageAdapter :
     /// token.
     /// </summary>
     [Display(
-        Name = "One-time password",
-        Description = "Email or Smart OTP used once to obtain a trading token.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OneTimePasswordKey,
+        Description = LocalizedStrings.EmailOrSmartOtpUsedOnceToObtainATradingTokenDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public SecureString OneTimePassword { get; set; }
@@ -85,8 +88,9 @@ public partial class DnseMessageAdapter :
     /// supplied.
     /// </summary>
     [Display(
-        Name = "Request Email OTP",
-        Description = "Send an Email OTP during the next connection, then reconnect with the received code.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RequestEmailOtpKey,
+        Description = LocalizedStrings.SendAnEmailOtpDuringTheNextConnectionThenReconnectWithTheReceivedCodeDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public bool RequestEmailOtpOnConnect { get; set; }
@@ -98,7 +102,7 @@ public partial class DnseMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AccountKey,
-        Description = "DNSE sub-account number. Empty selects the first stock account.",
+        Description = LocalizedStrings.DnseSubAccountNumberEmptySelectsTheFirstStockAccountDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     [BasicSetting]
@@ -109,16 +113,18 @@ public partial class DnseMessageAdapter :
     /// this value.
     /// </summary>
     [Display(
-        Name = "Loan package ID",
-        Description = "Default package returned by the DNSE loan-packages endpoint and required for an order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LoanPackageIdKey,
+        Description = LocalizedStrings.DefaultPackageReturnedByTheDnseLoanPackagesEndpointAndRequiredForAnOrderDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 7)]
     public int DefaultLoanPackageId { get; set; }
 
     /// <summary>Default DNSE trading-board identifier.</summary>
     [Display(
-        Name = "Trading board",
-        Description = "Default DNSE board identifier, normally G1 for round-lot trading.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TradingBoardKey,
+        Description = LocalizedStrings.DefaultDnseBoardIdentifierNormallyG1ForRoundLotTradingDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 8)]
     public string DefaultBoardId { get; set; } = "G1";
@@ -128,16 +134,18 @@ public partial class DnseMessageAdapter :
     /// units.
     /// </summary>
     [Display(
-        Name = "Price multiplier",
-        Description = "DNSE stock feeds quote prices in thousands of VND while orders use VND.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PriceMultiplierKey,
+        Description = LocalizedStrings.DnseStockFeedsQuotePricesInThousandsOfVndWhileOrdersUseVndDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 9)]
     public decimal MarketDataPriceMultiplier { get; set; } = 1000m;
 
     /// <summary>Interval for refreshing orders and account data.</summary>
     [Display(
-        Name = "Account polling interval",
-        Description = "REST fallback interval for orders, balances, and positions.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountPollingIntervalKey,
+        Description = LocalizedStrings.RestFallbackIntervalForOrdersBalancesAndPositionsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 10)]
     public TimeSpan AccountPollingInterval { get; set; } =
@@ -147,16 +155,18 @@ public partial class DnseMessageAdapter :
     /// Maximum number of securities emitted by an unrestricted lookup.
     /// </summary>
     [Display(
-        Name = "Lookup limit",
-        Description = "Maximum instruments emitted by one unrestricted lookup.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LookupLimitKey,
+        Description = LocalizedStrings.MaximumInstrumentsEmittedByOneUnrestrictedLookupDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 11)]
     public int LookupLimit { get; set; } = 5000;
 
     /// <summary>DNSE REST API version header.</summary>
     [Display(
-        Name = "API version",
-        Description = "DNSE REST API version sent in the version header.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiVersionKey,
+        Description = LocalizedStrings.DnseRestApiVersionSentInTheVersionHeaderDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 12)]
     public string ApiVersion { get; set; } = "2026-05-07";
@@ -166,24 +176,27 @@ public partial class DnseMessageAdapter :
     /// <c>Date</c>.
     /// </summary>
     [Display(
-        Name = "Signature date header",
-        Description = "HTTP date-header name included in the DNSE HMAC signature.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SignatureDateHeaderKey,
+        Description = LocalizedStrings.HttpDateHeaderNameIncludedInTheDnseHmacSignatureDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 13)]
     public string DateHeaderName { get; set; } = "Date";
 
     /// <summary>REST API address.</summary>
     [Display(
-        Name = "REST address",
-        Description = "DNSE LightSpeed REST API server root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.DnseLightSpeedRestApiServerRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 14)]
     public Uri RestAddress { get; set; } = _defaultRestAddress;
 
     /// <summary>WebSocket API address.</summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "DNSE LightSpeed real-time stream address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.DnseLightSpeedRealTimeStreamAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 15)]
     public Uri WebSocketAddress { get; set; } =

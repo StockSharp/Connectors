@@ -11,8 +11,9 @@ public sealed class FalconXOrderCondition : OrderCondition
 	/// <summary>Execute the request as a TWAP order over the order WebSocket.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP",
-		Description = "Execute the order as a FalconX TWAP order.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TWAPKey,
+		Description = LocalizedStrings.ExecuteTheOrderAsAFalconXTwapOrderDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 0)]
 	public bool IsTwap
@@ -24,8 +25,9 @@ public sealed class FalconXOrderCondition : OrderCondition
 	/// <summary>Total TWAP execution duration.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP duration",
-		Description = "Total duration over which FalconX executes the TWAP order.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapDurationKey,
+		Description = LocalizedStrings.TotalDurationOverWhichFalconXExecutesTheTwapOrderDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 1)]
 	public TimeSpan TwapDuration
@@ -38,8 +40,9 @@ public sealed class FalconXOrderCondition : OrderCondition
 	/// <summary>Optional number of TWAP child transactions.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP transactions",
-		Description = "Optional number of child transactions in the TWAP schedule.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapTransactionsKey,
+		Description = LocalizedStrings.OptionalNumberOfChildTransactionsInTheTwapScheduleDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 2)]
 	public int? TwapTransactionsCount
@@ -51,8 +54,9 @@ public sealed class FalconXOrderCondition : OrderCondition
 	/// <summary>Optional REST FOK limit-order slippage in basis points.</summary>
 	[DataMember]
 	[Display(
-		Name = "Slippage (bps)",
-		Description = "Optional FalconX REST limit-order slippage in basis points.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SlippageBpsKey,
+		Description = LocalizedStrings.OptionalFalconXRestLimitOrderSlippageInBasisPointsDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 3)]
 	public decimal? SlippageBps

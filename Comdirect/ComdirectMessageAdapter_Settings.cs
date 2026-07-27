@@ -21,8 +21,9 @@ public partial class ComdirectMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "OAuth client ID",
-        Description = "Client ID issued for the comdirect developer access.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthClientIdKey,
+        Description = LocalizedStrings.ClientIdIssuedForTheComdirectDeveloperAccessDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -30,8 +31,9 @@ public partial class ComdirectMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "OAuth client secret",
-        Description = "Client secret issued for the comdirect developer access.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthClientSecretKey,
+        Description = LocalizedStrings.ClientSecretIssuedForTheComdirectDeveloperAccessDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -39,8 +41,9 @@ public partial class ComdirectMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "Access number",
-        Description = "Eight-digit comdirect access number.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccessNumberKey,
+        Description = LocalizedStrings.EightDigitComdirectAccessNumberDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -48,8 +51,9 @@ public partial class ComdirectMessageAdapter : MessageAdapter,
 
     /// <inheritdoc />
     [Display(
-        Name = "PIN",
-        Description = "Six-digit comdirect access PIN.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PinLabelKey,
+        Description = LocalizedStrings.SixDigitComdirectAccessPinDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -59,8 +63,9 @@ public partial class ComdirectMessageAdapter : MessageAdapter,
     /// TAN procedure used to activate the session.
     /// </summary>
     [Display(
-        Name = "TAN procedure",
-        Description = "TAN procedure used to activate the comdirect session.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TanProcedureKey,
+        Description = LocalizedStrings.TanProcedureUsedToActivateTheComdirectSessionDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -94,8 +99,9 @@ public partial class ComdirectMessageAdapter : MessageAdapter,
     /// requested before order registration.
     /// </summary>
     [Display(
-        Name = "Default trading currency",
-        Description = "ISO currency used for order limits when instrument metadata is not cached.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultTradingCurrencyKey,
+        Description = LocalizedStrings.IsoCurrencyUsedForOrderLimitsWhenInstrumentMetadataIsNotCachedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     public string DefaultCurrency { get; set; } = "EUR";

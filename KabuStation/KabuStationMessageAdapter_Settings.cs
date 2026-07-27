@@ -60,32 +60,36 @@ public partial class KabuStationMessageAdapter : MessageAdapter, IDemoAdapter
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
 
 	/// <summary>Production WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Production WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>Demo WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo WebSocket endpoint",
-		Description = "Demo WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 7)]
 	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;

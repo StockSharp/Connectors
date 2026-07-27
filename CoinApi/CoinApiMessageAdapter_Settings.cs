@@ -14,7 +14,8 @@ public partial class CoinApiMessageAdapter
 
 	/// <summary>CoinAPI REST API root.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
@@ -22,7 +23,8 @@ public partial class CoinApiMessageAdapter
 
 	/// <summary>CoinAPI WebSocket V1 endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -30,16 +32,18 @@ public partial class CoinApiMessageAdapter
 
 	/// <summary>Optional exchange identifier filter for security lookup.</summary>
 	[Display(
-		Name = "Exchange filter",
-		Description = "Optional CoinAPI exchange identifier filter.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeFilterKey,
+		Description = LocalizedStrings.OptionalCoinAPIExchangeIdentifierFilterDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 0)]
 	public string ExchangeFilter { get; set; }
 
 	/// <summary>Optional asset identifier filter for security lookup.</summary>
 	[Display(
-		Name = "Asset filter",
-		Description = "Optional CoinAPI asset identifier filter.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AssetFilterKey,
+		Description = LocalizedStrings.OptionalCoinAPIAssetIdentifierFilterDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 1)]
 	public string AssetFilter { get; set; }
@@ -67,7 +71,8 @@ public partial class CoinApiMessageAdapter
 
 	/// <summary>Maximum number of securities returned by one lookup.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public int MaximumItems
@@ -119,8 +124,9 @@ public partial class CoinApiMessageAdapter
 
 	/// <summary>Default range when a historical request has no start time.</summary>
 	[Display(
-		Name = "History lookback",
-		Description = "Default range used when history has no start time.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLookbackKey,
+		Description = LocalizedStrings.DefaultRangeUsedWhenHistoryHasNoStartTimeDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 1)]
 	public TimeSpan HistoryLookback

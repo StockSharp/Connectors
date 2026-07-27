@@ -32,8 +32,9 @@ public partial class HdfcMessageAdapter : MessageAdapter,
 
 	/// <inheritdoc />
 	[Display(
-		Name = "API key",
-		Description = "Application key created in the InvestRight developer portal.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ApiKeyKey,
+		Description = LocalizedStrings.ApplicationKeyCreatedInTheInvestRightDeveloperPortalDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -41,8 +42,9 @@ public partial class HdfcMessageAdapter : MessageAdapter,
 
 	/// <inheritdoc />
 	[Display(
-		Name = "API secret",
-		Description = "Application secret used to exchange a request token for an access token.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ApiSecretKey,
+		Description = LocalizedStrings.ApplicationSecretUsedToExchangeARequestTokenForAnAccessTokenDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -50,8 +52,9 @@ public partial class HdfcMessageAdapter : MessageAdapter,
 
 	/// <summary>One-time request token returned by the authorization redirect.</summary>
 	[Display(
-		Name = "Request token",
-		Description = "One-time request token returned after InvestRight login and consent.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RequestTokenKey,
+		Description = LocalizedStrings.OneTimeRequestTokenReturnedAfterInvestRightLoginAndConsentDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
@@ -59,24 +62,27 @@ public partial class HdfcMessageAdapter : MessageAdapter,
 
 	/// <inheritdoc />
 	[Display(
-		Name = "Access token",
-		Description = "InvestRight access token. It is populated after request-token exchange.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccessTokenKey,
+		Description = LocalizedStrings.InvestRightAccessTokenItIsPopulatedAfterRequestTokenExchangeDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public SecureString Token { get; set; }
 
 	/// <summary>Portfolio name emitted by the connector.</summary>
 	[Display(
-		Name = "Portfolio name",
-		Description = "Portfolio name. When empty, the InvestRight user ID is used.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PortfolioNameLabelKey,
+		Description = LocalizedStrings.PortfolioNameWhenEmptyTheInvestRightUserIdIsUsedDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public string PortfolioName { get; set; }
 
 	/// <summary>Default product used for new orders.</summary>
 	[Display(
-		Name = "Default product",
-		Description = "Default HDFC Securities product used for new orders.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DefaultProductKey,
+		Description = LocalizedStrings.DefaultHdfcSecuritiesProductUsedForNewOrdersDescKey,
 		GroupName = LocalizedStrings.OrderKey,
 		Order = 5)]
 	public HdfcProducts DefaultProduct { get; set; } =
@@ -94,24 +100,27 @@ public partial class HdfcMessageAdapter : MessageAdapter,
 
 	/// <summary>Maximum number of WebSocket reconnect attempts.</summary>
 	[Display(
-		Name = "Reconnect attempts",
-		Description = "Maximum number of attempts to reconnect the InvestRight WebSocket.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+		Description = LocalizedStrings.MaximumNumberOfAttemptsToReconnectTheInvestRightWebSocketDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 7)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <summary>REST API root address.</summary>
 	[Display(
-		Name = "REST address",
-		Description = "InvestRight Open API root address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestAddressKey,
+		Description = LocalizedStrings.InvestRightOpenApiRootAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 8)]
 	public Uri RestAddress { get; set; } = _defaultRestAddress;
 
 	/// <summary>Public security-master CSV address.</summary>
 	[Display(
-		Name = "Instrument address",
-		Description = "Public InvestRight security-master CSV address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InstrumentAddressKey,
+		Description = LocalizedStrings.PublicInvestRightSecurityMasterCsvAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 9)]
 	public Uri InstrumentAddress { get; set; } =
@@ -119,8 +128,9 @@ public partial class HdfcMessageAdapter : MessageAdapter,
 
 	/// <summary>Market-data WebSocket address.</summary>
 	[Display(
-		Name = "WebSocket address",
-		Description = "InvestRight protobuf market-data WebSocket address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketAddressKey,
+		Description = LocalizedStrings.InvestRightProtobufMarketDataWebSocketAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public Uri WebSocketAddress { get; set; } =

@@ -26,7 +26,7 @@ public partial class KoreanFscMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
-        Description = "Decoded service key issued by the Korean Public Data Portal.",
+        Description = LocalizedStrings.DecodedServiceKeyIssuedByTheKoreanPublicDataPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -36,7 +36,7 @@ public partial class KoreanFscMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Korean FSC stock-securities service root.",
+        Description = LocalizedStrings.KoreanFscStockSecuritiesServiceRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 1)]
     public Uri Address { get; set; } =
@@ -44,8 +44,9 @@ public partial class KoreanFscMessageAdapter :
 
     /// <summary>Public FSC price dataset.</summary>
     [Display(
-        Name = "Dataset",
-        Description = "Stocks, income securities, or one of the two preemptive-right datasets.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatasetKey,
+        Description = LocalizedStrings.StocksIncomeSecuritiesOrOneOfTheTwoPreemptiveRightDatasetsDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 2)]
     [BasicSetting]
@@ -54,8 +55,9 @@ public partial class KoreanFscMessageAdapter :
 
     /// <summary>Optional KRX listing-market filter.</summary>
     [Display(
-        Name = "Market",
-        Description = "Optional KOSPI, KOSDAQ, or KONEX filter where the selected dataset supports it.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketKey,
+        Description = LocalizedStrings.OptionalKospiKosdaqOrKonexFilterWhereTheSelectedDatasetSupportsItDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 3)]
     public KoreanFscMarkets Market { get; set; } =
@@ -63,33 +65,37 @@ public partial class KoreanFscMessageAdapter :
 
     /// <summary>Optional local Korean reference date.</summary>
     [Display(
-        Name = "Reference date",
-        Description = "Optional Korean date used for security lookup and latest snapshots.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReferenceDateKey,
+        Description = LocalizedStrings.OptionalKoreanDateUsedForSecurityLookupAndLatestSnapshotsDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 4)]
     public DateTime? ReferenceDate { get; set; }
 
     /// <summary>Maximum days searched backwards for recent data.</summary>
     [Display(
-        Name = "Latest search days",
-        Description = "Maximum calendar days searched backwards for the latest published trading date.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LatestSearchDaysKey,
+        Description = LocalizedStrings.MaximumCalendarDaysSearchedBackwardsForTheLatestPublishedTradingDateDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int LatestSearchDays { get; set; } = 14;
 
     /// <summary>Number of API records requested per page.</summary>
     [Display(
-        Name = "Page size",
-        Description = "Number of Korean FSC records requested per API page.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageSizeKey,
+        Description = LocalizedStrings.NumberOfKoreanFscRecordsRequestedPerApiPageDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 6)]
     public int PageSize { get; set; } = 1000;
 
     /// <summary>Maximum API pages read by one request.</summary>
     [Display(
-        Name = "Maximum pages",
-        Description = "Maximum Korean FSC pages downloaded by one lookup or history subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumPagesKey,
+        Description = LocalizedStrings.MaximumKoreanFscPagesDownloadedByOneLookupOrHistorySubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 7)]
     public int MaxPages { get; set; } = 100;
 

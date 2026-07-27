@@ -7,25 +7,29 @@ public enum BluefinSelfTradePreventionTypes
 	/// <summary>Use the account default.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Unspecified")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UnspecifiedKey)]
 	Unspecified,
 
 	/// <summary>Cancel the taker order.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Cancel taker")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CancelTakerKey)]
 	Taker,
 
 	/// <summary>Cancel the maker order.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Cancel maker")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CancelMakerKey)]
 	Maker,
 
 	/// <summary>Cancel both orders.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Cancel both")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CancelBothKey)]
 	Both,
 }
 
@@ -55,9 +59,10 @@ public class BluefinOrderCondition : OrderCondition,
 	/// <summary>Whether the order uses isolated margin.</summary>
 	[DataMember]
 	[Display(
-		Name = "Isolated margin",
-		Description = "Place the order in isolated-margin mode.",
-		GroupName = "Parameters",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IsolatedMarginKey,
+		Description = LocalizedStrings.PlaceTheOrderInIsolatedMarginModeDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
 		Order = 1)]
 	public bool IsIsolated
 	{
@@ -110,9 +115,10 @@ public class BluefinOrderCondition : OrderCondition,
 	/// <summary>Self-trade prevention mode.</summary>
 	[DataMember]
 	[Display(
-		Name = "Self-trade prevention",
-		Description = "Action taken when an order would self-trade.",
-		GroupName = "Parameters",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SelfTradePreventionKey,
+		Description = LocalizedStrings.ActionTakenWhenAnOrderWouldSelfTradeDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
 		Order = 5)]
 	public BluefinSelfTradePreventionTypes SelfTradePrevention
 	{

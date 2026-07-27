@@ -4,15 +4,17 @@ namespace StockSharp.InvertirOnline;
 [DataContract]
 [Serializable]
 [Display(
-    Name = "IOL order condition",
-    Description = "InvertirOnline order parameters.")]
+    ResourceType = typeof(LocalizedStrings),
+    Name = LocalizedStrings.IolOrderConditionKey,
+    Description = LocalizedStrings.InvertirOnlineOrderParametersDescKey)]
 public sealed class InvertirOnlineOrderCondition : OrderCondition
 {
     /// <summary>Settlement term.</summary>
     [DataMember]
     [Display(
-        Name = "Settlement",
-        Description = "IOL settlement term.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SettlementKey,
+        Description = LocalizedStrings.IolSettlementTermDescKey,
         GroupName = LocalizedStrings.GeneralKey,
         Order = 0)]
     public InvertirOnlineSettlements Settlement

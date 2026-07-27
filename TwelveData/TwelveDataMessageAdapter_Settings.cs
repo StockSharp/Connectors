@@ -37,9 +37,10 @@ public partial class TwelveDataMessageAdapter : MessageAdapter, ITokenAdapter, I
 
 	/// <summary>Twelve Data real-time WebSocket address.</summary>
 	[Display(
-		Name = "WebSocket address",
-		Description = "Twelve Data real-time price endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketAddressKey,
+		Description = LocalizedStrings.TwelveDataRealTimePriceEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public Uri WebSocketAddress { get; set; } =
@@ -47,50 +48,56 @@ public partial class TwelveDataMessageAdapter : MessageAdapter, ITokenAdapter, I
 
 	/// <summary>Country used to narrow stock and ETF lookup.</summary>
 	[Display(
-		Name = "Country",
-		Description = "Country filter for stock and ETF reference data.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CountryKey,
+		Description = LocalizedStrings.CountryFilterForStockAndEtfReferenceDataDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	[BasicSetting]
 	public string Country { get; set; } = "United States";
 
 	/// <summary>Optional exchange used to narrow stock and ETF lookup.</summary>
 	[Display(
-		Name = "Stock exchange",
-		Description = "Optional stock and ETF exchange filter.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockExchangeKey,
+		Description = LocalizedStrings.OptionalStockAndEtfExchangeFilterDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 4)]
 	public string StockExchange { get; set; }
 
 	/// <summary>Optional MIC used to narrow stock and ETF lookup.</summary>
 	[Display(
-		Name = "Stock MIC",
-		Description = "Optional market identifier code for stock and ETF lookup.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockMicKey,
+		Description = LocalizedStrings.OptionalMarketIdentifierCodeForStockAndEtfLookupDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 5)]
 	public string StockMic { get; set; }
 
 	/// <summary>Optional crypto exchange used for lookup and ambiguous symbols.</summary>
 	[Display(
-		Name = "Crypto exchange",
-		Description = "Optional cryptocurrency exchange filter.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoExchangeKey,
+		Description = LocalizedStrings.OptionalCryptocurrencyExchangeFilterDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 6)]
 	public string CryptoExchange { get; set; }
 
 	/// <summary>Historical-price adjustment policy.</summary>
 	[Display(
-		Name = "Adjustment",
-		Description = "Split and dividend adjustment for historical candles.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AdjustmentKey,
+		Description = LocalizedStrings.SplitAndDividendAdjustmentForHistoricalCandlesDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 7)]
 	public TwelveDataAdjustments Adjustment { get; set; } = TwelveDataAdjustments.Splits;
 
 	/// <summary>Include eligible US pre-market and post-market data.</summary>
 	[Display(
-		Name = "Extended hours",
-		Description = "Include eligible US pre-market and post-market data.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExtendedHoursKey,
+		Description = LocalizedStrings.IncludeEligibleUsPreMarketAndPostMarketDataDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 8)]
 	public bool IsPrePost { get; set; }
 

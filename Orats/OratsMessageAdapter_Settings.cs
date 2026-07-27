@@ -37,43 +37,48 @@ public partial class OratsMessageAdapter : MessageAdapter, ITokenAdapter, IAddre
 
 	/// <summary>Current-data entitlement to use.</summary>
 	[Display(
-		Name = "Data mode",
-		Description = "Use delayed or agreement-gated live current-data endpoints.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataModeKey,
+		Description = LocalizedStrings.UseDelayedOrAgreementGatedLiveCurrentDataEndpointsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 2)]
 	[BasicSetting]
 	public OratsDataModes DataMode { get; set; }
 
 	/// <summary>Price adjustment used for historical stock candles.</summary>
 	[Display(
-		Name = "Price adjustment",
-		Description = "Select adjusted or unadjusted daily stock OHLC fields.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceAdjustmentKey,
+		Description = LocalizedStrings.SelectAdjustedOrUnadjustedDailyStockOhlcFieldsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	public OratsPriceAdjustments PriceAdjustment { get; set; } =
 		OratsPriceAdjustments.Adjusted;
 
 	/// <summary>Time zone used to place ORATS trade dates into market sessions.</summary>
 	[Display(
-		Name = "Market time zone",
-		Description = "System time-zone identifier for US Eastern market dates.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketTimeZoneKey,
+		Description = LocalizedStrings.SystemTimeZoneIdentifierForUsEasternMarketDatesDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 4)]
 	public string MarketTimeZoneId { get; set; } = "America/New_York";
 
 	/// <summary>Start of the daily stock candle session.</summary>
 	[Display(
-		Name = "Session start",
-		Description = "Open time assigned to daily stock candles.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SessionStartKey,
+		Description = LocalizedStrings.OpenTimeAssignedToDailyStockCandlesDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 5)]
 	public TimeSpan SessionStart { get; set; } = new(9, 30, 0);
 
 	/// <summary>End of the daily stock candle session.</summary>
 	[Display(
-		Name = "Session end",
-		Description = "Close time assigned to daily stock candles and EOD observations.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SessionEndKey,
+		Description = LocalizedStrings.CloseTimeAssignedToDailyStockCandlesAndEodObservationsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 6)]
 	public TimeSpan SessionEnd { get; set; } = new(16, 0, 0);
 

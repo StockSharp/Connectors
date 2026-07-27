@@ -53,8 +53,9 @@ public partial class BitbankMessageAdapter : IKeySecretAdapter
 	/// Public REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Public REST endpoint",
-		Description = "Bitbank public REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PublicRestEndpointKey,
+		Description = LocalizedStrings.BitbankPublicRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	[BasicSetting]
@@ -64,8 +65,9 @@ public partial class BitbankMessageAdapter : IKeySecretAdapter
 	/// Private REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Private REST endpoint",
-		Description = "Bitbank private REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrivateRestEndpointKey,
+		Description = LocalizedStrings.BitbankPrivateRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
@@ -75,8 +77,9 @@ public partial class BitbankMessageAdapter : IKeySecretAdapter
 	/// WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Bitbank WebSocket API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.BitbankWebSocketApiEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey,
 		Order = 0)]
 	[BasicSetting]

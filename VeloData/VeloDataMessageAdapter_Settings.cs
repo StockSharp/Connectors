@@ -14,7 +14,8 @@ public partial class VeloDataMessageAdapter
 
 	/// <summary>Velo Data market-data REST API v1 root.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	[BasicSetting]
@@ -22,7 +23,8 @@ public partial class VeloDataMessageAdapter
 
 	/// <summary>Velo Data news REST API root.</summary>
 	[Display(
-		Name = "News REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NewsRestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
@@ -30,7 +32,8 @@ public partial class VeloDataMessageAdapter
 
 	/// <summary>Velo Data news WebSocket endpoint.</summary>
 	[Display(
-		Name = "News WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NewsWebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -39,8 +42,9 @@ public partial class VeloDataMessageAdapter
 
 	/// <summary>Whether delisted futures and spot products are loaded.</summary>
 	[Display(
-		Name = "Include delisted",
-		Description = "Load delisted futures and spot products in addition to active products.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IncludeDelistedKey,
+		Description = LocalizedStrings.LoadDelistedFuturesAndSpotProductsInAdditionToActiveProductsDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	public bool IsIncludeDelisted { get; set; }
@@ -68,7 +72,8 @@ public partial class VeloDataMessageAdapter
 
 	/// <summary>Maximum number of instruments returned by a lookup.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public int MaximumItems
@@ -102,8 +107,9 @@ public partial class VeloDataMessageAdapter
 
 	/// <summary>Default range when a request has no start time.</summary>
 	[Display(
-		Name = "History lookback",
-		Description = "Default range used when history has no start time.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLookbackKey,
+		Description = LocalizedStrings.DefaultRangeUsedWhenHistoryHasNoStartTimeDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 1)]
 	public TimeSpan HistoryLookback

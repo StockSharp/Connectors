@@ -41,13 +41,15 @@ public enum DriftMarginModes
 	/// <summary>Cross margin.</summary>
 	[EnumMember(Value = "cross")]
 	[Display(
-		Name = "Cross")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CrossKey)]
 	Cross,
 
 	/// <summary>Isolated margin.</summary>
 	[EnumMember(Value = "isolated")]
 	[Display(
-		Name = "Isolated")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IsolatedKey)]
 	Isolated,
 }
 

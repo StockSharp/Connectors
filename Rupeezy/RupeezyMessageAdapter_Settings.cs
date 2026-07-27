@@ -35,8 +35,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// Application identifier created in the Vortex developer portal.
     /// </summary>
     [Display(
-        Name = "Application ID",
-        Description = "Application identifier created in the Rupeezy Vortex developer portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApplicationIdKey,
+        Description = LocalizedStrings.ApplicationIdentifierCreatedInTheRupeezyVortexDeveloperPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -46,8 +47,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// API key created in the Vortex developer portal.
     /// </summary>
     [Display(
-        Name = "API key",
-        Description = "API key created in the Rupeezy Vortex developer portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiKeyKey,
+        Description = LocalizedStrings.ApiKeyCreatedInTheRupeezyVortexDeveloperPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -57,8 +59,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// Authorization code returned by the Rupeezy SSO callback.
     /// </summary>
     [Display(
-        Name = "Authorization code",
-        Description = "Authorization code returned in the auth parameter of the Rupeezy SSO callback.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizationCodeKey,
+        Description = LocalizedStrings.AuthorizationCodeReturnedInTheAuthParameterOfTheRupeezySsoCallbackDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -78,8 +81,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// Portfolio name emitted by the connector.
     /// </summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the Rupeezy user or application identifier is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyTheRupeezyUserOrApplicationIdentifierIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public string PortfolioName { get; set; }
@@ -88,8 +92,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// Default product used for new orders.
     /// </summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Rupeezy order product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultRupeezyOrderProductDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 5)]
     public RupeezyProducts DefaultProduct { get; set; } = RupeezyProducts.Delivery;
@@ -98,8 +103,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// Maximum number of streaming reconnect attempts.
     /// </summary>
     [Display(
-        Name = "Reconnect attempts",
-        Description = "Maximum number of attempts to reconnect the Rupeezy WebSocket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+        Description = LocalizedStrings.MaximumNumberOfAttemptsToReconnectTheRupeezyWebSocketDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     public int ReconnectAttempts { get; set; } = 10;
@@ -108,8 +114,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// REST API root address.
     /// </summary>
     [Display(
-        Name = "REST address",
-        Description = "Rupeezy Vortex REST API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.RupeezyVortexRestApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 7)]
     public Uri Address { get; set; } = _defaultAddress;
@@ -118,8 +125,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// Public daily instrument-master address.
     /// </summary>
     [Display(
-        Name = "Master address",
-        Description = "Public Rupeezy daily instrument-master CSV address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MasterAddressKey,
+        Description = LocalizedStrings.PublicRupeezyDailyInstrumentMasterCsvAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 8)]
     public Uri MasterAddress { get; set; } = _defaultMasterAddress;
@@ -128,8 +136,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     /// Market-data and order-update WebSocket address.
     /// </summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Rupeezy live-data WebSocket address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.RupeezyLiveDataWebSocketAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 9)]
     public Uri WebSocketAddress { get; set; } = _defaultWebSocketAddress;

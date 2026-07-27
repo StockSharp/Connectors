@@ -32,7 +32,7 @@ public partial class TossSecuritiesMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.KeyKey,
-        Description = "OAuth client ID created in Toss Securities WTS.",
+        Description = LocalizedStrings.OAuthClientIdCreatedInTossSecuritiesWtsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -42,7 +42,7 @@ public partial class TossSecuritiesMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecretKey,
-        Description = "OAuth client secret created in Toss Securities WTS.",
+        Description = LocalizedStrings.OAuthClientSecretCreatedInTossSecuritiesWtsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -53,8 +53,9 @@ public partial class TossSecuritiesMessageAdapter :
     /// first brokerage account.
     /// </summary>
     [Display(
-        Name = "Account sequence",
-        Description = "Account sequence returned by Toss Securities. Zero selects the first account.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountSequenceKey,
+        Description = LocalizedStrings.AccountSequenceReturnedByTossSecuritiesZeroSelectsTheFirstAccountDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -73,8 +74,9 @@ public partial class TossSecuritiesMessageAdapter :
 
     /// <summary>Interval for polling REST market data.</summary>
     [Display(
-        Name = "Market polling interval",
-        Description = "Interval for polling live prices, order books, trades, and candles.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketPollingIntervalKey,
+        Description = LocalizedStrings.IntervalForPollingLivePricesOrderBooksTradesAndCandlesDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -82,8 +84,9 @@ public partial class TossSecuritiesMessageAdapter :
 
     /// <summary>Interval for polling orders and portfolios.</summary>
     [Display(
-        Name = "Account polling interval",
-        Description = "Interval for polling order status, holdings, and buying power.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountPollingIntervalKey,
+        Description = LocalizedStrings.IntervalForPollingOrderStatusHoldingsAndBuyingPowerDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public TimeSpan AccountPollingInterval { get; set; } =
@@ -91,16 +94,18 @@ public partial class TossSecuritiesMessageAdapter :
 
     /// <summary>Whether historical stock candles are adjusted.</summary>
     [Display(
-        Name = "Adjusted candles",
-        Description = "Request split- and dividend-adjusted stock candles.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AdjustedCandlesKey,
+        Description = LocalizedStrings.RequestSplitAndDividendAdjustedStockCandlesDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 6)]
     public bool AdjustedCandles { get; set; } = true;
 
     /// <summary>REST API server root.</summary>
     [Display(
-        Name = "API address",
-        Description = "Toss Securities Open API server root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiAddressKey,
+        Description = LocalizedStrings.TossSecuritiesOpenApiServerRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 7)]
     public Uri RestAddress { get; set; } = _defaultRestAddress;

@@ -29,17 +29,19 @@ public partial class ExegyMessageAdapter : MessageAdapter
 
 	/// <summary>Time zone used only for source timestamps without an offset.</summary>
 	[Display(
-		Name = "Default time zone",
-		Description = "System time-zone identifier applied only when a CSV timestamp has no UTC offset.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DefaultTimeZoneKey,
+		Description = LocalizedStrings.SystemTimeZoneIdentifierAppliedOnlyWhenACsvTimestampHasNoUtcOffsetDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 1)]
 	public string DefaultTimeZoneId { get; set; } = "UTC";
 
 	/// <summary>Whether nested delivery directories are scanned.</summary>
 	[Display(
-		Name = "Recursive scan",
-		Description = "Scan nested delivery directories without following reparse points.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RecursiveScanKey,
+		Description = LocalizedStrings.ScanNestedDeliveryDirectoriesWithoutFollowingReparsePointsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 2)]
 	public bool IsRecursive { get; set; } = true;
 

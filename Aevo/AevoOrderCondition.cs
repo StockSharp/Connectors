@@ -25,9 +25,10 @@ public class AevoOrderCondition : OrderCondition
 	/// <summary>Whether market-maker protection applies to the order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Market-maker protection",
-		Description = "Include the order in Aevo market-maker protection.",
-		GroupName = "Parameters",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketMakerProtectionKey,
+		Description = LocalizedStrings.IncludeTheOrderInAevoMarketMakerProtectionDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
 		Order = 1)]
 	public bool IsMmp
 	{

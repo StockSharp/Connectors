@@ -10,13 +10,13 @@ public enum ChoiceFinXProducts
     /// Delivery or carry-forward product.
     /// </summary>
     [EnumMember]
-    [Display(Name = "Delivery")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DeliveryKey)]
     Delivery,
 
     /// <summary>
     /// Margin or intraday product.
     /// </summary>
     [EnumMember]
-    [Display(Name = "Intraday")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IntradayKey)]
     Intraday,
 }

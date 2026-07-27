@@ -164,48 +164,54 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 
 	/// <summary>Production trading REST endpoint.</summary>
 	[Display(
-		Name = "Trading REST endpoint",
-		Description = "Production trading REST endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingRestEndpointKey,
+		Description = LocalizedStrings.ProductionTradingRestEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string TradingRestEndpoint { get; set; } = _defaultTradingRestEndpoint;
 
 	/// <summary>Demo trading REST endpoint.</summary>
 	[Display(
-		Name = "Demo trading REST endpoint",
-		Description = "Demo trading REST endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoTradingRestEndpointKey,
+		Description = LocalizedStrings.DemoTradingRestEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoTradingRestEndpoint { get; set; } = _defaultDemoTradingRestEndpoint;
 
 	/// <summary>Market data REST endpoint.</summary>
 	[Display(
-		Name = "Market data REST endpoint",
-		Description = "Market data REST endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataRestEndpointKey,
+		Description = LocalizedStrings.MarketDataRestEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketDataRestEndpoint { get; set; } = _defaultMarketDataRestEndpoint;
 
 	/// <summary>Production trading WebSocket endpoint.</summary>
 	[Display(
-		Name = "Trading WebSocket endpoint",
-		Description = "Production trading WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingWebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionTradingWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string TradingWebSocketEndpoint { get; set; } = _defaultTradingWebSocketEndpoint;
 
 	/// <summary>Demo trading WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo trading WebSocket endpoint",
-		Description = "Demo trading WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoTradingWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoTradingWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoTradingWebSocketEndpoint { get; set; } = _defaultDemoTradingWebSocketEndpoint;
 
 	/// <summary>Market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market data WebSocket endpoint",
-		Description = "Base market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataWebSocketEndpointKey,
+		Description = LocalizedStrings.BaseMarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketDataWebSocketEndpoint { get; set; } = _defaultMarketDataWebSocketEndpoint;

@@ -117,40 +117,45 @@ public partial class TradovateMessageAdapter : MessageAdapter, ILoginPasswordAda
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 8)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 9)]
 	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
 
 	/// <summary>Market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market WebSocket endpoint",
-		Description = "Market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketEndpointKey,
+		Description = LocalizedStrings.MarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
 
 	/// <summary>Production account WebSocket endpoint.</summary>
 	[Display(
-		Name = "Account WebSocket endpoint",
-		Description = "Production account WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountWebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionAccountWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 11)]
 	public string AccountWebSocketEndpoint { get; set; } = _defaultAccountWebSocketEndpoint;
 
 	/// <summary>Demo account WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo account WebSocket endpoint",
-		Description = "Demo account WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoAccountWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoAccountWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 12)]
 	public string DemoAccountWebSocketEndpoint { get; set; } = _defaultDemoAccountWebSocketEndpoint;

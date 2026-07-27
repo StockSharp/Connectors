@@ -36,7 +36,7 @@ public partial class QuiverQuantMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official Quiver Quantitative production API root.",
+        Description = LocalizedStrings.OfficialQuiverQuantitativeProductionApiRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -45,65 +45,73 @@ public partial class QuiverQuantMessageAdapter :
 
     /// <summary>Records requested per paginated API call.</summary>
     [Display(
-        Name = "Page size",
-        Description = "Records requested per paginated API call.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageSizeKey,
+        Description = LocalizedStrings.RecordsRequestedPerPaginatedApiCallDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 2)]
     public int PageSize { get; set; } = 100;
 
     /// <summary>Maximum pages requested for news history.</summary>
     [Display(
-        Name = "Page limit",
-        Description = "Safety limit for paginated news requests.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PageLimitKey,
+        Description = LocalizedStrings.SafetyLimitForPaginatedNewsRequestsDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 3)]
     public int MaxPages { get; set; } = 20;
 
     /// <summary>Maximum records requested for a custom dataset.</summary>
     [Display(
-        Name = "Dataset limit",
-        Description = "Maximum records requested from a paginated alternative dataset.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatasetLimitKey,
+        Description = LocalizedStrings.MaximumRecordsRequestedFromAPaginatedAlternativeDatasetDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int DatasetLimit { get; set; } = 500;
 
     /// <summary>Maximum news articles requested per subscription.</summary>
     [Display(
-        Name = "News limit",
-        Description = "Maximum Quiver News articles per subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsLimitKey,
+        Description = LocalizedStrings.MaximumQuiverNewsArticlesPerSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int NewsLimit { get; set; } = 200;
 
     /// <summary>Whether insider results use Quiver's code filter.</summary>
     [Display(
-        Name = "Limit insider codes",
-        Description = "Request only the transaction codes selected by Quiver's insider filter.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LimitInsiderCodesKey,
+        Description = LocalizedStrings.RequestOnlyTheTransactionCodesSelectedByQuiverSInsiderFilterDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 6)]
     public bool LimitInsiderCodes { get; set; }
 
     /// <summary>Whether only the most recent 13F changes are requested.</summary>
     [Display(
-        Name = "Most recent 13F",
-        Description = "Request the most recent institutional holding changes.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MostRecent13fKey,
+        Description = LocalizedStrings.RequestTheMostRecentInstitutionalHoldingChangesDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 7)]
     public bool MostRecentInstitutional { get; set; } = true;
 
     /// <summary>Whether new funds are included in 13F changes.</summary>
     [Display(
-        Name = "Include new funds",
-        Description = "Include newly reporting funds in institutional holding changes.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeNewFundsKey,
+        Description = LocalizedStrings.IncludeNewlyReportingFundsInInstitutionalHoldingChangesDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 8)]
     public bool IncludeNewFunds { get; set; } = true;
 
     /// <summary>Optional election cycle for corporate donors.</summary>
     [Display(
-        Name = "Donor election cycle",
-        Description = "Optional four-digit election cycle such as 2024.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DonorElectionCycleKey,
+        Description = LocalizedStrings.OptionalFourDigitElectionCycleSuchAs2024DescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 9)]
     public string CorporateDonorCycle { get; set; }
 

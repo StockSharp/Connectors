@@ -41,7 +41,7 @@ public partial class PpiMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.KeyKey,
-        Description = "API key generated in PPI service management.",
+        Description = LocalizedStrings.ApiKeyGeneratedInPpiServiceManagementDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -51,7 +51,7 @@ public partial class PpiMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.SecretKey,
-        Description = "API secret generated together with the PPI API key.",
+        Description = LocalizedStrings.ApiSecretGeneratedTogetherWithThePpiApiKeyDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -59,8 +59,9 @@ public partial class PpiMessageAdapter :
 
     /// <summary>Authorized PPI API client identifier.</summary>
     [Display(
-        Name = "Authorized client",
-        Description = "AuthorizedClient header supplied by PPI.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizedClientKey,
+        Description = LocalizedStrings.AuthorizedClientHeaderSuppliedByPpiDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -68,8 +69,9 @@ public partial class PpiMessageAdapter :
 
     /// <summary>PPI application client key.</summary>
     [Display(
-        Name = "Client key",
-        Description = "ClientKey header supplied by PPI. Empty uses the official SDK default for the selected environment.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ClientKeyLabelKey,
+        Description = LocalizedStrings.ClientKeyHeaderSuppliedByPpiEmptyUsesTheOfficialSdkDefaultForTheSelectedEnvironmentDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -77,16 +79,18 @@ public partial class PpiMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "Access token",
-        Description = "Existing bearer token. Empty logs in with the API key and secret.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccessTokenKey,
+        Description = LocalizedStrings.ExistingBearerTokenEmptyLogsInWithTheApiKeyAndSecretDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public SecureString Token { get; set; }
 
     /// <summary>Token used to renew an expired bearer session.</summary>
     [Display(
-        Name = "Refresh token",
-        Description = "Existing PPI refresh token. It is updated after authentication.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RefreshTokenKey,
+        Description = LocalizedStrings.ExistingPpiRefreshTokenItIsUpdatedAfterAuthenticationDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public SecureString RefreshToken { get; set; }
@@ -95,7 +99,7 @@ public partial class PpiMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.DemoKey,
-        Description = "Use the PPI sandbox environment.",
+        Description = LocalizedStrings.UseThePpiSandboxEnvironmentDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     [BasicSetting]
@@ -108,7 +112,7 @@ public partial class PpiMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AccountKey,
-        Description = "PPI account number. Empty selects the first available account.",
+        Description = LocalizedStrings.PpiAccountNumberEmptySelectsTheFirstAvailableAccountDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 7)]
     [BasicSetting]
@@ -116,8 +120,9 @@ public partial class PpiMessageAdapter :
 
     /// <summary>Default market used when a security has no native metadata.</summary>
     [Display(
-        Name = "Default market",
-        Description = "Default PPI market code, normally BYMA.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultMarketKey,
+        Description = LocalizedStrings.DefaultPpiMarketCodeNormallyBymaDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 8)]
     public string DefaultMarket { get; set; } = "BYMA";
@@ -126,24 +131,27 @@ public partial class PpiMessageAdapter :
     /// Default instrument type used when a security has no native metadata.
     /// </summary>
     [Display(
-        Name = "Default instrument type",
-        Description = "Default PPI instrument type, normally ACCIONES.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultInstrumentTypeKey,
+        Description = LocalizedStrings.DefaultPpiInstrumentTypeNormallyAccionesDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 9)]
     public string DefaultInstrumentType { get; set; } = "ACCIONES";
 
     /// <summary>Default settlement used for data and new orders.</summary>
     [Display(
-        Name = "Default settlement",
-        Description = "Default PPI settlement code, for example A-24HS or INMEDIATA.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultSettlementKey,
+        Description = LocalizedStrings.DefaultPpiSettlementCodeForExampleA24hsOrInmediataDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 10)]
     public string DefaultSettlement { get; set; } = "A-24HS";
 
     /// <summary>REST fallback interval for account data and orders.</summary>
     [Display(
-        Name = "Account polling interval",
-        Description = "REST fallback interval for orders, balances, and positions.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountPollingIntervalKey,
+        Description = LocalizedStrings.RestFallbackIntervalForOrdersBalancesAndPositionsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 11)]
     public TimeSpan AccountPollingInterval { get; set; } =
@@ -153,40 +161,45 @@ public partial class PpiMessageAdapter :
     /// Maximum number of securities emitted by an unrestricted lookup.
     /// </summary>
     [Display(
-        Name = "Lookup limit",
-        Description = "Maximum instruments emitted by one unrestricted lookup.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LookupLimitKey,
+        Description = LocalizedStrings.MaximumInstrumentsEmittedByOneUnrestrictedLookupDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 12)]
     public int LookupLimit { get; set; } = 5000;
 
     /// <summary>Production REST API address.</summary>
     [Display(
-        Name = "REST address",
-        Description = "PPI production REST API root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.PpiProductionRestApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 13)]
     public Uri RestAddress { get; set; } = _productionRestAddress;
 
     /// <summary>Sandbox REST API address.</summary>
     [Display(
-        Name = "Sandbox REST address",
-        Description = "PPI sandbox REST API root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SandboxRestAddressKey,
+        Description = LocalizedStrings.PpiSandboxRestApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 14)]
     public Uri SandboxRestAddress { get; set; } = _sandboxRestAddress;
 
     /// <summary>Production SignalR address.</summary>
     [Display(
-        Name = "Realtime address",
-        Description = "PPI production SignalR server root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RealtimeAddressKey,
+        Description = LocalizedStrings.PpiProductionSignalRServerRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 15)]
     public Uri RealtimeAddress { get; set; } = _productionRealtimeAddress;
 
     /// <summary>Sandbox SignalR address.</summary>
     [Display(
-        Name = "Sandbox realtime address",
-        Description = "PPI sandbox SignalR server root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SandboxRealtimeAddressKey,
+        Description = LocalizedStrings.PpiSandboxSignalRServerRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 16)]
     public Uri SandboxRealtimeAddress { get; set; } =

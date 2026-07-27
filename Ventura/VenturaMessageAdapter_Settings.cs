@@ -31,8 +31,9 @@ public partial class VenturaMessageAdapter : MessageAdapter,
 
 	/// <inheritdoc />
 	[Display(
-		Name = "App key",
-		Description = "Application key created in the Ventura EaseAPI portal.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AppKeyKey,
+		Description = LocalizedStrings.ApplicationKeyCreatedInTheVenturaEaseAPIPortalDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -40,8 +41,9 @@ public partial class VenturaMessageAdapter : MessageAdapter,
 
 	/// <inheritdoc />
 	[Display(
-		Name = "App secret",
-		Description = "Application secret used to create the EaseAPI authorization hash.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AppSecretKey,
+		Description = LocalizedStrings.ApplicationSecretUsedToCreateTheEaseAPIAuthorizationHashDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -49,16 +51,18 @@ public partial class VenturaMessageAdapter : MessageAdapter,
 
 	/// <summary>One-time request token returned by the browser login.</summary>
 	[Display(
-		Name = "Request token",
-		Description = "One-time request token returned by the EaseAPI authorization redirect.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RequestTokenKey,
+		Description = LocalizedStrings.OneTimeRequestTokenReturnedByTheEaseAPIAuthorizationRedirectDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	public SecureString RequestToken { get; set; }
 
 	/// <inheritdoc />
 	[Display(
-		Name = "Auth token",
-		Description = "EaseAPI bearer token. It is populated after request-token or TOTP login.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AuthTokenKey,
+		Description = LocalizedStrings.EaseAPIBearerTokenItIsPopulatedAfterRequestTokenOrTotpLoginDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
@@ -66,16 +70,18 @@ public partial class VenturaMessageAdapter : MessageAdapter,
 
 	/// <summary>Refresh token returned by EaseAPI authorization.</summary>
 	[Display(
-		Name = "Refresh token",
-		Description = "Refresh token returned by EaseAPI authorization.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RefreshTokenKey,
+		Description = LocalizedStrings.RefreshTokenReturnedByEaseAPIAuthorizationDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public SecureString RefreshToken { get; set; }
 
 	/// <summary>Ventura client ID.</summary>
 	[Display(
-		Name = "Client ID",
-		Description = "Ventura trading client ID.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClientIdKey,
+		Description = LocalizedStrings.VenturaTradingClientIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	[BasicSetting]
@@ -83,40 +89,45 @@ public partial class VenturaMessageAdapter : MessageAdapter,
 
 	/// <summary>Ventura account PIN for automated TOTP login.</summary>
 	[Display(
-		Name = "PIN",
-		Description = "Ventura account PIN used only when the auth token and request token are empty.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PinLabelKey,
+		Description = LocalizedStrings.VenturaAccountPinUsedOnlyWhenTheAuthTokenAndRequestTokenAreEmptyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public SecureString Pin { get; set; }
 
 	/// <summary>Base32 secret for automated TOTP login.</summary>
 	[Display(
-		Name = "TOTP secret",
-		Description = "Base32 authenticator secret used to generate a current TOTP code.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TotpSecretKey,
+		Description = LocalizedStrings.Base32AuthenticatorSecretUsedToGenerateACurrentTotpCodeDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 7)]
 	public SecureString TotpSecret { get; set; }
 
 	/// <summary>MAC address registered for TOTP authorization.</summary>
 	[Display(
-		Name = "MAC address",
-		Description = "MAC address sent in the x-mac-address header during TOTP login.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MacAddressKey,
+		Description = LocalizedStrings.MacAddressSentInTheXMacAddressHeaderDuringTotpLoginDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 8)]
 	public string MacAddress { get; set; }
 
 	/// <summary>Portfolio name emitted by the connector.</summary>
 	[Display(
-		Name = "Portfolio name",
-		Description = "Portfolio name. When empty, the Ventura client ID is used.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PortfolioNameLabelKey,
+		Description = LocalizedStrings.PortfolioNameWhenEmptyTheVenturaClientIdIsUsedDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 9)]
 	public string PortfolioName { get; set; }
 
 	/// <summary>Default product used for new orders.</summary>
 	[Display(
-		Name = "Default product",
-		Description = "Default Ventura product used for new orders.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DefaultProductKey,
+		Description = LocalizedStrings.DefaultVenturaProductUsedForNewOrdersDescKey,
 		GroupName = LocalizedStrings.OrderKey,
 		Order = 10)]
 	public VenturaProducts DefaultProduct { get; set; } =
@@ -134,24 +145,27 @@ public partial class VenturaMessageAdapter : MessageAdapter,
 
 	/// <summary>Maximum number of WebSocket reconnect attempts.</summary>
 	[Display(
-		Name = "Reconnect attempts",
-		Description = "Maximum number of EaseAPI WebSocket reconnect attempts.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+		Description = LocalizedStrings.MaximumNumberOfEaseAPIWebSocketReconnectAttemptsDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 12)]
 	public int ReconnectAttempts { get; set; } = 10;
 
 	/// <summary>REST API root address.</summary>
 	[Display(
-		Name = "REST address",
-		Description = "Ventura EaseAPI REST root address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestAddressKey,
+		Description = LocalizedStrings.VenturaEaseAPIRestRootAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 13)]
 	public Uri RestAddress { get; set; } = _defaultRestAddress;
 
 	/// <summary>Market-data WebSocket address.</summary>
 	[Display(
-		Name = "Market data address",
-		Description = "Ventura EaseAPI market-data WebSocket address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataAddressKey,
+		Description = LocalizedStrings.VenturaEaseAPIMarketDataWebSocketAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 14)]
 	public Uri MarketDataAddress { get; set; } =
@@ -159,8 +173,9 @@ public partial class VenturaMessageAdapter : MessageAdapter,
 
 	/// <summary>Order-status WebSocket address.</summary>
 	[Display(
-		Name = "Order status address",
-		Description = "Ventura EaseAPI order-status WebSocket address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderStatusAddressKey,
+		Description = LocalizedStrings.VenturaEaseAPIOrderStatusWebSocketAddressDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 15)]
 	public Uri OrderStatusAddress { get; set; } =

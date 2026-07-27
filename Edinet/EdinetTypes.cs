@@ -8,27 +8,27 @@ public enum EdinetDocumentFormats
 {
     /// <summary>Filing body, audit reports, and XBRL files in ZIP format.</summary>
     [EnumMember]
-    [Display(Name = "Filing and XBRL")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.FilingAndXbrlKey)]
     Filing = 1,
 
     /// <summary>Filed document in PDF format.</summary>
     [EnumMember]
-    [Display(Name = "PDF")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.PdfKey)]
     Pdf = 2,
 
     /// <summary>Attachments in ZIP format.</summary>
     [EnumMember]
-    [Display(Name = "Attachments")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AttachmentsKey)]
     Attachments = 3,
 
     /// <summary>English-language filing files in ZIP format.</summary>
     [EnumMember]
-    [Display(Name = "English files")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.EnglishFilesKey)]
     English = 4,
 
     /// <summary>XBRL converted to CSV files in ZIP format.</summary>
     [EnumMember]
-    [Display(Name = "CSV")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CSVKey)]
     Csv = 5,
 }
 
@@ -40,31 +40,31 @@ public enum EdinetDisclosureTypes
 {
     /// <summary>All disclosure types.</summary>
     [EnumMember]
-    [Display(Name = "All disclosures")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AllDisclosuresKey)]
     All,
 
     /// <summary>Annual reports and their corrections.</summary>
     [EnumMember]
-    [Display(Name = "Annual reports")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.AnnualReportsKey)]
     AnnualReports,
 
     /// <summary>Quarterly reports and their corrections.</summary>
     [EnumMember]
-    [Display(Name = "Quarterly reports")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuarterlyReportsKey)]
     QuarterlyReports,
 
     /// <summary>Semi-annual reports and their corrections.</summary>
     [EnumMember]
-    [Display(Name = "Semi-annual reports")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.SemiAnnualReportsKey)]
     SemiAnnualReports,
 
     /// <summary>Current reports and their corrections.</summary>
     [EnumMember]
-    [Display(Name = "Current reports")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CurrentReportsKey)]
     CurrentReports,
 
     /// <summary>Large-shareholding reports and their corrections.</summary>
     [EnumMember]
-    [Display(Name = "Large-shareholding reports")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.LargeShareholdingReportsKey)]
     LargeShareholdings,
 }

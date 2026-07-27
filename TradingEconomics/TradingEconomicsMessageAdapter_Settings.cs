@@ -38,7 +38,7 @@ public partial class TradingEconomicsMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official Trading Economics production API root.",
+        Description = LocalizedStrings.OfficialTradingEconomicsProductionApiRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -47,25 +47,28 @@ public partial class TradingEconomicsMessageAdapter :
 
     /// <summary>Default market suffix for bare tickers.</summary>
     [Display(
-        Name = "Default market suffix",
-        Description = "Trading Economics suffix appended to bare tickers, for example US.",
-        GroupName = "Symbols",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultMarketSuffixKey,
+        Description = LocalizedStrings.TradingEconomicsSuffixAppendedToBareTickersForExampleUsDescKey,
+        GroupName = LocalizedStrings.SymbolsKey,
         Order = 2)]
     public string DefaultMarket { get; set; } = "US";
 
     /// <summary>Country or term used for an empty security lookup.</summary>
     [Display(
-        Name = "Default search",
-        Description = "Country or search term used when a security lookup has no symbol or name.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultSearchKey,
+        Description = LocalizedStrings.CountryOrSearchTermUsedWhenASecurityLookupHasNoSymbolOrNameDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 3)]
     public string DefaultSearch { get; set; } = "united states";
 
     /// <summary>Maximum news articles emitted per request.</summary>
     [Display(
-        Name = "News limit",
-        Description = "Maximum number of Trading Economics news articles emitted per request.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsLimitKey,
+        Description = LocalizedStrings.MaximumNumberOfTradingEconomicsNewsArticlesEmittedPerRequestDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int NewsLimit { get; set; } = 100;
 

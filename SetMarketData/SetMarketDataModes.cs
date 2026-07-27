@@ -8,11 +8,11 @@ public enum SetMarketDataModes
 {
     /// <summary>Licensed real-time quotations.</summary>
     [EnumMember]
-    [Display(Name = "Real-time")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RealTimeKey)]
     RealTime,
 
     /// <summary>Licensed delayed quotations.</summary>
     [EnumMember]
-    [Display(Name = "Delayed")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DelayedKey)]
     Delayed,
 }

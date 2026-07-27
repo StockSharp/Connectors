@@ -123,32 +123,36 @@ public partial class LmaxMessageAdapter : MessageAdapter, IKeySecretAdapter, IDe
 
 	/// <summary>Optional account REST API endpoint override.</summary>
 	[Display(
-		Name = "Account REST endpoint",
-		Description = "Optional account REST API endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountRestEndpointKey,
+		Description = LocalizedStrings.OptionalAccountRestApiEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string AccountRestEndpoint { get; set; }
 
 	/// <summary>Optional market data REST API endpoint override.</summary>
 	[Display(
-		Name = "Market data REST endpoint",
-		Description = "Optional market data REST API endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataRestEndpointKey,
+		Description = LocalizedStrings.OptionalMarketDataRestApiEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketDataRestEndpoint { get; set; }
 
 	/// <summary>Optional market data WebSocket endpoint override.</summary>
 	[Display(
-		Name = "Market data WebSocket endpoint",
-		Description = "Optional market data WebSocket endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataWebSocketEndpointKey,
+		Description = LocalizedStrings.OptionalMarketDataWebSocketEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketDataWebSocketEndpoint { get; set; }
 
 	/// <summary>Optional account WebSocket endpoint override.</summary>
 	[Display(
-		Name = "Account WebSocket endpoint",
-		Description = "Optional account WebSocket endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountWebSocketEndpointKey,
+		Description = LocalizedStrings.OptionalAccountWebSocketEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string AccountWebSocketEndpoint { get; set; }

@@ -52,8 +52,9 @@ public partial class BitexbookMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Bitexbook REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.BitexbookRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -62,8 +63,9 @@ public partial class BitexbookMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Bitexbook WebSocket API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.BitexbookWebSocketApiEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

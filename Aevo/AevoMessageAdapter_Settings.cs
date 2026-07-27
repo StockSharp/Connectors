@@ -7,13 +7,15 @@ public enum AevoEnvironments
 	/// <summary>Mainnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Mainnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MainnetKey)]
 	Mainnet,
 
 	/// <summary>Testnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Testnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TestnetKey)]
 	Testnet,
 }
 
@@ -21,9 +23,10 @@ public partial class AevoMessageAdapter : IKeySecretAdapter
 {
 	/// <summary>Aevo environment.</summary>
 	[Display(
-		Name = "Environment",
-		Description = "Aevo API environment.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
+		Description = LocalizedStrings.AevoApiEnvironmentDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
 	public AevoEnvironments Environment { get; set; }
@@ -70,17 +73,19 @@ public partial class AevoMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Optional REST endpoint override.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Optional Aevo REST endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.OptionalAevoRestEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string RestEndpoint { get; set; }
 
 	/// <summary>Optional WebSocket endpoint override.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Optional Aevo WebSocket endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.OptionalAevoWebSocketEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string SocketEndpoint { get; set; }
 

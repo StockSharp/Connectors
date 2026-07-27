@@ -82,8 +82,9 @@ public partial class CoinExMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "CoinEx REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.CoinExRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -92,8 +93,9 @@ public partial class CoinExMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// Spot WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Spot WebSocket endpoint",
-		Description = "CoinEx spot WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SpotWebSocketEndpointKey,
+		Description = LocalizedStrings.CoinExSpotWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string SpotWebSocketEndpoint { get; set; } = _defaultSpotWebSocketEndpoint;
@@ -102,8 +104,9 @@ public partial class CoinExMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// Futures WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Futures WebSocket endpoint",
-		Description = "CoinEx futures WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FuturesWebSocketEndpointKey,
+		Description = LocalizedStrings.CoinExFuturesWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string FuturesWebSocketEndpoint { get; set; } = _defaultFuturesWebSocketEndpoint;

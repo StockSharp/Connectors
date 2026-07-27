@@ -64,8 +64,9 @@ public partial class BitmexMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	/// Production REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "BitMEX production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.BitMEXProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -74,8 +75,9 @@ public partial class BitmexMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	/// Demo REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "BitMEX testnet REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.BitMEXTestnetRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
@@ -84,8 +86,9 @@ public partial class BitmexMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	/// Production WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "BitMEX production WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.BitMEXProductionWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
@@ -94,8 +97,9 @@ public partial class BitmexMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	/// Demo WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Demo WebSocket endpoint",
-		Description = "BitMEX testnet WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoWebSocketEndpointKey,
+		Description = LocalizedStrings.BitMEXTestnetWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;

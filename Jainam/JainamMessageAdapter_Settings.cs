@@ -23,8 +23,9 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
 
     /// <summary>Jainam user identifier returned to the vendor redirect URL.</summary>
     [Display(
-        Name = "User ID",
-        Description = "Jainam user ID returned with the vendor authorization code.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.UserIdLabelKey,
+        Description = LocalizedStrings.JainamUserIdReturnedWithTheVendorAuthorizationCodeDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -32,8 +33,9 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
 
     /// <summary>Application code created in the Jainam developer portal.</summary>
     [Display(
-        Name = "App code",
-        Description = "App code used in the Jainam user authorization URL.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AppCodeKey,
+        Description = LocalizedStrings.AppCodeUsedInTheJainamUserAuthorizationUrlDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -41,8 +43,9 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
 
     /// <summary>Application secret created in the Jainam developer portal.</summary>
     [Display(
-        Name = "API secret",
-        Description = "API secret used with the user ID and authorization code to create a session.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiSecretKey,
+        Description = LocalizedStrings.ApiSecretUsedWithTheUserIdAndAuthorizationCodeToCreateASessionDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -50,8 +53,9 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
 
     /// <summary>Authorization code returned to the vendor redirect URL.</summary>
     [Display(
-        Name = "Authorization code",
-        Description = "Authorization code returned by Jainam after the user approves the vendor app.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizationCodeKey,
+        Description = LocalizedStrings.AuthorizationCodeReturnedByJainamAfterTheUserApprovesTheVendorAppDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -59,8 +63,9 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
 
     /// <inheritdoc />
     [Display(
-        Name = "User session",
-        Description = "Jainam userSession token. When supplied, the authorization code and API secret are not used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.UserSessionKey,
+        Description = LocalizedStrings.JainamUserSessionTokenWhenSuppliedTheAuthorizationCodeAndApiSecretAreNotUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -68,24 +73,27 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
 
     /// <summary>Portfolio name emitted by the connector.</summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the Jainam client ID is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyTheJainamClientIdIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public string PortfolioName { get; set; }
 
     /// <summary>Default product used for new orders.</summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Jainam product for new orders.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultJainamProductForNewOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 6)]
     public JainamProducts DefaultProduct { get; set; } = JainamProducts.LongTerm;
 
     /// <summary>Maximum number of streaming reconnect attempts.</summary>
     [Display(
-        Name = "Reconnect attempts",
-        Description = "Maximum number of attempts to reconnect the Jainam market WebSocket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+        Description = LocalizedStrings.MaximumNumberOfAttemptsToReconnectTheJainamMarketWebSocketDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 7)]
     public int ReconnectAttempts { get; set; } = 10;
@@ -101,24 +109,27 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
 
     /// <summary>REST API root address.</summary>
     [Display(
-        Name = "REST address",
-        Description = "Jainam ProTrade REST root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.JainamProTradeRestRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 9)]
     public Uri RestAddress { get; set; } = _defaultRestAddress;
 
     /// <summary>Public contract-master root address.</summary>
     [Display(
-        Name = "Instrument address",
-        Description = "Jainam public JSON contract-master root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.InstrumentAddressKey,
+        Description = LocalizedStrings.JainamPublicJsonContractMasterRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 10)]
     public string InstrumentAddress { get; set; } = _defaultInstrumentAddress;
 
     /// <summary>Market-data WebSocket address.</summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Jainam Noren market-data WebSocket address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.JainamNorenMarketDataWebSocketAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 11)]
     public string WebSocketAddress { get; set; } = _defaultWebSocketAddress;

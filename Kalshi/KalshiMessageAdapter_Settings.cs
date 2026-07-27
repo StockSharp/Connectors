@@ -45,8 +45,9 @@ public partial class KalshiMessageAdapter
 
 	/// <summary>Kalshi subaccount number, zero for the primary account.</summary>
 	[Display(
-		Name = "Subaccount",
-		Description = "Kalshi subaccount number (0-63).",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SubaccountKey,
+		Description = LocalizedStrings.KalshiSubaccountNumber063DescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
@@ -100,8 +101,9 @@ public partial class KalshiMessageAdapter
 
 	/// <summary>Maximum markets returned by an unbounded security lookup.</summary>
 	[Display(
-		Name = "Security lookup limit",
-		Description = "Maximum open Kalshi markets returned by one lookup.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecurityLookupLimitKey,
+		Description = LocalizedStrings.MaximumOpenKalshiMarketsReturnedByOneLookupDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public int SecurityLookupLimit
@@ -133,32 +135,36 @@ public partial class KalshiMessageAdapter
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 7)]
 	public string ProductionRestEndpoint { get; set; } = _productionRestEndpoint;
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 8)]
 	public string DemoRestEndpoint { get; set; } = _demoRestEndpoint;
 
 	/// <summary>Production WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Production WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 9)]
 	public string ProductionSocketEndpoint { get; set; } = _productionSocketEndpoint;
 
 	/// <summary>Demo WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo WebSocket endpoint",
-		Description = "Demo WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public string DemoSocketEndpoint { get; set; } = _demoSocketEndpoint;

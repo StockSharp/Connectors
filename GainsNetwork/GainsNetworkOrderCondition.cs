@@ -27,8 +27,9 @@ public class GainsNetworkOrderCondition : OrderCondition
 	/// <summary>Collateral token symbol. Empty uses the adapter default.</summary>
 	[DataMember]
 	[Display(
-		Name = "Collateral",
-		Description = "Collateral token symbol; empty uses the adapter default.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CollateralKey,
+		Description = LocalizedStrings.CollateralTokenSymbolEmptyUsesTheAdapterDefaultDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 1)]
 	public string CollateralSymbol
@@ -72,8 +73,9 @@ public class GainsNetworkOrderCondition : OrderCondition
 	/// <summary>Whether a pending entry is a stop order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Stop entry",
-		Description = "Use stop-entry semantics instead of limit-entry semantics.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopEntryKey,
+		Description = LocalizedStrings.UseStopEntrySemanticsInsteadOfLimitEntrySemanticsDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 4)]
 	public bool IsStopOrder
@@ -85,8 +87,9 @@ public class GainsNetworkOrderCondition : OrderCondition
 	/// <summary>Whether the request closes an existing position.</summary>
 	[DataMember]
 	[Display(
-		Name = "Close position",
-		Description = "Close the existing trade identified by Trade index.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClosePositionKey,
+		Description = LocalizedStrings.CloseTheExistingTradeIdentifiedByTradeIndexDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 5)]
 	public bool IsClosePosition
@@ -98,8 +101,9 @@ public class GainsNetworkOrderCondition : OrderCondition
 	/// <summary>On-chain trade index for close and management operations.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trade index",
-		Description = "On-chain Gains trade index used to manage or close a trade.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradeIndexKey,
+		Description = LocalizedStrings.OnChainGainsTradeIndexUsedToManageOrCloseATradeDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 6)]
 	public int? TradeIndex

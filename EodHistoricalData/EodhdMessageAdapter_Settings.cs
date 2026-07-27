@@ -39,9 +39,10 @@ public partial class EodhdMessageAdapter : MessageAdapter, ITokenAdapter, IAddre
 
 	/// <summary>EODHD US trade WebSocket address.</summary>
 	[Display(
-		Name = "US trade WebSocket",
-		Description = "EODHD US trade stream endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsTradeWebSocketKey,
+		Description = LocalizedStrings.EodhdUsTradeStreamEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public Uri StockTradeWebSocketAddress { get; set; } =
@@ -49,9 +50,10 @@ public partial class EodhdMessageAdapter : MessageAdapter, ITokenAdapter, IAddre
 
 	/// <summary>EODHD US quote WebSocket address.</summary>
 	[Display(
-		Name = "US quote WebSocket",
-		Description = "EODHD US quote stream endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsQuoteWebSocketKey,
+		Description = LocalizedStrings.EodhdUsQuoteStreamEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
 	public Uri StockQuoteWebSocketAddress { get; set; } =
@@ -59,9 +61,10 @@ public partial class EodhdMessageAdapter : MessageAdapter, ITokenAdapter, IAddre
 
 	/// <summary>EODHD forex WebSocket address.</summary>
 	[Display(
-		Name = "Forex WebSocket",
-		Description = "EODHD forex quote stream endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForexWebSocketKey,
+		Description = LocalizedStrings.EodhdForexQuoteStreamEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	[BasicSetting]
 	public Uri ForexWebSocketAddress { get; set; } =
@@ -69,9 +72,10 @@ public partial class EodhdMessageAdapter : MessageAdapter, ITokenAdapter, IAddre
 
 	/// <summary>EODHD crypto WebSocket address.</summary>
 	[Display(
-		Name = "Crypto WebSocket",
-		Description = "EODHD crypto trade stream endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoWebSocketKey,
+		Description = LocalizedStrings.EodhdCryptoTradeStreamEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	[BasicSetting]
 	public Uri CryptoWebSocketAddress { get; set; } =
@@ -79,26 +83,29 @@ public partial class EodhdMessageAdapter : MessageAdapter, ITokenAdapter, IAddre
 
 	/// <summary>Exchange used for unqualified stock identifiers and full stock lookup.</summary>
 	[Display(
-		Name = "Stock exchange",
-		Description = "EODHD exchange code used for unqualified stocks and full lookup.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockExchangeKey,
+		Description = LocalizedStrings.EodhdExchangeCodeUsedForUnqualifiedStocksAndFullLookupDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 6)]
 	[BasicSetting]
 	public string StockExchange { get; set; } = "US";
 
 	/// <summary>Include delisted instruments in exchange symbol lookup.</summary>
 	[Display(
-		Name = "Delisted securities",
-		Description = "Include delisted instruments in the exchange symbol list.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DelistedSecuritiesKey,
+		Description = LocalizedStrings.IncludeDelistedInstrumentsInTheExchangeSymbolListDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 7)]
 	public bool IsDelisted { get; set; }
 
 	/// <summary>Maximum number of symbols per EODHD WebSocket product.</summary>
 	[Display(
-		Name = "WebSocket symbol limit",
-		Description = "Configured simultaneous-symbol allowance for each WebSocket product.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketSymbolLimitKey,
+		Description = LocalizedStrings.ConfiguredSimultaneousSymbolAllowanceForEachWebSocketProductDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 8)]
 	public int MaxWebSocketSymbols { get; set; } = 50;
 

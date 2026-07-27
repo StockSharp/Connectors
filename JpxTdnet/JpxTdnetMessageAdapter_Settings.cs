@@ -25,7 +25,7 @@ public partial class JpxTdnetMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
-        Description = "JPX TDnet API access key.",
+        Description = LocalizedStrings.JpxTDnetApiAccessKeyDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -35,7 +35,7 @@ public partial class JpxTdnetMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "JPX TDnet production API root or an official test-server root.",
+        Description = LocalizedStrings.JpxTDnetProductionApiRootOrAnOfficialTestServerRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 1)]
     public Uri Address { get; set; } =
@@ -43,8 +43,9 @@ public partial class JpxTdnetMessageAdapter :
 
     /// <summary>Public TDnet disclosure viewer.</summary>
     [Display(
-        Name = "Viewer address",
-        Description = "Public TDnet disclosure viewer used for news links.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ViewerAddressKey,
+        Description = LocalizedStrings.PublicTDnetDisclosureViewerUsedForNewsLinksDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 2)]
     public Uri ViewerAddress { get; set; } =
@@ -52,8 +53,9 @@ public partial class JpxTdnetMessageAdapter :
 
     /// <summary>Index result mode.</summary>
     [Display(
-        Name = "Index mode",
-        Description = "Current disclosures or revision/deletion histories. History mode excludes never-modified disclosures by TDnet design.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IndexModeKey,
+        Description = LocalizedStrings.CurrentDisclosuresOrRevisionDeletionHistoriesHistoryModeExcludesNeverModifiedDisclosuresByTDnetDesignDescKey,
         GroupName = LocalizedStrings.NewsKey,
         Order = 3)]
     public JpxTdnetIndexModes IndexMode { get; set; } =
@@ -61,42 +63,47 @@ public partial class JpxTdnetMessageAdapter :
 
     /// <summary>Default history length when only an end date is supplied.</summary>
     [Display(
-        Name = "Default lookup days",
-        Description = "Calendar days requested when a news subscription has an end date but no start date.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultLookupDaysKey,
+        Description = LocalizedStrings.CalendarDaysRequestedWhenANewsSubscriptionHasAnEndDateButNoStartDateDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int DefaultLookupDays { get; set; } = 7;
 
     /// <summary>Maximum calendar days requested by one subscription.</summary>
     [Display(
-        Name = "Maximum days",
-        Description = "Maximum calendar days downloaded by one news subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumDaysKey,
+        Description = LocalizedStrings.MaximumCalendarDaysDownloadedByOneNewsSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int MaxDays { get; set; } = 366;
 
     /// <summary>Recent calendar days used for all-security lookup.</summary>
     [Display(
-        Name = "Security lookup days",
-        Description = "Recent calendar days scanned to discover securities when no stock code is supplied.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SecurityLookupDaysKey,
+        Description = LocalizedStrings.RecentCalendarDaysScannedToDiscoverSecuritiesWhenNoStockCodeIsSuppliedDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 6)]
     public int SecurityLookupDays { get; set; } = 31;
 
     /// <summary>Minimum delay between API requests.</summary>
     [Display(
-        Name = "Request interval",
-        Description = "Delay between TDnet API requests. JPX permits no more than one request per second.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RequestIntervalKey,
+        Description = LocalizedStrings.DelayBetweenTDnetApiRequestsJpxPermitsNoMoreThanOneRequestPerSecondDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 7)]
     public TimeSpan RequestInterval { get; set; } =
         TimeSpan.FromSeconds(1);
 
     /// <summary>Maximum downloaded document size in megabytes.</summary>
     [Display(
-        Name = "Maximum document size",
-        Description = "Maximum decoded PDF or XBRL ZIP size in megabytes.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumDocumentSizeKey,
+        Description = LocalizedStrings.MaximumDecodedPdfOrXbrlZipSizeInMegabytesDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 8)]
     public int MaxDocumentSizeMb { get; set; } = 100;
 

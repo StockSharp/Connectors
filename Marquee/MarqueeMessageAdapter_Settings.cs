@@ -52,32 +52,36 @@ public partial class MarqueeMessageAdapter : MessageAdapter, IDemoAdapter, IKeyS
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
 
 	/// <summary>Production OAuth endpoint.</summary>
 	[Display(
-		Name = "OAuth endpoint",
-		Description = "Production OAuth endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthEndpointKey,
+		Description = LocalizedStrings.ProductionOAuthEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;
 
 	/// <summary>Demo OAuth endpoint.</summary>
 	[Display(
-		Name = "Demo OAuth endpoint",
-		Description = "Demo OAuth endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoOAuthEndpointKey,
+		Description = LocalizedStrings.DemoOAuthEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoOAuthEndpoint { get; set; } = _defaultDemoOAuthEndpoint;

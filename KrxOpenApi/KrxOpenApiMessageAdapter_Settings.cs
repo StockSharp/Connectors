@@ -27,7 +27,7 @@ public partial class KrxOpenApiMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
-        Description = "KRX Open API authentication key sent in the AUTH_KEY header.",
+        Description = LocalizedStrings.KrxOpenApiAuthenticationKeySentInTheAuthKeyHeaderDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -35,8 +35,9 @@ public partial class KrxOpenApiMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "Sample service",
-        Description = "Use the official KRX sample endpoint instead of the approved production service.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SampleServiceKey,
+        Description = LocalizedStrings.UseTheOfficialKrxSampleEndpointInsteadOfTheApprovedProductionServiceDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -44,8 +45,9 @@ public partial class KrxOpenApiMessageAdapter :
 
     /// <summary>KRX daily dataset exposed by the adapter.</summary>
     [Display(
-        Name = "Dataset",
-        Description = "KRX market or instrument family used for security lookup and daily history.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatasetKey,
+        Description = LocalizedStrings.KrxMarketOrInstrumentFamilyUsedForSecurityLookupAndDailyHistoryDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 2)]
     [BasicSetting]
@@ -56,25 +58,28 @@ public partial class KrxOpenApiMessageAdapter :
     /// Optional local Korean reference date for lookup and latest-value requests.
     /// </summary>
     [Display(
-        Name = "Reference date",
-        Description = "Optional Korean market date. Empty uses the previous Korean day, or 2020-04-14 for sample service.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReferenceDateKey,
+        Description = LocalizedStrings.OptionalKoreanMarketDateEmptyUsesThePreviousKoreanDayOr20200414ForSampleServiceDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 3)]
     public DateTime? ReferenceDate { get; set; }
 
     /// <summary>Maximum days searched backwards for a current snapshot.</summary>
     [Display(
-        Name = "Latest search days",
-        Description = "Maximum calendar days searched backwards to find the latest non-empty KRX trading date.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LatestSearchDaysKey,
+        Description = LocalizedStrings.MaximumCalendarDaysSearchedBackwardsToFindTheLatestNonEmptyKrxTradingDateDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int LatestSearchDays { get; set; } = 14;
 
     /// <summary>Maximum API calls made by one history request.</summary>
     [Display(
-        Name = "Maximum requests",
-        Description = "Maximum daily KRX endpoints called by one lookup or history subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumRequestsKey,
+        Description = LocalizedStrings.MaximumDailyKrxEndpointsCalledByOneLookupOrHistorySubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int MaxRequests { get; set; } = 370;
 
@@ -82,7 +87,7 @@ public partial class KrxOpenApiMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "KRX production Open API root.",
+        Description = LocalizedStrings.KrxProductionOpenApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 6)]
     public Uri Address { get; set; } =
@@ -90,8 +95,9 @@ public partial class KrxOpenApiMessageAdapter :
 
     /// <summary>Official KRX sample API root.</summary>
     [Display(
-        Name = "Sample address",
-        Description = "Official KRX sample Open API root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SampleAddressKey,
+        Description = LocalizedStrings.OfficialKrxSampleOpenApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 7)]
     public Uri SampleAddress { get; set; } =

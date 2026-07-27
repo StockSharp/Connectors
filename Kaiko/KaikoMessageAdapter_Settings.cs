@@ -17,7 +17,8 @@ public partial class KaikoMessageAdapter
 
 	/// <summary>Kaiko REST API region.</summary>
 	[Display(
-		Name = "Region",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RegionKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -35,7 +36,8 @@ public partial class KaikoMessageAdapter
 
 	/// <summary>Kaiko public reference data API root.</summary>
 	[Display(
-		Name = "Reference endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReferenceEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -44,7 +46,8 @@ public partial class KaikoMessageAdapter
 
 	/// <summary>Kaiko regional market data API root.</summary>
 	[Display(
-		Name = "Market endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	[BasicSetting]
@@ -56,7 +59,8 @@ public partial class KaikoMessageAdapter
 
 	/// <summary>Kaiko production gRPC Stream endpoint.</summary>
 	[Display(
-		Name = "Stream endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StreamEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	[BasicSetting]
@@ -65,23 +69,26 @@ public partial class KaikoMessageAdapter
 
 	/// <summary>Optional exchange code used to narrow reference lookups.</summary>
 	[Display(
-		Name = "Exchange filter",
-		Description = "Optional Kaiko exchange code, for example cbse.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeFilterKey,
+		Description = LocalizedStrings.OptionalKaikoExchangeCodeForExampleCbseDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 0)]
 	public string ExchangeFilter { get; set; }
 
 	/// <summary>Optional instrument class used to narrow reference lookups.</summary>
 	[Display(
-		Name = "Instrument class",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InstrumentClassKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 1)]
 	public KaikoInstrumentClasses InstrumentClassFilter { get; set; }
 
 	/// <summary>Use the Kaiko production gRPC Stream for live data.</summary>
 	[Display(
-		Name = "Streaming",
-		Description = "Use Kaiko Stream for live trades, top of book, and OHLCV.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StreamingKey,
+		Description = LocalizedStrings.UseKaikoStreamForLiveTradesTopOfBookAndOhlcvDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 2)]
 	[BasicSetting]
@@ -110,7 +117,8 @@ public partial class KaikoMessageAdapter
 
 	/// <summary>Maximum number of reference instruments returned.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public int MaximumItems

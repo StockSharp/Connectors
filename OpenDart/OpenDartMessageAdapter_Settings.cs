@@ -26,7 +26,7 @@ public partial class OpenDartMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
-        Description = "Open DART 40-character API authentication key.",
+        Description = LocalizedStrings.OpenDart40CharacterApiAuthenticationKeyDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -36,7 +36,7 @@ public partial class OpenDartMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official English Open DART API root.",
+        Description = LocalizedStrings.OfficialEnglishOpenDartApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 1)]
     public Uri Address { get; set; } =
@@ -44,8 +44,9 @@ public partial class OpenDartMessageAdapter :
 
     /// <summary>Public disclosure-viewer address.</summary>
     [Display(
-        Name = "Disclosure address",
-        Description = "Public English DART disclosure viewer used for news links.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DisclosureAddressKey,
+        Description = LocalizedStrings.PublicEnglishDartDisclosureViewerUsedForNewsLinksDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 2)]
     public Uri DisclosureAddress { get; set; } =
@@ -53,8 +54,9 @@ public partial class OpenDartMessageAdapter :
 
     /// <summary>Top-level disclosure filter.</summary>
     [Display(
-        Name = "Disclosure type",
-        Description = "Open DART disclosure category used for news subscriptions.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DisclosureTypeKey,
+        Description = LocalizedStrings.OpenDartDisclosureCategoryUsedForNewsSubscriptionsDescKey,
         GroupName = LocalizedStrings.NewsKey,
         Order = 3)]
     public OpenDartDisclosureTypes DisclosureType { get; set; } =
@@ -62,8 +64,9 @@ public partial class OpenDartMessageAdapter :
 
     /// <summary>Corporation-class filter.</summary>
     [Display(
-        Name = "Corporation class",
-        Description = "Optional KOSPI, KOSDAQ, KONEX, or other-company filter for disclosures.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CorporationClassKey,
+        Description = LocalizedStrings.OptionalKospiKosdaqKonexOrOtherCompanyFilterForDisclosuresDescKey,
         GroupName = LocalizedStrings.NewsKey,
         Order = 4)]
     public OpenDartCorporationClasses CorporationClass { get; set; } =
@@ -71,8 +74,9 @@ public partial class OpenDartMessageAdapter :
 
     /// <summary>Whether only final disclosure versions are requested.</summary>
     [Display(
-        Name = "Final reports only",
-        Description = "Exclude amended and superseded disclosure versions.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.FinalReportsOnlyKey,
+        Description = LocalizedStrings.ExcludeAmendedAndSupersededDisclosureVersionsDescKey,
         GroupName = LocalizedStrings.NewsKey,
         Order = 5)]
     public bool FinalReportsOnly { get; set; }
@@ -81,16 +85,18 @@ public partial class OpenDartMessageAdapter :
     /// Optional fixed fiscal year used for financial-indicator requests.
     /// </summary>
     [Display(
-        Name = "Business year",
-        Description = "Optional fiscal year for Level1 financial ratios. Empty searches backwards from the latest completed year.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.BusinessYearKey,
+        Description = LocalizedStrings.OptionalFiscalYearForLevel1FinancialRatiosEmptySearchesBackwardsFromTheLatestCompletedYearDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 6)]
     public int? BusinessYear { get; set; }
 
     /// <summary>Periodic-report type used for financial indicators.</summary>
     [Display(
-        Name = "Report type",
-        Description = "Annual, first-quarter, semi-annual, or third-quarter report used for Level1 ratios.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReportTypeKey,
+        Description = LocalizedStrings.AnnualFirstQuarterSemiAnnualOrThirdQuarterReportUsedForLevel1RatiosDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 7)]
     public OpenDartReportTypes ReportType { get; set; } =
@@ -100,17 +106,19 @@ public partial class OpenDartMessageAdapter :
     /// Maximum years searched or downloaded by one financial request.
     /// </summary>
     [Display(
-        Name = "Financial search years",
-        Description = "Maximum fiscal years searched or downloaded by one Level1 subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.FinancialSearchYearsKey,
+        Description = LocalizedStrings.MaximumFiscalYearsSearchedOrDownloadedByOneLevel1SubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 8)]
     public int FinancialSearchYears { get; set; } = 4;
 
     /// <summary>Maximum disclosure pages downloaded per subscription.</summary>
     [Display(
-        Name = "Maximum news pages",
-        Description = "Maximum 100-item Open DART pages downloaded by one news subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumNewsPagesKey,
+        Description = LocalizedStrings.Maximum100ItemOpenDartPagesDownloadedByOneNewsSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 9)]
     public int MaxPages { get; set; } = 100;
 

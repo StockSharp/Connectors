@@ -39,7 +39,7 @@ public partial class PrimaryMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.LoginKey,
-        Description = "Primary API username.",
+        Description = LocalizedStrings.PrimaryApiUsernameDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -49,7 +49,7 @@ public partial class PrimaryMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.PasswordKey,
-        Description = "Primary API password.",
+        Description = LocalizedStrings.PrimaryApiPasswordDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -57,8 +57,9 @@ public partial class PrimaryMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "Access token",
-        Description = "Existing X-Auth-Token. Empty authenticates with username and password.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccessTokenKey,
+        Description = LocalizedStrings.ExistingXAuthTokenEmptyAuthenticatesWithUsernameAndPasswordDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     public SecureString Token { get; set; }
@@ -67,7 +68,7 @@ public partial class PrimaryMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.DemoKey,
-        Description = "Use the free reMarkets simulation environment.",
+        Description = LocalizedStrings.UseTheFreeReMarketsSimulationEnvironmentDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -77,7 +78,7 @@ public partial class PrimaryMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AccountKey,
-        Description = "Primary trading account. Required for orders, positions, and account reports.",
+        Description = LocalizedStrings.PrimaryTradingAccountRequiredForOrdersPositionsAndAccountReportsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -87,32 +88,36 @@ public partial class PrimaryMessageAdapter :
     /// Default proprietary identifier used when an order is not known locally.
     /// </summary>
     [Display(
-        Name = "Proprietary",
-        Description = "Primary participant identifier. Empty uses PBCP in reMarkets and api in production.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ProprietaryKey,
+        Description = LocalizedStrings.PrimaryParticipantIdentifierEmptyUsesPbcpInReMarketsAndApiInProductionDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public string Proprietary { get; set; }
 
     /// <summary>Native market identifier for manually entered securities.</summary>
     [Display(
-        Name = "Default market",
-        Description = "Primary native market identifier, normally ROFX even for routed external instruments.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultMarketKey,
+        Description = LocalizedStrings.PrimaryNativeMarketIdentifierNormallyRofxEvenForRoutedExternalInstrumentsDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 6)]
     public string DefaultMarket { get; set; } = "ROFX";
 
     /// <summary>WebSocket market-data throttling level.</summary>
     [Display(
-        Name = "Market data level",
-        Description = "Primary WebSocket update level from 1 (100 ms) to 5 (6000 ms).",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketDataLevelKey,
+        Description = LocalizedStrings.PrimaryWebSocketUpdateLevelFrom1100MsTo56000MsDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 7)]
     public int MarketDataLevel { get; set; } = 1;
 
     /// <summary>REST fallback interval for account data and orders.</summary>
     [Display(
-        Name = "Account polling interval",
-        Description = "REST fallback interval for orders, balances, and positions.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountPollingIntervalKey,
+        Description = LocalizedStrings.RestFallbackIntervalForOrdersBalancesAndPositionsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 8)]
     public TimeSpan AccountPollingInterval { get; set; } =
@@ -122,32 +127,36 @@ public partial class PrimaryMessageAdapter :
     /// Maximum number of securities emitted by an unrestricted lookup.
     /// </summary>
     [Display(
-        Name = "Lookup limit",
-        Description = "Maximum instruments emitted by one unrestricted lookup.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LookupLimitKey,
+        Description = LocalizedStrings.MaximumInstrumentsEmittedByOneUnrestrictedLookupDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 9)]
     public int LookupLimit { get; set; } = 10000;
 
     /// <summary>Production REST API address.</summary>
     [Display(
-        Name = "REST address",
-        Description = "Primary production REST API root. A broker-specific xOMS address can be supplied.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.PrimaryProductionRestApiRootABrokerSpecificXOMSAddressCanBeSuppliedDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 10)]
     public Uri RestAddress { get; set; } = _productionRestAddress;
 
     /// <summary>reMarkets REST API address.</summary>
     [Display(
-        Name = "Sandbox REST address",
-        Description = "Primary reMarkets REST API root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SandboxRestAddressKey,
+        Description = LocalizedStrings.PrimaryReMarketsRestApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 11)]
     public Uri SandboxRestAddress { get; set; } = _sandboxRestAddress;
 
     /// <summary>Production WebSocket API address.</summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Primary production WebSocket root. A broker-specific xOMS address can be supplied.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.PrimaryProductionWebSocketRootABrokerSpecificXOMSAddressCanBeSuppliedDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 12)]
     public Uri WebSocketAddress { get; set; } =
@@ -155,8 +164,9 @@ public partial class PrimaryMessageAdapter :
 
     /// <summary>reMarkets WebSocket API address.</summary>
     [Display(
-        Name = "Sandbox WebSocket address",
-        Description = "Primary reMarkets WebSocket root.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SandboxWebSocketAddressKey,
+        Description = LocalizedStrings.PrimaryReMarketsWebSocketRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 13)]
     public Uri SandboxWebSocketAddress { get; set; } =

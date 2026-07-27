@@ -48,8 +48,9 @@ public partial class BittrexMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Bittrex REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.BittrexRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -58,8 +59,9 @@ public partial class BittrexMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// SignalR endpoint.
 	/// </summary>
 	[Display(
-		Name = "SignalR endpoint",
-		Description = "Bittrex streaming endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SignalREndpointKey,
+		Description = LocalizedStrings.BittrexStreamingEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string SignalREndpoint { get; set; } = _defaultSignalREndpoint;

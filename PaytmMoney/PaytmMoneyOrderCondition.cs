@@ -12,8 +12,9 @@ public sealed class PaytmMoneyOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Product",
-        Description = "Paytm Money order product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ProductKey,
+        Description = LocalizedStrings.PaytmMoneyOrderProductDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public PaytmMoneyProducts? Product
     {
@@ -27,8 +28,9 @@ public sealed class PaytmMoneyOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Trigger price",
-        Description = "Trigger price for SL or SLM orders.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TriggerPriceKey,
+        Description = LocalizedStrings.TriggerPriceForSlOrSlmOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public decimal? TriggerPrice
     {
@@ -42,8 +44,9 @@ public sealed class PaytmMoneyOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "After market",
-        Description = "Submit the order as an after-market order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AfterMarketKey,
+        Description = LocalizedStrings.SubmitTheOrderAsAnAfterMarketOrderDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public bool AfterMarket
     {
@@ -57,8 +60,9 @@ public sealed class PaytmMoneyOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Bracket profit",
-        Description = "Profit value for a bracket order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.BracketProfitKey,
+        Description = LocalizedStrings.ProfitValueForABracketOrderDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public decimal? ProfitValue
     {
@@ -72,8 +76,9 @@ public sealed class PaytmMoneyOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Bracket stop loss",
-        Description = "Stop-loss value for a bracket order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.BracketStopLossKey,
+        Description = LocalizedStrings.StopLossValueForABracketOrderDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public decimal? StopLossValue
     {
@@ -87,8 +92,9 @@ public sealed class PaytmMoneyOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Leg number",
-        Description = "Native leg number for cover and bracket orders.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LegNumberKey,
+        Description = LocalizedStrings.NativeLegNumberForCoverAndBracketOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public string LegNumber
     {
@@ -102,8 +108,9 @@ public sealed class PaytmMoneyOrderCondition : OrderCondition
     /// </summary>
     [DataMember]
     [Display(
-        Name = "Algorithm order number",
-        Description = "Native algorithm order number for a bracket order.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AlgorithmOrderNumberKey,
+        Description = LocalizedStrings.NativeAlgorithmOrderNumberForABracketOrderDescKey,
         GroupName = LocalizedStrings.OrderKey)]
     public string AlgoOrderNumber
     {

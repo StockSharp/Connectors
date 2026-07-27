@@ -49,7 +49,7 @@ public partial class MasterLinkMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.CertificateKey,
-        Description = "Path to the Taishin securities PFX certificate.",
+        Description = LocalizedStrings.PathToTheTaishinSecuritiesPfxCertificateDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -57,8 +57,9 @@ public partial class MasterLinkMessageAdapter :
 
     /// <summary>PFX certificate password.</summary>
     [Display(
-        Name = "Certificate password",
-        Description = "Password for the Taishin securities PFX certificate.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CertificatePasswordKey,
+        Description = LocalizedStrings.PasswordForTheTaishinSecuritiesPfxCertificateDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -71,7 +72,7 @@ public partial class MasterLinkMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AccountKey,
-        Description = "Full brokerage account returned by Nova API. Empty selects the first stock account.",
+        Description = LocalizedStrings.FullBrokerageAccountReturnedByNovaApiEmptySelectsTheFirstStockAccountDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public string Account { get; set; }
@@ -80,16 +81,18 @@ public partial class MasterLinkMessageAdapter :
     /// Run the broker's one-time API qualification operation after login.
     /// </summary>
     [Display(
-        Name = "Register API access",
-        Description = "Run the official one-time registerApiAuth operation after login.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RegisterApiAccessKey,
+        Description = LocalizedStrings.RunTheOfficialOneTimeRegisterApiAuthOperationAfterLoginDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public bool RegisterApiAuth { get; set; }
 
     /// <summary>Official Nova market-data endpoint mode.</summary>
     [Display(
-        Name = "Market-data mode",
-        Description = "Normal or low-latency Nova WebSocket endpoint.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketDataModeKey,
+        Description = LocalizedStrings.NormalOrLowLatencyNovaWebSocketEndpointDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 6)]
     public MasterLinkMarketDataModes MarketDataMode { get; set; } =
@@ -97,9 +100,10 @@ public partial class MasterLinkMessageAdapter :
 
     /// <summary>Node.js executable path or command name.</summary>
     [Display(
-        Name = "Node.js path",
-        Description = "Path or command name of Node.js 16 or newer.",
-        GroupName = "Gateway",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NodeJsPathKey,
+        Description = LocalizedStrings.PathOrCommandNameOfNodeJs16OrNewerDescKey,
+        GroupName = LocalizedStrings.GatewayKey,
         Order = 7)]
     [BasicSetting]
     public string NodePath { get; set; } = "node";
@@ -109,9 +113,10 @@ public partial class MasterLinkMessageAdapter :
     /// <c>taishin-sdk</c> package.
     /// </summary>
     [Display(
-        Name = "Gateway directory",
-        Description = "Directory containing masterlink_gateway.cjs, package.json, and node_modules/taishin-sdk.",
-        GroupName = "Gateway",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.GatewayDirectoryKey,
+        Description = LocalizedStrings.DirectoryContainingMasterlinkGatewayCjsPackageJsonAndNodeModulesTaishinSdkDescKey,
+        GroupName = LocalizedStrings.GatewayKey,
         Order = 8)]
     [BasicSetting]
     public string GatewayDirectory { get; set; } =
@@ -119,16 +124,18 @@ public partial class MasterLinkMessageAdapter :
 
     /// <summary>Request adjusted historical candles.</summary>
     [Display(
-        Name = "Adjusted candles",
-        Description = "Request split- and dividend-adjusted historical candles.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AdjustedCandlesKey,
+        Description = LocalizedStrings.RequestSplitAndDividendAdjustedHistoricalCandlesDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 9)]
     public bool AdjustedCandles { get; set; } = true;
 
     /// <summary>Interval for refreshing orders and account data.</summary>
     [Display(
-        Name = "Account polling interval",
-        Description = "Interval for refreshing order status, fills, cash, and positions.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountPollingIntervalKey,
+        Description = LocalizedStrings.IntervalForRefreshingOrderStatusFillsCashAndPositionsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 10)]
     public TimeSpan AccountPollingInterval { get; set; } =
@@ -136,9 +143,10 @@ public partial class MasterLinkMessageAdapter :
 
     /// <summary>Maximum securities emitted by an unrestricted lookup.</summary>
     [Display(
-        Name = "Lookup limit",
-        Description = "Maximum number of Taiwan securities emitted by one unrestricted lookup.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LookupLimitKey,
+        Description = LocalizedStrings.MaximumNumberOfTaiwanSecuritiesEmittedByOneUnrestrictedLookupDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 11)]
     public int MaxLookupResults { get; set; } = 5000;
 

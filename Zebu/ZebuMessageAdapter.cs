@@ -42,8 +42,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <inheritdoc />
     [Display(
-        Name = "OAuth client ID",
-        Description = "Client ID generated in the Zebu MYNT API settings.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthClientIdKey,
+        Description = LocalizedStrings.ClientIdGeneratedInTheZebuMyntApiSettingsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -51,8 +52,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <inheritdoc />
     [Display(
-        Name = "OAuth client secret",
-        Description = "Client secret generated in the Zebu MYNT API settings.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthClientSecretKey,
+        Description = LocalizedStrings.ClientSecretGeneratedInTheZebuMyntApiSettingsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -60,8 +62,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>Authorization code returned to the registered callback.</summary>
     [Display(
-        Name = "Authorization code",
-        Description = "One-time code returned by the Zebu OAuth authorization redirect.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizationCodeKey,
+        Description = LocalizedStrings.OneTimeCodeReturnedByTheZebuOAuthAuthorizationRedirectDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -69,16 +72,18 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>OAuth refresh token.</summary>
     [Display(
-        Name = "Refresh token",
-        Description = "Refresh token used to obtain a new Zebu access token.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RefreshTokenKey,
+        Description = LocalizedStrings.RefreshTokenUsedToObtainANewZebuAccessTokenDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public SecureString RefreshToken { get; set; }
 
     /// <inheritdoc />
     [Display(
-        Name = "Access token",
-        Description = "OAuth Bearer access token. It is populated after code exchange or refresh.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccessTokenKey,
+        Description = LocalizedStrings.OAuthBearerAccessTokenItIsPopulatedAfterCodeExchangeOrRefreshDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public new SecureString Token
@@ -89,8 +94,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>Zebu user identifier.</summary>
     [Display(
-        Name = "User ID",
-        Description = "Zebu client code. OAuth normally populates it automatically.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.UserIdLabelKey,
+        Description = LocalizedStrings.ZebuClientCodeOAuthNormallyPopulatesItAutomaticallyDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     [BasicSetting]
@@ -102,8 +108,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>Zebu trading account identifier.</summary>
     [Display(
-        Name = "Account ID",
-        Description = "Trading account ID. When empty, User ID is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountIdKey,
+        Description = LocalizedStrings.TradingAccountIdWhenEmptyUserIdIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     public new string AccountId
@@ -114,16 +121,18 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>Expiration time of the current OAuth access token.</summary>
     [Display(
-        Name = "Token expires at",
-        Description = "UTC expiration time reported by the latest OAuth token response.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TokenExpiresAtKey,
+        Description = LocalizedStrings.UtcExpirationTimeReportedByTheLatestOAuthTokenResponseDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 7)]
     public DateTime? TokenExpiresAt { get; set; }
 
     /// <summary>Default MYNT order product.</summary>
     [Display(
-        Name = "Default product",
-        Description = "Default MYNT product used for new Zebu orders.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultMyntProductUsedForNewZebuOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 8)]
     public new ShoonyaProducts DefaultProduct
@@ -134,8 +143,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>Maximum number of WebSocket reconnect attempts.</summary>
     [Display(
-        Name = "Reconnect attempts",
-        Description = "Maximum number of attempts to reconnect the Zebu WebSocket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+        Description = LocalizedStrings.MaximumNumberOfAttemptsToReconnectTheZebuWebSocketDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 9)]
     public new int ReconnectAttempts
@@ -146,8 +156,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>OAuth authorization page.</summary>
     [Display(
-        Name = "Authorization address",
-        Description = "Zebu OAuth page where the user authorizes the application.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizationAddressKey,
+        Description = LocalizedStrings.ZebuOAuthPageWhereTheUserAuthorizesTheApplicationDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 10)]
     public Uri AuthorizationAddress { get; set; } =
@@ -155,8 +166,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>REST API endpoint.</summary>
     [Display(
-        Name = "REST endpoint",
-        Description = "Zebu MYNT OAuth REST endpoint.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestEndpointKey,
+        Description = LocalizedStrings.ZebuMyntOAuthRestEndpointDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 11)]
     public new string RestEndpoint
@@ -167,8 +179,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>Instrument archive endpoint template.</summary>
     [Display(
-        Name = "Instrument endpoint template",
-        Description = "Zebu exchange master ZIP endpoint template.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.InstrumentEndpointTemplateKey,
+        Description = LocalizedStrings.ZebuExchangeMasterZipEndpointTemplateDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 12)]
     public new string InstrumentEndpointTemplate
@@ -179,8 +192,9 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <summary>WebSocket endpoint.</summary>
     [Display(
-        Name = "WebSocket endpoint",
-        Description = "Zebu MYNT OAuth WebSocket endpoint.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketEndpointKey,
+        Description = LocalizedStrings.ZebuMyntOAuthWebSocketEndpointDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 13)]
     public new string WebSocketEndpoint

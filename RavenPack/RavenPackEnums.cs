@@ -7,12 +7,14 @@ public enum RavenPackProducts
 	/// <summary>Classic RavenPack Analytics product.</summary>
 	[EnumMember]
 	[Display(
-		Name = "RavenPack Analytics")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RavenPackAnalyticsKey)]
 	Analytics,
 
 	/// <summary>RavenPack Edge product.</summary>
 	[EnumMember]
 	[Display(
-		Name = "RavenPack Edge")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RavenPackEdgeKey)]
 	Edge,
 }

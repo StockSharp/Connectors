@@ -8,31 +8,36 @@ public enum TwelveDataMarkets
 	/// <summary>Exchange-listed stocks.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Stocks")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StocksKey)]
 	Stocks,
 
 	/// <summary>Exchange-traded funds.</summary>
 	[EnumMember]
 	[Display(
-		Name = "ETFs")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ETFsKey)]
 	Etfs,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Forex")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForexKey)]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Crypto")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoKey)]
 	Crypto,
 
 	/// <summary>Physical commodities.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Commodities")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CommoditiesKey)]
 	Commodities,
 }
 
@@ -44,24 +49,28 @@ public enum TwelveDataAdjustments
 	/// <summary>Adjust for splits and dividends.</summary>
 	[EnumMember]
 	[Display(
-		Name = "All")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AllKey)]
 	All,
 
 	/// <summary>Adjust for splits.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Splits")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SplitsKey)]
 	Splits,
 
 	/// <summary>Adjust for dividends.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Dividends")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DividendsKey)]
 	Dividends,
 
 	/// <summary>Do not adjust prices.</summary>
 	[EnumMember]
 	[Display(
-		Name = "None")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NoneKey)]
 	None,
 }

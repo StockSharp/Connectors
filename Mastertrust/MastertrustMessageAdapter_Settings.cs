@@ -38,8 +38,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// Mastertrust trading account identifier.
     /// </summary>
     [Display(
-        Name = "Trading client ID",
-        Description = "Mastertrust trading account identifier used by portfolio, order, and streaming APIs.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.TradingClientIdKey,
+        Description = LocalizedStrings.MastertrustTradingAccountIdentifierUsedByPortfolioOrderAndStreamingAPIsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -49,8 +50,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// OAuth2 client identifier created in the Mastertrust developer portal.
     /// </summary>
     [Display(
-        Name = "OAuth client ID",
-        Description = "OAuth2 client identifier created in the public Mastertrust developer portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthClientIdKey,
+        Description = LocalizedStrings.OAuth2ClientIdentifierCreatedInThePublicMastertrustDeveloperPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -60,8 +62,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// OAuth2 client secret issued by Mastertrust.
     /// </summary>
     [Display(
-        Name = "OAuth client secret",
-        Description = "OAuth2 client secret issued for the selected Mastertrust application.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OAuthClientSecretKey,
+        Description = LocalizedStrings.OAuth2ClientSecretIssuedForTheSelectedMastertrustApplicationDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -71,8 +74,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// Authorization code returned to the configured redirect URI.
     /// </summary>
     [Display(
-        Name = "Authorization code",
-        Description = "Daily OAuth2 authorization code returned by the Mastertrust authorization endpoint.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizationCodeKey,
+        Description = LocalizedStrings.DailyOAuth2AuthorizationCodeReturnedByTheMastertrustAuthorizationEndpointDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -82,8 +86,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// OAuth2 redirect URI registered for the application.
     /// </summary>
     [Display(
-        Name = "Redirect URI",
-        Description = "OAuth2 redirect URI registered in the Mastertrust developer portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RedirectUriKey,
+        Description = LocalizedStrings.OAuth2RedirectUriRegisteredInTheMastertrustDeveloperPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     [BasicSetting]
@@ -103,8 +108,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// Portfolio name emitted by the connector.
     /// </summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the Mastertrust trading client ID is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyTheMastertrustTradingClientIdIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     public string PortfolioName { get; set; }
@@ -113,8 +119,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// Default product used for new orders.
     /// </summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Mastertrust order product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultMastertrustOrderProductDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 7)]
     public MastertrustProducts DefaultProduct { get; set; } =
@@ -124,8 +131,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// Maximum number of streaming reconnect attempts.
     /// </summary>
     [Display(
-        Name = "Reconnect attempts",
-        Description = "Maximum number of attempts to reconnect the Mastertrust WebSocket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ReconnectAttemptsLabelKey,
+        Description = LocalizedStrings.MaximumNumberOfAttemptsToReconnectTheMastertrustWebSocketDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 8)]
     public int ReconnectAttempts { get; set; } = 10;
@@ -134,8 +142,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// REST and OAuth2 root address.
     /// </summary>
     [Display(
-        Name = "REST address",
-        Description = "Mastertrust Trade API REST and OAuth2 root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.MastertrustTradeApiRestAndOAuth2RootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 9)]
     public Uri Address { get; set; } = _defaultAddress;
@@ -144,8 +153,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// Public daily instrument-master archive address.
     /// </summary>
     [Display(
-        Name = "Master address",
-        Description = "Public Mastertrust daily instrument-master ZIP address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MasterAddressKey,
+        Description = LocalizedStrings.PublicMastertrustDailyInstrumentMasterZipAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 10)]
     public Uri MasterAddress { get; set; } = _defaultMasterAddress;
@@ -154,8 +164,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     /// Live market-data and account-update WebSocket address.
     /// </summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Mastertrust live-data and account-update WebSocket address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.MastertrustLiveDataAndAccountUpdateWebSocketAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 11)]
     public Uri WebSocketAddress { get; set; } = _defaultWebSocketAddress;

@@ -11,8 +11,9 @@ public partial class GainsNetworkMessageAdapter
 
 	/// <summary>Gains Network deployment.</summary>
 	[Display(
-		Name = "Environment",
-		Description = "Gains Network deployment environment.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
+		Description = LocalizedStrings.GainsNetworkDeploymentEnvironmentDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -21,40 +22,45 @@ public partial class GainsNetworkMessageAdapter
 
 	/// <summary>Optional JSON-RPC endpoint override.</summary>
 	[Display(
-		Name = "JSON-RPC endpoint",
-		Description = "Optional network JSON-RPC endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.JsonRpcEndpointKey,
+		Description = LocalizedStrings.OptionalNetworkJsonRpcEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string RpcEndpoint { get; set; }
 
 	/// <summary>Optional chain backend endpoint override.</summary>
 	[Display(
-		Name = "Backend endpoint",
-		Description = "Optional chain-specific Gains backend endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BackendEndpointKey,
+		Description = LocalizedStrings.OptionalChainSpecificGainsBackendEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string BackendEndpoint { get; set; }
 
 	/// <summary>Global history backend endpoint.</summary>
 	[Display(
-		Name = "Global endpoint",
-		Description = "Gains cross-chain history backend endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GlobalEndpointKey,
+		Description = LocalizedStrings.GainsCrossChainHistoryBackendEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string GlobalEndpoint { get; set; } = _defaultGlobalEndpoint;
 
 	/// <summary>Pricing REST endpoint.</summary>
 	[Display(
-		Name = "Pricing endpoint",
-		Description = "Gains current OHLC snapshot endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PricingEndpointKey,
+		Description = LocalizedStrings.GainsCurrentOhlcSnapshotEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string PricingEndpoint { get; set; } = _defaultPricingEndpoint;
 
 	/// <summary>Live price WebSocket endpoint.</summary>
 	[Display(
-		Name = "Price WebSocket",
-		Description = "Gains live mark and index price stream.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceWebSocketKey,
+		Description = LocalizedStrings.GainsLiveMarkAndIndexPriceStreamDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string PriceSocketEndpoint { get; set; } =
@@ -82,8 +88,9 @@ public partial class GainsNetworkMessageAdapter
 
 	/// <summary>Default collateral token.</summary>
 	[Display(
-		Name = "Collateral",
-		Description = "Default collateral token for new positions.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CollateralKey,
+		Description = LocalizedStrings.DefaultCollateralTokenForNewPositionsDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 3)]
 	public string DefaultCollateral
@@ -114,8 +121,9 @@ public partial class GainsNetworkMessageAdapter
 
 	/// <summary>Maximum execution slippage, in percent.</summary>
 	[Display(
-		Name = "Slippage (%)",
-		Description = "Maximum execution slippage in percentage points.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SlippageLabelKey,
+		Description = LocalizedStrings.MaximumExecutionSlippageInPercentagePointsDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 5)]
 	public decimal SlippagePercentage
@@ -129,16 +137,18 @@ public partial class GainsNetworkMessageAdapter
 
 	/// <summary>Optional Gains referral address.</summary>
 	[Display(
-		Name = "Referrer",
-		Description = "Optional EVM referral address included with new trades.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReferrerKey,
+		Description = LocalizedStrings.OptionalEvmReferralAddressIncludedWithNewTradesDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 6)]
 	public string ReferrerAddress { get; set; }
 
 	/// <summary>Automatically approve collateral when allowance is low.</summary>
 	[Display(
-		Name = "Auto approve",
-		Description = "Automatically approve the Gains diamond to spend collateral.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AutoApproveKey,
+		Description = LocalizedStrings.AutomaticallyApproveTheGainsDiamondToSpendCollateralDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public bool IsAutoApprove { get; set; } = true;
@@ -147,7 +157,8 @@ public partial class GainsNetworkMessageAdapter
 
 	/// <summary>Collateral allowance requested by automatic approval.</summary>
 	[Display(
-		Name = "Approval amount",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ApprovalAmountKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 8)]
 	public decimal ApprovalAmount
@@ -163,7 +174,8 @@ public partial class GainsNetworkMessageAdapter
 
 	/// <summary>Maximum transaction receipt wait time.</summary>
 	[Display(
-		Name = "Transaction timeout",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TransactionTimeoutKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 9)]
 	public TimeSpan TransactionTimeout
@@ -180,7 +192,8 @@ public partial class GainsNetworkMessageAdapter
 
 	/// <summary>Private account reconciliation interval.</summary>
 	[Display(
-		Name = "Account refresh",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountRefreshKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 10)]
 	public TimeSpan AccountRefreshInterval

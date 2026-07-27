@@ -36,8 +36,9 @@ public partial class ChoiceFinXMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "API key or Session ID",
-        Description = "Choice FinX API key or SessionId used in the Authorization header.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiKeyOrSessionIdKey,
+        Description = LocalizedStrings.ChoiceFinXApiKeyOrSessionIdUsedInTheAuthorizationHeaderDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -47,8 +48,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Header carrying the API key or session id.
     /// </summary>
     [Display(
-        Name = "Authorization header",
-        Description = "Header carrying the credential. Use Authorization for SessionId mode or Bearer when required by vendor credentials.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizationHeaderKey,
+        Description = LocalizedStrings.HeaderCarryingTheCredentialUseAuthorizationForSessionIdModeOrBearerWhenRequiredByVendorCredentialsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -59,8 +61,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Authorization header scheme.
     /// </summary>
     [Display(
-        Name = "Authorization scheme",
-        Description = "Authorization prefix. SessionId is used by the public REST reference; leave empty for a raw API key.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AuthorizationSchemeKey,
+        Description = LocalizedStrings.AuthorizationPrefixSessionIdIsUsedByThePublicRestReferenceLeaveEmptyForARawApiKeyDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -71,8 +74,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Vendor identifier issued by Choice.
     /// </summary>
     [Display(
-        Name = "Vendor ID",
-        Description = "Optional vendor identifier for an empanelled integration.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.VendorIdKey,
+        Description = LocalizedStrings.OptionalVendorIdentifierForAnEmpanelledIntegrationDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     public string VendorId { get; set; }
@@ -81,8 +85,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Vendor key issued by Choice.
     /// </summary>
     [Display(
-        Name = "Vendor key",
-        Description = "Optional vendor secret for an empanelled integration.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.VendorKeyKey,
+        Description = LocalizedStrings.OptionalVendorSecretForAnEmpanelledIntegrationDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public SecureString VendorKey { get; set; }
@@ -91,8 +96,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// JWT returned by the Choice FinX 2FA logon flow.
     /// </summary>
     [Display(
-        Name = "WebSocket JWT",
-        Description = "Optional JWT returned by logon and used by the interactive WebSocket.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketJwtKey,
+        Description = LocalizedStrings.OptionalJwtReturnedByLogonAndUsedByTheInteractiveWebSocketDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     public SecureString WebSocketToken { get; set; }
@@ -101,8 +107,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Default product used for new orders.
     /// </summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Choice FinX delivery or intraday product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultChoiceFinXDeliveryOrIntradayProductDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 6)]
     public ChoiceFinXProducts DefaultProduct { get; set; } =
@@ -112,8 +119,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Portfolio name emitted by the connector.
     /// </summary>
     [Display(
-        Name = "Portfolio name",
-        Description = "Portfolio name. When empty, the user id returned by Choice FinX is used.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PortfolioNameLabelKey,
+        Description = LocalizedStrings.PortfolioNameWhenEmptyTheUserIdReturnedByChoiceFinXIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 7)]
     public string PortfolioName { get; set; }
@@ -122,8 +130,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Native order mode type.
     /// </summary>
     [Display(
-        Name = "Mode type",
-        Description = "Optional Choice FinX ModeTyp value sent with order requests.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ModeTypeKey,
+        Description = LocalizedStrings.OptionalChoiceFinXModeTypValueSentWithOrderRequestsDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 8)]
     public string ModeType { get; set; }
@@ -132,8 +141,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Native order mode.
     /// </summary>
     [Display(
-        Name = "Mode",
-        Description = "Optional Choice FinX numeric Mode value sent with order requests.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ModeKey,
+        Description = LocalizedStrings.OptionalChoiceFinXNumericModeValueSentWithOrderRequestsDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 9)]
     public int? Mode { get; set; }
@@ -142,8 +152,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Device identifier sent with order requests.
     /// </summary>
     [Display(
-        Name = "Device ID",
-        Description = "Optional Choice FinX device identifier.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DeviceIdKey,
+        Description = LocalizedStrings.OptionalChoiceFinXDeviceIdentifierDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 10)]
     public string DeviceId { get; set; }
@@ -153,8 +164,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// that omit their own divisor.
     /// </summary>
     [Display(
-        Name = "Price divisor",
-        Description = "Native price divisor. Choice FinX documents paise-based order prices, so the default is 100.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PriceDivisorKey,
+        Description = LocalizedStrings.NativePriceDivisorChoiceFinXDocumentsPaiseBasedOrderPricesSoTheDefaultIs100DescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 11)]
     public decimal PriceDivisor { get; set; } = 100;
@@ -163,8 +175,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// REST API root address.
     /// </summary>
     [Display(
-        Name = "REST address",
-        Description = "Choice FinX REST API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.ChoiceFinXRestApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 12)]
     public Uri Address { get; set; } = _defaultAddress;
@@ -173,8 +186,9 @@ public partial class ChoiceFinXMessageAdapter :
     /// Interactive WebSocket address.
     /// </summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Choice FinX interactive WebSocket address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.ChoiceFinXInteractiveWebSocketAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 13)]
     public Uri WebSocketAddress { get; set; } =

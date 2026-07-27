@@ -98,7 +98,8 @@ public class DydxChainOrderCondition : OrderCondition
 	/// <summary>TWAP execution duration.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP duration",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapDurationKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 5)]
 	public TimeSpan TwapDuration
@@ -111,7 +112,8 @@ public class DydxChainOrderCondition : OrderCondition
 	/// <summary>Interval between TWAP child orders.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP interval",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapIntervalLabelKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 6)]
 	public TimeSpan TwapInterval
@@ -124,7 +126,8 @@ public class DydxChainOrderCondition : OrderCondition
 	/// <summary>Maximum TWAP oracle-price deviation in percent.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP price tolerance",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapPriceToleranceKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public decimal TwapPriceTolerance

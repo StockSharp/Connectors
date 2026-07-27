@@ -10,20 +10,20 @@ public enum FinraDataSets
 	/// Daily aggregate short-sale volume reported to FINRA facilities.
 	/// </summary>
 	[EnumMember]
-	[Display(Name = "Reg SHO daily short-sale volume")]
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.RegShoDailyShortSaleVolumeKey)]
 	RegShoDaily,
 
 	/// <summary>
 	/// Consolidated OTC short-interest positions.
 	/// </summary>
 	[EnumMember]
-	[Display(Name = "Consolidated short interest")]
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ConsolidatedShortInterestKey)]
 	ConsolidatedShortInterest,
 
 	/// <summary>
 	/// Weekly OTC and ATS aggregate trading activity.
 	/// </summary>
 	[EnumMember]
-	[Display(Name = "Weekly OTC/ATS summary")]
+	[Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.WeeklyOtcAtsSummaryKey)]
 	WeeklySummary,
 }

@@ -32,8 +32,9 @@ public partial class TradernetMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "Public API key",
-        Description = "Public key generated in the Tradernet account.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PublicApiKeyKey,
+        Description = LocalizedStrings.PublicKeyGeneratedInTheTradernetAccountDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -41,8 +42,9 @@ public partial class TradernetMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "Private API key",
-        Description = "Private key used to sign Tradernet API requests.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.PrivateApiKeyKey,
+        Description = LocalizedStrings.PrivateKeyUsedToSignTradernetApiRequestsDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -52,8 +54,9 @@ public partial class TradernetMessageAdapter :
     /// REST API root address.
     /// </summary>
     [Display(
-        Name = "API address",
-        Description = "Tradernet signed public API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiAddressKey,
+        Description = LocalizedStrings.TradernetSignedPublicApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 2)]
     public Uri Address { get; set; } = _defaultAddress;
@@ -62,8 +65,9 @@ public partial class TradernetMessageAdapter :
     /// WebSocket server address.
     /// </summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Tradernet realtime WebSocket address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.TradernetRealtimeWebSocketAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 3)]
     public Uri WebSocketAddress { get; set; } =
@@ -87,8 +91,9 @@ public partial class TradernetMessageAdapter :
     /// Maximum market depth emitted by the connector.
     /// </summary>
     [Display(
-        Name = "Maximum market depth",
-        Description = "Maximum number of bid and ask levels emitted from Tradernet.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumMarketDepthKey,
+        Description = LocalizedStrings.MaximumNumberOfBidAndAskLevelsEmittedFromTradernetDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 5)]
     public int MaxMarketDepth { get; set; } = 20;
@@ -97,8 +102,9 @@ public partial class TradernetMessageAdapter :
     /// Page size used for the securities directory.
     /// </summary>
     [Display(
-        Name = "Securities page size",
-        Description = "Number of securities requested per directory page.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SecuritiesPageSizeKey,
+        Description = LocalizedStrings.NumberOfSecuritiesRequestedPerDirectoryPageDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 6)]
     public int SecuritiesPageSize { get; set; } = 100;

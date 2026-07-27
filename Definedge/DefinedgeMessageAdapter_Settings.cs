@@ -41,8 +41,9 @@ public partial class DefinedgeMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "API token",
-        Description = "API token created in the Definedge developer portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiTokenKey,
+        Description = LocalizedStrings.ApiTokenCreatedInTheDefinedgeDeveloperPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -50,8 +51,9 @@ public partial class DefinedgeMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "API secret",
-        Description = "API secret created in the Definedge developer portal.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiSecretKey,
+        Description = LocalizedStrings.ApiSecretCreatedInTheDefinedgeDeveloperPortalDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -59,8 +61,9 @@ public partial class DefinedgeMessageAdapter :
 
     /// <inheritdoc />
     [Display(
-        Name = "API session key",
-        Description = "REST authorization key returned by Definedge login.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ApiSessionKeyKey,
+        Description = LocalizedStrings.RestAuthorizationKeyReturnedByDefinedgeLoginDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 2)]
     [BasicSetting]
@@ -70,8 +73,9 @@ public partial class DefinedgeMessageAdapter :
     /// Streaming session token.
     /// </summary>
     [Display(
-        Name = "WebSocket token",
-        Description = "Streaming token returned by Definedge login.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketTokenKey,
+        Description = LocalizedStrings.StreamingTokenReturnedByDefinedgeLoginDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -81,8 +85,9 @@ public partial class DefinedgeMessageAdapter :
     /// Current one-time password.
     /// </summary>
     [Display(
-        Name = "One-time password",
-        Description = "Current OTP or TOTP used only when creating a new API session.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.OneTimePasswordKey,
+        Description = LocalizedStrings.CurrentOtpOrTotpUsedOnlyWhenCreatingANewApiSessionDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
     public SecureString OneTimePassword { get; set; }
@@ -91,8 +96,9 @@ public partial class DefinedgeMessageAdapter :
     /// Definedge user identifier.
     /// </summary>
     [Display(
-        Name = "User ID",
-        Description = "User identifier returned by Definedge login.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.UserIdLabelKey,
+        Description = LocalizedStrings.UserIdentifierReturnedByDefinedgeLoginDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     [BasicSetting]
@@ -102,8 +108,9 @@ public partial class DefinedgeMessageAdapter :
     /// Definedge trading account identifier.
     /// </summary>
     [Display(
-        Name = "Account ID",
-        Description = "Trading account identifier returned by Definedge login.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AccountIdKey,
+        Description = LocalizedStrings.TradingAccountIdentifierReturnedByDefinedgeLoginDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
     [BasicSetting]
@@ -113,8 +120,9 @@ public partial class DefinedgeMessageAdapter :
     /// Default order product.
     /// </summary>
     [Display(
-        Name = "Default product",
-        Description = "Default Definedge product for new orders.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DefaultProductKey,
+        Description = LocalizedStrings.DefaultDefinedgeProductForNewOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 7)]
     public DefinedgeProducts DefaultProduct { get; set; } =
@@ -124,8 +132,9 @@ public partial class DefinedgeMessageAdapter :
     /// Algorithm identifier required by Definedge order entry.
     /// </summary>
     [Display(
-        Name = "Algo ID",
-        Description = "Registered algorithm ID, or the generic Definedge value 99999.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AlgoIdKey,
+        Description = LocalizedStrings.RegisteredAlgorithmIdOrTheGenericDefinedgeValue99999DescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 8)]
     public string AlgoId { get; set; } = "99999";
@@ -134,8 +143,9 @@ public partial class DefinedgeMessageAdapter :
     /// REST API root address.
     /// </summary>
     [Display(
-        Name = "REST address",
-        Description = "Definedge REST API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.RestAddressKey,
+        Description = LocalizedStrings.DefinedgeRestApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 9)]
     public Uri Address { get; set; } = _defaultAddress;
@@ -144,8 +154,9 @@ public partial class DefinedgeMessageAdapter :
     /// Authentication API root address.
     /// </summary>
     [Display(
-        Name = "Login address",
-        Description = "Definedge authentication API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LoginAddressKey,
+        Description = LocalizedStrings.DefinedgeAuthenticationApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 10)]
     public Uri LoginAddress { get; set; } = _defaultLoginAddress;
@@ -154,8 +165,9 @@ public partial class DefinedgeMessageAdapter :
     /// Historical data API root address.
     /// </summary>
     [Display(
-        Name = "History address",
-        Description = "Definedge historical data API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.HistoryAddressKey,
+        Description = LocalizedStrings.DefinedgeHistoricalDataApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 11)]
     public Uri HistoryAddress { get; set; } = _defaultHistoryAddress;
@@ -164,8 +176,9 @@ public partial class DefinedgeMessageAdapter :
     /// Public instrument master address.
     /// </summary>
     [Display(
-        Name = "Instrument master address",
-        Description = "Public Definedge all-market instrument archive.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.InstrumentMasterAddressKey,
+        Description = LocalizedStrings.PublicDefinedgeAllMarketInstrumentArchiveDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 12)]
     public Uri InstrumentMasterAddress { get; set; } =
@@ -175,8 +188,9 @@ public partial class DefinedgeMessageAdapter :
     /// Streaming API address.
     /// </summary>
     [Display(
-        Name = "WebSocket address",
-        Description = "Definedge streaming WebSocket address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.WebSocketAddressKey,
+        Description = LocalizedStrings.DefinedgeStreamingWebSocketAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 13)]
     public Uri WebSocketAddress { get; set; } =

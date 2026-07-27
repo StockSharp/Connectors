@@ -11,8 +11,9 @@ public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Destination peer type.</summary>
 	[DataMember]
 	[Display(
-		Name = "Destination type",
-		Description = "Fireblocks destination peer type.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DestinationTypeKey,
+		Description = LocalizedStrings.FireblocksDestinationPeerTypeDescKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 0)]
 	public FireblocksPeerTypes DestinationType
@@ -27,8 +28,9 @@ public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 	/// </summary>
 	[DataMember]
 	[Display(
-		Name = "Destination ID",
-		Description = "Fireblocks destination object identifier.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DestinationIdKey,
+		Description = LocalizedStrings.FireblocksDestinationObjectIdentifierDescKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 1)]
 	public string DestinationId
@@ -40,8 +42,9 @@ public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Network fee level.</summary>
 	[DataMember]
 	[Display(
-		Name = "Fee level",
-		Description = "Fireblocks network fee level.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FeeLevelKey,
+		Description = LocalizedStrings.FireblocksNetworkFeeLevelDescKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 2)]
 	public FireblocksFeeLevels FeeLevel
@@ -54,8 +57,9 @@ public sealed class FireblocksOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Whether the network fee is deducted from the amount.</summary>
 	[DataMember]
 	[Display(
-		Name = "Gross amount",
-		Description = "Deduct the network fee from the requested amount.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GrossAmountKey,
+		Description = LocalizedStrings.DeductTheNetworkFeeFromTheRequestedAmountDescKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 3)]
 	public bool IsGrossAmount

@@ -5,12 +5,14 @@ public enum BmllAuthenticationModes
 {
 	/// <summary>Sign the BMLL authentication challenge with an RSA private key.</summary>
 	[Display(
-		Name = "SSH key")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SshKeyKey)]
 	SshKey,
 
 	/// <summary>Use a previously issued bearer token.</summary>
 	[Display(
-		Name = "Bearer token")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BearerTokenKey)]
 	BearerToken,
 }
 

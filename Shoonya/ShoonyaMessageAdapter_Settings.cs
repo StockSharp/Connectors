@@ -70,24 +70,27 @@ public partial class ShoonyaMessageAdapter : MessageAdapter, ITokenAdapter
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Instrument file endpoint template.</summary>
 	[Display(
-		Name = "Instrument endpoint template",
-		Description = "Instrument file endpoint template.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InstrumentEndpointTemplateKey,
+		Description = LocalizedStrings.InstrumentFileEndpointTemplateDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string InstrumentEndpointTemplate { get; set; } = _defaultInstrumentEndpointTemplate;
 
 	/// <summary>WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.WebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 7)]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

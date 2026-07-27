@@ -10,34 +10,34 @@ public enum PaytmMoneyProducts
     /// Intraday product.
     /// </summary>
     [EnumMember]
-    [Display(Name = "Intraday")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.IntradayKey)]
     Intraday,
 
     /// <summary>
     /// Cash-and-carry delivery product.
     /// </summary>
     [EnumMember]
-    [Display(Name = "Delivery")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.DeliveryKey)]
     Delivery,
 
     /// <summary>
     /// Margin product.
     /// </summary>
     [EnumMember]
-    [Display(Name = "Margin")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.MarginKey)]
     Margin,
 
     /// <summary>
     /// Cover order.
     /// </summary>
     [EnumMember]
-    [Display(Name = "Cover")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.CoverKey)]
     Cover,
 
     /// <summary>
     /// Bracket order.
     /// </summary>
     [EnumMember]
-    [Display(Name = "Bracket")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.BracketKey)]
     Bracket,
 }

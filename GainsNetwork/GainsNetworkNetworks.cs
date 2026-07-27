@@ -7,19 +7,22 @@ public enum GainsNetworkEnvironments
 	/// <summary>Arbitrum One.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Arbitrum One")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ArbitrumOneKey)]
 	Arbitrum,
 
 	/// <summary>Base mainnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Base")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BaseKey)]
 	Base,
 
 	/// <summary>Polygon PoS.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Polygon")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PolygonKey)]
 	Polygon,
 }
 

@@ -36,7 +36,7 @@ public partial class FinancialDatasetsMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official Financial Datasets production API root.",
+        Description = LocalizedStrings.OfficialFinancialDatasetsProductionApiRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -45,34 +45,38 @@ public partial class FinancialDatasetsMessageAdapter :
 
     /// <summary>Whether inactive tickers are excluded from bulk lookup.</summary>
     [Display(
-        Name = "Active tickers only",
-        Description = "Use the actively traded price-snapshot ticker universe for bulk lookup.",
-        GroupName = "Filters",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ActiveTickersOnlyKey,
+        Description = LocalizedStrings.UseTheActivelyTradedPriceSnapshotTickerUniverseForBulkLookupDescKey,
+        GroupName = LocalizedStrings.FiltersKey,
         Order = 2)]
     public bool ActiveOnly { get; set; } = true;
 
     /// <summary>Default reporting period for financial datasets.</summary>
     [Display(
-        Name = "Financial period",
-        Description = "Reporting period used for statements and financial metrics.",
-        GroupName = "Financial data",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.FinancialPeriodKey,
+        Description = LocalizedStrings.ReportingPeriodUsedForStatementsAndFinancialMetricsDescKey,
+        GroupName = LocalizedStrings.FinancialDataKey,
         Order = 3)]
     public FinancialDatasetsPeriods FinancialPeriod { get; set; } =
         FinancialDatasetsPeriods.Annual;
 
     /// <summary>Maximum records requested for a custom dataset.</summary>
     [Display(
-        Name = "Dataset limit",
-        Description = "Maximum records requested from a custom financial, filing, or ownership dataset.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DatasetLimitKey,
+        Description = LocalizedStrings.MaximumRecordsRequestedFromACustomFinancialFilingOrOwnershipDatasetDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 4)]
     public int DataLimit { get; set; } = 100;
 
     /// <summary>Maximum news articles per request.</summary>
     [Display(
-        Name = "News limit",
-        Description = "Maximum news articles requested; the API currently permits up to ten.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsLimitKey,
+        Description = LocalizedStrings.MaximumNewsArticlesRequestedTheApiCurrentlyPermitsUpToTenDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int NewsLimit { get; set; } = 10;
 

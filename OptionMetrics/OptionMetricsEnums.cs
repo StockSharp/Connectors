@@ -8,19 +8,22 @@ public enum IvyDbPriceAdjustments
 	/// <summary>Original provider prices.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Raw")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RawKey)]
 	Raw,
 
 	/// <summary>Prices adjusted for splits and other capital distributions.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Split adjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SplitAdjustedKey)]
 	SplitAdjusted,
 
 	/// <summary>Prices adjusted with the provider total-return factor.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Total-return adjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TotalReturnAdjustedKey)]
 	TotalReturnAdjusted,
 }
 

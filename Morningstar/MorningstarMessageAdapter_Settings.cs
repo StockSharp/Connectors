@@ -82,8 +82,9 @@ public partial class MorningstarMessageAdapter : MessageAdapter, ILoginPasswordA
 
 	/// <summary>Optional REST API endpoint override.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Optional REST API endpoint override for the selected region.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.OptionalRestApiEndpointOverrideForTheSelectedRegionDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; }

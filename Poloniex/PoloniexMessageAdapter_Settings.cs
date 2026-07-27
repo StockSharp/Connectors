@@ -65,24 +65,27 @@ public partial class PoloniexMessageAdapter : MessageAdapter, IKeySecretAdapter
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Public WebSocket endpoint.</summary>
 	[Display(
-		Name = "Public WebSocket endpoint",
-		Description = "Public WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PublicWebSocketEndpointKey,
+		Description = LocalizedStrings.PublicWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>Private WebSocket endpoint.</summary>
 	[Display(
-		Name = "Private WebSocket endpoint",
-		Description = "Private WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrivateWebSocketEndpointKey,
+		Description = LocalizedStrings.PrivateWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string PrivateWebSocketEndpoint { get; set; } = _defaultPrivateWebSocketEndpoint;

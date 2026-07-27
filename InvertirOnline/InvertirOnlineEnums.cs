@@ -6,12 +6,12 @@ public enum InvertirOnlineCountries
 {
     /// <summary>Argentine market.</summary>
     [EnumMember]
-    [Display(Name = "Argentina")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.ArgentinaKey)]
     Argentina,
 
     /// <summary>United States market.</summary>
     [EnumMember]
-    [Display(Name = "United States")]
+    [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.UnitedStatesKey)]
     UnitedStates,
 }
 

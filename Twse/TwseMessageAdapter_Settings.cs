@@ -25,7 +25,7 @@ public partial class TwseMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Taiwan Stock Exchange OpenAPI v1 root.",
+        Description = LocalizedStrings.TaiwanStockExchangeOpenAPIV1RootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 0)]
     [BasicSetting]
@@ -34,25 +34,28 @@ public partial class TwseMessageAdapter :
 
     /// <summary>Load company and listed-fund profiles.</summary>
     [Display(
-        Name = "Include profiles",
-        Description = "Load listed-company and fund profiles for names, types, listing dates, and issue sizes.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeProfilesKey,
+        Description = LocalizedStrings.LoadListedCompanyAndFundProfilesForNamesTypesListingDatesAndIssueSizesDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 1)]
     public bool IncludeProfiles { get; set; } = true;
 
     /// <summary>Load daily valuation ratios.</summary>
     [Display(
-        Name = "Include valuations",
-        Description = "Load daily price-to-earnings, dividend-yield, and price-to-book ratios.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeValuationsKey,
+        Description = LocalizedStrings.LoadDailyPriceToEarningsDividendYieldAndPriceToBookRatiosDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 2)]
     public bool IncludeValuations { get; set; } = true;
 
     /// <summary>Duration for which one public snapshot is reused.</summary>
     [Display(
-        Name = "Cache timeout",
-        Description = "Duration for which a downloaded TWSE daily snapshot is reused. Zero disables caching.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.CacheTimeoutKey,
+        Description = LocalizedStrings.DurationForWhichADownloadedTwseDailySnapshotIsReusedZeroDisablesCachingDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 3)]
     public TimeSpan CacheTimeout { get; set; } =
         TimeSpan.FromMinutes(5);

@@ -26,7 +26,7 @@ public partial class SetMarketDataMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.TokenKey,
-        Description = "API key created in SET Smart Marketplace.",
+        Description = LocalizedStrings.ApiKeyCreatedInSetSmartMarketplaceDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -36,7 +36,7 @@ public partial class SetMarketDataMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official SET Market Data API root.",
+        Description = LocalizedStrings.OfficialSetMarketDataApiRootDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 1)]
     public Uri Address { get; set; } =
@@ -44,8 +44,9 @@ public partial class SetMarketDataMessageAdapter :
 
     /// <summary>Real-time or delayed market-data product.</summary>
     [Display(
-        Name = "Data mode",
-        Description = "Licensed real-time or delayed SET Market Data API product.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DataModeKey,
+        Description = LocalizedStrings.LicensedRealTimeOrDelayedSetMarketDataApiProductDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 2)]
     public SetMarketDataModes DataMode { get; set; } =
@@ -53,24 +54,27 @@ public partial class SetMarketDataMessageAdapter :
 
     /// <summary>Comma-separated SET and mai market filters.</summary>
     [Display(
-        Name = "Markets",
-        Description = "Comma-separated market filters: SET and mai.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MarketsKey,
+        Description = LocalizedStrings.CommaSeparatedMarketFiltersSetAndMaiDescKey,
         GroupName = LocalizedStrings.SecuritiesKey,
         Order = 3)]
     public string Markets { get; set; } = "SET,mai";
 
     /// <summary>Optional comma-separated index, industry, and sector filters.</summary>
     [Display(
-        Name = "Index and sector filters",
-        Description = "Optional comma-separated index, industry, or sector codes such as SET50,BANK.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IndexAndSectorFiltersKey,
+        Description = LocalizedStrings.OptionalCommaSeparatedIndexIndustryOrSectorCodesSuchAsSet50BankDescKey,
         GroupName = LocalizedStrings.SecuritiesKey,
         Order = 4)]
     public string IndexSectors { get; set; }
 
     /// <summary>Comma-separated security-type filters.</summary>
     [Display(
-        Name = "Security types",
-        Description = "Comma-separated SET security-type codes used by security lookup.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SecurityTypesKey,
+        Description = LocalizedStrings.CommaSeparatedSetSecurityTypeCodesUsedBySecurityLookupDescKey,
         GroupName = LocalizedStrings.SecuritiesKey,
         Order = 5)]
     public string SecurityTypeCodes { get; set; } =
@@ -78,16 +82,18 @@ public partial class SetMarketDataMessageAdapter :
 
     /// <summary>Whether odd-lot quotations are requested.</summary>
     [Display(
-        Name = "Include odd lots",
-        Description = "Request both main-board and odd-lot stock quotations.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeOddLotsKey,
+        Description = LocalizedStrings.RequestBothMainBoardAndOddLotStockQuotationsDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 6)]
     public bool IncludeOddLots { get; set; }
 
     /// <summary>Whether index securities are included in lookup.</summary>
     [Display(
-        Name = "Include indices",
-        Description = "Include SET and mai indices in security lookup.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.IncludeIndicesKey,
+        Description = LocalizedStrings.IncludeSetAndMaiIndicesInSecurityLookupDescKey,
         GroupName = LocalizedStrings.SecuritiesKey,
         Order = 7)]
     public bool IncludeIndices { get; set; } = true;

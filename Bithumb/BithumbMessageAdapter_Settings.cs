@@ -49,8 +49,9 @@ public partial class BithumbMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Bithumb REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.BithumbRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -59,8 +60,9 @@ public partial class BithumbMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// Prime REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Prime REST endpoint",
-		Description = "Bithumb Prime REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrimeRestEndpointKey,
+		Description = LocalizedStrings.BithumbPrimeRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string PrimeRestEndpoint { get; set; } = _defaultPrimeRestEndpoint;
@@ -69,8 +71,9 @@ public partial class BithumbMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Bithumb WebSocket API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.BithumbWebSocketApiEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;

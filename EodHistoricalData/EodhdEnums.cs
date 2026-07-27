@@ -8,25 +8,29 @@ public enum EodhdMarkets
 	/// <summary>Exchange-listed securities, funds, indices, and bonds.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Exchange securities")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeSecuritiesKey)]
 	Stocks,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Forex")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForexKey)]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Crypto")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoKey)]
 	Crypto,
 
 	/// <summary>US equity options.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Options")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OptionsKey)]
 	Options,
 }
 

@@ -36,7 +36,7 @@ public partial class StockDataOrgMessageAdapter :
     [Display(
         ResourceType = typeof(LocalizedStrings),
         Name = LocalizedStrings.AddressKey,
-        Description = "Official StockData.org API root.",
+        Description = LocalizedStrings.OfficialStockDataOrgApiRootDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -45,49 +45,55 @@ public partial class StockDataOrgMessageAdapter :
 
     /// <summary>Whether pre-market and after-hours data is included.</summary>
     [Display(
-        Name = "Extended hours",
-        Description = "Include pre-market and after-hours quotes and intraday bars.",
-        GroupName = "Market data",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.ExtendedHoursKey,
+        Description = LocalizedStrings.IncludePreMarketAndAfterHoursQuotesAndIntradayBarsDescKey,
+        GroupName = LocalizedStrings.MarketDataLabelKey,
         Order = 2)]
     public bool ExtendedHours { get; set; }
 
     /// <summary>Whether the paid split-adjusted intraday endpoint is used.</summary>
     [Display(
-        Name = "Adjusted intraday",
-        Description = "Use the split-adjusted intraday endpoint available on Standard and higher plans.",
-        GroupName = "Market data",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.AdjustedIntradayKey,
+        Description = LocalizedStrings.UseTheSplitAdjustedIntradayEndpointAvailableOnStandardAndHigherPlansDescKey,
+        GroupName = LocalizedStrings.MarketDataLabelKey,
         Order = 3)]
     public bool AdjustedIntraday { get; set; }
 
     /// <summary>Language filter for news requests.</summary>
     [Display(
-        Name = "News language",
-        Description = "Comma-separated StockData.org language codes used to filter news.",
-        GroupName = "News",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsLanguageKey,
+        Description = LocalizedStrings.CommaSeparatedStockDataOrgLanguageCodesUsedToFilterNewsDescKey,
+        GroupName = LocalizedStrings.NewsKey,
         Order = 4)]
     public string NewsLanguage { get; set; } = "en";
 
     /// <summary>Number of articles requested per news page.</summary>
     [Display(
-        Name = "News page size",
-        Description = "Number of news articles requested per page, subject to the subscription plan.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.NewsPageSizeKey,
+        Description = LocalizedStrings.NumberOfNewsArticlesRequestedPerPageSubjectToTheSubscriptionPlanDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 5)]
     public int NewsPageSize { get; set; } = 10;
 
     /// <summary>Maximum API pages or history chunks per request.</summary>
     [Display(
-        Name = "Maximum requests",
-        Description = "Maximum StockData.org pages or history chunks downloaded for one subscription.",
-        GroupName = "Limits",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumRequestsKey,
+        Description = LocalizedStrings.MaximumStockDataOrgPagesOrHistoryChunksDownloadedForOneSubscriptionDescKey,
+        GroupName = LocalizedStrings.LimitsKey,
         Order = 6)]
     public int MaxRequests { get; set; } = 100;
 
     /// <summary>Time zone used for quote timestamps without an offset.</summary>
     [Display(
-        Name = "Quote time zone",
-        Description = "Time zone used for IEX quote timestamps that do not contain an offset.",
-        GroupName = "Market data",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.QuoteTimeZoneKey,
+        Description = LocalizedStrings.TimeZoneUsedForIexQuoteTimestampsThatDoNotContainAnOffsetDescKey,
+        GroupName = LocalizedStrings.MarketDataLabelKey,
         Order = 7)]
     public string QuoteTimeZoneId { get; set; } =
         "Eastern Standard Time";

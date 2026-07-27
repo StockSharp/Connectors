@@ -34,8 +34,9 @@ public partial class ExanteMessageAdapter : MessageAdapter, IKeySecretAdapter
 
     /// <inheritdoc />
     [Display(
-        Name = "HTTP API key",
-        Description = "EXANTE HTTP API key created in API Management.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.HttpApiKeyKey,
+        Description = LocalizedStrings.ExanteHttpApiKeyCreatedInApiManagementDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 0)]
     [BasicSetting]
@@ -43,8 +44,9 @@ public partial class ExanteMessageAdapter : MessageAdapter, IKeySecretAdapter
 
     /// <inheritdoc />
     [Display(
-        Name = "Secret key",
-        Description = "Secret paired with the EXANTE HTTP API key.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SecretKeyLabelKey,
+        Description = LocalizedStrings.SecretPairedWithTheExanteHttpApiKeyDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 1)]
     [BasicSetting]
@@ -66,8 +68,9 @@ public partial class ExanteMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// Currency used for account summary conversion.
     /// </summary>
     [Display(
-        Name = "Summary currency",
-        Description = "ISO currency used by the EXANTE account summary API.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.SummaryCurrencyKey,
+        Description = LocalizedStrings.IsoCurrencyUsedByTheExanteAccountSummaryApiDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 3)]
     [BasicSetting]
@@ -90,8 +93,9 @@ public partial class ExanteMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// Maximum market depth sent to StockSharp.
     /// </summary>
     [Display(
-        Name = "Maximum market depth",
-        Description = "Maximum number of bid and ask levels emitted from the EXANTE feed.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.MaximumMarketDepthKey,
+        Description = LocalizedStrings.MaximumNumberOfBidAndAskLevelsEmittedFromTheExanteFeedDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 5)]
     public int MaxMarketDepth { get; set; } = 20;
@@ -100,8 +104,9 @@ public partial class ExanteMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// Maximum records requested from a historical endpoint.
     /// </summary>
     [Display(
-        Name = "History request size",
-        Description = "Maximum ticks or candles requested in one EXANTE history call.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.HistoryRequestSizeKey,
+        Description = LocalizedStrings.MaximumTicksOrCandlesRequestedInOneExanteHistoryCallDescKey,
         GroupName = LocalizedStrings.MarketDataKey,
         Order = 6)]
     public int HistoryRequestSize { get; set; } = 1000;
@@ -110,8 +115,9 @@ public partial class ExanteMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// Live HTTP API address.
     /// </summary>
     [Display(
-        Name = "Live API address",
-        Description = "EXANTE live HTTP API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.LiveApiAddressKey,
+        Description = LocalizedStrings.ExanteLiveHttpApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 7)]
     public Uri LiveAddress { get; set; } = _defaultLiveAddress;
@@ -120,8 +126,9 @@ public partial class ExanteMessageAdapter : MessageAdapter, IKeySecretAdapter
     /// Demo HTTP API address.
     /// </summary>
     [Display(
-        Name = "Demo API address",
-        Description = "EXANTE demo HTTP API root address.",
+        ResourceType = typeof(LocalizedStrings),
+        Name = LocalizedStrings.DemoApiAddressKey,
+        Description = LocalizedStrings.ExanteDemoHttpApiRootAddressDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 8)]
     public Uri DemoAddress { get; set; } = _defaultDemoAddress;

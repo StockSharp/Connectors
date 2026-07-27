@@ -11,8 +11,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Native operation kind.</summary>
 	[DataMember]
 	[Display(
-		Name = "Operation",
-		GroupName = "Anchorage",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OperationKey,
+		GroupName = LocalizedStrings.AnchorageLabelKey,
 		Order = 0)]
 	public AnchorageOperations Operation
 	{
@@ -24,8 +25,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Optional native trading order type.</summary>
 	[DataMember]
 	[Display(
-		Name = "Native order type",
-		GroupName = "Anchorage",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NativeOrderTypeKey,
+		GroupName = LocalizedStrings.AnchorageLabelKey,
 		Order = 1)]
 	public AnchorageNativeOrderTypes? NativeOrderType
 	{
@@ -37,8 +39,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Currency in which trading quantity is specified.</summary>
 	[DataMember]
 	[Display(
-		Name = "Quantity currency",
-		GroupName = "Anchorage",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuantityCurrencyKey,
+		GroupName = LocalizedStrings.AnchorageLabelKey,
 		Order = 2)]
 	public string QuantityCurrency
 	{
@@ -52,7 +55,7 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceKey,
-		GroupName = "Anchorage",
+		GroupName = LocalizedStrings.AnchorageLabelKey,
 		Order = 3)]
 	public decimal? TriggerPrice
 	{
@@ -63,8 +66,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Optional UTC expiration for advanced orders.</summary>
 	[DataMember]
 	[Display(
-		Name = "End time",
-		GroupName = "Anchorage",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EndTimeKey,
+		GroupName = LocalizedStrings.AnchorageLabelKey,
 		Order = 4)]
 	public DateTime? EndTime
 	{
@@ -75,7 +79,8 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Explicit source wallet ID for custody operations.</summary>
 	[DataMember]
 	[Display(
-		Name = "Source wallet",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SourceWalletKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 0)]
 	public string SourceWalletId
@@ -87,7 +92,8 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Destination resource kind.</summary>
 	[DataMember]
 	[Display(
-		Name = "Destination type",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DestinationTypeKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 1)]
 	public AnchorageResourceTypes DestinationType
@@ -100,7 +106,8 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Destination resource identifier.</summary>
 	[DataMember]
 	[Display(
-		Name = "Destination ID",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DestinationIdKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 2)]
 	public string DestinationId
@@ -112,7 +119,8 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Transfer memo.</summary>
 	[DataMember]
 	[Display(
-		Name = "Memo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MemoKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 3)]
 	public string Memo
@@ -124,7 +132,8 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Deduct a same-asset network fee from the amount.</summary>
 	[DataMember]
 	[Display(
-		Name = "Deduct fee",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DeductFeeKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 4)]
 	public bool IsFeeDeducted
@@ -136,7 +145,8 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Use the Anchorage gas station when available.</summary>
 	[DataMember]
 	[Display(
-		Name = "Use gas station",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UseGasStationKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 5)]
 	public bool IsGasStationUsed
@@ -148,8 +158,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Existing staking position identifier.</summary>
 	[DataMember]
 	[Display(
-		Name = "Staking position",
-		GroupName = "Staking",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StakingPositionKey,
+		GroupName = LocalizedStrings.StakingKey,
 		Order = 0)]
 	public string StakingPositionId
 	{
@@ -160,8 +171,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Staking provider.</summary>
 	[DataMember]
 	[Display(
-		Name = "Staking provider",
-		GroupName = "Staking",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StakingProviderKey,
+		GroupName = LocalizedStrings.StakingKey,
 		Order = 1)]
 	public AnchorageStakingProviders StakingProvider
 	{
@@ -173,8 +185,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Provider delegation address.</summary>
 	[DataMember]
 	[Display(
-		Name = "Provider address",
-		GroupName = "Staking",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProviderAddressKey,
+		GroupName = LocalizedStrings.StakingKey,
 		Order = 2)]
 	public string StakingProviderAddress
 	{
@@ -185,8 +198,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Ethereum validator credential type.</summary>
 	[DataMember]
 	[Display(
-		Name = "Validator type",
-		GroupName = "Staking",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ValidatorTypeKey,
+		GroupName = LocalizedStrings.StakingKey,
 		Order = 3)]
 	public AnchorageValidatorTypes? ValidatorType
 	{
@@ -198,8 +212,9 @@ public sealed class AnchorageOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Unstake the complete position.</summary>
 	[DataMember]
 	[Display(
-		Name = "Full amount",
-		GroupName = "Staking",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FullAmountKey,
+		GroupName = LocalizedStrings.StakingKey,
 		Order = 4)]
 	public bool IsFullAmount
 	{
