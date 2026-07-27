@@ -52,6 +52,7 @@
     <ProjectReference Include="..\Digifinex\Digifinex.csproj" />
     <ProjectReference Include="..\Directa\Directa.csproj" />
     <ProjectReference Include="..\Drift\Drift.csproj" />
+	<ProjectReference Include="..\DukasCopyJForex\DukasCopyJForex.csproj" />
     <ProjectReference Include="..\DydxChain\DydxChain.csproj" />
     <ProjectReference Include="..\edgeX\EdgeX.csproj" />
     <ProjectReference Include="..\Exante\Exante.csproj" />

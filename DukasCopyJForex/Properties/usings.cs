@@ -22,7 +22,7 @@ global using global::Ecng.Serialization;
 
 global using global::Newtonsoft.Json;
 
-global using global::StockSharp.DukasCopyLive.Native;
+global using global::StockSharp.DukasCopyJForex.Native;
 global using global::StockSharp.Localization;
 global using global::StockSharp.Messages;
 

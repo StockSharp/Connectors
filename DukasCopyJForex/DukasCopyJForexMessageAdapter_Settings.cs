@@ -1,19 +1,19 @@
-namespace StockSharp.DukasCopyLive;
+namespace StockSharp.DukasCopyJForex;
 
 /// <summary>The message adapter for Dukascopy through the official JForex SDK.</summary>
 [MediaIcon(Media.MediaNames.dukascopy)]
-[Doc("topics/api/connectors/forex/dukascopy_live.html")]
+[Doc("topics/api/connectors/forex/dukascopy_jforex.html")]
 [Display(
 	ResourceType = typeof(LocalizedStrings),
-	Name = LocalizedStrings.DukasCopyLiveKey,
+	Name = LocalizedStrings.DukasCopyJForexKey,
 	Description = LocalizedStrings.ForexConnectorKey,
 	GroupName = LocalizedStrings.ForexKey)]
 [MessageAdapterCategory(MessageAdapterCategories.FX | MessageAdapterCategories.RealTime |
 	MessageAdapterCategories.Free | MessageAdapterCategories.History | MessageAdapterCategories.Level1 |
 	MessageAdapterCategories.MarketDepth | MessageAdapterCategories.Ticks |
 	MessageAdapterCategories.Candles | MessageAdapterCategories.Transactions)]
-[OrderCondition(typeof(DukasCopyLiveOrderCondition))]
-public partial class DukasCopyLiveMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IDemoAdapter
+[OrderCondition(typeof(DukasCopyJForexOrderCondition))]
+public partial class DukasCopyJForexMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IDemoAdapter
 {
 	/// <inheritdoc />
 	[Display(

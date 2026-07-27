@@ -58,7 +58,7 @@
     <Project Path="Directa/Directa.csproj" />
     <Project Path="DowJones/DowJones.csproj" />
     <Project Path="Drift/Drift.csproj" />
-    <Project Path="DukasCopyLive/DukasCopyLive.csproj" />
+	<Project Path="DukasCopyJForex/DukasCopyJForex.csproj" />
     <Project Path="DydxChain/DydxChain.csproj" />
     <Project Path="DxFeed/DxFeed.csproj" />
     <Project Path="DXtrade/DXtrade.csproj" />

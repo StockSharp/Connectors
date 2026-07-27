@@ -1,12 +1,12 @@
-namespace StockSharp.DukasCopyLive;
+namespace StockSharp.DukasCopyJForex;
 
 /// <summary>Dukascopy JForex order parameters.</summary>
 [Serializable]
 [DataContract]
 [Display(
 	ResourceType = typeof(LocalizedStrings),
-	Name = LocalizedStrings.DukasCopyLiveKey)]
-public class DukasCopyLiveOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
+	Name = LocalizedStrings.DukasCopyJForexKey)]
+public class DukasCopyJForexOrderCondition : OrderCondition, IStopLossOrderCondition, ITakeProfitOrderCondition
 {
 	/// <summary>Optional native command. Auto maps the StockSharp side and order type.</summary>
 	[DataMember]
@@ -16,10 +16,10 @@ public class DukasCopyLiveOrderCondition : OrderCondition, IStopLossOrderConditi
 		Description = LocalizedStrings.OrderConditionDescKey,
 		GroupName = LocalizedStrings.ParametersKey,
 		Order = 0)]
-	public DukasCopyLiveOrderCommands NativeCommand
+	public DukasCopyJForexOrderCommands NativeCommand
 	{
-		get => Parameters.TryGetValue(nameof(NativeCommand))?.To<DukasCopyLiveOrderCommands?>() ??
-			DukasCopyLiveOrderCommands.Auto;
+		get => Parameters.TryGetValue(nameof(NativeCommand))?.To<DukasCopyJForexOrderCommands?>() ??
+			DukasCopyJForexOrderCommands.Auto;
 		set => Parameters[nameof(NativeCommand)] = value;
 	}
 

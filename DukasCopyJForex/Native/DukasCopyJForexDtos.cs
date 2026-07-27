@@ -1,6 +1,6 @@
-namespace StockSharp.DukasCopyLive.Native;
+namespace StockSharp.DukasCopyJForex.Native;
 
-internal static class DukasCopyLiveBridgeCommands
+internal static class DukasCopyJForexBridgeCommands
 {
 	public const string Connect = "connect";
 	public const string Disconnect = "disconnect";
@@ -16,7 +16,7 @@ internal static class DukasCopyLiveBridgeCommands
 	public const string Account = "account";
 }
 
-internal static class DukasCopyLiveBridgeKinds
+internal static class DukasCopyJForexBridgeKinds
 {
 	public const string Response = "response";
 	public const string Tick = "tick";
@@ -26,7 +26,7 @@ internal static class DukasCopyLiveBridgeKinds
 	public const string Error = "error";
 }
 
-internal sealed class DukasCopyLiveBridgeRequest
+internal sealed class DukasCopyJForexBridgeRequest
 {
 	[JsonProperty("request_id")]
 	public long RequestId { get; set; }
@@ -95,7 +95,7 @@ internal sealed class DukasCopyLiveBridgeRequest
 	public string Comment { get; set; }
 }
 
-internal sealed class DukasCopyLiveBridgeMessage
+internal sealed class DukasCopyJForexBridgeMessage
 {
 	[JsonProperty("kind")]
 	public string Kind { get; set; }
@@ -107,31 +107,31 @@ internal sealed class DukasCopyLiveBridgeMessage
 	public string Error { get; set; }
 
 	[JsonProperty("instruments")]
-	public DukasCopyLiveInstrument[] Instruments { get; set; }
+	public DukasCopyJForexInstrument[] Instruments { get; set; }
 
 	[JsonProperty("ticks")]
-	public DukasCopyLiveTick[] Ticks { get; set; }
+	public DukasCopyJForexTick[] Ticks { get; set; }
 
 	[JsonProperty("bars")]
-	public DukasCopyLiveBar[] Bars { get; set; }
+	public DukasCopyJForexBar[] Bars { get; set; }
 
 	[JsonProperty("orders")]
-	public DukasCopyLiveOrder[] Orders { get; set; }
+	public DukasCopyJForexOrder[] Orders { get; set; }
 
 	[JsonProperty("tick")]
-	public DukasCopyLiveTick Tick { get; set; }
+	public DukasCopyJForexTick Tick { get; set; }
 
 	[JsonProperty("bar")]
-	public DukasCopyLiveBar Bar { get; set; }
+	public DukasCopyJForexBar Bar { get; set; }
 
 	[JsonProperty("order")]
-	public DukasCopyLiveOrder Order { get; set; }
+	public DukasCopyJForexOrder Order { get; set; }
 
 	[JsonProperty("account")]
-	public DukasCopyLiveAccount Account { get; set; }
+	public DukasCopyJForexAccount Account { get; set; }
 }
 
-internal sealed class DukasCopyLiveInstrument
+internal sealed class DukasCopyJForexInstrument
 {
 	[JsonProperty("symbol")] public string Symbol { get; set; }
 	[JsonProperty("name")] public string Name { get; set; }
@@ -144,7 +144,7 @@ internal sealed class DukasCopyLiveInstrument
 	[JsonProperty("min_trade_amount")] public decimal MinTradeAmount { get; set; }
 }
 
-internal sealed class DukasCopyLiveTick
+internal sealed class DukasCopyJForexTick
 {
 	[JsonProperty("symbol")] public string Symbol { get; set; }
 	[JsonProperty("time")] public long Time { get; set; }
@@ -160,7 +160,7 @@ internal sealed class DukasCopyLiveTick
 	[JsonProperty("total_bid_volume")] public decimal TotalBidVolume { get; set; }
 }
 
-internal sealed class DukasCopyLiveBar
+internal sealed class DukasCopyJForexBar
 {
 	[JsonProperty("symbol")] public string Symbol { get; set; }
 	[JsonProperty("period")] public string Period { get; set; }
@@ -177,7 +177,7 @@ internal sealed class DukasCopyLiveBar
 	[JsonProperty("ask_volume")] public decimal AskVolume { get; set; }
 }
 
-internal sealed class DukasCopyLiveOrder
+internal sealed class DukasCopyJForexOrder
 {
 	[JsonProperty("id")] public string Id { get; set; }
 	[JsonProperty("label")] public string Label { get; set; }
@@ -200,7 +200,7 @@ internal sealed class DukasCopyLiveOrder
 	[JsonProperty("message")] public string Message { get; set; }
 }
 
-internal sealed class DukasCopyLiveAccount
+internal sealed class DukasCopyJForexAccount
 {
 	[JsonProperty("account_id")] public string AccountId { get; set; }
 	[JsonProperty("user_name")] public string UserName { get; set; }

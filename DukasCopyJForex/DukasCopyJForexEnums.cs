@@ -1,8 +1,8 @@
-namespace StockSharp.DukasCopyLive;
+namespace StockSharp.DukasCopyJForex;
 
 /// <summary>Dukascopy JForex native order commands.</summary>
 [DataContract]
-public enum DukasCopyLiveOrderCommands
+public enum DukasCopyJForexOrderCommands
 {
 	/// <summary>Derive the JForex command from the StockSharp side and order type.</summary>
 	[EnumMember]
