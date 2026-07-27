@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package nubrafrontend;
+
+option csharp_namespace = "StockSharp.Nubra.Native.Protocol";
+
+message BatchWebSocketOrderbookMessage {
+  int64 timestamp = 1;
+  repeated WebSocketMsgOrderBook instruments = 2;
+}
+
+message WebSocketMsgOrderBook {
+  uint32 inst_id = 1;
+  int64 timestamp = 2;
+  repeated OrderBookLevel bids = 3;
+  repeated OrderBookLevel asks = 4;
+  int64 ltp = 5;
+  int64 ltq = 6;
+  int64 volume = 7;
+  int64 ref_id = 8;
+}
+
+message OrderBookLevel {
+  int64 price = 1;
+  int64 quantity = 2;
+  int64 orders = 3;
+}
