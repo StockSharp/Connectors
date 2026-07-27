@@ -1,35 +1,19 @@
-# Gopax Connector for StockSharp
+# Gopax Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **Gopax** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `GopaxMessageAdapter` message adapter, exposing Gopax market data and trading operations through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **Gopax connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Market data: tick trades, order book (market depth), Level1 (best bid/ask and last trade).
-- Data access over HTTP/REST.
-- Order registration, replacement and cancellation through the standard StockSharp transactional model.
-- Trading board code: `Gopax`.
+- Typical coverage: digital assets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-`GopaxMessageAdapter` is configured through the following properties:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `Key` – API key.
-- `Secret` – API secret used to sign requests.
-- `Address` – Connection endpoint address.
-
-## Usage
-
-```csharp
-var adapter = new GopaxMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_KEY".ToSecureString(),
-    Secret = "YOUR_SECRET".ToSecureString(),
-    Address = "...",
-};
-```
-
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data and send orders through the StockSharp API.
-
-## Documentation
-
-See the [Gopax connector documentation](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/gopax.html).
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Gopax and by the connected account or API plan.

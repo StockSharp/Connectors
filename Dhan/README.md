@@ -1,33 +1,21 @@
-# DhanHQ v2 connector
+# DhanHQ v2 Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the DhanHQ API v2 connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform.
+The **DhanHQ v2 connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Protocol coverage
+## Key capabilities
 
-- DhanHQ v2 REST endpoints for orders, trades, Forever/GTT orders, funds, positions, holdings, historical candles, and the official detailed instrument master.
-- Five-level depth from the normal full packet. Requests with `MaxDepth` up to 20 or 200 use the separate official full-depth WebSocket endpoints and require the corresponding Dhan data entitlement.
-- The dedicated order-update WebSocket at `wss://api-order-update.dhan.co` for realtime updates to all account orders.
-- Intraday candles at 1, 5, 15, 25, and 60 minutes, plus daily candles. Intraday ranges are split into the documented 90-day request windows.
+- Typical coverage: equities, futures, options, FX and CFDs, funds and ETFs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Market-data and full-depth packets are decoded directly from their documented binary layouts.
+## Typical use
 
-One normal market-feed connection accepts up to 5,000 instruments. The extended-depth feeds are limited to NSE equity and derivatives: up to 50 instruments for 20-level depth and one instrument for 200-level depth per connection. The connector enforces these limits before sending a subscription.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Authentication
-
-Configure the Dhan client ID and a current access token generated through Dhan Web. User-generated access tokens expire after 24 hours. Order placement, modification, cancellation, and Forever order operations require the static public IP registered with Dhan.
-
-Trading APIs are available to Dhan clients. Market-data APIs, including 20-level and 200-level depth, may require a separate paid subscription.
-
-## Security identifiers
-
-Run a security lookup before subscribing or trading. The connector stores `exchangeSegment|securityId` in `SecurityId.Native`, preserving segment identity when numeric security IDs overlap.
-
-## Official references
-
-- [DhanHQ API v2](https://dhanhq.co/docs/v2/)
-- [Live market feed](https://dhanhq.co/docs/v2/live-market-feed/)
-- [Full market depth](https://dhanhq.co/docs/v2/full-market-depth/)
-- [Orders](https://dhanhq.co/docs/v2/orders/)
-- [Forever orders](https://dhanhq.co/docs/v2/forever/)
-- [Official Python SDK](https://github.com/dhan-oss/DhanHQ-py)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by DhanHQ v2 and by the connected account or API plan.

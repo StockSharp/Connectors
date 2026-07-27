@@ -1,84 +1,19 @@
-# StockSharp Copper Connector
+# Copper Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with Copper custody portfolios and
-ClearLoop accounts through the official Copper Platform REST API. It publishes
-currency reference data, portfolio and wallet balances, ClearLoop delegated
-balances, withdrawals, internal transfers, cancellation, and order history.
+The **Copper connector** connects StockSharp to a digital-asset custody, settlement, or institutional service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Access
+## Key capabilities
 
-A commercial Copper account, an API key, and its HMAC secret are required.
-Select the environment that owns the account:
+- Typical coverage: digital assets, FX and CFDs.
+- Instrument discovery and provider reference data.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported account, transfer, and transaction workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-- production: `https://api.copper.co/platform`;
-- demo: `https://api.stage.copper.co/platform`;
-- testnet: `https://api.testnet.copper.co/platform`.
+## Typical use
 
-`ApiEndpoint` may be overridden for an approved Copper gateway or proxy, but
-it must use HTTPS and end in `/platform`. Each request sends `Authorization:
-Key <key>`, a Unix-millisecond `X-Timestamp`, and a lowercase HMAC-SHA256
-`X-Signature`. The signature covers the timestamp, uppercase HTTP method, exact
-path including `/platform` and its query, and the exact minified request body.
-The secret is retained as a `SecureString` and is never transmitted.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Supported operations
-
-- Copper currency discovery, including network and decimal metadata;
-- active custody, trading, external, and ClearLoop portfolio discovery;
-- total, available, locked, reserved, and staked wallet balances;
-- ClearLoop main and sub-account balances, including delegated, reserved, and
-  currently available-to-undelegate amounts;
-- external blockchain withdrawals to a one-time address;
-- withdrawals to approved Copper address-book entries;
-- transfers between Copper portfolios;
-- ClearLoop delegation and undelegation through the documented portfolio-to-
-  portfolio withdrawal order flow;
-- custody-order cancellation while Copper still permits it;
-- bounded order history and continuous lifecycle reconciliation;
-- recovery by `externalOrderId` when a create response is lost after Copper
-  accepted the operation.
-
-Standard portfolios are published as `Copper_<portfolio-id>`. ClearLoop client
-accounts are additionally published as
-`Copper_CL_<portfolio-id>_<client-account-id>`, preserving separate delegated
-balances for exchange main accounts and subaccounts.
-
-Submit a transfer as a conditional sell order with
-`CopperOrderCondition.IsWithdraw` set to `true`. Select `ExternalAddress`,
-`AddressBook`, or `Portfolio` as the destination. For an external address,
-provide `WithdrawInfo.CryptoAddress`; `WithdrawInfo.PaymentId` or `Memo` carries
-a destination tag. For an address-book entry or portfolio, set
-`DestinationId`. A local Copper portfolio name may be used as the destination,
-or its native Copper ID may be supplied directly.
-
-## Important boundaries
-
-Copper is custody, collateral, settlement, and off-exchange infrastructure. It
-does not expose a public execution-market feed or trading WebSocket through the
-Copper Platform API. The connector therefore does not fabricate quotes, ticks,
-candles, order books, or exchange fills. A StockSharp transaction represents a
-Copper custody order and its approval, signing, blockchain, delegation, or
-settlement lifecycle; it is not reported as an exchange trade.
-
-Trading against a venue with funds delegated through ClearLoop still takes
-place through that venue's own trading API. Copper REST polling reconciles
-wallets, delegated balances, and order state. Copper webhooks are inbound HTTPS
-callbacks and require a separately secured public receiver; a desktop adapter
-does not open such an endpoint.
-
-Copper policies, user approvals, co-signing, address whitelists, settlement
-eligibility, and account permissions remain authoritative. A successfully
-submitted order can remain pending or require an action before it reaches a
-terminal state.
-
-## Official documentation
-
-- [Copper Developer Portal](https://developer.copper.co/)
-- [API authentication](https://developer.copper.co/api-reference/authentication)
-- [Copper Platform OpenAPI schema](https://developer.copper.co/copper-open-api-public.json)
-- [Fetch portfolios](https://developer.copper.co/api-reference/portfolios/get-portfolios)
-- [Fetch wallets](https://developer.copper.co/api-reference/wallets/get-wallets)
-- [Create an order](https://developer.copper.co/api-reference/orders/create-order)
-- [Delegate funds through ClearLoop](https://developer.copper.co/guides/clearloop/delegate-funds)
-- [Undelegate funds through ClearLoop](https://developer.copper.co/guides/clearloop/undelegate-funds)
-- [Fetch ClearLoop balances](https://developer.copper.co/api-reference/clearloop/get-clearloop-balances)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Copper and by the connected account or API plan.

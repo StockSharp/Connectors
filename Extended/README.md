@@ -1,31 +1,21 @@
-# Extended connector for StockSharp
+# Extended Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates the current official Extended Starknet REST v1 and
-WebSocket RPC v2 APIs for spot and perpetual markets.
+The **Extended connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported functionality:
+## Key capabilities
 
-- market discovery and current market statistics;
-- live Level1, sequence-checked full order-book updates, and public trades;
-- recent public trades, historical candles, and live candles;
-- authenticated balances, spot balances, positions, orders, and fills;
-- Starknet SNIP-12 signed limit, market, and conditional order entry;
-- cancellation, mass cancellation, and atomic cancel-and-replace;
-- mainnet and official Sepolia testnet endpoints.
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data requires no credentials. `Key` enables read-only account
-data. Trading additionally requires the Stark private key belonging to the L2
-key returned by Extended for the active account. The connector reads the
-account vault and public Stark key from the authenticated account endpoint and
-validates the private key before enabling order entry.
+## Typical use
 
-Official resources:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- [Extended API documentation](https://api.docs.extended.exchange/)
-- [Official Extended Python SDK](https://github.com/x10xchange/python_sdk)
-- [Official Extended Stark crypto wrapper](https://github.com/x10xchange/stark-crypto-wrapper-py)
-- [Extended brand kit](https://docs.extended.exchange/extended-resources/more/brand-kit)
-- [StockSharp Extended connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/extended.html)
-
-Extended and its marks are trademarks of their respective owner. StockSharp
-is not affiliated with or endorsed by Extended.
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Extended and by the connected account or API plan.

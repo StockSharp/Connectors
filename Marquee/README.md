@@ -1,42 +1,19 @@
-# Goldman Sachs Marquee connector for StockSharp
+# Goldman Sachs Marquee Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This connector provides native .NET access to the published Goldman Sachs Developer APIs used by Marquee and GS Quant. It talks directly to the official REST services and does not embed Python or invoke the `gs-quant` package.
+The **Goldman Sachs Marquee connector** connects StockSharp to a professional market-data and analytics service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Supported functionality
+## Key capabilities
 
-- OAuth 2.0 client-credentials authentication with automatic token renewal.
-- Production and official QA environments.
-- Entitlement-aware cross-asset security lookup through the Asset Service, including scrolling through large result sets.
-- Ticker, Marquee identifier, asset class, product type, currency, exchange, MIC, and common cross-reference identifiers.
-- Level 1 snapshots from the highest-ranked entitled provider for bid, ask, midpoint, trade, open, high, low, close, and volume fields.
-- Native end-of-day OHLCV history at the one-day time frame.
-- Automatic discovery of the dataset supplying each requested field through the measures-availability endpoint.
-- Merging of fields when Goldman Sachs serves OHLCV measures from different entitled datasets.
+- Typical coverage: equities, futures, options, FX and CFDs, bonds and fixed income, funds and ETFs, commodities, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- This adapter is intended for market data and does not route orders.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Key` - application identifier created in the Goldman Sachs Developer application portal.
-- `Secret` - corresponding OAuth application secret.
-- `IsDemo` - uses the official QA environment when enabled and production when disabled.
+Use this connector to feed charts, market-data storage, analytics, research workflows, and strategy testing with provider data.
 
-The connector requests the default read-only GS Quant scopes: `read_content`, `read_product_data`, `read_financial_data`, and `read_user_profile`. The application still receives only the datasets and identifiers enabled by its Goldman Sachs entitlements.
-
-## Data model and limitations
-
-Marquee datasets are entitlement-driven. The connector first requests `/data/measures/{assetId}/availability`, chooses the highest-ranked provider for each field, and then queries the selected dataset.
-
-The published generic data contract does not define a streaming WebSocket or a universal brokerage order lifecycle. Consequently, Level 1 is exposed as a completed REST snapshot, candles are historical end-of-day data, and the connector does not advertise fabricated streaming or transaction support. Goldman Sachs may expose additional execution services to an institution under separate onboarding documentation; those client-specific contracts are outside this connector.
-
-The QA environment is intended for testing institutional integrations. It is not a public retail paper-trading account. Market-data availability, latency, history, symbology, and licenses depend on the application's entitlements.
-
-## Official documentation
-
-- [Goldman Sachs Developer](https://developer.gs.com/)
-- [GS Quant authentication and OAuth sessions](https://developer.gs.com/docs/gsquant/authentication/gs-session/)
-- [Assets and Security Master](https://developer.gs.com/docs/gsquant/markets/assets-and-security-master/)
-- [Querying datasets](https://developer.gs.com/docs/gsquant/data/accessing-data/querying-data/)
-- [Dataset model and limits](https://developer.gs.com/docs/gsquant/data/data-environment/datasets/)
-- [Official open-source GS Quant SDK](https://github.com/goldmansachs/gs-quant)
-- [StockSharp Goldman Sachs Marquee connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/marquee.html)
-
-Goldman Sachs, Marquee, GS Quant, and their marks are trademarks of their respective owner. StockSharp is not affiliated with or endorsed by Goldman Sachs.
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Goldman Sachs Marquee and by the connected account or API plan.

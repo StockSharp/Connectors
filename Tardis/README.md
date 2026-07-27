@@ -1,69 +1,20 @@
-# StockSharp Tardis.dev Connector
+# Tardis.dev Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with the Tardis.dev instrument metadata
-API and the official open-source Tardis Machine. It provides one consistent
-adapter for normalized historical replay and real-time exchange streams. It is
-a market-data connector and does not submit orders.
+The **Tardis.dev connector** connects StockSharp to a digital-asset market-data and analytics service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Architecture and access
+## Key capabilities
 
-`Token` is a Tardis.dev Pro or Business API key. The connector sends it only in
-the documented `Authorization: Bearer` header to the HTTPS cloud metadata API.
-`Exchange` is one exact Tardis exchange ID, such as `binance`,
-`binance-futures`, `deribit`, or `bitmex`. At connection time the adapter loads
-`/v1/instruments/{exchange}`, including inactive and expired instruments, tick
-sizes, amount increments, contract multipliers, currencies, strikes, option
-types, and collection availability ranges. Reused exchange symbols retain the
-full Tardis metadata identity in the native StockSharp security ID.
+- Typical coverage: digital assets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Real-time subscriptions through the provider's streaming transport.
+- This adapter is intended for market data and does not route orders.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Normalized replay and live data are served by a locally running Tardis Machine.
-Its default endpoints are `http://localhost:8000/` and
-`ws://localhost:8001/`. Start the official Docker image or npm package with its
-own `TM_API_KEY`/`--api-key`; that credential remains inside Tardis Machine and
-is not placed in connector URLs. Historical replay is then downloaded and
-cached by the machine, while real-time normalized streams connect directly to
-the selected exchange. Exchange-specific credentials required by restricted
-live channels are also configured on Tardis Machine, as documented upstream.
+## Typical use
 
-## Market data
+Use this connector to feed charts, market-data storage, analytics, research workflows, and strategy testing with provider data.
 
-The connector supports:
-
-- security lookup from the Tardis instrument metadata API;
-- tick-by-tick trades from normalized `trade` messages;
-- L2 snapshots and incremental changes from `book_change` messages;
-- best bid/ask plus derivative last, index, mark, and open-interest values as
-  StockSharp Level 1 data;
-- time-based trade bars at 1, 5, 10, and 30 seconds; 1, 5, 15, and 30 minutes;
-  1 and 4 hours; and 1 day.
-
-Historical subscriptions use the streaming HTTP `replay-normalized` endpoint;
-the response is parsed line by line with a bounded NDJSON line size, rather
-than buffered as one response. Live subscriptions use
-`ws-stream-normalized`. Identical symbol/data-type subscriptions share one
-WebSocket. A finite StockSharp `Count` closes a live subscription after the
-requested number of emitted messages.
-
-`HistoryLimit` caps emitted replay messages. `HistoryLookback` supplies a range
-when no start is given, and `MaximumReplaySpan` prevents accidentally requesting
-an unbounded tick-level backfill. Tardis `quote` reconstruction needs the
-initial book state from midnight UTC, so Level 1 replay starts internally at
-that boundary and filters pre-request output. Exchange and local timestamps are
-parsed as UTC; the exchange timestamp is preferred. Order-book zero amounts are
-preserved only for incremental removals. Trade bars are validated against the
-requested interval before finished StockSharp candles are emitted.
-
-Funding rates and predicted funding rates have no exact StockSharp Level 1 field and are therefore not mislabeled as another metric. Raw exchange-native feeds, downloadable CSV datasets, liquidations, and option-summary greeks are also left out because this adapter consumes the documented normalized types with exact StockSharp equivalents.
-
-## Official documentation
-
-- [Tardis.dev documentation](https://docs.tardis.dev/)
-- [Instruments metadata API](https://docs.tardis.dev/api/instruments-metadata-api)
-- [Cloud HTTP API](https://docs.tardis.dev/api/http-api-reference)
-- [Tardis Machine quickstart](https://docs.tardis.dev/tardis-machine/quickstart)
-- [Historical normalized replay](https://docs.tardis.dev/tardis-machine/replaying-historical-data)
-- [Real-time normalized streaming](https://docs.tardis.dev/tardis-machine/streaming-real-time-data)
-- [Normalized data types](https://docs.tardis.dev/tardis-machine/data-types)
-- [Downloadable CSV datasets](https://docs.tardis.dev/downloadable-csv-files/overview)
-- [Official Tardis Machine repository](https://github.com/tardis-dev/tardis-machine)
-- [Tardis.dev website](https://tardis.dev/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Tardis.dev and by the connected account or API plan.

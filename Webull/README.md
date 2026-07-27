@@ -1,38 +1,20 @@
-# Webull Connector for StockSharp
+# Webull Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Webull OpenAPI connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements all three Webull transports: HTTP for requests and subscription control, MQTT/TLS for live market data, and gRPC for trade events.
+The **Webull connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Streaming Level1 snapshots and best bid/ask updates.
-- Streaming market depth and tick trades.
-- Security lookup, account balances and positions.
-- Stock order registration and cancellation.
-- Real-time order-status events through gRPC.
-- Production and sandbox environments for HTTP, MQTT and gRPC.
+- Typical coverage: equities.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Key` and `Secret` — Webull OpenAPI application credentials.
-- `Token` — optional reusable access token when account verification requires it.
-- `Account` — trading account identifier; when omitted, accounts are requested from Webull.
-- `IsDemo` — enables the Webull sandbox HTTP environment.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Usage
-
-```csharp
-var adapter = new WebullMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_APP_KEY".ToSecureString(),
-    Secret = "YOUR_APP_SECRET".ToSecureString(),
-    Token = "YOUR_ACCESS_TOKEN".ToSecureString(),
-    Account = "YOUR_ACCOUNT_ID",
-};
-```
-
-## Documentation
-
-- [StockSharp Webull connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/webull.html)
-- [Official Webull OpenAPI documentation](https://developer.webull.com/apis/docs/)
-- [Webull OpenAPI protocols](https://developer.webull.com/apis/docs/about-open-api/)
-- [Webull SDKs, endpoints and environments](https://developer.webull.com/apis/docs/sdk/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Webull and by the connected account or API plan.

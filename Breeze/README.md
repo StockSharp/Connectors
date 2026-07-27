@@ -1,26 +1,21 @@
-# ICICI Direct Breeze API connector
+# ICICI Direct Breeze API Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with the current ICICI Direct Breeze API for NSE cash and NSE equity derivatives.
+The **ICICI Direct Breeze API connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- REST v1 authentication using the Breeze API key, secret key, daily API session, timestamp, and SHA-256 checksum;
-- official NSE and NFO security master with equities, futures, and options;
-- live Level 1, trades, and five-level order books over the Breeze Socket.IO market feed;
-- historical candles for 1 second, 1 minute, 5 minutes, 30 minutes, and 1 day;
-- live 1-second, 1-minute, 5-minute, and 30-minute OHLC updates over the dedicated OHLC Socket.IO feed;
-- order placement, modification, cancellation, status, and trades;
-- real-time order notifications;
-- funds, positions, and holdings.
+- Typical coverage: equities, futures, options, funds and ETFs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Connection
+## Typical use
 
-Create an application in the Breeze portal and configure `Key`, `Secret`, and the daily `ApiSession`. The API session expires every trading day and must be regenerated through the ICICI Direct login flow. Order operations also require the static public IP registered with ICICI Direct.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Market orders are intentionally rejected: the current Breeze trading rules require an explicit limit price. Margin and Option Plus order flows are outside the connector's regular order lifecycle.
-
-The connector enforces the published 2,000-instrument combined live/OHLC subscription limit. ICICI Direct additionally applies 100 REST requests per minute, 5,000 REST requests per day, and a combined order-operation rate limit of 10 requests per second.
-
-Official documentation: https://api.icicidirect.com/breezeapi/documents/index.html
-
-Official SDK: https://github.com/Idirect-Tech/Breeze-Python-SDK
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by ICICI Direct Breeze API and by the connected account or API plan.

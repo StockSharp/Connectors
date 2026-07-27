@@ -1,49 +1,21 @@
 # Tapbit Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Tapbit Spot V2 and USDT perpetual markets through
-the current production REST and WebSocket APIs.
+The **Tapbit connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of Spot and USDT perpetual instruments with native price,
-  quantity, contract-multiplier, leverage, and order-size metadata;
-- Level1 snapshots and realtime ticker updates, including mark price, index
-  price, and open interest where Tapbit publishes them;
-- REST order-book snapshots and stateful realtime order books built from the
-  documented WebSocket snapshot and incremental-update protocol;
-- recent public trades and realtime delivery through bounded REST polling;
-- historical OHLCV candles and realtime candle updates for every interval
-  published by Tapbit;
-- Spot V2 API-key authentication, balances, limit-order registration,
-  individual and batch cancellation, open orders, historical orders, and
-  order lookup;
-- safe read retries, exact-query signing, documented request pacing,
-  WebSocket subscription recovery, heartbeat replies, and response limits.
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data does not require credentials. Private Spot operations
-require a Tapbit API key and secret, KYC eligibility, the permissions selected
-for that key, and any IP whitelist configured in the Tapbit firewall.
+## Typical use
 
-Tapbit's current public USDT perpetual documentation exposes market-data REST
-and WebSocket endpoints, but no private account, position, or order contract.
-Consequently, this connector provides futures market data and implements
-trading only for the officially documented Spot V2 API. Futures trading is not
-emulated through undocumented or reverse-engineered endpoints. Tapbit states
-that futures API access is application-based and subject to eligibility
-requirements.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-The Spot V2 order endpoint documents limit orders only and does not expose a
-client-order ID, replace operation, or private execution stream. The connector
-therefore rejects unsupported order types and polls the documented REST order
-state instead of inventing protocol fields.
-
-Official resources:
-
-- [Tapbit Open API documentation](https://www.tapbit.com/openapi-docs/)
-- [Spot V2 base endpoint](https://www.tapbit.com/openapi-docs/spot_v2/general_info/base_endpoint/)
-- [Spot V2 signing](https://www.tapbit.com/openapi-docs/spot_v2/general_info/signature_method/)
-- [Spot V2 market data](https://www.tapbit.com/openapi-docs/spot_v2/public/trade_pair_list/)
-- [Spot V2 place order](https://www.tapbit.com/openapi-docs/spot_v2/private/order/)
-- [Spot WebSocket order book](https://www.tapbit.com/openapi-docs/spot/ws/order_book/)
-- [USDT perpetual market data](https://www.tapbit.com/openapi-docs/usdt_perpetual/public/exchange_info/)
-- [USDT perpetual WebSocket](https://www.tapbit.com/openapi-docs/usdt_perpetual/ws/ws_general_info/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Tapbit and by the connected account or API plan.

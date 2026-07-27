@@ -1,44 +1,20 @@
-# StockSharp Tiger Brokers OpenAPI connector
+# Tiger Brokers OpenAPI Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This connector integrates StockSharp with Tiger Brokers OpenAPI through the official C# SDK. Signed account and quote requests use the OpenAPI request clients, while realtime market data, order events, executions, positions, and assets use the SDK's persistent TLS/TCP Protobuf push channel.
+The **Tiger Brokers OpenAPI connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Configuration
+## Key capabilities
 
-- `TigerId` is the developer identifier shown on the Tiger OpenAPI developer page.
-- `Account` is the live or paper account identifier used by default for trading and portfolio requests.
-- `License` selects the Tiger entity that issued the credentials: New Zealand, Singapore, Australia, or Hong Kong.
-- `PrivateKey` is the PKCS#8 RSA private key issued for the OpenAPI application.
-- `Token` is required by entities that use token authentication, including TBHK. Leave it empty only when the selected entity does not require it.
-- `AutoGrabPermission` asks the SDK to acquire the account's available quote permission when the push connection opens.
+- Typical coverage: equities, futures, options, FX and CFDs, funds and ETFs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Treat the private key and token as credentials. Do not write them to logs or source control. Token validity and renewal rules depend on the selected Tiger entity; the connector does not persist or automatically replace credentials.
+## Typical use
 
-## Supported operations
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- stock lookup for the US, Hong Kong, Singapore, Australia, and mainland China markets;
-- futures exchange, contract, and direct contract lookup;
-- option expiration and chain lookup when `UnderlyingSecurityId` is supplied;
-- realtime Level1 for stocks, options, and futures;
-- realtime stock depth and best bid/offer depth for options and futures;
-- realtime stock ticks and one-minute stock candles;
-- historical stock, futures, and option candles for the intervals supported by each native endpoint;
-- market, limit, stop, stop-limit, and trailing orders, including fractional quantities supported by the account;
-- order replacement and cancellation;
-- REST recovery plus realtime push updates for orders and executions;
-- account assets and positions through initial REST snapshots and realtime push updates.
-
-Tiger OpenAPI does not expose the same feeds or candle intervals for every asset class. In particular, tick push and live candle push are stock-only, live candles are one minute, and option discovery requires an underlying symbol. Historical candle requests are capped at 300 records per connector request. Quote depth, exchanges, sessions, order types, and fractional trading remain subject to the selected market and account permissions.
-
-## Push connection and limits
-
-The official SDK owns a single persistent push client per process. The connector therefore rejects a second simultaneous Tiger push connection in the same process. The SDK handles transport reconnects; after each connection acknowledgement the connector restores every active market-data subscription and the account subjects for orders, executions, positions, and assets.
-
-Tiger controls realtime quote permissions and subscription capacity per account, market-data package, and broker entity. `AutoGrabPermission` can acquire an available permission, but it cannot create an entitlement. REST and trading rate limits are enforced by Tiger and may vary by endpoint or account, so applications must honor current API errors and broker policy.
-
-## Official references
-
-- [Tiger OpenAPI C# introduction](https://quant.itigerup.com/openapi/en/csharp/overview/introduction.html)
-- [Tiger OpenAPI C# subscriptions](https://quant.itigerup.com/openapi/en/csharp/operation/subscribe/subscribeList.html)
-- [Official Tiger OpenAPI C# SDK](https://github.com/tigerfintech/openapi-cs-sdk)
-
-Verify current Tiger documentation, market-data entitlements, and the regulations applicable to the account before production deployment.
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Tiger Brokers OpenAPI and by the connected account or API plan.

@@ -1,25 +1,21 @@
 # ProBit Global Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates ProBit Global spot markets through the official REST,
-OAuth 2.0, and WebSocket APIs.
+The **ProBit Global connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- spot-market discovery with price and quantity increments;
-- Level1 quotes, order-book snapshots, public trades, and time-frame candles;
-- realtime ticker, order-book, trade, and candle updates;
-- balances, open orders, order history, and account trade history;
-- realtime private balance, order, and account trade updates;
-- limit and market orders with GTC or IOC execution;
-- individual cancellation and filtered group cancellation.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data does not require credentials. Trading and private data use
-the OAuth client ID and client secret configured through `Key` and `Secret`.
-A market buy requires its quote-currency amount in
-`ProBitOrderCondition.QuoteAmount`; other orders use the regular StockSharp
-volume.
+## Typical use
 
-Official resources:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- [ProBit Global API documentation](https://docs-en.probit.com/)
-- [ProBit Global API credentials](https://www.probit.com/en-us/my-page/api-management/api-credential)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by ProBit Global and by the connected account or API plan.

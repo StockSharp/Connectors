@@ -1,41 +1,21 @@
 # Coinbase Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This folder contains the **Coinbase** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) platform. The implementation provides both market data and transactional access to the Coinbase Advanced Trade API. It can be used as a reference for creating your own connectors or as a ready‑to‑use adapter in your trading application.
+The **Coinbase connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Real‑time data streaming through a websocket connection.
-- Historical data and trading operations via REST.
-- Supports ticks, order book updates, Level1 information and time frame candles.
-- Order support for market, limit and stop orders.
-- Withdraw operations via a custom order condition.
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books, candles and order-log events.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Usage
+## Typical use
 
-1. Obtain an API **Key**, **Secret** and **Passphrase** from your Coinbase account.
-2. Create a `CoinbaseMessageAdapter` and assign your credentials:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-```csharp
-var adapter = new CoinbaseMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_KEY".ToSecureString(),
-    Secret = "YOUR_SECRET".ToSecureString(),
-    Passphrase = "YOUR_PASSPHRASE".ToSecureString()
-};
-```
-3. Add the adapter to the `Connector` or other S# component and connect as usual.
-
-Market data subscriptions and order commands are handled through the standard S# message model. Live candle updates are available for the 5‑minute timeframe, other periods are built from ticks.
-
-## Implementation Notes
-
-The adapter relies on two helper classes:
-
-- `HttpClient` for REST requests (base URL `https://api.coinbase.com/api`).
-- `SocketClient` for websocket streaming (`wss://advanced-trade-ws.coinbase.com`).
-
-Message authentication is done through `Authenticator`, which signs requests using your secret key.
-
-The adapter is associated with the trading board code `CNBS`.
-
-For more information see the [Coinbase connector documentation](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/coinbase.html).
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Coinbase and by the connected account or API plan.

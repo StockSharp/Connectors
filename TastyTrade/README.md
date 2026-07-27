@@ -1,31 +1,21 @@
-# tastytrade Connector for StockSharp
+# tastytrade Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the tastytrade Open API connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It uses the official REST API for OAuth, reference and account data, the account WebSocket streamer for brokerage updates, and DXLink for live market data.
+The **tastytrade connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Equity, equity-option, futures, futures-option and cryptocurrency instruments.
-- Real-time Level1 quotes and trades over DXLink.
-- Historical and live time-frame candles over DXLink time-series subscriptions.
-- Brokerage accounts, balances and positions.
-- Order registration, replacement and cancellation.
-- Native multi-leg option and futures-option orders through `TastyTradeOrderCondition.Legs`.
-- Live order, fill, balance and position updates.
-- Production and sandbox environments.
-- Automatic OAuth access-token refresh from the configured refresh token.
+- Typical coverage: digital assets, equities, futures, options.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Token` — OAuth refresh token issued by tastytrade.
-- `ClientSecret` — OAuth client secret associated with the refresh token.
-- `Scopes` — OAuth scopes to request while refreshing (`Read`, `Trade`, or both).
-- `IsDemo` — selects the tastytrade sandbox REST and account-streamer endpoints.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Documentation
-
-- [StockSharp tastytrade connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/tastytrade.html)
-- [Official tastytrade developer documentation](https://developer.tastytrade.com/)
-- [Official Open API specifications](https://developer.tastytrade.com/open-api-spec/)
-- [Streaming market data](https://developer.tastytrade.com/streaming-market-data/)
-- [Streaming account data](https://developer.tastytrade.com/streaming-account-data/)
-- [Official JavaScript SDK](https://github.com/tastytrade/tastytrade-api-js)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by tastytrade and by the connected account or API plan.

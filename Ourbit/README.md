@@ -1,61 +1,21 @@
-# Ourbit connector for StockSharp
+# Ourbit Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Ourbit spot and USDT-margined perpetual futures through
-the exchange's current REST and WebSocket APIs. Public market data works without
-credentials; portfolios, orders, fills, positions, and trading require an API
-key and secret.
+The **Ourbit connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Supported functionality
+## Key capabilities
 
-- spot instruments on `BoardCodes.Ourbit` (`OURBT`);
-- perpetual futures on `BoardCodes.OurbitFutures` (`OURBF`);
-- security lookup with price step, volume step, minimum volume, and futures
-  contract multiplier metadata;
-- Level1, L2 order books, tick trades, and exchange candles through REST and
-  official WebSocket streams;
-- order-book snapshot recovery after a futures sequence gap;
-- spot balances and futures balances and positions;
-- active and historical orders and fills;
-- limit, market, post-only, IOC, and FOK orders where supported by the selected
-  market;
-- individual and group cancellation;
-- private spot account, order, and fill streams;
-- private futures asset, position, order, and fill streams;
-- heartbeat, reconnect, and subscription restoration.
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Ourbit does not expose an atomic order-replace operation, so replacement is
-reported as unsupported. Trading writes are never retried automatically. If a
-write fails after it may have reached the exchange, inspect exchange state
-before submitting it again.
+## Typical use
 
-## Configuration
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-```csharp
-var adapter = new OurbitMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_API_KEY".ToSecureString(),
-    Secret = "YOUR_API_SECRET".ToSecureString(),
-    Sections = [OurbitSections.Spot, OurbitSections.Futures],
-};
-```
-
-Default endpoints:
-
-- spot REST: `https://api.ourbit.com`;
-- spot WebSocket: `wss://wbs.ourbit.com/ws`;
-- futures REST: `https://futures.ourbit.com/api/v1`;
-- futures WebSocket: `wss://futures.ourbit.com/edge`.
-
-The spot WebSocket permits at most 30 public channels on one connection. The
-connector enforces this limit. Futures quantities are exchange contract units;
-the instrument multiplier is published through StockSharp security metadata.
-
-## Official documentation
-
-- [Ourbit Spot API](https://ourbitdevelop.github.io/apidocs/spot_v3_en/)
-- [Ourbit Futures API](https://ourbitdevelop.github.io/apidocs/contract_en/)
-- [Official Ourbit API examples](https://github.com/ourbitdevelop/ourbit-api-demo)
-- [StockSharp Ourbit connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/ourbit.html)
-
-Ourbit and its marks are trademarks of their respective owner. StockSharp is
-not affiliated with or endorsed by Ourbit.
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Ourbit and by the connected account or API plan.

@@ -1,31 +1,21 @@
 # CoinJar Exchange Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates CoinJar Exchange spot markets through the current
-Trading REST API, Market Data REST API, and official Phoenix WebSocket feed.
+The **CoinJar Exchange connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- active-product discovery with native currency metadata and dynamic price
-  levels;
-- Level1, Level2 order books, public trades, and OHLCV candle history;
-- realtime tickers, trades, and incremental order books through WebSocket;
-- explicit order-book snapshots and automatic recovery after reconnects;
-- cash accounts, open and historical orders, and fills;
-- realtime private account, order, and fill events through WebSocket;
-- market, limit, and stop-limit orders;
-- GTC, IOC, maker-or-cancel (post-only), auction-only, individual cancellation,
-  and filtered bulk cancellation.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-An API token is optional for public market data. Trading, balances, and the
-private WebSocket channel require a CoinJar Exchange API token. Grant only the
-permissions needed by the application.
+## Typical use
 
-CoinJar uses price-dependent tick and minimum trade sizes. StockSharp security
-metadata exposes the currency subunit as the baseline step, while every order
-is validated against the exact exchange price level before it is submitted.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official documentation:
-
-- [CoinJar Exchange API documentation](https://docs.exchange.coinjar.com/)
-- [REST API reference](https://docs.exchange.coinjar.com/reference/)
-- [WebSocket data-feed guide](https://docs.exchange.coinjar.com/reference/getting-started-data-feed)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by CoinJar Exchange and by the connected account or API plan.

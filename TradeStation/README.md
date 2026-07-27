@@ -1,28 +1,21 @@
-# TradeStation Connector for StockSharp
+# TradeStation Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the TradeStation API v3 connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. REST endpoints are used for reference data, historical bars and order management; TradeStation HTTP streams are used for live quotes, orders and positions.
+The **TradeStation connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Real-time Level1 quotes over the official HTTP streaming API.
-- Historical time-frame candles.
-- Symbol details for stocks, options, futures, indexes, forex and crypto pairs supported by TradeStation.
-- Brokerage accounts, balances and positions.
-- Order registration, replacement and cancellation.
-- Live order, execution and position updates.
-- Live and SIM paper-trading environments.
+- Typical coverage: equities, futures, options, FX and CFDs, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Token` — OAuth access token with `MarketData`, `ReadAccount` and `Trade` scopes.
-- `IsDemo` — selects `https://sim-api.tradestation.com/v3` instead of the live API.
-- `DefaultRoute` — order route; `Intelligent` is used by default.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-TradeStation access tokens expire. The application is responsible for obtaining and refreshing the OAuth token before reconnecting the adapter.
-
-## Documentation
-
-- [StockSharp TradeStation connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/tradestation.html)
-- [Official TradeStation API documentation](https://api.tradestation.com/docs/)
-- [Official API v3 specification](https://api.tradestation.com/docs/specification/)
-- [SIM and live environments](https://api.tradestation.com/docs/fundamentals/sim-vs-live/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by TradeStation and by the connected account or API plan.

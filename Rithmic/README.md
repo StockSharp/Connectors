@@ -1,23 +1,21 @@
-# Rithmic Connector for StockSharp
+# Rithmic Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Rithmic protobuf/WebSocket connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform.
+The **Rithmic connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Symbol search and reference data.
-- Streaming tick trades, Level1 quotes and market depth.
-- Futures and options market data.
-- Order registration, modification and cancellation.
-- Real-time order, portfolio, position and P&L updates.
-- Separate Rithmic ticker, order, history and P&L plant sessions.
+- Typical coverage: futures, options.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Login` — Rithmic user login.
-- `Password` — Rithmic user password.
-- `SystemName` — Rithmic system name assigned to the account.
-- `ServerAddress` — secure Rithmic WebSocket endpoint (`wss://...`).
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Documentation
-
-- [StockSharp Rithmic connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/rithmic.html)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Rithmic and by the connected account or API plan.

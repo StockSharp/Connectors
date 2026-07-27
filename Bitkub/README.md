@@ -1,18 +1,21 @@
 # Bitkub Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector provides access to Bitkub spot markets through the current REST v3/v4 APIs and public and private WebSocket APIs.
+The **Bitkub connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- security lookup;
-- Level1 market data, market depth, and public trades;
-- recent REST snapshots and live public WebSocket updates;
-- portfolio balances through Wallet API v4;
-- market and limit order registration, cancellation, and order status updates;
-- authenticated private WebSocket order and match notifications.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Market-buy orders on Bitkub are submitted as a quote-currency spending amount. Set `BitkubOrderCondition.QuoteAmount` explicitly for those orders. Limit-buy spending amounts are calculated from the requested base volume and price.
+## Typical use
 
-API credentials are optional for public market data and required for portfolio and transaction operations.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official API documentation: [bitkub-official-api-docs](https://github.com/bitkub/bitkub-official-api-docs).
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Bitkub and by the connected account or API plan.

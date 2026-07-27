@@ -1,38 +1,20 @@
-# Bloomberg Connector for StockSharp
+# Bloomberg Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This connector integrates StockSharp with the official Bloomberg BLPAPI .NET SDK and, when enabled, the Bloomberg EMSX API. It does not redistribute Bloomberg libraries, schemas, credentials, or market data.
+The **Bloomberg connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Real-time Bloomberg Level1 quotes and trades through `//blp/mktdata` subscriptions.
-- Exact Bloomberg-security lookup through `ReferenceDataRequest`.
-- Intraday minute bars through `IntradayBarRequest`.
-- Daily, weekly, and monthly history through `HistoricalDataRequest`.
-- EMSX order registration and routing, modification, and route cancellation.
-- Live EMSX order, route, and fill updates.
+- Typical coverage: equities, futures, options, FX and CFDs, bonds and fixed income, funds and ETFs, commodities, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Requirements
+## Typical use
 
-- Bloomberg Terminal API or Server API access with the required market-data entitlements.
-- The official Bloomberg BLPAPI .NET SDK and its matching native runtime libraries.
-- EMSX enablement, ETORSA acceptance, UUID authorization, and broker approval for order routing.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Bloomberg does not publish the official .NET SDK as a public NuGet dependency. Install it from the Bloomberg API Library, then set `SdkPath` to `Bloomberglp.Blpapi.dll` or its directory. The default Desktop API endpoint is `localhost:8194`.
-
-## Configuration
-
-- `ServerAddress` — BLPAPI host and port.
-- `SdkPath` — path to `Bloomberglp.Blpapi.dll` or its containing directory.
-- `IsEmsxEnabled` — opens the EMSX service and subscribes to order and route updates.
-- `EmsxService` — EMSX service name; production defaults to `//blp/emapisvc`.
-- `Broker` — EMSX broker destination used for routed orders.
-
-Security codes must be Bloomberg ticker strings, for example `IBM US Equity`. Security lookup is intentionally exact-symbol only; BLPAPI does not expose an unrestricted entitled universe enumeration. Market depth, historical ticks, cash balances, and positions are not advertised by this connector. Availability of fields and instruments always follows the connected Bloomberg user's entitlements.
-
-## Documentation
-
-- [StockSharp Bloomberg connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/bloomberg.html)
-- [Official Bloomberg BLPAPI documentation](https://bloomberg.github.io/blpapi-docs/)
-- [Official Bloomberg API Library downloads](https://www.bloomberg.com/professional/support/api-library/)
-- [Bloomberg EMSX API documentation](https://emsx-api-doc.readthedocs.io/en/latest/)
-- [Bloomberg Server API](https://professional.bloomberg.com/products/data/data-connectivity/server-api/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Bloomberg and by the connected account or API plan.

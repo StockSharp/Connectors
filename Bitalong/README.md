@@ -1,44 +1,22 @@
 # Bitalong Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the source code for the **Bitalong** connector used by the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. The connector implements an `MessageAdapter` which provides access to market data and trading operations on the Bitalong cryptocurrency exchange.
+The **Bitalong connector** connects StockSharp to a legacy digital-asset exchange integration. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+The upstream service may no longer be available. This integration is retained for compatibility, maintenance of existing systems, and study of a complete connector implementation.
 
-- Connection via REST/WebSocket using the `BitalongMessageAdapter` class.
-- Level1, tick, and order book market data subscriptions.
-- Order management (new, cancel, cancel all) and withdrawal requests.
-- Portfolio and balance updates with configurable check interval.
-- Automatic conversion between StockSharp data types and Bitalong REST API types located in the `Native` subfolder.
+## Key capabilities
 
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-`BitalongMessageAdapter` exposes several properties used to configure the connection:
+Use this connector to support an existing integration or as practical source code for learning how market data, transactions, and protocol details are mapped into StockSharp.
 
-| Property | Description |
-|----------|-------------|
-| **Key** | API key issued by Bitalong. Required for trading operations. |
-| **Secret** | API secret used to sign requests. |
-| **Address** | Exchange domain name. Defaults to `bitalong.com`. |
-| **BalanceCheckInterval** | Periodic account balance check interval. Useful when deposits or withdrawals occur. |
-
-### Using in code
-
-```csharp
-var adapter = new BitalongMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "<api-key>".ToSecureString(),
-    Secret = "<api-secret>".ToSecureString(),
-    BalanceCheckInterval = TimeSpan.FromMinutes(5)
-};
-```
-
-The adapter can then be registered in your `Connector` or passed directly to S# components that work with message adapters.
-
-## Folder structure
-
-- `BitalongMessageAdapter*.cs` – implementation split into settings, market data, and transaction logic.
-- `BitalongOrderCondition.cs` – custom order condition for withdrawal operations.
-- `Native` – lightweight wrappers for the exchange REST API including request helpers and model classes.
-
-
+Before operational use, verify that the upstream API and required endpoints are still available.

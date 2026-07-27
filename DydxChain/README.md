@@ -1,43 +1,21 @@
-# dYdX Chain connector for StockSharp
+# dYdX Chain Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates the current dYdX Chain Indexer and validator APIs for
-decentralized perpetual futures.
+The **dYdX Chain connector** connects StockSharp to an on-chain trading and liquidity protocol. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported functionality:
+## Key capabilities
 
-- discovery of active and suspended perpetual markets with their current tick,
-  size, margin, funding, volume, and open-interest parameters;
-- live Level1, incremental order books, public trades, and candle updates over
-  the official Indexer WebSocket protocol;
-- REST history for trades and candles;
-- public subaccount equity, collateral, asset balances, perpetual positions,
-  orders, and fills;
-- direct Cosmos `MsgPlaceOrder` and `MsgCancelOrder` transactions signed with a
-  secp256k1 private key and broadcast to dYdX Chain;
-- short-term market and IOC orders, long-term limit and post-only orders,
-  conditional stop-loss and take-profit orders, reduce-only orders, and native
-  TWAP orders;
-- order replacement through an explicit cancel-and-place sequence and filtered
-  group cancellation.
+- Typical coverage: on-chain assets and liquidity pools, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported swap or blockchain transaction submission.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data requires no credentials. `WalletAddress` enables read-only
-subaccount data. Trading additionally requires the corresponding hexadecimal
-Cosmos secp256k1 `PrivateKey`. The address is derived from the key and checked
-before use. `SubaccountNumber` selects the dYdX subaccount.
+## Typical use
 
-The connector checks that the validator reports chain ID `dydx-mainnet-1`.
-Market orders are submitted as short-term IOC orders with a configurable oracle
-price protection limit. Stateful and conditional orders use UTC expiration
-timestamps; short-term orders use the current chain height.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [dYdX documentation](https://docs.dydx.xyz/)
-- [API endpoints](https://docs.dydx.xyz/interaction/endpoints)
-- [Indexer WebSocket API](https://docs.dydx.xyz/indexer-client/websockets)
-- [Official dYdX v4 clients](https://github.com/dydxprotocol/v4-clients)
-- [Official dYdX Chain source](https://github.com/dydxprotocol/v4-chain)
-- [StockSharp dYdX Chain connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/dydx_chain.html)
-
-dYdX and its marks are trademarks of their respective owner. StockSharp is not
-affiliated with or endorsed by dYdX.
+Available networks, pools, instruments, and transaction functions depend on dYdX Chain, the configured RPC or indexer services, and wallet permissions.

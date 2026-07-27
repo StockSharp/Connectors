@@ -1,31 +1,21 @@
 # Mercado Bitcoin Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Mercado Bitcoin's current spot markets through REST
-API v4 and the official public WebSocket API.
+The **Mercado Bitcoin connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of exchange-listed and exchange-traded markets with native price,
-  quantity, and notional constraints;
-- Level1 snapshots and realtime ticker updates;
-- order-book snapshots with up to 1000 REST levels and realtime snapshots with
-  the maximum documented WebSocket depth of 200;
-- recent and time-filtered public trades plus realtime trade subscriptions;
-- historical candles for every interval published by Mercado Bitcoin;
-- OAuth2 client-credentials authentication with automatic token renewal;
-- multiple-account discovery, balances, and periodic account refreshes;
-- market, limit, post-only, and stop-limit orders;
-- individual and filtered bulk cancellation;
-- order lookup, order history, executions, and periodic order refreshes.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data works without credentials. Private operations require an API
-client ID and secret. `AccountId` may be left empty when the API key owns one
-account; for multiple accounts it selects the default account for trading.
+## Typical use
 
-Mercado Bitcoin currently documents only public WebSocket channels. Private account and order updates are therefore refreshed through the official REST API instead of an undocumented stream.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official documentation:
-
-- [Mercado Bitcoin REST API v4](https://api.mercadobitcoin.net/api/v4/docs)
-- [Mercado Bitcoin WebSocket API](https://ws.mercadobitcoin.net/docs/v0/)
-- [API product page](https://www.mercadobitcoin.com.br/api)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Mercado Bitcoin and by the connected account or API plan.

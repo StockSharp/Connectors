@@ -1,46 +1,21 @@
-# uSMART OpenAPI Connector for StockSharp
+# uSMART Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This connector integrates StockSharp with the official uSMART Securities OpenAPI for Hong Kong, U.S., Shanghai, and Shenzhen securities.
+The **uSMART connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Signed REST requests using the channel-specific MD5withRSA private key and URL-safe Base64 encoding.
-- Real-time WebSocket subscriptions for Level1 quotes, ticks, and order books.
-- WebSocket authentication, ping/pong handling, reconnect, and subscription recovery.
-- Security lookup for Hong Kong, U.S., Shanghai, and Shenzhen markets.
-- REST snapshots for Level1, ticks, and market depth.
-- Historical 1, 5, 10, 15, 30, and 60 minute candles plus daily and weekly candles.
-- Regular and fractional stock orders, order amendment, and cancellation.
-- Regular, pre-market, post-market, and dark-pool U.S. trading sessions where permitted.
-- Current-day orders, individual execution records, assets, and positions.
+- Typical coverage: equities, futures, options, FX and CFDs, bonds and fixed income, funds and ETFs, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Token` - token obtained through the uSMART OpenAPI login or onboarding flow.
-- `ChannelId` - channel identifier assigned by uSMART after approval.
-- `PrivateKey` - PEM-encoded channel RSA private key used for request signatures.
-- `FundAccount` - account number exposed as the StockSharp portfolio name.
-- `EncryptedTradePassword` - optional already-encrypted trading password. It must be produced with the separate data-encryption public key supplied by uSMART; the connector never accepts or stores a plain trading password.
-- `IsDemo` - use the documented UAT endpoints.
-- `DefaultMarket` - fallback market (`hk`, `us`, `sh`, or `sz`) when a security has no board code.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-OpenAPI access is not automatically enabled for every application account. uSMART requires an application, assets in the brokerage account, an authorization agreement, IP whitelisting, and channel-specific key material.
-
-The documented UAT trading host uses plain HTTP, while production uses HTTPS. Do not send a production token to the UAT environment. Quote REST and both WebSocket environments use TLS.
-
-## Behavior and limitations
-
-The public WebSocket contract covers quotes only. Orders, executions, assets, and positions are refreshed through signed REST requests. The connector uses the documented individual transaction-record endpoint for executions instead of fabricating fills from cumulative order quantities.
-
-The OpenAPI login procedure requires a second RSA public key for encrypting phone, login password, and trading password fields. That key is agreed separately with uSMART and is not published. The connector therefore starts from an issued access token and accepts only an already-encrypted optional trading password.
-
-Candlestick history is subject to the account quota documented by uSMART. WebSocket subscription operations are limited to ten topics per request and ten topics per second. Market-data availability depends on the account's quote entitlements.
-
-## Documentation
-
-- [StockSharp uSMART connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/usmart.html)
-- [Official uSMART OpenAPI introduction](https://api-doc.usmart.sg/)
-- [Basic quotes REST API](https://api-doc.usmart.sg/quote-base.html)
-- [Quote WebSocket protocol](https://api-doc.usmart.sg/quote-push.html)
-- [Trading and account API](https://api-doc.usmart.sg/trade.html)
-- [OpenAPI application page](https://www.usmart.sg/open-api)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by uSMART and by the connected account or API plan.

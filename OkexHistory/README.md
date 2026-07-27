@@ -1,31 +1,19 @@
-# OkexHistory Connector for StockSharp
+# OkexHistory Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **OkexHistory** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `OkexHistoryMessageAdapter` message adapter, exposing OkexHistory historical market data through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **OkexHistory connector** connects StockSharp to a digital-asset market-data and analytics service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Market data: tick trades, order book (market depth).
-- Data access over HTTP/REST.
-- Market-data only connector (no order routing).
-- Trading board code: `Okex`.
+- Typical coverage: digital assets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- This adapter is intended for market data and does not route orders.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-`OkexHistoryMessageAdapter` is configured through the following properties:
+Use this connector to feed charts, market-data storage, analytics, research workflows, and strategy testing with provider data.
 
-- `Address` – Connection endpoint address.
-
-## Usage
-
-```csharp
-var adapter = new OkexHistoryMessageAdapter(new IncrementalIdGenerator())
-{
-    Address = "...",
-};
-```
-
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data through the StockSharp API.
-
-## Documentation
-
-See the StockSharp guide on [creating your own connector](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html).
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by OkexHistory and by the connected account or API plan.

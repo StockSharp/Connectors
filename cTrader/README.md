@@ -1,37 +1,19 @@
-# cTrader Connector for StockSharp
+# cTrader Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **cTrader** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `cTraderMessageAdapter` message adapter, exposing cTrader market data and trading operations through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **cTrader connector** connects StockSharp to an FX/CFD broker or trading platform. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Market data: order book (market depth), Level1 (best bid/ask and last trade).
-- Data access over HTTP/REST.
-- Order registration, replacement and cancellation through the standard StockSharp transactional model.
-- Trading board code: `cTrader`.
+- Typical coverage: FX and CFDs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, order books and candles.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-`cTraderMessageAdapter` is configured through the following properties:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `ClientSecret` – Client secret.
-- `ClientId` – Client identifier.
-- `Address` – Connection endpoint address.
-- `IsDemo` – Set to `true` to use the demo/sandbox environment.
-
-## Usage
-
-```csharp
-var adapter = new cTraderMessageAdapter(new IncrementalIdGenerator())
-{
-    ClientSecret = "YOUR_CLIENTSECRET".ToSecureString(),
-    ClientId = "...",
-    Address = "...",
-    IsDemo = false,
-};
-```
-
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data and send orders through the StockSharp API.
-
-## Documentation
-
-See the [cTrader connector documentation](https://doc.stocksharp.com/en/topics/api/connectors/forex/ctrader.html).
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by cTrader and by the connected account or API plan.

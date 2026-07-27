@@ -1,39 +1,20 @@
-# Avantis connector for StockSharp
+# Avantis Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates the current official Avantis APIs and Base Mainnet
-contracts for cross-asset perpetual markets.
+The **Avantis connector** connects StockSharp to an on-chain trading and liquidity protocol. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported functionality:
+## Key capabilities
 
-- discovery of listed crypto, forex, commodity, equity, and index markets with
-  their current risk and trading parameters;
-- live Level1 prices through the Pyth Lazer stream with the official Hermes
-  fallback for markets not available on Lazer;
-- public Base-chain connectivity and wallet balance reporting;
-- current USDC and ETH balances, open positions, and pending limit orders;
-- signed market, zero-fee market, limit, and stop-limit orders;
-- limit-order replacement and cancellation;
-- full and partial position closing;
-- configurable automatic USDC approval for the Avantis trading contract.
+- Typical coverage: on-chain assets and liquidity pools, derivatives, FX and CFDs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes.
+- Provider-supported swap or blockchain transaction submission.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market discovery and Level1 data require no credentials. `WalletAddress`
-enables read-only portfolio and order data. Trading additionally requires the
-corresponding Base-compatible EVM `PrivateKey`. The connector verifies that the
-configured JSON-RPC endpoint is connected to Base Mainnet (chain ID 8453).
+## Typical use
 
-Avantis defines order volume as USDC collateral, not leveraged position size.
-The effective position value is the collateral multiplied by the leverage in
-`AvantisOrderCondition`. Avantis does not expose a native public order book,
-public trade tape, or candle-history API, so the connector does not synthesize
-those data types.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [Avantis documentation](https://docs.avantisfi.com/)
-- [Avantis SDK documentation](https://sdk.avantisfi.com/)
-- [Official Avantis Trader SDK](https://github.com/Avantis-Labs/avantis_trader_sdk)
-- [Avantis brand kit](https://docs.avantisfi.com/brand/avantis-brand-kit)
-- [StockSharp Avantis connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/avantis.html)
-
-Avantis and its marks are trademarks of their respective owner. StockSharp is
-not affiliated with or endorsed by Avantis.
+Available networks, pools, instruments, and transaction functions depend on Avantis, the configured RPC or indexer services, and wallet permissions.

@@ -1,18 +1,21 @@
-# StockSharp MetaApi Connector
+# MetaApi Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with the MetaApi REST and real-time
-streaming APIs for MetaTrader 4 and MetaTrader 5 accounts.
+The **MetaApi connector** connects StockSharp to an FX/CFD broker or trading platform. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- symbol specifications, Level 1 quotes, ticks, market depth, and candles;
-- historical ticks and time-frame candles;
-- synchronized portfolios, positions, orders, and deals;
-- market, limit, and stop orders, modification, cancellation, and position closing;
-- automatic stream reconnection, terminal resynchronization, and subscription recovery.
+- Typical coverage: equities, futures, options, FX and CFDs, commodities, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Configure a MetaApi API token and the deployed account ID. The account region is
-resolved automatically for API tokens and can be set explicitly for scoped
-account tokens.
+## Typical use
 
-Official API documentation: https://metaapi.cloud/docs/client/
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
+
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by MetaApi and by the connected account or API plan.

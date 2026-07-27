@@ -1,35 +1,21 @@
-# 5paisa Xstream connector
+# 5paisa Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the 5paisa Xstream connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform.
+The **5paisa connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Protocol coverage
+## Key capabilities
 
-- The official Xstream REST API for the scrip master, order placement, modification and cancellation, order and trade books, margin, holdings, positions, and historical candles.
-- The official routed market WebSocket (`openfeed`, `aopenfeed`, or `bopenfeed`, selected from the access-token payload) for realtime Level1 updates, last trades, and account-wide order/trade confirmations.
-- The separate official `20depth` WebSocket for 20-level NSE order books. The connector rejects depth requests for BSE and other unsupported exchanges before subscribing.
-- Historical candles at 1, 5, 10, 15, 30, and 60 minutes and one day. Requests are split into the documented six-month windows. Xstream does not expose a realtime candle channel, so candle subscriptions must be history-only.
-- Portfolio snapshots from margin, net-position, and holding endpoints, refreshed every 30 seconds while a live portfolio subscription is active.
+- Typical coverage: equities, futures, options, FX and CFDs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Authentication
+## Typical use
 
-Configure the app key, demat client code, and a current bearer access token issued through the 5paisa Xstream developer portal. The access token is normally valid for one trading day and must be renewed outside the connector. The connector does not store account credentials or perform the interactive login flow.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-`AlgoId` defaults to zero for non-algorithmic orders. Accounts placing exchange-registered algorithmic orders must configure the identifier assigned for that algorithm.
-
-All REST and WebSocket service endpoints can be overridden in the adapter settings. The three routed market-feed endpoints are configured separately so private deployments can preserve the `A` and `B` redirect behavior encoded in the access token.
-
-## Security identifiers
-
-Run a security lookup before subscribing or trading. The connector downloads the official complete scrip master and stores `exchange|exchangeType|scripCode` in `SecurityId.Native`. This preserves the exchange segment when numeric scrip codes overlap.
-
-Supported mappings include NSE cash, derivatives and currency; BSE cash, derivatives and currency; and MCX derivatives. The dedicated 20-level feed is available only for NSE instruments and may require the corresponding market-data entitlement.
-
-## Official references
-
-- [5paisa Xstream developer documentation](https://xstream.5paisa.com/dev-docs)
-- [Scrip master](https://xstream.5paisa.com/dev-docs/docFundamentals/scrip-master)
-- [Market feed](https://xstream.5paisa.com/dev-docs/market-data-system/market-feed)
-- [20-depth feed](https://xstream.5paisa.com/dev-docs/market-data-system/20MarketDepth)
-- [Order and trade confirmations](https://xstream.5paisa.com/dev-docs/order-tracking-system/web-socket-trade)
-- [Historical candles](https://xstream.5paisa.com/dev-docs/market-data-system/historical-candles)
-- [Official .NET SDK](https://github.com/5paisa/5paisa-dotnet)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by 5paisa and by the connected account or API plan.

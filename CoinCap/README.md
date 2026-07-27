@@ -1,33 +1,19 @@
-# CoinCap Connector for StockSharp
+# CoinCap Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **CoinCap** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `CoinCapMessageAdapter` message adapter, exposing CoinCap market data through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **CoinCap connector** connects StockSharp to a digital-asset market-data and analytics service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Market data: tick trades, Level1 (best bid/ask and last trade).
-- Real-time streaming over a WebSocket connection.
-- Market-data only connector (no order routing).
-- Trading board code: `CoinCap`.
+- Typical coverage: digital assets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Provider-supported order submission and execution workflows.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-`CoinCapMessageAdapter` is configured through the following properties:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `Token` – Personal API token.
-- `Address` – Connection endpoint address.
-
-## Usage
-
-```csharp
-var adapter = new CoinCapMessageAdapter(new IncrementalIdGenerator())
-{
-    Token = "YOUR_TOKEN".ToSecureString(),
-    Address = "...",
-};
-```
-
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data through the StockSharp API.
-
-## Documentation
-
-See the [CoinCap connector documentation](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/coincap.html).
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by CoinCap and by the connected account or API plan.

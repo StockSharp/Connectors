@@ -1,43 +1,21 @@
-# StockSharp Mirae Asset Sharekhan connector
+# Mirae Asset Sharekhan Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-StockSharp adapter for the current Mirae Asset Sharekhan Trading API. It uses the official
-REST service for scrip masters, historical charts, orders, reports, trades/positions,
-holdings, and funds, plus the official WebSocket endpoint for live prices and top-five
-market depth.
+The **Mirae Asset Sharekhan connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Credentials
+## Key capabilities
 
-Create an application in the Mirae Asset Sharekhan Trading API portal and complete the
-official browser login flow. Configure the adapter with the resulting `API key`, `Access
-token`, and trading `Customer ID`. `Vendor key` is needed only for a vendor application.
-The access token is accepted as an input deliberately: interactive login requires a user
-redirect and must not be simulated by a headless connector.
+- Typical coverage: equities, futures, options, FX and CFDs, funds and ETFs, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Supported operations
+## Typical use
 
-- scrip-master lookup for NSE/BSE cash, derivatives, currency, and MCX;
-- historical 1, 5, 15, 30, and 60 minute candles and daily candles;
-- live LTP/Level1, trades when the feed supplies last quantity, and top-five depth;
-- new, modify, and cancel order requests with Sharekhan order conditions;
-- day order/trade reports, holdings, funds, and position snapshots;
-- automatic WebSocket reconnect and restoration of market-data subscriptions.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Use the native Sharekhan exchange codes (`NC`, `BC`, `NF`, `BF`, `RN`, `RB`, `MX`) in a
-security board code. A security returned by lookup also carries its Sharekhan scrip code in
-`SecurityId.Native`, which avoids symbol ambiguity when subscribing or placing orders.
-
-## Protocol notes
-
-Mirae Asset Sharekhan currently documents a maximum of 1000 symbols per WebSocket connection. Historical intraday availability is limited by the broker, and historical data is not corporate-action adjusted.
-
-The official .NET SDK exposes textual WebSocket messages. The official Python SDK contains
-an empty binary-frame decoder, so no public binary layout is available to implement safely.
-This connector accepts official text frames and binary frames containing UTF-8 JSON, and
-reports a clear protocol error if the server sends an undocumented binary payload.
-
-## Official documentation
-
-- [Trading API documentation](https://www.sharekhan.com/trading-api/documentation/overview)
-- [Trading API FAQ](https://www.sharekhan.com/trading-api/faq)
-- [Official Python SDK](https://github.com/Sharekhan-API/shareconnectpython)
-- [Official .NET SDK](https://github.com/Sharekhan-API/shareconnectcsharp)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Mirae Asset Sharekhan and by the connected account or API plan.

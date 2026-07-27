@@ -1,32 +1,21 @@
-# NinjaTrader Connector for StockSharp
+# NinjaTrader Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the NinjaTrader connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It uses the official NinjaTrader REST and WebSocket APIs.
+The **NinjaTrader connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Futures contract lookup with maturity, exchange, tick-size, and multiplier metadata.
-- Real-time quotes, trades, and depth of market over the market-data WebSocket.
-- Historical and real-time time-frame candles.
-- Accounts, cash balances, positions, orders, and fills.
-- Real-time order, fill, position, and balance updates over the trading WebSocket.
-- Order registration, modification, and cancellation.
-- Live and demo environments with their dedicated trading and market-data endpoints.
+- Typical coverage: futures.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Login` — NinjaTrader user name.
-- `Password` — NinjaTrader password.
-- `Key` — API key client identifier (`cid`).
-- `Secret` — API key secret (`sec`).
-- `AppId` and `AppVersion` — registered application identity.
-- `DeviceId` — stable device identifier registered for API access.
-- `IsDemo` — use the simulation environment.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-API access and real-time market data depend on the permissions and exchange entitlements assigned to the NinjaTrader account and API key.
-
-## Documentation
-
-- [StockSharp NinjaTrader connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/ninjatrader.html)
-- [Official NinjaTrader API documentation](https://docs.ninjatrader.com/api)
-- [Official WebSocket protocol](https://docs.ninjatrader.com/api/websockets)
-- [Official market-data API](https://docs.ninjatrader.com/market-data)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by NinjaTrader and by the connected account or API plan.

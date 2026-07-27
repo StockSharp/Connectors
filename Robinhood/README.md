@@ -1,21 +1,21 @@
-# Robinhood connector
+# Robinhood Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector uses the official Robinhood Agentic Trading MCP endpoint. It supports US equity symbol search, polling Level 1 quotes, historical candles, accounts, balances, positions, equity order history, order review, placement, and cancellation.
+The **Robinhood connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Robinhood exposes Streamable HTTP MCP rather than a market-data WebSocket. The connector therefore polls quotes, positions, and orders at the configured interval. Quote calls are automatically split into the API limit of 20 symbols.
+## Key capabilities
 
-## Authentication
+- Typical coverage: equities.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-1. Create and authenticate a dedicated Robinhood Agentic account on a desktop device.
-2. Authorize `https://agent.robinhood.com/mcp/trading` through an MCP-capable client using Robinhood OAuth.
-3. Set the resulting OAuth bearer access token in the connector settings.
+## Typical use
 
-The connector can read all accounts authorized by Robinhood, but order placement is restricted by Robinhood to the dedicated Agentic account. An equity order is always reviewed with `review_equity_order` before `place_equity_order` is called.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Robinhood can vary the set of MCP tools by account eligibility and rollout. At connection time, the connector reads `tools/list` and rejects operations whose official tool is unavailable.
-
-Official documentation:
-
-- [Agentic Trading overview](https://robinhood.com/us/en/support/articles/agentic-trading-overview/)
-- [Trading with your agent and supported tools](https://robinhood.com/us/en/support/articles/trading-with-your-agent/)
-- [Model Context Protocol Streamable HTTP transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Robinhood and by the connected account or API plan.

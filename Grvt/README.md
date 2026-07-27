@@ -1,37 +1,21 @@
 # GRVT Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates GRVT's official full-field REST and WebSocket APIs.
-Public market data can be used without credentials. Private account data uses
-an API-key login and the resulting session cookie, while order submission also
-requires the EVM private key associated with the GRVT signer. The private key
-is used locally for EIP-712 signing and is never sent to GRVT.
+The **GRVT connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported functionality:
+## Key capabilities
 
-- perpetual, future, call, and put instrument discovery;
-- Level1, order-book snapshots, public trades, and candles over WebSocket;
-- historical public trades and candles through paginated REST requests;
-- account balances, positions, open orders, order history, and fills;
-- locally signed market, limit, post-only, IOC, FOK, reduce-only, and TP/SL
-  orders;
-- individual and filtered bulk cancellation;
-- authenticated order, fill, and position streams;
-- production and testnet environments.
+- Typical coverage: digital assets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-`Key` is the API key created in the GRVT UI. `Secret` is the matching EVM
-private key and is needed only for order creation. `SubAccountId` may be left
-empty when the API-key login response identifies a trading account. Endpoint
-properties default to the official hosts and switch together when
-`Environment` changes.
+## Typical use
 
-The connector uses the snapshot variants of the ticker and order-book streams. It checks stream sequence numbers, ignores duplicates, and reports gaps instead of inventing missing data.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [GRVT API documentation](https://api-docs.grvt.io/)
-- [Market Data API](https://api-docs.grvt.io/market_data_api/)
-- [Market Data WebSocket](https://api-docs.grvt.io/market_data_streams/)
-- [Trading API](https://api-docs.grvt.io/trading_api/)
-- [Trading WebSocket](https://api-docs.grvt.io/trading_streams/)
-- [Authentication](https://api-docs.grvt.io/auth/)
-- [Official Python SDK](https://github.com/gravity-technologies/grvt-pysdk)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by GRVT and by the connected account or API plan.

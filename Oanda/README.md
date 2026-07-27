@@ -1,20 +1,21 @@
 # OANDA Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the OANDA v20 connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform.
+The **OANDA connector** connects StockSharp to an FX/CFD broker or trading platform. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-The connector supports practice and live accounts, account and portfolio information, order management, positions, executions, instrument lookup, historical candles, streaming prices, and streaming transaction updates.
+## Key capabilities
 
-## Configuration
+- Typical coverage: FX and CFDs, commodities.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-- `Token` - personal access token generated for the OANDA v20 account.
-- `IsDemo` - selects the practice environment when enabled and the live environment when disabled.
-- `UseCompression` - enables HTTP response compression.
-- `LogOnlyTransactions` - suppresses raw pricing stream log messages while retaining transaction stream logging.
+## Typical use
 
-Available instruments, prices, order types, and trading permissions depend on the OANDA division and the selected account.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Documentation
-
-- [StockSharp OANDA connector documentation](https://doc.stocksharp.com/en/topics/api/connectors/forex/oanda.html)
-- [Official OANDA v20 API documentation](https://developer.oanda.com/rest-live-v20/introduction/)
-- [Official OANDA development guide](https://developer.oanda.com/rest-live-v20/development-guide/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by OANDA and by the connected account or API plan.

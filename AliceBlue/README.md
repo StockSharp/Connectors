@@ -1,33 +1,21 @@
-# Alice Blue ANT API connector
+# Alice Blue ANT API Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Alice Blue ANT API v2 connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform.
+The **Alice Blue ANT API connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Protocol coverage
+## Key capabilities
 
-- Current ANT v2 JSON REST endpoints at https://a3.aliceblueonline.com for profile, orders, trades, funds, positions, and holdings.
-- Enhanced v2 contract masters for NSE, BSE, NFO, BFO, CDS, BCD, MCX, and indices.
-- The official Noren market WebSocket for touchline and five-level depth data.
-- The separate official order-status WebSocket for realtime order and fill updates.
-- Official one-minute and daily historical candles for the exchange segments supported by the Alice Blue history service.
+- Typical coverage: equities, futures, options, FX and CFDs, funds and ETFs, commodities, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Authentication
+## Typical use
 
-Configure the Alice Blue user ID and the current userSession bearer token returned by the official authorization flow. ClientId defaults to the client ID returned by the profile endpoint and then to UserId when left empty. The connector does not store the authorization code, application secret, account password, or TOTP seed.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-The market WebSocket requires a separately created socket session and a double SHA-256 digest of userSession. The connector creates that session through the official REST endpoint. The order WebSocket uses an order token obtained through its own official REST endpoint.
-
-## Security identifiers and history
-
-Run a security lookup before subscribing or trading. The connector stores exchange|instrumentId in SecurityId.Native because instrument IDs overlap between exchange segments.
-
-Alice Blue currently documents historical data only for one-minute and daily resolution. On weekdays the history endpoint is available outside market hours, and BSE, BFO, and BCD history is not currently documented as supported. These server restrictions are surfaced rather than hidden.
-
-## Official references
-
-- [Alice Blue ANT API v2 documentation](https://v2api.aliceblueonline.com/)
-- [Authentication](https://v2api.aliceblueonline.com/Authentication/)
-- [Orders](https://v2api.aliceblueonline.com/orders%20Management/)
-- [Market WebSocket](https://v2api.aliceblueonline.com/Websocket/)
-- [Order-status WebSocket](https://v2api.aliceblueonline.com/Webhooks/)
-- [Contract masters](https://v2api.aliceblueonline.com/Contract%20Master/)
-- [Historical data](https://v2api.aliceblueonline.com/Historical%20Data/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Alice Blue ANT API and by the connected account or API plan.

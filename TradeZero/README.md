@@ -1,28 +1,21 @@
-# TradeZero Connector for StockSharp
+# TradeZero Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the TradeZero connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It uses the official TradeZero REST API and both official account WebSocket streams.
+The **TradeZero connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Equity and single-leg option order registration and cancellation.
-- Cancel-and-replace order workflow (TradeZero has no modify endpoint).
-- Accounts, balances, open positions, current orders and execution updates.
-- Real-time order and position updates over the Portfolio WebSocket stream.
-- Real-time account and position P&L over the P&L WebSocket stream.
-- Security search plus snapshot quotes, market depth and historical candles over REST.
-- Paper and live accounts through the same API host; credentials select the environment.
+- Typical coverage: equities, options.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-TradeZero does not currently document a public market-data WebSocket. Market quotes, depth and candles are therefore exposed as finite REST snapshots, while account data uses the documented WebSocket streams.
+## Typical use
 
-## Configuration
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `Key` — `TZ-API-KEY-ID` generated in the TradeZero portal.
-- `Secret` — `TZ-API-SECRET-KEY` generated in the TradeZero portal.
-- `DefaultRoute` — optional preferred account route returned by `GET /v1/api/accounts/{accountId}/routes`. If it is empty, the connector selects a compatible live route from that endpoint.
-
-## Documentation
-
-- [StockSharp TradeZero connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/tradezero.html)
-- [Official TradeZero developer documentation](https://developer.tradezero.com/docs/documentation)
-- [Official Trading API documentation](https://developer.tradezero.com/docs/documentation/trading)
-- [Official WebSocket API documentation](https://developer.tradezero.com/docs/websocket_api)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by TradeZero and by the connected account or API plan.

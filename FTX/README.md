@@ -1,49 +1,23 @@
-# FTX Connector for StockSharp
+# FTX Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This folder contains the source code of the **FTX** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. The connector allows applications built on top of S# to interact with the former FTX cryptocurrency exchange via both REST and WebSocket APIs.
+The **FTX connector** connects StockSharp to a legacy digital-asset exchange integration. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+The upstream service may no longer be available. This integration is retained for compatibility, maintenance of existing systems, and study of a complete connector implementation.
 
-- **Market data**
-  - Level1 quotes, order books, and trade ticks delivered through WebSocket streams.
-  - Time frame candles requested via REST and streamed via WebSocket.
-  - Supported candle time frames: 15&nbsp;s, 1&nbsp;min, 5&nbsp;min, 15&nbsp;min, 1&nbsp;hour, 4&nbsp;hours, and 1&nbsp;day.
-  - Order book depth up to 100 levels.
-  - Security lookup through the REST API.
-- **Trading operations**
-  - Placing and cancelling market and limit orders.
-  - Order status subscriptions with automatic retrieval of active and historical orders.
-  - Portfolio and position information for the main account or a specified sub‑account.
-- **Connectivity**
-  - Asynchronous message adapter built on top of `MessageAdapter`.
-  - Combined REST client for historical data and WebSocket client for real‑time updates.
-  - Connection heartbeat interval of one second by default.
+## Key capabilities
 
-## Configuration
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-The adapter is configured through the following properties:
+## Typical use
 
-- `Key` – API key issued by FTX.
-- `Secret` – API secret corresponding to the key.
-- `SubaccountName` – optional sub‑account name for trading and data requests.
+Use this connector to support an existing integration or as practical source code for learning how market data, transactions, and protocol details are mapped into StockSharp.
 
-These values can be saved to and loaded from a `SettingsStorage` object. When using transactional features (order management or portfolio information) the key and secret must be specified.
-
-## Usage
-
-Create an instance of `FtxMessageAdapter` and pass it to `Connector` or another component that consumes message adapters:
-
-```csharp
-var adapter = new FtxMessageAdapter(transactionIdGenerator)
-{
-    Key = mySecureApiKey,
-    Secret = mySecureApiSecret,
-    SubaccountName = "optional-subaccount"
-};
-```
-
-Once connected, subscribe to the desired market data or send order messages according to the StockSharp API. See the source files in this directory for implementation details.
-
-## Notes
-
-FTX filed for bankruptcy in 2022 and the exchange is no longer operational. The connector is provided for reference and historical purposes.
+Before operational use, verify that the upstream API and required endpoints are still available.

@@ -1,20 +1,21 @@
-# StockSharp Deriv Connector
+# Deriv Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with the current Deriv Options REST and
-WebSocket APIs.
+The **Deriv connector** connects StockSharp to an FX/CFD broker or trading platform. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- active symbols, Level 1 quotes, tick history, and tick streaming;
-- historical and streaming time-frame candles;
-- public market-data sessions without credentials;
-- authenticated demo and real accounts through the REST OTP workflow;
-- proposals, contract purchases, early sell or cancellation, and live contract updates;
-- balances, portfolios, open contracts, and transaction streaming;
-- automatic subscription restoration with a fresh one-time WebSocket URL.
+- Typical coverage: options, FX and CFDs, commodities.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Configure a Deriv personal access or OAuth token and application ID for private
-operations. The account ID is optional when exactly one active account matches
-the selected demo or real mode.
+## Typical use
 
-Official API documentation: https://developers.deriv.com/docs/
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
+
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Deriv and by the connected account or API plan.

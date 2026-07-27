@@ -1,30 +1,21 @@
 # Luno Exchange Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Luno spot markets through the current REST and
-WebSocket APIs.
+The **Luno Exchange connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of markets with native price and volume constraints;
-- Level1 data, order books, and public trades from REST snapshots;
-- realtime Level1 data, order books, public trades, and trade-built candles
-  through the official per-market WebSocket stream;
-- historical OHLCV candles for every interval documented by Luno;
-- HTTP Basic authentication with an API key ID and secret;
-- balances, open and historical orders, and account fills;
-- market, limit, post-only, and stop-limit orders;
-- GTC, IOC, and FOK time-in-force and individual or filtered bulk
-  cancellation;
-- realtime balance, order-status, and fill updates through the official user
-  WebSocket stream.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public REST market data works without credentials, except for the candles
-endpoint, which currently requires authentication. Luno requires an API key
-and secret as the first message on both documented WebSocket streams. Without
-credentials, use history-only subscriptions; with credentials, realtime
-market and account streams are enabled automatically.
+## Typical use
 
-Official documentation:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- [Luno API documentation](https://www.luno.com/en/developers/api)
-- [Luno official Go SDK](https://github.com/luno/luno-go)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Luno Exchange and by the connected account or API plan.

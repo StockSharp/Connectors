@@ -1,31 +1,21 @@
 # bitFlyer Lightning Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates current bitFlyer spot markets and bitFlyer Crypto CFD
-through the HTTP API and the JSON-RPC 2.0 realtime WebSocket API.
+The **bitFlyer Lightning connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- security discovery for spot and available CFD products;
-- Level1 snapshots and realtime ticker updates;
-- full order-book snapshots maintained from snapshot and delta channels;
-- recent public executions and realtime trade subscriptions;
-- balances, collateral, and Crypto CFD positions;
-- market and limit child orders with GTC, IOC, and FOK execution policies;
-- simple stop, stop-limit, and trailing-stop parent orders;
-- individual, product-wide, and filtered cancellation;
-- active and historical child/parent orders and account executions;
-- authenticated child-order and parent-order events over WebSocket.
+- Typical coverage: digital assets, spot markets, derivatives, FX and CFDs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-bitFlyer does not expose a native candle endpoint, so this connector does not
-advertise candle history or realtime candles. Public market data works without
-credentials. Portfolio, transaction, and private realtime operations require an
-API key with the corresponding permissions.
+## Typical use
 
-REST signatures use HMAC-SHA256 over the exact timestamp, HTTP method, request path (including query), and serialized request body. WebSocket authentication uses a fresh timestamp and nonce, and all active subscriptions are restored after reconnect.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official documentation:
-
-- [HTTP API](https://lightning.bitflyer.com/docs)
-- [Realtime API overview](https://bf-lightning-api.readme.io/docs/realtime-api)
-- [JSON-RPC 2.0 WebSocket](https://bf-lightning-api.readme.io/docs/endpoint-json-rpc)
-- [Realtime authentication](https://bf-lightning-api.readme.io/docs/realtime-api-auth)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by bitFlyer Lightning and by the connected account or API plan.

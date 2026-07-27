@@ -1,38 +1,21 @@
 # GMO Coin Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates GMO Coin's current Japanese spot and margin markets
-through the official Public API, Private API, and public and private WebSocket
-streams.
+The **GMO Coin connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- spot and margin-market discovery with native price, quantity, and notional
-  constraints;
-- Level1 snapshots and realtime ticker updates;
-- full order-book snapshots and realtime depth updates;
-- recent public executions and realtime trade subscriptions;
-- historical candles for every interval published by GMO Coin;
-- account balances, active orders, executions, open positions, and position
-  summaries;
-- market, limit, stop, post-only, and supported time-in-force orders;
-- individual, bulk, and filtered cancellation;
-- margin position opening and closing, loss-cut price updates, and position
-  events;
-- realtime private order, execution, position, and position-summary streams;
-- private WebSocket token renewal and subscription restoration after reconnect.
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data works without credentials. Private operations require an API
-key and secret with the corresponding trading and account permissions.
+## Typical use
 
-Private REST requests use GMO Coin's HMAC-SHA256 signature over the UTC millisecond timestamp, HTTP method, API path, and exact serialized request body.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-GMO Coin exposes historical candles through REST but does not publish a candle
-WebSocket channel. Candle subscriptions are therefore history-only.
-
-Official documentation:
-
-- [GMO Coin API](https://api.coin.z.com/docs/en/)
-- [Public REST API](https://api.coin.z.com/docs/en/#public-api)
-- [Private REST API](https://api.coin.z.com/docs/en/#private-api)
-- [Public WebSocket API](https://api.coin.z.com/docs/en/#public-ws-api)
-- [Private WebSocket API](https://api.coin.z.com/docs/en/#private-ws-api)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by GMO Coin and by the connected account or API plan.

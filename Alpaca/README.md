@@ -1,34 +1,20 @@
-# Alpaca Connector for StockSharp
+# Alpaca Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **Alpaca** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `AlpacaMessageAdapter` message adapter, exposing Alpaca market data and trading operations through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **Alpaca connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Market data: Level1 (best bid/ask and last trade), tick trades, news, order book (market depth).
-- Real-time streaming over a WebSocket connection.
-- Order registration, replacement and cancellation through the standard StockSharp transactional model.
+- Typical coverage: equities, futures, options.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books, candles and financial news.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-`AlpacaMessageAdapter` is configured through the following properties:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `Key` – API key.
-- `Secret` – API secret used to sign requests.
-- `IsDemo` – Set to `true` to use the demo/sandbox environment.
-
-## Usage
-
-```csharp
-var adapter = new AlpacaMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_KEY".ToSecureString(),
-    Secret = "YOUR_SECRET".ToSecureString(),
-    IsDemo = false,
-};
-```
-
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data and send orders through the StockSharp API.
-
-## Documentation
-
-See the StockSharp guide on [creating your own connector](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html).
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Alpaca and by the connected account or API plan.

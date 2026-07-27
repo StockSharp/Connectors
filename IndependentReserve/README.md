@@ -1,33 +1,21 @@
 # Independent Reserve Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Independent Reserve cryptocurrency spot markets
-through the current REST API and the official public WebSocket feed.
+The **Independent Reserve connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of all trade-enabled primary currencies and supported fiat quote
-  currencies with native price and volume precision;
-- Level1 data, full order books, public trades, and one-hour OHLCV history;
-- realtime order books and public trades through the official `orderbook-*`
-  and `ticker-*` WebSocket channels;
-- sequence validation and REST snapshot recovery for every live order book;
-- balances, open and historical orders, and account trades;
-- market and limit orders with GTC, IOC, FOK, and maker-only time-in-force;
-- quote-denominated market volume, slippage protection, and individual or
-  filtered bulk cancellation.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Independent Reserve does not provide a private account WebSocket. The
-connector therefore combines authenticated REST snapshots with periodic
-polling. Public order and trade events are correlated with the connector's
-non-sensitive `OrderGuid` and `ClientId` values to refresh owned orders as
-soon as they appear on the official public stream.
+## Typical use
 
-Private requests use the API's timestamp-expiry authentication mode to avoid
-cross-thread nonce races. Independent Reserve requires an API key restricted
-to at least one IP address when this mode is used.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official documentation:
-
-- [Independent Reserve API documentation](https://www.independentreserve.com/features/api)
-- [Independent Reserve WebSocket documentation](https://github.com/independentreserve/websockets)
-- [Independent Reserve official .NET API client](https://github.com/independentreserve/dotNetApiClient)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Independent Reserve and by the connected account or API plan.

@@ -1,55 +1,21 @@
-# Bitso connector for StockSharp
+# Bitso Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Bitso's current Trading API for the Latin American
-spot market. Public instruments and market data work without credentials.
-Balances, orders, replacements, cancellations, and user fills require a Bitso
-API key and secret with the corresponding permissions.
+The **Bitso connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Supported functionality
+## Key capabilities
 
-- all books from `GET /available_books` on `BoardCodes.Bitso` (`BITSO`), with
-  major/minor assets, tick size, amount limits, and quote currency;
-- REST Level1 snapshots with bid, ask, last, 24-hour high, low, volume, change,
-  and VWAP;
-- aggregated REST order-book snapshots and realtime top-20 `orders` WebSocket
-  snapshots;
-- recent public trades followed by the realtime `trades` WebSocket channel;
-- account balances with available and locked amounts;
-- open-order and recent user-fill snapshots, plus REST polling for private
-  updates while portfolio or order-status subscriptions are active;
-- spot market, limit, stop-market, and stop-limit orders;
-- GTC, IOC, FOK, and post-only mapping, optional market-order slippage
-  tolerance, native v4 in-place modification, individual cancellation, and
-  filtered bulk cancellation;
-- Nonce v2 values, exact HMAC-SHA256 request signing, documented public/private
-  rate limits, safe-read retries, and no automatic retries for trading writes.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-The current Bitso Trading API does not publish a candle-history endpoint, so
-the connector does not advertise candle support. Its WebSocket API documents
-subscriptions but no unsubscribe command. The connector therefore stops
-locally delivering a released stream and prunes server subscriptions on the
-next reconnect.
+## Typical use
 
-## Configuration
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-```csharp
-var adapter = new BitsoMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_API_KEY".ToSecureString(),
-    Secret = "YOUR_API_SECRET".ToSecureString(),
-};
-```
-
-Set `IsDemo = true` to use Bitso's official sandbox REST host. The public
-WebSocket market-data host is shared and remains independently configurable.
-
-## Official documentation
-
-- [Bitso Trading API overview](https://docs.bitso.com/bitso-api/docs/api-overview)
-- [Bitso WebSocket API](https://docs.bitso.com/bitso-api/docs/general)
-- [Bitso Nonce v2](https://docs.bitso.com/bitso-api/docs/nonce-v2-rollout)
-- [Bitso website](https://bitso.com/)
-- [StockSharp Bitso connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/bitso.html)
-
-Bitso and its marks are trademarks of their respective owner. StockSharp is
-not affiliated with or endorsed by Bitso.
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Bitso and by the connected account or API plan.

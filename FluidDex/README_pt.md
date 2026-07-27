@@ -1,0 +1,21 @@
+# Conector Fluid DEX
+[English](README.md) | [Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [日本語](README_ja.md)
+
+O **conector Fluid DEX** conecta o StockSharp a um protocolo de negociação e liquidez on-chain. Ele traduz dados e operações específicos do provedor para o modelo unificado de mensagens do StockSharp, permitindo usar as mesmas assinaturas e fluxos em diferentes mercados.
+
+## Principais recursos
+
+- Cobertura típica: ativos on-chain e pools de liquidez, derivativos.
+- Pesquisa de instrumentos e dados de referência do provedor.
+- Dados de mercado suportados pelo adaptador: cotações de nível 1, negócios tick a tick, livros de ordens e candles.
+- Solicitações de dados históricos para gráficos, análises e backtests.
+- Envio de swaps ou transações de blockchain suportados pelo provedor.
+- Atualizações de carteiras, saldos, posições e estado das execuções.
+- Assinaturas em tempo real pelo transporte de streaming do provedor.
+- Transportes, sessões e formatos específicos do provedor ficam ocultos atrás da API padrão do StockSharp.
+
+## Uso típico
+
+Use-o em estratégias ao vivo, terminais, serviços de gestão de ordens e ferramentas de monitoramento que precisem de acesso direto ao provedor.
+
+Redes, pools, instrumentos e funções de transação disponíveis dependem de Fluid DEX, dos serviços RPC ou de indexação e das permissões da carteira.

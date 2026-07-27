@@ -1,21 +1,20 @@
-# StockSharp StocksTrader Connector
+# StocksTrader Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with the official StocksTrader REST API.
+The **StocksTrader connector** connects StockSharp to an FX/CFD broker or trading platform. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- demo and real account discovery and account-state polling;
-- instrument lookup and latest bid, ask, and last-price snapshots;
-- market, limit, and stop order registration;
-- pending-order modification and cancellation;
-- open-position stop-loss and take-profit modification;
-- position closing, order and deal history, and execution reconciliation.
+- Typical coverage: equities, FX and CFDs, commodities.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-StocksTrader does not expose a streaming market-data API. Level 1 requests
-therefore return the latest available snapshot and complete immediately.
+## Typical use
 
-Configure a bearer token generated in the StocksTrader web terminal. The
-account ID is optional when exactly one account matches the selected demo or
-real mode.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official API documentation: https://api-doc.stockstrader.com/
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by StocksTrader and by the connected account or API plan.

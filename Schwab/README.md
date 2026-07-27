@@ -1,32 +1,21 @@
-# Charles Schwab Connector for StockSharp
+# Charles Schwab Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Charles Schwab Trader API connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. REST is used for reference, historical and transactional requests; the Schwab streamer WebSocket is used for live data and account activity.
+The **Charles Schwab connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Streaming Level1 equity quotes.
-- Streaming NASDAQ and NYSE order books.
-- Historical time-frame candles.
-- Security lookup, accounts, balances and positions.
-- Order registration, cancellation and status updates.
+- Typical coverage: equities, funds and ETFs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Token` — OAuth access token issued by Schwab.
-- `Address` — Trader API REST address; the default is `https://api.schwabapi.com/`.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-The WebSocket address and streamer identifiers are obtained automatically from the Schwab user-preferences endpoint.
-
-## Usage
-
-```csharp
-var adapter = new SchwabMessageAdapter(new IncrementalIdGenerator())
-{
-    Token = "YOUR_ACCESS_TOKEN".ToSecureString(),
-};
-```
-
-## Documentation
-
-- [StockSharp Schwab connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/schwab.html)
-- [Official Schwab Trader API](https://developer.schwab.com/products/trader-api--individual)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Charles Schwab and by the connected account or API plan.

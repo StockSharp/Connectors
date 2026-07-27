@@ -1,20 +1,20 @@
-# CSV Connector for StockSharp
+# CSV Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **CSV** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `CSVMessageAdapter` message adapter, exposing CSV market data through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **CSV connector** connects StockSharp to a configurable data source. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Data access over HTTP/REST.
-- Market-data only connector (no order routing).
+- Typical coverage: equities, futures, options.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Portfolio, balance, position, and execution-state updates.
+- This adapter is intended for market data and does not route orders.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Usage
+## Typical use
 
-```csharp
-var adapter = new CSVMessageAdapter(new IncrementalIdGenerator());
-```
+Use this connector to feed charts, market-data storage, analytics, research workflows, and strategy testing with provider data.
 
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data through the StockSharp API.
-
-## Documentation
-
-See the StockSharp guide on [creating your own connector](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html).
+Available fields, instruments, and time ranges depend on the configured source data.

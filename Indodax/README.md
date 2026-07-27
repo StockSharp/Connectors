@@ -1,32 +1,21 @@
 # Indodax Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Indodax spot markets through the official public REST,
-Trade API v2, TAPI, Market Data WebSocket, and Private WebSocket protocols.
+The **Indodax connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of all spot pairs with exchange price and volume limits;
-- Level1 quotes, order-book snapshots, public trades, and historical candles;
-- realtime books and trades through the official Market Data WebSocket;
-- balances, open orders, completed-order history, and account fill history;
-- realtime private order and fill events through the official Private WebSocket;
-- limit and market orders, client order IDs, maker-only limit orders, individual
-  cancellation, and filtered group cancellation;
-- HMAC-SHA512 authentication, public/trading/cancellation rate limits,
-  exchange-clock adjustment, reconnect with channel recovery, fresh private
-  tokens on reconnect, and lost-placement-response reconciliation.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-An API key is optional for public market data. Trading, balances, histories, and
-the private stream require an Indodax TAPI key and secret. A market buy uses
-`IndodaxOrderCondition.QuoteAmount`, because Indodax accepts market-buy size in
-quote currency; market sells use regular order volume. Set `PostOnly` on a limit
-order to request Indodax `MOC` maker-only execution.
+## Typical use
 
-Order and fill histories use the dedicated Trade API v2 endpoints. The legacy
-`tradeHistory` and `orderHistory` TAPI methods are not used because Indodax
-decommissioned them on April 7, 2026.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [Indodax API documentation](https://github.com/btcid/indodax-official-api-docs)
-- [Indodax website](https://indodax.com/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Indodax and by the connected account or API plan.

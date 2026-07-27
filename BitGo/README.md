@@ -1,63 +1,21 @@
-# StockSharp BitGo Connector
+# BitGo Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with BitGo Prime trading. It uses the
-authenticated Prime REST API for accounts, products, balances, order entry,
-cancellation, and history, and the official Trade WebSocket for Level 2 order
-books and private order lifecycle events.
+The **BitGo connector** connects StockSharp to a digital-asset custody, settlement, or institutional service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Access and configuration
+## Key capabilities
 
-Configure a BitGo access token with the `trade_view` scope. Order entry also
-requires `trade_trade`. If the token can access more than one Prime account,
-set `Account` to the exact account ID or name; a single available account is
-selected automatically.
+- Typical coverage: digital assets, FX and CFDs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes and order books.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported account, transfer, and transaction workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Production defaults are:
+## Typical use
 
-- REST: `https://app.bitgo.com/`
-- WebSocket: `wss://app.bitgo.com/api/prime/trading/v1/ws`
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-For test use, replace `app.bitgo.com` with `app.bitgo-test.com` in both
-settings. `ApiEndpoint` can also point to BitGo Express, which proxies the
-same Prime REST paths. The WebSocket remains a direct BitGo connection. The
-access token is stored as a secure string and is sent only in the HTTP or
-WebSocket handshake `Authorization: Bearer` header.
-
-## Protocol coverage
-
-The connector supports:
-
-- Prime account selection and product discovery;
-- real-time Level 1 and aggregated Level 2 books from snapshot plus
-  incremental WebSocket updates;
-- account balance snapshots and periodic reconciliation;
-- market, limit, stop-market, and stop-limit orders;
-- regular and time-sliced TWAP orders;
-- Steady Pace orders with interval, child-size, and variance controls;
-- funded and margin order routing when enabled for the product;
-- GTC, GTD, IOC, and FOK instructions where accepted by BitGo;
-- single and filtered group cancellation;
-- live private order and fill events;
-- paginated REST order and trade history.
-
-StockSharp order volume is submitted in the product's base currency. BitGo
-also permits quote-currency quantities, but using base quantity preserves the
-framework's order-volume semantics. BitGo does not expose REST replace; use
-cancel followed by a new order. The adapter reconciles live WebSocket state
-with REST snapshots without retrying order mutations.
-
-Custody wallet creation, wallet policies, blockchain transfers, transaction
-signing, staking, settlement webhooks, and administrative APIs are outside
-this trading adapter. They remain available through the broader BitGo API and
-BitGo Express.
-
-API timestamps are normalized to UTC `DateTime` values.
-
-## Official resources
-
-- [BitGo Developer Portal](https://developers.bitgo.com/)
-- [Prime trading WebSocket overview](https://developers.bitgo.com/reference/websocket-overview/)
-- [Level 2 WebSocket channel](https://developers.bitgo.com/reference/tradewebsocketlevel2/)
-- [Order WebSocket channel](https://developers.bitgo.com/reference/tradewebsocketorders/)
-- [Place Order API](https://developers.bitgo.com/reference/tradeordersadd/)
-- [Place Trade Orders guide](https://developers.bitgo.com/docs/trade-funded-place-orders/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by BitGo and by the connected account or API plan.

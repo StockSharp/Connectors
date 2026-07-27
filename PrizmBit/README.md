@@ -1,39 +1,22 @@
-# PrizmBit Connector for StockSharp
+# PrizmBit Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **PrizmBit** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `PrizmBitMessageAdapter` message adapter, exposing PrizmBit market data and trading operations through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **PrizmBit connector** connects StockSharp to a legacy digital-asset exchange integration. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+The upstream service may no longer be available. This integration is retained for compatibility, maintenance of existing systems, and study of a complete connector implementation.
 
-- Market data: tick trades, order log, Level1 (best bid/ask and last trade).
-- Real-time streaming over a WebSocket connection.
-- Order registration, replacement and cancellation through the standard StockSharp transactional model.
-- Trading board code: `PrizmBit`.
+## Key capabilities
 
-## Configuration
+- Typical coverage: digital assets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books, candles and order-log events.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-`PrizmBitMessageAdapter` is configured through the following properties:
+## Typical use
 
-- `Key` – API key.
-- `Secret` – API secret used to sign requests.
-- `Token` – Personal API token.
-- `AccountId` – Account identifier.
-- `IsDemo` – Set to `true` to use the demo/sandbox environment.
+Use this connector to support an existing integration or as practical source code for learning how market data, transactions, and protocol details are mapped into StockSharp.
 
-## Usage
-
-```csharp
-var adapter = new PrizmBitMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_KEY".ToSecureString(),
-    Secret = "YOUR_SECRET".ToSecureString(),
-    Token = "YOUR_TOKEN".ToSecureString(),
-    AccountId = "...",
-    IsDemo = false,
-};
-```
-
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data and send orders through the StockSharp API.
-
-## Documentation
-
-See the StockSharp guide on [creating your own connector](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html).
+Before operational use, verify that the upstream API and required endpoints are still available.

@@ -1,47 +1,21 @@
-# StockSharp Tinkoff Connector
+# Tinkoff Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-## Overview
+The **Tinkoff connector** connects StockSharp to a broker or trading service for Russian markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-This project contains the StockSharp (S#) connector for [Tinkoff Invest API](https://tinkoff.github.io/investAPI/). The connector implements a message adapter that communicates with Tinkoff via gRPC and exposes market data and trading capabilities inside the S# infrastructure. Both the live and sandbox (demo) environments are supported.
+## Key capabilities
 
-The source code can be used as a reference for building custom integrations or included directly into your trading applications that rely on StockSharp.
+- Typical coverage: equities, futures, options, FX and CFDs, bonds and fixed income.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Features
+## Typical use
 
-- **Authentication** using a personal API token
-- **Demo mode** via the sandbox API when `IsDemo` is enabled
-- **Market data** subscriptions for:
-  - Candles
-  - Trades (tick data)
-  - Level1 quotes (best bid/ask and last trade)
-  - Market depth (order book)
-- **Historical candle loading** from the history service
-- **Security lookup** for stocks, futures, options, currencies and bonds
-- **Order management**: place, cancel and replace both regular and stop orders
-- **Streaming updates** for orders, trades and portfolios with automatic reconnection
-- **Portfolio and position** requests
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Requirements
-
-- [.NET 6.0](https://dotnet.microsoft.com/) or newer
-- Access to the Tinkoff Invest API and a valid API token
-
-
-## Usage Example
-
-Instantiate `TinkoffMessageAdapter`, supply your token and specify whether the sandbox should be used:
-
-```csharp
-var adapter = new TinkoffMessageAdapter(TransactionIdGenerator.Default)
-{
-    Token = "<YOUR_TOKEN>".ToSecureString(),
-    IsDemo = false // true for sandbox trading
-};
-```
-
-Attach the adapter to a `Connector` instance or another component that works with message adapters. You can then subscribe to market data, send orders and track portfolio changes in the usual StockSharp style.
-
-## Documentation
-
-General StockSharp documentation is available at [doc.stocksharp.com/en](https://doc.stocksharp.com/en/). The Russian documentation page for the Tinkoff adapter is located [here](https://doc.stocksharp.com/ru/topics/api/connectors/russia/tinkoff.html).
-
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Tinkoff and by the connected account or API plan.

@@ -1,39 +1,21 @@
 # OSL Global Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates the current OSL Global SPOT API through the
-production REST service and both documented WebSocket generations.
+The **OSL Global connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of SPOT instruments with native price, quantity, and order-size
-  limits;
-- Level1 REST snapshots and realtime ticker updates;
-- recent public trades through REST and realtime trades through WebSocket;
-- REST order-book snapshots and native realtime 5- or 15-level snapshots;
-- historical OHLCV candles for every fixed interval exposed by OSL and
-  realtime candlestick updates through the official kline stream;
-- API-key authentication, account balances, open and historical orders,
-  trade fills, and realtime asset, order, and fill updates;
-- market and limit registration, GTC, IOC, FOK, post-only, quote-amount market
-  buys, all documented self-trade prevention policies, individual
-  cancellation, filtered cancellation, and native cancel-all;
-- bounded retry of safe REST reads, request signing over the exact transmitted
-  query and body, WebSocket heartbeat, reconnect with subscription recovery,
-  documented message pacing, and response-size limits.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data does not require credentials. Private operations require an
-OSL API key and secret. The passphrase may be empty when the API key was
-created without one. OSL enforces API-key IP whitelisting.
+## Typical use
 
-OSL currently publishes SPOT ticker, trade, depth, private account, and private
-order channels on the v2 WebSocket endpoints. Its documented realtime kline
-channel remains on the `/openapi/v1/ws` endpoint, so the connector keeps that
-official stream separate instead of emulating candles by polling REST.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [OSL Global API overview](https://docs.glb.osl.com/reference/overview-osl-global-api)
-- [SPOT trading REST API](https://docs.glb.osl.com/reference/spot-trading-module)
-- [SPOT WebSocket overview](https://docs.glb.osl.com/reference/spot-websocket-overview)
-- [WebSocket authentication](https://docs.glb.osl.com/reference/websocket-authentication)
-- [OSL Global](https://osl.com/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by OSL Global and by the connected account or API plan.

@@ -1,26 +1,21 @@
 # BTC Markets Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates BTC Markets cryptocurrency spot markets through the
-current REST v3 API and the official WebSocket v2 feed.
+The **BTC Markets connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of all markets with their native price and volume precision;
-- Level1 data, full order books, public trades, and OHLCV candle history;
-- realtime Level1, trades, and incremental order books through WebSocket;
-- CRC32 order-book checksum validation with automatic snapshot recovery;
-- balances, current and historical orders, and account trades;
-- realtime private order and fund changes through authenticated WebSocket;
-- market, limit, stop, stop-limit, and take-profit orders;
-- GTC, IOC, FOK, post-only, self-trade prevention, order replacement, and
-  individual or filtered bulk cancellation.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-API credentials are optional for public market data. Trading and account data
-require an API key and its Base64-encoded private key. Grant only the account
-permissions needed by the application.
+## Typical use
 
-Official documentation:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- [BTC Markets API documentation](https://docs.btcmarkets.net/)
-- [BTC Markets REST API v3](https://docs.btcmarkets.net/doc/)
-- [Official BTC Markets API clients](https://github.com/BTCMarkets)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by BTC Markets and by the connected account or API plan.

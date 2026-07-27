@@ -1,35 +1,21 @@
 # NDAX Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates NDAX spot markets through the exchange's current
-production REST API and AlphaPoint WebSocket gateway.
+The **NDAX connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of instruments and currencies with native price, quantity, and
-  minimum-order increments;
-- Level1 snapshots and realtime Level1 updates;
-- recent public trades through REST and realtime trades through WebSocket;
-- historical OHLCV candles and native realtime candle subscriptions for all
-  intervals exposed by NDAX;
-- REST order-book snapshots, aggregated order-level WebSocket updates,
-  sequence validation, duplicate suppression, and automatic snapshot recovery
-  after a sequence gap;
-- API-key authentication, account balances, open orders, order history,
-  account trades, and realtime account events;
-- market, limit, stop-market, and stop-limit registration, individual
-  cancellation, filtered cancellation, and native cancel-all;
-- bounded retry of safe REST reads, documented rate limits, WebSocket
-  reconnect and subscription restoration, heartbeat, and response-size limits.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data does not require credentials. Private operations require an
-NDAX API key, secret, and user ID. `AccountId` may remain zero to use the
-default account returned by authentication. NDAX currently limits clients to
-50 REST requests per minute and 10 WebSocket subscriptions per connection;
-the connector enforces both constraints.
+## Typical use
 
-Official resources:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- [NDAX API reference](https://apidoc.ndax.io/)
-- [API comprehensive guide](https://ndax.io/en/support/api_access_and_developer_tools/api-comprehensive-guide)
-- [NDAX API access and developer tools](https://ndax.io/en/support/api_access_and_developer_tools)
-- [NDAX](https://ndax.io/en)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by NDAX and by the connected account or API plan.

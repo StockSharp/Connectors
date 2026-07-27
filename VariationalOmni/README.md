@@ -1,31 +1,18 @@
-# Variational Omni connector for StockSharp
+# Variational Omni Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This connector uses Variational Omni's public read-only REST API. It discovers
-the currently listed perpetual markets and polls their latest market statistics
-without credentials.
+The **Variational Omni connector** connects StockSharp to a digital-asset market-data and analytics service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported functionality:
+## Key capabilities
 
-- perpetual-market discovery;
-- current mark price exposed as the StockSharp theoretical price;
-- current bid and ask from the API-provided base quote when available, with the
-  documented $1,000, $100,000, and $1,000,000 quotes used as fallbacks;
-- 24-hour USDC turnover and aggregate long-plus-short open interest;
-- configurable polling with the documented per-IP rate limit enforced by the
-  transport.
+- Typical coverage: digital assets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes.
+- This adapter is intended for market data and does not route orders.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Variational does not currently publish an Omni trading API or public WebSocket.
-The connector therefore does not advertise orders, portfolios, trades, candles,
-or market depth. The notional quote curve is not converted into a synthetic
-order book. Variational notes that quote values may be cached for up to ten
-minutes; every update retains the source quote timestamp.
+## Typical use
 
-Official resources:
+Use this connector to feed charts, market-data storage, analytics, research workflows, and strategy testing with provider data.
 
-- [Variational Omni API documentation](https://docs.variational.io/technical-documentation/api)
-- [Variational Omni](https://omni.variational.io/)
-- [Variational media kit](https://docs.variational.io/more/media-kit)
-- [StockSharp Variational Omni connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/variational_omni.html)
-
-Variational Omni and its marks are trademarks of their respective owner.
-StockSharp is not affiliated with or endorsed by Variational.
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Variational Omni and by the connected account or API plan.

@@ -1,45 +1,21 @@
-# Bitexbook Connector for StockSharp
+# Bitexbook Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-## Overview
+The **Bitexbook connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-This directory contains the source code of the **Bitexbook** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. The connector implements the `BitexbookMessageAdapter` which enables communication with the Bitexbook cryptocurrency exchange via HTTP REST and WebSocket APIs.
+## Key capabilities
 
-The project demonstrates how to integrate StockSharp with Bitexbook in order to obtain market data and perform trading operations. You can use the implementation as a reference when creating your own connectors or include it directly in your applications.
+- Typical coverage: digital assets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books, candles and order-log events.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Features
+## Typical use
 
-- Real-time communication over WebSocket for ticker updates and order events.
-- HTTP REST client for historical candles and trading requests.
-- Support for limit and market orders.
-- Balance check interval for monitoring account funds.
-- Mapping between StockSharp `SecurityId` and Bitexbook symbols.
-- Handles subscriptions for Level1, order log, and candle data.
-- Implements deposit and withdrawal operations via a custom order condition.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-
-## Usage
-
-Below is a simplified example of how the connector can be used within a StockSharp `Connector` instance.
-
-```csharp
-var adapter = new BitexbookMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YourApiKey".ToSecureString(),
-    Secret = "YourSecret".ToSecureString(),
-    BalanceCheckInterval = TimeSpan.FromMinutes(1)
-};
-
-var connector = new Connector
-{
-    Adapter = adapter
-};
-
-connector.Connect();
-```
-
-Once connected you can subscribe to market data or register/cancel orders via the standard StockSharp API.
-
-## Documentation
-
-Detailed instructions for creating custom connectors and using StockSharp can be found in the [official documentation](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/bitexbook.html).
-
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Bitexbook and by the connected account or API plan.

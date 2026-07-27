@@ -1,33 +1,21 @@
-# Lime Trader Connector for StockSharp
+# Lime Trader Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Lime Trader connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It uses the official Lime Trader REST API and account streaming feed.
+The **Lime Trader connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- OAuth password-flow authentication with an application client ID and secret.
-- US stock and option symbol lookup.
-- Current quote snapshots, including option Greeks when supplied by Lime.
-- Historical minute, hourly, daily, and weekly candles.
-- Account balances, buying power, positions, active orders, and current-day trades.
-- Real-time balance, position, order, and trade updates over the account WebSocket.
-- Market and limit order registration and order cancellation.
+- Typical coverage: equities, options.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Lime Trader does not provide a public market-data WebSocket. Quote subscriptions therefore return REST snapshots, while account and execution updates use the official WebSocket feed.
+## Typical use
 
-## Configuration
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `Login` — Lime user name.
-- `Password` — Lime password.
-- `Key` — OAuth client identifier issued for the application.
-- `Secret` — OAuth client secret issued for the application.
-
-API access, real-time data, options trading, and order routes depend on the permissions and market-data entitlements assigned to the Lime account.
-
-## Documentation
-
-- [StockSharp Lime Trader connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/lime.html)
-- [Official Lime Trader API](https://docs.lime.co/trader/)
-- [Authentication](https://docs.lime.co/trader/authentication/password-flow/)
-- [Account streaming feed](https://docs.lime.co/trader/accounts/streaming-feed/)
-- [Market data](https://docs.lime.co/trader/market-data/)
-- [Trading](https://docs.lime.co/trader/trading/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Lime Trader and by the connected account or API plan.

@@ -1,28 +1,21 @@
-# Tradovate Connector for StockSharp
+# Tradovate Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Tradovate connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It uses the official Tradovate REST and WebSocket APIs.
+The **Tradovate connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Futures contract lookup with maturity, exchange, tick-size and multiplier metadata.
-- Real-time quotes, trades and depth of market over WebSocket.
-- Historical and real-time time-frame candles.
-- Accounts, cash balances, positions, orders and fills.
-- Order registration, modification and cancellation.
-- Live and demo environments.
+- Typical coverage: futures.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Login` — Tradovate user name.
-- `Password` — Tradovate password.
-- `Key` — API key client identifier (`cid`).
-- `Secret` — API key secret (`sec`).
-- `AppId` and `AppVersion` — application identity registered with Tradovate.
-- `DeviceId` — stable device identifier registered for API access.
-- `IsDemo` — use the simulation environment.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Documentation
-
-- [StockSharp Tradovate connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/tradovate.html)
-- [Official Tradovate API documentation](https://api.tradovate.com/)
-- [Official Tradovate API examples](https://github.com/tradovate/example-api-js)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Tradovate and by the connected account or API plan.

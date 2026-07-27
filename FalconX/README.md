@@ -1,52 +1,21 @@
-# StockSharp FalconX Connector
+# FalconX Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with FalconX institutional spot trading.
-It uses the FalconX REST API for reference data, balances, FOK orders, and
-order history, the price WebSocket for executable quotes, and the order
-WebSocket for persistent and TWAP orders.
+The **FalconX connector** connects StockSharp to a digital-asset custody, settlement, or institutional service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Access and configuration
+## Key capabilities
 
-FalconX API access is provisioned to approved clients. Configure the API key,
-base64-encoded secret, and passphrase supplied by FalconX. The production
-defaults are:
+- Typical coverage: digital assets, FX and CFDs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes and order books.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported account, transfer, and transaction workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-- REST: `https://api.falconx.io/`;
-- executable-price stream: `wss://stream.falconx.io/price.tickers`;
-- order stream: `wss://order.falconx.io/order`.
+## Typical use
 
-FalconX may restrict credentials by source IP and entitlements. Sandbox or
-client-specific endpoints can be entered explicitly without changing the
-connector. Secrets are persisted through StockSharp secure-string storage and
-are never included in diagnostic output.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-`QuoteLevels` contains the positive base-asset quantities requested from the
-price stream. FalconX returns an executable two-sided price for each quantity.
-The adapter exposes `sell_price` as the bid and `buy_price` as the ask, and
-constructs market-depth levels from the incremental quantity curve. These are
-executable RFQ/RFS prices, not a public exchange order book.
-
-## Protocol coverage
-
-The connector supports:
-
-- enabled token-pair discovery and security lookup;
-- real-time Level 1 and synthetic market depth from executable-price updates;
-- portfolio and asset-balance snapshots;
-- REST market and limit FOK orders;
-- WebSocket limit GTC/GTX and market or limit TWAP orders;
-- order cancel, replace, live status updates, fills, and REST history.
-
-REST history is requested in windows of at most 31 days and in pages of at
-most 100 orders, matching the documented API limits. FalconX does not expose
-public trades or candles through these APIs, so those data types are not
-advertised. Custody, transfers, derivatives, allocations, and undocumented
-client-specific algorithms are outside this adapter.
-
-FalconX timestamps are normalized to UTC `DateTime` values.
-
-## Official resources
-
-- [FalconX API documentation](https://app.falconx.io/docs/rfq-rfs?token=3626)
-- [FalconX WebSocket examples](https://github.com/falconxio/fx-ws-clients)
-- [FalconX electronic trading](https://www.falconx.io/services/trading)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by FalconX and by the connected account or API plan.

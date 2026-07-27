@@ -1,32 +1,21 @@
 # Pintu Pro Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Pintu Pro spot markets through the official v1 REST
-and WebSocket protocols.
+The **Pintu Pro connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- symbol discovery with price, quantity, and order-value limits;
-- Level1 quotes, full 10-level order-book snapshots, and public trades;
-- realtime order books and trades through the official public WebSocket;
-- balances, open orders, order history, and account fill history;
-- realtime private order, fill, and balance events;
-- limit and market orders, GTC, IOC, FOK, and post-only execution;
-- client order IDs, individual cancellation, all-orders cancellation by symbol,
-  and side-filtered cancellation;
-- weighted rate limiting, server-clock adjustment from HTTP dates, required
-  WebSocket heartbeat replies, reconnect/resubscribe, snapshot recovery, and
-  lost-response reconciliation by `client_order_id`.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-An API key is optional for public market data. Trading, balances, and private
-streams require a Pintu Pro API key and HMAC-SHA256 secret. A market buy uses
-`PintuProOrderCondition.QuoteAmount`, because the exchange accepts its amount in
-quote currency; market sells use the regular order volume.
+## Typical use
 
-The public documentation currently publishes the UAT REST and WebSocket hosts,
-so those are the connector defaults. Both endpoint settings are configurable
-and can be replaced with the production hosts enabled for the account.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [Pintu Pro API documentation](https://docs.pintu.pro/)
-- [Pintu press kit and brand assets](https://pintu.co.id/en/press-kit)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Pintu Pro and by the connected account or API plan.

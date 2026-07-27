@@ -1,33 +1,21 @@
-# Interactive Brokers Connector for StockSharp
+# Interactive Brokers Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Interactive Brokers connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. `InteractiveBrokersMessageAdapter` connects directly to Trader Workstation (TWS) or IB Gateway through the native TWS socket protocol.
+The **Interactive Brokers connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Streaming Level1, market depth, tick-by-tick data and order updates.
-- Historical market data and candles.
-- Security lookup, scanners, fundamental reports and option parameters.
-- Portfolio, position and account data.
-- Order registration, replacement and cancellation, including advanced IB order conditions.
+- Typical coverage: equities, futures, options, FX and CFDs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books, candles and financial news.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Address` — TWS or IB Gateway socket endpoint. Paper TWS commonly uses port `7497`; paper IB Gateway commonly uses `4002`.
-- `ClientId` — API client identifier configured for the TWS session.
-- TWS or IB Gateway must be running with socket clients enabled.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Usage
-
-```csharp
-var adapter = new InteractiveBrokersMessageAdapter(new IncrementalIdGenerator())
-{
-    Address = new IPEndPoint(IPAddress.Loopback, 7497),
-    ClientId = 1,
-};
-```
-
-## Documentation
-
-- [StockSharp Interactive Brokers connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/interactive_brokers.html)
-- [Official Interactive Brokers TWS API](https://interactivebrokers.github.io/tws-api/)
-- [TWS API initial setup](https://interactivebrokers.github.io/tws-api/initial_setup.html)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Interactive Brokers and by the connected account or API plan.

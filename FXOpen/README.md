@@ -1,18 +1,21 @@
-# StockSharp FXOpen TickTrader Connector
+# FXOpen TickTrader Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with the FXOpen TickTrader Web API.
+The **FXOpen TickTrader connector** connects StockSharp to an FX/CFD broker or trading platform. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- instruments and current quotes;
-- Level 1 and market depth over the native Feed WebSocket;
-- historical and streaming time-frame candles;
-- portfolios, balances, positions, orders, and executions;
-- market, limit, stop, and stop-limit orders;
-- live and demo environments.
+- Typical coverage: equities, futures, FX and CFDs, commodities, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Create an FXOpen Web API token and configure its ID, key, and secret in the
-adapter settings. An optional one-time password can be supplied when the account
-requires two-factor authentication.
+## Typical use
 
-Official API documentation: https://ticktrader.fxopen.com/api
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
+
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by FXOpen TickTrader and by the connected account or API plan.

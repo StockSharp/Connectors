@@ -1,31 +1,21 @@
-# Upstox V3 Connector for StockSharp
+# Upstox V3 Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Upstox connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It uses the current Upstox REST APIs, Market Data Feed V3 protobuf protocol, and Portfolio Stream WebSocket.
+The **Upstox V3 connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Complete BOD instrument lookup for NSE, BSE, MCX, currency, index, futures, and options segments.
-- Real-time Level 1, trades, five-level market depth, option greeks, open interest, and market status over Market Data Feed V3.
-- Historical candles through the V3 flexible-interval API.
-- Profile, funds, positions, holdings, orders, and trades.
-- Real-time order, position, and holding updates through Portfolio Stream Feed.
-- V3 order placement, modification, cancellation, automatic slicing, AMO, disclosed quantity, stop triggers, and market protection.
-- Live and order-sandbox environments.
+- Typical coverage: equities, futures, options, FX and CFDs, funds and ETFs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Token` — Upstox OAuth access token. A standard token is required for trading; an analytics token can be used for supported read-only and market-data operations.
-- `IsDemo` — route place, modify, and cancel operations to the Upstox V3 sandbox. Upstox currently does not provide sandbox market-data or portfolio streams.
-- `DefaultProduct` — default Delivery (`D`), Intraday (`I`), or MTF product. `UpstoxOrderCondition.Product` can override it per order.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Upstox identifies securities by `instrument_key`, for example `NSE_EQ|INE669E01016`. The connector stores this value in `SecurityId.Native`; applications should select instruments through the connector's security lookup before subscribing or trading.
-
-## Documentation
-
-- [StockSharp Upstox connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/upstox.html)
-- [Upstox Developer API](https://upstox.com/developer/api-documentation/)
-- [Market Data Feed V3](https://upstox.com/developer/api-documentation/v3/get-market-data-feed/)
-- [Portfolio Stream Feed](https://upstox.com/developer/api-documentation/get-portfolio-stream-feed/)
-- [Order API V3](https://upstox.com/developer/api-documentation/v3/place-order/)
-- [Historical Candle Data V3](https://upstox.com/developer/api-documentation/v3/get-historical-candle-data/)
-- [Authentication](https://upstox.com/developer/api-documentation/authentication/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Upstox V3 and by the connected account or API plan.

@@ -1,35 +1,20 @@
-# Motilal Oswal MO API connector
+# Motilal Oswal MO API Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the Motilal Oswal MO API connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform.
+The **Motilal Oswal MO API connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Protocol coverage
+## Key capabilities
 
-- MO API REST endpoints for the instrument and index masters, order placement, modification and cancellation, order and trade books, positions, depository holdings, margin details, the client profile, and the account broadcast limit.
-- The official binary market WebSocket at `wss://ws1feed.motilaloswal.com/jwebsocket/jwebsocket` for realtime Level1, last-trade, open-interest, circuit-limit, index, and five-level order-book updates.
-- The official JSON order WebSocket for realtime account-wide order and trade updates. Live and UAT endpoints are selected with `IsDemo`.
-- Portfolio snapshots from margin, position, and holding endpoints, refreshed every 30 seconds while a live portfolio subscription is active.
+- Typical coverage: equities, futures, options, FX and CFDs, commodities.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Binary market messages are decoded directly from the official 30-byte packet layout.
+## Typical use
 
-MO API does not document historical ticks, historical order books, or a historical candle query. Its EOD endpoint provides the current exchange snapshot rather than a requested historical interval, so the connector intentionally does not advertise historical market data.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Authentication
-
-Configure the API key, API secret, client code, current daily authentication token, and access token issued by the MO API login flow. The connector accepts these already-issued tokens and does not store the account password or TOTP secret.
-
-MO API requires local and public IPv4 addresses, a MAC address, vendor information, and an installed-application identifier on every REST request. Configure real values registered for the application; the defaults are placeholders suitable only for initial setup.
-
-`IsDemo` selects the UAT REST and order-stream endpoints. The official SDK uses the same market-broadcast endpoint for live and UAT sessions, and market data remains subject to the account's exchange entitlements.
-
-## Security identifiers
-
-Run a security lookup before subscribing or trading. The connector stores `exchange|scripCode` in `SecurityId.Native`, preserving the exchange segment when numeric scrip codes overlap.
-
-Supported mappings cover NSE and BSE cash, NSE and BSE derivatives and currency, MCX, and NCDEX. The binary feed exposes five order-book levels. The connector reads and enforces the account-specific broadcast subscription limit returned by MO API.
-
-## Official references
-
-- [MO API documentation](https://invest.motilaloswal.com/moAPI/APIDocumentation/Introduction)
-- [Official .NET SDK](https://github.com/motradingapi/DotNetSDK)
-- [Official Python SDK](https://github.com/motradingapi/PythonSDK)
-- [Motilal Oswal developer login](https://invest.motilaloswal.com/moAPI/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Motilal Oswal MO API and by the connected account or API plan.

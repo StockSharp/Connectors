@@ -1,66 +1,23 @@
-# BTC-e (WEX) Connector for StockSharp
+# BTC-e Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-## Overview
+The **BTC-e connector** connects StockSharp to a legacy digital-asset exchange integration. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-This project contains the source code of the **BtceMessageAdapter**, a connector used to interact with the BTC‑e crypto exchange (later renamed to WEX). The adapter is implemented as part of the StockSharp trading framework and provides both real‑time market data and transactional capabilities.
+The upstream service may no longer be available. This integration is retained for compatibility, maintenance of existing systems, and study of a complete connector implementation.
 
-## Features
+## Key capabilities
 
-- **Market Data**: Receives ticks, order books and level 1 information through a WebSocket connection. Historical data can be downloaded via the REST API.
-- **Trading Operations**: Supports registration and cancellation of limit orders. Conditional orders are used to perform withdrawals.
-- **Portfolio Information**: The adapter retrieves account balances and updates positions based on trades and wallet changes.
-- **Configurable Connection**: API access is configured with a key and secret as well as a domain address (default value is `https://wex.nz/`).
-- **Pusher WebSocket Client**: Real‑time market updates are delivered by the internal `PusherClient` class located under `Native`.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## File Structure
+## Typical use
 
-- `BtceMessageAdapter.cs` – core adapter implementation and initialization logic.
-- `BtceMessageAdapter_MarketData.cs` – market data subscription handling.
-- `BtceMessageAdapter_Transaction.cs` – order registration, cancellations and portfolio management.
-- `BtceMessageAdapter_Settings.cs` – adapter settings including API key, secret and heartbeat interval.
-- `BtceOrderCondition.cs` – order condition class for withdrawal operations.
-- `Native/` – low level protocol helpers such as the REST `HttpClient` and WebSocket `PusherClient`.
+Use this connector to support an existing integration or as practical source code for learning how market data, transactions, and protocol details are mapped into StockSharp.
 
-## Installation
-
-1. Add the StockSharp connectors to your solution via the [StockSharp NuGet feed](https://stocksharp.com/en/products/nuget_manual/).
-2. Include the `Btce` project or compiled assembly in your application.
-3. Reference `BtceMessageAdapter` from your trading connector.
-
-## Usage Example
-
-```csharp
-var connector = new Connector();
-var adapter = new BtceMessageAdapter(connector.TransactionIdGenerator)
-{
-    Key = "YOUR_API_KEY".ToSecureString(),
-    Secret = "YOUR_SECRET".ToSecureString(),
-    Address = BtceMessageAdapter.DefaultDomain,
-};
-
-connector.Adapter.InnerAdapters.Add(adapter);
-connector.Connect();
-
-// request available instruments
-connector.LookupSecurities(new SecurityLookupMessage());
-
-// place a limit order
-await connector.RegisterOrderAsync(new OrderRegisterMessage
-{
-    SecurityId = "BTC/USD".ToSecurityId(BoardCodes.Btce),
-    Side = Sides.Buy,
-    OrderType = OrderTypes.Limit,
-    Price = 650m,
-    Volume = 0.1m,
-});
-```
-
-Withdrawal can be performed by registering an order with a `BtceOrderCondition` instance containing the required withdrawal information.
-
-## Documentation
-
-StockSharp documentation provides general instructions on working with message adapters: [Creating your own connector](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html).
-
-## Support
-
-Questions and discussion can be posted in the [StockSharp chat](https://stocksharp.com/en/chat/).
+Before operational use, verify that the upstream API and required endpoints are still available.

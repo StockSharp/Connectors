@@ -1,35 +1,20 @@
 # Coinhako Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Coinhako through the official Public API v1.
+The **Coinhako connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of Coinhako indicative spot markets for configurable counter
-  currencies;
-- live Level1 bid and ask prices through rate-conscious REST polling;
-- account balances, including separately reported order and alternative-product
-  locks;
-- RFQ market orders and limit orders, client order IDs, GTC and GTD expiry,
-  individual cancellation, and filtered group cancellation;
-- current and historical order lookup with live status polling;
-- ECDSA secp256k1 request signing, error handling, bounded retries for
-  safe reads, and lost-placement/cancellation-response reconciliation.
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public spot prices do not require credentials. Account and trading operations
-require Coinhako beta API access: `Key` is the hexadecimal public key sent as
-`X-API-KEY`, while `Secret` is the PEM-encoded ECDSA secp256k1 private key. The
-signature covers the HTTP method, absolute target URI, SHA-256 body digest,
-timestamp, and algorithm exactly as specified by Coinhako.
+## Typical use
 
-Coinhako's current Public API v1 does not publish a WebSocket or an order-book,
-trade, or candle feed. Consequently, the connector polls the official spot-price
-endpoint for Level1 and does not advertise unsupported market-depth, tick, or
-candle capabilities. The API also reports completed orders but no individual
-execution records; the adapter emits one deterministic completion execution for
-a completed order and clearly identifies it by the order ID.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [Coinhako Public API documentation](https://www.coinhako.com/api-docs/index.html)
-- [Coinhako API terms](https://www.coinhako.com/legal)
-- [Coinhako website](https://www.coinhako.com/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Coinhako and by the connected account or API plan.

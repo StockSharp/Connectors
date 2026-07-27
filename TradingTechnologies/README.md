@@ -1,43 +1,20 @@
-# Trading Technologies Connector for StockSharp
+# Trading Technologies Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This connector integrates StockSharp with the official client-side TT .NET SDK. The connector does not redistribute `tt-net-api.dll`, TT credentials, or market data.
+The **Trading Technologies connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Instrument search and exact instrument lookup.
-- Real-time Level1 fields, aggregated market depth, and time-and-sales subscriptions.
-- TT account, order, fill, position, and P&L snapshots and live updates.
-- Order registration, modification, and cancellation.
-- Production-live, production-simulation, and UAT-certification environments.
-- Native TT Edge WebSocket connectivity, recovery, and resynchronization managed by the official SDK.
+- Typical coverage: equities, futures, options, FX and CFDs, bonds and fixed income, funds and ETFs, commodities, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Requirements
+## Typical use
 
-- A TT user with the required market-data and trading permissions.
-- A TT application key and secret, represented by the combined `GUID:GUID` app-secret string required by the TT .NET SDK.
-- The official TT .NET SDK and its matching runtime dependencies.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Install the client-side TT .NET SDK, then set `SdkPath` to `tt-net-api.dll` or its containing directory. The library is loaded at runtime so a proprietary SDK binary is never included in this package.
-
-Only one TT SDK session should be hosted in a process. `TTAPI.Shutdown` is global to the client-side SDK.
-
-## Configuration
-
-- `SdkPath` — path to `tt-net-api.dll` or its containing directory.
-- `AppSecretKey` — combined TT application key and secret.
-- `Environment` — `ProdLive`, `ProdSim`, or `UatCert`.
-- `InitializationTimeout` — SDK initialization timeout in milliseconds.
-- `MarketDepth` — maximum number of aggregated order-book levels.
-- `IsBinaryProtocol` — enables the TT binary protocol.
-- `IsOptionsEnabled` — enables options market data in the SDK session.
-
-The connector intentionally advertises real-time data only. The client-side TT .NET SDK market-data subscriptions do not provide candle or historical-tick downloads; use a separate historical source when those data types are required. Instrument visibility, prices, and trading operations are always limited by the connected TT user's entitlements.
-
-## Documentation
-
-- [StockSharp Trading Technologies connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/trading_technologies.html)
-- [Official TT APIs overview](https://library.tradingtechnologies.com/apis/tt-apis/)
-- [Official TT .NET SDK guide](https://library.tradingtechnologies.com/tt-net-sdk/)
-- [TT .NET SDK price subscriptions](https://library.tradingtechnologies.com/tt-net-sdk/articles/md-price-sub.html)
-- [TT .NET SDK time-and-sales subscriptions](https://library.tradingtechnologies.com/tt-net-sdk/articles/md-ts-sub.html)
-- [TT .NET SDK order submission](https://library.tradingtechnologies.com/apis/tt-net-sdk/working-with-orders-and-fills-tt-net-sdk/submitting-orders-2/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Trading Technologies and by the connected account or API plan.

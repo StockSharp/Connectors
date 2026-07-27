@@ -1,34 +1,21 @@
 # VALR Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates VALR spot, margin, and perpetual-futures markets
-through the current REST and WebSocket APIs.
+The **VALR connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of active spot and perpetual pairs with native price, quantity,
-  notional, and margin constraints;
-- Level1 market summaries, aggregated order books, and public trades through
-  REST snapshots and the official trade WebSocket;
-- historical OHLCV candles for every interval documented by VALR and realtime
-  one-minute trade buckets;
-- HMAC-SHA512 authentication, including optional primary-account
-  impersonation of a subaccount;
-- balances, open perpetual positions, realised and unrealised PnL, and
-  leverage;
-- market, limit, post-only, stop-loss-limit, and take-profit-limit orders;
-- GTC, IOC, and FOK time-in-force, spot margin, and futures reduce-only flags;
-- native order modification, individual and filtered bulk cancellation;
-- open and historical orders, account fills, and realtime balance, order,
-  execution, and position updates through the account WebSocket.
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public REST market data works without credentials. VALR requires an API key
-and secret when establishing both documented WebSocket connections. Without
-credentials, use history-only subscriptions; with credentials, realtime market
-and account streams are enabled automatically. Set `SubAccountId` when a
-primary-account key should act on a margin- or futures-enabled subaccount. A
-key created directly on that subaccount does not need this setting.
+## Typical use
 
-Official documentation:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- [VALR API documentation](https://docs.valr.com/)
-- [VALR official API agent reference](https://github.com/valrdotcom/valr-agent-skills)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by VALR and by the connected account or API plan.

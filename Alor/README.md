@@ -1,33 +1,20 @@
-# Alor Connector for StockSharp
+# Alor Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **Alor** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `AlorMessageAdapter` message adapter, exposing Alor market data and trading operations through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **Alor connector** connects StockSharp to a broker or trading service for Russian markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Market data: order book (market depth), Level1 (best bid/ask and last trade), tick trades.
-- Real-time streaming over a WebSocket connection.
-- Order registration, replacement and cancellation through the standard StockSharp transactional model.
-- Trading board code: `Moex`.
+- Typical coverage: equities, futures, options.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-`AlorMessageAdapter` is configured through the following properties:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `Token` – Personal API token.
-- `IsDemo` – Set to `true` to use the demo/sandbox environment.
-
-## Usage
-
-```csharp
-var adapter = new AlorMessageAdapter(new IncrementalIdGenerator())
-{
-    Token = "YOUR_TOKEN".ToSecureString(),
-    IsDemo = false,
-};
-```
-
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data and send orders through the StockSharp API.
-
-## Documentation
-
-See the StockSharp guide on [creating your own connector](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html).
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Alor and by the connected account or API plan.

@@ -1,35 +1,20 @@
-# Hyperliquid Connector for StockSharp
+# Hyperliquid Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the **Hyperliquid** connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It implements the `HyperliquidMessageAdapter` message adapter, exposing Hyperliquid market data and trading operations through the StockSharp message model. The source can be used as a reference for building your own connector or included directly in a StockSharp-based application.
+The **Hyperliquid connector** connects StockSharp to an on-chain trading and liquidity protocol. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Market data: tick trades, order book (market depth), Level1 (best bid/ask and last trade).
-- Real-time streaming over a WebSocket connection.
-- Order registration, replacement and cancellation through the standard StockSharp transactional model.
-- Trading board code: `HyperliquidSpot`.
+- Typical coverage: on-chain assets and liquidity pools.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Provider-supported swap or blockchain transaction submission.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-`HyperliquidMessageAdapter` is configured through the following properties:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `Token` – Personal API token.
-- `PrivateKey` – Private key used to sign requests.
-- `Address` – Connection endpoint address.
-
-## Usage
-
-```csharp
-var adapter = new HyperliquidMessageAdapter(new IncrementalIdGenerator())
-{
-    Token = "YOUR_TOKEN".ToSecureString(),
-    PrivateKey = "YOUR_PRIVATEKEY".ToSecureString(),
-    Address = "...",
-};
-```
-
-Add the adapter to a `Connector` (or another component that consumes message adapters) and connect as usual; then subscribe to market data and send orders through the StockSharp API.
-
-## Documentation
-
-See the [Hyperliquid connector documentation](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/hyperliquid.html).
+Available networks, pools, instruments, and transaction functions depend on Hyperliquid, the configured RPC or indexer services, and wallet permissions.

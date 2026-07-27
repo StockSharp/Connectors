@@ -1,35 +1,19 @@
-# E*TRADE Connector for StockSharp
+# E*TRADE Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This directory contains the E*TRADE Developer Platform connector for the [StockSharp](https://github.com/StockSharp/StockSharp) trading platform. It uses the E*TRADE REST API and OAuth 1.0a authentication.
+The **E*TRADE connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- Equity security lookup and Level1 snapshots.
-- Account balances and positions.
-- Equity order registration and cancellation.
-- Production and sandbox environments.
+- Typical coverage: equities.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-## Configuration
+## Typical use
 
-- `Key` and `Secret` — OAuth consumer credentials.
-- `Token` and `AccessSecret` — authorized user-session credentials.
-- `IsDemo` — enables the sandbox API host.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-## Usage
-
-```csharp
-var adapter = new ETradeMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_CONSUMER_KEY".ToSecureString(),
-    Secret = "YOUR_CONSUMER_SECRET".ToSecureString(),
-    Token = "YOUR_ACCESS_TOKEN".ToSecureString(),
-    AccessSecret = "YOUR_ACCESS_SECRET".ToSecureString(),
-    IsDemo = true,
-};
-```
-
-## Documentation
-
-- [StockSharp E*TRADE connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/e_trade.html)
-- [Official E*TRADE getting started guide](https://developer.etrade.com/getting-started)
-- [E*TRADE OAuth and sandbox guide](https://developer.etrade.com/getting-started/developer-guides)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by E*TRADE and by the connected account or API plan.

@@ -1,36 +1,21 @@
-# QFEX connector for StockSharp
+# QFEX Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates the current official QFEX production APIs for
-perpetual futures on equities, indices, commodities, and currencies.
+The **QFEX connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported functionality:
+## Key capabilities
 
-- active-instrument discovery through the official REST reference-data API;
-- live Level1, complete Level2 snapshots, public trades, mark and underlier
-  prices, open interest, and price limits through the public WebSocket;
-- historical and streaming 1-minute, 5-minute, 15-minute, 1-hour, 4-hour, and
-  daily candles;
-- optional HMAC-authenticated balances, positions, open and historical orders,
-  fills, and user trades;
-- limit, market, add-liquidity-only, IOC, FOK, cancel, replace, and cancel-all
-  order flows.
+- Typical coverage: digital assets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data requires no credentials. Configure `Key` and `Secret`
-together to enable account data and order entry. `AccountId` is optional and
-selects a QFEX subaccount for both REST and WebSocket requests. Secrets are
-used only to compute HMAC-SHA256 signatures and are never transmitted.
+## Typical use
 
-QFEX publishes complete pulsed order-book snapshots rather than incremental updates, so the connector advertises snapshot depth. The API does not expose public historical trades; tick subscriptions are therefore live-only.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [QFEX API documentation](https://docs.qfex.com/)
-- [QFEX WebSocket overview](https://docs.qfex.com/websocket/main)
-- [QFEX OpenAPI specification](https://docs.qfex.com/api-reference/openapi.yaml)
-- [QFEX market-data AsyncAPI specification](https://docs.qfex.com/websocket/mds.yaml)
-- [QFEX trade AsyncAPI specification](https://docs.qfex.com/websocket/trade.yaml)
-- [Official QFEX CLI](https://github.com/QFEX-org/cli)
-- [StockSharp QFEX connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/qfex.html)
-
-QFEX and its marks are trademarks of their respective owner. StockSharp is
-not affiliated with or endorsed by QFEX.
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by QFEX and by the connected account or API plan.

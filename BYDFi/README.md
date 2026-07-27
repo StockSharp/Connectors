@@ -1,50 +1,21 @@
 # BYDFi Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates BYDFi perpetual futures through the current
-production REST API and the official public futures WebSocket service.
+The **BYDFi connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- discovery of USDT-margined and inverse perpetual contracts with native
-  price, quantity, contract-factor, and order-size metadata;
-- Level1 snapshots from REST and realtime ticker, mark-price, and index-price
-  updates through WebSocket;
-- REST order-book snapshots and realtime 10-, 50-, or 100-level WebSocket
-  snapshots;
-- recent public trades with continued REST polling;
-- historical OHLCV candles and realtime candle updates for every interval
-  published by BYDFi;
-- API-key authentication, futures balances, positions, open and historical
-  orders, and account trade history;
-- market, limit, stop, take-profit, stop-market, take-profit-market, and
-  trailing-stop orders; GTC, IOC, FOK, post-only, reduce-only, and
-  close-position flags; order amendment, individual cancellation,
-  filtered cancellation, native cancel-all, and position closing;
-- bounded retry of safe REST reads, request signing over the exact transmitted
-  query and body, WebSocket reconnect, response-size limits, and configurable
-  polling cadence.
+- Typical coverage: digital assets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data does not require credentials. Private operations require a
-BYDFi API key and secret. `W001` is used as the default futures wallet and can
-be changed in the adapter settings.
+## Typical use
 
-The currently published BYDFi API provides futures market data and trading.
-Its SPOT section documents deposit and withdrawal history but does not expose
-SPOT instruments, market data, or order entry, so this connector intentionally
-does not claim SPOT support.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-BYDFi does not currently publish a usable private WebSocket endpoint or a
-public trade stream in its official documentation. Consequently, account
-state and public trades are refreshed through REST. Level1, order books, and
-candles use the official realtime WebSocket streams. Changing the active
-WebSocket subscription set reconnects the URL-based combined stream, as
-required by the production service.
-
-Official resources:
-
-- [BYDFi API introduction](https://developers.bydfi.com/en/intro)
-- [Futures market REST API](https://developers.bydfi.com/en/futures/market)
-- [Futures trading REST API](https://developers.bydfi.com/en/futures/trade)
-- [Futures market WebSocket API](https://developers.bydfi.com/en/futures/websocket-market)
-- [Request signing](https://developers.bydfi.com/en/signature)
-- [BYDFi](https://www.bydfi.com/)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by BYDFi and by the connected account or API plan.

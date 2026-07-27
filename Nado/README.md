@@ -1,32 +1,21 @@
-# Nado connector for StockSharp
+# Nado Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates the current official Nado gateway v1/v2, archive
-indexer v1/v2, and subscription WebSocket APIs for spot and perpetual markets
-on Ink.
+The **Nado connector** connects StockSharp to an on-chain trading and liquidity protocol. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported functionality:
+## Key capabilities
 
-- spot and perpetual market discovery with trading increments;
-- live Level1, public trades, and sequence-checked order books;
-- recent trades, historical candles, and live candles;
-- public subaccount balances, positions, open orders, order history, and fills;
-- EIP-712 signed limit, protected market, IOC, FOK, and post-only orders;
-- reduce-only and isolated-margin order appendix fields;
-- individual, filtered, product-wide, and atomic cancel-and-replace operations;
-- configurable official mainnet or testnet gateway, archive, and WebSocket URLs.
+- Typical coverage: on-chain assets and liquidity pools, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported swap or blockchain transaction submission.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data requires no credentials. `WalletAddress` enables read-only
-subaccount data because Nado account streams and queries use the public bytes32
-subaccount identifier. Trading additionally requires the corresponding EVM
-`PrivateKey`. The default subaccount name is `default`.
+## Typical use
 
-Official resources:
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- [Nado API documentation](https://docs.nado.xyz/developer-resources/api)
-- [Nado API endpoints](https://docs.nado.xyz/developer-resources/api/endpoints)
-- [Official Nado TypeScript SDK](https://github.com/nadohq/nado-typescript-sdk)
-- [Official Nado Python SDK reference](https://nadohq.github.io/nado-python-sdk/api-reference.html)
-- [StockSharp Nado connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/nado.html)
-
-Nado and its marks are trademarks of their respective owner. StockSharp is not
-affiliated with or endorsed by Nado.
+Available networks, pools, instruments, and transaction functions depend on Nado, the configured RPC or indexer services, and wallet permissions.

@@ -1,51 +1,21 @@
-# StockSharp Bluefin connector
+# Bluefin Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with the current Bluefin Pro REST and WebSocket APIs for perpetuals on Sui.
+The **Bluefin connector** connects StockSharp to an on-chain trading and liquidity protocol. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Supported operations
+## Key capabilities
 
-- perpetual market discovery and trading-state metadata;
-- current and streaming Level1 data, including last, mark and oracle prices,
-  top of book, 24-hour statistics and open interest;
-- recent public trades and live trade subscriptions;
-- REST order-book snapshots followed by sequenced incremental WebSocket
-  updates with automatic recovery after a sequence gap;
-- historical and live last-price candles for every interval exposed by
-  Bluefin Pro;
-- account value, collateral balances and perpetual positions;
-- open orders, account fills and private real-time account updates;
-- locally signed market, limit, stop and take-profit orders, cancellation,
-  replacement and filtered bulk cancellation;
-- production and staging environments.
+- Typical coverage: on-chain assets and liquidity pools, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported swap or blockchain transaction submission.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-The current Bluefin Pro API publishes perpetual markets. It does not expose a
-spot order book through these endpoints, so the connector does not label
-perpetual instruments as spot securities.
+## Typical use
 
-## Configuration
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Public market data requires no credentials. `WalletAddress` is sufficient for
-the public account snapshot endpoint. Private streams, order history and
-trading require `PrivateKey`, supplied as either a Sui `suiprivkey` Ed25519 key
-or 32 hexadecimal seed bytes. The connector derives and validates the Sui
-address and never sends the private key to Bluefin.
-
-Authentication and orders are signed locally using Sui personal-message
-signing: BCS byte-vector serialization, the personal-message intent and
-Blake2b-256. Signed numeric order fields use Bluefin's fixed e9 format.
-
-The default production endpoints are:
-
-- `https://api.sui-prod.bluefin.io`
-- `https://trade.api.sui-prod.bluefin.io`
-- `https://auth.api.sui-prod.bluefin.io`
-- `wss://stream.api.sui-prod.bluefin.io/ws/market`
-- `wss://stream.api.sui-prod.bluefin.io/ws/account`
-
-Each endpoint can be overridden independently for staging, compatible gateways
-or colocated infrastructure.
-
-## Documentation
-
-- [Bluefin API documentation](https://bluefin-exchange.readme.io/)
-- [Official Bluefin Pro SDK](https://github.com/fireflyprotocol/pro-sdk)
+Available networks, pools, instruments, and transaction functions depend on Bluefin, the configured RPC or indexer services, and wallet permissions.

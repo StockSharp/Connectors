@@ -1,41 +1,20 @@
-# TradeLocker Connector for StockSharp
+# TradeLocker Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-This connector integrates StockSharp with TradeLocker Public API v1.5. It connects to either the official demo or live REST environment selected in the adapter settings.
+The **TradeLocker connector** connects StockSharp to a broker or electronic venue for financial markets. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Features
+## Key capabilities
 
-- JWT authentication and automatic refresh.
-- Explicit account selection when a login has multiple accounts.
-- Complete account instrument list and instrument metadata.
-- REST-polled bid/ask Level 1 quotes.
-- Historical 1-minute through weekly candles, up to the server-advertised limits.
-- Balance, available funds, PnL, open positions, active orders, and order history.
-- Market, limit, and stop orders; cancellation and position closing.
-- Optional absolute stop-loss, take-profit, and strategy identifier fields.
-- Rate-limit retry for safe requests and sequential polling workloads.
+- Typical coverage: equities, futures, FX and CFDs, funds and ETFs, indices.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-TradeLocker's account, order, and position tables use the columns published by `/trade/config`.
+## Typical use
 
-## Configuration
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-- `Login` - the email used to sign in to TradeLocker.
-- `Password` - the TradeLocker password.
-- `Server` - the broker server name shown on the TradeLocker login form.
-- `AccountId` - account ID or account name. It may be omitted only when the login exposes one account.
-- `IsDemo` - selects `demo.tradelocker.com` instead of `live.tradelocker.com`.
-- `DeveloperApiKey` - optional key issued through the TradeLocker Developer Program.
-- `PollingInterval` - minimum interval between polling jobs; workloads rotate between quotes, orders, and portfolio data.
-
-## Streaming limitation
-
-The current public API documentation describes the API as request-response REST and does not publish a supported WebSocket contract. The connector therefore does not claim streaming market data or private events. Live subscriptions are implemented with rate-aware REST polling, and historical candles are finite subscriptions.
-
-## Documentation
-
-- [StockSharp TradeLocker connector](https://doc.stocksharp.com/en/topics/api/connectors/stock_market/tradelocker.html)
-- [Official TradeLocker Public API](https://public-api.tradelocker.com/)
-- [Getting started and authentication](https://public-api.tradelocker.com/docs/getting-started)
-- [Instrument list](https://public-api.tradelocker.com/reference/getinstruments)
-- [Historical bars](https://public-api.tradelocker.com/reference/gethistory)
-- [Current quotes](https://public-api.tradelocker.com/reference/getquotes)
-- [Place an order](https://public-api.tradelocker.com/reference/placeorder)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by TradeLocker and by the connected account or API plan.

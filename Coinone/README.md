@@ -1,39 +1,21 @@
 # Coinone Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates Coinone's current Korean spot market through Public
-API v2, Private API v2.1, and the official public and private WebSocket streams.
+The **Coinone connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported features:
+## Key capabilities
 
-- KRW spot-market discovery with price, quantity, notional, maintenance, and
-  side-specific trading constraints;
-- Level1 snapshots and realtime ticker updates;
-- full order-book snapshots with native Coinone depth sizes;
-- recent public executions and realtime trade subscriptions;
-- historical candles with paging and realtime candle updates for the intervals
-  published by the WebSocket API;
-- balances with available, locked, and average acquisition price values;
-- market, limit, post-only limit, and stop-limit orders;
-- individual, market-wide, and filtered cancellation;
-- active-order lookup, completed-order and fill history, and realtime private
-  order events;
-- realtime private asset updates and subscription restoration after reconnect.
+- Typical coverage: digital assets, spot markets.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Public market data works without credentials. Private operations require a
-Coinone access token and secret with the required permissions and an allowed
-source IP. The `QuoteCurrency` setting defaults to `KRW`.
+## Typical use
 
-Private WebSocket authentication uses the same scheme with a fresh UUID nonce and UTC millisecond timestamp.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Coinone publishes monthly candles through REST, but does not list that interval
-for the CHART WebSocket channel. It is therefore available as a history-only
-interval in this connector.
-
-Official documentation:
-
-- [Coinone Open API](https://docs.coinone.co.kr/)
-- [Public API overview](https://docs.coinone.co.kr/docs/about-public-api)
-- [Public WebSocket](https://docs.coinone.co.kr/reference/public-websocket-1)
-- [Private WebSocket](https://docs.coinone.co.kr/reference/private-websocket-1)
-- [Order API](https://docs.coinone.co.kr/reference/place-order)
-- [API rate limits](https://docs.coinone.co.kr/docs/ratelimit-%EC%95%88%EB%82%B4)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Coinone and by the connected account or API plan.

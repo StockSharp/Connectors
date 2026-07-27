@@ -1,61 +1,21 @@
-# CoinW connector for StockSharp
+# CoinW Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates CoinW Spot and perpetual Futures REST APIs with the official public and authenticated WebSocket services.
+The **CoinW connector** connects StockSharp to a centralized digital-asset exchange. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Supported functionality
+## Key capabilities
 
-- spot instruments on `BoardCodes.CoinW` (`COINW`);
-- perpetual futures on `BoardCodes.CoinWFutures` (`CNWF`);
-- security lookup, Level1, recent trades, order books, and candles;
-- official ticker, trade, depth, and candle WebSocket streams;
-- spot incremental-depth sequence validation and automatic resubscription;
-- spot and futures limit and market orders;
-- futures trigger orders, attached stop-loss/take-profit, isolated/cross margin,
-  leverage, and all three documented quantity units;
-- dedicated futures position closing (CoinW does not close a hedged position by
-  submitting an ordinary opposite-side order);
-- order cancellation, security-scoped group cancellation, balances, positions,
-  active orders, order history, and spot fills;
-- authenticated WebSocket updates for balances, orders, futures positions, and
-  futures fills;
-- MD5 spot signing, HMAC-SHA256 futures signing, heartbeats, reconnect,
-  re-authentication, state hydration, bounded retry for safe reads, and
-  subscription restoration.
+- Typical coverage: digital assets, spot markets, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported order submission and execution workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-Trading writes are never automatically retried. If a write fails after it may
-have reached CoinW, inspect exchange state before submitting another request.
+## Typical use
 
-## Configuration
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Public market data works without credentials. Set `Key` and `Secret` for
-trading, portfolios, order history, and private streams. `Sections` selects
-Spot, Futures, or both.
-
-```csharp
-var adapter = new CoinWMessageAdapter(new IncrementalIdGenerator())
-{
-    Key = "YOUR_API_KEY".ToSecureString(),
-    Secret = "YOUR_API_SECRET".ToSecureString(),
-    Sections = [CoinWSections.Spot, CoinWSections.Futures],
-};
-```
-
-Default endpoints:
-
-- Spot and Futures REST: `https://api.coinw.com`;
-- Spot public/private WebSocket: `wss://ws.futurescw.com`;
-- Futures public/private WebSocket: `wss://ws.futurescw.com/perpum`.
-
-CoinW Spot WebSocket offers both a Socket.IO/token method and a direct standard
-WebSocket method. The connector deliberately uses the documented direct method,
-which needs no public token and fits StockSharp's reconnect model.
-
-## Official documentation
-
-- [CoinW API documentation](https://www.coinw.com/api-doc/en/common/introduction)
-- [CoinW Spot Trading API](https://www.coinw.com/api-doc/en/spot-trading)
-- [CoinW Futures Trading API](https://www.coinw.com/api-doc/en/futures-trading)
-- [StockSharp CoinW connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/coinw.html)
-
-CoinW and its marks are trademarks of their respective owner. StockSharp is not
-affiliated with or endorsed by CoinW.
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by CoinW and by the connected account or API plan.

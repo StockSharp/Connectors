@@ -1,39 +1,21 @@
-# StandX connector for StockSharp
+# StandX Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StandX's official perpetual-futures REST and
-WebSocket APIs. Public instrument discovery and market data work without
-credentials. Portfolio data and trading use StandX wallet authentication; the
-wallet private key signs the login challenge locally and is never sent to
-StandX.
+The **StandX connector** connects StockSharp to an on-chain trading and liquidity protocol. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-Supported functionality:
+## Key capabilities
 
-- perpetual-market discovery and current trading constraints;
-- Level1, order-book snapshots, and public trades over WebSocket;
-- recent public-trade snapshots and historical time-frame candles through REST;
-- balances, positions, open orders, order history, and fills;
-- locally signed market, limit, post-only, IOC, reduce-only, and attached
-  take-profit/stop-loss orders;
-- individual and filtered bulk cancellation;
-- authenticated order, fill, balance, and position streams.
+- Typical coverage: on-chain assets and liquidity pools, derivatives.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades, order books and candles.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported swap or blockchain transaction submission.
+- Portfolio, balance, position, and execution-state updates.
+- Real-time subscriptions through the provider's streaming transport.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-`Chain` selects BNB Smart Chain or Solana wallet authentication. `PrivateKey`
-accepts an EVM hexadecimal private key for BSC or a base58-encoded 64-byte
-Solana keypair. `WalletAddress` is optional; when supplied, it is checked
-against the private key before authentication. Without a private key the
-adapter stays in public market-data mode.
+## Typical use
 
-StandX provides live order, account, price, depth, and trade streams. Candles are retrieved from the official REST history endpoint and current candle updates are polled at the configured interval. Safe GET requests use bounded retry and backoff; trading writes are sent once over the signed order stream.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Official resources:
-
-- [StandX API documentation](https://docs.standx.com/standx-api/standx-api)
-- [Authentication](https://docs.standx.com/standx-api/perps-auth)
-- [Perps HTTP API](https://docs.standx.com/standx-api/perps-http)
-- [Perps WebSocket API](https://docs.standx.com/standx-api/perps-ws)
-- [Rate limits](https://docs.standx.com/standx-api/rate-limits)
-- [Official media assets](https://docs.standx.com/docs/resources/media-assets)
-- [StockSharp StandX connector](https://doc.stocksharp.com/en/topics/api/connectors/crypto_exchanges/standx.html)
-
-StandX and its marks are trademarks of their respective owner. StockSharp is
-not affiliated with or endorsed by StandX.
+Available networks, pools, instruments, and transaction functions depend on StandX, the configured RPC or indexer services, and wallet permissions.

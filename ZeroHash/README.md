@@ -1,65 +1,20 @@
-# StockSharp Zero Hash Connector
+# Zero Hash Connector
+[Русский](README_ru.md) | [中文](README_zh.md) | [Español](README_es.md) | [Deutsch](README_de.md) | [Português](README_pt.md) | [日本語](README_ja.md)
 
-The connector integrates StockSharp with the Zero Hash central limit order
-book (CLOB). It uses the authenticated CLOB REST API for instruments,
-balances, order entry, cancellation, and history, plus the long-lived CLOB
-HTTP subscriptions for real-time order books and private order events.
+The **Zero Hash connector** connects StockSharp to a digital-asset custody, settlement, or institutional service. It translates provider-specific data and operations into the unified StockSharp message model, so applications can use the same subscriptions and workflows across different venues.
 
-## Access and configuration
+## Key capabilities
 
-Zero Hash API access is provisioned to approved platform clients. Configure
-the API key, base64-encoded secret, and passphrase supplied by Zero Hash. For
-private trading, also configure:
+- Typical coverage: digital assets, FX and CFDs.
+- Instrument discovery and provider reference data.
+- Market data supported by the adapter: Level 1 quotes, tick trades and order books.
+- Historical data requests for charting, analysis, and backtesting.
+- Provider-supported account, transfer, and transaction workflows.
+- Portfolio, balance, position, and execution-state updates.
+- Provider-specific transport, sessions, and data formats are hidden behind the standard StockSharp API.
 
-- `Account`: the fully-qualified CLOB account, for example
-  `firms/F-PLAT01/accounts/CUST01-label`;
-- `User`: the case-sensitive fully-qualified CLOB user, for example
-  `firms/F-PLAT01/users/CUST01`.
+## Typical use
 
-The production API default is `https://api.zerohash.com/`. Certification can
-be selected by entering `https://api.cert.zerohash.com/` in `ApiEndpoint`.
-Both environments use the same signed-header scheme. Secrets are persisted
-through StockSharp secure-string storage and are never included in diagnostic
-output.
+Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
-Zero Hash signs the exact minified request body with HMAC-SHA256. The
-connector base64-decodes the configured secret, includes the complete request
-route in the signature, and sends the required `X-SCX-*` headers. Prices and
-quantities are converted with each instrument's published `price_scale` and
-`fractional_qty_scale`; no fixed crypto precision is assumed.
-
-## Protocol coverage
-
-The connector supports:
-
-- paginated CLOB instrument discovery and security lookup;
-- real-time ticks, Level 1, and aggregated market depth;
-- portfolio and per-asset balance snapshots with periodic reconciliation;
-- market-to-limit, limit, stop, and stop-limit order entry;
-- GTC, IOC, FOK, and good-till-time instructions;
-- post-only, all-or-none, self-match prevention, regulatory order capacity,
-  strict-limit, best-limit, and stop-trigger parameters;
-- single and filtered group cancellation;
-- live private order and execution updates;
-- paginated order and fill history.
-
-The CLOB market-data and order subscriptions are streaming HTTP endpoints,
-not ordinary WebSockets. The separate Zero Hash private WebSocket publishes
-RFQ prices and balances for other product flows; it does not provide the CLOB
-book and is deliberately not substituted for the CLOB streams here.
-
-The documented REST order search retains up to 14 days. Cancel/replace is
-available through the Zero Hash FIX interface but is not exposed by the
-documented CLOB REST API, so this adapter reports replace requests as
-unsupported. Custody, deposits, withdrawals, settlement webhooks, RFQ trades,
-and FIX sessions are outside this connector.
-
-Nanosecond API timestamps are normalized to UTC `DateTime` values.
-
-## Official resources
-
-- [Zero Hash developer documentation](https://docs.zerohash.com/)
-- [API authentication](https://docs.zerohash.com/reference/api-authentication)
-- [CLOB API overview](https://docs.zerohash.com/reference/clob)
-- [CLOB market-data subscription](https://docs.zerohash.com/reference/post_orders-v1-create-market-data-subscription)
-- [CLOB order subscription](https://docs.zerohash.com/reference/post_orders-v1-create-order-subscription)
+Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Zero Hash and by the connected account or API plan.
