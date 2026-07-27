@@ -12,6 +12,7 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 	private readonly string _accountId;
 	private readonly string _sessionToken;
 	private readonly string _instrumentEndpointTemplate;
+	private readonly bool _useBearerAuthentication;
 	private readonly HttpClient _httpClient;
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
 	private ShoonyaInstrument[] _instruments;
@@ -19,15 +20,20 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 	private IReadOnlyDictionary<string, ShoonyaInstrument> _instrumentsBySymbol;
 
 	public ShoonyaRestClient(string userId, string accountId, SecureString sessionToken,
-		string restEndpoint, string instrumentEndpointTemplate)
+		string restEndpoint, string instrumentEndpointTemplate,
+		bool useBearerAuthentication = false, HttpMessageHandler handler = null)
 	{
 		_userId = userId.ThrowIfEmpty(nameof(userId));
 		_accountId = accountId.ThrowIfEmpty(nameof(accountId));
 		_sessionToken = sessionToken.ThrowIfEmpty(nameof(sessionToken)).UnSecure();
 		_instrumentEndpointTemplate = instrumentEndpointTemplate.ThrowIfEmpty(nameof(instrumentEndpointTemplate));
-		_httpClient = new() { BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))) };
+		_useBearerAuthentication = useBearerAuthentication;
+		_httpClient = handler == null ? new() : new(handler);
+		_httpClient.BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
 		_httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 		_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Shoonya/1.0");
+		if (_useBearerAuthentication)
+			_httpClient.DefaultRequestHeaders.Authorization = new("Bearer", _sessionToken);
 	}
 
 	public override string Name => nameof(Shoonya) + "_" + nameof(ShoonyaRestClient);
@@ -223,11 +229,22 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 	private async Task<string> SendRaw<TRequest>(string path, TRequest body, CancellationToken cancellationToken)
 		where TRequest : class
 	{
-		var json = JsonConvert.SerializeObject(body, Formatting.None, _jsonSettings);
-		var form = $"jData={Uri.EscapeDataString(json)}&jKey={Uri.EscapeDataString(_sessionToken)}";
+		var token = JToken.FromObject(body, JsonSerializer.Create(_jsonSettings));
+		if (_useBearerAuthentication && token is JObject obj)
+		{
+			if (obj.Property("ordersource", StringComparison.OrdinalIgnoreCase) is { } source)
+				source.Value = "API2";
+			if (obj.Property("tsym", StringComparison.OrdinalIgnoreCase) is { Value.Type: JTokenType.String } symbol)
+				symbol.Value = WebUtility.UrlEncode(symbol.Value.Value<string>());
+		}
+		var json = token.ToString(Formatting.None);
+		var form = _useBearerAuthentication
+			? $"jData={json}"
+			: $"jData={Uri.EscapeDataString(json)}&jKey={Uri.EscapeDataString(_sessionToken)}";
 		using var request = new HttpRequestMessage(HttpMethod.Post, path)
 		{
-			Content = new StringContent(form, Encoding.UTF8, "application/x-www-form-urlencoded"),
+			Content = new StringContent(form, Encoding.UTF8,
+				_useBearerAuthentication ? "text/plain" : "application/x-www-form-urlencoded"),
 		};
 		this.AddVerboseLog("Shoonya POST {0}.", path);
 		using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken);
@@ -242,9 +259,19 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 	private async Task<ShoonyaInstrument[]> DownloadInstruments(string segment, CancellationToken cancellationToken)
 	{
 		var bytes = await _httpClient.GetByteArrayAsync(string.Format(CultureInfo.InvariantCulture, _instrumentEndpointTemplate, segment), cancellationToken);
+		return await ParseInstrumentArchive(segment, bytes, cancellationToken);
+	}
+
+	internal static async Task<ShoonyaInstrument[]> ParseInstrumentArchive(
+		string segment, byte[] bytes, CancellationToken cancellationToken)
+	{
+		segment.ThrowIfEmpty(nameof(segment));
+		if (bytes == null || bytes.Length == 0)
+			throw new InvalidDataException($"Noren {segment} security master is empty.");
+
 		using var archive = new ZipArchive(new MemoryStream(bytes), ZipArchiveMode.Read);
 		var entry = archive.Entries.FirstOrDefault(e => !e.Name.IsEmpty())
-			?? throw new InvalidDataException($"Shoonya {segment} security master is empty.");
+			?? throw new InvalidDataException($"Noren {segment} security master is empty.");
 		using var reader = new StreamReader(entry.Open(), Encoding.UTF8, true, 1 << 16);
 		var csv = new FastCsvReader(reader, StringHelper.N) { ColumnSeparator = ',' };
 		if (!await csv.NextLineAsync(cancellationToken))

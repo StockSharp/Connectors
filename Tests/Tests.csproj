@@ -135,6 +135,7 @@
     <ProjectReference Include="..\WooX\WooX.csproj" />
     <ProjectReference Include="..\Xt\Xt.csproj" />
     <ProjectReference Include="..\Yobit\Yobit.csproj" />
+    <ProjectReference Include="..\Zebu\Zebu.csproj" />
     <ProjectReference Include="..\Zoomex\Zoomex.csproj" />
   </ItemGroup>
 </Project>
