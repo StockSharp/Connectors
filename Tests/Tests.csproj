@@ -58,6 +58,7 @@
     <ProjectReference Include="..\Exmo\Exmo.csproj" />
     <ProjectReference Include="..\Extended\Extended.csproj" />
     <ProjectReference Include="..\FivePaisa\FivePaisa.csproj" />
+	<ProjectReference Include="..\Finam\Finam.csproj" />
     <ProjectReference Include="..\Firstock\Firstock.csproj" />
     <ProjectReference Include="..\FluidDex\FluidDex.csproj" />
     <ProjectReference Include="..\Foxbit\Foxbit.csproj" />
