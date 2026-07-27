@@ -28,6 +28,7 @@
     <ProjectReference Include="..\Bitvavo\Bitvavo.csproj" />
     <ProjectReference Include="..\Bluefin\Bluefin.csproj" />
     <ProjectReference Include="..\BTCMarkets\BTCMarkets.csproj" />
+	<ProjectReference Include="..\BtcTurk\BtcTurk.csproj" />
     <ProjectReference Include="..\BTSE\BTSE.csproj" />
     <ProjectReference Include="..\ByBit\ByBit.csproj" />
     <ProjectReference Include="..\BYDFi\BYDFi.csproj" />
