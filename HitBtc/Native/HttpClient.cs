@@ -1,5 +1,7 @@
 namespace StockSharp.HitBtc.Native;
 
+using Newtonsoft.Json.Linq;
+
 sealed class HitBtcRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 4;
@@ -169,12 +171,19 @@ sealed class HitBtcRestClient : BaseLogReceiver
 
 		try
 		{
-			var error = JsonConvert.DeserializeObject<ErrorEnvelope>(body, _jsonSettings)?.Error;
-			if (error is not null)
-				throw new InvalidOperationException(
-					$"HitBTC {request.RequestUri.PathAndQuery} failed: {error}");
+			var payload = JToken.Parse(body);
 
-			return JsonConvert.DeserializeObject<T>(body, _jsonSettings);
+			if (payload is JObject)
+			{
+				var error = payload.ToObject<ErrorEnvelope>(
+					JsonSerializer.Create(_jsonSettings))?.Error;
+
+				if (error is not null)
+					throw new InvalidOperationException(
+						$"HitBTC {request.RequestUri.PathAndQuery} failed: {error}");
+			}
+
+			return payload.ToObject<T>(JsonSerializer.Create(_jsonSettings));
 		}
 		catch (JsonException error)
 		{

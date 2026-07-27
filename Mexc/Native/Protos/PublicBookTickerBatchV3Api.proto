@@ -1,0 +1,18 @@
+// spot@public.bookTicker.v3.api.pb
+// Modified by StockSharp: added csharp_namespace for generated C# types.
+
+syntax = "proto3";
+
+import "PublicBookTickerV3Api.proto";
+
+option csharp_namespace = "StockSharp.Mexc.Native.Protobuf";
+option java_package = "com.mxc.push.common.protobuf";
+option optimize_for = SPEED;
+option java_multiple_files = true;
+option java_outer_classname = "PublicBookTickerBatchV3ApiProto";
+
+message PublicBookTickerBatchV3Api {
+  repeated PublicBookTickerV3Api items = 1;
+  string version = 2;
+  int64 lastOrderCreateTime = 3;
+}

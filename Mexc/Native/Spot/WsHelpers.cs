@@ -61,6 +61,11 @@ static class WsHelpers
 	public static DateTime ToDateTime(JToken token)
 	{
 		var value = token?.To<long?>() ?? 0;
+		return ToDateTime(value);
+	}
+
+	public static DateTime ToDateTime(long value)
+	{
 		if (value <= 0)
 			return default;
 
@@ -69,16 +74,16 @@ static class WsHelpers
 	}
 
 	public static double? ToDouble(JToken token)
+		=> ToDouble(token?.To<string>());
+
+	public static double? ToDouble(string value)
 	{
-		if (token is null)
+		if (value.IsEmpty())
 			return null;
 
-		var str = token.To<string>();
-		if (str.IsEmpty())
-			return null;
-
-		if (double.TryParse(str, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
-			return value;
+		if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture,
+			out var result))
+			return result;
 
 		return null;
 	}

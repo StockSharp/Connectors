@@ -59,10 +59,23 @@ partial class LBankMessageAdapter
 
 		if (mdMsg.IsSubscribe)
 		{
+			var depth = mdMsg.MaxDepth ?? SupportedOrderBookDepths.Max();
+
 			if (!mdMsg.IsHistoryOnly())
-				await _pusherClient.SubscribeOrderBook(mdMsg.IsSubscribe, pair, mdMsg.MaxDepth ?? SupportedOrderBookDepths.Max(), cancellationToken);
+				await _pusherClient.SubscribeOrderBook(true, pair, depth,
+					cancellationToken);
+
+			var snapshot = await _httpClient.GetOrderBookAsync(pair, depth,
+				cancellationToken);
+			await SendOrderBookAsync(pair,
+				snapshot.Timestamp == default ? CurrentTime : snapshot.Timestamp,
+				snapshot, mdMsg.TransactionId, cancellationToken);
 
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
+			if (mdMsg.IsHistoryOnly())
+				await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
+					cancellationToken);
 		}
 		else
 			await _pusherClient.SubscribeOrderBook(false, pair, mdMsg.MaxDepth ?? SupportedOrderBookDepths.Max(), cancellationToken);
@@ -244,6 +257,11 @@ partial class LBankMessageAdapter
 	}
 
 	private ValueTask SessionOnOrderBookChanged(string pair, DateTime time, OrderBook book, CancellationToken cancellationToken)
+		=> SendOrderBookAsync(pair, time, book, 0, cancellationToken);
+
+	private ValueTask SendOrderBookAsync(string pair, DateTime time,
+		OrderBook book, long originalTransactionId,
+		CancellationToken cancellationToken)
 	{
 		var secId = pair.ToStockSharp();
 
@@ -256,6 +274,8 @@ partial class LBankMessageAdapter
 			ServerTime = time,
 			Bids = (book.Bids ?? []).Select(ToQuoteChange).ToArray(),
 			Asks = (book.Asks ?? []).Select(ToQuoteChange).ToArray(),
+			OriginalTransactionId = originalTransactionId,
+			State = QuoteChangeStates.SnapshotComplete,
 		}, cancellationToken);
 	}
 

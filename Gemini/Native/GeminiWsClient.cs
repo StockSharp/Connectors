@@ -199,6 +199,8 @@ sealed class GeminiWsClient : BaseLogReceiver
 			DisableAutoResend = true,
 			Indent = false,
 			SendSettings = _jsonSettings,
+			BufferSize = 2 * 1024 * 1024,
+			BufferSizeUncompress = 2 * 1024 * 1024,
 		};
 		client.InitAsync += (socket, _) =>
 		{

@@ -1,5 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
+using System;
+
 using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,6 +15,9 @@ using StockSharp.Messages;
 [TestClass]
 public class LBankMarketDataTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override TimeSpan ConnectTimeout => TimeSpan.FromSeconds(60);
+
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new LBankMessageAdapter(new IncrementalIdGenerator());
 

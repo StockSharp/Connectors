@@ -143,7 +143,9 @@ partial class LBankMessageAdapter
 			_authKeyLastTimeRefresh = DateTime.UtcNow;
 		}
 
-		_pusherClient = new PusherClient(WebSocketEndpoint, ReConnectionSettings.WorkingTime) { Parent = this };
+		_pusherClient = new PusherClient(WebSocketEndpoint,
+			ReConnectionSettings.WorkingTime,
+			ReConnectionSettings.ReAttemptCount) { Parent = this };
 		SubscribePusherClient();
 		await _pusherClient.ConnectAsync(cancellationToken);
 	}

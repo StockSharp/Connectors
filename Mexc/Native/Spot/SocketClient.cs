@@ -1,7 +1,13 @@
 namespace StockSharp.Mexc.Native.Spot;
 
+using System.Globalization;
+using System.IO;
+
+using Google.Protobuf;
+
 using Newtonsoft.Json.Linq;
 
+using StockSharp.Mexc.Native.Protobuf;
 using StockSharp.Mexc.Native.Spot.Model;
 
 class SocketClient : BaseLogReceiver
@@ -159,6 +165,12 @@ class SocketClient : BaseLogReceiver
 
 		if (raw.EqualsIgnoreCase("PONG"))
 			return;
+
+		if (!IsJson(msg.Memory.Span))
+		{
+			await OnProtobufProcess(msg.Memory, isPrivate, cancellationToken);
+			return;
+		}
 
 		var obj = msg.AsObject() as JObject;
 		if (obj is null)
@@ -357,6 +369,203 @@ class SocketClient : BaseLogReceiver
 				}, cancellationToken);
 			}
 		}
+	}
+
+	private async ValueTask OnProtobufProcess(ReadOnlyMemory<byte> data, bool isPrivate,
+		CancellationToken cancellationToken)
+	{
+		PushDataV3ApiWrapper message;
+
+		try
+		{
+			message = PushDataV3ApiWrapper.Parser.ParseFrom(data.ToArray());
+		}
+		catch (InvalidProtocolBufferException error)
+		{
+			if (Error is { } errorHandler)
+				await errorHandler(new InvalidDataException(
+					"MEXC returned malformed Protobuf market data.", error),
+					cancellationToken);
+			return;
+		}
+
+		var symbol = ResolveSymbol(message);
+
+		if (message.PublicAggreBookTicker is { } ticker)
+		{
+			if (!symbol.IsEmpty() && TickerReceived is { } handler)
+				await handler(new Ticker
+				{
+					Symbol = symbol,
+					BidPrice = WsHelpers.ToDouble(ticker.BidPrice),
+					BidQty = WsHelpers.ToDouble(ticker.BidQuantity),
+					AskPrice = WsHelpers.ToDouble(ticker.AskPrice),
+					AskQty = WsHelpers.ToDouble(ticker.AskQuantity),
+				}, cancellationToken);
+			return;
+		}
+
+		if (message.PublicAggreDeals is { } deals)
+		{
+			if (!symbol.IsEmpty() && TradeReceived is { } handler)
+				foreach (var trade in deals.Deals)
+					await handler(new TradeStream
+					{
+						Symbol = symbol,
+						Id = ParseId(trade.TradeId),
+						Price = WsHelpers.ToDouble(trade.Price),
+						Quantity = WsHelpers.ToDouble(trade.Quantity),
+						Time = WsHelpers.ToDateTime(trade.Time),
+						IsBuyerMaker = trade.TradeType == 2,
+					}, cancellationToken);
+			return;
+		}
+
+		if (message.PublicAggreDepths is { } depth)
+		{
+			if (!symbol.IsEmpty() && OrderBookReceived is { } handler)
+				await handler(new OrderBookUpdate
+				{
+					Symbol = symbol,
+					FirstUpdateId = ParseVersion(depth.FromVersion),
+					FinalUpdateId = ParseVersion(depth.ToVersion),
+					Bids = [.. depth.Bids.Select(static level => new OrderBookEntry
+					{
+						Price = WsHelpers.ToDouble(level.Price),
+						Quantity = WsHelpers.ToDouble(level.Quantity),
+					})],
+					Asks = [.. depth.Asks.Select(static level => new OrderBookEntry
+					{
+						Price = WsHelpers.ToDouble(level.Price),
+						Quantity = WsHelpers.ToDouble(level.Quantity),
+					})],
+				}, cancellationToken);
+			return;
+		}
+
+		if (message.PublicSpotKline is { } kline)
+		{
+			if (!symbol.IsEmpty() && CandleReceived is { } handler)
+			{
+				var closeTime = WsHelpers.ToDateTime(kline.WindowEnd);
+				await handler(new CandleStream
+				{
+					Symbol = symbol,
+					Kline = new CandleData
+					{
+						Symbol = symbol,
+						Interval = WsHelpers.FromSpotWsInterval(kline.Interval),
+						OpenTime = WsHelpers.ToDateTime(kline.WindowStart),
+						CloseTime = closeTime,
+						Open = WsHelpers.ToDouble(kline.OpeningPrice) ?? 0,
+						Close = WsHelpers.ToDouble(kline.ClosingPrice) ?? 0,
+						High = WsHelpers.ToDouble(kline.HighestPrice) ?? 0,
+						Low = WsHelpers.ToDouble(kline.LowestPrice) ?? 0,
+						Volume = WsHelpers.ToDouble(kline.Volume) ?? 0,
+						QuoteVolume = WsHelpers.ToDouble(kline.Amount) ?? 0,
+						IsClosed = DateTime.UtcNow >= closeTime,
+					},
+				}, cancellationToken);
+			}
+			return;
+		}
+
+		if (message.PrivateAccount is { } account)
+		{
+			if (isPrivate && AccountReceived is { } handler)
+				await handler(new PrivateAccountUpdate
+				{
+					Asset = account.VcoinName,
+					Balance = WsHelpers.ToDouble(account.BalanceAmount),
+					Frozen = WsHelpers.ToDouble(account.FrozenAmount),
+					ChangeType = account.Type,
+					Time = WsHelpers.ToDateTime(account.Time),
+				}, cancellationToken);
+			return;
+		}
+
+		if (message.PrivateDeals is { } deal)
+		{
+			if (isPrivate && !symbol.IsEmpty() && UserTradeReceived is { } handler)
+				await handler(new PrivateDealUpdate
+				{
+					Symbol = symbol,
+					TradeId = deal.TradeId,
+					OrderId = deal.OrderId,
+					Price = WsHelpers.ToDouble(deal.Price),
+					Quantity = WsHelpers.ToDouble(deal.Quantity),
+					TradeType = deal.TradeType,
+					FeeAmount = WsHelpers.ToDouble(deal.FeeAmount),
+					FeeCurrency = deal.FeeCurrency,
+					Time = WsHelpers.ToDateTime(deal.Time),
+				}, cancellationToken);
+			return;
+		}
+
+		if (message.PrivateOrders is { } order)
+		{
+			if (isPrivate && !symbol.IsEmpty() && OrderReceived is { } handler)
+				await handler(new PrivateOrderUpdate
+				{
+					Symbol = symbol,
+					Id = order.Id,
+					Price = WsHelpers.ToDouble(order.Price),
+					Quantity = WsHelpers.ToDouble(order.Quantity),
+					AvgPrice = WsHelpers.ToDouble(order.AvgPrice),
+					OrderType = order.OrderType,
+					TradeType = order.TradeType,
+					RemainQuantity = WsHelpers.ToDouble(order.RemainQuantity),
+					LastDealQuantity = WsHelpers.ToDouble(order.LastDealQuantity),
+					CumulativeQuantity = WsHelpers.ToDouble(order.CumulativeQuantity),
+					CumulativeAmount = WsHelpers.ToDouble(order.CumulativeAmount),
+					Status = order.Status,
+					CreateTime = WsHelpers.ToDateTime(order.CreateTime),
+				}, cancellationToken);
+			return;
+		}
+
+		this.AddDebugLog("Ignore MEXC Protobuf channel {0} ({1}).",
+			message.Channel, message.BodyCase);
+	}
+
+	private long ParseId(string value)
+		=> long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
+			out var result)
+			? result
+			: Interlocked.Increment(ref _tradeIdSeed);
+
+	private static long ParseVersion(string value)
+		=> long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
+			out var result)
+			? result
+			: 0;
+
+	private static string ResolveSymbol(PushDataV3ApiWrapper message)
+	{
+		if (!message.Symbol.IsEmpty())
+			return message.Symbol.ToUpperInvariant();
+
+		var parts = message.Channel.SplitByAt(false);
+		if (parts.Length >= 2 && parts[^1].All(char.IsLetterOrDigit))
+			return parts[^1].ToUpperInvariant();
+
+		if (parts.Length >= 3 && parts[^2].All(char.IsLetterOrDigit))
+			return parts[^2].ToUpperInvariant();
+
+		return null;
+	}
+
+	private static bool IsJson(ReadOnlySpan<byte> data)
+	{
+		foreach (var value in data)
+		{
+			if (value is (byte)' ' or (byte)'\t' or (byte)'\r' or (byte)'\n')
+				continue;
+
+			return value is (byte)'{' or (byte)'[';
+		}
+
+		return true;
 	}
 
 	public ValueTask SubscribeTicker(long transId, string symbol, CancellationToken cancellationToken)

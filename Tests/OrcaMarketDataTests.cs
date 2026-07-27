@@ -1,5 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
+using System;
+
 using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,8 +13,12 @@ using StockSharp.Orca;
 /// Orca publishes market data without credentials.
 /// </summary>
 [TestClass]
+[DoNotParallelize]
 public class OrcaMarketDataTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override TimeSpan ConnectTimeout => TimeSpan.FromSeconds(45);
+
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new OrcaMessageAdapter(new IncrementalIdGenerator())
 	{

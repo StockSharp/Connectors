@@ -16,15 +16,12 @@ using StockSharp.Messages;
 /// Live market data checks for a connector whose public feed needs no credentials.
 /// </summary>
 /// <remarks>
-/// Every check opens its own session against the real venue, so the whole suite is opt in:
-/// set <c>STOCKSHARP_LIVE_TESTS=1</c> to run it. A derived class only has to build the
-/// adapter and name an instrument that is liquid enough to produce data quickly.
+/// Every check opens its own session against the real venue. A derived class only has to
+/// build the adapter and name an instrument that is liquid enough to produce data quickly.
 /// </remarks>
 [TestCategory("Integration")]
 public abstract class LiveMarketDataTestBase : BaseTestClass
 {
-	private const string _liveVar = "STOCKSHARP_LIVE_TESTS";
-
 	/// <inheritdoc />
 	protected override bool SkipInCI => true;
 
@@ -51,6 +48,11 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	/// Maximum time to wait for the first portion of market data.
 	/// </summary>
 	protected virtual TimeSpan DataTimeout => TimeSpan.FromSeconds(30);
+
+	/// <summary>
+	/// Maximum time to download the security list.
+	/// </summary>
+	protected virtual TimeSpan SecuritiesTimeout => TimeSpan.FromSeconds(60);
 
 	/// <summary>
 	/// How many candles back the candle check asks for.
@@ -84,9 +86,6 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 
 	private async Task RunAsync(Func<MarketDataTestHarness, Task> body)
 	{
-		if (!Env(_liveVar).EqualsIgnoreCase("1"))
-			Inconclusive($"Set {_liveVar}=1 to run live market data tests.");
-
 		var harness = CreateHarness();
 
 		await using (harness)
@@ -157,7 +156,8 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	[Timeout(120000)]
 	public Task Securities() => RunAsync(async harness =>
 	{
-		var result = await harness.LookupSecuritiesAsync(SecuritiesLimit, DataTimeout, CancellationToken);
+		var result = await harness.LookupSecuritiesAsync(SecuritiesLimit,
+			SecuritiesTimeout, CancellationToken);
 
 		IsGreater(result.Securities.Length, 0, "No securities received.");
 

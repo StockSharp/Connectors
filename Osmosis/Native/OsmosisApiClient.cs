@@ -268,41 +268,63 @@ sealed class OsmosisApiClient : BaseLogReceiver
 			if (json is not null)
 				request.Content = new StringContent(json, Encoding.UTF8,
 					"application/json");
-			using var response = await client.SendAsync(request,
-				HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-			if (response.Content.Headers.ContentLength is long length &&
-				length > _maximumResponseLength)
-				throw new OsmosisApiException(response.StatusCode, null,
-					"Osmosis response exceeds the safety limit.");
-			var body = await response.Content.ReadAsStringAsync(cancellationToken);
-			if (body.Length > _maximumResponseLength)
-				throw new OsmosisApiException(response.StatusCode, null,
-					"Osmosis response exceeds the safety limit.");
-			if (!response.IsSuccessStatusCode)
-			{
-				if (isRetryAllowed && attempt < 2 &&
-					(response.StatusCode == HttpStatusCode.TooManyRequests ||
-						(int)response.StatusCode >= 500))
-				{
-					await Task.Delay(TimeSpan.FromSeconds(attempt + 1),
-						cancellationToken);
-					continue;
-				}
-				throw CreateApiException(response.StatusCode, body);
-			}
+			var endpoint = request.RequestUri.IsAbsoluteUri
+				? request.RequestUri
+				: new Uri(client.BaseAddress, request.RequestUri);
 			try
 			{
-				var result = JsonConvert.DeserializeObject<TResponse>(body,
-					_serializerSettings);
-				return result is null
-					? throw new OsmosisApiException(response.StatusCode, null,
-						"Osmosis returned an empty JSON response.")
-					: result;
+				using var response = await client.SendAsync(request,
+					HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+				if (response.Content.Headers.ContentLength is long length &&
+					length > _maximumResponseLength)
+					throw new OsmosisApiException(response.StatusCode, null,
+						"Osmosis response exceeds the safety limit.");
+				var body = await response.Content.ReadAsStringAsync(
+					cancellationToken);
+				if (body.Length > _maximumResponseLength)
+					throw new OsmosisApiException(response.StatusCode, null,
+						"Osmosis response exceeds the safety limit.");
+				if (!response.IsSuccessStatusCode)
+				{
+					if (isRetryAllowed && attempt < 2 &&
+						(response.StatusCode == HttpStatusCode.TooManyRequests ||
+							(int)response.StatusCode >= 500))
+					{
+						await Task.Delay(TimeSpan.FromSeconds(attempt + 1),
+							cancellationToken);
+						continue;
+					}
+					throw CreateApiException(response.StatusCode, body);
+				}
+				try
+				{
+					var result = JsonConvert.DeserializeObject<TResponse>(body,
+						_serializerSettings);
+					return result is null
+						? throw new OsmosisApiException(response.StatusCode, null,
+							"Osmosis returned an empty JSON response.")
+						: result;
+				}
+				catch (JsonException error)
+				{
+					throw new OsmosisApiException(
+						"Osmosis returned malformed JSON.", error);
+				}
 			}
-			catch (JsonException error)
+			catch (HttpRequestException error) when (
+				isRetryAllowed && attempt < 2)
 			{
-				throw new OsmosisApiException(
-					"Osmosis returned malformed JSON.", error);
+				this.AddWarningLog(
+					"Osmosis request to {0} failed; retrying: {1}",
+					endpoint, error.Message);
+				await Task.Delay(TimeSpan.FromSeconds(attempt + 1),
+					cancellationToken);
+			}
+			catch (HttpRequestException error)
+			{
+				throw new HttpRequestException(
+					$"Osmosis request to '{endpoint}' failed.", error,
+					error.StatusCode);
 			}
 		}
 	}

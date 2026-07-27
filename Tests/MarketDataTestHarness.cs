@@ -168,9 +168,15 @@ class MarketDataTestHarness : IAsyncDisposable
 	{
 		var reader = CreateReader();
 
-		await _adapter.SendInMessageAsync(new ConnectMessage(), cancellationToken);
+		using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(
+			cancellationToken);
+		timeoutSource.CancelAfter(timeout);
 
-		var response = await reader.WaitAsync<ConnectMessage>(null, timeout, cancellationToken);
+		await _adapter.SendInMessageAsync(new ConnectMessage(), timeoutSource.Token)
+			.AsTask().WaitAsync(timeout, cancellationToken);
+
+		var response = await reader.WaitAsync<ConnectMessage>(null, timeout,
+			timeoutSource.Token);
 
 		if (response.Error is not null)
 			throw response.Error;
@@ -211,42 +217,54 @@ class MarketDataTestHarness : IAsyncDisposable
 		var transId = _adapter.TransactionIdGenerator.GetNextId();
 		var reader = CreateReader();
 
-		Post(new SecurityLookupMessage { TransactionId = transId }, cancellationToken);
+		using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(
+			cancellationToken);
+		timeoutSource.CancelAfter(timeout);
+		Post(new SecurityLookupMessage { TransactionId = transId },
+			timeoutSource.Token);
 
 		var securities = new List<SecurityMessage>();
 		var deadline = DateTime.UtcNow + timeout;
 		var isComplete = false;
 
-		// adapters differ in how they acknowledge a lookup: some reply first and finish later,
-		// some only send the end marker, so accept whichever of them arrives
-		while (securities.Count < max)
+		try
 		{
-			var left = deadline - DateTime.UtcNow;
-
-			if (left <= TimeSpan.Zero)
-				break;
-
-			var message = await reader.TryWaitAsync<Message>(m => IsFor(m, transId), left, cancellationToken);
-
-			if (message is null)
-				break;
-
-			if (message is SecurityMessage security)
+			// adapters differ in how they acknowledge a lookup: some reply first and finish later,
+			// some only send the end marker, so accept whichever of them arrives
+			while (securities.Count < max)
 			{
-				securities.Add(security);
-				continue;
+				var left = deadline - DateTime.UtcNow;
+
+				if (left <= TimeSpan.Zero)
+					break;
+
+				var message = await reader.TryWaitAsync<Message>(
+					m => IsFor(m, transId), left, cancellationToken);
+
+				if (message is null)
+					break;
+
+				if (message is SecurityMessage security)
+				{
+					securities.Add(security);
+					continue;
+				}
+
+				if (message is SubscriptionResponseMessage response)
+				{
+					if (response.Error is not null)
+						throw response.Error;
+
+					continue;
+				}
+
+				isComplete = true;
+				break;
 			}
-
-			if (message is SubscriptionResponseMessage response)
-			{
-				if (response.Error is not null)
-					throw response.Error;
-
-				continue;
-			}
-
-			isComplete = true;
-			break;
+		}
+		finally
+		{
+			await timeoutSource.CancelAsync();
 		}
 
 		return new([.. securities], isComplete);
@@ -312,38 +330,61 @@ class MarketDataTestHarness : IAsyncDisposable
 
 		var reader = CreateReader();
 
-		Post(mdMsg, cancellationToken);
+		using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(
+			cancellationToken);
+		timeoutSource.CancelAfter(timeout);
+		Post(mdMsg, timeoutSource.Token);
 
 		TMessage data = null;
+		Exception error = null;
 		var deadline = DateTime.UtcNow + timeout;
 
-		// the acknowledgement and the data race each other: adapters that answer a historical
-		// request inline may deliver the data before the reply, so watch for both at once
-		while (true)
+		try
 		{
-			var left = deadline - DateTime.UtcNow;
-
-			if (left <= TimeSpan.Zero)
-				break;
-
-			var message = await reader.TryWaitAsync<Message>(m =>
-				(m is SubscriptionResponseMessage response && response.OriginalTransactionId == transId) ||
-				(m is TMessage typed && IsOwned(typed, transId, securityId) && (filter is null || filter(typed))),
-				left, cancellationToken);
-
-			if (message is null)
-				break;
-
-			if (message is SubscriptionResponseMessage reply)
+			// the acknowledgement and the data race each other: adapters that answer a historical
+			// request inline may deliver the data before the reply, so watch for both at once
+			while (true)
 			{
-				if (reply.Error is not null)
-					return new(transId, reply.Error, null);
+				var left = deadline - DateTime.UtcNow;
 
-				continue;
+				if (left <= TimeSpan.Zero)
+					break;
+
+				var message = await reader.TryWaitAsync<Message>(m =>
+					m is ErrorMessage ||
+					(m is SubscriptionResponseMessage response &&
+						response.OriginalTransactionId == transId) ||
+					(m is TMessage typed && IsOwned(typed, transId, securityId) &&
+						(filter is null || filter(typed))),
+					left, cancellationToken);
+
+				if (message is null)
+					break;
+
+				if (message is SubscriptionResponseMessage reply)
+				{
+					if (reply.Error is not null)
+					{
+						error = reply.Error;
+						break;
+					}
+
+					continue;
+				}
+
+				if (message is ErrorMessage errorMessage)
+				{
+					error = errorMessage.Error;
+					break;
+				}
+
+				data = (TMessage)message;
+				break;
 			}
-
-			data = (TMessage)message;
-			break;
+		}
+		finally
+		{
+			await timeoutSource.CancelAsync();
 		}
 
 		// unsubscribe is a best effort cleanup, the session is torn down right after
@@ -356,7 +397,7 @@ class MarketDataTestHarness : IAsyncDisposable
 			DataType2 = dataType,
 		}, cancellationToken);
 
-		return new(transId, null, data);
+		return new(transId, error, data);
 	}
 
 	/// <summary>
@@ -375,8 +416,14 @@ class MarketDataTestHarness : IAsyncDisposable
 
 		var reader = CreateReader();
 
-		await _adapter.SendInMessageAsync(new DisconnectMessage(), cancellationToken);
-		await reader.TryWaitAsync<DisconnectMessage>(null, timeout, cancellationToken);
+		using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(
+			cancellationToken);
+		timeoutSource.CancelAfter(timeout);
+
+		await _adapter.SendInMessageAsync(new DisconnectMessage(),
+			timeoutSource.Token).AsTask().WaitAsync(timeout, cancellationToken);
+		await reader.TryWaitAsync<DisconnectMessage>(null, timeout,
+			timeoutSource.Token);
 	}
 
 	private async Task StopPumpAsync()

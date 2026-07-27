@@ -1,0 +1,16 @@
+// spot@public.miniTickers.v3.api
+// Modified by StockSharp: added csharp_namespace for generated C# types.
+
+syntax = "proto3";
+
+import "PublicMiniTickerV3Api.proto";
+
+option csharp_namespace = "StockSharp.Mexc.Native.Protobuf";
+option java_package = "com.mxc.push.common.protobuf";
+option optimize_for = SPEED;
+option java_multiple_files = true;
+option java_outer_classname = "PublicMiniTickersV3ApiProto";
+
+message PublicMiniTickersV3Api {
+  repeated PublicMiniTickerV3Api items = 1;
+}

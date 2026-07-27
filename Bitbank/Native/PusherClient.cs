@@ -14,6 +14,7 @@ class PusherClient : BaseLogReceiver
 	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
 
 	private readonly WebSocketClient _client;
+	private TaskCompletionSource _ready;
 
 	public PusherClient(string endpoint, WorkingTime workingTime)
 	{
@@ -55,10 +56,13 @@ class PusherClient : BaseLogReceiver
 		await _client.SendAsync("40", cancellationToken);
 	}
 
-	public ValueTask ConnectAsync(CancellationToken cancellationToken)
+	public async ValueTask ConnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Connecting);
-		return _client.ConnectAsync(cancellationToken);
+		_ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+		await _client.ConnectAsync(cancellationToken);
+		await _ready.Task.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
 	}
 
 	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
@@ -70,6 +74,18 @@ class PusherClient : BaseLogReceiver
 	private async ValueTask OnProcess(WebSocketMessage msg, CancellationToken cancellationToken)
 	{
 		var json = msg.AsString();
+
+		if (json == "2")
+		{
+			await _client.SendAsync("3", cancellationToken);
+			return;
+		}
+
+		if (json.StartsWith("40", StringComparison.Ordinal))
+		{
+			_ready?.TrySetResult();
+			return;
+		}
 
 		if (long.TryParse(json, out _))
 			return;
@@ -164,6 +180,6 @@ class PusherClient : BaseLogReceiver
 		if (isSubscribe)
 			return _client.SendAsync($"42[\"join-room\",\"{channel}\"]", cancellationToken);
 		else
-			return _client.SendAsync(new[] { "leave-room", channel }, cancellationToken);
+			return _client.SendAsync($"42[\"leave-room\",\"{channel}\"]", cancellationToken);
 	}
 }

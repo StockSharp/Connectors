@@ -18,7 +18,8 @@ class PusherClient : BaseLogReceiver
 	private readonly SynchronizedDictionary<string, long> _subscriptions = new(StringComparer.InvariantCultureIgnoreCase);
 	private long _nextSubscriptionId;
 
-	public PusherClient(string endpoint, WorkingTime workingTime)
+	public PusherClient(string endpoint, WorkingTime workingTime,
+		int reconnectAttempts)
 	{
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
@@ -44,6 +45,7 @@ class PusherClient : BaseLogReceiver
 			(s, a) => this.AddVerboseLog(s, a))
 		{
 			WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
+			ReconnectAttempts = reconnectAttempts,
 		};
 	}
 

@@ -17,6 +17,9 @@ sealed class GeminiWsHeader
 	[JsonProperty("e")]
 	public string Event { get; set; }
 
+	[JsonProperty("E")]
+	public long? EventTimeNanoseconds { get; set; }
+
 	[JsonProperty("s")]
 	public string Symbol { get; set; }
 

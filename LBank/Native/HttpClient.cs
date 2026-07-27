@@ -63,6 +63,19 @@ class HttpClient(string baseUrl, SecureString key, SecureString secret) : BaseLo
 		return MakeRequestAsync<IEnumerable<Trade>>(CreateUrl("supplement/trades.do"), request, cancellationToken);
 	}
 
+	public Task<OrderBook> GetOrderBookAsync(string symbol, int size,
+		CancellationToken cancellationToken)
+	{
+		var request = CreateRequest(Method.Get);
+
+		request
+			.AddParameter("symbol", symbol)
+			.AddParameter("size", size.Min(200).Max(1));
+
+		return MakeRequestAsync<OrderBook>(CreateUrl("depth.do"), request,
+			cancellationToken);
+	}
+
 	public Task<LBankAccount> GetUserInfoAsync(CancellationToken cancellationToken)
 		=> MakeRequestAsync<LBankAccount>(
 			CreateUrl("supplement/user_info_account.do"),

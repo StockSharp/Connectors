@@ -1,5 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
+using System;
+
 using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,7 +21,10 @@ public class HitBtcMarketDataTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "BTC/USD",
+		SecurityCode = "UNI/USDT",
 		BoardCode = BoardCodes.HitBtc,
 	};
+
+	/// <inheritdoc />
+	protected override TimeSpan DataTimeout => TimeSpan.FromSeconds(90);
 }
