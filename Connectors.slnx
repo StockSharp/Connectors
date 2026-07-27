@@ -19,6 +19,7 @@
     <Project Path="BingX/BingX.csproj" />
     <Project Path="Bitalong/Bitalong.csproj" />
 	<Project Path="Bit2Me/Bit2Me.csproj" />
+	<Project Path="BitoPro/BitoPro.csproj" />
     <Project Path="Bitbank/Bitbank.csproj" />
     <Project Path="Bitexbook/Bitexbook.csproj" />
     <Project Path="Bitfinex/Bitfinex.csproj" />

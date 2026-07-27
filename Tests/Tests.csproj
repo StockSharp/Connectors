@@ -14,6 +14,7 @@
     <ProjectReference Include="..\Binance\Binance.csproj" />
     <ProjectReference Include="..\BingX\BingX.csproj" />
 	<ProjectReference Include="..\Bit2Me\Bit2Me.csproj" />
+	<ProjectReference Include="..\BitoPro\BitoPro.csproj" />
     <ProjectReference Include="..\Bitbank\Bitbank.csproj" />
     <ProjectReference Include="..\Bitfinex\Bitfinex.csproj" />
     <ProjectReference Include="..\BitFlyer\BitFlyer.csproj" />
