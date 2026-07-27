@@ -27,7 +27,8 @@ public class OstiumOrderCondition : OrderCondition
 	/// <summary>Optional take-profit price. Zero disables take profit.</summary>
 	[DataMember]
 	[Display(
-		Name = "Take profit",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitLabelKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 1)]
 	public decimal TakeProfitPrice
@@ -41,7 +42,8 @@ public class OstiumOrderCondition : OrderCondition
 	/// <summary>Optional stop-loss price. Zero disables stop loss.</summary>
 	[DataMember]
 	[Display(
-		Name = "Stop loss",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossLabelKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 2)]
 	public decimal StopLossPrice
@@ -55,7 +57,8 @@ public class OstiumOrderCondition : OrderCondition
 	/// <summary>Use a stop trigger instead of a regular limit order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Stop order",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopOrderKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 3)]
 	public bool IsStopOrder
@@ -67,7 +70,8 @@ public class OstiumOrderCondition : OrderCondition
 	/// <summary>Restrict the trade to the protocol day-trading session.</summary>
 	[DataMember]
 	[Display(
-		Name = "Day trade",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DayTradeKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 4)]
 	public bool IsDayTrade
@@ -79,7 +83,8 @@ public class OstiumOrderCondition : OrderCondition
 	/// <summary>Close an existing position instead of opening a trade.</summary>
 	[DataMember]
 	[Display(
-		Name = "Close position",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClosePositionKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 5)]
 	public bool IsClosePosition
@@ -91,7 +96,8 @@ public class OstiumOrderCondition : OrderCondition
 	/// <summary>Per-pair Ostium position index used for closing.</summary>
 	[DataMember]
 	[Display(
-		Name = "Position index",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PositionIndexKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 6)]
 	public int? PositionIndex
@@ -103,7 +109,8 @@ public class OstiumOrderCondition : OrderCondition
 	/// <summary>Percentage of the position to close.</summary>
 	[DataMember]
 	[Display(
-		Name = "Close percentage",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClosePercentageKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public decimal? ClosePercentage

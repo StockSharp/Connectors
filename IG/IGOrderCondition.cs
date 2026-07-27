@@ -19,7 +19,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Native instrument expiry, for example <c>DFB</c>.</summary>
 	[DataMember]
 	[Display(
-		Name = "Expiry",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExpiryKey,
 		GroupName = LocalizedStrings.GeneralKey,
 		Order = 0)]
 	public string Expiry
@@ -31,7 +32,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Deal currency ISO code.</summary>
 	[DataMember]
 	[Display(
-		Name = "Currency",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CurrencyKey,
 		GroupName = LocalizedStrings.GeneralKey,
 		Order = 1)]
 	public string CurrencyCode
@@ -43,7 +45,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Create an independent position instead of netting.</summary>
 	[DataMember]
 	[Display(
-		Name = "Force open",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForceOpenKey,
 		GroupName = LocalizedStrings.GeneralKey,
 		Order = 2)]
 	public bool ForceOpen
@@ -55,7 +58,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Use a guaranteed stop.</summary>
 	[DataMember]
 	[Display(
-		Name = "Guaranteed stop",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GuaranteedStopKey,
 		GroupName = LocalizedStrings.StopKey,
 		Order = 3)]
 	public bool GuaranteedStop
@@ -67,7 +71,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Absolute stop level.</summary>
 	[DataMember]
 	[Display(
-		Name = "Stop level",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLevelKey,
 		GroupName = LocalizedStrings.StopKey,
 		Order = 4)]
 	public decimal? StopLevel
@@ -79,7 +84,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Stop distance in instrument points.</summary>
 	[DataMember]
 	[Display(
-		Name = "Stop distance",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopDistanceKey,
 		GroupName = LocalizedStrings.StopKey,
 		Order = 5)]
 	public decimal? StopDistance
@@ -91,7 +97,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Absolute profit-taking level.</summary>
 	[DataMember]
 	[Display(
-		Name = "Limit level",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LimitLevelKey,
 		GroupName = LocalizedStrings.LimitKey,
 		Order = 6)]
 	public decimal? LimitLevel
@@ -103,7 +110,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Profit-taking distance in instrument points.</summary>
 	[DataMember]
 	[Display(
-		Name = "Limit distance",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LimitDistanceKey,
 		GroupName = LocalizedStrings.LimitKey,
 		Order = 7)]
 	public decimal? LimitDistance
@@ -115,7 +123,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Enable a trailing stop.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trailing stop",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TrailingStopKey,
 		GroupName = LocalizedStrings.StopKey,
 		Order = 8)]
 	public bool TrailingStop
@@ -127,7 +136,8 @@ public class IgOrderCondition : OrderCondition
 	/// <summary>Trailing-stop increment in instrument points.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trailing increment",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TrailingIncrementKey,
 		GroupName = LocalizedStrings.StopKey,
 		Order = 9)]
 	public decimal? TrailingStopIncrement

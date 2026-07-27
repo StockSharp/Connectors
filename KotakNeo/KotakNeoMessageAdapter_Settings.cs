@@ -83,32 +83,36 @@ public partial class KotakNeoMessageAdapter : MessageAdapter
 
 	/// <summary>Login API endpoint.</summary>
 	[Display(
-		Name = "Login endpoint",
-		Description = "Login API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LoginEndpointKey,
+		Description = LocalizedStrings.LoginApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string LoginEndpoint { get; set; } = _defaultLoginEndpoint;
 
 	/// <summary>Validation API endpoint.</summary>
 	[Display(
-		Name = "Validation endpoint",
-		Description = "Session validation API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ValidationEndpointKey,
+		Description = LocalizedStrings.SessionValidationApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string ValidationEndpoint { get; set; } = _defaultValidationEndpoint;
 
 	/// <summary>Market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market WebSocket endpoint",
-		Description = "Market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketEndpointKey,
+		Description = LocalizedStrings.MarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
 
 	/// <summary>Order WebSocket endpoint template.</summary>
 	[Display(
-		Name = "Order WebSocket template",
-		Description = "Order WebSocket endpoint template where {0} is the data-center host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderWebSocketTemplateKey,
+		Description = LocalizedStrings.OrderWebSocketEndpointTemplateWhere0IsTheDataCenterHostDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OrderWebSocketEndpointTemplate { get; set; } = _defaultOrderWebSocketEndpointTemplate;

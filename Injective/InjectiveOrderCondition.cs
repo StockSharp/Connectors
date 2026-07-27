@@ -8,9 +8,10 @@ public class InjectiveOrderCondition : OrderCondition
 	/// <summary>Trigger price for a stop or take-profit order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trigger price",
-		Description = "Trigger price for a conditional Injective order.",
-		GroupName = "Condition",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerPriceKey,
+		Description = LocalizedStrings.TriggerPriceForAConditionalInjectiveOrderDescKey,
+		GroupName = LocalizedStrings.ConditionKey,
 		Order = 0)]
 	public decimal? TriggerPrice
 	{
@@ -21,9 +22,10 @@ public class InjectiveOrderCondition : OrderCondition
 	/// <summary>Whether the condition is a take-profit condition.</summary>
 	[DataMember]
 	[Display(
-		Name = "Take profit",
-		Description = "Use a take-profit trigger instead of a stop trigger.",
-		GroupName = "Condition",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitLabelKey,
+		Description = LocalizedStrings.UseATakeProfitTriggerInsteadOfAStopTriggerDescKey,
+		GroupName = LocalizedStrings.ConditionKey,
 		Order = 1)]
 	public bool IsTakeProfit
 	{
@@ -34,9 +36,10 @@ public class InjectiveOrderCondition : OrderCondition
 	/// <summary>Whether the derivative order can only reduce a position.</summary>
 	[DataMember]
 	[Display(
-		Name = "Reduce only",
-		Description = "Place a derivative order with zero margin so it can only reduce a position.",
-		GroupName = "Condition",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReduceOnlyKey,
+		Description = LocalizedStrings.PlaceADerivativeOrderWithZeroMarginSoItCanOnlyReduceAPositionDescKey,
+		GroupName = LocalizedStrings.ConditionKey,
 		Order = 2)]
 	public bool IsReduceOnly
 	{
@@ -47,9 +50,10 @@ public class InjectiveOrderCondition : OrderCondition
 	/// <summary>Requested derivative leverage.</summary>
 	[DataMember]
 	[Display(
-		Name = "Leverage",
-		Description = "Leverage used to calculate derivative order margin.",
-		GroupName = "Condition",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LeverageKey,
+		Description = LocalizedStrings.LeverageUsedToCalculateDerivativeOrderMarginDescKey,
+		GroupName = LocalizedStrings.ConditionKey,
 		Order = 3)]
 	public decimal? Leverage
 	{

@@ -94,24 +94,27 @@ public partial class SwissquoteMessageAdapter : MessageAdapter, ITokenAdapter, I
 
 	/// <summary>Production trading REST endpoint.</summary>
 	[Display(
-		Name = "Trading REST endpoint",
-		Description = "Production trading REST endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradingRestEndpointKey,
+		Description = LocalizedStrings.ProductionTradingRestEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 8)]
 	public string TradingEndpoint { get; set; } = _defaultTradingEndpoint;
 
 	/// <summary>Simulation trading REST endpoint.</summary>
 	[Display(
-		Name = "Demo trading REST endpoint",
-		Description = "Simulation trading REST endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoTradingRestEndpointKey,
+		Description = LocalizedStrings.SimulationTradingRestEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 9)]
 	public string DemoTradingEndpoint { get; set; } = _defaultDemoTradingEndpoint;
 
 	/// <summary>Custody REST endpoint.</summary>
 	[Display(
-		Name = "Custody REST endpoint",
-		Description = "Custody REST endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CustodyRestEndpointKey,
+		Description = LocalizedStrings.CustodyRestEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public string CustodyEndpoint { get; set; } = _defaultCustodyEndpoint;

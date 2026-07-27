@@ -35,51 +35,57 @@ public partial class MtNewswiresMessageAdapter : MessageAdapter, ITokenAdapter, 
 
 	/// <summary>viaNexus data-source identifier.</summary>
 	[Display(
-		Name = "Data source",
-		Description = "viaNexus data-source identifier containing the licensed dataset.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataSourceKey,
+		Description = LocalizedStrings.ViaNexusDataSourceIdentifierContainingTheLicensedDatasetDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public string DataSource { get; set; } = "EDGE";
 
 	/// <summary>MT Newswires dataset identifier.</summary>
 	[Display(
-		Name = "Dataset ID",
-		Description = "Licensed viaNexus MT Newswires dataset identifier.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DatasetIdKey,
+		Description = LocalizedStrings.LicensedViaNexusMtNewswiresDatasetIdentifierDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
 	public string DatasetId { get; set; } = "MT_NEWSWIRES_Global";
 
 	/// <summary>Interval between latest-record polls.</summary>
 	[Display(
-		Name = "Polling interval",
-		Description = "Interval between latest-record polls for live news.",
-		GroupName = "News",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PollingIntervalKey,
+		Description = LocalizedStrings.IntervalBetweenLatestRecordPollsForLiveNewsDescKey,
+		GroupName = LocalizedStrings.NewsKey,
 		Order = 4)]
 	public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(5);
 
 	/// <summary>Maximum number of latest records requested by one live poll.</summary>
 	[Display(
-		Name = "Polling batch size",
-		Description = "Maximum latest records requested by one live poll.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PollingBatchSizeKey,
+		Description = LocalizedStrings.MaximumLatestRecordsRequestedByOneLivePollDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 5)]
 	public int PollingBatchSize { get; set; } = 100;
 
 	/// <summary>Maximum records emitted by one historical request.</summary>
 	[Display(
-		Name = "News limit",
-		Description = "Maximum records emitted by one historical request.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NewsLimitKey,
+		Description = LocalizedStrings.MaximumRecordsEmittedByOneHistoricalRequestDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 6)]
 	public int MaxNewsItems { get; set; } = 10000;
 
 	/// <summary>Lookback used for history without an explicit start time.</summary>
 	[Display(
-		Name = "Default history lookback",
-		Description = "Lookback used for history without an explicit start time.",
-		GroupName = "History",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DefaultHistoryLookbackKey,
+		Description = LocalizedStrings.LookbackUsedForHistoryWithoutAnExplicitStartTimeDescKey,
+		GroupName = LocalizedStrings.HistoryKey,
 		Order = 7)]
 	public TimeSpan DefaultHistoryLookback { get; set; } = TimeSpan.FromDays(1);
 

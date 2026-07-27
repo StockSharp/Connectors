@@ -8,37 +8,43 @@ public enum IntrinioEquityProviders
 	/// <summary>Legacy Intrinio real-time IEX feed.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Real-time (IEX legacy)")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RealTimeIexLegacyKey)]
 	Realtime,
 
 	/// <summary>15-minute delayed consolidated SIP feed.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Delayed SIP")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DelayedSipKey)]
 	DelayedSip,
 
 	/// <summary>Nasdaq Basic feed.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Nasdaq Basic")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NasdaqBasicKey)]
 	NasdaqBasic,
 
 	/// <summary>Cboe One feed.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Cboe One")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CboeOneKey)]
 	CboeOne,
 
 	/// <summary>IEX feed.</summary>
 	[EnumMember]
 	[Display(
-		Name = "IEX")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IEXKey)]
 	Iex,
 
 	/// <summary>Intrinio Equities Edge feed.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Equities Edge")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EquitiesEdgeKey)]
 	EquitiesEdge,
 }
 
@@ -50,13 +56,15 @@ public enum IntrinioOptionProviders
 	/// <summary>OPRA feed.</summary>
 	[EnumMember]
 	[Display(
-		Name = "OPRA")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OpraKey)]
 	Opra,
 
 	/// <summary>Intrinio Options Edge feed.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Options Edge")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OptionsEdgeKey)]
 	OptionsEdge,
 }
 
@@ -127,41 +135,46 @@ public partial class IntrinioMessageAdapter : MessageAdapter, ITokenAdapter, IAd
 
 	/// <summary>Use split- and dividend-adjusted equity end-of-day prices.</summary>
 	[Display(
-		Name = "Adjusted prices",
-		Description = "Use adjusted equity end-of-day prices.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AdjustedPricesKey,
+		Description = LocalizedStrings.UseAdjustedEquityEndOfDayPricesDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 5)]
 	public bool IsAdjusted { get; set; }
 
 	/// <summary>Number of official SDK decoder threads for equities.</summary>
 	[Display(
-		Name = "Equity threads",
-		Description = "Equity decoder worker count.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EquityThreadsKey,
+		Description = LocalizedStrings.EquityDecoderWorkerCountDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public int EquityThreads { get; set; } = 4;
 
 	/// <summary>Number of official SDK decoder threads for options.</summary>
 	[Display(
-		Name = "Option threads",
-		Description = "Option decoder worker count.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OptionThreadsKey,
+		Description = LocalizedStrings.OptionDecoderWorkerCountDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 7)]
 	public int OptionThreads { get; set; } = 4;
 
 	/// <summary>Official SDK equities input buffer size.</summary>
 	[Display(
-		Name = "Equity buffer",
-		Description = "Equity SDK input buffer size.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EquityBufferKey,
+		Description = LocalizedStrings.EquitySdkInputBufferSizeDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 8)]
 	public int EquityBufferSize { get; set; } = 4096;
 
 	/// <summary>Official SDK options input buffer size.</summary>
 	[Display(
-		Name = "Option buffer",
-		Description = "Option SDK input buffer size.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OptionBufferKey,
+		Description = LocalizedStrings.OptionSdkInputBufferSizeDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 9)]
 	public int OptionBufferSize { get; set; } = 4096;
 

@@ -77,16 +77,18 @@ public partial class FactSetMessageAdapter : MessageAdapter, ILoginPasswordAdapt
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>OAuth discovery endpoint.</summary>
 	[Display(
-		Name = "OAuth discovery endpoint",
-		Description = "OAuth OpenID discovery endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthDiscoveryEndpointKey,
+		Description = LocalizedStrings.OAuthOpenIDDiscoveryEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OAuthDiscoveryEndpoint { get; set; } = _defaultOAuthDiscoveryEndpoint;

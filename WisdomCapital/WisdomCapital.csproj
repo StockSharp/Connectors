@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors_websocket.props" />
+  <PropertyGroup>
+    <ProjectGuid>{58195D9F-B336-4ABF-A3BB-31EADBAB90C2}</ProjectGuid>
+    <NoWarn>$(NoWarn);CS3001;CS3002;CS3003</NoWarn>
+    <PackageReadmeFile></PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="README.md" />
+  </ItemGroup>
+</Project>

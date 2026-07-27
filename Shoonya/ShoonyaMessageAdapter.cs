@@ -59,6 +59,17 @@ public partial class ShoonyaMessageAdapter
 	/// <inheritdoc />
 	public override string[] AssociatedBoards { get; } = ["NSE", "BSE", "NFO", "BFO", "CDS", "MCX"];
 
+	/// <summary>
+	/// Whether the Noren transport must use OAuth Bearer authentication.
+	/// </summary>
+	protected virtual bool IsBearerAuthentication => false;
+
+	/// <summary>
+	/// Prepare credentials before the shared Noren transport is created.
+	/// </summary>
+	protected virtual ValueTask PrepareConnectionAsync(CancellationToken cancellationToken)
+		=> default;
+
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg, CancellationToken cancellationToken)
 	{
@@ -67,10 +78,12 @@ public partial class ShoonyaMessageAdapter
 		if (ReconnectAttempts < 0)
 			throw new ArgumentOutOfRangeException(nameof(ReconnectAttempts), ReconnectAttempts, "Reconnect attempts cannot be negative.");
 
+		await PrepareConnectionAsync(cancellationToken);
 		UserId.ThrowIfEmpty(nameof(UserId));
 		Token.ThrowIfEmpty(nameof(Token));
 		_resolvedAccountId = AccountId.IsEmpty() ? UserId : AccountId;
-		_restClient = new(UserId, _resolvedAccountId, Token, RestEndpoint, InstrumentEndpointTemplate) { Parent = this };
+		_restClient = new(UserId, _resolvedAccountId, Token, RestEndpoint, InstrumentEndpointTemplate,
+			IsBearerAuthentication) { Parent = this };
 
 		try
 		{
@@ -80,7 +93,8 @@ public partial class ShoonyaMessageAdapter
 			if (this.IsMarketData() || this.IsTransactional())
 			{
 				_socketClient = new(UserId, _resolvedAccountId, Token, this.IsTransactional(),
-					ReconnectAttempts, ReConnectionSettings.WorkingTime, WebSocketEndpoint) { Parent = this };
+					ReconnectAttempts, ReConnectionSettings.WorkingTime, WebSocketEndpoint,
+					IsBearerAuthentication) { Parent = this };
 				_socketClient.MarketDataReceived += OnMarketDataReceived;
 				_socketClient.OrderReceived += OnOrderReceived;
 				_socketClient.Error += SendOutErrorAsync;

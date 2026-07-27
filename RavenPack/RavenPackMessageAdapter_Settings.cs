@@ -29,9 +29,10 @@ public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IA
 
 	/// <summary>RavenPack product selected for the dataset.</summary>
 	[Display(
-		Name = "Product",
-		Description = "RavenPack product selected for the dataset.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProductKey,
+		Description = LocalizedStrings.RavenPackProductSelectedForTheDatasetDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
 	public RavenPackProducts Product
@@ -53,9 +54,10 @@ public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IA
 
 	/// <summary>Identifier of a RavenPack granular dataset.</summary>
 	[Display(
-		Name = "Dataset ID",
-		Description = "Identifier of a RavenPack granular dataset used for history and the feed.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DatasetIdKey,
+		Description = LocalizedStrings.IdentifierOfARavenPackGranularDatasetUsedForHistoryAndTheFeedDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public string DatasetId { get; set; }
@@ -76,9 +78,10 @@ public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IA
 
 	/// <summary>RavenPack real-time JSON-lines feed base address.</summary>
 	[Display(
-		Name = "Feed address",
-		Description = "RavenPack real-time JSON-lines feed base address.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FeedAddressKey,
+		Description = LocalizedStrings.RavenPackRealTimeJsonLinesFeedBaseAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	[BasicSetting]
 	public Uri FeedAddress
@@ -89,25 +92,28 @@ public partial class RavenPackMessageAdapter : MessageAdapter, ITokenAdapter, IA
 
 	/// <summary>Maximum records emitted by one historical query.</summary>
 	[Display(
-		Name = "History limit",
-		Description = "Maximum records emitted by one synchronous JSON query (up to 10000).",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLimitKey,
+		Description = LocalizedStrings.MaximumRecordsEmittedByOneSynchronousJsonQueryUpTo10000DescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 5)]
 	public int MaxRecords { get; set; } = 10000;
 
 	/// <summary>Lookback used for a history-only request without a start time.</summary>
 	[Display(
-		Name = "Default history lookback",
-		Description = "Lookback used for a history-only request without a start time.",
-		GroupName = "History",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DefaultHistoryLookbackKey,
+		Description = LocalizedStrings.LookbackUsedForAHistoryOnlyRequestWithoutAStartTimeDescKey,
+		GroupName = LocalizedStrings.HistoryKey,
 		Order = 6)]
 	public TimeSpan DefaultHistoryLookback { get; set; } = TimeSpan.FromDays(1);
 
 	/// <summary>Resolve licensed story URLs through the Document API.</summary>
 	[Display(
-		Name = "Resolve document URLs",
-		Description = "Resolve each licensed story URL through the Document API.",
-		GroupName = "News",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ResolveDocumentURLsKey,
+		Description = LocalizedStrings.ResolveEachLicensedStoryUrlThroughTheDocumentApiDescKey,
+		GroupName = LocalizedStrings.NewsKey,
 		Order = 7)]
 	public bool IsResolveDocumentUrls { get; set; }
 

@@ -11,8 +11,9 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Native operation kind.</summary>
 	[DataMember]
 	[Display(
-		Name = "Operation",
-		GroupName = "Paxos",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OperationKey,
+		GroupName = LocalizedStrings.PaxosKey,
 		Order = 0)]
 	public PaxosOperations Operation
 	{
@@ -27,7 +28,7 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceKey,
-		GroupName = "Paxos",
+		GroupName = LocalizedStrings.PaxosKey,
 		Order = 1)]
 	public decimal? StopPrice
 	{
@@ -38,8 +39,9 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Quote amount required by a market buy.</summary>
 	[DataMember]
 	[Display(
-		Name = "Quote amount",
-		GroupName = "Paxos",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuoteAmountKey,
+		GroupName = LocalizedStrings.PaxosKey,
 		Order = 2)]
 	public decimal? QuoteAmount
 	{
@@ -50,8 +52,9 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Submit a post-only limit order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Post only",
-		GroupName = "Paxos",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PostOnlyLabelKey,
+		GroupName = LocalizedStrings.PaxosKey,
 		Order = 3)]
 	public bool IsPostOnly
 	{
@@ -62,8 +65,9 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Identity requesting an operation.</summary>
 	[DataMember]
 	[Display(
-		Name = "Identity ID",
-		GroupName = "Paxos",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IdentityIdKey,
+		GroupName = LocalizedStrings.PaxosKey,
 		Order = 4)]
 	public string IdentityId
 	{
@@ -74,8 +78,9 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Account associated with <see cref="IdentityId"/>.</summary>
 	[DataMember]
 	[Display(
-		Name = "Identity account ID",
-		GroupName = "Paxos",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IdentityAccountIdKey,
+		GroupName = LocalizedStrings.PaxosKey,
 		Order = 5)]
 	public string IdentityAccountId
 	{
@@ -86,7 +91,8 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Profile receiving trade settlement or transferred assets.</summary>
 	[DataMember]
 	[Display(
-		Name = "Destination profile",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DestinationProfileKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 0)]
 	public string DestinationProfileId
@@ -98,7 +104,8 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>External crypto destination address.</summary>
 	[DataMember]
 	[Display(
-		Name = "Destination address",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DestinationAddressKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 1)]
 	public string DestinationAddress
@@ -110,7 +117,8 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Crypto withdrawal network.</summary>
 	[DataMember]
 	[Display(
-		Name = "Crypto network",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoNetworkKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 2)]
 	public PaxosCryptoNetworks CryptoNetwork
@@ -123,7 +131,8 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Destination asset for a stablecoin conversion.</summary>
 	[DataMember]
 	[Display(
-		Name = "Destination asset",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DestinationAssetKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 3)]
 	public string DestinationAsset
@@ -135,7 +144,8 @@ public sealed class PaxosOrderCondition : BaseWithdrawOrderCondition
 	/// <summary>Optional blockchain memo.</summary>
 	[DataMember]
 	[Display(
-		Name = "Memo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MemoKey,
 		GroupName = LocalizedStrings.WithdrawKey,
 		Order = 4)]
 	public string Memo

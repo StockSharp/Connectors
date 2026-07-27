@@ -40,8 +40,9 @@ public partial class FalconXMessageAdapter : IKeySecretAdapter, IPassphraseAdapt
 
 	/// <summary>FalconX REST API root.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "FalconX REST API root.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.FalconXRestApiRootDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	[BasicSetting]
@@ -49,8 +50,9 @@ public partial class FalconXMessageAdapter : IKeySecretAdapter, IPassphraseAdapt
 
 	/// <summary>FalconX price-stream WebSocket endpoint.</summary>
 	[Display(
-		Name = "Price WebSocket",
-		Description = "FalconX price-stream WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceWebSocketKey,
+		Description = LocalizedStrings.FalconXPriceStreamWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	[BasicSetting]
@@ -59,8 +61,9 @@ public partial class FalconXMessageAdapter : IKeySecretAdapter, IPassphraseAdapt
 
 	/// <summary>FalconX order WebSocket endpoint.</summary>
 	[Display(
-		Name = "Order WebSocket",
-		Description = "FalconX order-entry WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderWebSocketKey,
+		Description = LocalizedStrings.FalconXOrderEntryWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	[BasicSetting]
@@ -71,8 +74,9 @@ public partial class FalconXMessageAdapter : IKeySecretAdapter, IPassphraseAdapt
 
 	/// <summary>Base-token quantities requested from the FalconX price stream.</summary>
 	[Display(
-		Name = "Quote levels",
-		Description = "Positive base-token quantities used for streamed FalconX prices.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuoteLevelsKey,
+		Description = LocalizedStrings.PositiveBaseTokenQuantitiesUsedForStreamedFalconXPricesDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public decimal[] QuoteLevels

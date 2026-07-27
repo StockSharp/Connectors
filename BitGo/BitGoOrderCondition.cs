@@ -11,8 +11,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Native order type. Leave empty for automatic mapping.</summary>
 	[DataMember]
 	[Display(
-		Name = "Native type",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NativeTypeKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 0)]
 	public BitGoOrderTypes? NativeType
 	{
@@ -23,8 +24,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Funding source.</summary>
 	[DataMember]
 	[Display(
-		Name = "Funding type",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FundingTypeKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 1)]
 	public BitGoFundingTypes FundingType
 	{
@@ -39,7 +41,7 @@ public sealed class BitGoOrderCondition : OrderCondition
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.StopPriceKey,
 		Description = LocalizedStrings.StopPriceKey,
-		GroupName = "BitGo",
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 2)]
 	public decimal? TriggerPrice
 	{
@@ -50,8 +52,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>TWAP duration.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP duration",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapDurationKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 3)]
 	public TimeSpan? TwapDuration
 	{
@@ -62,8 +65,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Use time-sliced TWAP execution.</summary>
 	[DataMember]
 	[Display(
-		Name = "Time sliced",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TimeSlicedKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 4)]
 	public bool IsTimeSliced
 	{
@@ -74,8 +78,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>TWAP slice interval.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP interval",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapIntervalLabelKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 5)]
 	public TimeSpan? TwapInterval
 	{
@@ -86,8 +91,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Regular TWAP progression bounds.</summary>
 	[DataMember]
 	[Display(
-		Name = "Bounds control",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BoundsControlKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 6)]
 	public BitGoBoundsControls BoundsControl
 	{
@@ -99,8 +105,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Steady Pace interval value.</summary>
 	[DataMember]
 	[Display(
-		Name = "Steady Pace interval",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SteadyPaceIntervalKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 7)]
 	public int? SteadyPaceInterval
 	{
@@ -111,8 +118,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Steady Pace interval unit.</summary>
 	[DataMember]
 	[Display(
-		Name = "Interval unit",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IntervalUnitKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 8)]
 	public BitGoIntervalUnits IntervalUnit
 	{
@@ -124,8 +132,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Steady Pace child-order size.</summary>
 	[DataMember]
 	[Display(
-		Name = "Sub-order size",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SubOrderSizeKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 9)]
 	public decimal? SubOrderSize
 	{
@@ -136,8 +145,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Steady Pace size variance from zero to one.</summary>
 	[DataMember]
 	[Display(
-		Name = "Variance",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.VarianceKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 10)]
 	public decimal? Variance
 	{
@@ -148,8 +158,9 @@ public sealed class BitGoOrderCondition : OrderCondition
 	/// <summary>Optional UTC execution schedule.</summary>
 	[DataMember]
 	[Display(
-		Name = "Scheduled date",
-		GroupName = "BitGo",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ScheduledDateKey,
+		GroupName = LocalizedStrings.BitGoKey,
 		Order = 11)]
 	public DateTime? ScheduledDate
 	{

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <ProjectGuid>{48B47E04-2A7F-452E-85D7-FFEC60DD4B34}</ProjectGuid>
+    <PackageReadmeFile></PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="README.md" />
+    <None Remove="Gateway\masterlink_gateway.cjs" />
+    <None Remove="Gateway\package.json" />
+    <None Include="Gateway\masterlink_gateway.cjs"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="MasterLinkGateway\masterlink_gateway.cjs"
+          Pack="true"
+          PackagePath="contentFiles\any\any\MasterLinkGateway\"
+          PackageCopyToOutput="true" />
+    <None Include="Gateway\package.json"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="MasterLinkGateway\package.json"
+          Pack="true"
+          PackagePath="contentFiles\any\any\MasterLinkGateway\"
+          PackageCopyToOutput="true" />
+  </ItemGroup>
+</Project>

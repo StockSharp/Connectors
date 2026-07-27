@@ -7,24 +7,28 @@ public enum PolymarketSignatureTypes
 	/// <summary>Externally owned account.</summary>
 	[EnumMember]
 	[Display(
-		Name = "EOA")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EoaKey)]
 	Eoa = 0,
 
 	/// <summary>Polymarket proxy wallet controlled by an EOA.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Polymarket proxy")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PolymarketProxyKey)]
 	PolyProxy = 1,
 
 	/// <summary>Polymarket Gnosis Safe controlled by an EOA.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Polymarket Gnosis Safe")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PolymarketGnosisSafeKey)]
 	PolyGnosisSafe = 2,
 
 	/// <summary>Polymarket deposit wallet using ERC-1271.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Polymarket ERC-1271")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PolymarketErc1271Key)]
 	Poly1271 = 3,
 }

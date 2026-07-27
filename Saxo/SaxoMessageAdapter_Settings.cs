@@ -112,8 +112,9 @@ public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITo
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 7)]
 	public string RestEndpoint
@@ -124,8 +125,9 @@ public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITo
 
 	/// <summary>OAuth token endpoint.</summary>
 	[Display(
-		Name = "Token endpoint",
-		Description = "OAuth token endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TokenEndpointKey,
+		Description = LocalizedStrings.OAuthTokenEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 8)]
 	public string TokenEndpoint
@@ -136,8 +138,9 @@ public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITo
 
 	/// <summary>Streaming authorization endpoint.</summary>
 	[Display(
-		Name = "Streaming authorization endpoint",
-		Description = "Streaming authorization endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StreamingAuthorizationEndpointKey,
+		Description = LocalizedStrings.StreamingAuthorizationEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 9)]
 	public string StreamAuthorizeEndpoint
@@ -148,8 +151,9 @@ public partial class SaxoMessageAdapter : MessageAdapter, IKeySecretAdapter, ITo
 
 	/// <summary>Streaming WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Streaming WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.StreamingWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public string WebSocketEndpoint

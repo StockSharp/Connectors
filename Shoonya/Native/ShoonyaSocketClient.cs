@@ -12,16 +12,19 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 	private readonly string _accountId;
 	private readonly string _sessionToken;
 	private readonly bool _subscribeOrders;
+	private readonly bool _useBearerAuthentication;
 	private readonly SynchronizedDictionary<string, bool> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 	private TaskCompletionSource<bool> _loginCompletion;
 
 	public ShoonyaSocketClient(string userId, string accountId, SecureString sessionToken, bool subscribeOrders,
-		int reconnectAttempts, WorkingTime workingTime, string webSocketEndpoint)
+		int reconnectAttempts, WorkingTime workingTime, string webSocketEndpoint,
+		bool useBearerAuthentication = false)
 	{
 		_userId = userId.ThrowIfEmpty(nameof(userId));
 		_accountId = accountId.ThrowIfEmpty(nameof(accountId));
 		_sessionToken = sessionToken.ThrowIfEmpty(nameof(sessionToken)).UnSecure();
 		_subscribeOrders = subscribeOrders;
+		_useBearerAuthentication = useBearerAuthentication;
 
 		_client = new(
 			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
@@ -92,13 +95,26 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 		if (reconnect || _loginCompletion == null || _loginCompletion.Task.IsCompleted)
 			_loginCompletion = CreateCompletion();
 
-		await Send(new ShoonyaSocketLoginRequest
-		{
-			UserId = _userId,
-			AccountId = _accountId,
-			SessionToken = _sessionToken,
-		}, cancellationToken);
+		await _client.SendAsync(CreateLoginPayload(), cancellationToken);
 	}
+
+	internal string CreateLoginPayload()
+		=> JsonConvert.SerializeObject(
+			_useBearerAuthentication
+				? new ShoonyaSocketOAuthLoginRequest
+				{
+					UserId = _userId,
+					AccountId = _accountId,
+					AccessToken = _sessionToken,
+				}
+				: new ShoonyaSocketLoginRequest
+				{
+					UserId = _userId,
+					AccountId = _accountId,
+					SessionToken = _sessionToken,
+				},
+			Formatting.None,
+			_jsonSettings);
 
 	private async ValueTask Process(WebSocketMessage message, CancellationToken cancellationToken)
 	{
@@ -111,6 +127,7 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 
 		switch (envelope.Type?.ToLowerInvariant())
 		{
+			case "ak":
 			case "ck":
 			{
 				var acknowledgement = JsonConvert.DeserializeObject<ShoonyaSocketAcknowledgement>(text, _jsonSettings)

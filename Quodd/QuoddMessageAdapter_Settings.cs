@@ -56,17 +56,19 @@ public partial class QuoddMessageAdapter : MessageAdapter, ITokenAdapter, ILogin
 
 	/// <summary>Firm login used for HTTP Basic authentication.</summary>
 	[Display(
-		Name = "Firm login",
-		Description = "Firm login used in the Basic authorization header.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FirmLoginKey,
+		Description = LocalizedStrings.FirmLoginUsedInTheBasicAuthorizationHeaderDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public string FirmLogin { get; set; }
 
 	/// <summary>Firm password used for HTTP Basic authentication.</summary>
 	[Display(
-		Name = "Firm password",
-		Description = "Firm password used in the Basic authorization header.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FirmPasswordKey,
+		Description = LocalizedStrings.FirmPasswordUsedInTheBasicAuthorizationHeaderDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public SecureString FirmPassword { get; set; }
 
@@ -82,25 +84,28 @@ public partial class QuoddMessageAdapter : MessageAdapter, ITokenAdapter, ILogin
 
 	/// <summary>QUODD JWT service address.</summary>
 	[Display(
-		Name = "Authentication address",
-		Description = "QUODD JWT service base address.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AuthenticationAddressKey,
+		Description = LocalizedStrings.QuoddJwtServiceBaseAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 7)]
 	public Uri AuthenticationAddress { get; set; } = new("https://vor.quodd.com");
 
 	/// <summary>Ticker used to validate market-data entitlement when connecting.</summary>
 	[Display(
-		Name = "Validation ticker",
-		Description = "Equity ticker used for the initial authenticated snapshot request.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ValidationTickerKey,
+		Description = LocalizedStrings.EquityTickerUsedForTheInitialAuthenticatedSnapshotRequestDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 8)]
 	public string ValidationTicker { get; set; } = "MSFT";
 
 	/// <summary>Whether separately entitled Ticker Info is requested during security lookup.</summary>
 	[Display(
-		Name = "Ticker Info",
-		Description = "Request the separately entitled Ticker Info service during security lookup.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TickerInfoKey,
+		Description = LocalizedStrings.RequestTheSeparatelyEntitledTickerInfoServiceDuringSecurityLookupDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 9)]
 	public bool IsTickerInfoEnabled { get; set; } = true;
 

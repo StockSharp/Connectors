@@ -4,8 +4,9 @@ public partial class SynthetixMessageAdapter
 {
 	/// <summary>Synthetix subaccount identifier.</summary>
 	[Display(
-		Name = "Subaccount ID",
-		Description = "Synthetix trading subaccount identifier.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SubaccountIdKey,
+		Description = LocalizedStrings.SynthetixTradingSubaccountIdentifierDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -23,33 +24,37 @@ public partial class SynthetixMessageAdapter
 
 	/// <summary>Optional public REST endpoint override.</summary>
 	[Display(
-		Name = "Info REST endpoint",
-		Description = "Optional Synthetix public REST endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InfoRestEndpointKey,
+		Description = LocalizedStrings.OptionalSynthetixPublicRestEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string InfoEndpoint { get; set; }
 
 	/// <summary>Optional authenticated REST endpoint override.</summary>
 	[Display(
-		Name = "Trade REST endpoint",
-		Description = "Optional Synthetix authenticated REST endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradeRestEndpointKey,
+		Description = LocalizedStrings.OptionalSynthetixAuthenticatedRestEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string TradeEndpoint { get; set; }
 
 	/// <summary>Optional public WebSocket endpoint override.</summary>
 	[Display(
-		Name = "Info WebSocket endpoint",
-		Description = "Optional Synthetix public WebSocket endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InfoWebSocketEndpointKey,
+		Description = LocalizedStrings.OptionalSynthetixPublicWebSocketEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string InfoSocketEndpoint { get; set; }
 
 	/// <summary>Optional authenticated WebSocket endpoint override.</summary>
 	[Display(
-		Name = "Trade WebSocket endpoint",
-		Description = "Optional Synthetix authenticated WebSocket endpoint override.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradeWebSocketEndpointKey,
+		Description = LocalizedStrings.OptionalSynthetixAuthenticatedWebSocketEndpointOverrideDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string TradeSocketEndpoint { get; set; }
 

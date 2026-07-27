@@ -56,8 +56,9 @@ public partial class QuestradeMessageAdapter : MessageAdapter, ITokenAdapter
 
 	/// <summary>OAuth token endpoint.</summary>
 	[Display(
-		Name = "OAuth endpoint",
-		Description = "OAuth token endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthEndpointKey,
+		Description = LocalizedStrings.OAuthTokenEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;

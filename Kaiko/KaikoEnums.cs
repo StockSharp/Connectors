@@ -5,12 +5,14 @@ public enum KaikoRegions
 {
 	/// <summary>United States region.</summary>
 	[Display(
-		Name = "United States")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UnitedStatesKey)]
 	Us,
 
 	/// <summary>European Union region.</summary>
 	[Display(
-		Name = "Europe")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EuropeKey)]
 	Eu,
 }
 
@@ -20,31 +22,36 @@ public enum KaikoInstrumentClasses
 {
 	/// <summary>All classes when used as a lookup filter.</summary>
 	[Display(
-		Name = "All")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AllKey)]
 	[EnumMember(Value = "")]
 	Unknown,
 
 	/// <summary>Spot instrument.</summary>
 	[Display(
-		Name = "Spot")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SpotKey)]
 	[EnumMember(Value = "spot")]
 	Spot,
 
 	/// <summary>Dated future.</summary>
 	[Display(
-		Name = "Future")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FutureKey)]
 	[EnumMember(Value = "future")]
 	Future,
 
 	/// <summary>Perpetual future.</summary>
 	[Display(
-		Name = "Perpetual future")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PerpetualFutureKey)]
 	[EnumMember(Value = "perpetual-future")]
 	PerpetualFuture,
 
 	/// <summary>Option.</summary>
 	[Display(
-		Name = "Option")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OptionKey)]
 	[EnumMember(Value = "option")]
 	Option,
 }

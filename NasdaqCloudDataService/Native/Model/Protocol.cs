@@ -5,22 +5,26 @@ public enum NasdaqCloudSources
 {
 	/// <summary>The Nasdaq Stock Market.</summary>
 	[Display(
-		Name = "Nasdaq")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NasdaqLabelKey)]
 	Nasdaq,
 
 	/// <summary>Nasdaq Texas.</summary>
 	[Display(
-		Name = "Nasdaq Texas")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NasdaqTexasKey)]
 	Bx,
 
 	/// <summary>Nasdaq PSX.</summary>
 	[Display(
-		Name = "Nasdaq PSX")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NasdaqPsxKey)]
 	Psx,
 
 	/// <summary>Consolidated quotes and trades.</summary>
 	[Display(
-		Name = "CQT")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CqtKey)]
 	Cqt,
 }
 
@@ -35,7 +39,8 @@ public enum NasdaqCloudOffsets
 
 	/// <summary>15-minute delayed data.</summary>
 	[Display(
-		Name = "Delayed")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DelayedKey)]
 	Delayed,
 }
 

@@ -36,8 +36,9 @@ public partial class ZeroHashMessageAdapter : IKeySecretAdapter, IPassphraseAdap
 
 	/// <summary>Fully-qualified Zero Hash CLOB account.</summary>
 	[Display(
-		Name = "Account",
-		Description = "Fully-qualified CLOB account used for orders and balances.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
+		Description = LocalizedStrings.FullyQualifiedClobAccountUsedForOrdersAndBalancesDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
@@ -45,8 +46,9 @@ public partial class ZeroHashMessageAdapter : IKeySecretAdapter, IPassphraseAdap
 
 	/// <summary>Fully-qualified Zero Hash CLOB user.</summary>
 	[Display(
-		Name = "User",
-		Description = "Case-sensitive fully-qualified CLOB user.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UserKey,
+		Description = LocalizedStrings.CaseSensitiveFullyQualifiedClobUserDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	[BasicSetting]
@@ -54,8 +56,9 @@ public partial class ZeroHashMessageAdapter : IKeySecretAdapter, IPassphraseAdap
 
 	/// <summary>Zero Hash REST and HTTP-stream API root.</summary>
 	[Display(
-		Name = "API endpoint",
-		Description = "Zero Hash REST and CLOB HTTP-stream API root.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ApiEndpointKey,
+		Description = LocalizedStrings.ZeroHashRestAndClobHttpStreamApiRootDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	[BasicSetting]

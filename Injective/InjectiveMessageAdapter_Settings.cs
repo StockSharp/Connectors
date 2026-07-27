@@ -7,13 +7,15 @@ public enum InjectiveEnvironments
 	/// <summary>Mainnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Mainnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MainnetKey)]
 	Mainnet,
 
 	/// <summary>Testnet.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Testnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TestnetKey)]
 	Testnet,
 }
 
@@ -21,9 +23,10 @@ public partial class InjectiveMessageAdapter
 {
 	/// <summary>Injective environment.</summary>
 	[Display(
-		Name = "Environment",
-		Description = "Injective API environment.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
+		Description = LocalizedStrings.InjectiveApiEnvironmentDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
 	public InjectiveEnvironments Environment { get; set; }
@@ -50,9 +53,10 @@ public partial class InjectiveMessageAdapter
 
 	/// <summary>Injective subaccount index.</summary>
 	[Display(
-		Name = "Subaccount",
-		Description = "Injective subaccount index between zero and 255.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SubaccountKey,
+		Description = LocalizedStrings.InjectiveSubaccountIndexBetweenZeroAnd255DescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public int SubaccountIndex
 	{
@@ -65,29 +69,33 @@ public partial class InjectiveMessageAdapter
 
 	/// <summary>Optional Indexer REST endpoint override.</summary>
 	[Display(
-		Name = "Indexer endpoint",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IndexerEndpointKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string IndexerEndpoint { get; set; }
 
 	/// <summary>Optional Indexer native gRPC endpoint override.</summary>
 	[Display(
-		Name = "gRPC endpoint",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GRPCEndpointKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string GrpcEndpoint { get; set; }
 
 	/// <summary>Optional chain LCD endpoint override.</summary>
 	[Display(
-		Name = "Chain endpoint",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ChainEndpointKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string ChainEndpoint { get; set; }
 
 	/// <summary>Optional Tendermint WebSocket endpoint override.</summary>
 	[Display(
-		Name = "Chain WebSocket endpoint",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ChainWebSocketEndpointKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string ChainSocketEndpoint { get; set; }
 
@@ -146,7 +154,8 @@ public partial class InjectiveMessageAdapter
 
 	/// <summary>Transaction gas limit.</summary>
 	[Display(
-		Name = "Gas limit",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GasLimitKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public long GasLimit
@@ -162,7 +171,8 @@ public partial class InjectiveMessageAdapter
 
 	/// <summary>Transaction fee amount in the smallest fee-denom units.</summary>
 	[Display(
-		Name = "Fee amount",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FeeAmountKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 8)]
 	public string FeeAmount
@@ -181,7 +191,8 @@ public partial class InjectiveMessageAdapter
 
 	/// <summary>Transaction fee denomination.</summary>
 	[Display(
-		Name = "Fee denom",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FeeDenomKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 9)]
 	public string FeeDenom { get; set; } = "inj";
@@ -190,7 +201,8 @@ public partial class InjectiveMessageAdapter
 
 	/// <summary>Default good-till-block lifetime for limit orders.</summary>
 	[Display(
-		Name = "Block lifetime",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BlockLifetimeKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 10)]
 	public long BlockLifetime

@@ -40,8 +40,9 @@ public partial class MoexLchiMessageAdapter : HistoricalMessageAdapter
 
 	/// <summary>MOEX contest FTP host.</summary>
 	[Display(
-		Name = "FTP host",
-		Description = "MOEX contest FTP host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FtpHostKey,
+		Description = LocalizedStrings.MoexContestFtpHostDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	public string FtpHost { get; set; } = _defaultFtpHost;
 

@@ -8,13 +8,15 @@ public enum OratsDataModes
 	/// <summary>Approximately 15-minute delayed data.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Delayed")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DelayedKey)]
 	Delayed,
 
 	/// <summary>Live calculated data with less than ten seconds of delay.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Live")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LiveKey)]
 	Live,
 }
 
@@ -26,13 +28,15 @@ public enum OratsPriceAdjustments
 	/// <summary>Corporate-action-adjusted fields.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Adjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AdjustedKey)]
 	Adjusted,
 
 	/// <summary>Unadjusted provider fields.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Unadjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UnadjustedKey)]
 	Unadjusted,
 }
 

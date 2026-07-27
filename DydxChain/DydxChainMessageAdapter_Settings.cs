@@ -30,8 +30,9 @@ public partial class DydxChainMessageAdapter
 
 	/// <summary>dYdX Chain CometBFT RPC endpoint.</summary>
 	[Display(
-		Name = "Validator RPC",
-		Description = "dYdX Chain CometBFT JSON-RPC endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ValidatorRpcKey,
+		Description = LocalizedStrings.DYdXChainCometBFTJsonRpcEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string ValidatorEndpoint { get; set; } = _defaultValidatorEndpoint;
@@ -58,7 +59,8 @@ public partial class DydxChainMessageAdapter
 
 	/// <summary>dYdX subaccount number.</summary>
 	[Display(
-		Name = "Subaccount",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SubaccountKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public int SubaccountNumber
@@ -91,7 +93,8 @@ public partial class DydxChainMessageAdapter
 
 	/// <summary>Short-term order lifetime in blocks.</summary>
 	[Display(
-		Name = "Block lifetime",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BlockLifetimeKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public int ShortTermBlockWindow
@@ -107,7 +110,8 @@ public partial class DydxChainMessageAdapter
 
 	/// <summary>Default lifetime for long-term and conditional orders.</summary>
 	[Display(
-		Name = "Stateful lifetime",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StatefulLifetimeKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 8)]
 	public TimeSpan StatefulOrderLifetime
@@ -124,7 +128,8 @@ public partial class DydxChainMessageAdapter
 
 	/// <summary>Gas limit used for zero-fee dYdX transactions.</summary>
 	[Display(
-		Name = "Gas limit",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GasLimitKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 9)]
 	public long GasLimit

@@ -50,8 +50,9 @@ public partial class BitfinexMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// REST API endpoint.
 	/// </summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Bitfinex REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.BitfinexRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
@@ -60,8 +61,9 @@ public partial class BitfinexMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// Private WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Private WebSocket endpoint",
-		Description = "Bitfinex authenticated WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrivateWebSocketEndpointKey,
+		Description = LocalizedStrings.BitfinexAuthenticatedWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string PrivateWebSocketEndpoint { get; set; } = _defaultPrivateWebSocketEndpoint;
@@ -70,8 +72,9 @@ public partial class BitfinexMessageAdapter : MessageAdapter, IKeySecretAdapter
 	/// Public WebSocket API endpoint.
 	/// </summary>
 	[Display(
-		Name = "Public WebSocket endpoint",
-		Description = "Bitfinex public WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PublicWebSocketEndpointKey,
+		Description = LocalizedStrings.BitfinexPublicWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey)]
 	[BasicSetting]
 	public string PublicWebSocketEndpoint { get; set; } = _defaultPublicWebSocketEndpoint;

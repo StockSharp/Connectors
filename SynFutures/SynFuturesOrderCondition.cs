@@ -31,8 +31,9 @@ public class SynFuturesOrderCondition : OrderCondition
 	/// </summary>
 	[DataMember]
 	[Display(
-		Name = "Margin",
-		Description = "Optional explicit quote margin transferred with the order.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarginKey,
+		Description = LocalizedStrings.OptionalExplicitQuoteMarginTransferredWithTheOrderDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 1)]
 	public decimal? Margin

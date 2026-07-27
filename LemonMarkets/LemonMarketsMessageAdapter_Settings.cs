@@ -121,16 +121,18 @@ public partial class LemonMarketsMessageAdapter : MessageAdapter, IDemoAdapter
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Sandbox REST API endpoint.</summary>
 	[Display(
-		Name = "Sandbox REST endpoint",
-		Description = "Sandbox REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SandboxRestEndpointKey,
+		Description = LocalizedStrings.SandboxRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string SandboxRestEndpoint { get; set; } = _defaultSandboxRestEndpoint;

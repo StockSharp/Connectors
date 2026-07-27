@@ -156,40 +156,45 @@ public partial class MotilalOswalMessageAdapter : MessageAdapter, IKeySecretAdap
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 14)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 15)]
 	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
 
 	/// <summary>Market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market WebSocket endpoint",
-		Description = "Market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketEndpointKey,
+		Description = LocalizedStrings.MarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 16)]
 	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
 
 	/// <summary>Production order WebSocket endpoint.</summary>
 	[Display(
-		Name = "Order WebSocket endpoint",
-		Description = "Production order WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderWebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionOrderWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 17)]
 	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;
 
 	/// <summary>Demo order WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo order WebSocket endpoint",
-		Description = "Demo order WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoOrderWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoOrderWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 18)]
 	public string DemoOrderWebSocketEndpoint { get; set; } = _defaultDemoOrderWebSocketEndpoint;

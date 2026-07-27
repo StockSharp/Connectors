@@ -49,24 +49,27 @@ public partial class TinkoffMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 
 	/// <summary>Production API endpoint.</summary>
 	[Display(
-		Name = "API endpoint",
-		Description = "Production gRPC API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ApiEndpointKey,
+		Description = LocalizedStrings.ProductionGRPCApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string Endpoint { get; set; } = _defaultEndpoint;
 
 	/// <summary>Demo API endpoint.</summary>
 	[Display(
-		Name = "Demo API endpoint",
-		Description = "Demo gRPC API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoApiEndpointKey,
+		Description = LocalizedStrings.DemoGRPCApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string DemoEndpoint { get; set; } = _defaultDemoEndpoint;
 
 	/// <summary>Historical data endpoint.</summary>
 	[Display(
-		Name = "History endpoint",
-		Description = "Historical data endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryEndpointKey,
+		Description = LocalizedStrings.HistoricalDataEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string HistoryEndpoint { get; set; } = _defaultHistoryEndpoint;

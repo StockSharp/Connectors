@@ -14,7 +14,8 @@ public partial class CoinMetricsMessageAdapter
 
 	/// <summary>Coin Metrics HTTP API v4 root.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
@@ -23,7 +24,8 @@ public partial class CoinMetricsMessageAdapter
 
 	/// <summary>Coin Metrics WebSocket API v4 root.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -32,24 +34,27 @@ public partial class CoinMetricsMessageAdapter
 
 	/// <summary>Optional exchange identifier filter.</summary>
 	[Display(
-		Name = "Exchange filter",
-		Description = "Optional Coin Metrics exchange identifier filter.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeFilterKey,
+		Description = LocalizedStrings.OptionalCoinMetricsExchangeIdentifierFilterDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 0)]
 	public string ExchangeFilter { get; set; }
 
 	/// <summary>Whether offline markets are included in security lookup.</summary>
 	[Display(
-		Name = "Include inactive",
-		Description = "Include offline Coin Metrics markets.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IncludeInactiveKey,
+		Description = LocalizedStrings.IncludeOfflineCoinMetricsMarketsDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 1)]
 	public bool IsInactiveIncluded { get; set; }
 
 	/// <summary>Whether experimental markets are included.</summary>
 	[Display(
-		Name = "Include experimental",
-		Description = "Include markets marked experimental by Coin Metrics.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IncludeExperimentalKey,
+		Description = LocalizedStrings.IncludeMarketsMarkedExperimentalByCoinMetricsDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 2)]
 	public bool IsExperimentalIncluded { get; set; }
@@ -77,7 +82,8 @@ public partial class CoinMetricsMessageAdapter
 
 	/// <summary>Maximum number of markets returned by one lookup.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public int MaximumItems
@@ -129,8 +135,9 @@ public partial class CoinMetricsMessageAdapter
 
 	/// <summary>Default range when a historical request has no start time.</summary>
 	[Display(
-		Name = "History lookback",
-		Description = "Default range used when history has no start time.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLookbackKey,
+		Description = LocalizedStrings.DefaultRangeUsedWhenHistoryHasNoStartTimeDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 1)]
 	public TimeSpan HistoryLookback

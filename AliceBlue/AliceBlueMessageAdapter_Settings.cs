@@ -79,32 +79,36 @@ public partial class AliceBlueMessageAdapter : MessageAdapter, ITokenAdapter
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Instrument master endpoint.</summary>
 	[Display(
-		Name = "Instrument endpoint",
-		Description = "Instrument master endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InstrumentEndpointKey,
+		Description = LocalizedStrings.InstrumentMasterEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
 
 	/// <summary>Market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market WebSocket endpoint",
-		Description = "Market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketEndpointKey,
+		Description = LocalizedStrings.MarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketWebSocketEndpoint { get; set; } = _defaultMarketWebSocketEndpoint;
 
 	/// <summary>Order WebSocket endpoint.</summary>
 	[Display(
-		Name = "Order WebSocket endpoint",
-		Description = "Order WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderWebSocketEndpointKey,
+		Description = LocalizedStrings.OrderWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OrderWebSocketEndpoint { get; set; } = _defaultOrderWebSocketEndpoint;

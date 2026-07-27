@@ -18,7 +18,8 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Paxos API environment.</summary>
 	[Display(
-		Name = "Environment",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EnvironmentKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -62,14 +63,16 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Space-delimited OAuth scopes.</summary>
 	[Display(
-		Name = "OAuth scopes",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthScopesKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public string Scopes { get; set; } = _defaultScopes;
 
 	/// <summary>Paxos REST API root ending in /v2.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	[BasicSetting]
@@ -81,7 +84,8 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Paxos OAuth token endpoint.</summary>
 	[Display(
-		Name = "OAuth endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	[BasicSetting]
@@ -93,7 +97,8 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Paxos public WebSocket root.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	[BasicSetting]
@@ -126,7 +131,8 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 
 	/// <summary>REST page size.</summary>
 	[Display(
-		Name = "Page size",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PageSizeKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 8)]
 	public int PageSize
@@ -142,7 +148,8 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 
 	/// <summary>Maximum reference-data items loaded.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 9)]
 	public int MaximumItems

@@ -127,40 +127,45 @@ public partial class OpenMarketsMessageAdapter : MessageAdapter, IKeySecretAdapt
 
 	/// <summary>Optional identity API endpoint override.</summary>
 	[Display(
-		Name = "Identity endpoint",
-		Description = "Optional identity API endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IdentityEndpointKey,
+		Description = LocalizedStrings.OptionalIdentityApiEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string IdentityEndpoint { get; set; }
 
 	/// <summary>Optional order management REST endpoint override.</summary>
 	[Display(
-		Name = "OMS endpoint",
-		Description = "Optional order management REST endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OmsEndpointKey,
+		Description = LocalizedStrings.OptionalOrderManagementRestEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OmsEndpoint { get; set; }
 
 	/// <summary>Optional market data REST endpoint override.</summary>
 	[Display(
-		Name = "Market data endpoint",
-		Description = "Optional market data REST endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataEndpointKey,
+		Description = LocalizedStrings.OptionalMarketDataRestEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketDataEndpoint { get; set; }
 
 	/// <summary>Optional market data stream endpoint override.</summary>
 	[Display(
-		Name = "Market stream endpoint",
-		Description = "Optional market data stream endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketStreamEndpointKey,
+		Description = LocalizedStrings.OptionalMarketDataStreamEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketStreamEndpoint { get; set; }
 
 	/// <summary>Optional order management stream endpoint override.</summary>
 	[Display(
-		Name = "OMS stream endpoint",
-		Description = "Optional order management stream endpoint override.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OmsStreamEndpointKey,
+		Description = LocalizedStrings.OptionalOrderManagementStreamEndpointOverrideDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OmsStreamEndpoint { get; set; }

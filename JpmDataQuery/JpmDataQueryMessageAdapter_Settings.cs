@@ -81,16 +81,18 @@ public partial class JpmDataQueryMessageAdapter : MessageAdapter, IKeySecretAdap
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>OAuth token endpoint.</summary>
 	[Display(
-		Name = "OAuth endpoint",
-		Description = "OAuth token endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthEndpointKey,
+		Description = LocalizedStrings.OAuthTokenEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;

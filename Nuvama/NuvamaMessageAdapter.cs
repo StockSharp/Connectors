@@ -1,0 +1,270 @@
+namespace StockSharp.Nuvama;
+
+public partial class NuvamaMessageAdapter
+{
+    private NuvamaRestClient _restClient;
+    private NuvamaStreamClient _streamClient;
+    private string _resolvedAccountId;
+    private string _resolvedUserId;
+    private string _resolvedAccountType;
+    private string _resolvedPortfolioName;
+    private DateTime _lastHeartbeat;
+    private DateTime _lastOrderRefresh;
+    private DateTime _lastPortfolioRefresh;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NuvamaMessageAdapter"/>
+    /// class.
+    /// </summary>
+    public NuvamaMessageAdapter(IdGenerator transactionIdGenerator)
+        : base(transactionIdGenerator)
+    {
+        HeartbeatInterval = TimeSpan.FromSeconds(10);
+        ReConnectionSettings.TimeOutInterval = TimeSpan.FromMinutes(2);
+
+        this.AddMarketDataSupport();
+        this.AddTransactionalSupport();
+        this.RemoveSupportedMessage(MessageTypes.OrderGroupCancel);
+        this.AddSupportedMarketDataType(DataType.Ticks);
+        this.AddSupportedMarketDataType(DataType.Level1);
+        this.AddSupportedMarketDataType(DataType.MarketDepth);
+        this.AddSupportedCandleTimeFrames(AllTimeFrames);
+    }
+
+    /// <inheritdoc />
+    public override bool IsAllDownloadingSupported(DataType dataType)
+        => dataType == DataType.Securities ||
+            dataType == DataType.Transactions ||
+            dataType == DataType.PositionChanges ||
+            base.IsAllDownloadingSupported(dataType);
+
+    /// <inheritdoc />
+    public override bool IsReplaceCommandEditCurrent => true;
+
+    /// <inheritdoc />
+    public override bool IsSupportTransactionLog => true;
+
+    /// <inheritdoc />
+    public override IEnumerable<int> SupportedOrderBookDepths { get; } = [5];
+
+    /// <inheritdoc />
+    public override string[] AssociatedBoards { get; } =
+        ["NSE", "BSE", "NFO", "BFO", "CDS", "MCX", "NCDEX"];
+
+    /// <inheritdoc />
+    protected override async ValueTask ConnectAsync(
+        ConnectMessage connectMsg,
+        CancellationToken cancellationToken)
+    {
+        if (_restClient != null)
+            throw new InvalidOperationException(
+                LocalizedStrings.NotDisconnectPrevTime);
+        if (PollingInterval <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(PollingInterval),
+                PollingInterval,
+                "Polling interval must be positive.");
+        }
+        if (ReconnectAttempts < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(ReconnectAttempts),
+                ReconnectAttempts,
+                "Reconnect attempts cannot be negative.");
+        }
+        if (StreamPort is < 1 or > 65535)
+            throw new ArgumentOutOfRangeException(nameof(StreamPort));
+
+        _restClient = new(
+            RestAddress,
+            InstrumentAddress,
+            IpAddressService)
+        {
+            Parent = this,
+        };
+        _restClient.AppIdKeyChanged += OnAppIdKeyChanged;
+        _restClient.AuthorizationChanged += OnAuthorizationChanged;
+
+        try
+        {
+            var login = await _restClient.Authenticate(
+                Key,
+                Secret,
+                RequestId,
+                VendorToken,
+                Token,
+                AppIdKey,
+                PublicIpAddress,
+                AccountId,
+                UserId,
+                AccountType,
+                EmployeeOrDependent,
+                cancellationToken);
+            VendorToken = login.VendorToken.Secure();
+            Token = login.Authorization.Secure();
+            AppIdKey = login.AppIdKey.Secure();
+            AccountId = _resolvedAccountId = login.AccountId;
+            UserId = _resolvedUserId = login.UserId;
+            AccountType = _resolvedAccountType = login.AccountType;
+            PublicIpAddress = login.PublicIpAddress;
+            EmployeeOrDependent = login.EmployeeOrDependent;
+            _resolvedPortfolioName = PortfolioName
+                .IsEmpty(_resolvedAccountId)
+                .IsEmpty("Nuvama");
+
+            if (this.IsMarketData() || this.IsTransactional())
+            {
+                _streamClient = new(
+                    StreamHost,
+                    StreamPort,
+                    _resolvedAccountType,
+                    _resolvedAccountId,
+                    _resolvedUserId,
+                    login.AppIdKey,
+                    ReconnectAttempts)
+                {
+                    Parent = this,
+                };
+                _streamClient.QuoteReceived += OnQuoteReceived;
+                _streamClient.DepthReceived += OnDepthReceived;
+                _streamClient.OrderReceived += OnOrderStreamReceived;
+                _streamClient.Error += SendOutErrorAsync;
+                _streamClient.StateChanged += SendOutConnectionStateAsync;
+                await _streamClient.Connect(cancellationToken);
+                if (this.IsTransactional())
+                    await _streamClient.SubscribeOrders(cancellationToken);
+            }
+
+            await base.ConnectAsync(connectMsg, cancellationToken);
+        }
+        catch
+        {
+            await DisposeClients(cancellationToken);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisconnectAsync(
+        DisconnectMessage disconnectMsg,
+        CancellationToken cancellationToken)
+    {
+        if (_restClient == null)
+            throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
+
+        try
+        {
+            if (_streamClient != null)
+                await _streamClient.Disconnect(cancellationToken);
+            await base.DisconnectAsync(disconnectMsg, cancellationToken);
+        }
+        finally
+        {
+            await DisposeClients(cancellationToken);
+        }
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask TimeAsync(
+        TimeMessage timeMsg,
+        CancellationToken cancellationToken)
+    {
+        if (_streamClient != null &&
+            CurrentTime - _lastHeartbeat >= TimeSpan.FromSeconds(60))
+        {
+            await _streamClient.SendHeartbeat(cancellationToken);
+            _lastHeartbeat = CurrentTime;
+        }
+
+        if (_orderStatusSubscriptionId != 0 &&
+            CurrentTime - _lastOrderRefresh >= PollingInterval)
+        {
+            await SendOrderSnapshot(
+                _orderStatusSubscriptionId,
+                false,
+                cancellationToken);
+            _lastOrderRefresh = CurrentTime;
+        }
+
+        if (_portfolioSubscriptionId != 0 &&
+            CurrentTime - _lastPortfolioRefresh >= PollingInterval)
+        {
+            await SendPortfolioSnapshot(
+                _portfolioSubscriptionId,
+                cancellationToken);
+            _lastPortfolioRefresh = CurrentTime;
+        }
+
+        await base.TimeAsync(timeMsg, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask ResetAsync(
+        ResetMessage resetMsg,
+        CancellationToken cancellationToken)
+    {
+        await DisposeClients(cancellationToken);
+        _marketSubscriptions.Clear();
+        _securityIds.Clear();
+        _instruments.Clear();
+        _instrumentKeys.Clear();
+        _lastTicks.Clear();
+        _orderTransactions.Clear();
+        _transactionOrders.Clear();
+        _tradeIds.Clear();
+        _orderStatusSubscriptionId = 0;
+        _portfolioSubscriptionId = 0;
+        _resolvedAccountId = null;
+        _resolvedUserId = null;
+        _resolvedAccountType = null;
+        _resolvedPortfolioName = null;
+        _lastHeartbeat = default;
+        _lastOrderRefresh = default;
+        _lastPortfolioRefresh = default;
+        await base.ResetAsync(resetMsg, cancellationToken);
+    }
+
+    private async ValueTask DisposeClients(
+        CancellationToken cancellationToken)
+    {
+        if (_streamClient != null)
+        {
+            _streamClient.QuoteReceived -= OnQuoteReceived;
+            _streamClient.DepthReceived -= OnDepthReceived;
+            _streamClient.OrderReceived -= OnOrderStreamReceived;
+            _streamClient.Error -= SendOutErrorAsync;
+            _streamClient.StateChanged -= SendOutConnectionStateAsync;
+            try
+            {
+                await _streamClient.Disconnect(cancellationToken);
+            }
+            catch (Exception error) when (
+                error is OperationCanceledException or IOException)
+            {
+                this.AddVerboseLog(
+                    "Nuvama stream cleanup: {0}",
+                    error.Message);
+            }
+            _streamClient.Dispose();
+            _streamClient = null;
+        }
+
+        if (_restClient != null)
+        {
+            _restClient.AppIdKeyChanged -= OnAppIdKeyChanged;
+            _restClient.AuthorizationChanged -= OnAuthorizationChanged;
+            _restClient.Dispose();
+            _restClient = null;
+        }
+    }
+
+    private void OnAppIdKeyChanged(string value)
+    {
+        AppIdKey = value.Secure();
+        _streamClient?.SetAppIdKey(value);
+    }
+
+    private void OnAuthorizationChanged(string value)
+        => Token = value.Secure();
+}

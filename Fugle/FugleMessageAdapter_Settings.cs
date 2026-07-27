@@ -39,24 +39,27 @@ public partial class FugleMessageAdapter : MessageAdapter, ITokenAdapter
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Stock WebSocket endpoint.</summary>
 	[Display(
-		Name = "Stock WebSocket endpoint",
-		Description = "Stock WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockWebSocketEndpointKey,
+		Description = LocalizedStrings.StockWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string StockWebSocketEndpoint { get; set; } = _defaultStockWebSocketEndpoint;
 
 	/// <summary>Futures and options WebSocket endpoint.</summary>
 	[Display(
-		Name = "Futures WebSocket endpoint",
-		Description = "Futures and options WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FuturesWebSocketEndpointKey,
+		Description = LocalizedStrings.FuturesAndOptionsWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string FuturesWebSocketEndpoint { get; set; } = _defaultFuturesWebSocketEndpoint;

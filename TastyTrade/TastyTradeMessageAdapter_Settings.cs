@@ -70,32 +70,36 @@ public partial class TastyTradeMessageAdapter : MessageAdapter, ITokenAdapter, I
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
 
 	/// <summary>Production account WebSocket endpoint.</summary>
 	[Display(
-		Name = "Account WebSocket endpoint",
-		Description = "Production account WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountWebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionAccountWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string AccountWebSocketEndpoint { get; set; } = _defaultAccountWebSocketEndpoint;
 
 	/// <summary>Demo account WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo account WebSocket endpoint",
-		Description = "Demo account WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoAccountWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoAccountWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 7)]
 	public string DemoAccountWebSocketEndpoint { get; set; } = _defaultDemoAccountWebSocketEndpoint;

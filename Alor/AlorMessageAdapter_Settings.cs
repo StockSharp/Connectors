@@ -73,48 +73,54 @@ public partial class AlorMessageAdapter : MessageAdapter, ITokenAdapter, IDemoAd
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
 
 	/// <summary>Production WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Production WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>Demo WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo WebSocket endpoint",
-		Description = "Demo WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
 
 	/// <summary>Production OAuth refresh endpoint.</summary>
 	[Display(
-		Name = "OAuth endpoint",
-		Description = "Production OAuth refresh endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OAuthEndpointKey,
+		Description = LocalizedStrings.ProductionOAuthRefreshEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string OAuthEndpoint { get; set; } = _defaultOAuthEndpoint;
 
 	/// <summary>Demo OAuth refresh endpoint.</summary>
 	[Display(
-		Name = "Demo OAuth endpoint",
-		Description = "Demo OAuth refresh endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoOAuthEndpointKey,
+		Description = LocalizedStrings.DemoOAuthRefreshEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoOAuthEndpoint { get; set; } = _defaultDemoOAuthEndpoint;

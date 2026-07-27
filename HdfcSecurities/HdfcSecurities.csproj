@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors_websocket.props" />
+  <PropertyGroup>
+    <ProjectGuid>{2E1FE5AE-3FA8-46A1-A671-DEBF1CD8FADB}</ProjectGuid>
+    <NoWarn>$(NoWarn);CS3001;CS3002;CS3003</NoWarn>
+    <PackageReadmeFile></PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVer)" />
+    <PackageReference Include="Grpc.Tools" Version="$(GrpcVer)" PrivateAssets="All" />
+    <Protobuf Include="Native\Protos\*.proto" GrpcServices="None" />
+  </ItemGroup>
+</Project>

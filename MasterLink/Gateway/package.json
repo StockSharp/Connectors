@@ -1,0 +1,7 @@
+{
+  "name": "stocksharp-masterlink-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local typed gateway for the official Taishin Nova API SDK",
+  "main": "masterlink_gateway.cjs"
+}

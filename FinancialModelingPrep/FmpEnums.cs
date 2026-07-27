@@ -8,31 +8,36 @@ public enum FmpMarkets
 	/// <summary>Exchange-listed stocks, ETFs, and funds.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Stocks and funds")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StocksAndFundsKey)]
 	Stocks,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Forex")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForexKey)]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Crypto")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoKey)]
 	Crypto,
 
 	/// <summary>Market indices.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Indices")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IndicesKey)]
 	Indices,
 
 	/// <summary>Commodities.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Commodities")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CommoditiesKey)]
 	Commodities,
 }
 
@@ -44,19 +49,22 @@ public enum FmpEodAdjustments
 	/// <summary>Provider's full adjusted history.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Adjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AdjustedKey)]
 	Adjusted,
 
 	/// <summary>Prices not adjusted for stock splits.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Non-split adjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NonSplitAdjustedKey)]
 	NonSplitAdjusted,
 
 	/// <summary>Dividend-adjusted prices.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Dividend adjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DividendAdjustedKey)]
 	DividendAdjusted,
 }
 

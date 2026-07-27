@@ -37,44 +37,49 @@ public partial class FinnhubMessageAdapter : MessageAdapter, ITokenAdapter, IAdd
 
 	/// <summary>Finnhub WebSocket address.</summary>
 	[Display(
-		Name = "WebSocket address",
-		Description = "Finnhub real-time WebSocket address.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketAddressKey,
+		Description = LocalizedStrings.FinnhubRealTimeWebSocketAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public Uri WebSocketAddress { get; set; } = new("wss://ws.finnhub.io/");
 
 	/// <summary>Default stock exchange code used for security lookup.</summary>
 	[Display(
-		Name = "Stock exchange",
-		Description = "Finnhub stock exchange code used for lookup.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockExchangeKey,
+		Description = LocalizedStrings.FinnhubStockExchangeCodeUsedForLookupDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	[BasicSetting]
 	public string StockExchange { get; set; } = "US";
 
 	/// <summary>Optional MIC filter used for stock security lookup.</summary>
 	[Display(
-		Name = "Stock MIC",
-		Description = "Optional market identifier code used for stock lookup.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockMicKey,
+		Description = LocalizedStrings.OptionalMarketIdentifierCodeUsedForStockLookupDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 4)]
 	public string StockMic { get; set; }
 
 	/// <summary>Default forex source used for security lookup.</summary>
 	[Display(
-		Name = "Forex exchange",
-		Description = "Finnhub forex source used for lookup.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForexExchangeKey,
+		Description = LocalizedStrings.FinnhubForexSourceUsedForLookupDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 5)]
 	[BasicSetting]
 	public string ForexExchange { get; set; } = "OANDA";
 
 	/// <summary>Default crypto exchange used for security lookup.</summary>
 	[Display(
-		Name = "Crypto exchange",
-		Description = "Finnhub crypto exchange used for lookup.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoExchangeKey,
+		Description = LocalizedStrings.FinnhubCryptoExchangeUsedForLookupDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 6)]
 	[BasicSetting]
 	public string CryptoExchange { get; set; } = "BINANCE";
@@ -90,9 +95,10 @@ public partial class FinnhubMessageAdapter : MessageAdapter, ITokenAdapter, IAdd
 
 	/// <summary>Request the separately entitled US stock bid/ask snapshot endpoint.</summary>
 	[Display(
-		Name = "Bid/ask snapshots",
-		Description = "Request Finnhub's premium US bid/ask endpoint.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BidAskSnapshotsKey,
+		Description = LocalizedStrings.RequestFinnhubSPremiumUsBidAskEndpointDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 8)]
 	public bool IsBidAskEnabled { get; set; }
 

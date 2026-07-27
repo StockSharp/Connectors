@@ -7,25 +7,29 @@ public enum FireblocksEnvironments
 	/// <summary>US mainnet or testnet workspace.</summary>
 	[EnumMember]
 	[Display(
-		Name = "US")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UsKey)]
 	Us,
 
 	/// <summary>EU mainnet or testnet workspace.</summary>
 	[EnumMember]
 	[Display(
-		Name = "EU")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EuKey)]
 	Eu,
 
 	/// <summary>EU2 mainnet or testnet workspace.</summary>
 	[EnumMember]
 	[Display(
-		Name = "EU2")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.Eu2Key)]
 	Eu2,
 
 	/// <summary>US sandbox workspace.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Sandbox")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SandboxKey)]
 	Sandbox,
 }
 

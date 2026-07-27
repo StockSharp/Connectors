@@ -26,42 +26,47 @@ public partial class OptionMetricsMessageAdapter : MessageAdapter
 
 	/// <summary>Price adjustment used for underlying-security history.</summary>
 	[Display(
-		Name = "Price adjustment",
-		Description = "Select raw, split-adjusted, or total-return-adjusted underlying prices.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceAdjustmentKey,
+		Description = LocalizedStrings.SelectRawSplitAdjustedOrTotalReturnAdjustedUnderlyingPricesDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 1)]
 	public IvyDbPriceAdjustments PriceAdjustment { get; set; } =
 		IvyDbPriceAdjustments.SplitAdjusted;
 
 	/// <summary>Time zone used to interpret IvyDB US trade dates.</summary>
 	[Display(
-		Name = "Market time zone",
-		Description = "System time-zone identifier for US Eastern market dates.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketTimeZoneKey,
+		Description = LocalizedStrings.SystemTimeZoneIdentifierForUsEasternMarketDatesDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 2)]
 	public string MarketTimeZoneId { get; set; } = "America/New_York";
 
 	/// <summary>Start of the daily underlying-security candle session.</summary>
 	[Display(
-		Name = "Session start",
-		Description = "Open time assigned to daily underlying-security candles.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SessionStartKey,
+		Description = LocalizedStrings.OpenTimeAssignedToDailyUnderlyingSecurityCandlesDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	public TimeSpan SessionStart { get; set; } = new(9, 30, 0);
 
 	/// <summary>Time assigned to daily option observations.</summary>
 	[Display(
-		Name = "Option snapshot time",
-		Description = "US Eastern time assigned to IvyDB end-of-day option observations.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OptionSnapshotTimeKey,
+		Description = LocalizedStrings.UsEasternTimeAssignedToIvyDBEndOfDayOptionObservationsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 4)]
 	public TimeSpan OptionSnapshotTime { get; set; } = new(15, 59, 0);
 
 	/// <summary>End of the daily underlying-security candle session.</summary>
 	[Display(
-		Name = "Session end",
-		Description = "Close time assigned to daily underlying-security observations.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SessionEndKey,
+		Description = LocalizedStrings.CloseTimeAssignedToDailyUnderlyingSecurityObservationsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 5)]
 	public TimeSpan SessionEnd { get; set; } = new(16, 0, 0);
 

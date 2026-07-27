@@ -27,25 +27,28 @@ public partial class AlgoSeekMessageAdapter : MessageAdapter
 
 	/// <summary>Time zone used by US equities and OPRA options files.</summary>
 	[Display(
-		Name = "Market time zone",
-		Description = "System time-zone identifier used for US equity and option timestamps.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketTimeZoneKey,
+		Description = LocalizedStrings.SystemTimeZoneIdentifierUsedForUsEquityAndOptionTimestampsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 1)]
 	public string MarketTimeZoneId { get; set; } = "America/New_York";
 
 	/// <summary>Whether nested delivery directories are scanned.</summary>
 	[Display(
-		Name = "Recursive scan",
-		Description = "Scan nested delivery directories without following reparse points.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RecursiveScanKey,
+		Description = LocalizedStrings.ScanNestedDeliveryDirectoriesWithoutFollowingReparsePointsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 2)]
 	public bool IsRecursive { get; set; } = true;
 
 	/// <summary>Whether only consolidated NBBO equity quotes are published.</summary>
 	[Display(
-		Name = "NBBO quotes only",
-		Description = "Ignore venue BBO rows and publish consolidated equity NBBO rows only.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NbboQuotesOnlyKey,
+		Description = LocalizedStrings.IgnoreVenueBboRowsAndPublishConsolidatedEquityNbboRowsOnlyDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	public bool IsNationalBestQuotesOnly { get; set; } = true;
 

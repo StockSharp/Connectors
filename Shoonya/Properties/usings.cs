@@ -5,6 +5,7 @@ global using global::System.Globalization;
 global using global::System.IO;
 global using global::System.IO.Compression;
 global using global::System.Linq;
+global using global::System.Net;
 global using global::System.Net.Http;
 global using global::System.Net.Http.Headers;
 global using global::System.Net.WebSockets;
@@ -23,6 +24,7 @@ global using global::Ecng.Net;
 global using global::Ecng.Serialization;
 
 global using global::Newtonsoft.Json;
+global using global::Newtonsoft.Json.Linq;
 
 global using global::StockSharp.Localization;
 global using global::StockSharp.Messages;

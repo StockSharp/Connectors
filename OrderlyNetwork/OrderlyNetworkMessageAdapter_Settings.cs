@@ -10,8 +10,9 @@ public partial class OrderlyNetworkMessageAdapter
 
 	/// <summary>Orderly account identifier.</summary>
 	[Display(
-		Name = "Orderly account ID",
-		Description = "Registered Orderly account identifier.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderlyAccountIdKey,
+		Description = LocalizedStrings.RegisteredOrderlyAccountIdentifierDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -50,8 +51,9 @@ public partial class OrderlyNetworkMessageAdapter
 
 	/// <summary>Private account-data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Private WebSocket",
-		Description = "Orderly private WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrivateWebSocketKey,
+		Description = LocalizedStrings.OrderlyPrivateWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey,
 		Order = 1)]
 	public string PrivateWebSocketEndpoint { get; set; } =

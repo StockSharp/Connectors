@@ -28,9 +28,10 @@ public partial class ThetaDataMessageAdapter : MessageAdapter, IAddressAdapter<U
 
 	/// <summary>Theta Terminal streaming WebSocket address.</summary>
 	[Display(
-		Name = "WebSocket",
-		Description = "Theta Terminal streaming endpoint.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketLabelKey,
+		Description = LocalizedStrings.ThetaTerminalStreamingEndpointDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
 	public Uri WebSocketAddress { get; set; } =
@@ -38,33 +39,37 @@ public partial class ThetaDataMessageAdapter : MessageAdapter, IAddressAdapter<U
 
 	/// <summary>Stock venue used by REST requests.</summary>
 	[Display(
-		Name = "Stock venue",
-		Description = "Nasdaq Basic or the merged UTP and CTA SIP feed.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockVenueKey,
+		Description = LocalizedStrings.NasdaqBasicOrTheMergedUtpAndCtaSipFeedDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 2)]
 	public ThetaDataStockVenues StockVenue { get; set; }
 
 	/// <summary>Time zone used by offset-free ThetaData timestamps.</summary>
 	[Display(
-		Name = "Market time zone",
-		Description = "System time-zone identifier for US Eastern market timestamps.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketTimeZoneKey,
+		Description = LocalizedStrings.SystemTimeZoneIdentifierForUsEasternMarketTimestampsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	public string MarketTimeZoneId { get; set; } = "America/New_York";
 
 	/// <summary>Start of the requested market session.</summary>
 	[Display(
-		Name = "Session start",
-		Description = "Earliest market time requested from historical intraday endpoints.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SessionStartKey,
+		Description = LocalizedStrings.EarliestMarketTimeRequestedFromHistoricalIntradayEndpointsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 4)]
 	public TimeSpan SessionStart { get; set; } = new(9, 30, 0);
 
 	/// <summary>End of the requested market session.</summary>
 	[Display(
-		Name = "Session end",
-		Description = "Latest market time requested from historical intraday endpoints.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SessionEndKey,
+		Description = LocalizedStrings.LatestMarketTimeRequestedFromHistoricalIntradayEndpointsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 5)]
 	public TimeSpan SessionEnd { get; set; } = new(16, 0, 0);
 

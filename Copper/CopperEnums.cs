@@ -7,19 +7,22 @@ public enum CopperEnvironments
 	/// <summary>Production environment.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Production")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProductionKey)]
 	Production,
 
 	/// <summary>Demonstration environment.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Demo")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoKey)]
 	Demo,
 
 	/// <summary>Testnet environment.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Testnet")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TestnetKey)]
 	Testnet,
 }
 
@@ -30,19 +33,22 @@ public enum CopperDestinationTypes
 	/// <summary>One-time blockchain address.</summary>
 	[EnumMember]
 	[Display(
-		Name = "External address")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExternalAddressKey)]
 	ExternalAddress,
 
 	/// <summary>Approved Copper address-book entry.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Address book")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AddressBookKey)]
 	AddressBook,
 
 	/// <summary>Another Copper or ClearLoop portfolio.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Portfolio")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PortfolioKey)]
 	Portfolio,
 }
 

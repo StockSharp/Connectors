@@ -48,56 +48,63 @@ public partial class WebullMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string DemoRestEndpoint { get; set; } = _defaultDemoRestEndpoint;
 
 	/// <summary>Production market data host.</summary>
 	[Display(
-		Name = "Market data host",
-		Description = "Production market data host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataHostKey,
+		Description = LocalizedStrings.ProductionMarketDataHostDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 7)]
 	public string MarketDataHost { get; set; } = _defaultMarketDataHost;
 
 	/// <summary>Demo market data host.</summary>
 	[Display(
-		Name = "Demo market data host",
-		Description = "Demo market data host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoMarketDataHostKey,
+		Description = LocalizedStrings.DemoMarketDataHostDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 8)]
 	public string DemoMarketDataHost { get; set; } = _defaultDemoMarketDataHost;
 
 	/// <summary>Market data port.</summary>
 	[Display(
-		Name = "Market data port",
-		Description = "Market data port.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDataPortKey,
+		Description = LocalizedStrings.MarketDataPortDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 9)]
 	public int MarketDataPort { get; set; } = 1883;
 
 	/// <summary>Production trade events endpoint.</summary>
 	[Display(
-		Name = "Events endpoint",
-		Description = "Production trade events endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EventsEndpointKey,
+		Description = LocalizedStrings.ProductionTradeEventsEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public string EventsEndpoint { get; set; } = _defaultEventsEndpoint;
 
 	/// <summary>Demo trade events endpoint.</summary>
 	[Display(
-		Name = "Demo events endpoint",
-		Description = "Demo trade events endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoEventsEndpointKey,
+		Description = LocalizedStrings.DemoTradeEventsEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 11)]
 	public string DemoEventsEndpoint { get; set; } = _defaultDemoEventsEndpoint;

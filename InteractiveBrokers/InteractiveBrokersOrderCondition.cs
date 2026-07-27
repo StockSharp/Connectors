@@ -257,7 +257,8 @@ public class InteractiveBrokersOrderCondition : OrderCondition, IStopLossOrderCo
 		/// Valid until <see cref="SecurityTypes.Stock"/>.
 		/// </remarks>
 		[Display(
-			Name = "VWAP")]
+			ResourceType = typeof(LocalizedStrings),
+			Name = LocalizedStrings.VWAPKey)]
 		VolumeWeightedAveragePrice,
 
 		/// <summary>

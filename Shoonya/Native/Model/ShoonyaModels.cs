@@ -507,6 +507,24 @@ sealed class ShoonyaSocketLoginRequest
 	public string Source { get; set; } = "API";
 }
 
+sealed class ShoonyaSocketOAuthLoginRequest
+{
+	[JsonProperty("t")]
+	public string Type { get; set; } = "a";
+
+	[JsonProperty("uid")]
+	public string UserId { get; set; }
+
+	[JsonProperty("actid")]
+	public string AccountId { get; set; }
+
+	[JsonProperty("accesstoken")]
+	public string AccessToken { get; set; }
+
+	[JsonProperty("source")]
+	public string Source { get; set; } = "API";
+}
+
 sealed class ShoonyaSocketSubscriptionRequest
 {
 	[JsonProperty("t")]

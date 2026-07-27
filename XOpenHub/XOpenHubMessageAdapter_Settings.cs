@@ -52,32 +52,36 @@ public partial class XOpenHubMessageAdapter : MessageAdapter, ILoginPasswordAdap
 
 	/// <summary>Production command WebSocket endpoint.</summary>
 	[Display(
-		Name = "Command WebSocket endpoint",
-		Description = "Production command WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CommandWebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionCommandWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string CommandEndpoint { get; set; } = _defaultCommandEndpoint;
 
 	/// <summary>Demo command WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo command WebSocket endpoint",
-		Description = "Demo command WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoCommandWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoCommandWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string DemoCommandEndpoint { get; set; } = _defaultDemoCommandEndpoint;
 
 	/// <summary>Production stream WebSocket endpoint.</summary>
 	[Display(
-		Name = "Stream WebSocket endpoint",
-		Description = "Production stream WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StreamWebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionStreamWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string StreamEndpoint { get; set; } = _defaultStreamEndpoint;
 
 	/// <summary>Demo stream WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo stream WebSocket endpoint",
-		Description = "Demo stream WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoStreamWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoStreamWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string DemoStreamEndpoint { get; set; } = _defaultDemoStreamEndpoint;

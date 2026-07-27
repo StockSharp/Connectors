@@ -57,16 +57,18 @@ public partial class AlphaVantageMessageAdapter : HistoricalMessageAdapter, ITok
 
 	/// <summary>Query API endpoint.</summary>
 	[Display(
-		Name = "Query endpoint",
-		Description = "Query API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QueryEndpointKey,
+		Description = LocalizedStrings.QueryApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string QueryEndpoint { get; set; } = _defaultQueryEndpoint;
 
 	/// <summary>Currency list endpoint.</summary>
 	[Display(
-		Name = "Currency list endpoint",
-		Description = "Base endpoint for currency list files.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CurrencyListEndpointKey,
+		Description = LocalizedStrings.BaseEndpointForCurrencyListFilesDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string CurrencyListEndpoint { get; set; } = _defaultCurrencyListEndpoint;

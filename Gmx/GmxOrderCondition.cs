@@ -63,7 +63,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Collateral token symbol for an increase or swap.</summary>
 	[DataMember]
 	[Display(
-		Name = "Collateral token",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CollateralTokenKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 2)]
 	public string CollateralToken
@@ -75,7 +76,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Collateral amount in token units.</summary>
 	[DataMember]
 	[Display(
-		Name = "Collateral amount",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CollateralAmountKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 3)]
 	public decimal? CollateralAmount
@@ -87,7 +89,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Token received by a decrease or swap.</summary>
 	[DataMember]
 	[Display(
-		Name = "Receive token",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReceiveTokenKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 4)]
 	public string ReceiveToken
@@ -99,7 +102,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Take-profit sidecar trigger for an increase.</summary>
 	[DataMember]
 	[Display(
-		Name = "Take-profit price",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitPriceKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 5)]
 	public decimal? TakeProfitPrice
@@ -111,7 +115,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Stop-loss sidecar trigger for an increase.</summary>
 	[DataMember]
 	[Display(
-		Name = "Stop-loss price",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossPriceKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 6)]
 	public decimal? StopLossPrice
@@ -123,7 +128,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Preserve leverage when decreasing a position.</summary>
 	[DataMember]
 	[Display(
-		Name = "Keep leverage",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeepLeverageKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public bool IsKeepLeverage
@@ -135,7 +141,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Automatically cancel an unexecutable order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Auto cancel",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AutoCancelKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 8)]
 	public bool IsAutoCancel
@@ -160,7 +167,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>TWAP duration.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP duration",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapDurationKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 10)]
 	public TimeSpan TwapDuration
@@ -173,7 +181,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Number of TWAP parts.</summary>
 	[DataMember]
 	[Display(
-		Name = "TWAP parts",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TwapPartsKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 11)]
 	public int TwapParts
@@ -185,7 +194,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Optional gas-payment token symbol.</summary>
 	[DataMember]
 	[Display(
-		Name = "Gas token",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GasTokenKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 12)]
 	public string GasPaymentToken
@@ -197,7 +207,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Optional GMX referral code.</summary>
 	[DataMember]
 	[Display(
-		Name = "Referral code",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReferralCodeKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 13)]
 	public string ReferralCode
@@ -209,7 +220,8 @@ public class GmxOrderCondition : OrderCondition
 	/// <summary>Optional UI-fee receiver address.</summary>
 	[DataMember]
 	[Display(
-		Name = "UI fee receiver",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.UiFeeReceiverKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 14)]
 	public string UiFeeReceiver

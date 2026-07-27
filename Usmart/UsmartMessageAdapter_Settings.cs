@@ -92,48 +92,54 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, IToken
 
 	/// <summary>Production quote REST API endpoint.</summary>
 	[Display(
-		Name = "Quote endpoint",
-		Description = "Production quote REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuoteEndpointKey,
+		Description = LocalizedStrings.ProductionQuoteRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 7)]
 	public string QuoteEndpoint { get; set; } = _defaultQuoteEndpoint;
 
 	/// <summary>Demo quote REST API endpoint.</summary>
 	[Display(
-		Name = "Demo quote endpoint",
-		Description = "Demo quote REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoQuoteEndpointKey,
+		Description = LocalizedStrings.DemoQuoteRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 8)]
 	public string DemoQuoteEndpoint { get; set; } = _defaultDemoQuoteEndpoint;
 
 	/// <summary>Production trading REST API endpoint.</summary>
 	[Display(
-		Name = "Trade endpoint",
-		Description = "Production trading REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradeEndpointKey,
+		Description = LocalizedStrings.ProductionTradingRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 9)]
 	public string TradeEndpoint { get; set; } = _defaultTradeEndpoint;
 
 	/// <summary>Demo trading REST API endpoint.</summary>
 	[Display(
-		Name = "Demo trade endpoint",
-		Description = "Demo trading REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoTradeEndpointKey,
+		Description = LocalizedStrings.DemoTradingRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 10)]
 	public string DemoTradeEndpoint { get; set; } = _defaultDemoTradeEndpoint;
 
 	/// <summary>Production WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "Production WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 11)]
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <summary>Demo WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo WebSocket endpoint",
-		Description = "Demo WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 12)]
 	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;

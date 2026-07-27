@@ -14,7 +14,8 @@ public partial class PythMessageAdapter
 
 	/// <summary>Pyth Pro symbology and history API v1 root.</summary>
 	[Display(
-		Name = "History endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	[BasicSetting]
@@ -23,7 +24,8 @@ public partial class PythMessageAdapter
 
 	/// <summary>Pyth Pro latest-price router API v1 root.</summary>
 	[Display(
-		Name = "Router endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RouterEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
@@ -32,7 +34,8 @@ public partial class PythMessageAdapter
 
 	/// <summary>Primary Pyth Pro WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket 1",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocket1Key,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -41,7 +44,8 @@ public partial class PythMessageAdapter
 
 	/// <summary>Secondary Pyth Pro WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket 2",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocket2Key,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	[BasicSetting]
@@ -50,7 +54,8 @@ public partial class PythMessageAdapter
 
 	/// <summary>Tertiary Pyth Pro WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket 3",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocket3Key,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	[BasicSetting]
@@ -59,8 +64,9 @@ public partial class PythMessageAdapter
 
 	/// <summary>Preferred Pyth delivery channel.</summary>
 	[Display(
-		Name = "Channel",
-		Description = "Preferred channel; feeds automatically use a slower minimum channel when required.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ChannelKey,
+		Description = LocalizedStrings.PreferredChannelFeedsAutomaticallyUseASlowerMinimumChannelWhenRequiredDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -69,16 +75,18 @@ public partial class PythMessageAdapter
 
 	/// <summary>Whether the catalogue is limited to token entitlements.</summary>
 	[Display(
-		Name = "Entitled only",
-		Description = "Load only feeds available to the configured API token.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.EntitledOnlyKey,
+		Description = LocalizedStrings.LoadOnlyFeedsAvailableToTheConfiguredApiTokenDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	public bool IsEntitledOnly { get; set; } = true;
 
 	/// <summary>Whether inactive and coming-soon feeds are included.</summary>
 	[Display(
-		Name = "Include inactive",
-		Description = "Include inactive and coming-soon feeds in security lookup.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IncludeInactiveKey,
+		Description = LocalizedStrings.IncludeInactiveAndComingSoonFeedsInSecurityLookupDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public bool IsIncludeInactive { get; set; }
@@ -106,7 +114,8 @@ public partial class PythMessageAdapter
 
 	/// <summary>Maximum number of instruments returned by a lookup.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public int MaximumItems
@@ -140,8 +149,9 @@ public partial class PythMessageAdapter
 
 	/// <summary>Default range when a request has no start time.</summary>
 	[Display(
-		Name = "History lookback",
-		Description = "Default range used when history has no start time.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLookbackKey,
+		Description = LocalizedStrings.DefaultRangeUsedWhenHistoryHasNoStartTimeDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 1)]
 	public TimeSpan HistoryLookback
@@ -158,8 +168,9 @@ public partial class PythMessageAdapter
 
 	/// <summary>Maximum bars requested from one history call.</summary>
 	[Display(
-		Name = "Bars per request",
-		Description = "Maximum number of time slots in one Pyth history request.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.BarsPerRequestKey,
+		Description = LocalizedStrings.MaximumNumberOfTimeSlotsInOnePythHistoryRequestDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 2)]
 	public int MaximumBarsPerRequest

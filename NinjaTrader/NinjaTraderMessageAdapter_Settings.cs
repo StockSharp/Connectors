@@ -111,48 +111,54 @@ public partial class NinjaTraderMessageAdapter : MessageAdapter, ILoginPasswordA
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = "https://live.tradovateapi.com/v1/";
 
 	/// <summary>Demo REST API endpoint.</summary>
 	[Display(
-		Name = "Demo REST endpoint",
-		Description = "Demo REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoRestEndpointKey,
+		Description = LocalizedStrings.DemoRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoRestEndpoint { get; set; } = "https://demo.tradovateapi.com/v1/";
 
 	/// <summary>Production market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Market WebSocket endpoint",
-		Description = "Production market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketWebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionMarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string MarketWebSocketEndpoint { get; set; } = "wss://md.tradovateapi.com/v1/websocket";
 
 	/// <summary>Demo market data WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo market WebSocket endpoint",
-		Description = "Demo market data WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoMarketWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoMarketDataWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoMarketWebSocketEndpoint { get; set; } = "wss://md-demo.tradovateapi.com/v1/websocket";
 
 	/// <summary>Production account WebSocket endpoint.</summary>
 	[Display(
-		Name = "Account WebSocket endpoint",
-		Description = "Production account WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountWebSocketEndpointKey,
+		Description = LocalizedStrings.ProductionAccountWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string AccountWebSocketEndpoint { get; set; } = "wss://live.tradovateapi.com/v1/websocket";
 
 	/// <summary>Demo account WebSocket endpoint.</summary>
 	[Display(
-		Name = "Demo account WebSocket endpoint",
-		Description = "Demo account WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoAccountWebSocketEndpointKey,
+		Description = LocalizedStrings.DemoAccountWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DemoAccountWebSocketEndpoint { get; set; } = "wss://demo.tradovateapi.com/v1/websocket";

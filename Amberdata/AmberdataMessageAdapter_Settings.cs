@@ -14,7 +14,8 @@ public partial class AmberdataMessageAdapter
 
 	/// <summary>Amberdata Market Data REST API root.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
@@ -23,7 +24,8 @@ public partial class AmberdataMessageAdapter
 
 	/// <summary>Amberdata spot WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -32,16 +34,18 @@ public partial class AmberdataMessageAdapter
 
 	/// <summary>Optional exchange identifier filter.</summary>
 	[Display(
-		Name = "Exchange filter",
-		Description = "Optional Amberdata exchange identifier filter.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeFilterKey,
+		Description = LocalizedStrings.OptionalAmberdataExchangeIdentifierFilterDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 0)]
 	public string ExchangeFilter { get; set; }
 
 	/// <summary>Whether delisted instruments are included in security lookup.</summary>
 	[Display(
-		Name = "Include inactive",
-		Description = "Include inactive and delisted spot instruments.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IncludeInactiveKey,
+		Description = LocalizedStrings.IncludeInactiveAndDelistedSpotInstrumentsDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 1)]
 	public bool IsInactiveIncluded { get; set; }
@@ -69,7 +73,8 @@ public partial class AmberdataMessageAdapter
 
 	/// <summary>Maximum number of securities returned by one lookup.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public int MaximumItems
@@ -121,8 +126,9 @@ public partial class AmberdataMessageAdapter
 
 	/// <summary>Default range when a historical request has no start time.</summary>
 	[Display(
-		Name = "History lookback",
-		Description = "Default range used when history has no start time.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLookbackKey,
+		Description = LocalizedStrings.DefaultRangeUsedWhenHistoryHasNoStartTimeDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 1)]
 	public TimeSpan HistoryLookback

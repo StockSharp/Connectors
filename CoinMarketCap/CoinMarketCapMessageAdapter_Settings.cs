@@ -9,7 +9,8 @@ public partial class CoinMarketCapMessageAdapter
 
 	/// <summary>CoinMarketCap API access mode.</summary>
 	[Display(
-		Name = "Access mode",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccessModeKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -37,7 +38,8 @@ public partial class CoinMarketCapMessageAdapter
 
 	/// <summary>CoinMarketCap REST API root.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -49,7 +51,8 @@ public partial class CoinMarketCapMessageAdapter
 
 	/// <summary>CoinMarketCap WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	[BasicSetting]
@@ -58,8 +61,9 @@ public partial class CoinMarketCapMessageAdapter
 
 	/// <summary>Default conversion currency.</summary>
 	[Display(
-		Name = "Quote currency",
-		Description = "Currency symbol used by REST quote conversion.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QuoteCurrencyKey,
+		Description = LocalizedStrings.CurrencySymbolUsedByRestQuoteConversionDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 0)]
 	[BasicSetting]
@@ -67,8 +71,9 @@ public partial class CoinMarketCapMessageAdapter
 
 	/// <summary>Use the paid CoinMarketCap WebSocket for live prices.</summary>
 	[Display(
-		Name = "Streaming",
-		Description = "Use the CoinMarketCap WebSocket beta (Startup plan or above).",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StreamingKey,
+		Description = LocalizedStrings.UseTheCoinMarketCapWebSocketBetaStartupPlanOrAboveDescKey,
 		GroupName = LocalizedStrings.MarketDataKey,
 		Order = 1)]
 	[BasicSetting]
@@ -97,7 +102,8 @@ public partial class CoinMarketCapMessageAdapter
 
 	/// <summary>Maximum number of securities cached and returned.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public int MaximumItems

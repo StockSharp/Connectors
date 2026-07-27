@@ -77,32 +77,36 @@ public partial class UpstoxMessageAdapter : MessageAdapter, ITokenAdapter, IDemo
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Instrument file endpoint.</summary>
 	[Display(
-		Name = "Instrument endpoint",
-		Description = "Instrument file endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.InstrumentEndpointKey,
+		Description = LocalizedStrings.InstrumentFileEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string InstrumentEndpoint { get; set; } = _defaultInstrumentEndpoint;
 
 	/// <summary>Production order REST API endpoint.</summary>
 	[Display(
-		Name = "Order endpoint",
-		Description = "Production order REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderEndpointKey,
+		Description = LocalizedStrings.ProductionOrderRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string OrderEndpoint { get; set; } = _defaultOrderEndpoint;
 
 	/// <summary>Demo order REST API endpoint.</summary>
 	[Display(
-		Name = "Demo order endpoint",
-		Description = "Demo order REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoOrderEndpointKey,
+		Description = LocalizedStrings.DemoOrderRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string DemoOrderEndpoint { get; set; } = _defaultDemoOrderEndpoint;

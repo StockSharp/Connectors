@@ -18,8 +18,9 @@ public partial class BitGoMessageAdapter
 
 	/// <summary>Go account identifier or exact account name.</summary>
 	[Display(
-		Name = "Account",
-		Description = "Go account ID or exact name. Optional when only one account is available.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountKey,
+		Description = LocalizedStrings.GoAccountIdOrExactNameOptionalWhenOnlyOneAccountIsAvailableDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -27,8 +28,9 @@ public partial class BitGoMessageAdapter
 
 	/// <summary>BitGo REST API or BitGo Express root.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "BitGo REST API or BitGo Express root.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.BitGoRestApiOrBitGoExpressRootDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -36,8 +38,9 @@ public partial class BitGoMessageAdapter
 
 	/// <summary>BitGo Prime WebSocket endpoint.</summary>
 	[Display(
-		Name = "WebSocket endpoint",
-		Description = "BitGo Prime trading WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.WebSocketEndpointKey,
+		Description = LocalizedStrings.BitGoPrimeTradingWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	[BasicSetting]
@@ -82,8 +85,9 @@ public partial class BitGoMessageAdapter
 
 	/// <summary>Include unsettled funds in the API's available balance.</summary>
 	[Display(
-		Name = "Include unsettled",
-		Description = "Include unsettled funds in the API available balance calculation.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IncludeUnsettledKey,
+		Description = LocalizedStrings.IncludeUnsettledFundsInTheApiAvailableBalanceCalculationDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public bool IsIncludeUnsettledInAvailable { get; set; }

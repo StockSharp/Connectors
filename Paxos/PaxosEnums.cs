@@ -7,13 +7,15 @@ public enum PaxosEnvironments
 	/// <summary>Production environment.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Production")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProductionKey)]
 	Production,
 
 	/// <summary>Sandbox environment.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Sandbox")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SandboxKey)]
 	Sandbox,
 }
 

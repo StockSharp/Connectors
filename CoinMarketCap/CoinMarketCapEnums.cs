@@ -5,12 +5,14 @@ public enum CoinMarketCapAccessModes
 {
 	/// <summary>Public API without an API key.</summary>
 	[Display(
-		Name = "Keyless")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.KeylessKey)]
 	Keyless,
 
 	/// <summary>Authenticated CoinMarketCap Pro API.</summary>
 	[Display(
-		Name = "API key")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ApiKeyKey)]
 	ApiKey,
 }
 

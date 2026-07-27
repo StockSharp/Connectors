@@ -37,26 +37,29 @@ public partial class MarketstackMessageAdapter : MessageAdapter, ITokenAdapter, 
 
 	/// <summary>Optional exchange MIC used for lookup and market-data requests.</summary>
 	[Display(
-		Name = "Stock exchange",
-		Description = "Optional exchange MIC, for example XNAS or XNYS.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StockExchangeKey,
+		Description = LocalizedStrings.OptionalExchangeMicForExampleXnasOrXnysDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 2)]
 	public string StockExchange { get; set; }
 
 	/// <summary>Price adjustment used for historical candles.</summary>
 	[Display(
-		Name = "Price adjustment",
-		Description = "Select raw or corporate-action-adjusted OHLC fields.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PriceAdjustmentKey,
+		Description = LocalizedStrings.SelectRawOrCorporateActionAdjustedOhlcFieldsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	public MarketstackAdjustments PriceAdjustment { get; set; } =
 		MarketstackAdjustments.Adjusted;
 
 	/// <summary>Whether intraday requests include pre-market and post-market data.</summary>
 	[Display(
-		Name = "After hours",
-		Description = "Include pre-market and post-market intraday data when entitled.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AfterHoursKey,
+		Description = LocalizedStrings.IncludePreMarketAndPostMarketIntradayDataWhenEntitledDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 4)]
 	public bool IsAfterHours { get; set; }
 

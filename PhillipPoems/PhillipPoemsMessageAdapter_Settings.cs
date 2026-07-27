@@ -147,16 +147,18 @@ public partial class PhillipPoemsMessageAdapter : MessageAdapter, IKeySecretAdap
 
 	/// <summary>Production REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "Production REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.ProductionRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = "https://api.poems.com.sg/api-gateway/pspl/";
 
 	/// <summary>Sandbox REST API endpoint.</summary>
 	[Display(
-		Name = "Sandbox REST endpoint",
-		Description = "Sandbox REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SandboxRestEndpointKey,
+		Description = LocalizedStrings.SandboxRestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string SandboxRestEndpoint { get; set; } = "https://sandboxapi.poems.com.sg/api-gateway/pspl/";

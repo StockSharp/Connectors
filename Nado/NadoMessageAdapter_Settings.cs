@@ -40,7 +40,7 @@ public partial class NadoMessageAdapter : MessageAdapter
 	/// <summary>Official gateway v2 endpoint.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
-		Name = "Gateway V2",
+		Name = LocalizedStrings.GatewayV2Key,
 		Description = LocalizedStrings.ServerAddressKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
@@ -58,7 +58,7 @@ public partial class NadoMessageAdapter : MessageAdapter
 	/// <summary>Official archive indexer v2 endpoint.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
-		Name = "Archive V2",
+		Name = LocalizedStrings.ArchiveV2Key,
 		Description = LocalizedStrings.ServerAddressKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
@@ -95,7 +95,8 @@ public partial class NadoMessageAdapter : MessageAdapter
 
 	/// <summary>Nado subaccount name encoded into bytes12.</summary>
 	[Display(
-		Name = "Subaccount",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SubaccountKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 7)]
 	public string SubaccountName

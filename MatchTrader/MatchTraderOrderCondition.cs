@@ -5,13 +5,15 @@ public sealed class MatchTraderOrderCondition : BaseWithdrawOrderCondition
 {
 	/// <summary>Absolute stop-loss price.</summary>
 	[Display(
-		Name = "Stop loss",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StopLossLabelKey,
 		GroupName = LocalizedStrings.GeneralKey)]
 	public decimal? StopLoss { get; set; }
 
 	/// <summary>Absolute take-profit price.</summary>
 	[Display(
-		Name = "Take profit",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitLabelKey,
 		GroupName = LocalizedStrings.GeneralKey)]
 	public decimal? TakeProfit { get; set; }
 

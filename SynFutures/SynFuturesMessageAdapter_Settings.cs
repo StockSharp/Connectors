@@ -25,7 +25,8 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 
 	/// <summary>Official SynFutures Base API endpoint.</summary>
 	[Display(
-		Name = "REST API",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestApiKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string ApiEndpoint { get; set; } = _defaultApiEndpoint;
@@ -40,14 +41,16 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 
 	/// <summary>Base JSON-RPC endpoint.</summary>
 	[Display(
-		Name = "JSON-RPC",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.JsonRpcKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string RpcEndpoint { get; set; } = _defaultRpcEndpoint;
 
 	/// <summary>Origin header used by SynFutures services.</summary>
 	[Display(
-		Name = "Origin",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OriginKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string Origin { get; set; } = _defaultOrigin;
@@ -91,7 +94,8 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 
 	/// <summary>Maximum market-order slippage in basis points.</summary>
 	[Display(
-		Name = "Slippage (bps)",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SlippageBpsKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 6)]
 	public int SlippageBps
@@ -107,7 +111,8 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 
 	/// <summary>On-chain order deadline offset.</summary>
 	[Display(
-		Name = "Order deadline",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderDeadlineKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public TimeSpan OrderDeadline
@@ -124,7 +129,8 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 
 	/// <summary>Maximum time to wait for a Base transaction receipt.</summary>
 	[Display(
-		Name = "Transaction timeout",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TransactionTimeoutKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 8)]
 	public TimeSpan TransactionTimeout
@@ -141,7 +147,8 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 
 	/// <summary>Fallback polling interval for account data.</summary>
 	[Display(
-		Name = "Account refresh",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AccountRefreshKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 9)]
 	public TimeSpan AccountRefreshInterval
@@ -175,7 +182,8 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 
 	/// <summary>Maximum order-book rows sent per side.</summary>
 	[Display(
-		Name = "Market depth",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarketDepthKey,
 		GroupName = LocalizedStrings.MarketDepthKey,
 		Order = 11)]
 	public int MarketDepth

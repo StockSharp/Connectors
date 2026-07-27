@@ -27,8 +27,9 @@ public class SynthetixOrderCondition : OrderCondition
 	/// <summary>Whether a conditional order is a take-profit order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Take profit",
-		Description = "Use the take-profit trigger instead of stop-loss.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TakeProfitLabelKey,
+		Description = LocalizedStrings.UseTheTakeProfitTriggerInsteadOfStopLossDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 1)]
 	public bool IsTakeProfit
@@ -40,8 +41,9 @@ public class SynthetixOrderCondition : OrderCondition
 	/// <summary>Whether a trigger executes as a market order.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trigger market",
-		Description = "Execute the conditional order at market when triggered.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerMarketKey,
+		Description = LocalizedStrings.ExecuteTheConditionalOrderAtMarketWhenTriggeredDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 2)]
 	public bool IsTriggerMarket
@@ -67,8 +69,9 @@ public class SynthetixOrderCondition : OrderCondition
 	/// <summary>Whether a trigger closes the entire position.</summary>
 	[DataMember]
 	[Display(
-		Name = "Close position",
-		Description = "Close the entire position when a conditional order triggers.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ClosePositionKey,
+		Description = LocalizedStrings.CloseTheEntirePositionWhenAConditionalOrderTriggersDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 4)]
 	public bool IsClosePosition
@@ -80,8 +83,9 @@ public class SynthetixOrderCondition : OrderCondition
 	/// <summary>Trigger evaluation price.</summary>
 	[DataMember]
 	[Display(
-		Name = "Trigger price type",
-		Description = "Price used to evaluate the trigger.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TriggerPriceTypeKey,
+		Description = LocalizedStrings.PriceUsedToEvaluateTheTriggerDescKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 5)]
 	public SynthetixTriggerPriceTypes TriggerPriceType
@@ -99,12 +103,14 @@ public enum SynthetixTriggerPriceTypes
 	/// <summary>Mark price.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Mark")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MarkKey)]
 	Mark,
 
 	/// <summary>Last traded price.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Last")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LastKey)]
 	Last,
 }

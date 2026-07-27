@@ -34,36 +34,40 @@ public partial class DriftMessageAdapter
 
 	/// <summary>Current hosted Data API endpoint.</summary>
 	[Display(
-		Name = "Data API",
-		Description = "Drift Data API endpoint.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataApiKey,
+		Description = LocalizedStrings.DriftDataApiEndpointDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	public string DataApiEndpoint { get; set; } =
 		"https://data.velocity.exchange";
 
 	/// <summary>Current hosted Data API WebSocket endpoint.</summary>
 	[Display(
-		Name = "Data WebSocket",
-		Description = "Drift Data API WebSocket endpoint.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataWebSocketKey,
+		Description = LocalizedStrings.DriftDataApiWebSocketEndpointDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	public string DataSocketEndpoint { get; set; } =
 		"wss://data.velocity.exchange/ws";
 
 	/// <summary>Current hosted DLOB endpoint.</summary>
 	[Display(
-		Name = "DLOB API",
-		Description = "Drift DLOB REST endpoint.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DlobApiKey,
+		Description = LocalizedStrings.DriftDlobRestEndpointDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string DlobEndpoint { get; set; } =
 		"https://dlob.velocity.exchange";
 
 	/// <summary>Current hosted DLOB WebSocket endpoint.</summary>
 	[Display(
-		Name = "DLOB WebSocket",
-		Description = "Drift DLOB WebSocket endpoint.",
-		GroupName = "Addresses",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DlobWebSocketKey,
+		Description = LocalizedStrings.DriftDlobWebSocketEndpointDescKey,
+		GroupName = LocalizedStrings.AddressesKey,
 		Order = 3)]
 	public string DlobSocketEndpoint { get; set; } =
 		"wss://dlob.velocity.exchange/ws";

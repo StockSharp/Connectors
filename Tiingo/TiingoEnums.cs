@@ -8,19 +8,22 @@ public enum TiingoMarkets
 	/// <summary>Exchange-listed securities and funds.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Stocks and funds")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StocksAndFundsKey)]
 	Stocks,
 
 	/// <summary>Foreign exchange.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Forex")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ForexKey)]
 	Forex,
 
 	/// <summary>Crypto assets.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Crypto")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CryptoKey)]
 	Crypto,
 }
 
@@ -32,19 +35,22 @@ public enum TiingoEquityStreamingModes
 	/// <summary>Exchange-compliant Tiingo derived reference prices.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Reference price")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReferencePriceKey)]
 	ReferencePrice,
 
 	/// <summary>Filtered IEX TOPS quotes and trades; IEX entitlement is required.</summary>
 	[EnumMember]
 	[Display(
-		Name = "IEX TOPS filtered")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IexTopsFilteredKey)]
 	IexTop,
 
 	/// <summary>Every IEX TOPS update; IEX entitlement is required.</summary>
 	[EnumMember]
 	[Display(
-		Name = "IEX TOPS all")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.IexTopsAllKey)]
 	IexAll,
 }
 
@@ -56,13 +62,15 @@ public enum TiingoPriceAdjustments
 	/// <summary>Use raw exchange prices and volumes.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Raw")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RawKey)]
 	Raw,
 
 	/// <summary>Use split- and dividend-adjusted prices and volumes.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Adjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AdjustedKey)]
 	Adjusted,
 }
 

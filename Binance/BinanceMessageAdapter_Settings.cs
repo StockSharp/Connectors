@@ -186,24 +186,27 @@ public partial class BinanceMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 
 	/// <summary>Demo websocket host for spot.</summary>
 	[Display(
-		Name = "Demo spot",
-		Description = "Demo spot WebSocket host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoSpotKey,
+		Description = LocalizedStrings.DemoSpotWebSocketHostDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey,
 		Order = 4)]
 	public string DemoHostWebSocketSpot { get; set; } = _defaultDemoHostWebSocketSpot;
 
 	/// <summary>Demo websocket host for futures.</summary>
 	[Display(
-		Name = "Demo futures",
-		Description = "Demo futures WebSocket host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoFuturesKey,
+		Description = LocalizedStrings.DemoFuturesWebSocketHostDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey,
 		Order = 5)]
 	public string DemoHostWebSocketFuture { get; set; } = _defaultDemoHostWebSocketFuture;
 
 	/// <summary>Demo websocket host for coin futures.</summary>
 	[Display(
-		Name = "Demo coin futures",
-		Description = "Demo coin futures WebSocket host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoCoinFuturesKey,
+		Description = LocalizedStrings.DemoCoinFuturesWebSocketHostDescKey,
 		GroupName = LocalizedStrings.WebSocketAddressesKey,
 		Order = 6)]
 	public string DemoHostWebSocketFutureCoin { get; set; } = _defaultDemoHostWebSocketFutureCoin;
@@ -243,24 +246,27 @@ public partial class BinanceMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 
 	/// <summary>Demo REST host for spot.</summary>
 	[Display(
-		Name = "Demo spot",
-		Description = "Demo spot REST host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoSpotKey,
+		Description = LocalizedStrings.DemoSpotRestHostDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 4)]
 	public string DemoHostRestSpot { get; set; } = _defaultDemoHostRestSpot;
 
 	/// <summary>Demo REST host for futures.</summary>
 	[Display(
-		Name = "Demo futures",
-		Description = "Demo futures REST host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoFuturesKey,
+		Description = LocalizedStrings.DemoFuturesRestHostDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
 	public string DemoHostRestFuture { get; set; } = _defaultDemoHostRestFuture;
 
 	/// <summary>Demo REST host for coin futures.</summary>
 	[Display(
-		Name = "Demo coin futures",
-		Description = "Demo coin futures REST host.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DemoCoinFuturesKey,
+		Description = LocalizedStrings.DemoCoinFuturesRestHostDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string DemoHostRestFutureCoin { get; set; } = _defaultDemoHostRestFutureCoin;

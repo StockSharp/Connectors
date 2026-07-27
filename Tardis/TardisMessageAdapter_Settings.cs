@@ -16,8 +16,9 @@ public partial class TardisMessageAdapter
 
 	/// <summary>Tardis exchange identifier.</summary>
 	[Display(
-		Name = "Exchange",
-		Description = "Tardis exchange ID.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeKey,
+		Description = LocalizedStrings.TardisExchangeIdDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -29,7 +30,8 @@ public partial class TardisMessageAdapter
 
 	/// <summary>Tardis cloud REST API v1 root.</summary>
 	[Display(
-		Name = "REST endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 0)]
 	[BasicSetting]
@@ -37,7 +39,8 @@ public partial class TardisMessageAdapter
 
 	/// <summary>Local Tardis Machine HTTP root.</summary>
 	[Display(
-		Name = "Machine HTTP endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MachineHttpEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 1)]
 	[BasicSetting]
@@ -45,7 +48,8 @@ public partial class TardisMessageAdapter
 
 	/// <summary>Local Tardis Machine WebSocket root.</summary>
 	[Display(
-		Name = "Machine WebSocket endpoint",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MachineWebSocketEndpointKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	[BasicSetting]
@@ -74,8 +78,9 @@ public partial class TardisMessageAdapter
 
 	/// <summary>Underlying exchange stream inactivity timeout.</summary>
 	[Display(
-		Name = "Stream timeout",
-		Description = "Tardis Machine exchange-stream inactivity timeout.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StreamTimeoutKey,
+		Description = LocalizedStrings.TardisMachineExchangeStreamInactivityTimeoutDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public TimeSpan StreamTimeout
@@ -92,7 +97,8 @@ public partial class TardisMessageAdapter
 
 	/// <summary>Maximum number of instruments returned by a lookup.</summary>
 	[Display(
-		Name = "Maximum items",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumItemsKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public int MaximumItems
@@ -126,8 +132,9 @@ public partial class TardisMessageAdapter
 
 	/// <summary>Default replay range when no start time is specified.</summary>
 	[Display(
-		Name = "History lookback",
-		Description = "Default replay range when history has no start time.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLookbackKey,
+		Description = LocalizedStrings.DefaultReplayRangeWhenHistoryHasNoStartTimeDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 1)]
 	public TimeSpan HistoryLookback
@@ -144,8 +151,9 @@ public partial class TardisMessageAdapter
 
 	/// <summary>Maximum time span accepted by one replay subscription.</summary>
 	[Display(
-		Name = "Maximum replay span",
-		Description = "Maximum range accepted by one normalized replay.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.MaximumReplaySpanKey,
+		Description = LocalizedStrings.MaximumRangeAcceptedByOneNormalizedReplayDescKey,
 		GroupName = LocalizedStrings.HistoryKey,
 		Order = 2)]
 	public TimeSpan MaximumReplaySpan

@@ -96,48 +96,54 @@ public partial class FivePaisaMessageAdapter : MessageAdapter, ITokenAdapter
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;
 
 	/// <summary>Historical data endpoint.</summary>
 	[Display(
-		Name = "History endpoint",
-		Description = "Historical data endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryEndpointKey,
+		Description = LocalizedStrings.HistoricalDataEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string HistoryEndpoint { get; set; } = _defaultHistoryEndpoint;
 
 	/// <summary>Default routed market-feed WebSocket endpoint.</summary>
 	[Display(
-		Name = "Feed WebSocket endpoint",
-		Description = "Default routed market-feed WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FeedWebSocketEndpointKey,
+		Description = LocalizedStrings.DefaultRoutedMarketFeedWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string FeedWebSocketEndpoint { get; set; } = _defaultFeedWebSocketEndpoint;
 
 	/// <summary>Market-feed WebSocket endpoint for redirect server A.</summary>
 	[Display(
-		Name = "Feed WebSocket A endpoint",
-		Description = "Market-feed WebSocket endpoint for redirect server A.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FeedWebSocketAEndpointKey,
+		Description = LocalizedStrings.MarketFeedWebSocketEndpointForRedirectServerADescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string FeedWebSocketAEndpoint { get; set; } = _defaultFeedWebSocketAEndpoint;
 
 	/// <summary>Market-feed WebSocket endpoint for redirect server B.</summary>
 	[Display(
-		Name = "Feed WebSocket B endpoint",
-		Description = "Market-feed WebSocket endpoint for redirect server B.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FeedWebSocketBEndpointKey,
+		Description = LocalizedStrings.MarketFeedWebSocketEndpointForRedirectServerBDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string FeedWebSocketBEndpoint { get; set; } = _defaultFeedWebSocketBEndpoint;
 
 	/// <summary>Market depth WebSocket endpoint.</summary>
 	[Display(
-		Name = "Depth WebSocket endpoint",
-		Description = "Market depth WebSocket endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DepthWebSocketEndpointKey,
+		Description = LocalizedStrings.MarketDepthWebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey)]
 	[BasicSetting]
 	public string DepthWebSocketEndpoint { get; set; } = _defaultDepthWebSocketEndpoint;

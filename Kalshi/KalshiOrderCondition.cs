@@ -39,9 +39,10 @@ public class KalshiOrderCondition : OrderCondition
 	/// <summary>Whether Kalshi cancels the order when exchange trading is paused.</summary>
 	[DataMember]
 	[Display(
-		Name = "Cancel on pause",
-		Description = "Cancel a resting order when Kalshi pauses trading.",
-		GroupName = "Parameters",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CancelOnPauseKey,
+		Description = LocalizedStrings.CancelARestingOrderWhenKalshiPausesTradingDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
 		Order = 2)]
 	public bool IsCancelOnPause
 	{
@@ -52,9 +53,10 @@ public class KalshiOrderCondition : OrderCondition
 	/// <summary>Self-trade prevention mode.</summary>
 	[DataMember]
 	[Display(
-		Name = "Self-trade prevention",
-		Description = "Action taken when the order would trade with another order from the same account.",
-		GroupName = "Parameters",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SelfTradePreventionKey,
+		Description = LocalizedStrings.ActionTakenWhenTheOrderWouldTradeWithAnotherOrderFromTheSameAccountDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
 		Order = 3)]
 	public KalshiSelfTradePreventionTypes SelfTradePreventionType
 	{
@@ -67,9 +69,10 @@ public class KalshiOrderCondition : OrderCondition
 	/// <summary>Optional Kalshi order-group identifier.</summary>
 	[DataMember]
 	[Display(
-		Name = "Order group",
-		Description = "Optional Kalshi order-group identifier.",
-		GroupName = "Parameters",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrderGroupKey,
+		Description = LocalizedStrings.OptionalKalshiOrderGroupIdentifierDescKey,
+		GroupName = LocalizedStrings.ParametersKey,
 		Order = 4)]
 	public string OrderGroupId
 	{

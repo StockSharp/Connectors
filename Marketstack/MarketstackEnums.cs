@@ -8,12 +8,14 @@ public enum MarketstackAdjustments
 	/// <summary>Unadjusted provider fields.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Raw")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RawKey)]
 	Raw,
 
 	/// <summary>Fields adjusted for corporate actions where supplied.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Adjusted")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AdjustedKey)]
 	Adjusted,
 }

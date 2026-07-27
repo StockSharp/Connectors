@@ -53,8 +53,9 @@ public partial class GmxMessageAdapter
 
 	/// <summary>Secondary official GMX API peer.</summary>
 	[Display(
-		Name = "Secondary API",
-		Description = "Independent official GMX API peer used for safe reads.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SecondaryApiKey,
+		Description = LocalizedStrings.IndependentOfficialGmxApiPeerUsedForSafeReadsDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 2)]
 	public string SecondaryApiEndpoint
@@ -117,7 +118,8 @@ public partial class GmxMessageAdapter
 
 	/// <summary>Default position collateral token.</summary>
 	[Display(
-		Name = "Collateral token",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.CollateralTokenKey,
 		GroupName = LocalizedStrings.TransactionKey,
 		Order = 7)]
 	public string DefaultCollateralToken

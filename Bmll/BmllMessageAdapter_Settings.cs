@@ -39,18 +39,20 @@ public partial class BmllMessageAdapter : MessageAdapter, ITokenAdapter,
 
 	/// <summary>Path to the PEM-encoded RSA private key registered with BMLL.</summary>
 	[Display(
-		Name = "Private key path",
-		Description = "Path to the PEM-encoded RSA private key registered with BMLL.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrivateKeyPathKey,
+		Description = LocalizedStrings.PathToThePemEncodedRsaPrivateKeyRegisteredWithBmllDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public string PrivateKeyPath { get; set; }
 
 	/// <inheritdoc />
 	[Display(
-		Name = "Private key passphrase",
-		Description = "Optional passphrase protecting the BMLL private key.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrivateKeyPassphraseKey,
+		Description = LocalizedStrings.OptionalPassphraseProtectingTheBmllPrivateKeyDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	[BasicSetting]
 	public SecureString Password { get; set; }
@@ -67,9 +69,10 @@ public partial class BmllMessageAdapter : MessageAdapter, ITokenAdapter,
 
 	/// <summary>Optional BMLL API key accompanying the bearer token.</summary>
 	[Display(
-		Name = "API key",
-		Description = "Optional BMLL x-api-key accompanying the bearer token.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ApiKeyKey,
+		Description = LocalizedStrings.OptionalBmllXApiKeyAccompanyingTheBearerTokenDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	[BasicSetting]
 	public SecureString ApiKey { get; set; }
@@ -86,9 +89,10 @@ public partial class BmllMessageAdapter : MessageAdapter, ITokenAdapter,
 
 	/// <summary>BMLL authentication API base address.</summary>
 	[Display(
-		Name = "Authentication address",
-		Description = "BMLL authentication API base address.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.AuthenticationAddressKey,
+		Description = LocalizedStrings.BmllAuthenticationApiBaseAddressDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 7)]
 	[BasicSetting]
 	public Uri AuthenticationAddress { get; set; } =
@@ -96,67 +100,75 @@ public partial class BmllMessageAdapter : MessageAdapter, ITokenAdapter,
 
 	/// <summary>Dataset used for tick subscriptions.</summary>
 	[Display(
-		Name = "Trades dataset",
-		Description = "Entitled BMLL dataset used for tick subscriptions.",
-		GroupName = "Datasets",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.TradesDatasetKey,
+		Description = LocalizedStrings.EntitledBmllDatasetUsedForTickSubscriptionsDescKey,
+		GroupName = LocalizedStrings.DatasetsKey,
 		Order = 8)]
 	[BasicSetting]
 	public string TradesDataset { get; set; } = "trades";
 
 	/// <summary>Dataset used for order-log and market-depth subscriptions.</summary>
 	[Display(
-		Name = "Level 3 dataset",
-		Description = "Entitled BMLL Level 3 dataset used for order log and depth.",
-		GroupName = "Datasets",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.Level3DatasetKey,
+		Description = LocalizedStrings.EntitledBmllLevel3DatasetUsedForOrderLogAndDepthDescKey,
+		GroupName = LocalizedStrings.DatasetsKey,
 		Order = 9)]
 	[BasicSetting]
 	public string Level3Dataset { get; set; } = "l3";
 
 	/// <summary>Interval between asynchronous query status polls.</summary>
 	[Display(
-		Name = "Query polling interval",
-		Description = "Interval between asynchronous query status polls.",
-		GroupName = "Queries",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QueryPollingIntervalKey,
+		Description = LocalizedStrings.IntervalBetweenAsynchronousQueryStatusPollsDescKey,
+		GroupName = LocalizedStrings.QueriesKey,
 		Order = 10)]
 	public TimeSpan QueryPollingInterval { get; set; } = TimeSpan.FromSeconds(1);
 
 	/// <summary>Maximum time to wait for one asynchronous query.</summary>
 	[Display(
-		Name = "Query timeout",
-		Description = "Maximum time to wait for one asynchronous query.",
-		GroupName = "Queries",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.QueryTimeoutKey,
+		Description = LocalizedStrings.MaximumTimeToWaitForOneAsynchronousQueryDescKey,
+		GroupName = LocalizedStrings.QueriesKey,
 		Order = 11)]
 	public TimeSpan QueryTimeout { get; set; } = TimeSpan.FromMinutes(5);
 
 	/// <summary>Maximum records emitted by one subscription.</summary>
 	[Display(
-		Name = "Record limit",
-		Description = "Maximum records emitted by one subscription.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RecordLimitKey,
+		Description = LocalizedStrings.MaximumRecordsEmittedByOneSubscriptionDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 12)]
 	public int MaxRecords { get; set; } = 1000000;
 
 	/// <summary>Maximum price levels emitted in one reconstructed depth snapshot.</summary>
 	[Display(
-		Name = "Depth limit",
-		Description = "Maximum price levels emitted in one reconstructed depth snapshot.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DepthLimitKey,
+		Description = LocalizedStrings.MaximumPriceLevelsEmittedInOneReconstructedDepthSnapshotDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 13)]
 	public int MaxDepth { get; set; } = 50;
 
 	/// <summary>Number of UTC dates requested when history has no explicit start.</summary>
 	[Display(
-		Name = "Default history days",
-		Description = "Number of UTC dates requested when history has no explicit start.",
-		GroupName = "History",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DefaultHistoryDaysKey,
+		Description = LocalizedStrings.NumberOfUtcDatesRequestedWhenHistoryHasNoExplicitStartDescKey,
+		GroupName = LocalizedStrings.HistoryKey,
 		Order = 14)]
 	public int DefaultHistoryDays { get; set; } = 1;
 
 	/// <summary>Emit only BMLL trades marked printable.</summary>
 	[Display(
-		Name = "Printable trades only",
-		Description = "Emit only BMLL trades marked printable to avoid duplicate reports.",
-		GroupName = "Trades",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PrintableTradesOnlyKey,
+		Description = LocalizedStrings.EmitOnlyBmllTradesMarkedPrintableToAvoidDuplicateReportsDescKey,
+		GroupName = LocalizedStrings.TradesKey,
 		Order = 15)]
 	public bool IsPrintableOnly { get; set; } = true;
 

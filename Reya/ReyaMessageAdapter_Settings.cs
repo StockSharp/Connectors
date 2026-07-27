@@ -9,8 +9,9 @@ public partial class ReyaMessageAdapter
 
 	/// <summary>Owner wallet used for account queries and streams.</summary>
 	[Display(
-		Name = "Owner wallet",
-		Description = "Reya account owner EVM wallet address.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OwnerWalletKey,
+		Description = LocalizedStrings.ReyaAccountOwnerEvmWalletAddressDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
@@ -18,8 +19,9 @@ public partial class ReyaMessageAdapter
 
 	/// <summary>Optional Reya account ID override.</summary>
 	[Display(
-		Name = "Reya account ID",
-		Description = "Optional account ID; discovered from the owner wallet when empty.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ReyaAccountIdKey,
+		Description = LocalizedStrings.OptionalAccountIdDiscoveredFromTheOwnerWalletWhenEmptyDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
@@ -58,7 +60,8 @@ public partial class ReyaMessageAdapter
 
 	/// <summary>Reya EVM chain identifier.</summary>
 	[Display(
-		Name = "Chain ID",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ChainIdKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 3)]
 	public long ChainId
@@ -72,7 +75,8 @@ public partial class ReyaMessageAdapter
 
 	/// <summary>Orders Gateway verifying contract.</summary>
 	[Display(
-		Name = "Orders Gateway",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OrdersGatewayKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	public string OrdersGatewayAddress { get; set; } = _defaultGatewayAddress;
@@ -81,7 +85,8 @@ public partial class ReyaMessageAdapter
 
 	/// <summary>Reya DEX exchange identifier.</summary>
 	[Display(
-		Name = "Exchange ID",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ExchangeIdKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 5)]
 	public long ExchangeId
@@ -97,7 +102,8 @@ public partial class ReyaMessageAdapter
 
 	/// <summary>Reya perpetual pool counterparty account ID.</summary>
 	[Display(
-		Name = "Pool account ID",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.PoolAccountIdKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 6)]
 	public string PoolAccountId

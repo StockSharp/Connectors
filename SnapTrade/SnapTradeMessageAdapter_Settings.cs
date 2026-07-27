@@ -84,8 +84,9 @@ public partial class SnapTradeMessageAdapter : MessageAdapter, IKeySecretAdapter
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
-		Name = "REST endpoint",
-		Description = "REST API endpoint.",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.RestEndpointKey,
+		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
 	public string RestEndpoint { get; set; } = _defaultRestEndpoint;

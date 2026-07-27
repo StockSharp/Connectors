@@ -37,44 +37,49 @@ public partial class ActivFinancialMessageAdapter : MessageAdapter, ILoginPasswo
 
 	/// <summary>One API gateway host assigned by ACTIV Financial.</summary>
 	[Display(
-		Name = "One API host",
-		Description = "ACTIV One API gateway host assigned to the account.",
-		GroupName = "Connection",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OneApiHostKey,
+		Description = LocalizedStrings.ActivOneApiGatewayHostAssignedToTheAccountDescKey,
+		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
 	public string Host { get; set; } = "aop-ny4-replay.activfinancial.com";
 
 	/// <summary>ACTIV data source.</summary>
 	[Display(
-		Name = "Data source",
-		Description = "Entitled ACTIV One API data source.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.DataSourceKey,
+		Description = LocalizedStrings.EntitledActivOneApiDataSourceDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 3)]
 	[BasicSetting]
 	public ActivDataSources DataSource { get; set; } = ActivDataSources.Activ;
 
 	/// <summary>Symbol namespace used for canonical requests.</summary>
 	[Display(
-		Name = "Symbology",
-		Description = "Symbol namespace used for canonical One API requests.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.SymbologyKey,
+		Description = LocalizedStrings.SymbolNamespaceUsedForCanonicalOneApiRequestsDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 4)]
 	public ActivSymbologies Symbology { get; set; } = ActivSymbologies.Native;
 
 	/// <summary>Node.js executable path.</summary>
 	[Display(
-		Name = "Node.js path",
-		Description = "Path or command name of the Node.js executable.",
-		GroupName = "Gateway",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.NodeJsPathKey,
+		Description = LocalizedStrings.PathOrCommandNameOfTheNodeJsExecutableDescKey,
+		GroupName = LocalizedStrings.GatewayKey,
 		Order = 5)]
 	[BasicSetting]
 	public string NodePath { get; set; } = "node";
 
 	/// <summary>Directory containing the typed gateway and its installed npm dependencies.</summary>
 	[Display(
-		Name = "Gateway directory",
-		Description = "Directory containing activ_gateway.cjs, package.json, and node_modules.",
-		GroupName = "Gateway",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.GatewayDirectoryKey,
+		Description = LocalizedStrings.DirectoryContainingActivGatewayCjsPackageJsonAndNodeModulesDescKey,
+		GroupName = LocalizedStrings.GatewayKey,
 		Order = 6)]
 	[BasicSetting]
 	public string GatewayDirectory { get; set; } =
@@ -82,25 +87,28 @@ public partial class ActivFinancialMessageAdapter : MessageAdapter, ILoginPasswo
 
 	/// <summary>Fallback time zone for records whose topic has no Olson time-zone field.</summary>
 	[Display(
-		Name = "Fallback time zone",
-		Description = "IANA or system time-zone identifier used only when ACTIV omits topic time-zone metadata.",
-		GroupName = "Market data",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.FallbackTimeZoneKey,
+		Description = LocalizedStrings.IanaOrSystemTimeZoneIdentifierUsedOnlyWhenActivOmitsTopicTimeZoneMetadataDescKey,
+		GroupName = LocalizedStrings.MarketDataLabelKey,
 		Order = 7)]
 	public string FallbackTimeZoneId { get; set; } = "UTC";
 
 	/// <summary>Maximum records returned by a lookup with no smaller requested count.</summary>
 	[Display(
-		Name = "Lookup limit",
-		Description = "Maximum number of query-snapshot records returned by one security lookup.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.LookupLimitKey,
+		Description = LocalizedStrings.MaximumNumberOfQuerySnapshotRecordsReturnedByOneSecurityLookupDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 8)]
 	public int MaxLookupResults { get; set; } = 1000;
 
 	/// <summary>Maximum records returned by one TSS history request.</summary>
 	[Display(
-		Name = "History limit",
-		Description = "Maximum number of tick or candle records returned by one TSS request.",
-		GroupName = "Limits",
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.HistoryLimitKey,
+		Description = LocalizedStrings.MaximumNumberOfTickOrCandleRecordsReturnedByOneTssRequestDescKey,
+		GroupName = LocalizedStrings.LimitsKey,
 		Order = 9)]
 	public int MaxHistoryResults { get; set; } = 10000;
 

@@ -7,13 +7,15 @@ public enum AnchorageEnvironments
 	/// <summary>Production environment.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Production")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.ProductionKey)]
 	Production,
 
 	/// <summary>Staging sandbox environment.</summary>
 	[EnumMember]
 	[Display(
-		Name = "Staging")]
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.StagingKey)]
 	Staging,
 }
 

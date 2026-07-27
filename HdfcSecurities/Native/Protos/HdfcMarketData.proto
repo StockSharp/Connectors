@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+option csharp_namespace = "StockSharp.HdfcSecurities.Native.Protocol";
+
+message GenericDTOList {
+  repeated GenericDTO genericDTOList = 1;
+}
+
+message GenericDTO {
+  int64 instrumentId = 1;
+  MBPData mbpData = 2;
+  IndexData indexData = 3;
+  int64 sequenceNo = 7;
+  int64 packetTimestamp = 8;
+  PacketType packetType = 9;
+}
+
+message MBPData {
+  double lastTradedPrice = 1;
+  int64 lastTradeTime = 2;
+  string netChangeIndicator = 3;
+  int32 netPriceChangeFromClosingPrice = 4;
+  double openPrice = 5;
+  double highPrice = 6;
+  double closingPrice = 7;
+  double lowPrice = 8;
+  int64 volumeTradedToday = 9;
+  int64 lastTradeQuantity = 10;
+  double averageTradePrice = 11;
+  MarketDepthDTOList marketDepthDTOList = 12;
+  int64 totalBuyQuantity = 13;
+  int64 totalSellQuantity = 14;
+  double lowerCircuitLimit = 15;
+  double upperCircuitLimit = 16;
+  int64 oi = 17;
+}
+
+message IndexData {
+  string indexName = 1;
+  double indexValue = 2;
+  double highIndexValue = 3;
+  double lowIndexValue = 4;
+  double openingIndex = 5;
+  double closingIndex = 6;
+  double percentChange = 7;
+  double yearlyHigh = 8;
+  double yearlyLow = 9;
+  int64 packetTimeStamp = 10;
+}
+
+message MarketDepthDTOList {
+  repeated MarketDepthDTO marketDepthDTO = 1;
+}
+
+message MarketDepthDTO {
+  int64 quantity = 1;
+  double price = 2;
+  int64 numberOfOrders = 3;
+  bool buyFlag = 4;
+}
+
+enum PacketType {
+  NSE_CM_ALL = 0;
+  NSE_CD_ALL = 1;
+  NSE_INDEX = 2;
+  NSE_FO_ALL = 3;
+  BSE_CM = 4;
+  BSE_INDEX = 5;
+  BSE_FO_ALL = 6;
+  MCX_PKT = 7;
+  ORDER = 8;
+  TRADE = 9;
+  NSE_CM_CIRC = 10;
+  NSE_CD_CIRC = 11;
+  NSE_CD_OI = 12;
+  NSE_FO_CIRC = 13;
+  NSE_FO_OI = 14;
+  BSE_FO_OI = 15;
+  HEARTBEAT = 16;
+  NSE_FO_GREEK = 17;
+  BSE_FO_GREEK = 18;
+}
