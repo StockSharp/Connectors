@@ -71,6 +71,7 @@
     <ProjectReference Include="..\Gopax\Gopax.csproj" />
     <ProjectReference Include="..\Grvt\Grvt.csproj" />
     <ProjectReference Include="..\HashKey\HashKey.csproj" />
+    <ProjectReference Include="..\HdfcSecurities\HdfcSecurities.csproj" />
     <ProjectReference Include="..\HitBtc\HitBtc.csproj" />
     <ProjectReference Include="..\Huobi\Huobi.csproj" />
     <ProjectReference Include="..\Hyperliquid\Hyperliquid.csproj" />
