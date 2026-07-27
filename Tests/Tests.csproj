@@ -97,6 +97,7 @@
     <ProjectReference Include="..\MoexISS\MoexISS.csproj" />
     <ProjectReference Include="..\Nado\Nado.csproj" />
     <ProjectReference Include="..\NDAX\NDAX.csproj" />
+    <ProjectReference Include="..\Nuvama\Nuvama.csproj" />
     <ProjectReference Include="..\Okex\Okex.csproj" />
     <ProjectReference Include="..\OkexHistory\OkexHistory.csproj" />
     <ProjectReference Include="..\Orca\Orca.csproj" />
