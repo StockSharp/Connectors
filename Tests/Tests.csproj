@@ -46,6 +46,7 @@
     <ProjectReference Include="..\Coinone\Coinone.csproj" />
 	<ProjectReference Include="..\CoinTR\CoinTR.csproj" />
     <ProjectReference Include="..\CoinsPh\CoinsPh.csproj" />
+	<ProjectReference Include="..\Coinstore\Coinstore.csproj" />
     <ProjectReference Include="..\Comdirect\Comdirect.csproj" />
     <ProjectReference Include="..\CowProtocol\CowProtocol.csproj" />
     <ProjectReference Include="..\CryptoCom\CryptoCom.csproj" />
