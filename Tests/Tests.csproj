@@ -62,6 +62,7 @@
 	<ProjectReference Include="..\Birdeye\Birdeye.csproj" />
 	<ProjectReference Include="..\ZeroX\ZeroX.csproj" />
 	<ProjectReference Include="..\KyberSwap\KyberSwap.csproj" />
+	<ProjectReference Include="..\Velora\Velora.csproj" />
 	<ProjectReference Include="..\CoinSpot\CoinSpot.csproj" />
     <ProjectReference Include="..\CoinsPh\CoinsPh.csproj" />
 	<ProjectReference Include="..\Coinstore\Coinstore.csproj" />
