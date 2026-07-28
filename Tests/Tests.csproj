@@ -49,6 +49,7 @@
 	<ProjectReference Include="..\CoinTR\CoinTR.csproj" />
 	<ProjectReference Include="..\CoinSwitch\CoinSwitch.csproj" />
 	<ProjectReference Include="..\CoinCatch\CoinCatch.csproj" />
+	<ProjectReference Include="..\CoinSpot\CoinSpot.csproj" />
     <ProjectReference Include="..\CoinsPh\CoinsPh.csproj" />
 	<ProjectReference Include="..\Coinstore\Coinstore.csproj" />
     <ProjectReference Include="..\Comdirect\Comdirect.csproj" />
