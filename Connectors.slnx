@@ -236,6 +236,7 @@
 	<Project Path="DeltaExchangeIndia/DeltaExchangeIndia.csproj" />
 	<Project Path="Coincall/Coincall.csproj" />
 	<Project Path="CoinPaprika/CoinPaprika.csproj" />
+	<Project Path="CoinGlass/CoinGlass.csproj" />
 	<Project Path="CoinSpot/CoinSpot.csproj" />
 	<Project Path="Coinstore/Coinstore.csproj" />
     <Project Path="GmoCoin/GmoCoin.csproj" />
