@@ -288,6 +288,7 @@
     <Project Path="Settrade/Settrade.csproj" />
     <Project Path="SSI/SSI.csproj" />
     <Project Path="IIFL/IIFL.csproj" />
+    <Project Path="MStock/MStock.csproj" />
     <Project Path="QuickSwap/QuickSwap.csproj" />
     <Project Path="Osmosis/Osmosis.csproj" />
     <Project Path="Cetus/Cetus.csproj" />
