@@ -5,6 +5,7 @@
     <ProjectReference Include="..\Aevo\Aevo.csproj" />
     <ProjectReference Include="..\AlorHistory\AlorHistory.csproj" />
     <ProjectReference Include="..\ApexOmni\ApexOmni.csproj" />
+	<ProjectReference Include="..\AscendEx\AscendEx.csproj" />
     <ProjectReference Include="..\Aster\Aster.csproj" />
     <ProjectReference Include="..\Avantis\Avantis.csproj" />
     <ProjectReference Include="..\Backpack\Backpack.csproj" />
