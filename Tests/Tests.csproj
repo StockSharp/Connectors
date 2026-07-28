@@ -47,6 +47,7 @@
     <ProjectReference Include="..\CoinMarketCap\CoinMarketCap.csproj" />
     <ProjectReference Include="..\Coinone\Coinone.csproj" />
 	<ProjectReference Include="..\CoinTR\CoinTR.csproj" />
+	<ProjectReference Include="..\CoinSwitch\CoinSwitch.csproj" />
     <ProjectReference Include="..\CoinsPh\CoinsPh.csproj" />
 	<ProjectReference Include="..\Coinstore\Coinstore.csproj" />
     <ProjectReference Include="..\Comdirect\Comdirect.csproj" />
