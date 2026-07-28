@@ -241,6 +241,7 @@
 	<Project Path="DexScreener/DexScreener.csproj" />
 	<Project Path="Birdeye/Birdeye.csproj" />
 	<Project Path="ZeroX/ZeroX.csproj" />
+	<Project Path="KyberSwap/KyberSwap.csproj" />
 	<Project Path="CoinSpot/CoinSpot.csproj" />
 	<Project Path="Coinstore/Coinstore.csproj" />
     <Project Path="GmoCoin/GmoCoin.csproj" />
