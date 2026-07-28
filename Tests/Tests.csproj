@@ -61,6 +61,7 @@
 	<ProjectReference Include="..\Xrpl\Xrpl.csproj" />
 	<ProjectReference Include="..\Settrade\Settrade.csproj" />
 	<ProjectReference Include="..\SSI\SSI.csproj" />
+	<ProjectReference Include="..\IIFL\IIFL.csproj" />
 	<ProjectReference Include="..\Coincall\Coincall.csproj" />
 	<ProjectReference Include="..\CoinPaprika\CoinPaprika.csproj" />
 	<ProjectReference Include="..\CoinGlass\CoinGlass.csproj" />
