@@ -4,6 +4,7 @@
     <ProjectReference Include="..\Aerodrome\Aerodrome.csproj" />
     <ProjectReference Include="..\Aevo\Aevo.csproj" />
     <ProjectReference Include="..\AlorHistory\AlorHistory.csproj" />
+	<ProjectReference Include="..\AltCoinTrader\AltCoinTrader.csproj" />
     <ProjectReference Include="..\ApexOmni\ApexOmni.csproj" />
 	<ProjectReference Include="..\AscendEx\AscendEx.csproj" />
     <ProjectReference Include="..\Aster\Aster.csproj" />
