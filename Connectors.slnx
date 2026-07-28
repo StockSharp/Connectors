@@ -239,6 +239,7 @@
     <Project Path="IndependentReserve/IndependentReserve.csproj" />
     <Project Path="BTCMarkets/BTCMarkets.csproj" />
 	<Project Path="BtcTurk/BtcTurk.csproj" />
+	<Project Path="Buda/Buda.csproj" />
     <Project Path="CoinJar/CoinJar.csproj" />
     <Project Path="Korbit/Korbit.csproj" />
     <Project Path="PintuPro/PintuPro.csproj" />
