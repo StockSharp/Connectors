@@ -67,6 +67,7 @@
 	<ProjectReference Include="..\JQuants\JQuants.csproj" />
 	<ProjectReference Include="..\MarketDataApp\MarketDataApp.csproj" />
 	<ProjectReference Include="..\SecEdgar\SecEdgar.csproj" />
+	<ProjectReference Include="..\OpenFigi\OpenFigi.csproj" />
 	<ProjectReference Include="..\Coincall\Coincall.csproj" />
 	<ProjectReference Include="..\CoinPaprika\CoinPaprika.csproj" />
 	<ProjectReference Include="..\CoinGlass\CoinGlass.csproj" />
