@@ -294,6 +294,7 @@
     <Project Path="MarketDataApp/MarketDataApp.csproj" />
     <Project Path="SecEdgar/SecEdgar.csproj" />
     <Project Path="OpenFigi/OpenFigi.csproj" />
+    <Project Path="SimFin/SimFin.csproj" />
     <Project Path="QuickSwap/QuickSwap.csproj" />
     <Project Path="Osmosis/Osmosis.csproj" />
     <Project Path="Cetus/Cetus.csproj" />
