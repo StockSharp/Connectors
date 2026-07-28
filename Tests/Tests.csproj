@@ -38,6 +38,7 @@
     <ProjectReference Include="..\BTSE\BTSE.csproj" />
     <ProjectReference Include="..\ByBit\ByBit.csproj" />
     <ProjectReference Include="..\BYDFi\BYDFi.csproj" />
+	<ProjectReference Include="..\Chainflip\Chainflip.csproj" />
     <ProjectReference Include="..\Cetus\Cetus.csproj" />
     <ProjectReference Include="..\Cex\Cex.csproj" />
     <ProjectReference Include="..\ChoiceFinX\ChoiceFinX.csproj" />
