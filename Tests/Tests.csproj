@@ -129,6 +129,7 @@
     <ProjectReference Include="..\Public\Public.csproj" />
     <ProjectReference Include="..\PumpSwap\PumpSwap.csproj" />
     <ProjectReference Include="..\QFEX\QFEX.csproj" />
+	<ProjectReference Include="..\Quidax\Quidax.csproj" />
     <ProjectReference Include="..\Raydium\Raydium.csproj" />
     <ProjectReference Include="..\Reya\Reya.csproj" />
     <ProjectReference Include="..\Rupeezy\Rupeezy.csproj" />

@@ -177,6 +177,7 @@
     <Project Path="Qmt/Qmt.csproj" />
     <Project Path="QuantFeed/QuantFeed.csproj" />
     <Project Path="Questrade/Questrade.csproj" />
+	<Project Path="Quidax/Quidax.csproj" />
     <Project Path="Quodd/Quodd.csproj" />
     <Project Path="RakutenRss/RakutenRss.csproj" />
     <Project Path="RavenPack/RavenPack.csproj" />
