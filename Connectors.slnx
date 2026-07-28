@@ -131,6 +131,7 @@
     <Project Path="NasdaqCloudDataService/NasdaqCloudDataService.csproj" />
     <Project Path="NasdaqDataLink/NasdaqDataLink.csproj" />
     <Project Path="NinjaTrader/NinjaTrader.csproj" />
+	<Project Path="NovaDax/NovaDax.csproj" />
     <Project Path="Oanda/Oanda.csproj" />
     <Project Path="OpenMarkets/OpenMarkets.csproj" />
     <Project Path="OptionMetrics/OptionMetrics.csproj" />
