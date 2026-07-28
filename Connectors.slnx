@@ -286,6 +286,7 @@
     <Project Path="StonFi/StonFi.csproj" />
     <Project Path="Xrpl/Xrpl.csproj" />
     <Project Path="Settrade/Settrade.csproj" />
+    <Project Path="SSI/SSI.csproj" />
     <Project Path="QuickSwap/QuickSwap.csproj" />
     <Project Path="Osmosis/Osmosis.csproj" />
     <Project Path="Cetus/Cetus.csproj" />
