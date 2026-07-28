@@ -291,6 +291,7 @@
     <Project Path="MStock/MStock.csproj" />
     <Project Path="Samco/Samco.csproj" />
     <Project Path="JQuants/JQuants.csproj" />
+    <Project Path="MarketDataApp/MarketDataApp.csproj" />
     <Project Path="QuickSwap/QuickSwap.csproj" />
     <Project Path="Osmosis/Osmosis.csproj" />
     <Project Path="Cetus/Cetus.csproj" />

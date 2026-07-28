@@ -65,6 +65,7 @@
 	<ProjectReference Include="..\MStock\MStock.csproj" />
 	<ProjectReference Include="..\Samco\Samco.csproj" />
 	<ProjectReference Include="..\JQuants\JQuants.csproj" />
+	<ProjectReference Include="..\MarketDataApp\MarketDataApp.csproj" />
 	<ProjectReference Include="..\Coincall\Coincall.csproj" />
 	<ProjectReference Include="..\CoinPaprika\CoinPaprika.csproj" />
 	<ProjectReference Include="..\CoinGlass\CoinGlass.csproj" />
