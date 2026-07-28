@@ -59,6 +59,7 @@
 	<ProjectReference Include="..\CoinGlass\CoinGlass.csproj" />
 	<ProjectReference Include="..\Coinalyze\Coinalyze.csproj" />
 	<ProjectReference Include="..\DexScreener\DexScreener.csproj" />
+	<ProjectReference Include="..\Birdeye\Birdeye.csproj" />
 	<ProjectReference Include="..\CoinSpot\CoinSpot.csproj" />
     <ProjectReference Include="..\CoinsPh\CoinsPh.csproj" />
 	<ProjectReference Include="..\Coinstore\Coinstore.csproj" />
