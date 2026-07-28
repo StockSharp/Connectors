@@ -58,6 +58,7 @@
 	<ProjectReference Include="..\DeltaExchangeIndia\DeltaExchangeIndia.csproj" />
 	<ProjectReference Include="..\Dexalot\Dexalot.csproj" />
 	<ProjectReference Include="..\StonFi\StonFi.csproj" />
+	<ProjectReference Include="..\Xrpl\Xrpl.csproj" />
 	<ProjectReference Include="..\Coincall\Coincall.csproj" />
 	<ProjectReference Include="..\CoinPaprika\CoinPaprika.csproj" />
 	<ProjectReference Include="..\CoinGlass\CoinGlass.csproj" />
