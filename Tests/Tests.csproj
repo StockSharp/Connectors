@@ -2,6 +2,7 @@
   <Import Project="..\..\StockSharp (GitHub)\common_target_tests.props" />
   <ItemGroup>
     <ProjectReference Include="..\Aerodrome\Aerodrome.csproj" />
+	<ProjectReference Include="..\Velodrome\Velodrome.csproj" />
     <ProjectReference Include="..\Aevo\Aevo.csproj" />
     <ProjectReference Include="..\AlorHistory\AlorHistory.csproj" />
 	<ProjectReference Include="..\AltCoinTrader\AltCoinTrader.csproj" />
