@@ -70,6 +70,7 @@
 	<ProjectReference Include="..\OpenFigi\OpenFigi.csproj" />
 	<ProjectReference Include="..\SimFin\SimFin.csproj" />
 	<ProjectReference Include="..\TraderMade\TraderMade.csproj" />
+	<ProjectReference Include="..\Finage\Finage.csproj" />
 	<ProjectReference Include="..\Coincall\Coincall.csproj" />
 	<ProjectReference Include="..\CoinPaprika\CoinPaprika.csproj" />
 	<ProjectReference Include="..\CoinGlass\CoinGlass.csproj" />
