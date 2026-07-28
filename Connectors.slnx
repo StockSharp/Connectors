@@ -283,6 +283,7 @@
     <Project Path="Jupiter/Jupiter.csproj" />
     <Project Path="THORChain/THORChain.csproj" />
     <Project Path="SunIo/SunIo.csproj" />
+    <Project Path="StonFi/StonFi.csproj" />
     <Project Path="QuickSwap/QuickSwap.csproj" />
     <Project Path="Osmosis/Osmosis.csproj" />
     <Project Path="Cetus/Cetus.csproj" />

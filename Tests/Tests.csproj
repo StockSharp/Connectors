@@ -57,6 +57,7 @@
 	<ProjectReference Include="..\WazirX\WazirX.csproj" />
 	<ProjectReference Include="..\DeltaExchangeIndia\DeltaExchangeIndia.csproj" />
 	<ProjectReference Include="..\Dexalot\Dexalot.csproj" />
+	<ProjectReference Include="..\StonFi\StonFi.csproj" />
 	<ProjectReference Include="..\Coincall\Coincall.csproj" />
 	<ProjectReference Include="..\CoinPaprika\CoinPaprika.csproj" />
 	<ProjectReference Include="..\CoinGlass\CoinGlass.csproj" />
@@ -177,5 +178,8 @@
     <ProjectReference Include="..\Zebu\Zebu.csproj" />
 	<ProjectReference Include="..\ZondaCrypto\ZondaCrypto.csproj" />
     <ProjectReference Include="..\Zoomex\Zoomex.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+	<PackageReference Include="TonSdk.Core" Version="$(TonSdkCoreVer)" />
   </ItemGroup>
 </Project>

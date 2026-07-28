@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <ItemGroup>
+    <PackageReference Include="TonSdk.Core" Version="$(TonSdkCoreVer)" />
+    <PackageReference Include="TonSdk.Contracts" Version="$(TonSdkContractsVer)" />
+  </ItemGroup>
+</Project>
