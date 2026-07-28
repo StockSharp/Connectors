@@ -133,6 +133,7 @@
     <ProjectReference Include="..\SynFutures\SynFutures.csproj" />
     <ProjectReference Include="..\Synthetix\Synthetix.csproj" />
     <ProjectReference Include="..\THORChain\THORChain.csproj" />
+	<ProjectReference Include="..\Tokocrypto\Tokocrypto.csproj" />
     <ProjectReference Include="..\Toobit\Toobit.csproj" />
     <ProjectReference Include="..\Tradernet\Tradernet.csproj" />
     <ProjectReference Include="..\Tradejini\Tradejini.csproj" />
