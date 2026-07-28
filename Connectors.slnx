@@ -243,6 +243,7 @@
 	<Project Path="ZeroX/ZeroX.csproj" />
 	<Project Path="KyberSwap/KyberSwap.csproj" />
 	<Project Path="Velora/Velora.csproj" />
+	<Project Path="DeepBook/DeepBook.csproj" />
 	<Project Path="CoinSpot/CoinSpot.csproj" />
 	<Project Path="Coinstore/Coinstore.csproj" />
     <Project Path="GmoCoin/GmoCoin.csproj" />

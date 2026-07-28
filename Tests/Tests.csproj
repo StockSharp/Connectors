@@ -63,6 +63,7 @@
 	<ProjectReference Include="..\ZeroX\ZeroX.csproj" />
 	<ProjectReference Include="..\KyberSwap\KyberSwap.csproj" />
 	<ProjectReference Include="..\Velora\Velora.csproj" />
+	<ProjectReference Include="..\DeepBook\DeepBook.csproj" />
 	<ProjectReference Include="..\CoinSpot\CoinSpot.csproj" />
     <ProjectReference Include="..\CoinsPh\CoinsPh.csproj" />
 	<ProjectReference Include="..\Coinstore\Coinstore.csproj" />
