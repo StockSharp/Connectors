@@ -157,6 +157,7 @@
     <ProjectReference Include="..\Xt\Xt.csproj" />
     <ProjectReference Include="..\Yobit\Yobit.csproj" />
     <ProjectReference Include="..\Zebu\Zebu.csproj" />
+	<ProjectReference Include="..\ZondaCrypto\ZondaCrypto.csproj" />
     <ProjectReference Include="..\Zoomex\Zoomex.csproj" />
   </ItemGroup>
 </Project>

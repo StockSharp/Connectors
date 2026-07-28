@@ -305,6 +305,7 @@
     <Project Path="Zaif/Zaif.csproj" />
     <Project Path="ZB/ZB.csproj" />
     <Project Path="Zerodha/Zerodha.csproj" />
+	<Project Path="ZondaCrypto/ZondaCrypto.csproj" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/Tests.csproj" />
