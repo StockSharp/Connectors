@@ -18,6 +18,7 @@
     <Project Path="Binance/Binance.csproj" />
     <Project Path="BingX/BingX.csproj" />
     <Project Path="Bitalong/Bitalong.csproj" />
+	<Project Path="BigOne/BigOne.csproj" />
 	<Project Path="Bit2Me/Bit2Me.csproj" />
 	<Project Path="BitoPro/BitoPro.csproj" />
     <Project Path="Bitbank/Bitbank.csproj" />
