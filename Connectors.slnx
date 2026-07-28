@@ -231,6 +231,7 @@
 	<Project Path="CoinSwitch/CoinSwitch.csproj" />
 	<Project Path="CoinCatch/CoinCatch.csproj" />
 	<Project Path="Coinmetro/Coinmetro.csproj" />
+	<Project Path="LCX/LCX.csproj" />
 	<Project Path="CoinSpot/CoinSpot.csproj" />
 	<Project Path="Coinstore/Coinstore.csproj" />
     <Project Path="GmoCoin/GmoCoin.csproj" />
