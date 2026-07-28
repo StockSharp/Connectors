@@ -1,0 +1,32 @@
+namespace StockSharp.TraderMade.Native;
+
+sealed class TraderMadeInstrument
+{
+	public string Symbol { get; init; }
+	public string BaseCurrency { get; init; }
+	public string QuoteCurrency { get; init; }
+	public string Name { get; init; }
+	public SecurityTypes SecurityType { get; init; }
+}
+
+sealed class TraderMadeBar
+{
+	public DateTime Time { get; init; }
+	public decimal Open { get; init; }
+	public decimal High { get; init; }
+	public decimal Low { get; init; }
+	public decimal Close { get; init; }
+}
+
+sealed class TraderMadeQuote
+{
+	public string Symbol { get; init; }
+	public DateTime Time { get; init; }
+	public decimal? Bid { get; init; }
+	public decimal? Ask { get; init; }
+	public decimal? Mid { get; init; }
+	public decimal? BidVolume { get; init; }
+	public decimal? AskVolume { get; init; }
+	public QuoteChange[] Bids { get; init; } = [];
+	public QuoteChange[] Asks { get; init; } = [];
+}
