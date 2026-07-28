@@ -245,6 +245,7 @@
 	<Project Path="Velora/Velora.csproj" />
 	<Project Path="DeepBook/DeepBook.csproj" />
 	<Project Path="Velodrome/Velodrome.csproj" />
+	<Project Path="Pendle/Pendle.csproj" />
 	<Project Path="CoinSpot/CoinSpot.csproj" />
 	<Project Path="Coinstore/Coinstore.csproj" />
     <Project Path="GmoCoin/GmoCoin.csproj" />
