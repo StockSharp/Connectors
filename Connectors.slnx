@@ -233,6 +233,7 @@
 	<Project Path="Coinmetro/Coinmetro.csproj" />
 	<Project Path="LCX/LCX.csproj" />
 	<Project Path="WazirX/WazirX.csproj" />
+	<Project Path="DeltaExchangeIndia/DeltaExchangeIndia.csproj" />
 	<Project Path="CoinSpot/CoinSpot.csproj" />
 	<Project Path="Coinstore/Coinstore.csproj" />
     <Project Path="GmoCoin/GmoCoin.csproj" />

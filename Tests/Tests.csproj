@@ -53,6 +53,7 @@
 	<ProjectReference Include="..\Coinmetro\Coinmetro.csproj" />
 	<ProjectReference Include="..\LCX\LCX.csproj" />
 	<ProjectReference Include="..\WazirX\WazirX.csproj" />
+	<ProjectReference Include="..\DeltaExchangeIndia\DeltaExchangeIndia.csproj" />
 	<ProjectReference Include="..\CoinSpot\CoinSpot.csproj" />
     <ProjectReference Include="..\CoinsPh\CoinsPh.csproj" />
 	<ProjectReference Include="..\Coinstore\Coinstore.csproj" />
