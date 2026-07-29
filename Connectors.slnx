@@ -18,6 +18,7 @@
     <Project Path="Bibox/Bibox.csproj" />
     <Project Path="Bigul/Bigul.csproj" />
     <Project Path="Binance/Binance.csproj" />
+    <Project Path="BinanceHistory/BinanceHistory.csproj" />
     <Project Path="BingX/BingX.csproj" />
     <Project Path="Bitalong/Bitalong.csproj" />
 	<Project Path="BigOne/BigOne.csproj" />
