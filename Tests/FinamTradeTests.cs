@@ -12,18 +12,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Newtonsoft.Json;
 
-using StockSharp.Finam;
-using StockSharp.Finam.Native;
-using StockSharp.Finam.Native.Model;
+using StockSharp.FinamTrade;
+using StockSharp.FinamTrade.Native;
+using StockSharp.FinamTrade.Native.Model;
 using StockSharp.Messages;
 
 [TestClass]
-public class FinamTests : BaseTestClass
+public class FinamTradeTests : BaseTestClass
 {
 	[TestMethod]
 	public void SettingsRoundTripKeepsConnectionOptions()
 	{
-		var source = new FinamMessageAdapter(new IncrementalIdGenerator())
+		var source = new FinamTradeMessageAdapter(new IncrementalIdGenerator())
 		{
 			Token = "secret-token".Secure(),
 			AccountId = "ACC-42",
@@ -36,7 +36,7 @@ public class FinamTests : BaseTestClass
 		var storage = new SettingsStorage();
 		source.Save(storage);
 
-		var target = new FinamMessageAdapter(new IncrementalIdGenerator());
+		var target = new FinamTradeMessageAdapter(new IncrementalIdGenerator());
 		target.Load(storage);
 
 		AreEqual("secret-token", target.Token.UnSecure());

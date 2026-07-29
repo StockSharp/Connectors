@@ -1,13 +1,13 @@
-namespace StockSharp.Finam;
+namespace StockSharp.FinamTrade;
 
 /// <summary>
 /// The message adapter for Finam Trade API.
 /// </summary>
 [MediaIcon(Media.MediaNames.finam)]
-[Doc("topics/api/connectors/russia/finam.html")]
+[Doc("topics/api/connectors/russia/finam_trade.html")]
 [Display(
 	ResourceType = typeof(LocalizedStrings),
-	Name = LocalizedStrings.FinamKey,
+	Name = LocalizedStrings.FinamTradeKey,
 	Description = LocalizedStrings.StockConnectorKey,
 	GroupName = LocalizedStrings.RussiaKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Russia |
@@ -22,8 +22,8 @@ namespace StockSharp.Finam;
 	MessageAdapterCategories.Options |
 	MessageAdapterCategories.FX |
 	MessageAdapterCategories.Free)]
-[OrderCondition(typeof(FinamOrderCondition))]
-public partial class FinamMessageAdapter : MessageAdapter, ITokenAdapter
+[OrderCondition(typeof(FinamTradeOrderCondition))]
+public partial class FinamTradeMessageAdapter : MessageAdapter, ITokenAdapter
 {
 	private const string _defaultRestAddress = "https://api.finam.ru/";
 	private const string _defaultWebSocketAddress = "wss://api.finam.ru/ws";

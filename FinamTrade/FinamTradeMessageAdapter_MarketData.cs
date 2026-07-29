@@ -1,6 +1,6 @@
-namespace StockSharp.Finam;
+namespace StockSharp.FinamTrade;
 
-public partial class FinamMessageAdapter
+public partial class FinamTradeMessageAdapter
 {
 	/// <inheritdoc />
 	protected override async ValueTask SecurityLookupAsync(

@@ -1,13 +1,13 @@
-namespace StockSharp.Finam;
+namespace StockSharp.FinamTrade;
 
-public partial class FinamMessageAdapter
+public partial class FinamTradeMessageAdapter
 {
 	/// <inheritdoc />
 	protected override async ValueTask RegisterOrderAsync(
 		OrderRegisterMessage message, CancellationToken cancellationToken)
 	{
 		var accountId = GetRequiredAccountId(message.PortfolioName);
-		var condition = message.Condition as FinamOrderCondition;
+		var condition = message.Condition as FinamTradeOrderCondition;
 		var orderType = message.OrderType ?? OrderTypes.Limit;
 		if (orderType is not (OrderTypes.Market or OrderTypes.Limit or
 			OrderTypes.Conditional))
@@ -356,7 +356,7 @@ public partial class FinamMessageAdapter
 
 		var condition = order.Type is "ORDER_TYPE_STOP" or
 			"ORDER_TYPE_STOP_LIMIT"
-				? new FinamOrderCondition
+				? new FinamTradeOrderCondition
 				{
 					StopPrice = order.StopPrice.ToDecimal(),
 					StopCondition = order.StopCondition

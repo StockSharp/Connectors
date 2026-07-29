@@ -1,6 +1,6 @@
-namespace StockSharp.Finam;
+namespace StockSharp.FinamTrade;
 
-public partial class FinamMessageAdapter
+public partial class FinamTradeMessageAdapter
 {
 	private sealed class MarketSubscription
 	{
@@ -30,10 +30,10 @@ public partial class FinamMessageAdapter
 	private OrderStatusMessage _orderStatusFilter;
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="FinamMessageAdapter"/> class.
+	/// Initializes a new instance of the <see cref="FinamTradeMessageAdapter"/> class.
 	/// </summary>
 	/// <param name="transactionIdGenerator">Transaction identifier generator.</param>
-	public FinamMessageAdapter(IdGenerator transactionIdGenerator)
+	public FinamTradeMessageAdapter(IdGenerator transactionIdGenerator)
 		: base(transactionIdGenerator)
 	{
 		HeartbeatInterval = TimeSpan.FromSeconds(1);

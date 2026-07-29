@@ -75,7 +75,7 @@
     <Project Path="Exegy/Exegy.csproj" />
     <Project Path="Exmo/Exmo.csproj" />
     <Project Path="FactSet/FactSet.csproj" />
-	<Project Path="Finam/Finam.csproj" />
+	<Project Path="FinamTrade/FinamTrade.csproj" />
     <Project Path="FinancialModelingPrep/FinancialModelingPrep.csproj" />
     <Project Path="Finnhub/Finnhub.csproj" />
     <Project Path="FivePaisa/FivePaisa.csproj" />

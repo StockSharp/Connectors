@@ -1,4 +1,4 @@
-namespace StockSharp.Finam.Native.Model;
+namespace StockSharp.FinamTrade.Native.Model;
 
 sealed class FinamAuthRequest
 {

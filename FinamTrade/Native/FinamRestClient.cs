@@ -1,4 +1,4 @@
-namespace StockSharp.Finam.Native;
+namespace StockSharp.FinamTrade.Native;
 
 sealed class FinamRestClient : BaseLogReceiver
 {

@@ -1,4 +1,4 @@
-namespace StockSharp.Finam;
+namespace StockSharp.FinamTrade;
 
 /// <summary>
 /// Native Finam order time-in-force values.

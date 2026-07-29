@@ -1,14 +1,14 @@
-namespace StockSharp.Finam;
+namespace StockSharp.FinamTrade;
 
 /// <summary>
 /// Finam Trade API order parameters.
 /// </summary>
 [Display(
 	ResourceType = typeof(LocalizedStrings),
-	Name = LocalizedStrings.FinamKey)]
+	Name = LocalizedStrings.FinamTradeKey)]
 [Serializable]
 [DataContract]
-public class FinamOrderCondition : OrderCondition
+public class FinamTradeOrderCondition : OrderCondition
 {
 	/// <summary>
 	/// Native time-in-force value.

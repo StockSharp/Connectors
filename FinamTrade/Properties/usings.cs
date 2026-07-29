@@ -25,8 +25,8 @@ global using global::Newtonsoft.Json;
 global using global::Newtonsoft.Json.Linq;
 global using global::Newtonsoft.Json.Serialization;
 
-global using global::StockSharp.Finam.Native;
-global using global::StockSharp.Finam.Native.Model;
+global using global::StockSharp.FinamTrade.Native;
+global using global::StockSharp.FinamTrade.Native.Model;
 global using global::StockSharp.Localization;
 global using global::StockSharp.Messages;
 
