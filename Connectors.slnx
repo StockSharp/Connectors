@@ -39,6 +39,7 @@
     <Project Path="Breeze/Breeze.csproj" />
     <Project Path="Btce/Btce.csproj" />
     <Project Path="ByBit/ByBit.csproj" />
+    <Project Path="ByBitHistory/ByBitHistory.csproj" />
     <Project Path="CapitalCom/CapitalCom.csproj" />
     <Project Path="CapitalFutures/CapitalFutures.csproj" />
     <Project Path="CboeDataShop/CboeDataShop.csproj" />
