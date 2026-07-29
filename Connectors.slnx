@@ -326,6 +326,7 @@
     <Project Path="Tradernet/Tradernet.csproj" />
     <Project Path="Tradejini/Tradejini.csproj" />
     <Project Path="Trading212/Trading212.csproj" />
+    <Project Path="Transaq/Transaq.csproj" />
     <Project Path="TradingTechnologies/TradingTechnologies.csproj" />
     <Project Path="Tradovate/Tradovate.csproj" />
     <Project Path="TradeZero/TradeZero.csproj" />
