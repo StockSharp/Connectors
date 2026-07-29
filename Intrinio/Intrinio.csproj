@@ -3,21 +3,4 @@
   <PropertyGroup>
     <ProjectGuid>{91865EB2-8258-49E3-9101-9D7EC21D49AF}</ProjectGuid>
   </PropertyGroup>
-  <ItemGroup>
-    <!-- The official packages expose sample/test assemblies as runtime assets.
-         Restore their dependency graph but reference only the two production SDK binaries. -->
-    <PackageReference Include="IntrinioRealTimeClient" Version="$(IntrinioRealtimeVer)"
-      GeneratePathProperty="true" ExcludeAssets="compile;runtime" />
-    <PackageReference Include="Intrinio.SDK" Version="$(IntrinioSdkVer)"
-      GeneratePathProperty="true" ExcludeAssets="compile;runtime" />
-    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftVer)" />
-    <Reference Include="Intrinio.Realtime">
-      <HintPath>$(PkgIntrinioRealTimeClient)\lib\net9.0\Intrinio.Realtime.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="Intrinio.SDK">
-      <HintPath>$(PkgIntrinio_SDK)\lib\net8.0\Intrinio.SDK.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-  </ItemGroup>
 </Project>

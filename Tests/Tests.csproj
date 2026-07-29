@@ -123,6 +123,7 @@
     <ProjectReference Include="..\IndependentReserve\IndependentReserve.csproj" />
     <ProjectReference Include="..\Indodax\Indodax.csproj" />
     <ProjectReference Include="..\Injective\Injective.csproj" />
+    <ProjectReference Include="..\Intrinio\Intrinio.csproj" />
     <ProjectReference Include="..\Jainam\Jainam.csproj" />
     <ProjectReference Include="..\Jupiter\Jupiter.csproj" />
     <ProjectReference Include="..\Kalshi\Kalshi.csproj" />

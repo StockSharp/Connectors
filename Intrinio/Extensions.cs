@@ -64,26 +64,6 @@ readonly record struct IntrinioOptionKey(
 
 static class Extensions
 {
-	public static EquityProvider ToSdk(this IntrinioEquityProviders provider)
-		=> provider switch
-		{
-			IntrinioEquityProviders.Realtime => EquityProvider.REALTIME,
-			IntrinioEquityProviders.DelayedSip => EquityProvider.DELAYED_SIP,
-			IntrinioEquityProviders.NasdaqBasic => EquityProvider.NASDAQ_BASIC,
-			IntrinioEquityProviders.CboeOne => EquityProvider.CBOE_ONE,
-			IntrinioEquityProviders.Iex => EquityProvider.IEX,
-			IntrinioEquityProviders.EquitiesEdge => EquityProvider.EQUITIES_EDGE,
-			_ => throw new ArgumentOutOfRangeException(nameof(provider), provider, null),
-		};
-
-	public static OptionProvider ToSdk(this IntrinioOptionProviders provider)
-		=> provider switch
-		{
-			IntrinioOptionProviders.Opra => OptionProvider.OPRA,
-			IntrinioOptionProviders.OptionsEdge => OptionProvider.OPTIONS_EDGE,
-			_ => throw new ArgumentOutOfRangeException(nameof(provider), provider, null),
-		};
-
 	public static string ToRealtimeSource(this IntrinioEquityProviders provider)
 		=> provider switch
 		{

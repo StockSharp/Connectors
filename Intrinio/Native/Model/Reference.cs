@@ -2,102 +2,102 @@ namespace StockSharp.Intrinio.Native.Model;
 
 class IntrinioSecuritySummary
 {
-	[JsonProperty("id")]
+	[JsonPropertyName("id")]
 	public string Id { get; set; }
 
-	[JsonProperty("company_id")]
+	[JsonPropertyName("company_id")]
 	public string CompanyId { get; set; }
 
-	[JsonProperty("exchange")]
+	[JsonPropertyName("exchange")]
 	public string Exchange { get; set; }
 
-	[JsonProperty("exchange_mic")]
+	[JsonPropertyName("exchange_mic")]
 	public string ExchangeMic { get; set; }
 
-	[JsonProperty("name")]
+	[JsonPropertyName("name")]
 	public string Name { get; set; }
 
-	[JsonProperty("code")]
+	[JsonPropertyName("code")]
 	public string Code { get; set; }
 
-	[JsonProperty("currency")]
+	[JsonPropertyName("currency")]
 	public string Currency { get; set; }
 
-	[JsonProperty("ticker")]
+	[JsonPropertyName("ticker")]
 	public string Ticker { get; set; }
 
-	[JsonProperty("composite_ticker")]
+	[JsonPropertyName("composite_ticker")]
 	public string CompositeTicker { get; set; }
 
-	[JsonProperty("figi")]
+	[JsonPropertyName("figi")]
 	public string Figi { get; set; }
 
-	[JsonProperty("composite_figi")]
+	[JsonPropertyName("composite_figi")]
 	public string CompositeFigi { get; set; }
 
-	[JsonProperty("share_class_figi")]
+	[JsonPropertyName("share_class_figi")]
 	public string ShareClassFigi { get; set; }
 
-	[JsonProperty("primary_listing")]
+	[JsonPropertyName("primary_listing")]
 	public bool? IsPrimaryListing { get; set; }
 }
 
 sealed class IntrinioSecurity : IntrinioSecuritySummary
 {
-	[JsonProperty("type")]
+	[JsonPropertyName("type")]
 	public string Type { get; set; }
 
-	[JsonProperty("active")]
+	[JsonPropertyName("active")]
 	public bool? IsActive { get; set; }
 
-	[JsonProperty("etf")]
+	[JsonPropertyName("etf")]
 	public bool? IsEtf { get; set; }
 
-	[JsonProperty("delisted")]
+	[JsonPropertyName("delisted")]
 	public bool? IsDelisted { get; set; }
 }
 
 sealed class IntrinioSecuritiesResponse
 {
-	[JsonProperty("securities")]
+	[JsonPropertyName("securities")]
 	public IntrinioSecuritySummary[] Securities { get; set; }
 
-	[JsonProperty("next_page")]
+	[JsonPropertyName("next_page")]
 	public string NextPage { get; set; }
 }
 
 sealed class IntrinioSecuritySearchResponse
 {
-	[JsonProperty("securities")]
+	[JsonPropertyName("securities")]
 	public IntrinioSecuritySummary[] Securities { get; set; }
 }
 
 sealed class IntrinioOption
 {
-	[JsonProperty("id")]
+	[JsonPropertyName("id")]
 	public string Id { get; set; }
 
-	[JsonProperty("code")]
+	[JsonPropertyName("code")]
 	public string Code { get; set; }
 
-	[JsonProperty("ticker")]
+	[JsonPropertyName("ticker")]
 	public string Ticker { get; set; }
 
-	[JsonProperty("expiration")]
+	[JsonPropertyName("expiration")]
 	public string Expiration { get; set; }
 
-	[JsonProperty("strike")]
+	[JsonPropertyName("strike")]
 	public decimal? Strike { get; set; }
 
-	[JsonProperty("type")]
+	[JsonPropertyName("type")]
 	public string Type { get; set; }
 }
 
 sealed class IntrinioOptionsResponse
 {
-	[JsonProperty("options")]
+	[JsonPropertyName("options")]
 	public IntrinioOption[] Options { get; set; }
 
-	[JsonProperty("next_page")]
+	[JsonPropertyName("next_page")]
 	public string NextPage { get; set; }
 }

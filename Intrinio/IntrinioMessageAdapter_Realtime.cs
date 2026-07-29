@@ -1,5 +1,7 @@
 namespace StockSharp.Intrinio;
 
+using RealtimeOptionTrade = Native.IntrinioOptionTrade;
+
 sealed class IntrinioOptionRefreshSnapshot
 {
 	public decimal? OpenInterest { get; init; }
@@ -15,24 +17,24 @@ public partial class IntrinioMessageAdapter
 		_optionRefreshes = new(StringComparer.OrdinalIgnoreCase);
 
 	private ValueTask OnRealtimeEvent(IntrinioStreamSubscription subscription,
-		IntrinioRealtimeEvent update, CancellationToken cancellationToken)
+		IntrinioDecodedEvent update, CancellationToken cancellationToken)
 		=> update.Type switch
 		{
-			IntrinioRealtimeEventTypes.EquityTrade =>
+			IntrinioDecodedEventTypes.EquityTrade =>
 				OnEquityTrade(subscription, update.EquityTrade, cancellationToken),
-			IntrinioRealtimeEventTypes.EquityQuote =>
+			IntrinioDecodedEventTypes.EquityQuote =>
 				OnEquityQuote(subscription, update.EquityQuote, cancellationToken),
-			IntrinioRealtimeEventTypes.OptionTrade =>
+			IntrinioDecodedEventTypes.OptionTrade =>
 				OnOptionTrade(subscription, update.OptionTrade, cancellationToken),
-			IntrinioRealtimeEventTypes.OptionQuote =>
+			IntrinioDecodedEventTypes.OptionQuote =>
 				OnOptionQuote(subscription, update.OptionQuote, cancellationToken),
-			IntrinioRealtimeEventTypes.OptionRefresh =>
+			IntrinioDecodedEventTypes.OptionRefresh =>
 				OnOptionRefresh(update.OptionRefresh),
 			_ => throw new ArgumentOutOfRangeException(nameof(update.Type), update.Type, null),
 		};
 
 	private ValueTask OnEquityTrade(IntrinioStreamSubscription subscription,
-		EquityTrade trade, CancellationToken cancellationToken)
+		IntrinioEquityTrade trade, CancellationToken cancellationToken)
 	{
 		var price = RequireDecimal(trade.Price, "equity trade price");
 		var time = trade.Timestamp.ToUtc();
@@ -64,7 +66,7 @@ public partial class IntrinioMessageAdapter
 	}
 
 	private ValueTask OnEquityQuote(IntrinioStreamSubscription subscription,
-		EquityQuote quote, CancellationToken cancellationToken)
+		IntrinioEquityQuote quote, CancellationToken cancellationToken)
 	{
 		if (subscription.DataType != DataType.Level1)
 			return default;
@@ -76,14 +78,14 @@ public partial class IntrinioMessageAdapter
 			SecurityId = subscription.SecurityId,
 			ServerTime = time,
 		};
-		if (quote.Type == EquityQuoteType.Bid)
+		if (quote.Type == IntrinioEquityQuoteTypes.Bid)
 		{
 			message
 				.TryAdd(Level1Fields.BestBidPrice, price)
 				.TryAdd(Level1Fields.BestBidVolume, (decimal)quote.Size)
 				.TryAdd(Level1Fields.BestBidTime, time);
 		}
-		else if (quote.Type == EquityQuoteType.Ask)
+		else if (quote.Type == IntrinioEquityQuoteTypes.Ask)
 		{
 			message
 				.TryAdd(Level1Fields.BestAskPrice, price)
@@ -96,7 +98,7 @@ public partial class IntrinioMessageAdapter
 	}
 
 	private ValueTask OnOptionTrade(IntrinioStreamSubscription subscription,
-		OptionTrade trade, CancellationToken cancellationToken)
+		RealtimeOptionTrade trade, CancellationToken cancellationToken)
 	{
 		var price = trade.Price.ToSafeDecimal();
 		if (price == null)
@@ -137,7 +139,7 @@ public partial class IntrinioMessageAdapter
 	}
 
 	private ValueTask OnOptionQuote(IntrinioStreamSubscription subscription,
-		OptionQuote quote, CancellationToken cancellationToken)
+		IntrinioOptionQuote quote, CancellationToken cancellationToken)
 	{
 		if (subscription.DataType != DataType.Level1)
 			return default;
@@ -167,7 +169,7 @@ public partial class IntrinioMessageAdapter
 		return SendOutMessageAsync(message, cancellationToken);
 	}
 
-	private ValueTask OnOptionRefresh(OptionRefresh refresh)
+	private ValueTask OnOptionRefresh(IntrinioOptionRefresh refresh)
 	{
 		_optionRefreshes[refresh.Contract] = new()
 		{

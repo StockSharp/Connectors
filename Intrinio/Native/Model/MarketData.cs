@@ -2,414 +2,414 @@ namespace StockSharp.Intrinio.Native.Model;
 
 sealed class IntrinioRealtimeStockPrice
 {
-	[JsonProperty("last_price")]
+	[JsonPropertyName("last_price")]
 	public decimal? LastPrice { get; set; }
 
-	[JsonProperty("last_time")]
+	[JsonPropertyName("last_time")]
 	public DateTime? LastTime { get; set; }
 
-	[JsonProperty("last_size")]
+	[JsonPropertyName("last_size")]
 	public decimal? LastSize { get; set; }
 
-	[JsonProperty("bid_price")]
+	[JsonPropertyName("bid_price")]
 	public decimal? BidPrice { get; set; }
 
-	[JsonProperty("bid_size")]
+	[JsonPropertyName("bid_size")]
 	public decimal? BidSize { get; set; }
 
-	[JsonProperty("bid_time")]
+	[JsonPropertyName("bid_time")]
 	public DateTime? BidTime { get; set; }
 
-	[JsonProperty("ask_price")]
+	[JsonPropertyName("ask_price")]
 	public decimal? AskPrice { get; set; }
 
-	[JsonProperty("ask_size")]
+	[JsonPropertyName("ask_size")]
 	public decimal? AskSize { get; set; }
 
-	[JsonProperty("ask_time")]
+	[JsonPropertyName("ask_time")]
 	public DateTime? AskTime { get; set; }
 
-	[JsonProperty("open_price")]
+	[JsonPropertyName("open_price")]
 	public decimal? OpenPrice { get; set; }
 
-	[JsonProperty("close_price")]
+	[JsonPropertyName("close_price")]
 	public decimal? ClosePrice { get; set; }
 
-	[JsonProperty("high_price")]
+	[JsonPropertyName("high_price")]
 	public decimal? HighPrice { get; set; }
 
-	[JsonProperty("low_price")]
+	[JsonPropertyName("low_price")]
 	public decimal? LowPrice { get; set; }
 
-	[JsonProperty("exchange_volume")]
+	[JsonPropertyName("exchange_volume")]
 	public decimal? ExchangeVolume { get; set; }
 
-	[JsonProperty("market_volume")]
+	[JsonPropertyName("market_volume")]
 	public decimal? MarketVolume { get; set; }
 
-	[JsonProperty("updated_on")]
+	[JsonPropertyName("updated_on")]
 	public DateTime? UpdatedOn { get; set; }
 
-	[JsonProperty("eod_close_price")]
+	[JsonPropertyName("eod_close_price")]
 	public decimal? EodClosePrice { get; set; }
 
-	[JsonProperty("source")]
+	[JsonPropertyName("source")]
 	public string Source { get; set; }
 }
 
 sealed class IntrinioSecurityQuote
 {
-	[JsonProperty("last")]
+	[JsonPropertyName("last")]
 	public decimal? Last { get; set; }
 
-	[JsonProperty("last_time")]
+	[JsonPropertyName("last_time")]
 	public DateTime? LastTime { get; set; }
 
-	[JsonProperty("open")]
+	[JsonPropertyName("open")]
 	public decimal? Open { get; set; }
 
-	[JsonProperty("high")]
+	[JsonPropertyName("high")]
 	public decimal? High { get; set; }
 
-	[JsonProperty("low")]
+	[JsonPropertyName("low")]
 	public decimal? Low { get; set; }
 
-	[JsonProperty("exchange_volume")]
+	[JsonPropertyName("exchange_volume")]
 	public decimal? ExchangeVolume { get; set; }
 
-	[JsonProperty("market_volume")]
+	[JsonPropertyName("market_volume")]
 	public decimal? MarketVolume { get; set; }
 
-	[JsonProperty("eod_fifty_two_week_high")]
+	[JsonPropertyName("eod_fifty_two_week_high")]
 	public decimal? FiftyTwoWeekHigh { get; set; }
 
-	[JsonProperty("eod_fifty_two_week_low")]
+	[JsonPropertyName("eod_fifty_two_week_low")]
 	public decimal? FiftyTwoWeekLow { get; set; }
 
-	[JsonProperty("pricetoearnings")]
+	[JsonPropertyName("pricetoearnings")]
 	public decimal? PriceEarnings { get; set; }
 
-	[JsonProperty("previous_close")]
+	[JsonPropertyName("previous_close")]
 	public decimal? PreviousClose { get; set; }
 
-	[JsonProperty("change_percent")]
+	[JsonPropertyName("change_percent")]
 	public decimal? ChangePercent { get; set; }
 }
 
 sealed class IntrinioStockPricesResponse
 {
-	[JsonProperty("stock_prices")]
+	[JsonPropertyName("stock_prices")]
 	public IntrinioStockPrice[] StockPrices { get; set; }
 
-	[JsonProperty("next_page")]
+	[JsonPropertyName("next_page")]
 	public string NextPage { get; set; }
 }
 
 sealed class IntrinioStockPrice
 {
-	[JsonProperty("date")]
+	[JsonPropertyName("date")]
 	public DateTime? Date { get; set; }
 
-	[JsonProperty("intraperiod")]
+	[JsonPropertyName("intraperiod")]
 	public bool? IsIntraperiod { get; set; }
 
-	[JsonProperty("open")]
+	[JsonPropertyName("open")]
 	public decimal? Open { get; set; }
 
-	[JsonProperty("high")]
+	[JsonPropertyName("high")]
 	public decimal? High { get; set; }
 
-	[JsonProperty("low")]
+	[JsonPropertyName("low")]
 	public decimal? Low { get; set; }
 
-	[JsonProperty("close")]
+	[JsonPropertyName("close")]
 	public decimal? Close { get; set; }
 
-	[JsonProperty("volume")]
+	[JsonPropertyName("volume")]
 	public decimal? Volume { get; set; }
 
-	[JsonProperty("adj_open")]
+	[JsonPropertyName("adj_open")]
 	public decimal? AdjustedOpen { get; set; }
 
-	[JsonProperty("adj_high")]
+	[JsonPropertyName("adj_high")]
 	public decimal? AdjustedHigh { get; set; }
 
-	[JsonProperty("adj_low")]
+	[JsonPropertyName("adj_low")]
 	public decimal? AdjustedLow { get; set; }
 
-	[JsonProperty("adj_close")]
+	[JsonPropertyName("adj_close")]
 	public decimal? AdjustedClose { get; set; }
 
-	[JsonProperty("adj_volume")]
+	[JsonPropertyName("adj_volume")]
 	public decimal? AdjustedVolume { get; set; }
 
-	[JsonProperty("split_ratio")]
+	[JsonPropertyName("split_ratio")]
 	public decimal? SplitRatio { get; set; }
 
-	[JsonProperty("dividend")]
+	[JsonPropertyName("dividend")]
 	public decimal? Dividend { get; set; }
 }
 
 sealed class IntrinioSecurityIntervalsResponse
 {
-	[JsonProperty("intervals")]
+	[JsonPropertyName("intervals")]
 	public IntrinioStockInterval[] Intervals { get; set; }
 
-	[JsonProperty("next_page")]
+	[JsonPropertyName("next_page")]
 	public string NextPage { get; set; }
 }
 
 sealed class IntrinioStockInterval
 {
-	[JsonProperty("time")]
+	[JsonPropertyName("time")]
 	public DateTime? Time { get; set; }
 
-	[JsonProperty("open")]
+	[JsonPropertyName("open")]
 	public decimal? Open { get; set; }
 
-	[JsonProperty("high")]
+	[JsonPropertyName("high")]
 	public decimal? High { get; set; }
 
-	[JsonProperty("low")]
+	[JsonPropertyName("low")]
 	public decimal? Low { get; set; }
 
-	[JsonProperty("close")]
+	[JsonPropertyName("close")]
 	public decimal? Close { get; set; }
 
-	[JsonProperty("volume")]
+	[JsonPropertyName("volume")]
 	public decimal? Volume { get; set; }
 
-	[JsonProperty("trade_count")]
+	[JsonPropertyName("trade_count")]
 	public decimal? TradeCount { get; set; }
 }
 
 sealed class IntrinioSecurityTradesResponse
 {
-	[JsonProperty("next_page")]
+	[JsonPropertyName("next_page")]
 	public string NextPage { get; set; }
 
-	[JsonProperty("trades")]
+	[JsonPropertyName("trades")]
 	public IntrinioSecurityTrade[] Trades { get; set; }
 }
 
 sealed class IntrinioSecurityTrade
 {
-	[JsonProperty("symbol")]
+	[JsonPropertyName("symbol")]
 	public string Symbol { get; set; }
 
-	[JsonProperty("timestamp")]
+	[JsonPropertyName("timestamp")]
 	public DateTime? Timestamp { get; set; }
 
-	[JsonProperty("price")]
+	[JsonPropertyName("price")]
 	public decimal? Price { get; set; }
 
-	[JsonProperty("size")]
+	[JsonPropertyName("size")]
 	public decimal? Size { get; set; }
 
-	[JsonProperty("total_volume")]
+	[JsonPropertyName("total_volume")]
 	public decimal? TotalVolume { get; set; }
 
-	[JsonProperty("market_center")]
+	[JsonPropertyName("market_center")]
 	public string MarketCenter { get; set; }
 
-	[JsonProperty("condition")]
+	[JsonPropertyName("condition")]
 	public string Condition { get; set; }
 
-	[JsonProperty("is_darkpool")]
+	[JsonPropertyName("is_darkpool")]
 	public bool? IsDarkpool { get; set; }
 }
 
 sealed class IntrinioOptionRealtimeResponse
 {
-	[JsonProperty("price")]
+	[JsonPropertyName("price")]
 	public IntrinioOptionRealtimePrice Price { get; set; }
 
-	[JsonProperty("stats")]
+	[JsonPropertyName("stats")]
 	public IntrinioOptionRealtimeStats Stats { get; set; }
 
-	[JsonProperty("extended_price")]
+	[JsonPropertyName("extended_price")]
 	public IntrinioOptionExtendedPrice ExtendedPrice { get; set; }
 }
 
 sealed class IntrinioOptionRealtimePrice
 {
-	[JsonProperty("last")]
+	[JsonPropertyName("last")]
 	public decimal? Last { get; set; }
 
-	[JsonProperty("last_size")]
+	[JsonPropertyName("last_size")]
 	public int? LastSize { get; set; }
 
-	[JsonProperty("last_timestamp")]
+	[JsonPropertyName("last_timestamp")]
 	public DateTime? LastTimestamp { get; set; }
 
-	[JsonProperty("volume")]
+	[JsonPropertyName("volume")]
 	public int? Volume { get; set; }
 
-	[JsonProperty("ask")]
+	[JsonPropertyName("ask")]
 	public decimal? Ask { get; set; }
 
-	[JsonProperty("ask_size")]
+	[JsonPropertyName("ask_size")]
 	public int? AskSize { get; set; }
 
-	[JsonProperty("ask_timestamp")]
+	[JsonPropertyName("ask_timestamp")]
 	public DateTime? AskTimestamp { get; set; }
 
-	[JsonProperty("bid")]
+	[JsonPropertyName("bid")]
 	public decimal? Bid { get; set; }
 
-	[JsonProperty("bid_size")]
+	[JsonPropertyName("bid_size")]
 	public int? BidSize { get; set; }
 
-	[JsonProperty("bid_timestamp")]
+	[JsonPropertyName("bid_timestamp")]
 	public DateTime? BidTimestamp { get; set; }
 
-	[JsonProperty("open_interest")]
+	[JsonPropertyName("open_interest")]
 	public int? OpenInterest { get; set; }
 }
 
 sealed class IntrinioOptionRealtimeStats
 {
-	[JsonProperty("implied_volatility")]
+	[JsonPropertyName("implied_volatility")]
 	public decimal? ImpliedVolatility { get; set; }
 
-	[JsonProperty("delta")]
+	[JsonPropertyName("delta")]
 	public decimal? Delta { get; set; }
 
-	[JsonProperty("gamma")]
+	[JsonPropertyName("gamma")]
 	public decimal? Gamma { get; set; }
 
-	[JsonProperty("theta")]
+	[JsonPropertyName("theta")]
 	public decimal? Theta { get; set; }
 
-	[JsonProperty("vega")]
+	[JsonPropertyName("vega")]
 	public decimal? Vega { get; set; }
 
-	[JsonProperty("underlying_price")]
+	[JsonPropertyName("underlying_price")]
 	public decimal? UnderlyingPrice { get; set; }
 }
 
 sealed class IntrinioOptionExtendedPrice
 {
-	[JsonProperty("trade_open")]
+	[JsonPropertyName("trade_open")]
 	public decimal? TradeOpen { get; set; }
 
-	[JsonProperty("trade_high")]
+	[JsonPropertyName("trade_high")]
 	public decimal? TradeHigh { get; set; }
 
-	[JsonProperty("trade_low")]
+	[JsonPropertyName("trade_low")]
 	public decimal? TradeLow { get; set; }
 
-	[JsonProperty("trade_close")]
+	[JsonPropertyName("trade_close")]
 	public decimal? TradeClose { get; set; }
 
-	[JsonProperty("mark")]
+	[JsonPropertyName("mark")]
 	public decimal? Mark { get; set; }
 }
 
 sealed class IntrinioOptionPricesEodResponse
 {
-	[JsonProperty("prices")]
+	[JsonPropertyName("prices")]
 	public IntrinioOptionPriceEod[] Prices { get; set; }
 
-	[JsonProperty("next_page")]
+	[JsonPropertyName("next_page")]
 	public string NextPage { get; set; }
 }
 
 sealed class IntrinioOptionPriceEod
 {
-	[JsonProperty("date")]
+	[JsonPropertyName("date")]
 	public string Date { get; set; }
 
-	[JsonProperty("open")]
+	[JsonPropertyName("open")]
 	public decimal? Open { get; set; }
 
-	[JsonProperty("high")]
+	[JsonPropertyName("high")]
 	public decimal? High { get; set; }
 
-	[JsonProperty("low")]
+	[JsonPropertyName("low")]
 	public decimal? Low { get; set; }
 
-	[JsonProperty("close")]
+	[JsonPropertyName("close")]
 	public decimal? Close { get; set; }
 
-	[JsonProperty("volume")]
+	[JsonPropertyName("volume")]
 	public int? Volume { get; set; }
 
-	[JsonProperty("open_interest")]
+	[JsonPropertyName("open_interest")]
 	public int? OpenInterest { get; set; }
 }
 
 sealed class IntrinioOptionIntervalsResponse
 {
-	[JsonProperty("intervals")]
+	[JsonPropertyName("intervals")]
 	public IntrinioOptionInterval[] Intervals { get; set; }
 }
 
 sealed class IntrinioOptionInterval
 {
-	[JsonProperty("open_time")]
+	[JsonPropertyName("open_time")]
 	public DateTime? OpenTime { get; set; }
 
-	[JsonProperty("close_time")]
+	[JsonPropertyName("close_time")]
 	public DateTime? CloseTime { get; set; }
 
-	[JsonProperty("open")]
+	[JsonPropertyName("open")]
 	public decimal? Open { get; set; }
 
-	[JsonProperty("high")]
+	[JsonPropertyName("high")]
 	public decimal? High { get; set; }
 
-	[JsonProperty("low")]
+	[JsonPropertyName("low")]
 	public decimal? Low { get; set; }
 
-	[JsonProperty("close")]
+	[JsonPropertyName("close")]
 	public decimal? Close { get; set; }
 
-	[JsonProperty("volume")]
+	[JsonPropertyName("volume")]
 	public decimal? Volume { get; set; }
 
-	[JsonProperty("trade_count")]
+	[JsonPropertyName("trade_count")]
 	public decimal? TradeCount { get; set; }
 }
 
 sealed class IntrinioOptionTradesResponse
 {
-	[JsonProperty("next_page")]
+	[JsonPropertyName("next_page")]
 	public string NextPage { get; set; }
 
-	[JsonProperty("trades")]
+	[JsonPropertyName("trades")]
 	public IntrinioOptionTrade[] Trades { get; set; }
 }
 
 sealed class IntrinioOptionTrade
 {
-	[JsonProperty("contract")]
+	[JsonPropertyName("contract")]
 	public string Contract { get; set; }
 
-	[JsonProperty("timestamp")]
+	[JsonPropertyName("timestamp")]
 	public DateTime? Timestamp { get; set; }
 
-	[JsonProperty("price")]
+	[JsonPropertyName("price")]
 	public decimal? Price { get; set; }
 
-	[JsonProperty("size")]
+	[JsonPropertyName("size")]
 	public decimal? Size { get; set; }
 
-	[JsonProperty("total_volume")]
+	[JsonPropertyName("total_volume")]
 	public decimal? TotalVolume { get; set; }
 
-	[JsonProperty("ask_price_at_execution")]
+	[JsonPropertyName("ask_price_at_execution")]
 	public decimal? AskPriceAtExecution { get; set; }
 
-	[JsonProperty("bid_price_at_execution")]
+	[JsonPropertyName("bid_price_at_execution")]
 	public decimal? BidPriceAtExecution { get; set; }
 
-	[JsonProperty("exchange")]
+	[JsonPropertyName("exchange")]
 	public string Exchange { get; set; }
 
-	[JsonProperty("conditions")]
+	[JsonPropertyName("conditions")]
 	public string Conditions { get; set; }
 
-	[JsonProperty("sequence_id")]
+	[JsonPropertyName("sequence_id")]
 	public decimal? SequenceId { get; set; }
 }

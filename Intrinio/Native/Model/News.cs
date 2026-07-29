@@ -2,49 +2,49 @@ namespace StockSharp.Intrinio.Native.Model;
 
 sealed class IntrinioNewsResponse
 {
-	[JsonProperty("news")]
+	[JsonPropertyName("news")]
 	public IntrinioNewsItem[] News { get; set; }
 
-	[JsonProperty("next_page")]
+	[JsonPropertyName("next_page")]
 	public string NextPage { get; set; }
 }
 
 sealed class IntrinioNewsItem
 {
-	[JsonProperty("id")]
+	[JsonPropertyName("id")]
 	public string Id { get; set; }
 
-	[JsonProperty("title")]
+	[JsonPropertyName("title")]
 	public string Title { get; set; }
 
-	[JsonProperty("publication_date")]
+	[JsonPropertyName("publication_date")]
 	public DateTime? PublicationDate { get; set; }
 
-	[JsonProperty("url")]
+	[JsonPropertyName("url")]
 	public string Url { get; set; }
 
-	[JsonProperty("summary")]
+	[JsonPropertyName("summary")]
 	public string Summary { get; set; }
 
-	[JsonProperty("source")]
+	[JsonPropertyName("source")]
 	public string Source { get; set; }
 
-	[JsonProperty("securities")]
+	[JsonPropertyName("securities")]
 	public IntrinioSecuritySummary[] Securities { get; set; }
 
-	[JsonProperty("article_sentiment")]
+	[JsonPropertyName("article_sentiment")]
 	public string ArticleSentiment { get; set; }
 
-	[JsonProperty("language")]
+	[JsonPropertyName("language")]
 	public string Language { get; set; }
 }
 
 sealed class IntrinioErrorResponse
 {
-	[JsonProperty("error")]
+	[JsonPropertyName("error")]
 	public string Error { get; set; }
 
-	[JsonProperty("message")]
+	[JsonPropertyName("message")]
 	public string Message { get; set; }
 
 	public string GetMessage() => Message.IsEmpty(Error);

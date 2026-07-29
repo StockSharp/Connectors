@@ -1,5 +1,7 @@
 namespace StockSharp.Intrinio;
 
+using RestOptionTrade = Native.Model.IntrinioOptionTrade;
+
 public partial class IntrinioMessageAdapter
 {
 	/// <inheritdoc />
@@ -148,7 +150,9 @@ public partial class IntrinioMessageAdapter
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
 		if (!mdMsg.IsSubscribe)
 		{
-			await SafeRealtime().UnsubscribeAsync(mdMsg.OriginalTransactionId, cancellationToken);
+			var unsubscription = await SafeRealtime().UnsubscribeAsync(
+				mdMsg.OriginalTransactionId, cancellationToken);
+			RemoveOptionRefresh(unsubscription);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
@@ -187,7 +191,9 @@ public partial class IntrinioMessageAdapter
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
 		if (!mdMsg.IsSubscribe)
 		{
-			await SafeRealtime().UnsubscribeAsync(mdMsg.OriginalTransactionId, cancellationToken);
+			var unsubscription = await SafeRealtime().UnsubscribeAsync(
+				mdMsg.OriginalTransactionId, cancellationToken);
+			RemoveOptionRefresh(unsubscription);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
@@ -340,6 +346,12 @@ public partial class IntrinioMessageAdapter
 			DataType = mdMsg.DataType2,
 			IsOption = isOption,
 		}, cancellationToken);
+	}
+
+	private void RemoveOptionRefresh(IntrinioUnsubscription? unsubscription)
+	{
+		if (unsubscription is { IsOption: true, IsLastForFeed: true } removed)
+			_optionRefreshes.TryRemove(removed.Symbol, out _);
 	}
 
 	private async Task SendEquitySnapshot(MarketDataMessage mdMsg,
@@ -507,7 +519,7 @@ public partial class IntrinioMessageAdapter
 			Timezone = "UTC",
 			PageSize = 10000,
 		};
-		var trades = new List<IntrinioOptionTrade>();
+		var trades = new List<RestOptionTrade>();
 		var pages = new HashSet<string>(StringComparer.Ordinal);
 		do
 		{

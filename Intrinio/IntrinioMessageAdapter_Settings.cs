@@ -142,7 +142,7 @@ public partial class IntrinioMessageAdapter : MessageAdapter, ITokenAdapter, IAd
 		Order = 5)]
 	public bool IsAdjusted { get; set; }
 
-	/// <summary>Number of official SDK decoder threads for equities.</summary>
+	/// <summary>Number of real-time event-processing workers for equities.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.EquityThreadsKey,
@@ -151,7 +151,7 @@ public partial class IntrinioMessageAdapter : MessageAdapter, ITokenAdapter, IAd
 		Order = 6)]
 	public int EquityThreads { get; set; } = 4;
 
-	/// <summary>Number of official SDK decoder threads for options.</summary>
+	/// <summary>Number of real-time event-processing workers for options.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.OptionThreadsKey,
@@ -160,7 +160,7 @@ public partial class IntrinioMessageAdapter : MessageAdapter, ITokenAdapter, IAd
 		Order = 7)]
 	public int OptionThreads { get; set; } = 4;
 
-	/// <summary>Official SDK equities input buffer size.</summary>
+	/// <summary>Equities real-time event buffer size per worker.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.EquityBufferKey,
@@ -169,7 +169,7 @@ public partial class IntrinioMessageAdapter : MessageAdapter, ITokenAdapter, IAd
 		Order = 8)]
 	public int EquityBufferSize { get; set; } = 4096;
 
-	/// <summary>Official SDK options input buffer size.</summary>
+	/// <summary>Options real-time event buffer size per worker.</summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.OptionBufferKey,

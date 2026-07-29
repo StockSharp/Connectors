@@ -13,10 +13,11 @@ sealed class IntrinioApiException : InvalidOperationException
 
 sealed class IntrinioRestClient : BaseLogReceiver, IDisposable
 {
-	private static readonly JsonSerializerSettings _jsonSettings = new()
+	private static readonly JsonSerializerOptions _jsonOptions = new()
 	{
-		NullValueHandling = NullValueHandling.Ignore,
-		DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+		PropertyNameCaseInsensitive = true,
+		Converters = { new UtcDateTimeConverter() },
 	};
 
 	private readonly Uri _address;
@@ -123,7 +124,7 @@ sealed class IntrinioRestClient : BaseLogReceiver, IDisposable
 			if (body.IsEmpty())
 				return null;
 
-			return JsonConvert.DeserializeObject<T>(body, _jsonSettings)
+			return Deserialize<T>(body)
 				?? throw new InvalidOperationException(
 					$"Intrinio returned an empty response for '{Sanitize(address)}'.");
 		}
@@ -132,7 +133,7 @@ sealed class IntrinioRestClient : BaseLogReceiver, IDisposable
 			$"Intrinio request '{Sanitize(address)}' exhausted its retry limit.");
 	}
 
-	private Uri BuildUri(string relative, IntrinioRequest query)
+	internal Uri BuildUri(string relative, IntrinioRequest query)
 	{
 		var pairs = new List<(string name, string value)>
 		{
@@ -145,7 +146,7 @@ sealed class IntrinioRestClient : BaseLogReceiver, IDisposable
 				var value = property.GetValue(query);
 				if (value == null)
 					continue;
-				var name = property.GetCustomAttribute<JsonPropertyAttribute>()?.PropertyName;
+				var name = property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name;
 				if (name.IsEmpty())
 					throw new InvalidOperationException(
 						$"Intrinio request property '{property.Name}' has no protocol name.");
@@ -183,7 +184,7 @@ sealed class IntrinioRestClient : BaseLogReceiver, IDisposable
 		IntrinioErrorResponse error = null;
 		try
 		{
-			error = JsonConvert.DeserializeObject<IntrinioErrorResponse>(body, _jsonSettings);
+			error = Deserialize<IntrinioErrorResponse>(body);
 		}
 		catch (JsonException)
 		{
@@ -205,6 +206,32 @@ sealed class IntrinioRestClient : BaseLogReceiver, IDisposable
 	{
 		var value = address.AbsoluteUri;
 		return value.EndsWith('/') ? address : new Uri(value + "/");
+	}
+
+	internal static T Deserialize<T>(string value)
+		=> JsonSerializer.Deserialize<T>(value, _jsonOptions);
+
+	private sealed class UtcDateTimeConverter : JsonConverter<DateTime>
+	{
+		public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert,
+			JsonSerializerOptions options)
+		{
+			if (reader.TokenType != JsonTokenType.String ||
+				!DateTimeOffset.TryParse(reader.GetString(), CultureInfo.InvariantCulture,
+					DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeUniversal |
+					DateTimeStyles.AdjustToUniversal, out var value))
+			{
+				throw new JsonException("Expected an ISO 8601 date or timestamp.");
+			}
+
+			return value.UtcDateTime;
+		}
+
+		public override void Write(Utf8JsonWriter writer, DateTime value,
+			JsonSerializerOptions options)
+			=> writer.WriteStringValue(value.Kind == DateTimeKind.Unspecified
+				? DateTime.SpecifyKind(value, DateTimeKind.Utc)
+				: value.ToUniversalTime());
 	}
 
 	protected override void DisposeManaged()

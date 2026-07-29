@@ -55,8 +55,8 @@ public partial class IntrinioMessageAdapter
 			throw new InvalidOperationException("Intrinio REST address must be an absolute HTTPS URI.");
 		if (EquityThreads <= 0 || OptionThreads <= 0)
 			throw new InvalidOperationException("Intrinio decoder thread counts must be positive.");
-		if (EquityBufferSize < 2048 || OptionBufferSize < 2048)
-			throw new InvalidOperationException("Intrinio SDK buffer sizes must be at least 2048.");
+		if (EquityBufferSize <= 0 || OptionBufferSize <= 0)
+			throw new InvalidOperationException("Intrinio real-time buffer sizes must be positive.");
 
 		var apiKey = Token.UnSecure();
 		_restClient = new(Address, apiKey) { Parent = this };
@@ -113,6 +113,7 @@ public partial class IntrinioMessageAdapter
 
 		_restClient?.Dispose();
 		_restClient = null;
+		_optionRefreshes.Clear();
 		if (stopError != null)
 			throw new AggregateException("Failed to stop Intrinio real-time clients.", stopError);
 	}
