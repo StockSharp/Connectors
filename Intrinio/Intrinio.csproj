@@ -19,8 +19,8 @@
     <PackageReference Include="RestSharp" Version="$(RestSharpVer)" />
     <PackageReference Include="Serilog" Version="$(SerilogVer)" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogSettingsVer)" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="$(SerilogSinksVer)" />
-    <PackageReference Include="Serilog.Sinks.File" Version="$(SerilogSinksVer)" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="$(SerilogSinksConsoleVer)" />
+    <PackageReference Include="Serilog.Sinks.File" Version="$(SerilogSinksFileVer)" />
     <Reference Include="Intrinio.Realtime">
       <HintPath>$(PkgIntrinioRealTimeClient)\lib\net9.0\Intrinio.Realtime.dll</HintPath>
       <Private>true</Private>
