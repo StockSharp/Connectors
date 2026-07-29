@@ -109,6 +109,7 @@
     <Project Path="KotakNeo/KotakNeo.csproj" />
     <Project Path="Kraken/Kraken.csproj" />
     <Project Path="Kucoin/Kucoin.csproj" />
+    <Project Path="KucoinHistory/KucoinHistory.csproj" />
     <Project Path="Latoken/Latoken.csproj" />
     <Project Path="LBank/LBank.csproj" />
     <Project Path="LemonMarkets/LemonMarkets.csproj" />

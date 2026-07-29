@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <ItemGroup>
+    <PackageReference Include="Ecng.IO.Compression" Version="$(EcngVer)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Common\S3BucketHelper.cs" Link="S3BucketHelper.cs" />
+  </ItemGroup>
+</Project>
