@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <ItemGroup>
+    <Compile Include="..\Common\S3BucketHelper.cs" Link="S3BucketHelper.cs" />
+  </ItemGroup>
+</Project>
