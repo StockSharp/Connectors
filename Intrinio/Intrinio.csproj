@@ -10,17 +10,7 @@
       GeneratePathProperty="true" ExcludeAssets="compile;runtime" />
     <PackageReference Include="Intrinio.SDK" Version="$(IntrinioSdkVer)"
       GeneratePathProperty="true" ExcludeAssets="compile;runtime" />
-    <PackageReference Include="Intrinio.Collections" Version="$(IntrinioCollectionsVer)" />
-    <PackageReference Include="JsonSubTypes" Version="$(JsonSubTypesVer)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(MsExtensionsVer)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MsExtensionsVer)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftVer)" />
-    <PackageReference Include="Polly" Version="$(PollyVer)" />
-    <PackageReference Include="RestSharp" Version="$(RestSharpVer)" />
-    <PackageReference Include="Serilog" Version="$(SerilogVer)" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogSettingsVer)" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="$(SerilogSinksConsoleVer)" />
-    <PackageReference Include="Serilog.Sinks.File" Version="$(SerilogSinksFileVer)" />
     <Reference Include="Intrinio.Realtime">
       <HintPath>$(PkgIntrinioRealTimeClient)\lib\net9.0\Intrinio.Realtime.dll</HintPath>
       <Private>true</Private>
