@@ -88,14 +88,14 @@ class HttpClient : BaseLogReceiver
 			.AddParameter("symbol", symbol)
 			.AddParameter("side", side)
 			.AddParameter("type", type)
-			.AddParameter("quantity", quantity.ToString())
+			.AddParameter("quantity", quantity.To<string>())
 			.AddParameter("newClientOrderId", clientOrderId);
 
 		if (!timeInForce.IsEmpty())
 			request.AddParameter("timeInForce", timeInForce);
 
 		if (price.HasValue)
-			request.AddParameter("price", price.Value.ToString());
+			request.AddParameter("price", price.Value.To<string>());
 
 		if (reduceOnly.HasValue)
 			request.AddParameter("reduceOnly", reduceOnly.Value.ToString().ToLowerInvariant());

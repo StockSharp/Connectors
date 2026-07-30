@@ -32,22 +32,22 @@ class RestTradingClient : RestAlpacaClient
 		dynamic body = new ExpandoObject();
 
 		body.symbol = symbol;
-		body.qty = qty.ToString();
+		body.qty = qty.To<string>();
 		body.side = side;
 		body.type = type;
 		body.time_in_force = tif;
 
 		if (limitPrice is not null)
-			body.limit_price = limitPrice.Value.ToString();
+			body.limit_price = limitPrice.Value.To<string>();
 
 		if (stopPrice is not null)
-			body.stop_price = stopPrice.Value.ToString();
+			body.stop_price = stopPrice.Value.To<string>();
 
 		if (trailPrice is not null)
-			body.trail_price = trailPrice.Value.ToString();
+			body.trail_price = trailPrice.Value.To<string>();
 
 		if (trailPercent is not null)
-			body.trail_percent = trailPercent.Value.ToString();
+			body.trail_percent = trailPercent.Value.To<string>();
 
 		if (extendedHours is not null)
 			body.extended_hours = extendedHours.Value;
@@ -69,17 +69,17 @@ class RestTradingClient : RestAlpacaClient
 
 		dynamic body = new ExpandoObject();
 
-		body.qty = qty.ToString();
+		body.qty = qty.To<string>();
 		body.time_in_force = tif;
 
 		if (limitPrice is not null)
-			body.limit_price = limitPrice.Value.ToString();
+			body.limit_price = limitPrice.Value.To<string>();
 
 		if (stopPrice is not null)
-			body.stop_price = stopPrice.Value.ToString();
+			body.stop_price = stopPrice.Value.To<string>();
 
 		if (trail is not null)
-			body.trail = trail.Value.ToString();
+			body.trail = trail.Value.To<string>();
 
 		body.client_order_id = transactionId.ToString();
 

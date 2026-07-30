@@ -85,7 +85,7 @@ class HttpClient : BaseLogReceiver
 		request.AddJsonBody(new
 		{
 			coin,
-			amount = amount.ToString(),
+			amount = amount.To<string>(),
 			address = info.CryptoAddress,
 			tag = info.Comment,
 			transferType = "on_chain"
@@ -104,8 +104,8 @@ class HttpClient : BaseLogReceiver
 			symbol = regMsg.SecurityId.ToSymbol(),
 			side = regMsg.Side.ToNative(),
 			orderType = regMsg.OrderType.ToNative(),
-			price = regMsg.OrderType == OrderTypes.Market ? null : (regMsg.Price != 0 ? regMsg.Price.ToString() : null),
-			size = regMsg.Volume.ToString(),
+			price = regMsg.OrderType == OrderTypes.Market ? null : (regMsg.Price != 0 ? regMsg.Price.To<string>() : null),
+			size = regMsg.Volume.To<string>(),
 			clientOid = regMsg.TransactionId.ToRequestId(),
 			force = regMsg.TimeInForce.ToNative(),
 		});
@@ -136,8 +136,8 @@ class HttpClient : BaseLogReceiver
 		{
 			symbol = replaceMsg.SecurityId.ToSymbol(),
 			orderId = replaceMsg.OldOrderId.Value.To<string>(),
-			price = replaceMsg.Price.ToString(),
-			size = replaceMsg.Volume.ToString(),
+			price = replaceMsg.Price.To<string>(),
+			size = replaceMsg.Volume.To<string>(),
 			newClientOid = replaceMsg.TransactionId.ToRequestId(),
 		});
 

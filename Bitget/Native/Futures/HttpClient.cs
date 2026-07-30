@@ -101,8 +101,8 @@ class HttpClient : BaseLogReceiver
 			symbol = regMsg.SecurityId.ToSymbol(),
 			side = regMsg.Side.ToNative(),
 			orderType = regMsg.OrderType.ToNative(),
-			price = regMsg.Price != 0 ? regMsg.Price.ToString() : null,
-			size = regMsg.Volume.ToString(),
+			price = regMsg.Price != 0 ? regMsg.Price.To<string>() : null,
+			size = regMsg.Volume.To<string>(),
 			clientOid = regMsg.TransactionId.ToRequestId(),
 			force = regMsg.TimeInForce.ToNative(),
 			reduceOnly = regMsg.PositionEffect is not null ? (bool?)regMsg.PositionEffect.Value.ToNative() : null,
@@ -136,8 +136,8 @@ class HttpClient : BaseLogReceiver
 			productType = _productType,
 			symbol = replaceMsg.SecurityId.ToSymbol(),
 			orderId = replaceMsg.OldOrderId.Value.ToString(),
-			newPrice = replaceMsg.OldOrderPrice != replaceMsg.Price ? replaceMsg.Price.ToString() : null,
-			newSize = replaceMsg.OldOrderVolume != replaceMsg.Volume ? replaceMsg.Volume.ToString() : null,
+			newPrice = replaceMsg.OldOrderPrice != replaceMsg.Price ? replaceMsg.Price.To<string>() : null,
+			newSize = replaceMsg.OldOrderVolume != replaceMsg.Volume ? replaceMsg.Volume.To<string>() : null,
 			newClientOid = replaceMsg.TransactionId.ToRequestId(),
 		});
 

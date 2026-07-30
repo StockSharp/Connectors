@@ -108,7 +108,7 @@ class HttpClient : BaseLogReceiver
 			{ "text", text },
 			{ "contract", contract },
 			{ "size", (long)size },
-			{ "price", price.ToString() },
+			{ "price", price.To<string>() },
 		};
 
 		if (!timeInForce.IsEmpty())

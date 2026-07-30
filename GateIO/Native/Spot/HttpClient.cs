@@ -89,7 +89,7 @@ class HttpClient : BaseLogReceiver
 		request.AddJsonBody(new
 		{
 			currency,
-			amount = amount.ToString(),
+			amount = amount.To<string>(),
 			address = info.CryptoAddress,
 			memo = info.Comment
 		});

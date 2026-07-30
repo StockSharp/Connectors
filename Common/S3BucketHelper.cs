@@ -1,5 +1,6 @@
 namespace StockSharp.Connectors.Common;
 
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Xml.Linq;
@@ -221,7 +222,8 @@ static class S3BucketHelper
 			var year = yyyymmdd / 10000;
 			var month = (yyyymmdd / 100) % 100;
 			var day = yyyymmdd % 100;
-			if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 2000 && year <= 2100)
+			if (year >= 2000 && year <= 2100 && month >= 1 && month <= 12 &&
+				day >= 1 && day <= DateTime.DaysInMonth(year, month))
 			{
 				date = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
 				return true;
@@ -229,8 +231,8 @@ static class S3BucketHelper
 		}
 
 		// Fallback to standard parsing
-		return DateTime.TryParseExact(dateStr, format, null,
-			System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal,
+		return DateTime.TryParseExact(dateStr, format, CultureInfo.InvariantCulture,
+			DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
 			out date);
 	}
 }

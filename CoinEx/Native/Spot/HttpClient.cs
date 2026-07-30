@@ -123,7 +123,7 @@ class HttpClient : BaseLogReceiver
 		{
 			ccy = currency,
 			to_address = info.CryptoAddress,
-			amount = volume.ToString(),
+			amount = volume.To<string>(),
 			memo = info.Comment
 		});
 
