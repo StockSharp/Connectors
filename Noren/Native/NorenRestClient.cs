@@ -1,6 +1,6 @@
-namespace StockSharp.Shoonya.Native;
+namespace StockSharp.Noren.Native;
 
-sealed class ShoonyaRestClient : BaseLogReceiver
+sealed class NorenRestClient : BaseLogReceiver
 {
 	private static readonly string[] _segments = ["NSE", "BSE", "NFO", "BFO", "CDS", "MCX"];
 	private static readonly JsonSerializerSettings _jsonSettings = new()
@@ -15,11 +15,11 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 	private readonly bool _useBearerAuthentication;
 	private readonly HttpClient _httpClient;
 	private readonly SemaphoreSlim _instrumentLock = new(1, 1);
-	private ShoonyaInstrument[] _instruments;
-	private IReadOnlyDictionary<string, ShoonyaInstrument> _instrumentsByKey;
-	private IReadOnlyDictionary<string, ShoonyaInstrument> _instrumentsBySymbol;
+	private NorenInstrument[] _instruments;
+	private IReadOnlyDictionary<string, NorenInstrument> _instrumentsByKey;
+	private IReadOnlyDictionary<string, NorenInstrument> _instrumentsBySymbol;
 
-	public ShoonyaRestClient(string userId, string accountId, SecureString sessionToken,
+	public NorenRestClient(string userId, string accountId, SecureString sessionToken,
 		string restEndpoint, string instrumentEndpointTemplate,
 		bool useBearerAuthentication = false, HttpMessageHandler handler = null)
 	{
@@ -31,12 +31,12 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 		_httpClient = handler == null ? new() : new(handler);
 		_httpClient.BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint)));
 		_httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-		_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Shoonya/1.0");
+		_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Noren/1.0");
 		if (_useBearerAuthentication)
 			_httpClient.DefaultRequestHeaders.Authorization = new("Bearer", _sessionToken);
 	}
 
-	public override string Name => nameof(Shoonya) + "_" + nameof(ShoonyaRestClient);
+	public override string Name => nameof(Noren) + "_" + nameof(NorenRestClient);
 
 	protected override void DisposeManaged()
 	{
@@ -45,7 +45,7 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 		base.DisposeManaged();
 	}
 
-	public async Task<ShoonyaInstrument[]> GetInstruments(CancellationToken cancellationToken)
+	public async Task<NorenInstrument[]> GetInstruments(CancellationToken cancellationToken)
 	{
 		if (_instruments != null)
 			return _instruments;
@@ -73,56 +73,56 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 		}
 	}
 
-	public async Task<ShoonyaInstrument> GetInstrument(string instrumentKey, CancellationToken cancellationToken)
+	public async Task<NorenInstrument> GetInstrument(string instrumentKey, CancellationToken cancellationToken)
 	{
 		await GetInstruments(cancellationToken);
 		return _instrumentsByKey.TryGetValue(instrumentKey, out var instrument) ? instrument : null;
 	}
 
-	public async Task<ShoonyaInstrument> FindInstrument(string exchange, string tradingSymbol, CancellationToken cancellationToken)
+	public async Task<NorenInstrument> FindInstrument(string exchange, string tradingSymbol, CancellationToken cancellationToken)
 	{
 		await GetInstruments(cancellationToken);
 		return _instrumentsBySymbol.TryGetValue(ToSymbolKey(exchange, tradingSymbol), out var instrument) ? instrument : null;
 	}
 
-	public async Task<string> PlaceOrder(ShoonyaPlaceOrderRequest order, CancellationToken cancellationToken)
+	public async Task<string> PlaceOrder(NorenPlaceOrderRequest order, CancellationToken cancellationToken)
 	{
-		var response = await SendObject<ShoonyaOrderResult, ShoonyaPlaceOrderRequest>("PlaceOrder", order, cancellationToken);
+		var response = await SendObject<NorenOrderResult, NorenPlaceOrderRequest>("PlaceOrder", order, cancellationToken);
 		return response.OrderId.IsEmpty(response.Result).ThrowIfEmpty(nameof(response.OrderId));
 	}
 
-	public Task ModifyOrder(ShoonyaModifyOrderRequest order, CancellationToken cancellationToken)
+	public Task ModifyOrder(NorenModifyOrderRequest order, CancellationToken cancellationToken)
 		=> SendStatus("ModifyOrder", order, cancellationToken);
 
 	public Task CancelOrder(string orderId, CancellationToken cancellationToken)
-		=> SendStatus("CancelOrder", new ShoonyaCancelOrderRequest
+		=> SendStatus("CancelOrder", new NorenCancelOrderRequest
 		{
 			UserId = _userId,
 			OrderId = orderId.ThrowIfEmpty(nameof(orderId)),
 		}, cancellationToken);
 
-	public Task<ShoonyaOrder[]> GetOrders(CancellationToken cancellationToken)
-		=> SendArray<ShoonyaOrder, ShoonyaUserRequest>("OrderBook",
+	public Task<NorenOrder[]> GetOrders(CancellationToken cancellationToken)
+		=> SendArray<NorenOrder, NorenUserRequest>("OrderBook",
 			new() { UserId = _userId }, cancellationToken, true);
 
-	public Task<ShoonyaTrade[]> GetTrades(CancellationToken cancellationToken)
-		=> SendArray<ShoonyaTrade, ShoonyaAccountRequest>("TradeBook",
+	public Task<NorenTrade[]> GetTrades(CancellationToken cancellationToken)
+		=> SendArray<NorenTrade, NorenAccountRequest>("TradeBook",
 			new() { UserId = _userId, AccountId = _accountId }, cancellationToken, true);
 
-	public Task<ShoonyaPosition[]> GetPositions(CancellationToken cancellationToken)
-		=> SendArray<ShoonyaPosition, ShoonyaAccountRequest>("PositionBook",
+	public Task<NorenPosition[]> GetPositions(CancellationToken cancellationToken)
+		=> SendArray<NorenPosition, NorenAccountRequest>("PositionBook",
 			new() { UserId = _userId, AccountId = _accountId }, cancellationToken, true);
 
-	public Task<ShoonyaHolding[]> GetHoldings(CancellationToken cancellationToken)
-		=> SendArray<ShoonyaHolding, ShoonyaAccountRequest>("Holdings",
-			new() { UserId = _userId, AccountId = _accountId, Product = ShoonyaProducts.Delivery.ToNative() },
+	public Task<NorenHolding[]> GetHoldings(CancellationToken cancellationToken)
+		=> SendArray<NorenHolding, NorenAccountRequest>("Holdings",
+			new() { UserId = _userId, AccountId = _accountId, Product = NorenProducts.Delivery.ToNative() },
 			cancellationToken, true);
 
-	public Task<ShoonyaLimits> GetLimits(CancellationToken cancellationToken)
-		=> SendObject<ShoonyaLimits, ShoonyaAccountRequest>("Limits",
+	public Task<NorenLimits> GetLimits(CancellationToken cancellationToken)
+		=> SendObject<NorenLimits, NorenAccountRequest>("Limits",
 			new() { UserId = _userId, AccountId = _accountId }, cancellationToken);
 
-	public async Task<ShoonyaCandle[]> GetCandles(ShoonyaInstrument instrument, TimeSpan timeFrame,
+	public async Task<NorenCandle[]> GetCandles(NorenInstrument instrument, TimeSpan timeFrame,
 		DateTime? from, DateTime? to, CancellationToken cancellationToken)
 	{
 		var end = NormalizeUtc(to ?? DateTime.UtcNow);
@@ -132,7 +132,7 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 
 		if (timeFrame == TimeSpan.FromDays(1))
 		{
-			var request = new ShoonyaDailyCandleRequest
+			var request = new NorenDailyCandleRequest
 			{
 				UserId = _userId,
 				Symbol = $"{instrument.Exchange}:{instrument.TradingSymbol}",
@@ -144,9 +144,9 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 
 		var minutes = Convert.ToInt32(timeFrame.TotalMinutes);
 		if (minutes is not (1 or 3 or 5 or 10 or 15 or 30 or 60 or 120 or 240))
-			throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, "Unsupported Shoonya candle interval.");
+			throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, "Unsupported Noren candle interval.");
 
-		return await SendArray<ShoonyaCandle, ShoonyaCandleRequest>("TPSeries", new()
+		return await SendArray<NorenCandle, NorenCandleRequest>("TPSeries", new()
 		{
 			UserId = _userId,
 			Exchange = instrument.Exchange,
@@ -159,34 +159,34 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 
 	private async Task SendStatus<TRequest>(string path, TRequest body, CancellationToken cancellationToken)
 		where TRequest : class
-		=> await SendObject<ShoonyaOrderResult, TRequest>(path, body, cancellationToken);
+		=> await SendObject<NorenOrderResult, TRequest>(path, body, cancellationToken);
 
 	private async Task<TResponse> SendObject<TResponse, TRequest>(string path, TRequest body,
 		CancellationToken cancellationToken)
-		where TResponse : ShoonyaResponse
+		where TResponse : NorenResponse
 		where TRequest : class
 	{
 		var content = await SendRaw(path, body, cancellationToken);
 		var response = JsonConvert.DeserializeObject<TResponse>(content, _jsonSettings)
-			?? throw new InvalidOperationException($"Shoonya returned an empty response for {path}.");
+			?? throw new InvalidOperationException($"Noren returned an empty response for {path}.");
 		EnsureSuccess(response, path);
 		return response;
 	}
 
 	private async Task<TItem[]> SendArray<TItem, TRequest>(string path, TRequest body,
 		CancellationToken cancellationToken, bool allowNoData)
-		where TItem : ShoonyaResponse
+		where TItem : NorenResponse
 		where TRequest : class
 	{
 		var content = await SendRaw(path, body, cancellationToken);
 		if (FirstToken(content) != '[')
 		{
-			var error = JsonConvert.DeserializeObject<ShoonyaResponse>(content, _jsonSettings)
-				?? throw new InvalidOperationException($"Shoonya returned an invalid response for {path}.");
+			var error = JsonConvert.DeserializeObject<NorenResponse>(content, _jsonSettings)
+				?? throw new InvalidOperationException($"Noren returned an invalid response for {path}.");
 			if (allowNoData && IsNoData(error))
 				return [];
 			EnsureSuccess(error, path);
-			throw new InvalidOperationException($"Shoonya returned an unexpected object response for {path}.");
+			throw new InvalidOperationException($"Noren returned an unexpected object response for {path}.");
 		}
 
 		var items = JsonConvert.DeserializeObject<TItem[]>(content, _jsonSettings) ?? [];
@@ -195,15 +195,15 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 		return items;
 	}
 
-	private async Task<ShoonyaCandle[]> SendDailyCandles(ShoonyaDailyCandleRequest body,
+	private async Task<NorenCandle[]> SendDailyCandles(NorenDailyCandleRequest body,
 		CancellationToken cancellationToken)
 	{
 		const string path = "EODChartData";
 		var content = await SendRaw(path, body, cancellationToken);
 		if (FirstToken(content) != '[')
 		{
-			var error = JsonConvert.DeserializeObject<ShoonyaResponse>(content, _jsonSettings)
-				?? throw new InvalidOperationException("Shoonya returned an invalid daily-candle response.");
+			var error = JsonConvert.DeserializeObject<NorenResponse>(content, _jsonSettings)
+				?? throw new InvalidOperationException("Noren returned an invalid daily-candle response.");
 			if (IsNoData(error))
 				return [];
 			EnsureSuccess(error, path);
@@ -219,11 +219,11 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 			var encoded = JsonConvert.DeserializeObject<string[]>(content, _jsonSettings) ?? [];
 			return [.. encoded
 				.Where(value => !value.IsEmpty())
-				.Select(value => JsonConvert.DeserializeObject<ShoonyaCandle>(value, _jsonSettings))
+				.Select(value => JsonConvert.DeserializeObject<NorenCandle>(value, _jsonSettings))
 				.Where(candle => candle != null)];
 		}
 
-		return JsonConvert.DeserializeObject<ShoonyaCandle[]>(content, _jsonSettings) ?? [];
+		return JsonConvert.DeserializeObject<NorenCandle[]>(content, _jsonSettings) ?? [];
 	}
 
 	private async Task<string> SendRaw<TRequest>(string path, TRequest body, CancellationToken cancellationToken)
@@ -246,23 +246,23 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 			Content = new StringContent(form, Encoding.UTF8,
 				_useBearerAuthentication ? "text/plain" : "application/x-www-form-urlencoded"),
 		};
-		this.AddVerboseLog("Shoonya POST {0}.", path);
+		this.AddVerboseLog("Noren POST {0}.", path);
 		using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken);
 		var content = await response.Content.ReadAsStringAsync(cancellationToken);
 		if (!response.IsSuccessStatusCode)
-			throw new HttpRequestException($"Shoonya {path} returned HTTP {(int)response.StatusCode}: {response.ReasonPhrase}");
+			throw new HttpRequestException($"Noren {path} returned HTTP {(int)response.StatusCode}: {response.ReasonPhrase}");
 		if (content.IsEmpty())
-			throw new InvalidOperationException($"Shoonya returned an empty response for {path}.");
+			throw new InvalidOperationException($"Noren returned an empty response for {path}.");
 		return content;
 	}
 
-	private async Task<ShoonyaInstrument[]> DownloadInstruments(string segment, CancellationToken cancellationToken)
+	private async Task<NorenInstrument[]> DownloadInstruments(string segment, CancellationToken cancellationToken)
 	{
 		var bytes = await _httpClient.GetByteArrayAsync(string.Format(CultureInfo.InvariantCulture, _instrumentEndpointTemplate, segment), cancellationToken);
 		return await ParseInstrumentArchive(segment, bytes, cancellationToken);
 	}
 
-	internal static async Task<ShoonyaInstrument[]> ParseInstrumentArchive(
+	internal static async Task<NorenInstrument[]> ParseInstrumentArchive(
 		string segment, byte[] bytes, CancellationToken cancellationToken)
 	{
 		segment.ThrowIfEmpty(nameof(segment));
@@ -277,7 +277,7 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 		if (!await csv.NextLineAsync(cancellationToken))
 			return [];
 
-		var instruments = new List<ShoonyaInstrument>();
+		var instruments = new List<NorenInstrument>();
 		while (await csv.NextLineAsync(cancellationToken))
 		{
 			var instrument = ReadInstrument(segment, csv);
@@ -287,10 +287,10 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 		return [.. instruments];
 	}
 
-	private static ShoonyaInstrument ReadInstrument(string segment, FastCsvReader csv)
+	private static NorenInstrument ReadInstrument(string segment, FastCsvReader csv)
 	{
 		string[] values;
-		var instrument = new ShoonyaInstrument();
+		var instrument = new NorenInstrument();
 		switch (segment)
 		{
 			case "NSE":
@@ -382,18 +382,18 @@ sealed class ShoonyaRestClient : BaseLogReceiver
 	private static char FirstToken(string content)
 		=> content.SkipWhile(char.IsWhiteSpace).FirstOrDefault();
 
-	private static bool IsNoData(ShoonyaResponse response)
+	private static bool IsNoData(NorenResponse response)
 		=> response.ErrorMessage?.Contains("no data", StringComparison.OrdinalIgnoreCase) == true ||
 			response.ErrorMessage?.Contains("not found", StringComparison.OrdinalIgnoreCase) == true;
 
-	private static void EnsureSuccess(ShoonyaResponse response, string operation)
+	private static void EnsureSuccess(NorenResponse response, string operation)
 	{
 		if (response == null)
-			throw new InvalidOperationException($"Shoonya returned an empty response for {operation}.");
+			throw new InvalidOperationException($"Noren returned an empty response for {operation}.");
 		if (response.Status.EqualsIgnoreCase("Ok") ||
 			response.Status.IsEmpty() && response.ErrorMessage.IsEmpty())
 			return;
-		throw new InvalidOperationException($"Shoonya {operation} error: {response.ErrorMessage.IsEmpty(response.Status)}");
+		throw new InvalidOperationException($"Noren {operation} error: {response.ErrorMessage.IsEmpty(response.Status)}");
 	}
 
 	private static DateTime NormalizeUtc(DateTime value)

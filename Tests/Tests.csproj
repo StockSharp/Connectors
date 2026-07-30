@@ -60,6 +60,7 @@
 	<ProjectReference Include="..\StonFi\StonFi.csproj" />
 	<ProjectReference Include="..\Xrpl\Xrpl.csproj" />
 	<ProjectReference Include="..\Settrade\Settrade.csproj" />
+	<ProjectReference Include="..\Shoonya\Shoonya.csproj" />
 	<ProjectReference Include="..\SSI\SSI.csproj" />
 	<ProjectReference Include="..\IIFL\IIFL.csproj" />
 	<ProjectReference Include="..\MStock\MStock.csproj" />
@@ -145,6 +146,7 @@
     <ProjectReference Include="..\MoexISS\MoexISS.csproj" />
     <ProjectReference Include="..\Nado\Nado.csproj" />
     <ProjectReference Include="..\NDAX\NDAX.csproj" />
+    <ProjectReference Include="..\Noren\Noren.csproj" />
 	<ProjectReference Include="..\NovaDax\NovaDax.csproj" />
     <ProjectReference Include="..\Nubra\Nubra.csproj" />
     <ProjectReference Include="..\Nuvama\Nuvama.csproj" />

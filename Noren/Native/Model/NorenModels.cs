@@ -1,6 +1,6 @@
-namespace StockSharp.Shoonya.Native.Model;
+namespace StockSharp.Noren.Native.Model;
 
-class ShoonyaResponse
+class NorenResponse
 {
 	[JsonProperty("stat")]
 	public string Status { get; set; }
@@ -12,7 +12,7 @@ class ShoonyaResponse
 	public string RequestTime { get; set; }
 }
 
-sealed class ShoonyaUserRequest
+sealed class NorenUserRequest
 {
 	[JsonProperty("ordersource")]
 	public string OrderSource { get; set; } = "API";
@@ -21,7 +21,7 @@ sealed class ShoonyaUserRequest
 	public string UserId { get; set; }
 }
 
-sealed class ShoonyaAccountRequest
+sealed class NorenAccountRequest
 {
 	[JsonProperty("uid")]
 	public string UserId { get; set; }
@@ -39,7 +39,7 @@ sealed class ShoonyaAccountRequest
 	public string Exchange { get; set; }
 }
 
-sealed class ShoonyaInstrumentRequest
+sealed class NorenInstrumentRequest
 {
 	[JsonProperty("uid")]
 	public string UserId { get; set; }
@@ -51,7 +51,7 @@ sealed class ShoonyaInstrumentRequest
 	public string Token { get; set; }
 }
 
-sealed class ShoonyaCandleRequest
+sealed class NorenCandleRequest
 {
 	[JsonProperty("ordersource")]
 	public string OrderSource { get; set; } = "API";
@@ -75,7 +75,7 @@ sealed class ShoonyaCandleRequest
 	public string Interval { get; set; }
 }
 
-sealed class ShoonyaDailyCandleRequest
+sealed class NorenDailyCandleRequest
 {
 	[JsonProperty("uid")]
 	public string UserId { get; set; }
@@ -90,7 +90,7 @@ sealed class ShoonyaDailyCandleRequest
 	public string To { get; set; }
 }
 
-sealed class ShoonyaPlaceOrderRequest
+sealed class NorenPlaceOrderRequest
 {
 	[JsonProperty("ordersource")]
 	public string OrderSource { get; set; } = "API";
@@ -147,7 +147,7 @@ sealed class ShoonyaPlaceOrderRequest
 	public string TrailingPrice { get; set; }
 }
 
-sealed class ShoonyaModifyOrderRequest
+sealed class NorenModifyOrderRequest
 {
 	[JsonProperty("ordersource")]
 	public string OrderSource { get; set; } = "API";
@@ -189,7 +189,7 @@ sealed class ShoonyaModifyOrderRequest
 	public string TrailingPrice { get; set; }
 }
 
-sealed class ShoonyaCancelOrderRequest
+sealed class NorenCancelOrderRequest
 {
 	[JsonProperty("ordersource")]
 	public string OrderSource { get; set; } = "API";
@@ -201,7 +201,7 @@ sealed class ShoonyaCancelOrderRequest
 	public string OrderId { get; set; }
 }
 
-sealed class ShoonyaOrderResult : ShoonyaResponse
+sealed class NorenOrderResult : NorenResponse
 {
 	[JsonProperty("norenordno")]
 	public string OrderId { get; set; }
@@ -210,7 +210,7 @@ sealed class ShoonyaOrderResult : ShoonyaResponse
 	public string Result { get; set; }
 }
 
-class ShoonyaOrder : ShoonyaResponse
+class NorenOrder : NorenResponse
 {
 	[JsonProperty("norenordno")]
 	public string OrderId { get; set; }
@@ -318,11 +318,11 @@ class ShoonyaOrder : ShoonyaResponse
 	public string ChildOrderType { get; set; }
 }
 
-sealed class ShoonyaTrade : ShoonyaOrder
+sealed class NorenTrade : NorenOrder
 {
 }
 
-sealed class ShoonyaPosition : ShoonyaResponse
+sealed class NorenPosition : NorenResponse
 {
 	[JsonProperty("exch")]
 	public string Exchange { get; set; }
@@ -370,10 +370,10 @@ sealed class ShoonyaPosition : ShoonyaResponse
 	public string CarrySellQuantity { get; set; }
 }
 
-sealed class ShoonyaHolding : ShoonyaResponse
+sealed class NorenHolding : NorenResponse
 {
 	[JsonProperty("exch_tsym")]
-	public ShoonyaHoldingInstrument[] Instruments { get; set; }
+	public NorenHoldingInstrument[] Instruments { get; set; }
 
 	[JsonProperty("holdqty")]
 	public string HoldingQuantity { get; set; }
@@ -394,7 +394,7 @@ sealed class ShoonyaHolding : ShoonyaResponse
 	public string UploadPrice { get; set; }
 }
 
-sealed class ShoonyaHoldingInstrument
+sealed class NorenHoldingInstrument
 {
 	[JsonProperty("exch")]
 	public string Exchange { get; set; }
@@ -406,7 +406,7 @@ sealed class ShoonyaHoldingInstrument
 	public string TradingSymbol { get; set; }
 }
 
-sealed class ShoonyaLimits : ShoonyaResponse
+sealed class NorenLimits : NorenResponse
 {
 	[JsonProperty("actid")]
 	public string AccountId { get; set; }
@@ -433,7 +433,7 @@ sealed class ShoonyaLimits : ShoonyaResponse
 	public string Collateral { get; set; }
 }
 
-sealed class ShoonyaCandle : ShoonyaResponse
+sealed class NorenCandle : NorenResponse
 {
 	[JsonProperty("time")]
 	public string Time { get; set; }
@@ -460,7 +460,7 @@ sealed class ShoonyaCandle : ShoonyaResponse
 	public string OpenInterest { get; set; }
 }
 
-sealed class ShoonyaInstrument
+sealed class NorenInstrument
 {
 	public string Exchange { get; set; }
 	public string Token { get; set; }
@@ -476,20 +476,20 @@ sealed class ShoonyaInstrument
 	public decimal TickSize { get; set; }
 }
 
-sealed class ShoonyaDepthLevel
+sealed class NorenDepthLevel
 {
 	public decimal Price { get; set; }
 	public decimal Volume { get; set; }
 	public int OrdersCount { get; set; }
 }
 
-class ShoonyaSocketEnvelope
+class NorenSocketEnvelope
 {
 	[JsonProperty("t")]
 	public string Type { get; set; }
 }
 
-sealed class ShoonyaSocketLoginRequest
+sealed class NorenSocketLoginRequest
 {
 	[JsonProperty("t")]
 	public string Type { get; set; } = "c";
@@ -507,7 +507,7 @@ sealed class ShoonyaSocketLoginRequest
 	public string Source { get; set; } = "API";
 }
 
-sealed class ShoonyaSocketOAuthLoginRequest
+sealed class NorenSocketOAuthLoginRequest
 {
 	[JsonProperty("t")]
 	public string Type { get; set; } = "a";
@@ -525,7 +525,7 @@ sealed class ShoonyaSocketOAuthLoginRequest
 	public string Source { get; set; } = "API";
 }
 
-sealed class ShoonyaSocketSubscriptionRequest
+sealed class NorenSocketSubscriptionRequest
 {
 	[JsonProperty("t")]
 	public string Type { get; set; }
@@ -534,7 +534,7 @@ sealed class ShoonyaSocketSubscriptionRequest
 	public string Instruments { get; set; }
 }
 
-sealed class ShoonyaSocketOrderRequest
+sealed class NorenSocketOrderRequest
 {
 	[JsonProperty("t")]
 	public string Type { get; set; } = "o";
@@ -543,13 +543,13 @@ sealed class ShoonyaSocketOrderRequest
 	public string AccountId { get; set; }
 }
 
-sealed class ShoonyaSocketHeartbeat
+sealed class NorenSocketHeartbeat
 {
 	[JsonProperty("t")]
 	public string Type { get; set; } = "h";
 }
 
-sealed class ShoonyaSocketAcknowledgement : ShoonyaSocketEnvelope
+sealed class NorenSocketAcknowledgement : NorenSocketEnvelope
 {
 	[JsonProperty("s")]
 	public string Status { get; set; }
@@ -558,7 +558,7 @@ sealed class ShoonyaSocketAcknowledgement : ShoonyaSocketEnvelope
 	public string ErrorMessage { get; set; }
 }
 
-sealed class ShoonyaMarketUpdate : ShoonyaSocketEnvelope
+sealed class NorenMarketUpdate : NorenSocketEnvelope
 {
 	[JsonProperty("e")]
 	public string Exchange { get; set; }

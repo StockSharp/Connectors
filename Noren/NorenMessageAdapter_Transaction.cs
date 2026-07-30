@@ -1,6 +1,6 @@
-namespace StockSharp.Shoonya;
+namespace StockSharp.Noren;
 
-public partial class ShoonyaMessageAdapter
+public partial class NorenMessageAdapter
 {
 	private readonly SynchronizedDictionary<string, long> _orderTransactions = new(StringComparer.OrdinalIgnoreCase);
 	private readonly SynchronizedDictionary<long, string> _transactionOrders = [];
@@ -15,12 +15,12 @@ public partial class ShoonyaMessageAdapter
 		var orderType = regMsg.OrderType ?? OrderTypes.Limit;
 		ValidateOrderType(orderType);
 		if (regMsg.TimeInForce == TimeInForce.MatchOrCancel)
-			throw new NotSupportedException("Shoonya does not expose fill-or-kill orders.");
+			throw new NotSupportedException("Noren does not expose fill-or-kill orders.");
 
-		var condition = regMsg.Condition as ShoonyaOrderCondition;
+		var condition = regMsg.Condition as NorenOrderCondition;
 		var triggerPrice = condition?.TriggerPrice;
 		if (orderType == OrderTypes.Conditional && triggerPrice is not > 0)
-			throw new InvalidOperationException("A positive trigger price is required for a Shoonya stop order.");
+			throw new InvalidOperationException("A positive trigger price is required for a Noren stop order.");
 		if (orderType == OrderTypes.Limit && regMsg.Price <= 0)
 			throw new ArgumentOutOfRangeException(nameof(regMsg.Price), regMsg.Price, "A positive limit price is required.");
 
@@ -32,7 +32,7 @@ public partial class ShoonyaMessageAdapter
 
 		var instrument = await GetInstrument(regMsg.SecurityId.ToInstrumentKey(), cancellationToken);
 		var product = condition?.Product ?? DefaultProduct;
-		var orderId = await _restClient.PlaceOrder(new ShoonyaPlaceOrderRequest
+		var orderId = await _restClient.PlaceOrder(new NorenPlaceOrderRequest
 		{
 			UserId = UserId,
 			AccountId = _resolvedAccountId,
@@ -81,21 +81,21 @@ public partial class ShoonyaMessageAdapter
 	{
 		EnsurePortfolio(replaceMsg.PortfolioName);
 		if (replaceMsg.TimeInForce == TimeInForce.MatchOrCancel)
-			throw new NotSupportedException("Shoonya does not expose fill-or-kill orders.");
+			throw new NotSupportedException("Noren does not expose fill-or-kill orders.");
 
 		var current = await ResolveOrder(replaceMsg.OldOrderStringId, replaceMsg.OriginalTransactionId, cancellationToken);
 		var orderType = replaceMsg.OrderType ?? current.ToOrderType();
 		ValidateOrderType(orderType);
-		var condition = replaceMsg.Condition as ShoonyaOrderCondition;
+		var condition = replaceMsg.Condition as NorenOrderCondition;
 		var triggerPrice = condition?.TriggerPrice ?? Positive(current.TriggerPrice);
 		if (orderType == OrderTypes.Conditional && triggerPrice is not > 0)
-			throw new InvalidOperationException("A positive trigger price is required for a Shoonya stop order.");
+			throw new InvalidOperationException("A positive trigger price is required for a Noren stop order.");
 		if (orderType == OrderTypes.Limit && replaceMsg.Price <= 0)
 			throw new ArgumentOutOfRangeException(nameof(replaceMsg.Price), replaceMsg.Price, "A positive limit price is required.");
 
 		var quantity = ToQuantity(replaceMsg.Volume, nameof(replaceMsg.Volume), false);
 		var instrument = await ResolveInstrument(replaceMsg.SecurityId, current, cancellationToken);
-		await _restClient.ModifyOrder(new ShoonyaModifyOrderRequest
+		await _restClient.ModifyOrder(new NorenModifyOrderRequest
 		{
 			UserId = UserId,
 			AccountId = _resolvedAccountId,
@@ -253,7 +253,7 @@ public partial class ShoonyaMessageAdapter
 		}
 	}
 
-	private async ValueTask ProcessOrder(ShoonyaOrder order, long originId, bool isLookup,
+	private async ValueTask ProcessOrder(NorenOrder order, long originId, bool isLookup,
 		CancellationToken cancellationToken)
 	{
 		if (order == null || order.OrderId.IsEmpty())
@@ -289,12 +289,12 @@ public partial class ShoonyaMessageAdapter
 				Positive(order.DisclosedQuantity), order.AfterMarket.EqualsIgnoreCase("Yes"),
 				Positive(order.StopLossPrice), Positive(order.ProfitPrice), Positive(order.TrailingPrice), order.Remarks),
 			Error = state == OrderStates.Failed
-				? new InvalidOperationException(order.RejectionReason.IsEmpty($"Shoonya order status: {order.OrderStatus}."))
+				? new InvalidOperationException(order.RejectionReason.IsEmpty($"Noren order status: {order.OrderStatus}."))
 				: null,
 		}, cancellationToken);
 	}
 
-	private async ValueTask ProcessTrade(ShoonyaOrder trade, long originId, CancellationToken cancellationToken)
+	private async ValueTask ProcessTrade(NorenOrder trade, long originId, CancellationToken cancellationToken)
 	{
 		if (trade == null || trade.OrderId.IsEmpty())
 			return;
@@ -316,11 +316,11 @@ public partial class ShoonyaMessageAdapter
 			Side = trade.Side.ToSide(),
 			TradePrice = trade.FillPrice.ToDecimal(),
 			TradeVolume = trade.FillQuantity.ToDecimal(),
-			ServerTime = trade.FillTime.ToShoonyaTime() ?? GetOrderTime(trade),
+			ServerTime = trade.FillTime.ToNorenTime() ?? GetOrderTime(trade),
 		}, cancellationToken);
 	}
 
-	private async ValueTask OnOrderReceived(ShoonyaOrder order, CancellationToken cancellationToken)
+	private async ValueTask OnOrderReceived(NorenOrder order, CancellationToken cancellationToken)
 	{
 		var transactionId = _orderTransactions.TryGetValue2(order.OrderId) ?? 0;
 		if (transactionId != 0 || _orderStatusSubscriptionId != 0)
@@ -329,7 +329,7 @@ public partial class ShoonyaMessageAdapter
 			await ProcessTrade(order, 0, cancellationToken);
 	}
 
-	private async Task<ShoonyaOrder> ResolveOrder(string orderId, long originalTransactionId,
+	private async Task<NorenOrder> ResolveOrder(string orderId, long originalTransactionId,
 		CancellationToken cancellationToken)
 	{
 		if (orderId.IsEmpty())
@@ -348,10 +348,10 @@ public partial class ShoonyaMessageAdapter
 				return order;
 		}
 
-		throw new InvalidOperationException($"Shoonya order '{orderId}' was not found in the current order book.");
+		throw new InvalidOperationException($"Noren order '{orderId}' was not found in the current order book.");
 	}
 
-	private async Task<ShoonyaInstrument> ResolveInstrument(SecurityId securityId, ShoonyaOrder order,
+	private async Task<NorenInstrument> ResolveInstrument(SecurityId securityId, NorenOrder order,
 		CancellationToken cancellationToken)
 	{
 		if (securityId.Native is string native && !native.IsEmpty())
@@ -359,7 +359,7 @@ public partial class ShoonyaMessageAdapter
 		if (!order.Exchange.IsEmpty() && !order.Token.IsEmpty())
 			return await GetInstrument(order.Exchange.ToInstrumentKey(order.Token), cancellationToken);
 		return await _restClient.FindInstrument(order.Exchange, order.TradingSymbol, cancellationToken)
-			?? throw new InvalidOperationException($"Shoonya instrument '{order.Exchange}|{order.TradingSymbol}' was not found.");
+			?? throw new InvalidOperationException($"Noren instrument '{order.Exchange}|{order.TradingSymbol}' was not found.");
 	}
 
 	private async Task<SecurityId> GetSecurityId(string exchange, string token, string tradingSymbol,
@@ -391,14 +391,14 @@ public partial class ShoonyaMessageAdapter
 	{
 		if (orderType is not OrderTypes.Limit and not OrderTypes.Market and not OrderTypes.Conditional)
 			throw new ArgumentOutOfRangeException(nameof(orderType), orderType,
-				"Shoonya supports market, limit, stop-limit, and stop-market orders.");
+				"Noren supports market, limit, stop-limit, and stop-market orders.");
 	}
 
 	private static long ToQuantity(decimal value, string parameterName, bool allowZero)
 	{
 		if (value < 0 || !allowZero && value == 0 || value != decimal.Truncate(value) || value > long.MaxValue)
 			throw new ArgumentOutOfRangeException(parameterName, value,
-				"Shoonya quantities must be non-negative whole numbers within Int64 range.");
+				"Noren quantities must be non-negative whole numbers within Int64 range.");
 		return decimal.ToInt64(value);
 	}
 
@@ -408,22 +408,23 @@ public partial class ShoonyaMessageAdapter
 	private static string FormatOptional(decimal? value)
 		=> value is > 0 ? FormatPrice(value.Value) : null;
 
-	private static ShoonyaOrderCondition CreateCondition(ShoonyaProducts product, decimal? triggerPrice,
+	private NorenOrderCondition CreateCondition(NorenProducts product, decimal? triggerPrice,
 		decimal? disclosedVolume, bool isAfterMarket, decimal? stopLossPrice, decimal? profitPrice,
 		decimal? trailingPrice, string remarks)
-		=> new()
-		{
-			Product = product,
-			TriggerPrice = triggerPrice,
-			DisclosedVolume = disclosedVolume,
-			IsAfterMarket = isAfterMarket,
-			StopLossPrice = stopLossPrice,
-			ProfitPrice = profitPrice,
-			TrailingPrice = trailingPrice,
-			Remarks = remarks,
-		};
+	{
+		var condition = CreateOrderCondition();
+		condition.Product = product;
+		condition.TriggerPrice = triggerPrice;
+		condition.DisclosedVolume = disclosedVolume;
+		condition.IsAfterMarket = isAfterMarket;
+		condition.StopLossPrice = stopLossPrice;
+		condition.ProfitPrice = profitPrice;
+		condition.TrailingPrice = trailingPrice;
+		condition.Remarks = remarks;
+		return condition;
+	}
 
-	private DateTime GetOrderTime(ShoonyaOrder order)
-		=> order.ExchangeTime.ToShoonyaTime() ?? order.OrderEntryTime.ToShoonyaTime() ??
-			order.NorenTime.ToShoonyaTime() ?? CurrentTime;
+	private DateTime GetOrderTime(NorenOrder order)
+		=> order.ExchangeTime.ToNorenTime() ?? order.OrderEntryTime.ToNorenTime() ??
+			order.NorenTime.ToNorenTime() ?? CurrentTime;
 }

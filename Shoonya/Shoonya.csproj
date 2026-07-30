@@ -1,4 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\common_connectors_websocket.props" />
-
+  <Import Project="..\common_connectors.props" />
+  <ItemGroup>
+    <ProjectReference Include="..\Noren\Noren.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\common_connectors.props" />
   <ItemGroup>
-    <ProjectReference Include="..\Shoonya\Shoonya.csproj" />
+    <ProjectReference Include="..\Noren\Noren.csproj" />
   </ItemGroup>
 </Project>

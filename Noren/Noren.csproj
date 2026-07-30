@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors_websocket.props" />
+  <PropertyGroup>
+    <Description>Shared Noren protocol infrastructure for StockSharp connectors.</Description>
+    <IsConnectorProject>false</IsConnectorProject>
+  </PropertyGroup>
+</Project>

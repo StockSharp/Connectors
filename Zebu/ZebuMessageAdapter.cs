@@ -18,7 +18,7 @@ using StockSharp.Zebu.Native;
     MessageAdapterCategories.Futures | MessageAdapterCategories.Options |
     MessageAdapterCategories.FX | MessageAdapterCategories.Commodities)]
 [OrderCondition(typeof(ZebuOrderCondition))]
-public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
+public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
 {
     private static readonly Uri _defaultAuthorizationAddress =
         new("https://go.mynt.in/OAuthlogin/authorize/oauth");
@@ -135,7 +135,7 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
         Description = LocalizedStrings.DefaultMyntProductUsedForNewZebuOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 8)]
-    public new ShoonyaProducts DefaultProduct
+    public new NorenProducts DefaultProduct
     {
         get => base.DefaultProduct;
         set => base.DefaultProduct = value;
@@ -247,6 +247,10 @@ public class ZebuMessageAdapter : ShoonyaMessageAdapter, IKeySecretAdapter
 
     /// <inheritdoc />
     protected override bool IsBearerAuthentication => true;
+
+    /// <inheritdoc />
+    protected override NorenOrderCondition CreateOrderCondition()
+        => new ZebuOrderCondition();
 
     /// <inheritdoc />
     protected override async ValueTask PrepareConnectionAsync(

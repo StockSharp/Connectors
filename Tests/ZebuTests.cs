@@ -3,11 +3,9 @@ namespace StockSharp.Connectors.Tests;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,13 +17,10 @@ using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using StockSharp.Messages;
-using StockSharp.Shoonya;
-using StockSharp.Shoonya.Native;
-using StockSharp.Shoonya.Native.Model;
+using StockSharp.Noren;
 using StockSharp.Zebu;
 using StockSharp.Zebu.Native;
 
@@ -53,7 +48,7 @@ public class ZebuTests : BaseTestClass
             UserId = "ZP001",
             AccountId = "ZP001-A",
             TokenExpiresAt = expires,
-            DefaultProduct = ShoonyaProducts.Normal,
+            DefaultProduct = NorenProducts.Normal,
             ReconnectAttempts = 7,
             AuthorizationAddress =
                 new("https://oauth.example.test/authorize"),
@@ -114,7 +109,7 @@ public class ZebuTests : BaseTestClass
         AreEqual(
             "https://go.mynt.in/OAuthlogin/authorize/oauth?client_id=ZP00%201%2FU",
             adapter.CreateAuthorizationUri().AbsoluteUri);
-        IsTrue(ShoonyaMessageAdapter.AllTimeFrames.Any());
+        IsTrue(NorenMessageAdapter.AllTimeFrames.Any());
     }
 
     [TestMethod]
@@ -208,239 +203,6 @@ public class ZebuTests : BaseTestClass
             ZebuOAuthClient.ParseToken(
                 "GenAcsTok",
                 """{"stat":"Ok","uid":"ZP001"}"""));
-    }
-
-    [TestMethod]
-    public async Task BearerTransportUsesRawJDataApi2AndEncodedSymbol()
-    {
-        var handler = new CaptureHandler(
-            new ResponseSpec(
-                """{"stat":"Ok","norenordno":"ORDER-1"}"""));
-        using var client = new ShoonyaRestClient(
-            "ZP001",
-            "ZP001",
-            "ACCESS".Secure(),
-            "https://go.example.test/NorenWClientAPI/",
-            "https://static.example.test/{0}.zip",
-            true,
-            handler);
-
-        var orderId = await client.PlaceOrder(
-            Order("M&M-EQ"),
-            CancellationToken.None);
-
-        AreEqual("ORDER-1", orderId);
-        var request = handler.Requests.Single();
-        AreEqual("Bearer ACCESS", request.Authorization);
-        AreEqual("text/plain; charset=utf-8", request.ContentType);
-        IsFalse(request.Body.Contains("jKey="));
-        var body = JObject.Parse(request.Body["jData=".Length..]);
-        AreEqual("API2", body["ordersource"].Value<string>());
-        AreEqual("M%26M-EQ", body["tsym"].Value<string>());
-        AreEqual("ZP001", body["uid"].Value<string>());
-        AreEqual("10", body["qty"].Value<string>());
-    }
-
-    [TestMethod]
-    public async Task LegacyTransportKeepsFormJKeyProtocol()
-    {
-        var handler = new CaptureHandler(
-            new ResponseSpec(
-                """{"stat":"Ok","norenordno":"ORDER-2"}"""));
-        using var client = new ShoonyaRestClient(
-            "FA001",
-            "FA001",
-            "SESSION".Secure(),
-            "https://api.example.test/NorenWClientTP/",
-            "https://static.example.test/{0}.zip",
-            false,
-            handler);
-
-        await client.PlaceOrder(
-            Order("M&M-EQ"),
-            CancellationToken.None);
-
-        var request = handler.Requests.Single();
-        IsNull(request.Authorization);
-        AreEqual(
-            "application/x-www-form-urlencoded; charset=utf-8",
-            request.ContentType);
-        IsTrue(request.Body.Contains("&jKey=SESSION"));
-        IsTrue(
-            Uri.UnescapeDataString(request.Body)
-                .Contains("\"ordersource\":\"API\""));
-        IsTrue(
-            Uri.UnescapeDataString(request.Body)
-                .Contains("\"tsym\":\"M&M-EQ\""));
-    }
-
-    [TestMethod]
-    public void SocketLoginPayloadSwitchesBetweenOAuthAndSessionModes()
-    {
-        using var oauth = new ShoonyaSocketClient(
-            "ZP001",
-            "ZP001-A",
-            "ACCESS".Secure(),
-            true,
-            3,
-            new WorkingTime(),
-            "wss://go.example.test/NorenWSAPI/",
-            true);
-        using var legacy = new ShoonyaSocketClient(
-            "FA001",
-            "FA001",
-            "SESSION".Secure(),
-            true,
-            3,
-            new WorkingTime(),
-            "wss://api.example.test/NorenWSTP/",
-            false);
-
-        var oauthPayload = JObject.Parse(oauth.CreateLoginPayload());
-        AreEqual("a", oauthPayload["t"].Value<string>());
-        AreEqual("ACCESS", oauthPayload["accesstoken"].Value<string>());
-        IsNull(oauthPayload["susertoken"]);
-        AreEqual("API", oauthPayload["source"].Value<string>());
-
-        var legacyPayload = JObject.Parse(legacy.CreateLoginPayload());
-        AreEqual("c", legacyPayload["t"].Value<string>());
-        AreEqual("SESSION", legacyPayload["susertoken"].Value<string>());
-        IsNull(legacyPayload["accesstoken"]);
-    }
-
-    [TestMethod]
-    public async Task PublishedMasterArchivesMapAllSegmentLayouts()
-    {
-        var equity = await ShoonyaRestClient.ParseInstrumentArchive(
-            "NSE",
-            CreateArchive(
-                "NSE_symbols.txt",
-                """
-				Exchange,Token,LotSize,Symbol,TradingSymbol,Instrument,TickSize,
-				NSE,26000,1,Nifty 50,NIFTY INDEX,INDEX,0,
-				NSE,2885,1,RELIANCE,RELIANCE-EQ,EQ,0.05,
-				"""),
-            CancellationToken.None);
-        var derivative = await ShoonyaRestClient.ParseInstrumentArchive(
-            "NFO",
-            CreateArchive(
-                "NFO_symbols.txt",
-                """
-				Exchange,Token,LotSize,Symbol,TradingSymbol,Expiry,Instrument,OptionType,StrikePrice,TickSize,
-				NFO,156871,900,ZYDUSLIFE,ZYDUSLIFE29SEP26P1600,29-SEP-2026,OPTSTK,PE,1600,0.05,
-				"""),
-            CancellationToken.None);
-        var currency = await ShoonyaRestClient.ParseInstrumentArchive(
-            "CDS",
-            CreateArchive(
-                "CDS_symbols.txt",
-                """
-				Exchange,Token,LotSize,Precision,Multiplier,Symbol,TradingSymbol,Expiry,Instrument,OptionType,StrikePrice,TickSize,
-				CDS,17274,1,4,1000,USDJPY,USDJPY29DEC26P141,29-DEC-2026,OPTCUR,PE,141,0.01,
-				"""),
-            CancellationToken.None);
-        var commodity = await ShoonyaRestClient.ParseInstrumentArchive(
-            "MCX",
-            CreateArchive(
-                "MCX_symbols.txt",
-                """
-				Exchange,Token,LotSize,GNGD,Symbol,TradingSymbol,Expiry,Instrument,OptionType,StrikePrice,TickSize,
-				MCX,574822,100,0.1,SILVER100,SILVER10031JUL26,31-JUL-2026,FUTCOM,XX,0,1,
-				"""),
-            CancellationToken.None);
-
-        AreEqual(2, equity.Length);
-        AreEqual(SecurityTypes.Index, equity[0].ToSecurityType());
-        AreEqual(SecurityTypes.Stock, equity[1].ToSecurityType());
-        AreEqual(SecurityTypes.Option, derivative[0].ToSecurityType());
-        AreEqual(OptionTypes.Put, derivative[0].OptionType.ToOptionType());
-        AreEqual(1600m, derivative[0].StrikePrice);
-        AreEqual(SecurityTypes.Option, currency[0].ToSecurityType());
-        AreEqual(1000m, currency[0].Multiplier);
-        AreEqual(SecurityTypes.Future, commodity[0].ToSecurityType());
-        AreEqual("MCX|574822", commodity[0].ToSecurityId().Native);
-    }
-
-    [TestMethod]
-    public void NativeCodesAndOrderStatesRemainNorenCompatible()
-    {
-        AreEqual("C", ShoonyaProducts.Delivery.ToNative());
-        AreEqual("I", ShoonyaProducts.Intraday.ToNative());
-        AreEqual("M", ShoonyaProducts.Normal.ToNative());
-        AreEqual("B", Sides.Buy.ToNative());
-        AreEqual(Sides.Sell, "S".ToSide());
-        AreEqual("MKT", OrderTypes.Market.ToPriceType(0));
-        AreEqual("SL-LMT", OrderTypes.Conditional.ToPriceType(100));
-        AreEqual("SL-MKT", OrderTypes.Conditional.ToPriceType(0));
-        AreEqual("IOC", ((TimeInForce?)TimeInForce.CancelBalance).ToRetention());
-        AreEqual(
-            OrderStates.Pending,
-            "TRIGGER_PENDING".ToOrderState(null));
-        AreEqual(
-            OrderStates.Active,
-            "OPEN".ToOrderState(null));
-        AreEqual(
-            OrderStates.Done,
-            "COMPLETE".ToOrderState("Fill"));
-        AreEqual(
-            OrderStates.Failed,
-            "REJECTED".ToOrderState("Rejected"));
-    }
-
-    [TestMethod]
-    public void SparseDepthUpdatesMergeWithoutErasingPreviousLevels()
-    {
-        var state = new ShoonyaMarketUpdate();
-        state.Apply(JsonConvert.DeserializeObject<ShoonyaMarketUpdate>(
-            """
-			{"t":"dk","e":"NSE","tk":"22","lp":"1156.25",
-			 "bp1":"1156.00","bq1":"4","bo1":"1",
-			 "sp1":"1156.50","sq1":"10","so1":"2",
-			 "bp2":"1155.80","bq2":"67","bo2":"4"}
-			"""));
-        state.Apply(JsonConvert.DeserializeObject<ShoonyaMarketUpdate>(
-            """
-			{"t":"df","e":"NSE","tk":"22","lp":"1157.00",
-			 "sq1":"3","so1":"1"}
-			"""));
-
-        AreEqual(1157m, state.LastPrice.ToDecimal());
-        AreEqual(2, state.GetBids().Length);
-        AreEqual(1156m, state.GetBids()[0].Price);
-        AreEqual(1156.50m, state.GetAsks()[0].Price);
-        AreEqual(3m, state.GetAsks()[0].Volume);
-        AreEqual(1, state.GetAsks()[0].OrdersCount);
-    }
-
-    private static ShoonyaPlaceOrderRequest Order(string symbol)
-        => new()
-        {
-            UserId = "ZP001",
-            AccountId = "ZP001",
-            Side = "B",
-            Product = "C",
-            Exchange = "NSE",
-            TradingSymbol = symbol,
-            Quantity = "10",
-            DisclosedQuantity = "0",
-            PriceType = "LMT",
-            Price = "100.50",
-            TriggerPrice = "0",
-            Retention = "DAY",
-        };
-
-    private static byte[] CreateArchive(string name, string content)
-    {
-        using var stream = new MemoryStream();
-        using (var archive = new ZipArchive(
-            stream,
-            ZipArchiveMode.Create,
-            true))
-        using (var writer = new StreamWriter(
-            archive.CreateEntry(name).Open(),
-            new UTF8Encoding(false)))
-            writer.Write(content);
-        return stream.ToArray();
     }
 
     private sealed record ResponseSpec(

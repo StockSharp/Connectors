@@ -1,11 +1,11 @@
-namespace StockSharp.Shoonya;
+namespace StockSharp.Noren;
 
-public partial class ShoonyaMessageAdapter
+public partial class NorenMessageAdapter
 {
 	private readonly SynchronizedDictionary<string, SynchronizedDictionary<DataType, long>> _marketSubscriptions = new(StringComparer.OrdinalIgnoreCase);
 	private readonly SynchronizedDictionary<string, SecurityId> _securityIds = new(StringComparer.OrdinalIgnoreCase);
-	private readonly SynchronizedDictionary<string, ShoonyaInstrument> _instruments = new(StringComparer.OrdinalIgnoreCase);
-	private readonly SynchronizedDictionary<string, ShoonyaMarketUpdate> _marketStates = new(StringComparer.OrdinalIgnoreCase);
+	private readonly SynchronizedDictionary<string, NorenInstrument> _instruments = new(StringComparer.OrdinalIgnoreCase);
+	private readonly SynchronizedDictionary<string, NorenMarketUpdate> _marketStates = new(StringComparer.OrdinalIgnoreCase);
 	private readonly SynchronizedDictionary<string, (DateTime time, decimal price, decimal volume)> _lastTicks = new(StringComparer.OrdinalIgnoreCase);
 
 	/// <inheritdoc />
@@ -73,7 +73,7 @@ public partial class ShoonyaMessageAdapter
 	{
 		var depth = mdMsg.MaxDepth ?? 5;
 		if (depth is < 1 or > 5)
-			throw new ArgumentOutOfRangeException(nameof(mdMsg.MaxDepth), depth, "Shoonya provides five market-depth levels.");
+			throw new ArgumentOutOfRangeException(nameof(mdMsg.MaxDepth), depth, "Noren provides five market-depth levels.");
 		return ProcessRealtimeSubscription(mdMsg, DataType.MarketDepth, cancellationToken);
 	}
 
@@ -136,12 +136,12 @@ public partial class ShoonyaMessageAdapter
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (!mdMsg.IsHistoryOnly())
-			throw new NotSupportedException("Shoonya provides historical candles only; realtime candle subscriptions are not available.");
+			throw new NotSupportedException("Noren provides historical candles only; realtime candle subscriptions are not available.");
 
 		var instrument = await GetInstrument(mdMsg.SecurityId.ToInstrumentKey(), cancellationToken);
 		var timeFrame = mdMsg.GetTimeFrame();
 		var candles = await _restClient.GetCandles(instrument, timeFrame, mdMsg.From, mdMsg.To, cancellationToken);
-		IEnumerable<ShoonyaCandle> ordered = candles
+		IEnumerable<NorenCandle> ordered = candles
 			.Where(c => c?.GetCandleTime() != null)
 			.OrderBy(c => c.GetCandleTime());
 		if (mdMsg.Count is long count)
@@ -170,17 +170,17 @@ public partial class ShoonyaMessageAdapter
 		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
 
-	private async Task<ShoonyaInstrument> GetInstrument(string instrumentKey, CancellationToken cancellationToken)
+	private async Task<NorenInstrument> GetInstrument(string instrumentKey, CancellationToken cancellationToken)
 	{
 		if (_instruments.TryGetValue(instrumentKey, out var instrument))
 			return instrument;
 		instrument = await _restClient.GetInstrument(instrumentKey, cancellationToken)
-			?? throw new InvalidOperationException($"Shoonya instrument '{instrumentKey}' was not found in the official security master.");
+			?? throw new InvalidOperationException($"Noren instrument '{instrumentKey}' was not found in the official security master.");
 		_instruments[instrumentKey] = instrument;
 		return instrument;
 	}
 
-	private async ValueTask OnMarketDataReceived(ShoonyaMarketUpdate update, CancellationToken cancellationToken)
+	private async ValueTask OnMarketDataReceived(NorenMarketUpdate update, CancellationToken cancellationToken)
 	{
 		var instrumentKey = update.Exchange.ToInstrumentKey(update.Token);
 		if (!_marketSubscriptions.TryGetValue(instrumentKey, out var subscriptions))

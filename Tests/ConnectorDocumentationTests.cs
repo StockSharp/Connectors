@@ -335,24 +335,31 @@ public class ConnectorDocumentationTests : BaseTestClass
 				.EnumerateFiles(root, "*.csproj", SearchOption.AllDirectories)
 				.Select(path => Path.GetRelativePath(root, path))
 				.Select(NormalizeProjectPath)
-				.Where(IsConnectorProjectPath)
+				.Where(path => IsConnectorProjectPath(root, path))
 				.Distinct(StringComparer.Ordinal)
 				.Order(StringComparer.Ordinal),
 		];
 
-	private static bool IsConnectorProjectPath(string path)
+	private static bool IsConnectorProjectPath(string root, string path)
 	{
 		var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-		return segments.Length > 1 &&
-			path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase) &&
-			!segments.Any(segment =>
+		if (segments.Length <= 1 ||
+			!path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase) ||
+			segments.Any(segment =>
 				segment.Equals(".git", StringComparison.OrdinalIgnoreCase) ||
 				segment.Equals(".vs", StringComparison.OrdinalIgnoreCase) ||
 				segment.Equals("Tests", StringComparison.OrdinalIgnoreCase) ||
 				segment.Equals("bin", StringComparison.OrdinalIgnoreCase) ||
 				segment.Equals("obj", StringComparison.OrdinalIgnoreCase) ||
-				segment.Equals("TestResults", StringComparison.OrdinalIgnoreCase));
+				segment.Equals("TestResults", StringComparison.OrdinalIgnoreCase)))
+			return false;
+
+		var project = XDocument.Load(Path.Combine(root, path));
+
+		return !GetElements(project, "IsConnectorProject")
+			.Any(element => element.Value.Trim()
+				.Equals("false", StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static string NormalizeProjectPath(string path)

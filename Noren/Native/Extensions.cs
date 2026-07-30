@@ -1,4 +1,4 @@
-namespace StockSharp.Shoonya.Native;
+namespace StockSharp.Noren.Native;
 
 static class Extensions
 {
@@ -11,7 +11,7 @@ static class Extensions
 	{
 		var parts = key?.Split('|');
 		if (parts?.Length != 2 || parts[0].IsEmpty() || parts[1].IsEmpty())
-			throw new FormatException($"Invalid Shoonya instrument key '{key}'.");
+			throw new FormatException($"Invalid Noren instrument key '{key}'.");
 		parts[0].ToBoardCode();
 		return (parts[0].ToUpperInvariant(), parts[1]);
 	}
@@ -30,7 +30,7 @@ static class Extensions
 			return securityId.SecurityCode;
 		}
 
-		throw new InvalidOperationException("Shoonya token is missing. Select the security through Shoonya lookup so SecurityId.Native contains exchange|token.");
+		throw new InvalidOperationException("Noren token is missing. Select the security through Noren lookup so SecurityId.Native contains exchange|token.");
 	}
 
 	public static string ToBoardCode(this string exchange)
@@ -42,10 +42,10 @@ static class Extensions
 			"BFO" => "BFO",
 			"CDS" => "CDS",
 			"MCX" => "MCX",
-			_ => throw new ArgumentOutOfRangeException(nameof(exchange), exchange, "Unsupported Shoonya exchange segment."),
+			_ => throw new ArgumentOutOfRangeException(nameof(exchange), exchange, "Unsupported Noren exchange segment."),
 		};
 
-	public static SecurityId ToSecurityId(this ShoonyaInstrument instrument)
+	public static SecurityId ToSecurityId(this NorenInstrument instrument)
 		=> instrument.Exchange.ToSecurityId(instrument.Token, instrument.TradingSymbol.IsEmpty(instrument.Symbol));
 
 	public static SecurityId ToSecurityId(this string exchange, string token, string symbol = null)
@@ -56,7 +56,7 @@ static class Extensions
 			Native = exchange.ToInstrumentKey(token),
 		};
 
-	public static SecurityTypes ToSecurityType(this ShoonyaInstrument instrument)
+	public static SecurityTypes ToSecurityType(this NorenInstrument instrument)
 	{
 		var type = instrument.Instrument?.ToUpperInvariant();
 		if (type == "INDEX")
@@ -80,25 +80,25 @@ static class Extensions
 			_ => null,
 		};
 
-	public static string ToNative(this ShoonyaProducts product)
+	public static string ToNative(this NorenProducts product)
 		=> product switch
 		{
-			ShoonyaProducts.Delivery => "C",
-			ShoonyaProducts.Intraday => "I",
-			ShoonyaProducts.Normal => "M",
-			ShoonyaProducts.Cover => "H",
-			ShoonyaProducts.Bracket => "B",
+			NorenProducts.Delivery => "C",
+			NorenProducts.Intraday => "I",
+			NorenProducts.Normal => "M",
+			NorenProducts.Cover => "H",
+			NorenProducts.Bracket => "B",
 			_ => throw new ArgumentOutOfRangeException(nameof(product), product, null),
 		};
 
-	public static ShoonyaProducts ToProduct(this string product)
+	public static NorenProducts ToProduct(this string product)
 		=> product?.ToUpperInvariant() switch
 		{
-			"I" => ShoonyaProducts.Intraday,
-			"M" => ShoonyaProducts.Normal,
-			"H" => ShoonyaProducts.Cover,
-			"B" => ShoonyaProducts.Bracket,
-			_ => ShoonyaProducts.Delivery,
+			"I" => NorenProducts.Intraday,
+			"M" => NorenProducts.Normal,
+			"H" => NorenProducts.Cover,
+			"B" => NorenProducts.Bracket,
+			_ => NorenProducts.Delivery,
 		};
 
 	public static string ToNative(this Sides side)
@@ -115,10 +115,10 @@ static class Extensions
 			OrderTypes.Conditional when price > 0 => "SL-LMT",
 			OrderTypes.Conditional => "SL-MKT",
 			_ => throw new ArgumentOutOfRangeException(nameof(orderType), orderType,
-				"Shoonya supports market, limit, stop-limit, and stop-market orders."),
+				"Noren supports market, limit, stop-limit, and stop-market orders."),
 		};
 
-	public static OrderTypes ToOrderType(this ShoonyaOrder order)
+	public static OrderTypes ToOrderType(this NorenOrder order)
 		=> order.PriceType?.ToUpperInvariant() switch
 		{
 			"MKT" => OrderTypes.Market,
@@ -178,7 +178,7 @@ static class Extensions
 		return Convert.ToInt64(Math.Floor((utc - DateTime.UnixEpoch).TotalSeconds));
 	}
 
-	public static DateTime? ToShoonyaTime(this string value)
+	public static DateTime? ToNorenTime(this string value)
 	{
 		if (value.IsEmpty() || value.Trim() is "0" or "-")
 			return null;
@@ -204,13 +204,13 @@ static class Extensions
 		return null;
 	}
 
-	public static DateTime? GetCandleTime(this ShoonyaCandle candle)
-		=> candle.EpochTime.ToShoonyaTime() ?? candle.Time.ToShoonyaTime();
+	public static DateTime? GetCandleTime(this NorenCandle candle)
+		=> candle.EpochTime.ToNorenTime() ?? candle.Time.ToNorenTime();
 
-	public static DateTime GetMarketTime(this ShoonyaMarketUpdate update)
-		=> update.FeedTime.ToShoonyaTime() ?? update.LastTradeTime.ToShoonyaTime() ?? DateTime.UtcNow;
+	public static DateTime GetMarketTime(this NorenMarketUpdate update)
+		=> update.FeedTime.ToNorenTime() ?? update.LastTradeTime.ToNorenTime() ?? DateTime.UtcNow;
 
-	public static void Apply(this ShoonyaMarketUpdate state, ShoonyaMarketUpdate update)
+	public static void Apply(this NorenMarketUpdate state, NorenMarketUpdate update)
 	{
 		Set(update.Type, value => state.Type = value);
 		Set(update.Exchange, value => state.Exchange = value);
@@ -271,7 +271,7 @@ static class Extensions
 		Set(update.AskOrders5, value => state.AskOrders5 = value);
 	}
 
-	public static ShoonyaDepthLevel[] GetBids(this ShoonyaMarketUpdate state)
+	public static NorenDepthLevel[] GetBids(this NorenMarketUpdate state)
 		=> CreateDepth(
 			(state.BidPrice1, state.BidQuantity1, state.BidOrders1),
 			(state.BidPrice2, state.BidQuantity2, state.BidOrders2),
@@ -279,7 +279,7 @@ static class Extensions
 			(state.BidPrice4, state.BidQuantity4, state.BidOrders4),
 			(state.BidPrice5, state.BidQuantity5, state.BidOrders5));
 
-	public static ShoonyaDepthLevel[] GetAsks(this ShoonyaMarketUpdate state)
+	public static NorenDepthLevel[] GetAsks(this NorenMarketUpdate state)
 		=> CreateDepth(
 			(state.AskPrice1, state.AskQuantity1, state.AskOrders1),
 			(state.AskPrice2, state.AskQuantity2, state.AskOrders2),
@@ -287,9 +287,9 @@ static class Extensions
 			(state.AskPrice4, state.AskQuantity4, state.AskOrders4),
 			(state.AskPrice5, state.AskQuantity5, state.AskOrders5));
 
-	private static ShoonyaDepthLevel[] CreateDepth(params (string price, string volume, string orders)[] values)
+	private static NorenDepthLevel[] CreateDepth(params (string price, string volume, string orders)[] values)
 		=> [.. values
-			.Select(v => new ShoonyaDepthLevel
+			.Select(v => new NorenDepthLevel
 			{
 				Price = v.price.ToDecimal(),
 				Volume = v.volume.ToDecimal(),

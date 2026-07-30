@@ -1,6 +1,6 @@
-namespace StockSharp.Shoonya.Native;
+namespace StockSharp.Noren.Native;
 
-sealed class ShoonyaSocketClient : BaseLogReceiver
+sealed class NorenSocketClient : BaseLogReceiver
 {
 	private static readonly JsonSerializerSettings _jsonSettings = new()
 	{
@@ -16,7 +16,7 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 	private readonly SynchronizedDictionary<string, bool> _subscriptions = new(StringComparer.OrdinalIgnoreCase);
 	private TaskCompletionSource<bool> _loginCompletion;
 
-	public ShoonyaSocketClient(string userId, string accountId, SecureString sessionToken, bool subscribeOrders,
+	public NorenSocketClient(string userId, string accountId, SecureString sessionToken, bool subscribeOrders,
 		int reconnectAttempts, WorkingTime workingTime, string webSocketEndpoint,
 		bool useBearerAuthentication = false)
 	{
@@ -42,10 +42,10 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 		_client.PostConnect += OnPostConnect;
 	}
 
-	public override string Name => nameof(Shoonya) + "_" + nameof(ShoonyaSocketClient);
+	public override string Name => nameof(Noren) + "_" + nameof(NorenSocketClient);
 
-	public event Func<ShoonyaMarketUpdate, CancellationToken, ValueTask> MarketDataReceived;
-	public event Func<ShoonyaOrder, CancellationToken, ValueTask> OrderReceived;
+	public event Func<NorenMarketUpdate, CancellationToken, ValueTask> MarketDataReceived;
+	public event Func<NorenOrder, CancellationToken, ValueTask> OrderReceived;
 	public event Func<Exception, CancellationToken, ValueTask> Error;
 	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
 
@@ -67,7 +67,7 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 		=> _client.DisconnectAsync(cancellationToken);
 
 	public ValueTask SendHeartbeat(CancellationToken cancellationToken)
-		=> Send(new ShoonyaSocketHeartbeat(), cancellationToken);
+		=> Send(new NorenSocketHeartbeat(), cancellationToken);
 
 	public async ValueTask Subscribe(string instrumentKey, bool isDepth, CancellationToken cancellationToken)
 	{
@@ -101,13 +101,13 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 	internal string CreateLoginPayload()
 		=> JsonConvert.SerializeObject(
 			_useBearerAuthentication
-				? new ShoonyaSocketOAuthLoginRequest
+				? new NorenSocketOAuthLoginRequest
 				{
 					UserId = _userId,
 					AccountId = _accountId,
 					AccessToken = _sessionToken,
 				}
-				: new ShoonyaSocketLoginRequest
+				: new NorenSocketLoginRequest
 				{
 					UserId = _userId,
 					AccountId = _accountId,
@@ -122,25 +122,25 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 		if (text.IsEmpty())
 			return;
 
-		var envelope = JsonConvert.DeserializeObject<ShoonyaSocketEnvelope>(text, _jsonSettings)
-			?? throw new InvalidDataException("Shoonya returned an empty WebSocket message.");
+		var envelope = JsonConvert.DeserializeObject<NorenSocketEnvelope>(text, _jsonSettings)
+			?? throw new InvalidDataException("Noren returned an empty WebSocket message.");
 
 		switch (envelope.Type?.ToLowerInvariant())
 		{
 			case "ak":
 			case "ck":
 			{
-				var acknowledgement = JsonConvert.DeserializeObject<ShoonyaSocketAcknowledgement>(text, _jsonSettings)
-					?? throw new InvalidDataException("Shoonya returned an invalid connection acknowledgement.");
+				var acknowledgement = JsonConvert.DeserializeObject<NorenSocketAcknowledgement>(text, _jsonSettings)
+					?? throw new InvalidDataException("Noren returned an invalid connection acknowledgement.");
 				if (!acknowledgement.Status.EqualsIgnoreCase("OK"))
 				{
-					var error = new InvalidOperationException($"Shoonya WebSocket login failed: {acknowledgement.ErrorMessage.IsEmpty(acknowledgement.Status)}");
+					var error = new InvalidOperationException($"Noren WebSocket login failed: {acknowledgement.ErrorMessage.IsEmpty(acknowledgement.Status)}");
 					_loginCompletion?.TrySetException(error);
 					throw error;
 				}
 
 				if (_subscribeOrders)
-					await Send(new ShoonyaSocketOrderRequest { AccountId = _accountId }, cancellationToken);
+					await Send(new NorenSocketOrderRequest { AccountId = _accountId }, cancellationToken);
 				foreach (var subscription in _subscriptions.ToArray())
 					await SendSubscription(subscription.Key, subscription.Value, true, cancellationToken);
 				_loginCompletion?.TrySetResult(true);
@@ -152,8 +152,8 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 			case "dk":
 			case "df":
 			{
-				var update = JsonConvert.DeserializeObject<ShoonyaMarketUpdate>(text, _jsonSettings)
-					?? throw new InvalidDataException("Shoonya returned an invalid market-data update.");
+				var update = JsonConvert.DeserializeObject<NorenMarketUpdate>(text, _jsonSettings)
+					?? throw new InvalidDataException("Noren returned an invalid market-data update.");
 				if (!update.Exchange.IsEmpty() && !update.Token.IsEmpty() && MarketDataReceived is { } handler)
 					await handler(update, cancellationToken);
 				break;
@@ -161,8 +161,8 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 
 			case "om":
 			{
-				var order = JsonConvert.DeserializeObject<ShoonyaOrder>(text, _jsonSettings)
-					?? throw new InvalidDataException("Shoonya returned an invalid order update.");
+				var order = JsonConvert.DeserializeObject<NorenOrder>(text, _jsonSettings)
+					?? throw new InvalidDataException("Noren returned an invalid order update.");
 				if (!order.OrderId.IsEmpty() && OrderReceived is { } handler)
 					await handler(order, cancellationToken);
 				break;
@@ -174,10 +174,10 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 
 			default:
 			{
-				var acknowledgement = JsonConvert.DeserializeObject<ShoonyaSocketAcknowledgement>(text, _jsonSettings);
+				var acknowledgement = JsonConvert.DeserializeObject<NorenSocketAcknowledgement>(text, _jsonSettings);
 				if (acknowledgement != null && !acknowledgement.ErrorMessage.IsEmpty())
-					throw new InvalidOperationException($"Shoonya WebSocket error: {acknowledgement.ErrorMessage}");
-				this.AddVerboseLog("Ignored Shoonya WebSocket message type {0}.", envelope.Type);
+					throw new InvalidOperationException($"Noren WebSocket error: {acknowledgement.ErrorMessage}");
+				this.AddVerboseLog("Ignored Noren WebSocket message type {0}.", envelope.Type);
 				break;
 			}
 		}
@@ -185,7 +185,7 @@ sealed class ShoonyaSocketClient : BaseLogReceiver
 
 	private ValueTask SendSubscription(string instrumentKey, bool isDepth, bool subscribe,
 		CancellationToken cancellationToken)
-		=> Send(new ShoonyaSocketSubscriptionRequest
+		=> Send(new NorenSocketSubscriptionRequest
 		{
 			Type = subscribe ? isDepth ? "d" : "t" : isDepth ? "ud" : "u",
 			Instruments = instrumentKey,

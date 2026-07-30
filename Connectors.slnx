@@ -381,6 +381,9 @@
     <Project Path="XbrlFilings/XbrlFilings.csproj" />
     <Project Path="Zebu/Zebu.csproj" />
   </Folder>
+  <Folder Name="/Shared/">
+    <Project Path="Noren/Noren.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/Tests.csproj" />
   </Folder>
