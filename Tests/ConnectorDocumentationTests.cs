@@ -307,22 +307,25 @@ public class ConnectorDocumentationTests : BaseTestClass
 
 			var adapterDeclarations = declarations
 				.Where(p => p.Value.Any(d => _baseAdapterRegex.IsMatch(d.Bases)))
+				.OrderBy(p => p.Key, StringComparer.Ordinal)
 				.ToArray();
 
-			if (adapterDeclarations.Length != 1)
-				Fail($"Project '{project}' must declare exactly one message adapter, but {adapterDeclarations.Length} were found.");
+			if (adapterDeclarations.Length == 0)
+				Fail($"Project '{project}' must declare at least one message adapter.");
 
-			var adapter = adapterDeclarations[0];
-			var docPaths = adapter.Value
-				.SelectMany(d => _docRegex.Matches(d.Attributes).Cast<Match>())
-				.Select(m => m.Groups["path"].Value)
-				.Distinct(StringComparer.Ordinal)
-				.ToArray();
+			foreach (var adapter in adapterDeclarations)
+			{
+				var docPaths = adapter.Value
+					.SelectMany(d => _docRegex.Matches(d.Attributes).Cast<Match>())
+					.Select(m => m.Groups["path"].Value)
+					.Distinct(StringComparer.Ordinal)
+					.ToArray();
 
-			if (docPaths.Length > 1)
-				Fail($"Adapter '{adapter.Key}' has more than one Doc path: {string.Join(", ", docPaths)}.");
+				if (docPaths.Length > 1)
+					Fail($"Adapter '{adapter.Key}' has more than one Doc path: {string.Join(", ", docPaths)}.");
 
-			adapters.Add(new AdapterInfo(project, adapter.Key, docPaths.FirstOrDefault() ?? string.Empty));
+				adapters.Add(new AdapterInfo(project, adapter.Key, docPaths.FirstOrDefault() ?? string.Empty));
+			}
 		}
 
 		return [.. adapters];
