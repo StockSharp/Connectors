@@ -1,10 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\common_connectors.props" />
 
-  <PropertyGroup>
-    <ProjectGuid>{F3068408-9764-432E-8FB4-596B308EDB4F}</ProjectGuid>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Ecng.IO.Compression" Version="$(EcngVer)" />
   </ItemGroup>

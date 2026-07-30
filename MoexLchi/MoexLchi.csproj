@@ -1,8 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\common_connectors.props" />
-  <PropertyGroup>
-    <ProjectGuid>{20711136-65C8-455A-836F-68252EC7C7B0}</ProjectGuid>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentFTP" Version="$(FluentFtpVer)" />
     <PackageReference Include="Ecng.IO.Compression" Version="$(EcngVer)" />

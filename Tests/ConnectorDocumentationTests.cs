@@ -21,6 +21,16 @@ public class ConnectorDocumentationTests : BaseTestClass
 {
 	private const string _docPrefix = "topics/api/connectors/";
 	private static readonly Uri _docBaseUri = new("https://doc.stocksharp.com/");
+	private static readonly string[] _readmeFiles =
+	[
+		"README.md",
+		"README_ru.md",
+		"README_zh.md",
+		"README_es.md",
+		"README_de.md",
+		"README_pt.md",
+		"README_ja.md",
+	];
 
 	private static readonly Regex _classRegex = new(
 		@"(?<attributes>(?:^[ \t]*\[[^\]]+\]\s*)*)^[ \t]*(?:(?:public|internal|private|protected|sealed|abstract|partial)\s+)*class\s+(?<name>\w+MessageAdapter)\b(?<bases>\s*:\s*[^\{]+)?",
@@ -34,6 +44,10 @@ public class ConnectorDocumentationTests : BaseTestClass
 		@"\[Doc\(\s*""(?<path>[^""]+)""\s*\)\]",
 		RegexOptions.Compiled);
 
+	private static readonly Lazy<string> _repositoryRoot = new(FindRepositoryRoot);
+	private static readonly Lazy<string[]> _connectorProjectPaths = new(() => GetConnectorProjectPaths(_repositoryRoot.Value));
+	private static readonly Lazy<AdapterInfo[]> _adapters = new(LoadAdapters);
+
 	private sealed record AdapterInfo(string Project, string Type, string DocPath);
 
 	private sealed record PageCheckResult(string Page, HttpStatusCode? StatusCode, string Error)
@@ -44,7 +58,7 @@ public class ConnectorDocumentationTests : BaseTestClass
 	[TestMethod]
 	public void EveryAdapterHasDocumentation()
 	{
-		var adapters = GetAdapters();
+		var adapters = _adapters.Value;
 		var undocumented = adapters
 			.Where(a => a.DocPath.IsEmpty())
 			.Select(a => $"{a.Project}: {a.Type}")
@@ -55,9 +69,141 @@ public class ConnectorDocumentationTests : BaseTestClass
 	}
 
 	[TestMethod]
+	public void EveryConnectorHasLocalizedReadmes()
+	{
+		var root = _repositoryRoot.Value;
+		var failures = new List<string>();
+
+		foreach (var projectPath in _connectorProjectPaths.Value)
+		{
+			var projectDirectory = Path.GetDirectoryName(Path.Combine(root, projectPath));
+
+			if (!Directory.Exists(projectDirectory))
+			{
+				failures.Add($"{projectPath}: project directory does not exist.");
+				continue;
+			}
+
+			var actualReadmes = Directory
+				.EnumerateFiles(projectDirectory, "README*.md", SearchOption.TopDirectoryOnly)
+				.Select(Path.GetFileName)
+				.ToHashSet(StringComparer.Ordinal);
+
+			foreach (var readme in _readmeFiles)
+			{
+				if (!actualReadmes.Contains(readme))
+					failures.Add($"{projectPath}: missing {readme}.");
+				else if (new FileInfo(Path.Combine(projectDirectory, readme)).Length == 0)
+					failures.Add($"{projectPath}: {readme} is empty.");
+			}
+
+			foreach (var readme in actualReadmes.Except(_readmeFiles, StringComparer.Ordinal).Order(StringComparer.Ordinal))
+				failures.Add($"{projectPath}: unexpected {readme}.");
+		}
+
+		if (failures.Count > 0)
+			Fail($"Connector projects must contain exactly the seven localized README files:{Environment.NewLine}{string.Join(Environment.NewLine, failures.Order(StringComparer.Ordinal))}");
+	}
+
+	[TestMethod]
+	public void ConnectorProjectsPreserveReadmePackageContract()
+	{
+		var root = _repositoryRoot.Value;
+		var failures = new List<string>();
+		var commonPropsPath = Path.Combine(root, "common_connectors.props");
+		var webSocketPropsPath = Path.Combine(root, "common_connectors_websocket.props");
+
+		try
+		{
+			var commonProps = XDocument.Load(commonPropsPath);
+			var packageReadmes = GetElements(commonProps, "PackageReadmeFile")
+				.Select(element => element.Value.Trim())
+				.ToArray();
+
+			if (packageReadmes.Length != 1 ||
+				!packageReadmes[0].Equals("README.md", StringComparison.Ordinal))
+				failures.Add("common_connectors.props must define PackageReadmeFile exactly once as README.md.");
+
+			var packedReadmes = GetElements(commonProps, "None")
+				.Where(element => ReferencesReadme(element.Attribute("Include")?.Value))
+				.ToArray();
+
+			if (packedReadmes.Length != 1 ||
+				packedReadmes[0].Attribute("Pack")?.Value.Equals("true", StringComparison.OrdinalIgnoreCase) != true ||
+				packedReadmes[0].Attribute("PackagePath")?.Value != string.Empty)
+				failures.Add("common_connectors.props must pack README.md with Pack=\"true\" and PackagePath=\"\".");
+		}
+		catch (Exception ex)
+		{
+			failures.Add($"common_connectors.props cannot be read: {ex.Message}");
+		}
+
+		try
+		{
+			var webSocketProps = XDocument.Load(webSocketPropsPath);
+			var importsCommonProps = GetElements(webSocketProps, "Import")
+				.Select(element => element.Attribute("Project")?.Value)
+				.Any(IsCommonConnectorProps);
+
+			if (!importsCommonProps)
+				failures.Add("common_connectors_websocket.props must import common_connectors.props.");
+		}
+		catch (Exception ex)
+		{
+			failures.Add($"common_connectors_websocket.props cannot be read: {ex.Message}");
+		}
+
+		foreach (var projectPath in _connectorProjectPaths.Value)
+		{
+			var fullPath = Path.Combine(root, projectPath);
+
+			try
+			{
+				var project = XDocument.Load(fullPath);
+				var importsConnectorProps = GetElements(project, "Import")
+					.Select(element => element.Attribute("Project")?.Value)
+					.Any(IsConnectorProps);
+
+				if (!importsConnectorProps)
+					failures.Add($"{projectPath}: does not import common_connectors.props or common_connectors_websocket.props.");
+
+				foreach (var element in GetElements(project, "PackageReadmeFile"))
+				{
+					var value = element.Value.Trim();
+
+					if (!value.Equals("README.md", StringComparison.Ordinal))
+						failures.Add($"{projectPath}: overrides PackageReadmeFile with '{value}'.");
+				}
+
+				foreach (var item in GetElements(project, "None"))
+				{
+					if (ReferencesReadme(item.Attribute("Remove")?.Value))
+						failures.Add($"{projectPath}: removes README.md from the None items.");
+
+					var updatesReadme =
+						ReferencesReadme(item.Attribute("Include")?.Value) ||
+						ReferencesReadme(item.Attribute("Update")?.Value);
+					var disablesPacking = item.Attribute("Pack")?.Value
+						.Equals("false", StringComparison.OrdinalIgnoreCase) == true;
+
+					if (updatesReadme && disablesPacking)
+						failures.Add($"{projectPath}: marks README.md with Pack=\"false\".");
+				}
+			}
+			catch (Exception ex)
+			{
+				failures.Add($"{projectPath}: project XML cannot be read: {ex.Message}");
+			}
+		}
+
+		if (failures.Count > 0)
+			Fail($"Connector README NuGet contract violations:{Environment.NewLine}{string.Join(Environment.NewLine, failures.Order(StringComparer.Ordinal))}");
+	}
+
+	[TestMethod]
 	public async Task DocumentationPagesExist()
 	{
-		var adapters = GetAdapters();
+		var adapters = _adapters.Value;
 		var invalidPaths = adapters
 			.Where(a => !a.DocPath.IsEmpty() &&
 				(!a.DocPath.StartsWith(_docPrefix, StringComparison.Ordinal) || !a.DocPath.EndsWith(".html", StringComparison.Ordinal)))
@@ -73,7 +219,7 @@ public class ConnectorDocumentationTests : BaseTestClass
 			.Distinct(StringComparer.Ordinal)
 			.Order(StringComparer.Ordinal)
 			.ToArray();
-		var repositoryRoot = FindRepositoryRoot();
+		var repositoryRoot = _repositoryRoot.Value;
 		var documentationRoot = Path.GetFullPath(Path.Combine(repositoryRoot, "..", "doc", "en"));
 
 		if (Directory.Exists(documentationRoot))
@@ -131,19 +277,13 @@ public class ConnectorDocumentationTests : BaseTestClass
 			Fail($"The following documentation pages are unavailable:{Environment.NewLine}{string.Join(Environment.NewLine, failures)}");
 	}
 
-	private static AdapterInfo[] GetAdapters()
+	private static AdapterInfo[] LoadAdapters()
 	{
-		var root = FindRepositoryRoot();
-		var solution = XDocument.Load(Path.Combine(root, "Connectors.slnx"));
+		var root = _repositoryRoot.Value;
 		var adapters = new List<AdapterInfo>();
 
-		foreach (var projectElement in solution.Descendants("Project"))
+		foreach (var projectPath in _connectorProjectPaths.Value)
 		{
-			var projectPath = projectElement.Attribute("Path")?.Value;
-
-			if (projectPath.IsEmpty() || projectPath.StartsWith("Tests/", StringComparison.OrdinalIgnoreCase))
-				continue;
-
 			var project = Path.GetFileNameWithoutExtension(projectPath);
 			var projectDirectory = Path.GetDirectoryName(Path.Combine(root, projectPath));
 			var declarations = new Dictionary<string, List<(string Attributes, string Bases)>>(StringComparer.Ordinal);
@@ -187,6 +327,56 @@ public class ConnectorDocumentationTests : BaseTestClass
 
 		return [.. adapters];
 	}
+
+	private static string[] GetConnectorProjectPaths(string root)
+		=>
+		[
+			.. Directory
+				.EnumerateFiles(root, "*.csproj", SearchOption.AllDirectories)
+				.Select(path => Path.GetRelativePath(root, path))
+				.Select(NormalizeProjectPath)
+				.Where(IsConnectorProjectPath)
+				.Distinct(StringComparer.Ordinal)
+				.Order(StringComparer.Ordinal),
+		];
+
+	private static bool IsConnectorProjectPath(string path)
+	{
+		var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+		return segments.Length > 1 &&
+			path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase) &&
+			!segments.Any(segment =>
+				segment.Equals(".git", StringComparison.OrdinalIgnoreCase) ||
+				segment.Equals(".vs", StringComparison.OrdinalIgnoreCase) ||
+				segment.Equals("Tests", StringComparison.OrdinalIgnoreCase) ||
+				segment.Equals("bin", StringComparison.OrdinalIgnoreCase) ||
+				segment.Equals("obj", StringComparison.OrdinalIgnoreCase) ||
+				segment.Equals("TestResults", StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static string NormalizeProjectPath(string path)
+		=> path.Replace('\\', '/').TrimStart('/');
+
+	private static IEnumerable<XElement> GetElements(XContainer document, string localName)
+		=> document.Descendants().Where(element =>
+			element.Name.LocalName.Equals(localName, StringComparison.Ordinal));
+
+	private static bool ReferencesReadme(string itemSpec)
+		=> !itemSpec.IsEmpty() && itemSpec
+			.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+			.Select(value => value.Replace('\\', '/'))
+			.Any(value => value.Equals("README.md", StringComparison.OrdinalIgnoreCase) ||
+				value.EndsWith("/README.md", StringComparison.OrdinalIgnoreCase));
+
+	private static bool IsConnectorProps(string project)
+		=> IsCommonConnectorProps(project) ||
+			NormalizeProjectPath(project ?? string.Empty)
+				.EndsWith("common_connectors_websocket.props", StringComparison.OrdinalIgnoreCase);
+
+	private static bool IsCommonConnectorProps(string project)
+		=> NormalizeProjectPath(project ?? string.Empty)
+			.EndsWith("common_connectors.props", StringComparison.OrdinalIgnoreCase);
 
 	private static string FindRepositoryRoot()
 	{

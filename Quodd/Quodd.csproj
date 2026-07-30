@@ -2,7 +2,6 @@
   <Import Project="..\common_connectors.props" />
 
   <PropertyGroup>
-    <ProjectGuid>{90DCE2D7-A3A7-4BE4-BB55-F7F1EC25413C}</ProjectGuid>
     <!-- gRPC generated code is not CLS-compliant. -->
     <DefineConstants>$(DefineConstants);CLS_DISABLE</DefineConstants>
   </PropertyGroup>

@@ -2,7 +2,6 @@
   <Import Project="..\common_connectors.props" />
 
   <PropertyGroup>
-    <ProjectGuid>{F0A237AA-8C29-4F7A-B6C1-8C2D5551E721}</ProjectGuid>
     <NoWarn>$(NoWarn);CS3001;CS3002;CS3003</NoWarn>
   </PropertyGroup>
 

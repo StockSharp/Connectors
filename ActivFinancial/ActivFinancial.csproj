@@ -1,9 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\common_connectors.props" />
 
-  <PropertyGroup>
-    <ProjectGuid>{62028643-3251-49FD-AE72-A53EEBD9C3BA}</ProjectGuid>
-  </PropertyGroup>
 
   <ItemGroup>
     <None Update="Gateway\activ_gateway.cjs"

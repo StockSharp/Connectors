@@ -1,11 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\common_connectors.props" />
-  <PropertyGroup>
-    <ProjectGuid>{22F2B2EF-BBD3-4DD4-A750-DA55EEDAE5E3}</ProjectGuid>
-    <PackageReadmeFile></PackageReadmeFile>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="$(MsExtensionsVer)" />
-    <None Remove="README.md" />
   </ItemGroup>
 </Project>

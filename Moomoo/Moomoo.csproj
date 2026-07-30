@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\common_connectors.props" />
-  <PropertyGroup>
-    <ProjectGuid>{9EB932A3-F00E-40B5-92A6-D992A356B1B3}</ProjectGuid>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="moomoo-api" Version="$(MoomooApiVer)" />
   </ItemGroup>

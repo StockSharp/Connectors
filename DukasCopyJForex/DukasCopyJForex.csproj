@@ -1,9 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="..\common_connectors.props" />
 
-	<PropertyGroup>
-		<ProjectGuid>{92F12A43-2519-4B6A-9060-CF6D9A9DF07D}</ProjectGuid>
-	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="Bridge\pom.xml" Pack="true" PackagePath="bridge\" />
