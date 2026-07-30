@@ -340,6 +340,7 @@ public partial class ChoiceFinXMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId, cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -378,6 +379,7 @@ public partial class ChoiceFinXMessageAdapter
         OrderStatusMessage filter = null)
     {
         var left = filter?.Count ?? long.MaxValue;
+
         foreach (var order in
             (await _restClient.GetOrders(
                 cancellationToken))
@@ -610,6 +612,7 @@ public partial class ChoiceFinXMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -949,6 +952,7 @@ public partial class ChoiceFinXMessageAdapter
             if (value != 0)
                 return value;
         }
+
         return null;
     }
 }

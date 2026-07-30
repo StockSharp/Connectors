@@ -138,6 +138,7 @@ public partial class CowProtocolMessageAdapter
 		var orders = await LoadAccountOrdersAsync(10_000,
 			cancellationToken);
 		var errors = new List<Exception>();
+
 		foreach (var order in orders)
 		{
 			var tracked = TrackOrder(order);
@@ -161,6 +162,7 @@ public partial class CowProtocolMessageAdapter
 				errors.Add(error);
 			}
 		}
+
 		if (errors.Count > 0)
 			throw errors.Count == 1
 				? errors[0]
@@ -175,6 +177,7 @@ public partial class CowProtocolMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -203,6 +206,7 @@ public partial class CowProtocolMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -214,6 +218,7 @@ public partial class CowProtocolMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -256,6 +261,7 @@ public partial class CowProtocolMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -341,10 +347,12 @@ public partial class CowProtocolMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var tracked in active)
 		{
 			var order = await HttpClient.GetOrderAsync(tracked.Uid,
@@ -355,6 +363,7 @@ public partial class CowProtocolMessageAdapter
 			await SendTrackedSnapshotAsync(refreshed,
 				refreshed.TransactionId, false, cancellationToken);
 		}
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -370,9 +379,11 @@ public partial class CowProtocolMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(static group => group.First())];
 		var result = new List<(CowProtocolToken, BigInteger)>();
+
 		foreach (var token in tokens)
 			result.Add((token, await RpcClient.GetBalanceAsync(token,
 				cancellationToken)));
+
 		return [.. result];
 	}
 
@@ -438,6 +449,7 @@ public partial class CowProtocolMessageAdapter
 			.ToArray();
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var tracked in trackedOrders)
 		{
 			var state = ToOrderState(tracked.Order.Status);
@@ -460,6 +472,7 @@ public partial class CowProtocolMessageAdapter
 			throw new ArgumentOutOfRangeException(nameof(maximum));
 		var result = new List<CowProtocolOrder>();
 		const int pageSize = 1000;
+
 		for (var offset = 0; result.Count < maximum; offset += pageSize)
 		{
 			var page = await HttpClient.GetOrdersAsync(RpcClient.WalletAddress,
@@ -468,6 +481,7 @@ public partial class CowProtocolMessageAdapter
 			if (page.Length < pageSize)
 				break;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 
@@ -577,6 +591,7 @@ public partial class CowProtocolMessageAdapter
 	{
 		var trades = await HttpClient.GetTradesAsync(tracked.Uid,
 			cancellationToken) ?? [];
+
 		foreach (var trade in trades.OrderBy(static item => item.BlockNumber)
 			.ThenBy(static item => item.LogIndex))
 		{

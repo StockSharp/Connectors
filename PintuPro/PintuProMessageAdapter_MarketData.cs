@@ -8,6 +8,7 @@ public partial class PintuProMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class PintuProMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -48,6 +50,7 @@ public partial class PintuProMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -56,6 +59,7 @@ public partial class PintuProMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -120,6 +124,7 @@ public partial class PintuProMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -175,6 +180,7 @@ public partial class PintuProMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -195,6 +201,7 @@ public partial class PintuProMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var requestedCount = (mdMsg.Count ?? long.MaxValue).Min(int.MaxValue)
 			.To<int>();
+
 		foreach (var trade in (response?.Trades ?? [])
 			.Where(trade => trade is not null &&
 				(from is null || trade.Timestamp.FromPintuProTimestamp(
@@ -313,9 +320,11 @@ public partial class PintuProMessageAdapter
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
 		}
 		var serverTime = message.Timestamp.FromPintuProTimestamp(CurrentTime);
+
 		foreach (var pair in depthSubscriptions)
 			await SendBookAsync(symbol, message.Data, pair.Value.Depth, pair.Key,
 				serverTime, cancellationToken);
+
 		foreach (var pair in level1Subscriptions)
 			await SendLevel1BookAsync(symbol, message.Data, pair.Key, serverTime,
 				cancellationToken);
@@ -348,9 +357,11 @@ public partial class PintuProMessageAdapter
 				level1Subscriptions = [.. _level1Subscriptions.Where(pair =>
 					pair.Value.Symbol.EqualsIgnoreCase(symbol))];
 			}
+
 			foreach (var pair in tickSubscriptions)
 				await SendPublicTradeAsync(symbol, trade, pair.Key,
 					cancellationToken, identifier);
+
 			foreach (var pair in level1Subscriptions)
 				await SendLevel1TradeAsync(symbol, trade, pair.Key,
 					cancellationToken);

@@ -7,6 +7,7 @@ public partial class BitpandaFusionMessageAdapter
 		SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		var board = lookupMsg.SecurityId.BoardCode;
@@ -31,6 +32,7 @@ public partial class BitpandaFusionMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var pair in pairs)
 		{
 			if (!requested.IsEmpty() && !NormalizePair(pair.Pair).EqualsIgnoreCase(requested))
@@ -61,6 +63,7 @@ public partial class BitpandaFusionMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -100,6 +103,7 @@ public partial class BitpandaFusionMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -139,6 +143,7 @@ public partial class BitpandaFusionMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -180,6 +185,7 @@ public partial class BitpandaFusionMessageAdapter
 			.GroupBy(static item => item.OpenTime)
 			.Select(static group => group.First())
 			.TakeLast(count);
+
 		foreach (var item in selected)
 		{
 			await SendOutMessageAsync(new TimeFrameCandleMessage
@@ -197,6 +203,7 @@ public partial class BitpandaFusionMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await CompleteSnapshotAsync(mdMsg, cancellationToken);
 	}
 

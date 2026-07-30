@@ -166,6 +166,7 @@ public partial class BTSEMessageAdapter
 						.Where(static market => !market.IsEmpty())
 						.Distinct(StringComparer.OrdinalIgnoreCase).ToArray()
 					: [symbol];
+
 				foreach (var market in symbols)
 					await GetRestClient(section).CancelOrderAsync(new()
 					{
@@ -189,6 +190,7 @@ public partial class BTSEMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -208,6 +210,7 @@ public partial class BTSEMessageAdapter
 
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, cancellationToken);
@@ -231,6 +234,7 @@ public partial class BTSEMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -258,6 +262,7 @@ public partial class BTSEMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, symbol, statusMsg.From,
 			statusMsg.To, maximum, cancellationToken, requestedSection, orderId, null);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
@@ -317,6 +322,7 @@ public partial class BTSEMessageAdapter
 
 		var balances = new Dictionary<string, (decimal Available, decimal Blocked)>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var wallet in await _futuresRestClient.GetFuturesWalletAsync(
 			cancellationToken) ?? [])
 		{
@@ -327,6 +333,7 @@ public partial class BTSEMessageAdapter
 				balances.TryGetValue(asset.Currency, out var value);
 				balances[asset.Currency] = (value.Available + asset.Balance, value.Blocked);
 			}
+
 			foreach (var asset in wallet?.AssetsInUse ?? [])
 			{
 				if (asset?.Currency.IsEmpty() != false)
@@ -335,6 +342,7 @@ public partial class BTSEMessageAdapter
 				balances[asset.Currency] = (value.Available, value.Blocked + asset.Balance);
 			}
 		}
+
 		foreach (var balance in balances)
 			await SendFuturesBalanceAsync(balance.Key, balance.Value.Available,
 				balance.Value.Blocked, originalTransactionId, cancellationToken);
@@ -371,6 +379,7 @@ public partial class BTSEMessageAdapter
 				{
 					Symbol = symbol,
 				}, cancellationToken);
+
 				foreach (var order in (orders ?? [])
 					.Where(static order => order?.OrderId.IsEmpty() == false)
 					.OrderBy(static order => order.Timestamp)
@@ -391,6 +400,7 @@ public partial class BTSEMessageAdapter
 					? fromTime.ToUniversalTime() < DateTime.UtcNow.AddDays(-7)
 					: section == BTSESections.Futures ? false : null,
 			}, cancellationToken);
+
 			foreach (var trade in (trades ?? [])
 				.Where(trade => trade.Timestamp > 0 &&
 					(from is null || trade.Timestamp.FromMilliseconds() >=

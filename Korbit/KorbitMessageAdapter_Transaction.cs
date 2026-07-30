@@ -123,6 +123,7 @@ public partial class KorbitMessageAdapter
 			throw new NotSupportedException(
 				"Korbit spot bulk cancellation cannot close positions.");
 		var markets = GetSelectedMarkets(cancelMsg.SecurityId);
+
 		foreach (var market in markets)
 		{
 			var orders = await RestClient.GetOpenOrdersAsync(new()
@@ -131,6 +132,7 @@ public partial class KorbitMessageAdapter
 				AccountSequence = AccountSequence,
 				Limit = 1000,
 			}, cancellationToken) ?? [];
+
 			foreach (var order in orders.Where(order => order is not null &&
 				(cancelMsg.Side is null ||
 					order.Side.ToStockSharp() == cancelMsg.Side)))
@@ -154,6 +156,7 @@ public partial class KorbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -177,12 +180,14 @@ public partial class KorbitMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -193,6 +198,7 @@ public partial class KorbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -230,6 +236,7 @@ public partial class KorbitMessageAdapter
 		else
 		{
 			var left = (statusMsg.Count ?? 500).Min(10000).Max(1).To<int>();
+
 			foreach (var selectedMarket in market is null
 				? GetSelectedMarkets(default)
 				: [market])
@@ -242,12 +249,14 @@ public partial class KorbitMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -445,6 +454,7 @@ public partial class KorbitMessageAdapter
 			.Select(static group => group.First())
 			.OrderByDescending(static order => order.CreatedAt)
 			.Take(maximum).ToArray();
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, market.Symbol, message.TransactionId,
 				cancellationToken);
@@ -461,6 +471,7 @@ public partial class KorbitMessageAdapter
 			Limit = tradeLimit,
 		}, cancellationToken) ?? [];
 		var sentTrades = 0;
+
 		foreach (var trade in trades.Where(trade => trade is not null &&
 			(message.Side is null ||
 				trade.Side.ToStockSharp() == message.Side)).Take(tradeLimit))
@@ -473,6 +484,7 @@ public partial class KorbitMessageAdapter
 				message.TransactionId, cancellationToken);
 			sentTrades++;
 		}
+
 		return orders.Length + sentTrades;
 	}
 
@@ -483,6 +495,7 @@ public partial class KorbitMessageAdapter
 		{
 			AccountSequence = AccountSequence,
 		}, cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(balance.Currency, balance.Available,
 				balance.TradeInUse + balance.WithdrawalInUse,
@@ -648,6 +661,7 @@ public partial class KorbitMessageAdapter
 				account != AccountSequence)
 			return;
 		var symbol = GetMarket(message.Symbol).Symbol;
+
 		foreach (var order in message.Order.Orders ?? [])
 		{
 			if (order is null || order.OrderId <= 0)
@@ -678,6 +692,7 @@ public partial class KorbitMessageAdapter
 			var volume = order.Quantity ?? tracked.Volume;
 			if (volume <= 0 && order.FilledQuantity > 0)
 				volume = order.FilledQuantity;
+
 			foreach (var target in targets)
 				await SendOutMessageAsync(new ExecutionMessage
 				{
@@ -728,6 +743,7 @@ public partial class KorbitMessageAdapter
 				account != AccountSequence)
 			return;
 		var symbol = GetMarket(message.Symbol).Symbol;
+
 		foreach (var trade in message.Trade.Trades ?? [])
 		{
 			if (trade is null || !AddAccountTrade(symbol, trade.TradeId))
@@ -737,6 +753,7 @@ public partial class KorbitMessageAdapter
 			var targets = GetOrderTargets(symbol,
 				trade.OrderId.ToString(CultureInfo.InvariantCulture), null,
 				trade.Side.ToStockSharp(), tracked?.TransactionId ?? 0);
+
 			foreach (var target in targets)
 				await SendAccountTradeAsync(symbol, trade.TradeId,
 					trade.OrderId, trade.Side, trade.Price, trade.Quantity,
@@ -755,6 +772,7 @@ public partial class KorbitMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var subscriptionId in subscriptions)
 			foreach (var asset in message.Asset.Assets ?? [])
 				await SendBalanceAsync(asset.Currency, asset.Available,
@@ -818,11 +836,13 @@ public partial class KorbitMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var pair in subscriptions)
 		{
 			var markets = pair.Value.Symbol.IsEmpty()
 				? GetSelectedMarkets(default)
 				: [GetMarket(pair.Value.Symbol)];
+
 			foreach (var market in markets)
 			{
 				var orders = await RestClient.GetOpenOrdersAsync(new()
@@ -831,6 +851,7 @@ public partial class KorbitMessageAdapter
 					AccountSequence = AccountSequence,
 					Limit = 1000,
 				}, cancellationToken) ?? [];
+
 				foreach (var order in orders.Where(order => order is not null &&
 					MatchesOrderSubscription(pair.Value, market.Symbol,
 						order.OrderId.ToString(CultureInfo.InvariantCulture),

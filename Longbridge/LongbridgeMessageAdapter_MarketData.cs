@@ -6,6 +6,7 @@ public partial class LongbridgeMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.SecurityId.SecurityCode.IsEmpty() && lookupMsg.SecurityId.Native == null)
 			throw new InvalidOperationException("Longbridge security lookup requires an exact symbol such as AAPL.US or 700.HK.");
 		var symbol = lookupMsg.SecurityId.ToNativeSymbol();
@@ -14,6 +15,7 @@ public partial class LongbridgeMessageAdapter
 		var response = await _quoteSocket.Request((byte)LongbridgeQuoteCommand.QuerySecurityStaticInfo,
 			request, SecurityStaticInfoResponse.Parser, cancellationToken);
 		var securityTypes = lookupMsg.GetSecurityTypes();
+
 		foreach (var info in response.SecuStaticInfo)
 		{
 			var securityType = GetSecurityType(info, securityTypes);
@@ -31,6 +33,7 @@ public partial class LongbridgeMessageAdapter
 			if (security.IsMatch(lookupMsg, securityTypes))
 				await SendOutMessageAsync(security, cancellationToken);
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -50,6 +53,7 @@ public partial class LongbridgeMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		var symbol = mdMsg.SecurityId.ToNativeSymbol();
@@ -89,6 +93,7 @@ public partial class LongbridgeMessageAdapter
 		}
 		var lower = mdMsg.From?.ToUniversalTime();
 		var upper = mdMsg.To?.ToUniversalTime();
+
 		foreach (var candle in response.Candlesticks
 			.Where(c => (lower == null || c.Timestamp.ToUtcTime() >= lower) && (upper == null || c.Timestamp.ToUtcTime() <= upper))
 			.OrderBy(c => c.Timestamp).TakeLast(count))
@@ -107,6 +112,7 @@ public partial class LongbridgeMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
 
@@ -114,6 +120,7 @@ public partial class LongbridgeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (!_subscriptions.TryGetValue(mdMsg.OriginalTransactionId, out var subscription))
@@ -137,6 +144,7 @@ public partial class LongbridgeMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_subscriptions.CachedValues.Select(s => s.Symbol).Append(symbol).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 500)
 			throw new InvalidOperationException("Longbridge quote subscriptions are limited to 500 distinct symbols.");
 		var alreadySubscribed = _subscriptions.CachedValues.Any(s => s.Symbol.EqualsIgnoreCase(symbol) && s.Type == type);
@@ -177,8 +185,10 @@ public partial class LongbridgeMessageAdapter
 				request.Symbol.Add(symbol);
 				var response = await _quoteSocket.Request((byte)LongbridgeQuoteCommand.QuerySecurityQuote,
 					request, SecurityQuoteResponse.Parser, cancellationToken);
+
 				foreach (var quote in response.SecuQuote)
 					await SendLevel1(mdMsg.TransactionId, mdMsg.SecurityId, quote, cancellationToken);
+
 				break;
 			}
 			case SubType.Depth:
@@ -195,8 +205,10 @@ public partial class LongbridgeMessageAdapter
 					new SecurityTradeRequest { Symbol = symbol, Count = (int)Math.Clamp(mdMsg.Count ?? 100, 1, 1000) },
 					SecurityTradeResponse.Parser, cancellationToken);
 				var index = 0;
+
 				foreach (var trade in response.Trades.OrderBy(t => t.Timestamp))
 					await SendTick(mdMsg.TransactionId, mdMsg.SecurityId, trade, $"snapshot:{index++}", cancellationToken);
+
 				break;
 			}
 		}
@@ -207,12 +219,14 @@ public partial class LongbridgeMessageAdapter
 		if (packet.Command == (byte)LongbridgeQuoteCommand.PushQuoteData)
 		{
 			var quote = PushQuote.Parser.ParseFrom(packet.Body);
+
 			foreach (var subscription in FindSubscriptions(quote.Symbol, SubType.Quote))
 				await SendLevel1(subscription.TransactionId, subscription.SecurityId, quote, cancellationToken);
 		}
 		else if (packet.Command == (byte)LongbridgeQuoteCommand.PushDepthData)
 		{
 			var depth = PushDepth.Parser.ParseFrom(packet.Body);
+
 			foreach (var subscription in FindSubscriptions(depth.Symbol, SubType.Depth))
 				await SendDepth(subscription.TransactionId, subscription.SecurityId, depth.Ask, depth.Bid,
 					DateTime.UtcNow, cancellationToken);
@@ -220,9 +234,11 @@ public partial class LongbridgeMessageAdapter
 		else if (packet.Command == (byte)LongbridgeQuoteCommand.PushTradeData)
 		{
 			var trades = PushTrade.Parser.ParseFrom(packet.Body);
+
 			foreach (var subscription in FindSubscriptions(trades.Symbol, SubType.Trade))
 			{
 				var index = 0;
+
 				foreach (var trade in trades.Trade)
 					await SendTick(subscription.TransactionId, subscription.SecurityId, trade,
 						$"{trades.Sequence.ToString(CultureInfo.InvariantCulture)}:{index++}", cancellationToken);

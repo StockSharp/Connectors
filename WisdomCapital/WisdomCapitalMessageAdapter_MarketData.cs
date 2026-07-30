@@ -23,6 +23,7 @@ public partial class WisdomCapitalMessageAdapter
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId,
             cancellationToken);
+
         var securityTypes = lookupMsg.GetSecurityTypes();
         var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -146,6 +147,7 @@ public partial class WisdomCapitalMessageAdapter
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId,
             cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await RemoveRealtimeSubscription(
@@ -174,6 +176,7 @@ public partial class WisdomCapitalMessageAdapter
                 reference,
                 messageCode,
                 cancellationToken);
+
         foreach (var update in updates)
         {
             await SendMarketSnapshot(
@@ -238,6 +241,7 @@ public partial class WisdomCapitalMessageAdapter
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId,
             cancellationToken);
+
         if (!mdMsg.IsSubscribe)
             return;
         if (!mdMsg.IsHistoryOnly())
@@ -296,6 +300,7 @@ public partial class WisdomCapitalMessageAdapter
                 },
                 cancellationToken);
         }
+
         await SendSubscriptionFinishedAsync(
             mdMsg.TransactionId,
             cancellationToken);

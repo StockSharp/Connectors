@@ -8,6 +8,7 @@ public partial class SunIoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class SunIoMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -42,6 +44,7 @@ public partial class SunIoMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -51,6 +54,7 @@ public partial class SunIoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -78,6 +82,7 @@ public partial class SunIoMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -92,6 +97,7 @@ public partial class SunIoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -111,16 +117,19 @@ public partial class SunIoMessageAdapter
 		var trades = await LoadTradesAsync(market, from, to, maximum,
 			cancellationToken);
 		var delivered = 0;
+
 		foreach (var trade in trades)
 			if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken))
 				delivered++;
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -140,6 +149,7 @@ public partial class SunIoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -165,15 +175,18 @@ public partial class SunIoMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * historyCount);
 		var candles = await LoadCandlesAsync(market, timeFrame, from, to,
 			historyCount, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || candles.Length >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -262,6 +275,7 @@ public partial class SunIoMessageAdapter
 		string fromToken, string toToken, BigInteger amount)
 	{
 		var valid = new List<(SunIoRoute Route, BigInteger Output)>();
+
 		foreach (var route in source ?? [])
 		{
 			try
@@ -275,6 +289,7 @@ public partial class SunIoMessageAdapter
 			{
 			}
 		}
+
 		if (valid.Count == 0)
 			throw new InvalidDataException(
 				"SUN.io returned no executable Smart Router path.");
@@ -299,6 +314,7 @@ public partial class SunIoMessageAdapter
 			route.RawOutputAmount.ParseInteger("route output amount") <= 0)
 			throw new InvalidDataException(
 				"SUN.io returned an inconsistent routing path.");
+
 		foreach (var token in tokens)
 			_ = token.NormalizeTronAddress();
 	}
@@ -311,6 +327,7 @@ public partial class SunIoMessageAdapter
 		from = from.Max(to - SunIoExtensions.MaximumHistoryRange);
 		var transactions = new List<SunIoRouterTransaction>();
 		string offset = null;
+
 		for (var page = 0; transactions.Count < HistoryMaximum; page++)
 		{
 			var response = await ApiClient.GetRouterTransactionsAsync(
@@ -328,11 +345,14 @@ public partial class SunIoMessageAdapter
 			if (page >= HistoryMaximum / 100)
 				break;
 		}
+
 		var result = new List<SunIoTrade>();
+
 		foreach (var transaction in transactions)
 			if (TryCreateTrade(market, transaction, out var trade) &&
 				trade.Time >= from && trade.Time <= to)
 				result.Add(trade);
+
 		return [.. result.GroupBy(static trade => trade.Id,
 				StringComparer.OrdinalIgnoreCase)
 			.Select(static group => group.OrderByDescending(trade =>
@@ -411,6 +431,7 @@ public partial class SunIoMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_tradeDeliveryOrder.Enqueue(key);
+
 			while (_tradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenTrades.Remove(_tradeDeliveryOrder.Dequeue());
 		}
@@ -503,12 +524,14 @@ public partial class SunIoMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(group => (group.First().Value.Market,
 					group.Select(static pair => pair.Key).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			try
 			{
 				var snapshot = await LoadLevel1Async(group.Market,
 					cancellationToken);
+
 				foreach (var target in group.Targets)
 				{
 					var fingerprint = new Level1Fingerprint(snapshot.Bid,
@@ -554,6 +577,7 @@ public partial class SunIoMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -565,6 +589,7 @@ public partial class SunIoMessageAdapter
 				item.Subscription.Delivered).Min(HistoryMaximum).Max(1);
 			var trades = await LoadTradesAsync(item.Subscription.Market,
 				from, to, remaining, cancellationToken);
+
 			foreach (var trade in trades)
 			{
 				if (await SendTradeAsync(item.Subscription.Market, trade,
@@ -575,10 +600,12 @@ public partial class SunIoMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeTicks(target);
@@ -594,6 +621,7 @@ public partial class SunIoMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -605,6 +633,7 @@ public partial class SunIoMessageAdapter
 			var candles = await LoadCandlesAsync(item.Subscription.Market,
 				item.Subscription.TimeFrame, from, to, maximum,
 				cancellationToken);
+
 			foreach (var candle in candles)
 			{
 				var key = $"{item.Id}:{candle.OpenTime.Ticks}";
@@ -631,10 +660,12 @@ public partial class SunIoMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeCandles(target);
@@ -651,6 +682,7 @@ public partial class SunIoMessageAdapter
 			var retained = _tradeDeliveryOrder.Where(_seenTrades.Contains)
 				.ToArray();
 			_tradeDeliveryOrder.Clear();
+
 			foreach (var key in retained)
 				_tradeDeliveryOrder.Enqueue(key);
 		}
@@ -670,8 +702,10 @@ public partial class SunIoMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -695,6 +729,7 @@ public partial class SunIoMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

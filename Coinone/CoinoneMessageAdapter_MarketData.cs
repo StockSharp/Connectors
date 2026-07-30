@@ -7,6 +7,7 @@ public partial class CoinoneMessageAdapter
 		SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class CoinoneMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class CoinoneMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +56,7 @@ public partial class CoinoneMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -115,6 +119,7 @@ public partial class CoinoneMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -177,6 +182,7 @@ public partial class CoinoneMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -200,6 +206,7 @@ public partial class CoinoneMessageAdapter
 		}, cancellationToken);
 		var from = mdMsg.From?.ToUniversalTime();
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
+
 		foreach (var trade in (response.Transactions ?? [])
 			.Where(trade => trade is not null &&
 				(from is null || trade.Timestamp.FromCoinoneTimestamp(
@@ -246,6 +253,7 @@ public partial class CoinoneMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -278,6 +286,7 @@ public partial class CoinoneMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await DownloadCandlesAsync(market, interval, from, to,
 			count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
@@ -347,6 +356,7 @@ public partial class CoinoneMessageAdapter
 	{
 		var values = new SortedDictionary<long, CoinoneCandle>();
 		var cursor = new DateTimeOffset(to).ToUnixTimeMilliseconds();
+
 		while (values.Count < count)
 		{
 			var pageSize = (count - values.Count).Min(500).Max(1);
@@ -361,6 +371,7 @@ public partial class CoinoneMessageAdapter
 			var page = response.Chart ?? [];
 			if (page.Length == 0)
 				break;
+
 			foreach (var candle in page)
 			{
 				if (candle is null)
@@ -369,6 +380,7 @@ public partial class CoinoneMessageAdapter
 				if (time >= from && time <= to)
 					values[candle.Timestamp] = candle;
 			}
+
 			var earliest = page.Where(static candle => candle is not null)
 				.Select(static candle => candle.Timestamp).DefaultIfEmpty().Min();
 			if (earliest <= 0 || earliest.FromCoinoneTimestamp(DateTime.MinValue) <= from ||
@@ -376,6 +388,7 @@ public partial class CoinoneMessageAdapter
 				break;
 			cursor = earliest - 1;
 		}
+
 		return [.. values.Values.TakeLast(count)];
 	}
 
@@ -459,6 +472,7 @@ public partial class CoinoneMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(market, book.Timestamp, book.Bids, book.Asks,
 				pair.Value.Depth, pair.Key, cancellationToken);
@@ -474,6 +488,7 @@ public partial class CoinoneMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendTickerAsync(ticker, pair.Key, cancellationToken);
 	}
@@ -491,6 +506,7 @@ public partial class CoinoneMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendPublicTradeAsync(market, trade.Id, trade.Timestamp,
 				trade.Price, trade.Quantity, trade.IsSellerMaker, pair.Key,
@@ -520,6 +536,7 @@ public partial class CoinoneMessageAdapter
 			TargetVolume = candle.TargetVolume,
 			QuoteVolume = candle.QuoteVolume,
 		};
+
 		foreach (var pair in subscriptions)
 			await SendCandleAsync(market, value, timeFrame, pair.Key,
 				cancellationToken);

@@ -8,6 +8,7 @@ public partial class RakutenRssMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var code = message.SecurityId.SecurityCode;
 		if (code.IsEmpty())
@@ -48,6 +49,7 @@ public partial class RakutenRssMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!message.IsSubscribe)
 		{
@@ -96,6 +98,7 @@ public partial class RakutenRssMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!message.IsSubscribe)
 		{
@@ -144,6 +147,7 @@ public partial class RakutenRssMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!message.IsSubscribe)
 		{
@@ -297,6 +301,7 @@ public partial class RakutenRssMessageAdapter
 			.OrderBy(candle => candle.OpenTime).ToArray();
 		if (onlyChanged && candles.Length > 0)
 			candles = [candles[^1]];
+
 		foreach (var candle in candles)
 		{
 			var signature = $"{candle.OpenTime:O}|{candle.Open}|{candle.High}|" +

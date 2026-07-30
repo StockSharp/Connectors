@@ -78,6 +78,7 @@ partial class ZBMessageAdapter
 		if (mdMsg.IsSubscribe)
 		{
 			var candles = await _httpClient.GetCandlesAsync(mdMsg.SecurityId.ToSymbol(false), cancellationToken);
+
 			foreach (var candle in candles)
 			{
 				await SendOutMessageAsync(new TimeFrameCandleMessage

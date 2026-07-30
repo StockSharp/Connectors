@@ -76,6 +76,7 @@ sealed class PythRestClient : BaseLogReceiver
 		var batchSpan = TimeSpan.FromTicks(checked(timeFrame.Ticks *
 			(maximumBarsPerRequest - 1L)));
 		var begin = from;
+
 		while (begin <= to)
 		{
 			var end = AddClamped(begin, batchSpan);
@@ -89,8 +90,10 @@ sealed class PythRestClient : BaseLogReceiver
 				"&resolution=" + Uri.EscapeDataString(resolution);
 			var response = await GetAsync<PythHistoryResponse>(_historyClient, path,
 				cancellationToken);
+
 			foreach (var candle in ParseHistory(response))
 				yield return candle;
+
 			if (end >= to || end == DateTime.MaxValue)
 				break;
 			begin = end.AddSeconds(1);

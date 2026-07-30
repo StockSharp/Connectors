@@ -391,6 +391,7 @@ public partial class DnseMessageAdapter
                 10,
                 1,
                 cancellationToken);
+
             foreach (var instrument in page?.Data ?? [])
             {
                 if (instrument?.Symbol.IsEmpty() != false)
@@ -398,6 +399,7 @@ public partial class DnseMessageAdapter
                 CacheSecurity(
                     instrument.ToNative(DefaultBoardId));
             }
+
             if (!key.IsEmpty() &&
                 _securities.TryGetValue(key, out cached))
             {

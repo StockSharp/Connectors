@@ -117,6 +117,7 @@ public partial class TradernetMessageAdapter
         {
             var response = await Rest.FindSecurities(
                 query, cancellationToken);
+
             foreach (var item in response?.Found ?? [])
             {
                 if (left <= 0)
@@ -136,6 +137,7 @@ public partial class TradernetMessageAdapter
                     cancellationToken);
                 var securities =
                     response?.Securities ?? [];
+
                 foreach (var security in securities)
                 {
                     left = await SendDirectorySecurity(
@@ -144,6 +146,7 @@ public partial class TradernetMessageAdapter
                     if (left <= 0)
                         break;
                 }
+
                 if (securities.Length <
                         SecuritiesPageSize ||
                     response?.Total is long total &&
@@ -246,6 +249,7 @@ public partial class TradernetMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveMarketSubscription(
@@ -257,6 +261,7 @@ public partial class TradernetMessageAdapter
         var security = await GetSecurity(
             message.SecurityId, cancellationToken);
         var securityId = security.ToSecurityId();
+
         foreach (var quote in await Rest.GetQuotes(
             [security.Ticker], cancellationToken))
         {
@@ -288,6 +293,7 @@ public partial class TradernetMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveMarketSubscription(
@@ -320,6 +326,7 @@ public partial class TradernetMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveMarketSubscription(
@@ -356,6 +363,7 @@ public partial class TradernetMessageAdapter
                 trades = trades.TakeLast(
                     (int)message.Count.Value);
             }
+
             foreach (var trade in trades)
             {
                 await SendOutMessageAsync(
@@ -396,6 +404,7 @@ public partial class TradernetMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
             return;
         if (!message.IsHistoryOnly())
@@ -568,6 +577,7 @@ public partial class TradernetMessageAdapter
             _bookStates[block.Ticker] = state;
         }
         state.Apply(block);
+
         foreach (var subscription in FindSubscriptions(
             block.Ticker, DataType.MarketDepth))
         {
@@ -616,6 +626,7 @@ public partial class TradernetMessageAdapter
         var result = new List<(
             DateTime, decimal, decimal,
             decimal, decimal, decimal)>(count);
+
         for (var i = 0; i < count; i++)
         {
             if (prices[i] is not JArray values ||
@@ -639,6 +650,7 @@ public partial class TradernetMessageAdapter
                     ? ReadDecimal(volumes[i]) ?? 0m
                     : 0m));
         }
+
         return result.ToArray();
     }
 
@@ -660,6 +672,7 @@ public partial class TradernetMessageAdapter
 
         var result = new List<PublicTrade>();
         var index = 0;
+
         foreach (var item in series)
         {
             long? timestamp = null;
@@ -714,6 +727,7 @@ public partial class TradernetMessageAdapter
             result.Add(new(time, price.Value, volume, id));
             index++;
         }
+
         return result.ToArray();
     }
 

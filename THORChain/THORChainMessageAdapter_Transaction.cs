@@ -168,6 +168,7 @@ public partial class THORChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -196,6 +197,7 @@ public partial class THORChainMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -207,6 +209,7 @@ public partial class THORChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -251,6 +254,7 @@ public partial class THORChainMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -328,12 +332,15 @@ public partial class THORChainMessageAdapter
 		{
 			var balance = GetRuneBalance(await ApiClient.GetBalancesAsync(
 				Signer.WalletAddress, cancellationToken));
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balance,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -454,12 +461,15 @@ public partial class THORChainMessageAdapter
 			local = [.. _trackedSwaps.Values];
 		var combined = remote.ToDictionary(static swap =>
 			swap.TransactionHash, StringComparer.OrdinalIgnoreCase);
+
 		foreach (var swap in local)
 			combined[swap.TransactionHash] = swap;
+
 		var swaps = combined.Values.Where(swap => Matches(subscription, swap))
 			.OrderBy(static swap => swap.SubmittedTime).ToArray();
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			if (subscription.States is { Length: > 0 } states &&
@@ -494,17 +504,21 @@ public partial class THORChainMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var result = new List<TrackedSwap>();
+
 		for (var offset = 0; offset < HistoryMaximum; offset += 50)
 		{
 			var page = await ApiClient.GetActionsAsync(null,
 				Signer.WalletAddress, null, 50, offset, cancellationToken);
 			var actions = page?.Actions ?? [];
+
 			foreach (var action in actions)
 				if (TryCreateWalletSwap(action, out var swap))
 					result.Add(swap);
+
 			if (actions.Length < 50)
 				break;
 		}
+
 		return [.. result.GroupBy(static swap => swap.TransactionHash,
 				StringComparer.OrdinalIgnoreCase)
 			.Select(static group => group.OrderByDescending(swap =>
@@ -520,37 +534,43 @@ public partial class THORChainMessageAdapter
 			if (action is null || action.Type != THORChainActionTypes.Swap ||
 				!TryFindCoin(action.Inputs, THORChainExtensions.RuneAsset,
 					out var inputTransaction, out var inputCoin) ||
-				!inputTransaction.Address.EqualsIgnoreCase(
-					Signer.WalletAddress))
-				return false;
-			THORChainMarket market = null;
-			THORChainCoinAmount outputCoin = null;
-			THORChainActionTransaction outputTransaction = null;
-			using (_sync.EnterScope())
-				foreach (var candidate in _marketsByAsset.Values)
+					!inputTransaction.Address.EqualsIgnoreCase(
+						Signer.WalletAddress))
+					return false;
+
+				THORChainMarket market = null;
+				THORChainCoinAmount outputCoin = null;
+				THORChainActionTransaction outputTransaction = null;
+
+				using (_sync.EnterScope())
+					foreach (var candidate in _marketsByAsset.Values)
 					if (TryFindCoin(action.Outputs, candidate.Asset,
 						out outputTransaction, out outputCoin))
 					{
 						market = candidate;
-						break;
-					}
-			if (market is null)
-				return false;
-			var volume = inputCoin.Amount.FromProtocolAmount("swap input");
-			var quoteVolume = outputCoin is null
-				? 0m
-				: outputCoin.Amount.FromProtocolAmount("swap output");
-			var poolPrice = THORChainExtensions.ParseDecimal(
-				market.Pool.AssetPrice, "pool asset price");
-			var state = action.Status switch
-			{
+							break;
+						}
+
+				if (market is null)
+					return false;
+
+				var volume = inputCoin.Amount.FromProtocolAmount("swap input");
+				var quoteVolume = outputCoin is null
+					? 0m
+					: outputCoin.Amount.FromProtocolAmount("swap output");
+				var poolPrice = THORChainExtensions.ParseDecimal(
+					market.Pool.AssetPrice, "pool asset price");
+
+				var state = action.Status switch
+				{
 				THORChainActionStatuses.Pending => OrderStates.Active,
 				THORChainActionStatuses.Success => OrderStates.Done,
-				THORChainActionStatuses.Refund => OrderStates.Failed,
-				_ => OrderStates.Active,
-			};
-			swap = new()
-			{
+					THORChainActionStatuses.Refund => OrderStates.Failed,
+					_ => OrderStates.Active,
+				};
+
+				swap = new()
+				{
 				TransactionHash = inputTransaction.TransactionId
 					.NormalizeTransactionHash(),
 				Market = market,
@@ -561,11 +581,12 @@ public partial class THORChainMessageAdapter
 				Memo = action.Metadata?.Swap?.Memo,
 				SubmittedTime = action.Date.ParseActionTime(),
 				State = state,
-				FailureReason = action.Metadata?.Refund?.Reason ??
-					action.Metadata?.Failed?.Reason,
-				Action = action,
-			};
-			return true;
+					FailureReason = action.Metadata?.Refund?.Reason ??
+						action.Metadata?.Failed?.Reason,
+					Action = action,
+				};
+
+				return true;
 		}
 		catch (Exception error) when (error is InvalidDataException or
 			FormatException or OverflowException)

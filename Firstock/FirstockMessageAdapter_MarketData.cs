@@ -17,6 +17,7 @@ public partial class FirstockMessageAdapter
         CancellationToken cancellationToken)
     {
         await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
         var securityTypes = lookupMsg.GetSecurityTypes();
         var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -95,6 +96,7 @@ public partial class FirstockMessageAdapter
         CancellationToken cancellationToken)
     {
         await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
         if (_socketClient == null)
             throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
@@ -139,6 +141,7 @@ public partial class FirstockMessageAdapter
         CancellationToken cancellationToken)
     {
         await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
             return;
         if (!mdMsg.IsHistoryOnly())

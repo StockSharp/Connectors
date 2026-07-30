@@ -8,6 +8,7 @@ public partial class IgMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var count = (int)Math.Clamp(lookupMsg.Count ?? 100, 1, 1000);
 		var nativeEpic = lookupMsg.SecurityId.Native as string;
@@ -25,6 +26,7 @@ public partial class IgMessageAdapter
 			throw new InvalidOperationException("IG security lookup requires an EPIC or a search term.");
 		var summaries = (await _rest.SearchMarkets(query, cancellationToken)).Markets ?? [];
 		var sent = 0;
+
 		foreach (var summary in summaries)
 		{
 			if (sent >= count)
@@ -36,6 +38,7 @@ public partial class IgMessageAdapter
 				details, lookupMsg, securityTypes, cancellationToken))
 				sent++;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -51,6 +54,7 @@ public partial class IgMessageAdapter
 	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var old))
@@ -59,6 +63,7 @@ public partial class IgMessageAdapter
 		}
 		if (mdMsg.IsHistoryOnly())
 			throw new NotSupportedException("IG does not expose historical tick trades through the public REST API.");
+
 		var epic = mdMsg.SecurityId.ToEpic();
 		_marketSubscriptions[mdMsg.TransactionId] = new()
 		{
@@ -83,6 +88,7 @@ public partial class IgMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_candleSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var old))
@@ -122,6 +128,7 @@ public partial class IgMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var old))
@@ -138,6 +145,7 @@ public partial class IgMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_marketSubscriptions[mdMsg.TransactionId] = new()
 		{
 			TransactionId = mdMsg.TransactionId,
@@ -225,21 +233,25 @@ public partial class IgMessageAdapter
 			: new DateTimeOffset(mdMsg.From.Value.ToUniversalTime());
 		var candles = new SortedDictionary<DateTimeOffset, IgPriceSnapshot>();
 		var page = 1;
+
 		while (candles.Count < count)
 		{
 			var response = await _rest.GetPrices(epic, timeFrame.ToResolution(), from, to, page,
 				Math.Min(500, count - candles.Count), cancellationToken);
+
 			foreach (var candle in response.Prices ?? [])
 			{
 				var time = candle.SnapshotTimeUtc.ParseIgTime() ?? candle.SnapshotTime.ParseIgTime();
 				if (time is { } value && value >= from && value <= to)
 					candles[value] = candle;
 			}
+
 			var totalPages = response.Metadata?.PageData?.TotalPages ?? 1;
 			if (page >= totalPages || response.Prices?.Length is null or 0)
 				break;
 			page++;
 		}
+
 		foreach (var pair in candles.Take(count))
 		{
 			var candle = pair.Value;
@@ -315,6 +327,7 @@ public partial class IgMessageAdapter
 		var price = update.Last ?? (update.Bid is { } bid && update.Offer is { } offer ? (bid + offer) / 2 : update.Bid ?? update.Offer);
 		if (price == null)
 			return;
+
 		foreach (var subscription in _marketSubscriptions.CachedValues.Where(s =>
 			s.Epic.EqualsIgnoreCase(update.Epic) && s.DataType == DataType.Ticks))
 		{
@@ -338,6 +351,7 @@ public partial class IgMessageAdapter
 	{
 		if (update.Open == null || update.High == null || update.Low == null || update.Close == null)
 			return;
+
 		foreach (var subscription in _candleSubscriptions.CachedValues.Where(s =>
 			s.Epic.EqualsIgnoreCase(update.Epic) && s.TimeFrame == update.TimeFrame))
 		{

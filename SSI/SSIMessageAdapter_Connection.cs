@@ -141,9 +141,11 @@ public partial class SSIMessageAdapter
 							.Select(static group =>
 								(group.Key, group.ToArray()))
 					];
+
 				foreach (var group in groups)
 					await client.SubscribeAsync(group.Channel,
 						group.Topics, cancellationToken);
+
 				_streamClient = client;
 			}
 			catch

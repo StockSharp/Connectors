@@ -7,11 +7,13 @@ public partial class FactSetMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var code = lookupMsg.SecurityId.SecurityCode;
 		if (!code.IsEmpty())
 		{
 			var securityTypes = lookupMsg.GetSecurityTypes();
 			var left = lookupMsg.Count ?? long.MaxValue;
+
 			foreach (var reference in await SafeClient().GetReferences(code, cancellationToken))
 			{
 				CacheReference(reference);
@@ -31,6 +33,7 @@ public partial class FactSetMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -104,6 +107,7 @@ public partial class FactSetMessageAdapter
 
 		foreach (var message in result)
 			await SendOutMessageAsync(message, cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
@@ -113,6 +117,7 @@ public partial class FactSetMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -145,6 +150,7 @@ public partial class FactSetMessageAdapter
 		}
 
 		var securityId = mdMsg.SecurityId.ToFactSetSecurityId(reference);
+
 		foreach (var price in prices)
 		{
 			var time = price.GetTime();

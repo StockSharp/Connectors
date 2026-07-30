@@ -7,6 +7,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		var securityTypes = lookupMsg.GetSecurityTypes();
@@ -16,6 +17,7 @@ public partial class WeexMessageAdapter
 			(securityTypes.Count == 0 || securityTypes.Contains(SecurityTypes.CryptoCurrency)))
 		{
 			var response = await RestClient.GetSpotExchangeInfoAsync(cancellationToken);
+
 			foreach (var symbol in response?.Symbols ?? [])
 			{
 				if (symbol?.Symbol.IsEmpty() != false || !symbol.IsTradeEnabled || !symbol.IsDisplayEnabled)
@@ -44,6 +46,7 @@ public partial class WeexMessageAdapter
 			(securityTypes.Count == 0 || securityTypes.Contains(SecurityTypes.Future)))
 		{
 			var response = await RestClient.GetFuturesExchangeInfoAsync(cancellationToken);
+
 			foreach (var symbol in response?.Symbols ?? [])
 			{
 				if (symbol?.Symbol.IsEmpty() != false)
@@ -78,6 +81,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -94,6 +98,7 @@ public partial class WeexMessageAdapter
 		var book = await RestClient.GetOrderBookAsync(section, symbol, 15, cancellationToken);
 		await SendBestQuotesAsync(book, symbol, section, mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -116,6 +121,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -130,6 +136,7 @@ public partial class WeexMessageAdapter
 		await SendBookAsync(book, symbol, section, QuoteChangeStates.SnapshotComplete,
 			mdMsg.TransactionId, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -158,6 +165,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -177,6 +185,7 @@ public partial class WeexMessageAdapter
 
 		string lastTradeId = null;
 		var lastTime = from ?? default;
+
 		foreach (var trade in trades)
 		{
 			await SendTradeAsync(trade.Id, trade.Price, trade.Volume, trade.Time,
@@ -187,6 +196,7 @@ public partial class WeexMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -215,6 +225,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -232,6 +243,7 @@ public partial class WeexMessageAdapter
 			mdMsg.From, to, count, cancellationToken);
 
 		var lastOpenTime = mdMsg.From ?? default;
+
 		foreach (var candle in candles ?? [])
 		{
 			await SendCandleAsync(candle, symbol, section, timeFrame,
@@ -240,6 +252,7 @@ public partial class WeexMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -348,10 +361,11 @@ public partial class WeexMessageAdapter
 	{
 		foreach (var item in update?.Data ?? [])
 		{
-			var symbol = item.Symbol.IsEmpty(update.Symbol);
-			if (symbol.IsEmpty())
-				continue;
-			await BroadcastTickerAsync(new WeexTicker
+				var symbol = item.Symbol.IsEmpty(update.Symbol);
+				if (symbol.IsEmpty())
+					continue;
+
+				await BroadcastTickerAsync(new WeexTicker
 			{
 				Symbol = symbol,
 				PriceChange = item.PriceChange,
@@ -377,6 +391,7 @@ public partial class WeexMessageAdapter
 				.Where(pair => pair.Value.Section == section &&
 					pair.Value.Symbol.EqualsIgnoreCase(ticker.Symbol))
 				.Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var subscription in subscriptions)
 			await SendTickerAsync(ticker, section, subscription.Id, cancellationToken,
 				eventTime > 0 ? eventTime.ToUtcTime() : null);
@@ -411,6 +426,7 @@ public partial class WeexMessageAdapter
 		{
 			foreach (var depth in subscriptions.Select(static item => item.State.Depth).Distinct())
 				await GetMarketClient(section).ResubscribeDepthAsync(update.Symbol, depth, cancellationToken);
+
 			return;
 		}
 
@@ -434,12 +450,14 @@ public partial class WeexMessageAdapter
 	{
 		if (update?.Symbol.IsEmpty() != false)
 			return;
+
 		foreach (var trade in (update.Data ?? []).OrderBy(static item => item.Time))
 		{
 			(long Id, TickSubscription State)[] subscriptions;
 			using (_sync.EnterScope())
 			{
 				var accepted = new List<(long, TickSubscription)>();
+
 				foreach (var pair in _tickSubscriptions)
 				{
 					var state = pair.Value;
@@ -452,8 +470,10 @@ public partial class WeexMessageAdapter
 					state.LastTime = trade.Time.ToUtcTime();
 					accepted.Add((pair.Key, state));
 				}
+
 				subscriptions = [.. accepted];
 			}
+
 			foreach (var subscription in subscriptions)
 				await SendTradeAsync(trade.Id, trade.Price, trade.Volume, trade.Time,
 					trade.IsBuyerMaker ? Sides.Sell : Sides.Buy, update.Symbol, section,
@@ -479,6 +499,7 @@ public partial class WeexMessageAdapter
 						pair.Value.Symbol.EqualsIgnoreCase(symbol) &&
 						(pair.Value.LastOpenTime == default || openTime >= pair.Value.LastOpenTime))
 					.Select(static pair => (pair.Key, pair.Value))];
+
 				foreach (var subscription in subscriptions)
 					subscription.State.LastOpenTime = openTime;
 			}

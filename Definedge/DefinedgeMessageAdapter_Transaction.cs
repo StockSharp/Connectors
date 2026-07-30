@@ -310,6 +310,7 @@ public partial class DefinedgeMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId, cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -348,6 +349,7 @@ public partial class DefinedgeMessageAdapter
         OrderStatusMessage filter = null)
     {
         var left = filter?.Count ?? long.MaxValue;
+
         foreach (var order in
             (await _restClient.GetOrders(cancellationToken))
                 .Where(order => order != null)
@@ -390,6 +392,7 @@ public partial class DefinedgeMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==

@@ -135,6 +135,7 @@ public partial class CoinCatchMessageAdapter
 		}
 		var orders = await RestClient.GetOpenOrdersAsync(
 			null, cancellationToken);
+
 		foreach (var symbol in orders
 			.Where(order => !order.Symbol.IsEmpty() &&
 				(cancelMsg.Side is null ||
@@ -158,6 +159,7 @@ public partial class CoinCatchMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		var portfolioName = GetPortfolioName();
 		if (!lookupMsg.PortfolioName.IsEmpty() &&
@@ -199,6 +201,7 @@ public partial class CoinCatchMessageAdapter
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"CoinCatch portfolio subscription already exists.");
@@ -214,6 +217,7 @@ public partial class CoinCatchMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -295,6 +299,7 @@ public partial class CoinCatchMessageAdapter
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"CoinCatch order-status subscription already exists.");

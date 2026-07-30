@@ -149,9 +149,11 @@ public partial class ZondaCryptoMessageAdapter
 		if (message.BookChanges.Length > 0)
 			await ProcessBookMessageAsync(
 				message, cancellationToken);
+
 		foreach (var trade in message.Trades)
 			await ProcessTradeMessageAsync(
 				trade, cancellationToken);
+
 		if (message.Wallet is not null &&
 			_portfolioSubscriptionId != 0)
 			await SendBalanceAsync(

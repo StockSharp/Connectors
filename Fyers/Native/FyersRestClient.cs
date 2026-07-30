@@ -60,6 +60,7 @@ sealed class FyersRestClient : BaseLogReceiver
 
 			var instruments = new List<FyersInstrument>();
 			var errors = new List<Exception>();
+
 			foreach (var source in _masterFiles)
 			{
 				try
@@ -205,6 +206,7 @@ sealed class FyersRestClient : BaseLogReceiver
 
 		var candles = new List<FyersCandle>();
 		var pageSize = timeFrame == TimeSpan.FromDays(1) ? TimeSpan.FromDays(365) : TimeSpan.FromDays(90);
+
 		while (start <= end)
 		{
 			var pageEnd = start + pageSize;
@@ -220,6 +222,7 @@ sealed class FyersRestClient : BaseLogReceiver
 			request.AddQueryParameter("cont_flag", "1");
 
 			var response = Validate(await request.InvokeAsync<FyersHistoryResponse>(new Uri(new Uri(_baseUrl), "data/history"), this, this.AddVerboseLog, cancellationToken));
+
 			foreach (var row in response.Candles ?? [])
 			{
 				if (row?.Length < 6)

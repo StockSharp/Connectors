@@ -170,10 +170,12 @@ public partial class BloFinMessageAdapter
 				OrderId = order.OrderId,
 			})
 			.ToArray();
+
 		for (var offset = 0; offset < requests.Length; offset += 20)
 		{
 			var results = await RestClient.CancelOrdersAsync(
 				[.. requests.Skip(offset).Take(20)], cancellationToken) ?? [];
+
 			foreach (var result in results)
 				ThrowIfOperationFailed(result, $"cancel order {result?.OrderId}");
 		}
@@ -184,6 +186,7 @@ public partial class BloFinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -201,11 +204,13 @@ public partial class BloFinMessageAdapter
 		}, cancellationToken);
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		await PrivateWsClient.SubscribeAccountAsync(cancellationToken);
 		await PrivateWsClient.SubscribePositionsAsync(cancellationToken);
@@ -216,6 +221,7 @@ public partial class BloFinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -231,11 +237,13 @@ public partial class BloFinMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, symbol, statusMsg.From,
 			statusMsg.To, limit, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		await PrivateWsClient.SubscribeOrdersAsync(cancellationToken);
 	}
@@ -246,6 +254,7 @@ public partial class BloFinMessageAdapter
 		var account = await RestClient.GetAccountAsync(cancellationToken);
 		if (account is not null)
 			await OnAccountAsync(account, originalTransactionId, cancellationToken);
+
 		foreach (var position in await RestClient.GetPositionsAsync(null, cancellationToken) ?? [])
 			await SendPositionAsync(position, originalTransactionId, cancellationToken);
 	}
@@ -262,6 +271,7 @@ public partial class BloFinMessageAdapter
 		};
 		var pending = await RestClient.GetPendingOrdersAsync(query, cancellationToken) ?? [];
 		var history = await RestClient.GetOrderHistoryAsync(query, cancellationToken) ?? [];
+
 		foreach (var order in pending.Concat(history)
 			.Where(static order => order?.OrderId.IsEmpty() == false)
 			.GroupBy(static order => order.OrderId)
@@ -285,6 +295,7 @@ public partial class BloFinMessageAdapter
 		await SendOrderAsync(order, _orderStatusSubscriptionId, cancellationToken);
 		if (order?.OrderId.IsEmpty() != false || order.FilledSize.ToDecimal() is not > 0)
 			return;
+
 		foreach (var fill in await RestClient.GetFillsAsync(new()
 		{
 			InstrumentId = order.InstrumentId,

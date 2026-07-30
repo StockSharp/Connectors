@@ -11,6 +11,7 @@ public partial class LimeMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var limit = lookupMsg.Count is long count ? checked((int)count.Min(1000).Max(1)) : 100;
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = (long)limit;
@@ -19,14 +20,17 @@ public partial class LimeMessageAdapter
 		if (securityTypes.Contains(SecurityTypes.Option) && !query.IsEmpty())
 		{
 			var underlying = lookupMsg.GetUnderlyingCode().IsEmpty(query);
+
 			foreach (var series in await _httpClient.GetOptionSeries(underlying, cancellationToken) ?? [])
 			{
 				var expirations = lookupMsg.ExpiryDate is DateTime expiry
 					? [expiry.ToUniversalTime().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)]
 					: series.Expirations ?? [];
+
 				foreach (var expiration in expirations)
 				{
 					var chain = await _httpClient.GetOptionChain(underlying, expiration, series.Series, cancellationToken);
+
 					foreach (var option in chain?.Chain ?? [])
 					{
 						var security = new SecurityMessage
@@ -46,9 +50,11 @@ public partial class LimeMessageAdapter
 						if (--left <= 0)
 							break;
 					}
+
 					if (left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -57,6 +63,7 @@ public partial class LimeMessageAdapter
 		if (left > 0 && securityTypes.Any(type => type != SecurityTypes.Option))
 		{
 			var result = await _httpClient.LookupSecurities(query, checked((int)left.Min(1000)), cancellationToken);
+
 			foreach (var item in result?.Trades ?? [])
 			{
 				var security = new SecurityMessage
@@ -83,6 +90,7 @@ public partial class LimeMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 
@@ -125,6 +133,7 @@ public partial class LimeMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 

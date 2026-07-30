@@ -110,8 +110,10 @@ sealed class AscendExRestClient : BaseLogReceiver
 			HttpMethod.Get, "api/pro/v1/trades",
 			Values(("symbol", symbol), ("n", 100)),
 			null, false, null, cancellationToken);
+
 		foreach (var trade in envelope?.Data ?? [])
 			trade.Pair = envelope.Symbol.IsEmpty(symbol);
+
 		return envelope?.Data;
 	}
 

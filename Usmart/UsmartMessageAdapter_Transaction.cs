@@ -191,6 +191,7 @@ public partial class UsmartMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == message.OriginalTransactionId)
@@ -214,6 +215,7 @@ public partial class UsmartMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == message.OriginalTransactionId)
@@ -245,6 +247,7 @@ public partial class UsmartMessageAdapter
 		var skip = Math.Max(0, filter?.Skip ?? 0);
 		var left = Math.Max(0, filter?.Count ?? long.MaxValue);
 		var selected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var order in orders.Where(order => IsOrderMatch(order, filter))
 			.OrderByDescending(GetOrderTime))
 		{
@@ -264,6 +267,7 @@ public partial class UsmartMessageAdapter
 		var now = DateTime.UtcNow;
 		var records = await LoadTrades(filter?.From ?? now.Date, filter?.To ?? now,
 			cancellationToken);
+
 		foreach (var trade in records.Where(trade => trade != null && selected.Contains(
 			trade.OrderId.ToString(CultureInfo.InvariantCulture))).OrderBy(trade => trade.Time))
 			await ProcessTrade(trade, originalTransactionId, isLookup, cancellationToken);
@@ -273,6 +277,7 @@ public partial class UsmartMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var result = new List<UsmartTrade>();
+
 		for (var page = 1; ; page++)
 		{
 			var response = await _rest.GetTrades(new UsmartRecordsRequest
@@ -288,12 +293,14 @@ public partial class UsmartMessageAdapter
 			if (items.Length < 100 || result.Count >= (response.Data?.Total ?? 0))
 				break;
 		}
+
 		return result.ToArray();
 	}
 
 	private async Task<UsmartOrder[]> LoadTodayOrders(CancellationToken cancellationToken)
 	{
 		var result = new List<UsmartOrder>();
+
 		for (var page = 1; ; page++)
 		{
 			var response = await _rest.GetTodayOrders(new UsmartPagedRequest
@@ -303,12 +310,15 @@ public partial class UsmartMessageAdapter
 				PageSize = 100,
 			}, cancellationToken);
 			var items = response.Data?.Items ?? [];
+
 			foreach (var order in items.Where(order => order?.OrderId.IsEmpty() == false))
 				_orders[order.OrderId] = order;
+
 			result.AddRange(items.Where(order => order != null));
 			if (items.Length < 100 || result.Count >= (response.Data?.Total ?? 0))
 				break;
 		}
+
 		return result.ToArray();
 	}
 
@@ -408,6 +418,7 @@ public partial class UsmartMessageAdapter
 		_positionIds.Clear();
 		var succeeded = 0;
 		Exception lastError = null;
+
 		foreach (var exchange in new[]
 		{
 			UsmartExchangeTypes.HongKong,
@@ -464,6 +475,7 @@ public partial class UsmartMessageAdapter
 				.TryAdd(PositionChangeTypes.Currency, currency), cancellationToken);
 			}
 		}
+
 		if (succeeded == 0 && lastError != null)
 			throw lastError;
 		if (!isLookup)

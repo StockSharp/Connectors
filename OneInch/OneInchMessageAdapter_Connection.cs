@@ -49,6 +49,7 @@ public partial class OneInchMessageAdapter
 					"Configured 1inch market definitions are invalid.", error);
 			}
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -66,6 +67,7 @@ public partial class OneInchMessageAdapter
 						error.Message);
 				}
 			}
+
 			OneInchMarket[] markets;
 			using (_sync.EnterScope())
 				markets = [.. _markets.Values];
@@ -227,6 +229,7 @@ public partial class OneInchMessageAdapter
 			? Chain.GetDefaultMarkets()
 			: Markets;
 		var result = new List<OneInchMarketDefinition>();
+
 		foreach (var item in configured.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -246,6 +249,7 @@ public partial class OneInchMessageAdapter
 					: null,
 			});
 		}
+
 		if (result.Count == 0)
 			throw new InvalidOperationException(
 				"At least one 1inch market must be configured.");

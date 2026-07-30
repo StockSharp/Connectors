@@ -38,6 +38,7 @@ public partial class OrcaMessageAdapter
 				throw new InvalidOperationException(
 					"At least one Orca pool must be configured or discovered.");
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -53,6 +54,7 @@ public partial class OrcaMessageAdapter
 						definition.PoolAddress, error.Message);
 				}
 			}
+
 			using (_sync.EnterScope())
 				if (_markets.Count == 0)
 					throw errors.Count == 1
@@ -168,6 +170,7 @@ public partial class OrcaMessageAdapter
 					error.Message);
 			}
 		}
+
 		foreach (var definition in explicitDefinitions)
 		{
 			OrcaApiPool apiPool = null;
@@ -195,6 +198,7 @@ public partial class OrcaMessageAdapter
 					definition.PoolAddress)?.ApiPool,
 			};
 		}
+
 		return [.. definitions.Values];
 	}
 
@@ -280,6 +284,7 @@ public partial class OrcaMessageAdapter
 						existing.PoolAddress);
 					_markets.Add(existing.SecurityCode, existing);
 				}
+
 				market.SecurityCode = BuildUniquePoolCode(pair,
 					market.PoolAddress);
 			}
@@ -300,6 +305,7 @@ public partial class OrcaMessageAdapter
 		if (Pools.IsEmpty())
 			return [];
 		var result = new List<OrcaMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -320,6 +326,7 @@ public partial class OrcaMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result.GroupBy(static definition =>
 			definition.PoolAddress, StringComparer.Ordinal)
 			.Select(static group => group.First())];
@@ -439,6 +446,7 @@ public partial class OrcaMessageAdapter
 			if (!_markets.ContainsKey(code))
 				return code;
 		}
+
 		return $"{pair}-{poolAddress.ToUpperInvariant()}";
 	}
 

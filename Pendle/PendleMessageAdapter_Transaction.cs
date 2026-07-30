@@ -153,6 +153,7 @@ public partial class PendleMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -181,6 +182,7 @@ public partial class PendleMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -192,6 +194,7 @@ public partial class PendleMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -236,6 +239,7 @@ public partial class PendleMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -299,6 +303,7 @@ public partial class PendleMessageAdapter
 		if (destinationAmount <= 0)
 			throw new InvalidDataException(
 				"Pendle conversion returned a non-positive output amount.");
+
 		foreach (var approval in response.RequiredApprovals ?? [])
 		{
 			if (approval is null ||
@@ -308,6 +313,7 @@ public partial class PendleMessageAdapter
 				throw new InvalidDataException(
 					"Pendle conversion returned an unexpected approval.");
 		}
+
 		var data = route.Transaction;
 		var from = data.From.NormalizeAddress();
 		if (!from.EqualsIgnoreCase(RpcClient.WalletAddress))
@@ -391,12 +397,15 @@ public partial class PendleMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -460,9 +469,11 @@ public partial class PendleMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(static group => group.First())];
 		var result = new List<(PendleToken, BigInteger)>();
+
 		foreach (var token in tokens)
 			result.Add((token, await RpcClient.GetBalanceAsync(token,
 				cancellationToken)));
+
 		return [.. result];
 	}
 
@@ -516,6 +527,7 @@ public partial class PendleMessageAdapter
 				.OrderBy(static swap => swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			var receipt = swap.State == OrderStates.Active
@@ -638,6 +650,7 @@ public partial class PendleMessageAdapter
 		var destinationAmount = swap.DestinationToken.Address.IsNativeToken()
 			? swap.ExpectedDestinationAmount
 			: BigInteger.Zero;
+
 		foreach (var log in receipt.Logs ?? [])
 		{
 			if (log?.IsRemoved != false || log.Address.IsEmpty() ||
@@ -680,6 +693,7 @@ public partial class PendleMessageAdapter
 					destinationAmount -= amount;
 			}
 		}
+
 		if (sourceAmount <= 0 || destinationAmount <= 0)
 			throw new InvalidDataException(
 				$"Successful Pendle transaction '{swap.TransactionHash}' " +
@@ -740,6 +754,7 @@ public partial class PendleMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

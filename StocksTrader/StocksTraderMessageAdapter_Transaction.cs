@@ -212,6 +212,7 @@ public partial class StocksTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -236,6 +237,7 @@ public partial class StocksTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -270,6 +272,7 @@ public partial class StocksTraderMessageAdapter
 		var skip = Math.Max(0, filter?.Skip ?? 0);
 		var left = Math.Max(0, filter?.Count ?? long.MaxValue);
 		var selected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var order in orders.OrderByDescending(GetOrderTime))
 		{
 			if (!IsOrderMatch(order, filter))
@@ -295,6 +298,7 @@ public partial class StocksTraderMessageAdapter
 			.GroupBy(static item => item.DealId, StringComparer.OrdinalIgnoreCase)
 			.ToDictionary(static group => group.Key, static group => group.First().Order,
 				StringComparer.OrdinalIgnoreCase);
+
 		foreach (var deal in deals.OrderBy(static deal => deal.OpenTime ?? 0))
 		{
 			if (deal?.Id.IsEmpty() != false ||
@@ -315,6 +319,7 @@ public partial class StocksTraderMessageAdapter
 	{
 		var result = new Dictionary<string, StocksTraderOrder>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var order in await Client.GetOrdersAsync(PortfolioName, null,
 			cancellationToken) ?? [])
 			AddLatest(result, order, static item => item.LastModified ?? item.CreateTime ?? 0);
@@ -327,6 +332,7 @@ public partial class StocksTraderMessageAdapter
 		var to = isLookup ? filter?.To ?? DateTime.UtcNow : DateTime.UtcNow;
 		long pageSkip = 0;
 		string previousPage = null;
+
 		while (true)
 		{
 			var page = await Client.GetOrdersAsync(PortfolioName, new()
@@ -341,13 +347,16 @@ public partial class StocksTraderMessageAdapter
 				throw new InvalidOperationException(
 					"StocksTrader repeated an order-history page during pagination.");
 			previousPage = pageKey;
+
 			foreach (var order in page)
 				AddLatest(result, order,
 					static item => item.LastModified ?? item.CreateTime ?? 0);
+
 			if (page.Length < 500)
 				break;
 			pageSkip += page.Length;
 		}
+
 		return [.. result.Values];
 	}
 
@@ -356,6 +365,7 @@ public partial class StocksTraderMessageAdapter
 	{
 		var result = new Dictionary<string, StocksTraderDeal>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var deal in await Client.GetDealsAsync(PortfolioName, null,
 			cancellationToken) ?? [])
 			AddLatest(result, deal, static item => item.CloseTime ?? item.OpenTime ?? 0);
@@ -368,6 +378,7 @@ public partial class StocksTraderMessageAdapter
 		var to = isLookup ? filter?.To ?? DateTime.UtcNow : DateTime.UtcNow;
 		long pageSkip = 0;
 		string previousPage = null;
+
 		while (true)
 		{
 			var page = await Client.GetDealsAsync(PortfolioName, new()
@@ -382,13 +393,16 @@ public partial class StocksTraderMessageAdapter
 				throw new InvalidOperationException(
 					"StocksTrader repeated a deal-history page during pagination.");
 			previousPage = pageKey;
+
 			foreach (var deal in page)
 				AddLatest(result, deal,
 					static item => item.CloseTime ?? item.OpenTime ?? 0);
+
 			if (page.Length < 500)
 				break;
 			pageSkip += page.Length;
 		}
+
 		return [.. result.Values];
 	}
 
@@ -582,6 +596,7 @@ public partial class StocksTraderMessageAdapter
 
 		var positions = new Dictionary<string, PositionAggregate>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var deal in deals.Where(static deal =>
 			deal?.Id.IsEmpty() == false && !deal.Ticker.IsEmpty() &&
 			(deal.Status.EqualsIgnoreCase("open") ||
@@ -605,6 +620,7 @@ public partial class StocksTraderMessageAdapter
 		{
 			previousTickers = [.. _positionTickers];
 			_positionTickers.Clear();
+
 			foreach (var ticker in positions.Keys)
 				_positionTickers.Add(ticker);
 		}

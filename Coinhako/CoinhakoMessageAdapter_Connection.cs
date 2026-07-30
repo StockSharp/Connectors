@@ -22,9 +22,11 @@ public partial class CoinhakoMessageAdapter
 		try
 		{
 			var prices = new List<CoinhakoSpotPrice>();
+
 			foreach (var currency in GetCounterCurrencies())
 				prices.AddRange(await client.GetSpotsAsync(null, currency,
 					cancellationToken) ?? []);
+
 			RegisterMarkets(prices);
 			if (GetMarkets().Length == 0)
 				throw new InvalidDataException(

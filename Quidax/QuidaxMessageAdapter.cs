@@ -166,6 +166,7 @@ public partial class QuidaxMessageAdapter
 		{
 			_marketsBySecurity.Clear();
 			_marketsByNative.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Id.IsEmpty() != false ||
@@ -220,8 +221,10 @@ public partial class QuidaxMessageAdapter
 			if (!ids.Add(key))
 				return false;
 			queue.Enqueue(key);
+
 			while (queue.Count > _maximumRememberedTradeIds)
 				ids.Remove(queue.Dequeue());
+
 			return true;
 		}
 	}

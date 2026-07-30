@@ -7,6 +7,7 @@ public partial class BitrueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		await EnsureInstrumentsAsync(cancellationToken);
 		var securityTypes = lookupMsg.GetSecurityTypes();
@@ -17,6 +18,7 @@ public partial class BitrueMessageAdapter
 			BitrueSpotSymbol[] symbols;
 			using (_sync.EnterScope())
 				symbols = [.. _spotSymbols.Values.OrderBy(static item => item.Symbol)];
+
 			foreach (var symbol in symbols)
 			{
 				var priceFilter = symbol.Filters?.FirstOrDefault(static filter =>
@@ -47,6 +49,7 @@ public partial class BitrueMessageAdapter
 			BitrueFuturesContract[] contracts;
 			using (_sync.EnterScope())
 				contracts = [.. _futuresContracts.Values.OrderBy(static item => item.Symbol)];
+
 			foreach (var contract in contracts)
 			{
 				var security = new SecurityMessage
@@ -77,6 +80,7 @@ public partial class BitrueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -105,6 +109,7 @@ public partial class BitrueMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -131,6 +136,7 @@ public partial class BitrueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -152,6 +158,7 @@ public partial class BitrueMessageAdapter
 			book.Timestamp > 0 ? book.Timestamp.ToUtcTime() : CurrentTime,
 			mdMsg.TransactionId, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -179,6 +186,7 @@ public partial class BitrueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -198,11 +206,13 @@ public partial class BitrueMessageAdapter
 		if (section == BitrueSections.Spot)
 		{
 			var trades = await SpotRestClient.GetTradesAsync(symbol, limit, cancellationToken) ?? [];
+
 			foreach (var trade in trades.Where(static trade => trade is not null)
 				.Where(trade => trade.Timestamp.ToUtcTime() >= from &&
 					trade.Timestamp.ToUtcTime() <= to)
 				.OrderBy(static trade => trade.Timestamp))
 				await SendSpotTradeAsync(symbol, trade, mdMsg.TransactionId, cancellationToken);
+
 			var latestTrade = trades.Where(static trade => trade is not null)
 				.Select(static trade => (long?)trade.TradeId).Max();
 			if (latestTrade is long latestTradeId)
@@ -215,6 +225,7 @@ public partial class BitrueMessageAdapter
 		{
 			var trades = await GetPublicClient(section).RequestTradesAsync(symbol, limit,
 				cancellationToken);
+
 			foreach (var trade in trades.Where(static trade => trade is not null)
 				.Where(trade => trade.Timestamp <= 0 ||
 					trade.Timestamp.ToUtcTime() >= from && trade.Timestamp.ToUtcTime() <= to))
@@ -223,6 +234,7 @@ public partial class BitrueMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -249,6 +261,7 @@ public partial class BitrueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -286,6 +299,7 @@ public partial class BitrueMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -328,6 +342,7 @@ public partial class BitrueMessageAdapter
 			foreach (var symbol in spotSymbols.Where(static symbol =>
 				symbol?.Symbol.IsEmpty() == false && symbol.Status == BitrueSpotSymbolStatuses.Trading))
 				_spotSymbols[symbol.Symbol] = symbol;
+
 			foreach (var contract in futuresContracts.Where(static contract =>
 				contract?.Symbol.IsEmpty() == false && contract.Status == 1 &&
 				contract.ContractType.EqualsIgnoreCase("E")))
@@ -335,6 +350,7 @@ public partial class BitrueMessageAdapter
 				_futuresContracts[contract.Symbol] = contract;
 				_futuresPrivateSymbols[contract.Symbol.ToPrivateWsSymbol()] = contract.Symbol;
 			}
+
 			_instrumentsLoaded = true;
 		}
 	}
@@ -358,6 +374,7 @@ public partial class BitrueMessageAdapter
 		var result = new List<BitrueSpotCandle>();
 		var timestamps = new HashSet<long>();
 		var cursor = to.ToUnixMilliseconds() + 1;
+
 		while (result.Count < maximum)
 		{
 			var limit = (maximum - result.Count).Min(1440).Max(1);
@@ -371,6 +388,7 @@ public partial class BitrueMessageAdapter
 			var page = response?.Data ?? [];
 			if (page.Length == 0)
 				break;
+
 			foreach (var candle in page)
 			{
 				var timestamp = candle.GetTimestamp();
@@ -378,11 +396,13 @@ public partial class BitrueMessageAdapter
 				if (time >= from && time <= to && timestamps.Add(timestamp))
 					result.Add(candle);
 			}
+
 			var earliest = page.Min(static candle => candle.GetTimestamp());
 			if (earliest.ToUtcTime() <= from || earliest >= cursor || page.Length < limit)
 				break;
 			cursor = earliest;
 		}
+
 		return [.. result.OrderBy(static candle => candle.GetTimestamp()).TakeLast(maximum)];
 	}
 
@@ -393,6 +413,7 @@ public partial class BitrueMessageAdapter
 		var result = new List<BitrueFuturesCandle>();
 		var timestamps = new HashSet<long>();
 		var cursor = new DateTimeOffset(to).ToUnixTimeSeconds() + 1;
+
 		while (result.Count < maximum)
 		{
 			var limit = (maximum - result.Count).Min(300).Max(1);
@@ -400,6 +421,7 @@ public partial class BitrueMessageAdapter
 				symbol, timeFrame, cursor, limit, cancellationToken);
 			if (page.Length == 0)
 				break;
+
 			foreach (var candle in page)
 			{
 				var timestamp = candle.GetTimestamp();
@@ -407,6 +429,7 @@ public partial class BitrueMessageAdapter
 				if (time >= from && time <= to && timestamps.Add(timestamp))
 					result.Add(candle);
 			}
+
 			var earliest = page.Min(static candle => candle.GetTimestamp());
 			var earliestSeconds = Math.Abs(earliest) < 100_000_000_000L
 				? earliest
@@ -415,6 +438,7 @@ public partial class BitrueMessageAdapter
 				break;
 			cursor = earliestSeconds;
 		}
+
 		return [.. result.OrderBy(static candle => candle.GetTimestamp()).TakeLast(maximum)];
 	}
 
@@ -455,10 +479,12 @@ public partial class BitrueMessageAdapter
 			long lastId;
 			using (_sync.EnterScope())
 				_spotLastTradeIds.TryGetValue(subscription.Symbol, out lastId);
+
 			foreach (var trade in trades.Where(trade => trade is not null &&
 				trade.TradeId > lastId)
 				.OrderBy(static trade => trade.TradeId))
 				await PublishSpotTradeAsync(subscription.Symbol, trade, cancellationToken);
+
 			var latestTrade = trades.Where(static trade => trade is not null)
 				.Select(static trade => (long?)trade.TradeId).Max();
 			if (latestTrade is long latestTradeId)
@@ -478,6 +504,7 @@ public partial class BitrueMessageAdapter
 				EndIndex = DateTime.UtcNow.ToUnixMilliseconds() + 1,
 				Limit = 2,
 			}, cancellationToken);
+
 			foreach (var candle in response?.Data ?? [])
 				await PublishSpotCandleAsync(subscription.Symbol, subscription.TimeFrame,
 					candle, cancellationToken);
@@ -557,6 +584,7 @@ public partial class BitrueMessageAdapter
 				.Where(pair => pair.Value.Section == section &&
 					pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendBookAsync(section, symbol, book.Bids, book.Asks,
 				timestamp > 0 ? timestamp.ToUtcTime() : CurrentTime,
@@ -572,6 +600,7 @@ public partial class BitrueMessageAdapter
 				.Where(pair => pair.Value.Section == BitrueSections.Futures &&
 					pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendFuturesTickerAsync(symbol, ticker, timestamp, id, cancellationToken);
 	}
@@ -585,6 +614,7 @@ public partial class BitrueMessageAdapter
 				.Where(pair => pair.Value.Section == BitrueSections.Futures &&
 					pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendFuturesTradeAsync(symbol, trade, id, cancellationToken,
 				timestamp);
@@ -601,6 +631,7 @@ public partial class BitrueMessageAdapter
 					pair.Value.Symbol.EqualsIgnoreCase(symbol) &&
 					pair.Value.TimeFrame == timeFrame)
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendFuturesCandleAsync(symbol, candle, timeFrame, id, cancellationToken);
 	}
@@ -614,6 +645,7 @@ public partial class BitrueMessageAdapter
 				.Where(pair => pair.Value.Section == BitrueSections.Spot &&
 					pair.Value.Symbol.EqualsIgnoreCase(ticker.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendSpotTickerAsync(ticker, id, cancellationToken);
 	}
@@ -627,6 +659,7 @@ public partial class BitrueMessageAdapter
 				.Where(pair => pair.Value.Section == BitrueSections.Spot &&
 					pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendSpotTradeAsync(symbol, trade, id, cancellationToken);
 	}
@@ -641,6 +674,7 @@ public partial class BitrueMessageAdapter
 					pair.Value.Symbol.EqualsIgnoreCase(symbol) &&
 					pair.Value.TimeFrame == timeFrame)
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendSpotCandleAsync(symbol, candle, timeFrame, id, cancellationToken);
 	}

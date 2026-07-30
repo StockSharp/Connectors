@@ -143,6 +143,7 @@ public partial class DerivMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_symbols.Clear();
+
 			foreach (var symbol in symbols)
 				_symbols[symbol.Symbol] = symbol;
 		}

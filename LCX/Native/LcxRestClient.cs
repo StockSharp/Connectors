@@ -651,6 +651,7 @@ sealed class LcxRestClient : BaseLogReceiver
 		var bodyText = body?.ToString(Formatting.None);
 		var attempts = retryable ? _maximumReadAttempts : 1;
 		Exception lastError = null;
+
 		for (var attempt = 0; attempt < attempts; attempt++)
 		{
 			try
@@ -726,6 +727,7 @@ sealed class LcxRestClient : BaseLogReceiver
 					cancellationToken);
 			}
 		}
+
 		throw lastError ?? new InvalidOperationException(
 			"LCX API request failed.");
 	}

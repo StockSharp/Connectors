@@ -157,6 +157,7 @@ public partial class NasdaqCloudDataServiceMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -195,6 +196,7 @@ public partial class NasdaqCloudDataServiceMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -237,6 +239,7 @@ public partial class NasdaqCloudDataServiceMessageAdapter
 		var bars = await SafeClient().GetBars(
 			Source, Offset, code, timeFrame, range, from, to, cancellationToken);
 		var parsed = new List<(DateTime time, NasdaqCloudBar bar)>();
+
 		foreach (var bar in bars.WhereNotNull())
 		{
 			var time = bar.Timestamp.ToNasdaqCloudTime();
@@ -261,6 +264,7 @@ public partial class NasdaqCloudDataServiceMessageAdapter
 		var securityId = mdMsg.SecurityId.NormalizeNasdaqCloud(
 			code, _equityBoard, code);
 		var sent = 0;
+
 		foreach (var item in selected)
 		{
 			await SendOutMessageAsync(new TimeFrameCandleMessage

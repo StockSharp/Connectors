@@ -106,6 +106,7 @@ sealed class PythSocketPool : BaseLogReceiver
 		{
 			SubscriptionId = subscriptionId,
 		};
+
 		foreach (var connection in _connections)
 			await connection.SendUnsubscribeAsync(request, cancellationToken);
 	}

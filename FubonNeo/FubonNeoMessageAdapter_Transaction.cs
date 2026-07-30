@@ -101,6 +101,7 @@ public partial class FubonNeoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -123,6 +124,7 @@ public partial class FubonNeoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -153,6 +155,7 @@ public partial class FubonNeoMessageAdapter
 		OrderStatusMessage filter = null)
 	{
 		var left = filter?.Count ?? long.MaxValue;
+
 		foreach (var update in (await _client.GetOrdersAsync(cancellationToken))
 			.OrderBy(item => FubonNeoExtensions.ParseFubonTradeTime(item.Date, item.LastTime)))
 		{
@@ -198,6 +201,7 @@ public partial class FubonNeoMessageAdapter
 		var selected = accounts.ToArray();
 		if (!portfolioName.IsEmpty() && selected.Length == 0)
 			throw new InvalidOperationException(LocalizedStrings.AccountNotFound);
+
 		foreach (var account in selected)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -240,6 +244,7 @@ public partial class FubonNeoMessageAdapter
 			.TryAdd(PositionChangeTypes.UnrealizedPnL, position.UnrealizedPnL, true)
 			.TryAdd(PositionChangeTypes.BlockedValue, position.BlockedValue, true), cancellationToken);
 		}
+
 		_lastPortfolioRefresh = CurrentTime;
 	}
 

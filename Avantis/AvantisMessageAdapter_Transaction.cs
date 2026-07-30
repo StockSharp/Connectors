@@ -253,6 +253,7 @@ public partial class AvantisMessageAdapter
 				(order.LimitOrderType == AvantisOpenOrderTypes.StopLimit) ==
 					cancelMsg.IsStop.Value)
 			.ToArray();
+
 		foreach (var order in orders)
 		{
 			var receipt = await RpcClient.SendAndWaitAsync(
@@ -279,6 +280,7 @@ public partial class AvantisMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -297,12 +299,14 @@ public partial class AvantisMessageAdapter
 		await SendPortfolioSnapshotAsync(data, lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		_lastAccountRefresh = DateTime.UtcNow;
 	}
@@ -313,6 +317,7 @@ public partial class AvantisMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -324,12 +329,14 @@ public partial class AvantisMessageAdapter
 			cancellationToken);
 		await SendOrderSnapshotAsync(data, statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		_lastAccountRefresh = DateTime.UtcNow;
 	}
@@ -463,6 +470,7 @@ public partial class AvantisMessageAdapter
 			cancellationToken);
 
 		var currentMarkets = new HashSet<int>();
+
 		foreach (var group in (data.Positions ?? [])
 			.Where(static position => position is not null)
 			.GroupBy(static position => position.PairIndex))
@@ -477,6 +485,7 @@ public partial class AvantisMessageAdapter
 			decimal weightedLeverage = 0m;
 			decimal collateralTotal = 0m;
 			var currentPrice = GetPrice(group.Key)?.Price;
+
 			foreach (var position in group)
 			{
 				var collateral = position.Collateral.ParseScaled(6,
@@ -497,6 +506,7 @@ public partial class AvantisMessageAdapter
 				if (currentPrice is decimal price)
 					unrealized += sign * quantity * (price - openPrice);
 			}
+
 			currentMarkets.Add(group.Key);
 			await SendOutMessageAsync(new PositionChangeMessage
 			{
@@ -527,6 +537,7 @@ public partial class AvantisMessageAdapter
 			_knownPositionMarkets.Clear();
 			_knownPositionMarkets.UnionWith(currentMarkets);
 		}
+
 		foreach (var pairIndex in missing)
 		{
 			var market = GetMarket(pairIndex);
@@ -548,6 +559,7 @@ public partial class AvantisMessageAdapter
 	{
 		data ??= new();
 		var messages = new List<ExecutionMessage>();
+
 		foreach (var order in data.LimitOrders ?? [])
 		{
 			if (order is null)
@@ -562,6 +574,7 @@ public partial class AvantisMessageAdapter
 			messages.Add(CreateLimitOrderMessage(order, market, time,
 				statusMsg.TransactionId));
 		}
+
 		foreach (var position in data.Positions ?? [])
 		{
 			if (position is null)
@@ -580,6 +593,7 @@ public partial class AvantisMessageAdapter
 			.Skip(Math.Max(0, statusMsg.Skip ?? 0).To<int>())
 			.Take((statusMsg.Count ?? int.MaxValue).Min(int.MaxValue).To<int>())
 			.ToArray();
+
 		foreach (var message in selected)
 		{
 			UpdateServerTime(message.ServerTime);
@@ -608,9 +622,11 @@ public partial class AvantisMessageAdapter
 			removed = [.. _knownLimitOrders.Where(pair =>
 				!current.ContainsKey(pair.Key)).Select(static pair => pair.Value)];
 			_knownLimitOrders.Clear();
+
 			foreach (var pair in current)
 				_knownLimitOrders.Add(pair.Key, pair.Value);
 		}
+
 		foreach (var order in removed)
 		{
 			var market = GetMarket(order.PairIndex);

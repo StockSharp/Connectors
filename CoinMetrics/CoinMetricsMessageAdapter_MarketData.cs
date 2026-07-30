@@ -7,6 +7,7 @@ public partial class CoinMetricsMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		if (!message.SecurityId.BoardCode.IsEmpty() &&
 			!message.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.CoinMetrics))
@@ -28,6 +29,7 @@ public partial class CoinMetricsMessageAdapter
 			ExchangeFilter, MaximumItems, cancellationToken);
 		CacheMarkets(markets);
 		var skip = Math.Max(0L, message.Skip ?? 0);
+
 		foreach (var market in markets.Where(IsValidMarket)
 			.OrderBy(static item => item.Status == CoinMetricsMarketStatuses.Offline)
 			.ThenBy(static item => item.Exchange,
@@ -49,6 +51,7 @@ public partial class CoinMetricsMessageAdapter
 			if (--left == 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -57,6 +60,7 @@ public partial class CoinMetricsMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -80,6 +84,7 @@ public partial class CoinMetricsMessageAdapter
 			var trades = await SafeRest().GetTradesAsync(market.Market, from, to,
 				GetHistoryLimit(remaining), cancellationToken);
 			var sent = 0;
+
 			foreach (var trade in trades)
 			{
 				ValidateMarket(market, trade?.Market, "trade");
@@ -87,6 +92,7 @@ public partial class CoinMetricsMessageAdapter
 					cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -94,6 +100,7 @@ public partial class CoinMetricsMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(CoinMetricsStreamKinds.Trades, market.Market, default,
 				CoinMetricsBookDepthModes.Unknown), 0,
@@ -106,6 +113,7 @@ public partial class CoinMetricsMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -129,6 +137,7 @@ public partial class CoinMetricsMessageAdapter
 			var quotes = await SafeRest().GetQuotesAsync(market.Market, from, to,
 				GetHistoryLimit(remaining), cancellationToken);
 			var sent = 0;
+
 			foreach (var quote in quotes)
 			{
 				ValidateMarket(market, quote?.Market, "quote");
@@ -136,6 +145,7 @@ public partial class CoinMetricsMessageAdapter
 					cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -143,6 +153,7 @@ public partial class CoinMetricsMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(CoinMetricsStreamKinds.Quotes, market.Market, default,
 				CoinMetricsBookDepthModes.Unknown), 0,
@@ -155,6 +166,7 @@ public partial class CoinMetricsMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -180,6 +192,7 @@ public partial class CoinMetricsMessageAdapter
 			var books = await SafeRest().GetOrderBooksAsync(market.Market, from,
 				to, GetHistoryLimit(remaining), depth, cancellationToken);
 			var sent = 0;
+
 			foreach (var book in books)
 			{
 				ValidateMarket(market, book?.Market, "order book");
@@ -187,6 +200,7 @@ public partial class CoinMetricsMessageAdapter
 					message.TransactionId, depth, 0, cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -194,6 +208,7 @@ public partial class CoinMetricsMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(CoinMetricsStreamKinds.OrderBooks, market.Market, default,
 				depth > 100
@@ -208,6 +223,7 @@ public partial class CoinMetricsMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -234,6 +250,7 @@ public partial class CoinMetricsMessageAdapter
 			var candles = await SafeRest().GetCandlesAsync(market.Market,
 				timeFrame, from, to, GetHistoryLimit(remaining), cancellationToken);
 			var sent = 0;
+
 			foreach (var candle in candles)
 			{
 				ValidateMarket(market, candle?.Market, "candle");
@@ -243,6 +260,7 @@ public partial class CoinMetricsMessageAdapter
 					lastCandleOpenTime = openTime;
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -250,6 +268,7 @@ public partial class CoinMetricsMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(CoinMetricsStreamKinds.Candles, market.Market, timeFrame,
 				CoinMetricsBookDepthModes.Unknown),
@@ -695,6 +714,7 @@ public partial class CoinMetricsMessageAdapter
 		IEnumerable<CoinMetricsBookLevel> levels, bool isBid, int depth)
 	{
 		var result = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level?.Price is not > 0 || level.Size is null or < 0)
@@ -703,6 +723,7 @@ public partial class CoinMetricsMessageAdapter
 			if (level.Size > 0)
 				result.Add(new(level.Price.Value, level.Size.Value));
 		}
+
 		return [.. (isBid
 			? result.OrderByDescending(static quote => quote.Price)
 			: result.OrderBy(static quote => quote.Price)).Take(depth)];

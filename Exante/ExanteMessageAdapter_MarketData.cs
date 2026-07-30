@@ -45,6 +45,7 @@ public partial class ExanteMessageAdapter
 
                 var symbols = await Rest.GetSymbolsByExchange(
                     exchange.Id, cancellationToken);
+
                 foreach (var symbol in symbols)
                 {
                     if (!query.IsEmpty() &&
@@ -128,6 +129,7 @@ public partial class ExanteMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveMarketSubscription(
@@ -166,6 +168,7 @@ public partial class ExanteMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveMarketSubscription(
@@ -205,6 +208,7 @@ public partial class ExanteMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveMarketSubscription(
@@ -267,6 +271,7 @@ public partial class ExanteMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
             return;
         if (!message.IsHistoryOnly())

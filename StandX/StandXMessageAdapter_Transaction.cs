@@ -200,6 +200,7 @@ public partial class StandXMessageAdapter
 			: GetInstrument(cancelMsg.SecurityId).Symbol;
 		var openOrders = (await RestClient.GetOpenOrdersAsync(symbol, 1200,
 			cancellationToken)).Result ?? [];
+
 		foreach (var order in openOrders.Where(order => order is not null &&
 			(cancelMsg.Side is null || order.Side.ToStockSharp() == cancelMsg.Side)))
 			await OrderSocket.CancelOrderAsync(new() { OrderId = order.Id },
@@ -212,6 +213,7 @@ public partial class StandXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -232,12 +234,14 @@ public partial class StandXMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		await MarketSocket.SubscribeAsync(StandXChannels.Balance, null,
 			cancellationToken);
@@ -251,6 +255,7 @@ public partial class StandXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -268,12 +273,14 @@ public partial class StandXMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, symbol,
 			statusMsg.From, statusMsg.To, limit, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		await MarketSocket.SubscribeAsync(StandXChannels.Order, null,
 			cancellationToken);
@@ -286,6 +293,7 @@ public partial class StandXMessageAdapter
 	{
 		await SendBalanceAsync(await RestClient.GetBalanceAsync(cancellationToken),
 			transactionId, cancellationToken);
+
 		foreach (var position in await RestClient.GetPositionsAsync(null,
 			cancellationToken) ?? [])
 			await SendPositionAsync(position, transactionId, cancellationToken);
@@ -299,6 +307,7 @@ public partial class StandXMessageAdapter
 			limit.Min(1200), cancellationToken)).Result ?? [];
 		var history = (await RestClient.GetOrdersAsync(symbol, from, to, limit,
 			cancellationToken)).Result ?? [];
+
 		foreach (var order in open.Concat(history)
 			.Where(static order => order is not null && order.Id > 0)
 			.GroupBy(static order => order.Id)

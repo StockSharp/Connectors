@@ -210,6 +210,7 @@ public partial class ZoomexMessageAdapter
 		foreach (var category in categories)
 		{
 			var scopes = GetScopes(category, product?.Symbol);
+
 			foreach (var scope in scopes)
 			{
 				if (cancelMsg.Side is null && cancelMsg.IsStop is null)
@@ -220,6 +221,7 @@ public partial class ZoomexMessageAdapter
 						Symbol = scope.Symbol,
 						SettleCoin = scope.SettleCoin,
 					}, cancellationToken);
+
 					foreach (var item in result?.Items ?? [])
 					{
 						var tracked = GetTrackedOrder(item.OrderId) ??
@@ -229,6 +231,7 @@ public partial class ZoomexMessageAdapter
 								cancelMsg.TransactionId, OrderStates.Done,
 								cancellationToken);
 					}
+
 					continue;
 				}
 
@@ -257,6 +260,7 @@ public partial class ZoomexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -287,6 +291,7 @@ public partial class ZoomexMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -298,6 +303,7 @@ public partial class ZoomexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -336,6 +342,7 @@ public partial class ZoomexMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -346,11 +353,14 @@ public partial class ZoomexMessageAdapter
 	{
 		var wallets = await RestClient.GetWalletBalanceAsync(
 			AccountType.ToNative(), cancellationToken);
+
 		foreach (var account in wallets?.Items ?? [])
 			await SendWalletAsync(account, target, isForced, CurrentTime,
 				cancellationToken);
+
 		if (AccountType == ZoomexAccountTypes.Spot)
 			return;
+
 		foreach (var category in GetEnabledCategories().Where(
 			static value => value != ZoomexCategories.Spot))
 		{
@@ -378,10 +388,12 @@ public partial class ZoomexMessageAdapter
 						await SendOrderAsync(order, target, isForced,
 							cancellationToken);
 			}
+
 			foreach (var order in await LoadOrderHistoryAsync(category,
 				subscription, cancellationToken))
 				await SendOrderAsync(order, target, isForced,
 					cancellationToken);
+
 			foreach (var execution in await LoadExecutionsAsync(category,
 				subscription, cancellationToken))
 				await SendExecutionAsync(execution, target,
@@ -393,6 +405,7 @@ public partial class ZoomexMessageAdapter
 		long timestamp, CancellationToken cancellationToken)
 	{
 		_ = timestamp;
+
 		foreach (var order in orders ?? [])
 		{
 			if (order?.OrderId.IsEmpty() != false)
@@ -400,6 +413,7 @@ public partial class ZoomexMessageAdapter
 			var targets = GetOrderTargets(order.Category, order.Symbol,
 				order.OrderId, order.OrderLinkId, order.Side,
 				GetOrderUpdateTime(order));
+
 			foreach (var target in targets)
 				await SendOrderAsync(order, target, false,
 					cancellationToken);
@@ -411,6 +425,7 @@ public partial class ZoomexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		_ = timestamp;
+
 		foreach (var execution in executions ?? [])
 		{
 			if (execution?.ExecutionId.IsEmpty() != false)
@@ -419,6 +434,7 @@ public partial class ZoomexMessageAdapter
 				execution.Symbol, execution.OrderId,
 				execution.OrderLinkId, execution.Side,
 				execution.ExecutionTime.ToLong() ?? 0);
+
 			foreach (var target in targets)
 				await SendExecutionAsync(execution, target,
 					cancellationToken);
@@ -432,6 +448,7 @@ public partial class ZoomexMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var position in positions ?? [])
 			foreach (var target in targets)
 				await SendPositionAsync(position, target, false,
@@ -445,10 +462,12 @@ public partial class ZoomexMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var account in accounts ?? [])
 		{
 			if (account.AccountType != AccountType.ToNative())
 				continue;
+
 			foreach (var target in targets)
 				await SendWalletAsync(account, target, false,
 					GetTime(timestamp), cancellationToken);
@@ -460,30 +479,34 @@ public partial class ZoomexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		foreach (var coin in account?.Coins ?? [])
-		{
-			if (coin?.Coin.IsEmpty() != false)
-				continue;
-			var current = coin.Equity.ToDecimal() ??
-				coin.WalletBalance.ToDecimal() ?? 0m;
+			{
+				if (coin?.Coin.IsEmpty() != false)
+					continue;
+
+				var current = coin.Equity.ToDecimal() ??
+					coin.WalletBalance.ToDecimal() ?? 0m;
 			var available = coin.AvailableToWithdraw.ToDecimal();
 			var margins = (coin.TotalOrderInitialMargin.ToDecimal() ?? 0m) +
 				(coin.TotalPositionInitialMargin.ToDecimal() ?? 0m);
 			var blocked = available is decimal free
 				? (current - free).Max(margins).Max(0m)
 				: margins.Max(0m);
-			var unrealized = coin.UnrealizedPnl.ToDecimal();
-			var realized = coin.RealizedPnl.ToDecimal();
-			var fingerprint = new BalanceFingerprint(current, blocked,
-				unrealized, realized);
-			var key = $"{target}:{coin.Coin.ToUpperInvariant()}";
-			using (_sync.EnterScope())
-			{
+				var unrealized = coin.UnrealizedPnl.ToDecimal();
+				var realized = coin.RealizedPnl.ToDecimal();
+
+				var fingerprint = new BalanceFingerprint(current, blocked,
+					unrealized, realized);
+				var key = $"{target}:{coin.Coin.ToUpperInvariant()}";
+
+				using (_sync.EnterScope())
+				{
 				if (!isForced && _balanceFingerprints.TryGetValue(key,
 					out var previous) && previous == fingerprint)
 					continue;
-				_balanceFingerprints[key] = fingerprint;
-			}
-			await SendOutMessageAsync(new PositionChangeMessage
+					_balanceFingerprints[key] = fingerprint;
+				}
+
+				await SendOutMessageAsync(new PositionChangeMessage
 			{
 				PortfolioName = GetPortfolioName(),
 				SecurityId = new()
@@ -690,20 +713,24 @@ public partial class ZoomexMessageAdapter
 		var result = new List<ZoomexPosition>();
 		var cursor = default(string);
 		var seen = new HashSet<string>(StringComparer.Ordinal);
+
 		while (true)
 		{
 			var page = await RestClient.GetPositionsAsync(category, symbol,
 				settleCoin, cursor, 200, cancellationToken);
+
 			foreach (var item in page?.Items ?? [])
 			{
 				item.Category = category;
 				result.Add(item);
 			}
+
 			var next = page?.NextPageCursor;
 			if (next.IsEmpty() || !seen.Add(next))
 				break;
 			cursor = next;
 		}
+
 		return [.. result];
 	}
 
@@ -715,6 +742,7 @@ public partial class ZoomexMessageAdapter
 		var result = new List<ZoomexOrder>();
 		var cursor = default(string);
 		var seen = new HashSet<string>(StringComparer.Ordinal);
+
 		while (true)
 		{
 			var page = await RestClient.GetOpenOrdersAsync(category, symbol,
@@ -728,6 +756,7 @@ public partial class ZoomexMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result];
 	}
 
@@ -741,18 +770,21 @@ public partial class ZoomexMessageAdapter
 			{
 				var cursor = default(string);
 				var seen = new HashSet<string>(StringComparer.Ordinal);
+
 				while (result.Count < subscription.Maximum)
 				{
 					var page = await RestClient.GetOrderHistoryAsync(
 						category, subscription.Symbol, subscription.OrderId,
 						subscription.OrderLinkId, from, to, cursor, 50,
 						token);
+
 					foreach (var item in page?.Items ?? [])
 					{
 						item.Category = category;
 						if (MatchesOrder(subscription, item))
 							result.Add(item);
 					}
+
 					var next = page?.NextPageCursor;
 					if (next.IsEmpty() || !seen.Add(next))
 						break;
@@ -779,17 +811,20 @@ public partial class ZoomexMessageAdapter
 			{
 				var cursor = default(string);
 				var seen = new HashSet<string>(StringComparer.Ordinal);
+
 				while (result.Count < subscription.Maximum)
 				{
 					var page = await RestClient.GetExecutionsAsync(category,
 						subscription.Symbol, subscription.OrderId, from, to,
 						cursor, 100, token);
+
 					foreach (var item in page?.Items ?? [])
 					{
 						item.Category = category;
 						if (MatchesExecution(subscription, item))
 							result.Add(item);
 					}
+
 					var next = page?.NextPageCursor;
 					if (next.IsEmpty() || !seen.Add(next))
 						break;
@@ -817,6 +852,7 @@ public partial class ZoomexMessageAdapter
 		if (from > to)
 			return;
 		var cursor = to;
+
 		while (cursor >= from)
 		{
 			var start = (cursor - TimeSpan.FromDays(7) +
@@ -837,6 +873,7 @@ public partial class ZoomexMessageAdapter
 			: product.Category == ZoomexCategories.Spot
 				? []
 				: [product.Category];
+
 		foreach (var category in categories)
 			foreach (var scope in GetScopes(category, product?.Symbol))
 				foreach (var position in await LoadPositionsAsync(category,
@@ -916,6 +953,7 @@ public partial class ZoomexMessageAdapter
 				GetTrackedOrderUnsafe(orderLinkId);
 			if (tracked is not null)
 				targets.Add(tracked.TransactionId);
+
 			foreach (var pair in _orderSubscriptions)
 			{
 				var subscription = pair.Value;
@@ -1038,6 +1076,7 @@ public partial class ZoomexMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

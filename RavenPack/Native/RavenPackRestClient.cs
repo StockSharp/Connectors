@@ -83,6 +83,7 @@ sealed class RavenPackRestClient : BaseLogReceiver
 		bool isNotFoundEmpty, CancellationToken cancellationToken)
 	{
 		var uri = new Uri(_address, path);
+
 		for (var attempt = 1; ; attempt++)
 		{
 			using var request = new HttpRequestMessage(method, uri);

@@ -239,6 +239,7 @@ partial class FtxMessageAdapter
 		if (statusMsg != null)
 		{
 			await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 			_isOrderSubscribed = statusMsg.IsSubscribe;
 		}
 

@@ -108,10 +108,13 @@ internal sealed class GrowwFeedClient : BaseLogReceiver
 	public async ValueTask Disconnect()
 	{
 		_lifetime?.Cancel();
+
 		foreach (var subscription in _subscriptions.Values.ToArray())
 			await AwaitSubscription(subscription.Task);
+
 		foreach (var subscription in _subscriptions.Values.ToArray())
 			subscription.Dispose();
+
 		_subscriptions.Clear();
 
 		if (_connection != null)

@@ -200,6 +200,7 @@ public partial class KoreanFscMessageAdapter
         CancellationToken cancellationToken)
     {
         var date = GetReferenceDate();
+
         for (var days = 0;
             days < LatestSearchDays;
             days++, date = date.AddDays(-1))

@@ -9,6 +9,7 @@ public partial class FinnhubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var board = lookupMsg.SecurityId.BoardCode;
 		var value = (lookupMsg.SecurityId.Native as string)
@@ -59,6 +60,7 @@ public partial class FinnhubMessageAdapter
 			else
 			{
 				var response = await SafeRest().Search(value, StockExchange, cancellationToken);
+
 				foreach (var symbol in response?.Result ?? [])
 				{
 					await Emit(symbol?.ToSecurityMessage(lookupMsg.TransactionId));
@@ -104,6 +106,7 @@ public partial class FinnhubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -126,6 +129,7 @@ public partial class FinnhubMessageAdapter
 		if (mdMsg.IsHistoryOnly() && market != FinnhubMarkets.Stocks)
 			throw new NotSupportedException(
 				"Finnhub does not expose forex or crypto Level1 snapshots through REST.");
+
 		var snapshotSent = market == FinnhubMarkets.Stocks &&
 			await SendLevel1Snapshot(mdMsg.TransactionId, securityId, symbol, cancellationToken);
 		if (snapshotSent && remaining is > 0)
@@ -147,6 +151,7 @@ public partial class FinnhubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -191,6 +196,7 @@ public partial class FinnhubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -218,6 +224,7 @@ public partial class FinnhubMessageAdapter
 		var left = mdMsg.Count ?? long.MaxValue;
 		var emitted = new HashSet<long>();
 		var current = from;
+
 		while (current <= to && left > 0)
 		{
 			var chunkTo = timeFrame < TimeSpan.FromDays(1) && to - current > TimeSpan.FromDays(30)
@@ -227,6 +234,7 @@ public partial class FinnhubMessageAdapter
 			if (candles != null && !candles.Status.EqualsIgnoreCase("no_data"))
 			{
 				var count = GetCandleCount(candles);
+
 				foreach (var index in Enumerable.Range(0, count)
 					.OrderBy(index => candles.Timestamp[index]))
 				{
@@ -267,6 +275,7 @@ public partial class FinnhubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -307,6 +316,7 @@ public partial class FinnhubMessageAdapter
 		if (mdMsg.From == null && mdMsg.Count is > 0 && ordered.LongLength > mdMsg.Count.Value)
 			ordered = ordered.TakeLast(checked((int)Math.Min(mdMsg.Count.Value, int.MaxValue))).ToArray();
 		var left = mdMsg.Count ?? 100;
+
 		foreach (var item in ordered)
 		{
 			var serverTime = Extensions.FromUnixSeconds(item.Timestamp.Value);
@@ -395,6 +405,7 @@ public partial class FinnhubMessageAdapter
 		var target = Math.Min(requestedCount is > 0 ? requestedCount.Value : 1000,
 			int.MaxValue);
 		var collected = new List<HistoricalTick>();
+
 		for (var days = 0; days < 31 && collected.Count < target; days++)
 		{
 			var date = to.Date.AddDays(-days);
@@ -405,8 +416,10 @@ public partial class FinnhubMessageAdapter
 
 		var selected = collected.OrderBy(item => item.Time)
 			.TakeLast(checked((int)target)).ToArray();
+
 		foreach (var tick in selected)
 			await SendTick(mdMsg.TransactionId, securityId, tick, cancellationToken);
+
 		return selected.LongLength;
 	}
 
@@ -416,9 +429,11 @@ public partial class FinnhubMessageAdapter
 	{
 		var left = requestedCount ?? long.MaxValue;
 		var sent = 0L;
+
 		for (var date = from.Date; date <= to.Date && left > 0; date = date.AddDays(1))
 		{
 			var skip = 0L;
+
 			while (left > 0)
 			{
 				var limit = (int)Math.Min(25000, left);
@@ -427,6 +442,7 @@ public partial class FinnhubMessageAdapter
 				var count = GetTickCount(response);
 				if (count == 0)
 					break;
+
 				for (var index = 0; index < count && left > 0; index++)
 				{
 					var tick = ToHistoricalTick(response, index);
@@ -436,12 +452,14 @@ public partial class FinnhubMessageAdapter
 					sent++;
 					left--;
 				}
+
 				skip += response.Count is > 0 ? response.Count.Value : count;
 				if (count < limit || skip >= (response.Total ?? skip))
 					break;
 				await IterationInterval.Delay(cancellationToken);
 			}
 		}
+
 		return sent;
 	}
 
@@ -451,6 +469,7 @@ public partial class FinnhubMessageAdapter
 		var initialCount = output.Count;
 		var probe = await SafeRest().GetTicks(symbol, date, 1, 0, cancellationToken);
 		var cursor = probe?.Total ?? probe?.Count ?? 0;
+
 		while (cursor > 0 && output.Count - initialCount < limit)
 		{
 			var pageSize = (int)Math.Min(25000, cursor);
@@ -460,6 +479,7 @@ public partial class FinnhubMessageAdapter
 			var count = GetTickCount(response);
 			if (count == 0)
 				break;
+
 			for (var index = count - 1;
 				index >= 0 && output.Count - initialCount < limit; index--)
 			{
@@ -467,6 +487,7 @@ public partial class FinnhubMessageAdapter
 				if (tick.Time <= to)
 					output.Add(tick);
 			}
+
 			cursor = skip;
 			await IterationInterval.Delay(cancellationToken);
 		}

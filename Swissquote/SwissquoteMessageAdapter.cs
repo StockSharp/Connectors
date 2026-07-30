@@ -154,6 +154,7 @@ public partial class SwissquoteMessageAdapter
 			{
 			}
 		}
+
 		return null;
 	}
 }

@@ -10,10 +10,12 @@ public partial class NadoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static item => item.Symbol,
 			StringComparer.Ordinal))
 		{
@@ -41,6 +43,7 @@ public partial class NadoMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -49,6 +52,7 @@ public partial class NadoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -70,6 +74,7 @@ public partial class NadoMessageAdapter
 		await SendLevel1SnapshotAsync(market, mdMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -108,6 +113,7 @@ public partial class NadoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -130,6 +136,7 @@ public partial class NadoMessageAdapter
 		await SendDepthSnapshotAsync(market.ProductId, mdMsg.TransactionId,
 			depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -170,6 +177,7 @@ public partial class NadoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -190,6 +198,7 @@ public partial class NadoMessageAdapter
 		var count = (mdMsg.Count ?? HistoryLimit).Min(HistoryLimit).Max(1).To<int>();
 		var trades = await RestClient.GetPublicTradesAsync(market.TickerId,
 			count, null, cancellationToken);
+
 		foreach (var trade in trades
 			.Where(static item => item is not null && item.Timestamp > 0)
 			.Where(item => item.Timestamp.FromNadoSeconds() <= to &&
@@ -198,7 +207,9 @@ public partial class NadoMessageAdapter
 			.TakeLast(count))
 			await SendPublicTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -238,6 +249,7 @@ public partial class NadoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -263,6 +275,7 @@ public partial class NadoMessageAdapter
 		var count = GetCandleCount(mdMsg, timeFrame, to);
 		var candles = await RestClient.GetCandlesAsync(market.ProductId,
 			granularity, count, to, cancellationToken);
+
 		foreach (var candle in candles
 			.Where(static item => item is not null && !item.Timestamp.IsEmpty())
 			.Where(item => from is null ||
@@ -271,7 +284,9 @@ public partial class NadoMessageAdapter
 			.TakeLast(count))
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -377,6 +392,7 @@ public partial class NadoMessageAdapter
 				{
 					await SendOutErrorAsync(error, cancellationToken);
 				}
+
 			throw;
 		}
 	}
@@ -393,6 +409,7 @@ public partial class NadoMessageAdapter
 		IEnumerable<NadoSubscriptionKey> keys)
 	{
 		var added = new List<NadoSubscriptionKey>();
+
 		foreach (var key in keys)
 		{
 			if (_streamReferences.TryGetValue(key, out var count))
@@ -403,6 +420,7 @@ public partial class NadoMessageAdapter
 				added.Add(key);
 			}
 		}
+
 		return [.. added];
 	}
 
@@ -410,6 +428,7 @@ public partial class NadoMessageAdapter
 		IEnumerable<NadoSubscriptionKey> keys)
 	{
 		var removed = new List<NadoSubscriptionKey>();
+
 		foreach (var key in keys)
 		{
 			if (!_streamReferences.TryGetValue(key, out var count))
@@ -422,6 +441,7 @@ public partial class NadoMessageAdapter
 				removed.Add(key);
 			}
 		}
+
 		return [.. removed];
 	}
 
@@ -459,6 +479,7 @@ public partial class NadoMessageAdapter
 			if (_prices.TryGetValue(trade.ProductId, out var state))
 				state.Last = price;
 		}
+
 		foreach (var id in tickIds)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -470,6 +491,7 @@ public partial class NadoMessageAdapter
 				TradeVolume = volume,
 				OriginSide = trade.IsTakerBuyer ? Sides.Buy : Sides.Sell,
 			}, cancellationToken);
+
 		foreach (var id in level1Ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -507,6 +529,7 @@ public partial class NadoMessageAdapter
 				state.Ask = ask;
 			}
 		}
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -536,6 +559,7 @@ public partial class NadoMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.ProductId == depth.ProductId).Select(static pair =>
 				(pair.Key, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new QuoteChangeMessage
 			{
@@ -562,6 +586,7 @@ public partial class NadoMessageAdapter
 				(pair.Key, pair.Value.TimeFrame))];
 		var openTime = candle.Timestamp.FromNadoNanoseconds();
 		UpdateServerTime(openTime);
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{
@@ -707,6 +732,7 @@ public partial class NadoMessageAdapter
 		bool isBids)
 	{
 		var quotes = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level?.Length is not >= 2 ||
@@ -720,6 +746,7 @@ public partial class NadoMessageAdapter
 			if (volume > 0)
 				quotes.Add(new(price, volume));
 		}
+
 		var ordered = isBids
 			? quotes.OrderByDescending(static quote => quote.Price)
 			: quotes.OrderBy(static quote => quote.Price);
@@ -730,6 +757,7 @@ public partial class NadoMessageAdapter
 		bool isBids, bool isSnapshot)
 	{
 		var quotes = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level?.Length is not >= 2)
@@ -743,6 +771,7 @@ public partial class NadoMessageAdapter
 			if (!isSnapshot || volume > 0)
 				quotes.Add(new(price, volume));
 		}
+
 		var ordered = isBids
 			? quotes.OrderByDescending(static quote => quote.Price)
 			: quotes.OrderBy(static quote => quote.Price);

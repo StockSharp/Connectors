@@ -97,6 +97,7 @@ public partial class FireblocksMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_vaults.Clear();
+
 			foreach (var account in accounts.Where(static account =>
 				account is not null && !account.Id.IsEmpty()))
 				_vaults[account.GetPortfolioName()] = account;

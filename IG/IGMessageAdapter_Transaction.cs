@@ -182,6 +182,7 @@ public partial class IgMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -190,10 +191,13 @@ public partial class IgMessageAdapter
 		}
 		EnsureAccount(statusMsg.PortfolioName);
 		await SendActivityHistory(statusMsg, cancellationToken);
+
 		foreach (var position in (await _rest.GetPositions(cancellationToken)).Positions ?? [])
 			await ProcessPositionOrder(position, statusMsg.TransactionId, cancellationToken);
+
 		foreach (var order in (await _rest.GetWorkingOrders(cancellationToken)).WorkingOrders ?? [])
 			await ProcessWorkingOrder(order, statusMsg.TransactionId, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 		else
@@ -208,6 +212,7 @@ public partial class IgMessageAdapter
 		var count = (int)Math.Clamp(statusMsg.Count ?? 10000, 1, 10000);
 		var activities = new List<IgActivity>(Math.Min(count, 500));
 		string next = null;
+
 		for (var page = 0; page < 100 && activities.Count < count; page++)
 		{
 			var response = await _rest.GetActivities(statusMsg.From, statusMsg.To,
@@ -218,6 +223,7 @@ public partial class IgMessageAdapter
 			if (batch.Length == 0 || next.IsEmpty())
 				break;
 		}
+
 		foreach (var activity in activities.OrderBy(a => a.Date.ParseIgTime() ?? DateTimeOffset.MinValue))
 			await ProcessActivity(activity, statusMsg.TransactionId, cancellationToken);
 	}
@@ -306,6 +312,7 @@ public partial class IgMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -315,6 +322,7 @@ public partial class IgMessageAdapter
 		var accounts = (await _rest.GetAccounts(cancellationToken)).Accounts ?? _session.Accounts ?? [];
 		if (!lookupMsg.PortfolioName.IsEmpty())
 			accounts = [.. accounts.Where(a => a.Id.EqualsIgnoreCase(lookupMsg.PortfolioName))];
+
 		foreach (var account in accounts)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -325,6 +333,7 @@ public partial class IgMessageAdapter
 			}, cancellationToken);
 			await ProcessBalance(account.Id, account.Currency, account.Balance, lookupMsg.TransactionId, cancellationToken);
 		}
+
 		if (accounts.Any(a => a.Id.EqualsIgnoreCase(_session.AccountId)))
 		{
 			foreach (var position in (await _rest.GetPositions(cancellationToken)).Positions ?? [])

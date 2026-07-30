@@ -119,6 +119,7 @@ public partial class XrplMessageAdapter
 					(cancelMsg.Side is null ||
 						order.Side == cancelMsg.Side))
 			];
+
 		foreach (var order in orders)
 		{
 			await _transactionGate.WaitAsync(cancellationToken);
@@ -158,6 +159,7 @@ public partial class XrplMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -183,6 +185,7 @@ public partial class XrplMessageAdapter
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg,
@@ -196,6 +199,7 @@ public partial class XrplMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -233,6 +237,7 @@ public partial class XrplMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] =
 				subscription;
@@ -388,10 +393,13 @@ public partial class XrplMessageAdapter
 			portfolios = [.. _portfolioSubscriptions];
 			subscriptions = [.. _orderSubscriptions];
 		}
+
 		foreach (var target in portfolios)
 			await SendPortfolioSnapshotAsync(target, false,
 				cancellationToken);
+
 		await RefreshOrdersAsync(cancellationToken);
+
 		foreach (var item in subscriptions)
 			await SendOrderSnapshotAsync(item.Value, item.Key,
 				cancellationToken);
@@ -407,6 +415,7 @@ public partial class XrplMessageAdapter
 			Signer.WalletAddress, markets, cancellationToken);
 		var activeBySequence = offers.ToDictionary(
 			static offer => offer.Sequence);
+
 		foreach (var offer in offers)
 		{
 			TrackedOrder tracked;
@@ -457,6 +466,7 @@ public partial class XrplMessageAdapter
 				.. _trackedOrders.Values.Where(static order =>
 					order.State == OrderStates.Active)
 			];
+
 		foreach (var tracked in trackedOrders)
 		{
 			if (activeBySequence.ContainsKey(tracked.OfferSequence))
@@ -501,6 +511,7 @@ public partial class XrplMessageAdapter
 	{
 		var balances = await RpcClient.GetBalancesAsync(
 			Signer.WalletAddress, cancellationToken);
+
 		foreach (var balance in balances)
 		{
 			var securityId = ToPositionSecurityId(balance.Asset);
@@ -571,6 +582,7 @@ public partial class XrplMessageAdapter
 			];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var order in orders)
 		{
 			if (subscription.States is { Length: > 0 } states &&

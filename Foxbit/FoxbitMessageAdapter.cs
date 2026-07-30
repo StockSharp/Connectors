@@ -172,6 +172,7 @@ public partial class FoxbitMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets ?? [])
 				if (market?.Symbol.IsEmpty() == false &&
 					market.Base?.Symbol.IsEmpty() == false &&
@@ -257,6 +258,7 @@ public partial class FoxbitMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (!order.ExchangeOrderId.IsEmpty())
 				_trackedOrders[order.ExchangeOrderId] = order;
 			if (!order.ClientOrderId.IsEmpty())

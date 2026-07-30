@@ -166,6 +166,7 @@ public partial class IndodaxMessageAdapter
 			: GetMarket(cancelMsg.SecurityId);
 		var openOrders = await LoadOpenOrdersAsync(requestedMarket,
 			cancellationToken);
+
 		foreach (var order in openOrders.Where(order =>
 			(cancelMsg.Side is null || order.Side.ToStockSharp() ==
 				cancelMsg.Side)))
@@ -190,6 +191,7 @@ public partial class IndodaxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -213,6 +215,7 @@ public partial class IndodaxMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -224,6 +227,7 @@ public partial class IndodaxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -259,6 +263,7 @@ public partial class IndodaxMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -296,6 +301,7 @@ public partial class IndodaxMessageAdapter
 				{
 				}
 			}
+
 			throw;
 		}
 	}
@@ -307,6 +313,7 @@ public partial class IndodaxMessageAdapter
 		var held = (account?.Held ?? []).ToDictionary(
 			static value => NormalizeAccountCurrency(value.Name),
 			static value => value.Amount, StringComparer.OrdinalIgnoreCase);
+
 		foreach (var asset in account?.Available ?? [])
 		{
 			var currency = NormalizeAccountCurrency(asset.Name);
@@ -317,6 +324,7 @@ public partial class IndodaxMessageAdapter
 				cancellationToken);
 			held.Remove(currency);
 		}
+
 		foreach (var asset in held)
 			await SendBalanceAsync(asset.Key, 0m, asset.Value,
 				originalTransactionId,
@@ -370,6 +378,7 @@ public partial class IndodaxMessageAdapter
 		var openOrders = await LoadOpenOrdersAsync(requestedMarket,
 			cancellationToken);
 		var sent = 0;
+
 		foreach (var order in openOrders.Where(order =>
 			MatchesOrder(subscription, order)).Take(maximum))
 		{
@@ -379,12 +388,14 @@ public partial class IndodaxMessageAdapter
 		}
 
 		var markets = GetHistoryMarkets(subscription, openOrders);
+
 		foreach (var market in markets)
 		{
 			if (sent >= maximum)
 				break;
 			var orders = await LoadOrderHistoryAsync(market, from, to,
 				maximum - sent, cancellationToken);
+
 			foreach (var order in orders.Where(order =>
 				MatchesOrder(subscription, order)).Take(maximum - sent))
 			{
@@ -397,6 +408,7 @@ public partial class IndodaxMessageAdapter
 				break;
 			var trades = await LoadTradeHistoryAsync(market, from, to,
 				maximum - sent, cancellationToken);
+
 			foreach (var trade in trades.Where(trade =>
 				MatchesTrade(subscription, trade)).Take(maximum - sent))
 			{
@@ -423,6 +435,7 @@ public partial class IndodaxMessageAdapter
 	{
 		var values = new Dictionary<string, IndodaxV2Order>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var window in GetHistoryWindows(from, to))
 		{
 			var response = await RestClient.GetOrderHistoryAsync(new()
@@ -432,12 +445,15 @@ public partial class IndodaxMessageAdapter
 				EndTime = window.End,
 				Limit = 1000,
 			}, cancellationToken);
+
 			foreach (var order in response ?? [])
 				if (order?.OrderId.IsEmpty() == false)
 					values[order.OrderId] = order;
+
 			if (values.Count >= maximum)
 				break;
 		}
+
 		return [.. values.Values.OrderByDescending(static order =>
 			order.FinishTime > 0 ? order.FinishTime : order.SubmitTime)
 			.Take(maximum)];
@@ -449,6 +465,7 @@ public partial class IndodaxMessageAdapter
 	{
 		var values = new Dictionary<string, IndodaxV2Trade>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var window in GetHistoryWindows(from, to))
 		{
 			var response = await RestClient.GetTradeHistoryAsync(new()
@@ -458,12 +475,15 @@ public partial class IndodaxMessageAdapter
 				EndTime = window.End,
 				Limit = 1000,
 			}, cancellationToken);
+
 			foreach (var trade in response ?? [])
 				if (trade?.TradeId.IsEmpty() == false)
 					values[trade.TradeId] = trade;
+
 			if (values.Count >= maximum)
 				break;
 		}
+
 		return [.. values.Values.OrderByDescending(static trade => trade.Time)
 			.Take(maximum)];
 	}
@@ -472,6 +492,7 @@ public partial class IndodaxMessageAdapter
 		DateTime from, DateTime to)
 	{
 		var cursor = to;
+
 		while (cursor > from)
 		{
 			var start = cursor - TimeSpan.FromHours(24) +
@@ -772,6 +793,7 @@ public partial class IndodaxMessageAdapter
 				tracked?.TransactionId ?? 0);
 			var hasNewTrade = !order.TradeId.IsEmpty() &&
 				AddAccountTrade(order.TradeId);
+
 			foreach (var target in targets)
 			{
 				await SendPrivateOrderAsync(order, target, cancellationToken);
@@ -836,9 +858,11 @@ public partial class IndodaxMessageAdapter
 		if (!subscription.PairId.IsEmpty())
 			return [GetMarket(subscription.PairId)];
 		var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var order in openOrders ?? [])
 			if (order?.Pair.IsEmpty() == false)
 				ids.Add(GetMarket(order.Pair).PairId);
+
 		using (_sync.EnterScope())
 			foreach (var tracked in _trackedOrders.Values)
 				if (!tracked.PairId.IsEmpty())
@@ -894,12 +918,14 @@ public partial class IndodaxMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var pair in subscriptions)
 		{
 			var market = pair.Value.PairId.IsEmpty()
 				? null
 				: GetMarket(pair.Value.PairId);
 			var orders = await LoadOpenOrdersAsync(market, cancellationToken);
+
 			foreach (var order in orders.Where(order =>
 				MatchesOrder(pair.Value, order)))
 				await SendLegacyOrderAsync(order, pair.Key, cancellationToken);

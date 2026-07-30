@@ -249,6 +249,7 @@ class HttpClient : BaseLogReceiver
 		await Task.WhenAll(tasks);
 
 		var list = new List<OkexOrder>();
+
 		foreach (var t in tasks)
 			list.AddRange(t.Result);
 

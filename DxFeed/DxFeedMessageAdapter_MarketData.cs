@@ -41,9 +41,11 @@ public partial class DxFeedMessageAdapter
 		catch
 		{
 			_securityLookups.Remove(lookupMsg.TransactionId);
+
 			foreach (var symbol in subscribed)
 				await SafeClient().UnsubscribeFeed(DxFeedEventTypes.Profile,
 					symbol, null, null, cancellationToken);
+
 			throw;
 		}
 	}
@@ -242,14 +244,17 @@ public partial class DxFeedMessageAdapter
 					subscribed.Add((eventType, source));
 				}
 			}
+
 			await SendSubscriptionResultAsync(message, cancellationToken);
 		}
 		catch
 		{
 			_marketSubscriptions.Remove(message.TransactionId);
+
 			foreach (var item in subscribed)
 				await SafeClient().UnsubscribeFeed(item.eventType, subscription.Symbol,
 					subscription.From, item.source, cancellationToken);
+
 			throw;
 		}
 	}
@@ -565,6 +570,7 @@ public partial class DxFeedMessageAdapter
 			if (value is > 0)
 				return value.ToUtcTime();
 		}
+
 		return DateTime.UtcNow;
 	}
 

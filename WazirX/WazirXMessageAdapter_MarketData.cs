@@ -9,11 +9,13 @@ public partial class WazirXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in GetMarkets().OrderBy(
 			static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
@@ -48,6 +50,7 @@ public partial class WazirXMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -59,6 +62,7 @@ public partial class WazirXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		const string stream = "!ticker@arr";
 		if (!mdMsg.IsSubscribe)
@@ -132,6 +136,7 @@ public partial class WazirXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -213,6 +218,7 @@ public partial class WazirXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -244,6 +250,7 @@ public partial class WazirXMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 1000)
 			.Max(1).Min(1000).To<int>();
+
 		foreach (var trade in
 			(await RestClient.GetTradesAsync(
 				market.Symbol,
@@ -265,6 +272,7 @@ public partial class WazirXMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
@@ -303,6 +311,7 @@ public partial class WazirXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -342,6 +351,7 @@ public partial class WazirXMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var from = (mdMsg.From ??
 			to - timeFrame * maximum).ToUniversalTime();
+
 		foreach (var candle in
 			(await RestClient.GetCandlesAsync(
 				market.Symbol,
@@ -359,6 +369,7 @@ public partial class WazirXMessageAdapter
 				candle,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
@@ -405,6 +416,7 @@ public partial class WazirXMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendLevel1Async(
 				market,
@@ -427,6 +439,7 @@ public partial class WazirXMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendTradeAsync(
 				market,
@@ -452,6 +465,7 @@ public partial class WazirXMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(
 				market,
@@ -474,6 +488,7 @@ public partial class WazirXMessageAdapter
 				pair.Value.Symbol.EqualsIgnoreCase(
 					market.Symbol) &&
 				pair.Value.TimeFrame == candle.TimeFrame)];
+
 		foreach (var pair in subscriptions)
 			await SendCandleAsync(
 				market,
@@ -659,16 +674,19 @@ public partial class WazirXMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var state = new BookState();
+
 			foreach (var quote in book.Bids)
 			{
 				if (quote.Volume > 0)
 					state.Bids[quote.Price] = quote.Volume;
 			}
+
 			foreach (var quote in book.Asks)
 			{
 				if (quote.Volume > 0)
 					state.Asks[quote.Price] = quote.Volume;
 			}
+
 			_books[book.Symbol] = state;
 		}
 	}
@@ -683,6 +701,7 @@ public partial class WazirXMessageAdapter
 				state = new();
 				_books[book.Symbol] = state;
 			}
+
 			foreach (var quote in book.Bids.Concat(book.Asks))
 			{
 				var side = quote.Side == Sides.Buy

@@ -88,6 +88,7 @@ public partial class GrvtMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_instruments.Clear();
+
 			foreach (var instrument in instruments)
 			{
 				if (instrument?.Instrument.IsEmpty() != false ||

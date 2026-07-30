@@ -19,6 +19,7 @@ public partial class PaxosMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		EnsureAuthenticated();
 		if (!message.IsSubscribe)
 		{
@@ -27,6 +28,7 @@ public partial class PaxosMessageAdapter
 		}
 		await RefreshProfilesAsync(cancellationToken);
 		var selected = SelectPortfolios(GetPortfolios(), message.PortfolioName);
+
 		foreach (var portfolio in selected)
 			await SendOutMessageAsync(new PortfolioMessage
 			{
@@ -35,6 +37,7 @@ public partial class PaxosMessageAdapter
 				ClientCode = portfolio.Profile.Id,
 				OriginalTransactionId = message.TransactionId,
 			}, cancellationToken);
+
 		await SendPortfolioSnapshotAsync(message.TransactionId, true, selected,
 			cancellationToken);
 		if (message.IsHistoryOnly())
@@ -44,6 +47,7 @@ public partial class PaxosMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions[message.TransactionId] = new()
 			{
@@ -58,6 +62,7 @@ public partial class PaxosMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		EnsureAuthenticated();
 		if (!message.IsSubscribe)
 		{
@@ -103,6 +108,7 @@ public partial class PaxosMessageAdapter
 			await CompleteOrderStatusAsync(message, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[message.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(message, cancellationToken);
@@ -130,6 +136,7 @@ public partial class PaxosMessageAdapter
 		{
 			var balances = await RestClient.GetBalancesAsync(portfolio.Profile.Id,
 				cancellationToken);
+
 			foreach (var balance in balances.Where(static balance =>
 				balance?.Asset.IsEmpty() == false))
 			{
@@ -251,6 +258,7 @@ public partial class PaxosMessageAdapter
 		var selectedRecords = records.Where(record =>
 			Matches(subscription, record)).OrderBy(static record => record.Time)
 			.Skip(subscription.Skip).Take(subscription.Maximum).ToArray();
+
 		foreach (var record in selectedRecords)
 		{
 			if (record.Order is not null)
@@ -388,11 +396,13 @@ public partial class PaxosMessageAdapter
 		{
 			await RefreshProfilesAsync(cancellationToken);
 			var portfolios = GetPortfolios();
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target.Key, false,
 					SelectPortfolios(portfolios, target.Value.PortfolioName),
 					cancellationToken);
 		}
+
 		foreach (var (id, localId) in activeOperations)
 		{
 			var tracked = GetTrackedOperation(id, null);
@@ -410,10 +420,12 @@ public partial class PaxosMessageAdapter
 					var executions = await RestClient.GetExecutionsAsync(
 						tracked.ProfileId, id, null, null, PageSize, HistoryLimit,
 						cancellationToken);
+
 					foreach (var execution in executions.OrderBy(static item =>
 						item.ExecutedAt.ToPaxosTime(DateTime.UnixEpoch)))
 						await SendPrivateExecutionAsync(execution, localId,
 							cancellationToken);
+
 					break;
 				}
 				case NativeOperationKinds.Transfer:
@@ -438,6 +450,7 @@ public partial class PaxosMessageAdapter
 				}
 			}
 		}
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -772,6 +785,7 @@ public partial class PaxosMessageAdapter
 		Dictionary<string, T> fingerprints, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in fingerprints.Keys.Where(key => key.StartsWith(prefix,
 			StringComparison.Ordinal)).ToArray())
 			fingerprints.Remove(key);

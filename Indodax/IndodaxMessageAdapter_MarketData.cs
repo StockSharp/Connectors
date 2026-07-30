@@ -8,6 +8,7 @@ public partial class IndodaxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class IndodaxMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.PairId,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -50,6 +52,7 @@ public partial class IndodaxMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -58,6 +61,7 @@ public partial class IndodaxMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -116,6 +120,7 @@ public partial class IndodaxMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -169,6 +174,7 @@ public partial class IndodaxMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -188,6 +194,7 @@ public partial class IndodaxMessageAdapter
 		var from = mdMsg.From?.ToUniversalTime();
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var maximum = (mdMsg.Count ?? long.MaxValue).Min(int.MaxValue).To<int>();
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade => trade is not null &&
 				(from is null || trade.Timestamp.FromIndodaxSeconds(
@@ -228,6 +235,7 @@ public partial class IndodaxMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -249,6 +257,7 @@ public partial class IndodaxMessageAdapter
 
 		var candles = new Dictionary<long, IndodaxCandle>();
 		var chunk = TimeSpan.FromTicks(timeFrame.Ticks * 5000L);
+
 		for (var cursor = from; cursor <= to;)
 		{
 			var end = cursor + chunk;
@@ -259,9 +268,11 @@ public partial class IndodaxMessageAdapter
 				new DateTimeOffset(cursor).ToUnixTimeSeconds(),
 				new DateTimeOffset(end).ToUnixTimeSeconds(),
 				cancellationToken);
+
 			foreach (var candle in values ?? [])
 				if (candle is not null && candle.Time > 0)
 					candles[candle.Time] = candle;
+
 			if (end >= to)
 				break;
 			cursor = end + timeFrame;
@@ -362,9 +373,11 @@ public partial class IndodaxMessageAdapter
 				pair.Value.PairId.EqualsIgnoreCase(market.PairId))];
 		}
 		var serverTime = CurrentTime;
+
 		foreach (var pair in depthSubscriptions)
 			await SendBookAsync(market, book, pair.Value.Depth, pair.Key,
 				serverTime, cancellationToken);
+
 		foreach (var pair in level1Subscriptions)
 			await SendLevel1BookAsync(market, book, pair.Key, serverTime,
 				cancellationToken);
@@ -392,9 +405,11 @@ public partial class IndodaxMessageAdapter
 				level1Subscriptions = [.. _level1Subscriptions.Where(pair =>
 					pair.Value.PairId.EqualsIgnoreCase(market.PairId))];
 			}
+
 			foreach (var pair in tickSubscriptions)
 				await SendSocketTradeAsync(market, trade, pair.Key, identifier,
 					cancellationToken);
+
 			foreach (var pair in level1Subscriptions)
 				await SendLevel1TradeAsync(market, trade, pair.Key,
 					cancellationToken);

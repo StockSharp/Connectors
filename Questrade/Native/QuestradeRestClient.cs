@@ -121,6 +121,7 @@ sealed class QuestradeRestClient : BaseLogReceiver
 		var rejectedToken = _accessToken;
 		var authorizationRetried = false;
 		var rateLimitRetried = false;
+
 		while (true)
 		{
 			using var request = new HttpRequestMessage(method, new Uri(_apiRoot, path));

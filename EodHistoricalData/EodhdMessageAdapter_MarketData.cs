@@ -10,6 +10,7 @@ public partial class EodhdMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var board = lookupMsg.SecurityId.BoardCode;
 		var native = lookupMsg.SecurityId.Native as string;
@@ -84,12 +85,14 @@ public partial class EodhdMessageAdapter
 						Limit = Math.Max(1, pageSize),
 					}, cancellationToken);
 					var data = page?.Data ?? [];
+
 					foreach (var item in data)
 					{
 						await Emit(item.ToSecurityMessage(lookupMsg.TransactionId));
 						if (left <= 0)
 							break;
 					}
+
 					if (data.Length < pageSize ||
 						page?.Meta?.Total is { } total && offset + data.Length >= total)
 					{
@@ -116,6 +119,7 @@ public partial class EodhdMessageAdapter
 			} : null;
 			var requested = left >= 500 ? 500 : left + Math.Min(skip, 500 - left);
 			var searchLimit = checked((int)Math.Max(1, requested));
+
 			foreach (var item in await SafeRest().Search(value, Math.Max(1, searchLimit),
 				GetSearchType(securityTypes), exchange, cancellationToken) ?? [])
 			{
@@ -147,6 +151,7 @@ public partial class EodhdMessageAdapter
 					EodhdMarkets.Crypto => "CC",
 					_ => StockExchange,
 				};
+
 				foreach (var item in await SafeRest().GetExchangeSymbols(exchange,
 					IsDelisted, null, cancellationToken) ?? [])
 				{
@@ -165,6 +170,7 @@ public partial class EodhdMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -213,6 +219,7 @@ public partial class EodhdMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -247,6 +254,7 @@ public partial class EodhdMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (!key.IsUsStock() && key.Market != EodhdMarkets.Crypto)
 			throw new NotSupportedException(
 				"EODHD live trades are available for US stocks and crypto only.");
@@ -260,6 +268,7 @@ public partial class EodhdMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -311,6 +320,7 @@ public partial class EodhdMessageAdapter
 
 		var left = mdMsg.Count ?? long.MaxValue;
 		var emitted = new HashSet<long>();
+
 		foreach (var bar in bars.OrderBy(item => item.OpenTime))
 		{
 			if (bar.OpenTime < from || bar.OpenTime > to || !emitted.Add(bar.OpenTime.Ticks))
@@ -343,6 +353,7 @@ public partial class EodhdMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -371,16 +382,19 @@ public partial class EodhdMessageAdapter
 		var target = Math.Min(mdMsg.Count ?? 100, int.MaxValue);
 		var values = new List<EodhdNewsItem>();
 		var links = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		for (var offset = 0; values.Count < target;)
 		{
 			var limit = checked((int)Math.Min(1000, target - values.Count));
 			var page = await SafeRest().GetNews(hasSecurity ? key.ToRestTicker() : null,
 				from, to, limit, offset, cancellationToken) ?? [];
+
 			foreach (var item in page)
 			{
 				if (item != null && (item.Link.IsEmpty() || links.Add(item.Link)))
 					values.Add(item);
 			}
+
 			if (page.Length < limit)
 				break;
 			offset = checked(offset + page.Length);
@@ -456,11 +470,13 @@ public partial class EodhdMessageAdapter
 		var values = (page?.Data ?? []).Where(item => item?.Attributes != null &&
 			Extensions.TryParseUtc(item.Attributes.TradeTime, out _))
 			.OrderBy(item => ParseUtc(item.Attributes.TradeTime)).Take(target).ToArray();
+
 		foreach (var item in values)
 		{
 			await SendOutMessageAsync(CreateOptionLevel1(transactionId, securityId,
 				item.Attributes), cancellationToken);
 		}
+
 		return values.LongLength;
 	}
 
@@ -520,6 +536,7 @@ public partial class EodhdMessageAdapter
 			.ThenBy(index => ticks.Sequences != null && index < ticks.Sequences.Length
 				? ticks.Sequences[index] : long.MinValue);
 		long sent = 0;
+
 		foreach (var index in indices)
 		{
 			var time = Extensions.FromUnixMilliseconds(ticks.Timestamps[index]);
@@ -540,6 +557,7 @@ public partial class EodhdMessageAdapter
 			if (++sent >= limit)
 				break;
 		}
+
 		return sent;
 	}
 
@@ -548,6 +566,7 @@ public partial class EodhdMessageAdapter
 	{
 		var result = new List<SelectedBar>();
 		var target = Math.Min(count ?? 10000, 10000);
+
 		for (var offset = 0; offset <= 10000 && result.Count < target;)
 		{
 			var limit = checked((int)Math.Min(1000, target - result.Count));
@@ -560,6 +579,7 @@ public partial class EodhdMessageAdapter
 				Limit = Math.Max(1, limit),
 			}, cancellationToken);
 			var data = page?.Data ?? [];
+
 			foreach (var item in data)
 			{
 				var value = item?.Attributes;
@@ -572,6 +592,7 @@ public partial class EodhdMessageAdapter
 				result.Add(new(time, value.Open.Value, value.High.Value, value.Low.Value,
 					value.Last.Value, value.Volume.GetValueOrDefault(), value.OpenInterest));
 			}
+
 			if (data.Length < limit ||
 				page?.Meta?.Total is { } total && offset + data.Length >= total)
 			{
@@ -582,6 +603,7 @@ public partial class EodhdMessageAdapter
 				break;
 			await IterationInterval.Delay(cancellationToken);
 		}
+
 		return [.. result];
 	}
 

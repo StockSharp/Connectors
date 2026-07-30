@@ -22,11 +22,13 @@ public partial class FXOpenMessageAdapter
 			this.AddInfoLog("Connecting FXOpen ({0}) REST endpoint {1}.",
 				IsDemo ? "demo" : "live", GetSafeEndpoint(Address));
 			await SendOutConnectionStateAsync(ConnectionStates.Connecting, cancellationToken);
+
 			foreach (var symbol in await _restClient.GetSymbolsAsync(cancellationToken))
 			{
 				if (!symbol.Symbol.IsEmpty())
 					_symbols[symbol.Symbol] = symbol;
 			}
+
 			this.AddInfoLog("FXOpen loaded {0} symbols.", _symbols.Count);
 
 			if (_restClient.IsCredentialsAvailable)

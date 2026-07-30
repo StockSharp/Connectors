@@ -208,6 +208,7 @@ public partial class CryptoComMessageAdapter
 			await SendOrderAsync(order, statusMsg.TransactionId, cancellationToken);
 
 		var trades = await RestClient.GetUserTradesAsync(historyParameters, cancellationToken);
+
 		foreach (var trade in trades
 			.Where(trade => IsTradeMatch(trade, statusMsg))
 			.OrderBy(GetTradeTime)

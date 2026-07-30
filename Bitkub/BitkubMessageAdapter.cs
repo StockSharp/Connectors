@@ -155,6 +155,7 @@ public partial class BitkubMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var item in symbols ?? [])
 			{
 				if (item?.Symbol.IsEmpty() != false || item.PairingId <= 0 ||

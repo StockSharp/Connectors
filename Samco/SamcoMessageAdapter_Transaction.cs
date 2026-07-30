@@ -123,6 +123,7 @@ public partial class SamcoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -143,6 +144,7 @@ public partial class SamcoMessageAdapter
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId);
 		await SendSubscriptionResultAsync(statusMsg,
@@ -156,6 +158,7 @@ public partial class SamcoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -175,6 +178,7 @@ public partial class SamcoMessageAdapter
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg,
@@ -202,6 +206,7 @@ public partial class SamcoMessageAdapter
 				? (int)Math.Min(count.Value, int.MaxValue)
 				: int.MaxValue)
 			.ToArray();
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, target, true,
 				cancellationToken);
@@ -218,6 +223,7 @@ public partial class SamcoMessageAdapter
 					value.Time.UtcDateTime <=
 						to.Value.ToUniversalTime()))
 			.ToArray();
+
 		foreach (var trade in trades)
 			await SendTradeAsync(trade, target, true,
 				cancellationToken);
@@ -255,6 +261,7 @@ public partial class SamcoMessageAdapter
 				cancellationToken)).ToSamcoObjects("holdingDetails"))
 			await SendHoldingAsync(holding, target,
 				cancellationToken);
+
 		foreach (var position in (await RestClient.GetPositionsAsync(
 				"NET", cancellationToken))
 				.ToSamcoObjects("positionDetails"))
@@ -343,11 +350,13 @@ public partial class SamcoMessageAdapter
 			.ToSamcoObjects("tradeBookDetails")
 			.Select(static value => value.ToSamcoTrade())
 			.ToArray();
+
 		foreach (var target in targets)
 		{
 			foreach (var order in orders)
 				await SendOrderAsync(order, target, false,
 					cancellationToken);
+
 			foreach (var trade in trades)
 				await SendTradeAsync(trade, target, false,
 					cancellationToken);
@@ -360,6 +369,7 @@ public partial class SamcoMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var target in targets)
 			await SendPortfolioSnapshotAsync(target,
 				cancellationToken);

@@ -18,8 +18,10 @@ public partial class LimeMessageAdapter
 	private async Task<LimeAccount[]> EnsureAccounts(CancellationToken cancellationToken)
 	{
 		var accounts = await _httpClient.GetAccounts(cancellationToken) ?? [];
+
 		foreach (var account in accounts)
 			_accounts[account.AccountNumber] = account;
+
 		return accounts;
 	}
 
@@ -106,6 +108,7 @@ public partial class LimeMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 			return;
 
@@ -118,6 +121,7 @@ public partial class LimeMessageAdapter
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
 			await ProcessBalance(account, lookupMsg.TransactionId, cancellationToken);
+
 			foreach (var position in await _httpClient.GetPositions(account.AccountNumber, cancellationToken) ?? [])
 				await ProcessPosition(account.AccountNumber, position, lookupMsg.TransactionId, cancellationToken);
 
@@ -135,6 +139,7 @@ public partial class LimeMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 			return;
 
@@ -148,6 +153,7 @@ public partial class LimeMessageAdapter
 				await ProcessOrder(order, statusMsg.TransactionId, cancellationToken);
 
 			var trades = await _httpClient.GetTrades(account.AccountNumber, DateTime.UtcNow.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), cancellationToken);
+
 			foreach (var trade in trades?.Trades ?? [])
 			{
 				trade.AccountNumber = account.AccountNumber;

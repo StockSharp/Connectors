@@ -219,11 +219,13 @@ sealed class DnseSocketClient : BaseLogReceiver
         if (action.EqualsIgnoreCase("auth_success"))
         {
             _isAuthenticated = true;
+
             foreach (var subscription in _subscriptions.ToArray())
             {
                 await SendSubscription(
                     subscription, true, cancellationToken);
             }
+
             var sessionId =
                 root.Value<string>("session_id") ??
                 root.Value<string>("sid") ??

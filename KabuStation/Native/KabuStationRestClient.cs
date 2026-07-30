@@ -86,6 +86,7 @@ internal sealed class KabuStationRestClient : BaseLogReceiver
 			? "&updtime=" + time.ToUniversalTime().AddHours(9).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture)
 			: string.Empty;
 		var result = new List<KabuStationOrder>();
+
 		foreach (var (product, securityType) in new[]
 		{
 			(1, SecurityTypes.Stock),
@@ -96,12 +97,14 @@ internal sealed class KabuStationRestClient : BaseLogReceiver
 		{
 			var orders = await Send<KabuStationOrder[]>(HttpMethod.Get,
 				$"orders?product={product}&details=true{updated}", null, false, true, cancellationToken);
+
 			foreach (var order in orders ?? [])
 			{
 				order.SecurityType = securityType;
 				result.Add(order);
 			}
 		}
+
 		return [.. result.GroupBy(order => order.Id, StringComparer.OrdinalIgnoreCase).Select(group => group.Last())];
 	}
 

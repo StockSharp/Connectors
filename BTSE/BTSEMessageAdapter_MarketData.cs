@@ -7,6 +7,7 @@ public partial class BTSEMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -63,6 +64,7 @@ public partial class BTSEMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -113,6 +115,7 @@ public partial class BTSEMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -169,6 +172,7 @@ public partial class BTSEMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -183,6 +187,7 @@ public partial class BTSEMessageAdapter
 		var count = (mdMsg.Count ?? 1000).Min(10000).Max(1).To<int>();
 		var trades = await LoadTradesAsync(section, symbol, from, to, count,
 			cancellationToken);
+
 		foreach (var trade in trades)
 			await SendTradeAsync(section, trade, mdMsg.TransactionId, cancellationToken);
 
@@ -227,6 +232,7 @@ public partial class BTSEMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -240,6 +246,7 @@ public partial class BTSEMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await LoadCandlesAsync(section, symbol, timeFrame, from, to, count,
 			cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(section, symbol, candle, timeFrame, mdMsg.TransactionId,
 				cancellationToken);
@@ -302,6 +309,7 @@ public partial class BTSEMessageAdapter
 		else
 		{
 			var cursor = from.Value;
+
 			while (cursor <= to && result.Count < maximum)
 			{
 				var end = cursor.AddDays(30).Min(to);
@@ -338,6 +346,7 @@ public partial class BTSEMessageAdapter
 	{
 		var result = new List<BTSECandle>();
 		var cursor = to;
+
 		while (cursor >= from && result.Count < maximum)
 		{
 			var page = await GetRestClient(section).GetCandlesAsync(new()
@@ -419,6 +428,7 @@ public partial class BTSEMessageAdapter
 				.Where(pair => pair.Value.Section == section &&
 					pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendTradeAsync(section, trade, id, cancellationToken);
 	}
@@ -439,6 +449,7 @@ public partial class BTSEMessageAdapter
 					.Select(static pair => pair.Key)];
 			var bid = book.Bids?.FirstOrDefault();
 			var ask = book.Asks?.FirstOrDefault();
+
 			foreach (var id in ids)
 				await SendOutMessageAsync(new Level1ChangeMessage
 				{
@@ -452,6 +463,7 @@ public partial class BTSEMessageAdapter
 				.TryAdd(Level1Fields.BestBidVolume, bid?.Size)
 				.TryAdd(Level1Fields.BestAskPrice, ask?.Price)
 				.TryAdd(Level1Fields.BestAskVolume, ask?.Size), cancellationToken);
+
 			return;
 		}
 
@@ -479,6 +491,7 @@ public partial class BTSEMessageAdapter
 			{
 				foreach (var item in subscriptions)
 					item.Subscription.LastSequence = 0;
+
 				await GetBookWsClient(section).ResubscribeDepthAsync(book.Symbol,
 					cancellationToken);
 				return;

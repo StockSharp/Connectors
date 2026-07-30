@@ -242,6 +242,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -252,6 +253,7 @@ public partial class BullishMessageAdapter
 		BullishTradingAccount[] accounts;
 		using (_sync.EnterScope())
 			accounts = [.. _accounts.Values];
+
 		foreach (var account in accounts)
 			await SendOutMessageAsync(new PortfolioMessage
 			{
@@ -259,6 +261,7 @@ public partial class BullishMessageAdapter
 				BoardCode = BoardCodes.Bullish,
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
+
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
@@ -268,6 +271,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -288,6 +292,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var accounts = await RestClient.GetTradingAccountsAsync(cancellationToken) ?? [];
+
 		foreach (var account in accounts)
 		{
 			if (account?.TradingAccountId.IsEmpty() != false)
@@ -295,9 +300,11 @@ public partial class BullishMessageAdapter
 			using (_sync.EnterScope())
 				_accounts[account.TradingAccountId] = account;
 			await SendTradingAccountAsync(account, originalTransactionId, cancellationToken);
+
 			foreach (var asset in await RestClient.GetAssetAccountsAsync(account.TradingAccountId,
 				cancellationToken) ?? [])
 				await SendAssetAccountAsync(asset, originalTransactionId, cancellationToken);
+
 			if (IsSectionEnabled(BullishSections.Derivatives))
 			{
 				foreach (var position in await RestClient.GetDerivativePositionsAsync(
@@ -314,6 +321,7 @@ public partial class BullishMessageAdapter
 		string[] accountIds;
 		using (_sync.EnterScope())
 			accountIds = requestedAccount.IsEmpty() ? [.. _accounts.Keys] : [requestedAccount];
+
 		foreach (var accountId in accountIds)
 		{
 			var orders = (await RestClient.GetOpenOrdersAsync(accountId, symbol,
@@ -324,6 +332,7 @@ public partial class BullishMessageAdapter
 				.GroupBy(static order => order.OrderId)
 				.Select(static group => group.First())
 				.OrderBy(static order => order.CreatedAtTimestamp.ToUtcTime(order.CreatedAtDateTime));
+
 			foreach (var order in orders)
 			{
 				order.TradingAccountId ??= accountId;

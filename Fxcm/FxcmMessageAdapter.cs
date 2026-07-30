@@ -146,11 +146,13 @@ public partial class FxcmMessageAdapter
 	{
 		var rest = GetRest();
 		var desired = GetDesiredModels().ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var model in desired.Where(model => !_subscribedModels.Contains(model)))
 		{
 			await rest.SubscribeModel(model, cancellationToken);
 			_subscribedModels.Add(model);
 		}
+
 		foreach (var model in _subscribedModels.SyncGet(set => set.ToArray())
 			.Where(model => !desired.Contains(model)))
 		{

@@ -12,6 +12,7 @@ public partial class XtpMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (_securityLookup != null)
 			throw new InvalidOperationException("Only one XTP security lookup can be active at a time.");
 
@@ -55,6 +56,7 @@ public partial class XtpMessageAdapter
 	private async ValueTask ProcessMarketDataSubscription(MarketDataMessage mdMsg, DataType dataType, bool isTicks, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var ticker = mdMsg.SecurityId.SecurityCode;
 		if (ticker.IsEmpty())
 			throw new ArgumentException("Security code is not specified.", nameof(mdMsg));

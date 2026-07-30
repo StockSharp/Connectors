@@ -6,6 +6,7 @@ public partial class QuestradeMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = (int)Math.Clamp(lookupMsg.Count ?? 100, 1, 1000);
 		var nativeId = lookupMsg.SecurityId.Native switch
@@ -18,6 +19,7 @@ public partial class QuestradeMessageAdapter
 		{
 			foreach (var symbol in (await _client.GetSymbol(nativeId, cancellationToken)).Symbols ?? [])
 				await SendSecurity(symbol, lookupMsg, securityTypes, cancellationToken);
+
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 			return;
 		}
@@ -25,6 +27,7 @@ public partial class QuestradeMessageAdapter
 		var prefix = lookupMsg.SecurityId.SecurityCode;
 		var offset = 0;
 		var seen = new HashSet<long>();
+
 		for (var pageNumber = 0; pageNumber < 100 && left > 0; pageNumber++)
 		{
 			var page = (await _client.SearchSymbols(prefix, offset, cancellationToken)).Symbols ?? [];
@@ -33,19 +36,24 @@ public partial class QuestradeMessageAdapter
 			var ids = page.Select(s => s.SymbolId).Where(id => id > 0 && seen.Add(id)).Take(100).ToArray();
 			if (ids.Length == 0)
 				break;
+
 			for (var batchOffset = 0; batchOffset < ids.Length; batchOffset += 50)
 			{
 				var batch = ids.Skip(batchOffset).Take(50).ToArray();
+
 				foreach (var symbol in (await _client.GetSymbols(batch, cancellationToken)).Symbols ?? [])
 				{
 					if (await SendSecurity(symbol, lookupMsg, securityTypes, cancellationToken) && --left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
+
 			offset += page.Length;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +61,7 @@ public partial class QuestradeMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			_quoteSubscriptions.Remove(mdMsg.OriginalTransactionId);
@@ -65,6 +74,7 @@ public partial class QuestradeMessageAdapter
 		{
 			foreach (var quote in (await _client.GetQuote(symbol.SymbolId, cancellationToken)).Quotes ?? [])
 				await ProcessQuote(quote, mdMsg.TransactionId, mdMsg.SecurityId, cancellationToken);
+
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
@@ -91,6 +101,7 @@ public partial class QuestradeMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		var symbol = await ResolveSymbol(mdMsg.SecurityId, cancellationToken);
@@ -104,12 +115,14 @@ public partial class QuestradeMessageAdapter
 		var pageSpan = TimeSpan.FromTicks(checked(timeFrame.Ticks * 1999));
 		var candles = new SortedDictionary<DateTime, QuestradeCandle>();
 		var cursor = from;
+
 		while (cursor < to && candles.Count < limit)
 		{
 			var pageTo = cursor + pageSpan;
 			if (pageTo > to)
 				pageTo = to;
 			var page = (await _client.GetCandles(symbol.SymbolId, cursor, pageTo, interval, cancellationToken)).Candles ?? [];
+
 			foreach (var candle in page)
 			{
 				if (candle.Start >= from && candle.Start <= to)
@@ -117,10 +130,12 @@ public partial class QuestradeMessageAdapter
 				if (candles.Count >= limit)
 					break;
 			}
+
 			if (pageTo >= to)
 				break;
 			cursor = pageTo;
 		}
+
 		foreach (var candle in candles.Values)
 		{
 			await SendOutMessageAsync(new TimeFrameCandleMessage
@@ -137,6 +152,7 @@ public partial class QuestradeMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
 
@@ -218,8 +234,10 @@ public partial class QuestradeMessageAdapter
 			if (subscriptions.Length == 0)
 				return;
 			var response = await _client.StartQuoteStream(subscriptions.Select(s => s.SymbolId).Distinct(), cancellationToken);
+
 			foreach (var quote in response.Quotes ?? [])
 				await ProcessQuote(quote, cancellationToken);
+
 			if (response.StreamPort <= 0)
 				throw new InvalidOperationException("Questrade L1 endpoint returned an invalid stream port.");
 			_quoteCts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeCts.Token);
@@ -235,6 +253,7 @@ public partial class QuestradeMessageAdapter
 	{
 		var port = firstPort;
 		var failures = 0;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			var started = DateTime.UtcNow;
@@ -243,8 +262,10 @@ public partial class QuestradeMessageAdapter
 				if (port <= 0)
 				{
 					var response = await _client.StartQuoteStream(symbolIds, cancellationToken);
+
 					foreach (var quote in response.Quotes ?? [])
 						await ProcessQuote(quote, cancellationToken);
+
 					port = response.StreamPort;
 					if (port <= 0)
 						throw new InvalidOperationException("Questrade L1 reconnect returned an invalid stream port.");
@@ -278,6 +299,7 @@ public partial class QuestradeMessageAdapter
 	{
 		if (quote == null)
 			return;
+
 		foreach (var subscription in _quoteSubscriptions.CachedValues.Where(s => s.SymbolId == quote.SymbolId))
 			await ProcessQuote(quote, subscription.TransactionId, subscription.SecurityId, cancellationToken);
 	}

@@ -65,6 +65,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 				Config = new(),
 			}, cancellationToken)).Value;
 		var accounts = new List<GMTradeRpcTokenAccount>();
+
 		foreach (var program in new[] { _tokenProgram, _token2022Program })
 		{
 			var response = await SendAsync<GMTradeRpcContextValue<
@@ -87,6 +88,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 				Decimals = 9,
 			},
 		};
+
 		foreach (var group in accounts
 			.Select(static account => account?.Account?.Data?.Parsed?.Information)
 			.Where(static info => info?.Mint.IsEmpty() == false &&
@@ -98,6 +100,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 				throw new InvalidDataException(
 					$"Solana RPC returned inconsistent decimals for '{group.Key}'.");
 			var amount = BigInteger.Zero;
+
 			foreach (var item in group)
 			{
 				if (!BigInteger.TryParse(item.TokenAmount.Amount,
@@ -108,6 +111,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 						$"'{item.TokenAmount.Amount}'.");
 				amount += current;
 			}
+
 			result.Add(new()
 			{
 				Mint = group.Key,
@@ -115,6 +119,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 				Decimals = decimals,
 			});
 		}
+
 		return [.. result];
 	}
 
@@ -202,6 +207,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 		await using var source = await content.ReadAsStreamAsync(cancellationToken);
 		using var target = new MemoryStream();
 		var buffer = new byte[81920];
+
 		while (true)
 		{
 			var read = await source.ReadAsync(buffer, cancellationToken);
@@ -212,6 +218,7 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 					"Solana RPC response exceeds the 16 MiB safety limit.");
 			target.Write(buffer, 0, read);
 		}
+
 		return Encoding.UTF8.GetString(target.GetBuffer(), 0,
 			checked((int)target.Length));
 	}

@@ -195,12 +195,15 @@ sealed class BTCMarketsSocketClient : BaseLogReceiver
 					StringComparer.OrdinalIgnoreCase).ToArray()))];
 			privateSubscriptions = [.. _privateSubscriptions];
 		}
+
 		await SendCommandAsync(client, BTCMarketsSocketMessageTypes.Subscribe,
 			[BTCMarketsSocketChannels.Heartbeat], [], cancellationToken);
+
 		foreach (var subscription in publicSubscriptions)
 			await SendCommandAsync(client,
 				BTCMarketsSocketMessageTypes.AddSubscription,
 				[subscription.Channel], subscription.Markets, cancellationToken);
+
 		foreach (var channel in privateSubscriptions)
 			await SendCommandAsync(client,
 				BTCMarketsSocketMessageTypes.AddSubscription, [channel], [],

@@ -7,6 +7,7 @@ public partial class UsmartMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (_rest == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
@@ -17,9 +18,11 @@ public partial class UsmartMessageAdapter
 			: new[] { explicitMarket };
 		var skip = Math.Max(0, message.Skip ?? 0);
 		var left = Math.Max(0, message.Count ?? long.MaxValue);
+
 		foreach (var market in markets)
 		{
 			var response = await _rest.GetSecurities(market, cancellationToken);
+
 			foreach (var item in response.Data?.Items ?? [])
 			{
 				if (item?.Symbol.IsEmpty() != false)
@@ -51,9 +54,11 @@ public partial class UsmartMessageAdapter
 				await SendOutMessageAsync(security, cancellationToken);
 				left--;
 			}
+
 			if (left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -62,6 +67,7 @@ public partial class UsmartMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveSubscription(_level1Subscriptions, message.OriginalTransactionId,
@@ -71,8 +77,10 @@ public partial class UsmartMessageAdapter
 		var securityId = NormalizeSecurityId(message.SecurityId);
 		var response = await _rest.GetQuotes([securityId.ToSecuId(DefaultMarket)],
 			cancellationToken);
+
 		foreach (var quote in response.Data?.Items ?? [])
 			await SendQuote(message.TransactionId, securityId, quote, cancellationToken);
+
 		if (!message.IsHistoryOnly())
 			await AddSubscription(_level1Subscriptions, message.TransactionId, securityId,
 				"rt", cancellationToken);
@@ -84,6 +92,7 @@ public partial class UsmartMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveSubscription(_tickSubscriptions, message.OriginalTransactionId,
@@ -94,6 +103,7 @@ public partial class UsmartMessageAdapter
 		var count = (int)Math.Clamp(message.Count ?? 100, 1, 500);
 		var response = await _rest.GetTicks(securityId.ToSecuId(DefaultMarket), 0, 0,
 			count, cancellationToken);
+
 		foreach (var tick in (response.Data?.Items ?? []).OrderBy(item => item.Time))
 		{
 			var time = tick.Time.ToUtc(securityId.ToMarket(DefaultMarket), CurrentTime);
@@ -103,6 +113,7 @@ public partial class UsmartMessageAdapter
 				continue;
 			await SendTick(message.TransactionId, securityId, tick, cancellationToken);
 		}
+
 		if (!message.IsHistoryOnly())
 			await AddSubscription(_tickSubscriptions, message.TransactionId, securityId,
 				"tk", cancellationToken);
@@ -114,6 +125,7 @@ public partial class UsmartMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveSubscription(_depthSubscriptions, message.OriginalTransactionId,
@@ -136,6 +148,7 @@ public partial class UsmartMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 		var securityId = NormalizeSecurityId(message.SecurityId);
@@ -146,6 +159,7 @@ public partial class UsmartMessageAdapter
 			count, cancellationToken);
 		var from = message.From is DateTime fromValue ? EnsureUtc(fromValue) : (DateTime?)null;
 		var to = message.To is DateTime toValue ? EnsureUtc(toValue) : (DateTime?)null;
+
 		foreach (var candle in (response.Data?.Items ?? []).OrderBy(item => item.Time))
 		{
 			var openTime = candle.Time.ToUtc(securityId.ToMarket(DefaultMarket), CurrentTime);
@@ -168,6 +182,7 @@ public partial class UsmartMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await SendSubscriptionFinishedAsync(message.TransactionId, cancellationToken);
 	}
 

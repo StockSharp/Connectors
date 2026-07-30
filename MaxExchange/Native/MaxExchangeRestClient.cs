@@ -268,6 +268,7 @@ sealed class MaxExchangeRestClient : BaseLogReceiver
 			EnsureCredentials();
 		path = "/" + path.ThrowIfEmpty(nameof(path)).Trim('/');
 		values ??= [];
+
 		for (var attempt = 0; ; attempt++)
 		{
 			var nonce = NextNonce();

@@ -65,6 +65,7 @@ public partial class SaxoMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			_orderStatusSubscriptionId = 0;
@@ -74,9 +75,12 @@ public partial class SaxoMessageAdapter
 
 		var accountKey = statusMsg.PortfolioName.IsEmpty(_client.Session.AccountKey);
 		var orders = await _client.Rest.GetOpenOrders(accountKey, cancellationToken);
+
 		foreach (var order in orders.Data ?? [])
 			await ProcessOpenOrder(order, statusMsg.TransactionId, cancellationToken);
+
 		var activities = await _client.Rest.GetOrderActivities(accountKey, statusMsg.From, statusMsg.To, cancellationToken);
+
 		foreach (var activity in activities.Data ?? [])
 			await ProcessActivity(activity, statusMsg.TransactionId, cancellationToken);
 
@@ -92,6 +96,7 @@ public partial class SaxoMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			_portfolioSubscriptionId = 0;

@@ -20,6 +20,7 @@ public partial class PythMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -32,6 +33,7 @@ public partial class PythMessageAdapter
 		var skip = Math.Max(0L, message.Skip ?? 0);
 		var left = Math.Max(0L,
 			Math.Min(message.Count ?? MaximumItems, MaximumItems));
+
 		foreach (var instrument in GetInstruments()
 			.Where(instrument => Matches(instrument, value))
 			.OrderBy(static instrument => instrument.Symbol,
@@ -50,6 +52,7 @@ public partial class PythMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -58,6 +61,7 @@ public partial class PythMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			RemoveLiveSubscription(message.OriginalTransactionId);
@@ -90,6 +94,7 @@ public partial class PythMessageAdapter
 			selected = message.From is null
 				? selected.TakeLast(range.Limit)
 				: selected.Take(range.Limit);
+
 			foreach (var pair in selected)
 			{
 				await SendOutMessageAsync(new Level1ChangeMessage
@@ -153,6 +158,7 @@ public partial class PythMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -179,6 +185,7 @@ public partial class PythMessageAdapter
 			? selected.TakeLast(range.Limit)
 			: selected.Take(range.Limit);
 		var securityId = ToSecurityId(instrument);
+
 		foreach (var pair in selected)
 		{
 			var row = pair.Value;
@@ -199,6 +206,7 @@ public partial class PythMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await FinishAsync(message, cancellationToken);
 	}
 
@@ -208,6 +216,7 @@ public partial class PythMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var result = new SortedDictionary<DateTime, PythHistoryCandle>();
+
 		await foreach (var candle in SafeRest().GetHistoryAsync(instrument, channel,
 			timeFrame, range.From, range.To, MaximumBarsPerRequest,
 			cancellationToken))
@@ -218,6 +227,7 @@ public partial class PythMessageAdapter
 				continue;
 			result[candle.OpenTime] = candle;
 		}
+
 		return result;
 	}
 

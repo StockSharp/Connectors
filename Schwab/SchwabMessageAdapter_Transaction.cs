@@ -84,6 +84,7 @@ partial class SchwabMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -121,6 +122,7 @@ partial class SchwabMessageAdapter
 				.TryAdd(PositionChangeTypes.CurrentPrice, position.MarketValue), cancellationToken);
 			}
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -128,11 +130,13 @@ partial class SchwabMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
 		var from = message.From?.ToUniversalTime() ?? DateTime.UtcNow.AddDays(-60);
 		var to = message.To?.ToUniversalTime() ?? DateTime.UtcNow;
+
 		foreach (var order in await _client.GetOrders(await ResolveAccount(message.PortfolioName, cancellationToken), from, to, cancellationToken) ?? [])
 		{
 			var leg = order.Legs?.FirstOrDefault();
@@ -153,6 +157,7 @@ partial class SchwabMessageAdapter
 				ServerTime = order.EnteredTime.ToUtcDateTime(),
 			}, cancellationToken);
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 }

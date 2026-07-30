@@ -377,6 +377,7 @@ sealed class DeltaExchangeIndiaWsClient : BaseLogReceiver
 			Subscription[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions];
+
 			foreach (var subscription in subscriptions)
 				await SendAsync(
 					CreateSubscription(

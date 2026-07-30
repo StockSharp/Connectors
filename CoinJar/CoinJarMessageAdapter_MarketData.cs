@@ -8,6 +8,7 @@ public partial class CoinJarMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedProduct = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class CoinJarMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var product in products.OrderBy(static value => value.Id,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -44,6 +46,7 @@ public partial class CoinJarMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -52,6 +55,7 @@ public partial class CoinJarMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -102,6 +106,7 @@ public partial class CoinJarMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -160,6 +165,7 @@ public partial class CoinJarMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -182,6 +188,7 @@ public partial class CoinJarMessageAdapter
 				"CoinJar trade history start must not exceed its end.");
 		var trades = await LoadPublicTradesAsync(product.Id, from, to, maximum,
 			cancellationToken);
+
 		foreach (var trade in trades)
 			await SendPublicTradeAsync(product.Id, trade, mdMsg.TransactionId,
 				cancellationToken);
@@ -215,6 +222,7 @@ public partial class CoinJarMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -241,6 +249,7 @@ public partial class CoinJarMessageAdapter
 				"CoinJar candle history start must not exceed its end.");
 		var candles = await LoadCandlesAsync(product.Id, timeFrame, from, to,
 			maximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(product.Id, candle, timeFrame,
 				mdMsg.TransactionId, null, cancellationToken);
@@ -352,6 +361,7 @@ public partial class CoinJarMessageAdapter
 			transactionIds = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.ProductId.EqualsIgnoreCase(productId)).Select(static pair =>
 					pair.Key)];
+
 		foreach (var transactionId in transactionIds)
 			await SendTickerAsync(productId, ticker, transactionId,
 				cancellationToken);
@@ -372,12 +382,14 @@ public partial class CoinJarMessageAdapter
 				pair.Value.ProductId.EqualsIgnoreCase(productId)).Select(static pair =>
 					(pair.Key, pair.Value))];
 		}
+
 		foreach (var trade in (trades ?? []).Where(static value => value is not null)
 			.OrderBy(static value => value.Timestamp))
 		{
 			foreach (var transactionId in tickIds)
 				await SendPublicTradeAsync(productId, trade, transactionId,
 					cancellationToken);
+
 			if (socketEvent != CoinJarSocketEvents.Init)
 				foreach (var item in candles)
 					await UpdateLiveCandleAsync(item.Id, item.Subscription, trade,
@@ -433,6 +445,7 @@ public partial class CoinJarMessageAdapter
 			await SocketClient.RequestSnapshotAsync(productId, cancellationToken);
 			return;
 		}
+
 		foreach (var message in messages)
 			await SendOutMessageAsync(message, cancellationToken);
 	}
@@ -480,13 +493,16 @@ public partial class CoinJarMessageAdapter
 		IReadOnlyDictionary<decimal, decimal> current)
 	{
 		var result = new List<QuoteChange>();
+
 		foreach (var pair in previous)
 			if (!current.ContainsKey(pair.Key))
 				result.Add(new(pair.Key, 0));
+
 		foreach (var pair in current)
 			if (!previous.TryGetValue(pair.Key, out var volume) ||
 				volume != pair.Value)
 				result.Add(new(pair.Key, pair.Value));
+
 		return [.. result];
 	}
 
@@ -494,6 +510,7 @@ public partial class CoinJarMessageAdapter
 		IReadOnlyDictionary<decimal, decimal> source)
 	{
 		target.Clear();
+
 		foreach (var pair in source)
 			target.Add(pair.Key, pair.Value);
 	}
@@ -646,6 +663,7 @@ public partial class CoinJarMessageAdapter
 		var result = new Dictionary<long, CoinJarTrade>();
 		var after = new DateTimeOffset(from.ToUtcTime()).ToUnixTimeSeconds();
 		var before = new DateTimeOffset(to.ToUtcTime()).ToUnixTimeSeconds() + 1;
+
 		while (result.Count < maximum && before > after)
 		{
 			var requested = (maximum - result.Count).Min(1000).Max(1);
@@ -657,9 +675,11 @@ public partial class CoinJarMessageAdapter
 			}, cancellationToken);
 			if (page is not { Length: > 0 })
 				break;
+
 			foreach (var trade in page.Where(trade => trade is not null &&
 				GetTime(trade.Timestamp) >= from && GetTime(trade.Timestamp) <= to))
 				result[trade.TradeId] = trade;
+
 			var earliest = page.Where(static trade => trade is not null)
 				.Select(trade => new DateTimeOffset(GetTime(trade.Timestamp))
 					.ToUnixTimeSeconds()).DefaultIfEmpty(before).Min();
@@ -668,6 +688,7 @@ public partial class CoinJarMessageAdapter
 				break;
 			before = earliest;
 		}
+
 		return [.. result.Values.OrderBy(static trade => trade.Timestamp)
 			.TakeLast(maximum)];
 	}
@@ -679,6 +700,7 @@ public partial class CoinJarMessageAdapter
 		var result = new Dictionary<DateTime, CoinJarCandle>();
 		var cursorEnd = to.ToUtcTime();
 		var lowerBound = from.ToUtcTime();
+
 		while (result.Count < maximum && cursorEnd >= lowerBound)
 		{
 			var pageSize = (maximum - result.Count).Min(1000).Max(1);
@@ -693,15 +715,18 @@ public partial class CoinJarMessageAdapter
 			}, cancellationToken);
 			if (page is not { Length: > 0 })
 				break;
+
 			foreach (var candle in page.Where(candle => candle is not null &&
 				candle.OpenTime.ToUtcTime() >= lowerBound &&
 				candle.OpenTime.ToUtcTime() <= to))
 				result[candle.OpenTime.ToUtcTime()] = candle;
+
 			var earliest = page.Min(static candle => candle.OpenTime.ToUtcTime());
 			if (earliest <= lowerBound || earliest >= cursorEnd)
 				break;
 			cursorEnd = earliest.SubtractPeriods(timeFrame, 1);
 		}
+
 		return [.. result.Values.OrderBy(static candle => candle.OpenTime)
 			.TakeLast(maximum)];
 	}

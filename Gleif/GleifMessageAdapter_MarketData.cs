@@ -38,6 +38,7 @@ public partial class GleifMessageAdapter
                 page,
                 PageSize,
                 cancellationToken);
+
             foreach (var record in document.Data.Skip(innerSkip))
             {
                 innerSkip = 0;
@@ -54,6 +55,7 @@ public partial class GleifMessageAdapter
 
                 if (!ExpandIsins || value.IsIsin())
                     continue;
+
                 for (var isinPage = 1;
                     isinPage <= MaxPages && remaining > 0;
                     isinPage++)
@@ -63,6 +65,7 @@ public partial class GleifMessageAdapter
                         isinPage,
                         PageSize,
                         cancellationToken);
+
                     foreach (var mapping in mappings.Data)
                     {
                         var isin = mapping?.Attributes?.Isin;
@@ -77,6 +80,7 @@ public partial class GleifMessageAdapter
                         if (--remaining <= 0)
                             break;
                     }
+
                     if (mappings.Links?.Next.IsEmpty() != false)
                         break;
                 }

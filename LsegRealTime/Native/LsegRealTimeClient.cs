@@ -190,6 +190,7 @@ internal sealed class LsegRealTimeClient : IDisposable
 
 		var connections = _connections;
 		await Task.WhenAll(connections.Select(connection => connection.DisconnectAsync()));
+
 		foreach (var connection in connections)
 			connection.Dispose();
 
@@ -205,6 +206,7 @@ internal sealed class LsegRealTimeClient : IDisposable
 		}
 
 		var disconnected = new InvalidOperationException("The LSEG Real-Time connection was closed.");
+
 		foreach (var snapshot in _snapshots.ToArray())
 		{
 			if (_snapshots.TryRemove(snapshot.Key, out var pending))
@@ -349,6 +351,7 @@ internal sealed class LsegRealTimeClient : IDisposable
 			string serviceName = null;
 			int? serviceState = null;
 			int? acceptingRequests = null;
+
 			foreach (var filter in entry.FilterList?.Entries ?? [])
 			{
 				var elements = filter.Elements;
@@ -391,8 +394,10 @@ internal sealed class LsegRealTimeClient : IDisposable
 			}
 
 			_activeSlot = activeConnection.Slot;
+
 			foreach (var subscription in _subscriptions.Values)
 				subscription.LastSequence = 0;
+
 			await ReissueAllAsync(activeConnection, CancellationToken.None);
 			await ReissueSnapshotsAsync(activeConnection, CancellationToken.None);
 		}
@@ -547,6 +552,7 @@ internal sealed class LsegRealTimeClient : IDisposable
 			};
 
 		var currentUrl = new Uri(authUrl);
+
 		for (var redirect = 0; redirect < 5; redirect++)
 		{
 			using var content = new StringContent(request.ToFormBody(), Encoding.ASCII, "application/x-www-form-urlencoded");
@@ -598,6 +604,7 @@ internal sealed class LsegRealTimeClient : IDisposable
 		var baseUrl = _configuration.DiscoveryUrl.IsEmpty("https://api.refinitiv.com/streaming/pricing/v1/");
 		var separator = baseUrl.Contains('?') ? '&' : '?';
 		var currentUrl = new Uri($"{baseUrl}{separator}transport=websocket");
+
 		for (var redirect = 0; redirect < 5; redirect++)
 		{
 			using var request = new HttpRequestMessage(HttpMethod.Get, currentUrl);

@@ -10,6 +10,7 @@ public partial class VeloDataMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -22,6 +23,7 @@ public partial class VeloDataMessageAdapter
 		var skip = Math.Max(0L, message.Skip ?? 0);
 		var left = Math.Max(0L,
 			Math.Min(message.Count ?? MaximumItems, MaximumItems));
+
 		foreach (var instrument in GetInstruments()
 			.Where(instrument => Matches(instrument, value))
 			.OrderBy(static instrument => instrument.Code,
@@ -40,6 +42,7 @@ public partial class VeloDataMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -48,6 +51,7 @@ public partial class VeloDataMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -90,6 +94,7 @@ public partial class VeloDataMessageAdapter
 			? selected.TakeLast(range.Limit)
 			: selected.Take(range.Limit);
 		var securityId = ToSecurityId(instrument);
+
 		foreach (var pair in selected)
 		{
 			var row = pair.Value;
@@ -120,6 +125,7 @@ public partial class VeloDataMessageAdapter
 			if (change.Changes.Count > 0)
 				await SendOutMessageAsync(change, cancellationToken);
 		}
+
 		await FinishAsync(message, cancellationToken);
 	}
 
@@ -128,6 +134,7 @@ public partial class VeloDataMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -175,6 +182,7 @@ public partial class VeloDataMessageAdapter
 			? selected.TakeLast(range.Limit)
 			: selected.Take(range.Limit);
 		var securityId = ToSecurityId(instrument);
+
 		foreach (var pair in selected)
 		{
 			var row = pair.Value;
@@ -204,6 +212,7 @@ public partial class VeloDataMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await FinishAsync(message, cancellationToken);
 	}
 
@@ -212,6 +221,7 @@ public partial class VeloDataMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			RemoveLiveNews(message.OriginalTransactionId);
@@ -250,6 +260,7 @@ public partial class VeloDataMessageAdapter
 			var selected = from is null
 				? parsed.TakeLast(limit)
 				: parsed.Take(limit);
+
 			foreach (var item in selected)
 			{
 				await SendNewsAsync(message.TransactionId, target.SecurityId,
@@ -300,6 +311,7 @@ public partial class VeloDataMessageAdapter
 			End = AddClamped(range.To, timeFrame),
 			Resolution = timeFrame,
 		};
+
 		await foreach (var row in SafeRest().GetRowsAsync(request,
 			cancellationToken))
 		{
@@ -308,6 +320,7 @@ public partial class VeloDataMessageAdapter
 			if (time >= range.From && time <= range.To)
 				result[time] = row;
 		}
+
 		return result;
 	}
 

@@ -9,6 +9,7 @@ public partial class TraderMadeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		if (lookupMsg.Skip is < 0)
 			throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
 		if (lookupMsg.Count is <= 0)
@@ -25,6 +26,7 @@ public partial class TraderMadeMessageAdapter
 		var skip = lookupMsg.Skip ?? 0;
 		var left = Math.Min(lookupMsg.Count ?? MaximumSecurities,
 			MaximumSecurities);
+
 		foreach (var instrument in (await GetInstrumentsAsync(
 			cancellationToken))
 			.Where(instrument => query.IsEmpty() ||
@@ -51,6 +53,7 @@ public partial class TraderMadeMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg,
 			cancellationToken);
 	}
@@ -113,6 +116,7 @@ public partial class TraderMadeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		var subscriptions = depth
 			? _depthSubscriptions
 			: _level1Subscriptions;
@@ -159,6 +163,7 @@ public partial class TraderMadeMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		var first = !HasSubscriptions(instrument.Symbol);
 		using (_subscriptionSync.EnterScope())
 			subscriptions[mdMsg.TransactionId] =
@@ -186,6 +191,7 @@ public partial class TraderMadeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -207,6 +213,7 @@ public partial class TraderMadeMessageAdapter
 		if (from > to)
 			throw new ArgumentOutOfRangeException(nameof(mdMsg.From));
 		var bars = new List<TraderMadeBar>();
+
 		for (var cursor = from; cursor <= to;)
 		{
 			var end = cursor + interval.MaxRange;
@@ -219,6 +226,7 @@ public partial class TraderMadeMessageAdapter
 				break;
 			cursor = end + timeFrame;
 		}
+
 		foreach (var bar in bars
 			.Where(bar => bar.Time >= from && bar.Time <= to)
 			.GroupBy(static bar => bar.Time)
@@ -238,6 +246,7 @@ public partial class TraderMadeMessageAdapter
 				ClosePrice = bar.Close,
 				State = CandleStates.Finished,
 			}, cancellationToken);
+
 		await CompleteSubscriptionAsync(mdMsg, cancellationToken);
 	}
 
@@ -260,9 +269,11 @@ public partial class TraderMadeMessageAdapter
 				.Select(static pair => pair.Key)
 				.ToArray();
 		}
+
 		foreach (var transactionId in level1)
 			await SendQuoteAsync(quote, transactionId, false,
 				cancellationToken);
+
 		foreach (var transactionId in depth)
 			await SendQuoteAsync(quote, transactionId, true,
 				cancellationToken);

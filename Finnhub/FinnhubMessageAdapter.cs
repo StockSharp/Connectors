@@ -145,6 +145,7 @@ public partial class FinnhubMessageAdapter
 			subscriptions = _liveSubscriptions.Values
 				.Where(subscription => subscription.Symbol.EqualsIgnoreCase(trade.Symbol))
 				.ToArray();
+
 			foreach (var subscription in subscriptions)
 			{
 				if (subscription.Remaining is > 0 && --subscription.Remaining == 0)
@@ -153,11 +154,13 @@ public partial class FinnhubMessageAdapter
 					finished.Add(subscription.TransactionId);
 				}
 			}
+
 			unsubscribe = finished.Count > 0 && !_liveSubscriptions.Values
 				.Any(subscription => subscription.Symbol.EqualsIgnoreCase(trade.Symbol));
 		}
 
 		var serverTime = Extensions.FromUnixMilliseconds(trade.Timestamp.Value);
+
 		foreach (var subscription in subscriptions)
 		{
 			if (subscription.DataType == DataType.Level1)

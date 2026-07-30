@@ -143,12 +143,15 @@ public partial class LcxMessageAdapter
 		foreach (var ticker in message?.Tickers ?? [])
 			await ProcessTickerAsync(
 				ticker, cancellationToken);
+
 		if (message?.Book is not null)
 			await ProcessBookAsync(
 				message.Book, cancellationToken);
+
 		foreach (var trade in message?.Trades ?? [])
 			await ProcessTradeAsync(
 				trade, cancellationToken);
+
 		if (_portfolioSubscriptionId != 0)
 		{
 			foreach (var balance in message?.Balances ?? [])

@@ -90,6 +90,7 @@ public partial class DriftMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -113,6 +114,7 @@ public partial class DriftMessageAdapter
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -124,6 +126,7 @@ public partial class DriftMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -145,6 +148,7 @@ public partial class DriftMessageAdapter
 			await SendSubscriptionResultAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId, subscription);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -308,10 +312,13 @@ public partial class DriftMessageAdapter
 		else
 			await Task.WhenAll(userTask, tradesTask);
 		var user = await userTask;
+
 		foreach (var transactionId in portfolios)
 			await SendPortfolioSnapshotAsync(user, transactionId, false,
 				cancellationToken);
+
 		var trades = tradesTask is null ? [] : await tradesTask;
+
 		foreach (var (transactionId, subscription) in orders)
 			await SendOrderSnapshotAsync(user, trades, subscription,
 				transactionId, false, cancellationToken);
@@ -440,6 +447,7 @@ public partial class DriftMessageAdapter
 			.Take(subscription.Limit)
 			.ToArray();
 		var currentKeys = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var order in orders)
 		{
 			var key = OrderKey(transactionId, order.OrderId);
@@ -467,12 +475,14 @@ public partial class DriftMessageAdapter
 			missing = [.. _knownOrders.Where(pair =>
 				pair.Key.StartsWith(prefix, StringComparison.Ordinal) &&
 				!currentKeys.Contains(pair.Key))];
+
 			foreach (var (key, _) in missing)
 			{
 				_knownOrders.Remove(key);
 				_orderFingerprints.Remove(key);
 			}
 		}
+
 		foreach (var (_, order) in missing)
 		{
 			var message = CreateOrderMessage(order, transactionId);

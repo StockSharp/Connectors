@@ -228,6 +228,7 @@ public partial class XOpenHubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -239,6 +240,7 @@ public partial class XOpenHubMessageAdapter
 		}
 
 		EnsureAccount(statusMsg.PortfolioName);
+
 		foreach (var trade in await _command.GetTrades(true, cancellationToken) ?? [])
 			await SendTradeExecution(trade, statusMsg.TransactionId, false, cancellationToken);
 
@@ -250,6 +252,7 @@ public partial class XOpenHubMessageAdapter
 			var from = new DateTimeOffset((statusMsg.From ??
 				to.UtcDateTime.AddDays(-30)).ToUniversalTime());
 			var left = statusMsg.Count ?? long.MaxValue;
+
 			foreach (var trade in (await _command.GetTradesHistory(from, to, cancellationToken) ?? [])
 				.OrderBy(t => t.CloseTime ?? t.OpenTime))
 			{
@@ -274,6 +277,7 @@ public partial class XOpenHubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -355,9 +359,11 @@ public partial class XOpenHubMessageAdapter
 			cancellationToken);
 
 		_positions.Clear();
+
 		foreach (var position in (await _command.GetTrades(true, cancellationToken) ?? [])
 			.Where(t => t.Type == 0 && !t.Closed))
 			_positions[GetPositionKey(position)] = position;
+
 		foreach (var symbol in _positions.Values.Select(p => p.Symbol)
 			.Distinct(StringComparer.OrdinalIgnoreCase))
 			await SendPosition(symbol, originalTransactionId, cancellationToken);

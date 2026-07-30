@@ -8,10 +8,12 @@ public partial class AevoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static market =>
 			market.InstrumentName, StringComparer.Ordinal))
 		{
@@ -39,6 +41,7 @@ public partial class AevoMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -47,6 +50,7 @@ public partial class AevoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -73,6 +77,7 @@ public partial class AevoMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var channel = TickerChannel(market.InstrumentName);
 		var subscribe = false;
 		using (_sync.EnterScope())
@@ -106,6 +111,7 @@ public partial class AevoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -140,6 +146,7 @@ public partial class AevoMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var channel = DepthChannel(market.InstrumentName);
 		var subscribe = false;
 		using (_sync.EnterScope())
@@ -174,6 +181,7 @@ public partial class AevoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -206,21 +214,26 @@ public partial class AevoMessageAdapter
 				StringComparer.Ordinal)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var trade in history)
 			await SendTradeAsync(trade, mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var subscription = new TickSubscription
 		{
 			TransactionId = mdMsg.TransactionId,
 			Symbol = market.InstrumentName,
 		};
+
 		foreach (var trade in history)
 			if (!trade.TradeId.IsEmpty())
 				subscription.SeenTrades.Add(trade.TradeId);
+
 		var channel = TradeChannel(market.InstrumentName);
 		var subscribe = false;
 		using (_sync.EnterScope())
@@ -254,6 +267,7 @@ public partial class AevoMessageAdapter
 			? ServerTime
 			: data.Timestamp.FromAevoNanoseconds();
 		UpdateServerTime(time);
+
 		foreach (var ticker in data.Tickers ?? [])
 		{
 			if (ticker?.InstrumentName.IsEmpty() != false)
@@ -263,6 +277,7 @@ public partial class AevoMessageAdapter
 				subscriptions = [.. _level1Subscriptions.Values.Where(
 					subscription => subscription.Symbol.Equals(
 						ticker.InstrumentName, StringComparison.Ordinal))];
+
 			foreach (var subscription in subscriptions)
 				await SendLevel1Async(ticker, time, subscription.TransactionId,
 					cancellationToken);
@@ -285,6 +300,7 @@ public partial class AevoMessageAdapter
 				subscription => subscription.Symbol.Equals(book.InstrumentName,
 					StringComparison.Ordinal))];
 		}
+
 		foreach (var subscription in subscriptions)
 			await SendDepthAsync(book.InstrumentName, state,
 				subscription.TransactionId, subscription.Depth,
@@ -303,6 +319,7 @@ public partial class AevoMessageAdapter
 					StringComparison.Ordinal) &&
 				(trade.TradeId.IsEmpty() ||
 					subscription.SeenTrades.Add(trade.TradeId)))];
+
 		foreach (var subscription in subscriptions)
 			await SendTradeAsync(trade, subscription.TransactionId,
 				cancellationToken);

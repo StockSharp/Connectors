@@ -42,6 +42,7 @@ public partial class QuickSwapMessageAdapter
 					"Configured QuickSwap market definitions are invalid.",
 					error);
 			}
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -63,6 +64,7 @@ public partial class QuickSwapMessageAdapter
 				QuickSwapGraphClient>[] graphClients;
 			using (_sync.EnterScope())
 				graphClients = [.. _graphClients];
+
 			foreach (var graph in graphClients)
 			{
 				try
@@ -214,6 +216,7 @@ public partial class QuickSwapMessageAdapter
 	{
 		var failed = 0;
 		string firstError = null;
+
 		foreach (var pool in pools ?? [])
 		{
 			if (pool?.Id.IsEmpty() != false || pool.Token0 is null ||
@@ -265,6 +268,7 @@ public partial class QuickSwapMessageAdapter
 					pool.ReserveUsd.ToDecimalInvariant() ?? 0m,
 			});
 		}
+
 		if (failed > 0)
 			this.AddWarningLog(
 				"QuickSwap {0} discovery skipped {1} invalid pools. " +
@@ -334,6 +338,7 @@ public partial class QuickSwapMessageAdapter
 						existing.PoolId);
 					_markets.Add(existing.SecurityCode, existing);
 				}
+
 				market.SecurityCode = BuildUniqueMarketCode(pair,
 					market.PoolId);
 			}
@@ -350,12 +355,14 @@ public partial class QuickSwapMessageAdapter
 	private string BuildUniqueMarketCode(string pair, string poolId)
 	{
 		poolId = poolId.NormalizeAddress()[2..];
+
 		for (var length = 6; length <= poolId.Length; length += 2)
 		{
 			var code = $"{pair}-{poolId[..length].ToUpperInvariant()}";
 			if (!_markets.ContainsKey(code))
 				return code;
 		}
+
 		throw new InvalidDataException(
 			$"Unable to create a unique QuickSwap security code for " +
 			$"pool '{poolId}'.");
@@ -366,6 +373,7 @@ public partial class QuickSwapMessageAdapter
 		if (Markets.IsEmpty())
 			return [];
 		var result = new List<QuickSwapMarketDefinition>();
+
 		foreach (var item in Markets.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -385,6 +393,7 @@ public partial class QuickSwapMessageAdapter
 				QuoteToken = fields[2].NormalizeAddress(),
 			});
 		}
+
 		return [.. result];
 	}
 
@@ -444,8 +453,10 @@ public partial class QuickSwapMessageAdapter
 			graphClients = [.. _graphClients.Values];
 			_graphClients.Clear();
 		}
+
 		foreach (var graphClient in graphClients)
 			graphClient.Dispose();
+
 		_rpcClient?.Dispose();
 		_rpcClient = null;
 		ClearState();

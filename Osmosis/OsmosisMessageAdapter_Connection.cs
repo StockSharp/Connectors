@@ -80,8 +80,10 @@ public partial class OsmosisMessageAdapter
 			expiredTicks = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.To is DateTime end && CurrentTime >= end)
 				.Select(static pair => pair.Key)];
+
 			foreach (var target in expiredTicks)
 				UnsubscribeTicksNoLock(target);
+
 			if (_apiClient is not null && _level1Subscriptions.Count > 0 &&
 				CurrentTime >= _nextMarketPoll)
 			{
@@ -110,8 +112,10 @@ public partial class OsmosisMessageAdapter
 			await RunSafelyAsync(PollLevel1Async, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
+
 		foreach (var target in expiredTicks)
 			await SendSubscriptionFinishedAsync(target, cancellationToken);
+
 		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
@@ -163,6 +167,7 @@ public partial class OsmosisMessageAdapter
 		var result = new List<OsmosisMarketDefinition>();
 		var pairs = new HashSet<string>(StringComparer.Ordinal);
 		var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var item in Markets.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -194,6 +199,7 @@ public partial class OsmosisMessageAdapter
 				SecurityCode = code,
 			});
 		}
+
 		if (result.Count == 0)
 			throw new InvalidOperationException(
 				"At least one Osmosis market must be configured.");
@@ -210,6 +216,7 @@ public partial class OsmosisMessageAdapter
 				$"The asset list belongs to '{assetList.ChainName}', not Osmosis.");
 		var assets = new Dictionary<string, OsmosisToken>(
 			StringComparer.Ordinal);
+
 		foreach (var asset in assetList.Assets ?? [])
 		{
 			if (asset is null || asset.IsDisabled || asset.IsPreview ||
@@ -271,6 +278,7 @@ public partial class OsmosisMessageAdapter
 		OsmosisMarket[] markets;
 		using (_sync.EnterScope())
 			markets = [.. _markets.Values];
+
 		foreach (var market in markets)
 		{
 			var amount = ProbeVolume.ToBaseUnits(market.BaseToken.Decimals);
@@ -285,12 +293,14 @@ public partial class OsmosisMessageAdapter
 	{
 		var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
 			PairKey(baseDenomination, quoteDenomination))));
+
 		for (var length = 6; length <= 20; length += 2)
 		{
 			var candidate = $"{code}-{hash[..length]}";
 			if (!_markets.ContainsKey(candidate))
 				return candidate;
 		}
+
 		throw new InvalidDataException(
 			$"Cannot create a unique Osmosis code for '{code}'.");
 	}
@@ -361,6 +371,7 @@ public partial class OsmosisMessageAdapter
 		var time = await GetBlockTimeAsync(swap.Height, CancellationToken.None);
 		var identity = $"{swap.TransactionHash}:{swap.MessageIndex}:" +
 			$"{swap.PoolId}:{swap.Input.Amount}:{swap.Output.Amount}";
+
 		foreach (var target in targets)
 		{
 			if (target.Subscription.To is DateTime end && time > end)
@@ -398,8 +409,10 @@ public partial class OsmosisMessageAdapter
 		{
 			if (_blockTimes.TryAdd(height, time))
 				_blockTimeOrder.Enqueue(height);
+
 			while (_blockTimeOrder.Count > 4096)
 				_blockTimes.Remove(_blockTimeOrder.Dequeue());
+
 			return _blockTimes[height];
 		}
 	}

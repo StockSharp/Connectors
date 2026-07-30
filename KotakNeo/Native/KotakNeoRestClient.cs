@@ -94,6 +94,7 @@ sealed class KotakNeoRestClient : BaseLogReceiver
 				throw new InvalidOperationException(response?.Message ?? "Kotak Neo did not return scrip-master file paths.");
 
 			var instruments = new List<KotakNeoInstrument>();
+
 			foreach (var path in paths.Where(p => !p.IsEmpty()))
 				await ReadInstruments(path, instruments, cancellationToken);
 
@@ -215,8 +216,10 @@ sealed class KotakNeoRestClient : BaseLogReceiver
 			csv.ReadString();
 			var isin = csv.ReadString();
 			var assetCode = csv.ReadString();
+
 			for (var i = 0; i < 5; i++)
 				csv.ReadString();
+
 			var rawTickSize = ParseDecimal(csv.ReadString());
 			var lotSize = ParseDecimal(csv.ReadString());
 			var rawExpiry = ParseLong(csv.ReadString());
@@ -282,8 +285,10 @@ sealed class KotakNeoRestClient : BaseLogReceiver
 	private static decimal Pow10(int precision)
 	{
 		var value = 1m;
+
 		for (var i = 0; i < precision; i++)
 			value *= 10m;
+
 		return value;
 	}
 

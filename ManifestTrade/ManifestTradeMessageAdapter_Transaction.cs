@@ -12,30 +12,39 @@ public partial class ManifestTradeMessageAdapter
 		ValidateOrderRequest(regMsg.OrderType ?? OrderTypes.Limit,
 			regMsg.Condition, regMsg.PostOnly, regMsg.TimeInForce,
 			regMsg.UserOrderId);
+
 		if (!market.IsDirectTradingSupported)
 			throw new NotSupportedException(
 				"Direct Manifest Trade orders currently require legacy SPL " +
 				"tokens; this Token-2022 market is read-only.");
+
 		var orderType = regMsg.OrderType ?? OrderTypes.Limit;
 		var volume = regMsg.Volume.Abs();
+
 		if (volume <= 0)
 			throw new InvalidOperationException(
 				"Manifest Trade order volume must be positive.");
+
 		var baseValue = volume.ToBaseUnits(market.BaseToken.Decimals);
+
 		if (baseValue <= 0 || baseValue > ulong.MaxValue)
 			throw new InvalidOperationException(
 				"Manifest Trade order volume does not fit into base atoms.");
+
 		var baseAtoms = (ulong)baseValue;
 		await RefreshMarketAsync(market, cancellationToken);
 		var computeUnitPrice = await GetComputeUnitPriceAsync(market,
 			cancellationToken);
+
 		TransactionInstruction[] instructions;
 		var price = regMsg.Price;
+
 		if (orderType == OrderTypes.Market)
 		{
 			if (regMsg.Price != 0)
 				throw new InvalidOperationException(
 					"A Manifest Trade market order must not specify a price.");
+
 			var quote = market.GetQuote(regMsg.Side, baseAtoms,
 				SlippageTolerance);
 			instructions = ManifestTradeInstructionBuilder.BuildMarketOrder(
@@ -49,6 +58,7 @@ public partial class ManifestTradeMessageAdapter
 			if (regMsg.Price <= 0)
 				throw new InvalidOperationException(
 					"A Manifest Trade limit order price must be positive.");
+
 			var encoded = ManifestTradeExtensions.EncodePrice(regMsg.Price,
 				market.BaseToken.Decimals, market.QuoteToken.Decimals);
 			var seat = GetWalletSeat(market);
@@ -72,8 +82,10 @@ public partial class ManifestTradeMessageAdapter
 				seat?.Index, deposit, checked((uint)ComputeUnitLimit),
 				computeUnitPrice);
 		}
+
 		var signature = await RpcClient.SendTransactionAsync(instructions,
 			cancellationToken);
+
 		var tracked = new TrackedOrder
 		{
 			TransactionId = regMsg.TransactionId,
@@ -87,8 +99,10 @@ public partial class ManifestTradeMessageAdapter
 			SubmittedTime = CurrentTime,
 			State = OrderStates.Active,
 		};
+
 		using (_sync.EnterScope())
 			_trackedOrders[signature] = tracked;
+
 		await SendTrackedOrderAsync(tracked, regMsg.TransactionId,
 			cancellationToken);
 	}
@@ -101,30 +115,39 @@ public partial class ManifestTradeMessageAdapter
 		ValidatePortfolio(replaceMsg.PortfolioName);
 		var previous = ResolveTrackedOrder(replaceMsg.OldOrderStringId,
 			replaceMsg.OldOrderId, "replacement");
+
 		if (previous.OrderType == OrderTypes.Market ||
 			(replaceMsg.OrderType ?? OrderTypes.Limit) != OrderTypes.Limit)
 			throw new NotSupportedException(
 				"Manifest Trade can replace active limit orders only.");
+
 		if (previous.Sequence is null)
 			throw new InvalidOperationException(
 				"The original Manifest order has not received its on-chain " +
 				"sequence yet.");
+
 		ValidateOrderRequest(OrderTypes.Limit, replaceMsg.Condition,
 			replaceMsg.PostOnly, replaceMsg.TimeInForce,
 			replaceMsg.UserOrderId);
 		var market = previous.Market;
+
 		if (!replaceMsg.SecurityId.SecurityCode.IsEmpty() &&
 			!ReferenceEquals(GetMarket(replaceMsg.SecurityId), market))
 			throw new InvalidOperationException(
 				"A Manifest replacement must stay on the original market.");
+
 		var volume = replaceMsg.Volume.Abs();
+
 		if (volume <= 0 || replaceMsg.Price <= 0)
 			throw new InvalidOperationException(
 				"Manifest replacement price and volume must be positive.");
+
 		var baseValue = volume.ToBaseUnits(market.BaseToken.Decimals);
+
 		if (baseValue <= 0 || baseValue > ulong.MaxValue)
 			throw new InvalidOperationException(
 				"Manifest replacement volume does not fit into base atoms.");
+
 		await RefreshMarketAsync(market, cancellationToken);
 		var onChain = FindOrder(market, previous.Sequence.Value,
 			RpcClient.WalletAddress) ?? throw new InvalidOperationException(
@@ -160,8 +183,10 @@ public partial class ManifestTradeMessageAdapter
 			ManifestTradeExtensions.NoExpirationSlot, seat.Index, deposit,
 			previous.Sequence.Value, onChain.Index,
 			checked((uint)ComputeUnitLimit), computeUnitPrice);
+
 		var signature = await RpcClient.SendTransactionAsync(instructions,
 			cancellationToken);
+
 		var replacement = new TrackedOrder
 		{
 			TransactionId = replaceMsg.TransactionId,
@@ -175,6 +200,7 @@ public partial class ManifestTradeMessageAdapter
 			SubmittedTime = CurrentTime,
 			State = OrderStates.Active,
 		};
+
 		using (_sync.EnterScope())
 		{
 			_trackedOrders[signature] = replacement;
@@ -184,6 +210,7 @@ public partial class ManifestTradeMessageAdapter
 				ReplacementOrder = replacement,
 			};
 		}
+
 		await SendTrackedOrderAsync(replacement, replaceMsg.TransactionId,
 			cancellationToken);
 	}
@@ -234,6 +261,7 @@ public partial class ManifestTradeMessageAdapter
 					order.Market.SecurityCode.EqualsIgnoreCase(
 						cancelMsg.SecurityId.SecurityCode)) &&
 				(cancelMsg.Side is null || order.Side == cancelMsg.Side))];
+
 		foreach (var order in orders)
 		{
 			await RefreshMarketAsync(order.Market, cancellationToken);
@@ -261,6 +289,7 @@ public partial class ManifestTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -289,6 +318,7 @@ public partial class ManifestTradeMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -300,6 +330,7 @@ public partial class ManifestTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -340,6 +371,7 @@ public partial class ManifestTradeMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -360,6 +392,7 @@ public partial class ManifestTradeMessageAdapter
 			portfolioTargets = [.. _portfolioSubscriptions];
 			orderTargets = [.. _orderSubscriptions];
 		}
+
 		foreach (var action in actions)
 		{
 			var receipt = await RpcClient.GetReceiptAsync(action.Key,
@@ -368,6 +401,7 @@ public partial class ManifestTradeMessageAdapter
 				await ApplyPendingActionAsync(action.Key, action.Value, receipt,
 					cancellationToken);
 		}
+
 		foreach (var order in pendingOrders)
 		{
 			if (order.Receipt is not null)
@@ -377,15 +411,18 @@ public partial class ManifestTradeMessageAdapter
 			if (receipt is not null)
 				await ApplyOrderReceiptAsync(order, receipt, cancellationToken);
 		}
+
 		if (portfolioTargets.Length > 0 || orderTargets.Length > 0)
 			await RefreshAllMarketsAsync(cancellationToken);
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -397,6 +434,7 @@ public partial class ManifestTradeMessageAdapter
 	{
 		using (_sync.EnterScope())
 			order.Receipt = receipt;
+
 		if (!receipt.IsSuccessful)
 		{
 			using (_sync.EnterScope())
@@ -408,12 +446,15 @@ public partial class ManifestTradeMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		await ProcessPrivateEventsAsync(order.Signature, receipt.LogMessages,
 			receipt, cancellationToken);
 		await RefreshMarketAsync(order.Market, cancellationToken);
+
 		var current = order.Sequence is ulong sequence
 			? FindOrder(order.Market, sequence, RpcClient.WalletAddress)
 			: null;
+
 		using (_sync.EnterScope())
 		{
 			if (current is not null)
@@ -429,6 +470,7 @@ public partial class ManifestTradeMessageAdapter
 				order.State = OrderStates.Done;
 			}
 		}
+
 		await SendTrackedOrderAsync(order, order.TransactionId,
 			cancellationToken);
 	}
@@ -493,6 +535,7 @@ public partial class ManifestTradeMessageAdapter
 			}
 		}
 		var time = receipt?.BlockTime ?? DateTime.UtcNow;
+
 		foreach (var fill in ManifestTradeExtensions.DecodeFillEvents(signature,
 			logs, time))
 		{
@@ -528,6 +571,7 @@ public partial class ManifestTradeMessageAdapter
 			await SendTrackedTradeAsync(tracked, trade,
 				cancellationToken);
 		}
+
 		foreach (var cancellation in
 			ManifestTradeExtensions.DecodeCancelEvents(logs))
 		{
@@ -556,6 +600,7 @@ public partial class ManifestTradeMessageAdapter
 				ReferenceEquals(order.Market, market) &&
 				order.State == OrderStates.Active && order.Sequence is not null &&
 				order.Receipt is not null && market.Slot >= order.Receipt.Slot)];
+
 		foreach (var order in orders)
 		{
 			var current = FindOrder(market, order.Sequence.Value,
@@ -596,6 +641,7 @@ public partial class ManifestTradeMessageAdapter
 		var values = tokens.ToDictionary(static token => token.Mint,
 			static token => (Token: token, Current: BigInteger.Zero,
 				Blocked: BigInteger.Zero), StringComparer.Ordinal);
+
 		for (var offset = 0; offset < tokens.Length; offset += 100)
 		{
 			var chunk = tokens.Skip(offset).Take(100).ToArray();
@@ -605,6 +651,7 @@ public partial class ManifestTradeMessageAdapter
 				.ToArray();
 			var accounts = await RpcClient.GetAccountsAsync(addresses,
 				cancellationToken);
+
 			for (var index = 0; index < chunk.Length; index++)
 			{
 				var token = chunk[index];
@@ -615,6 +662,7 @@ public partial class ManifestTradeMessageAdapter
 				values[token.Mint] = (item.Token, amount, item.Blocked);
 			}
 		}
+
 		foreach (var market in markets)
 		{
 			var seat = GetWalletSeat(market);
@@ -622,18 +670,22 @@ public partial class ManifestTradeMessageAdapter
 				continue;
 			BigInteger lockedBase = 0;
 			BigInteger lockedQuote = 0;
+
 			foreach (var order in market.Asks.Where(order =>
 				order.TraderIndex == seat.Index))
 				lockedBase += order.BaseAtoms;
+
 			foreach (var order in market.Bids.Where(order =>
 				order.TraderIndex == seat.Index))
 				lockedQuote += ManifestTradeExtensions.RequiredQuoteAtoms(
 					order.RawPrice, order.BaseAtoms);
+
 			AddVenueBalance(values, market.BaseToken,
 				seat.BaseWithdrawableAtoms + lockedBase, lockedBase);
 			AddVenueBalance(values, market.QuoteToken,
 				seat.QuoteWithdrawableAtoms + lockedQuote, lockedQuote);
 		}
+
 		var result = values.Values.Select(static item =>
 			(item.Token.Mint.Equals(ManifestTradeExtensions.WrappedSolMint,
 				StringComparison.Ordinal) ? "WSOL" : item.Token.Symbol,
@@ -710,6 +762,7 @@ public partial class ManifestTradeMessageAdapter
 		}
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var order in tracked)
 		{
 			if (subscription.States is { Length: > 0 } states &&
@@ -732,12 +785,14 @@ public partial class ManifestTradeMessageAdapter
 			}
 			await SendTrackedOrderAsync(order, target, cancellationToken);
 		}
+
 		if (subscription.States is { Length: > 0 } requestedStates &&
 			!requestedStates.Contains(OrderStates.Active))
 			return;
 		var known = tracked.Where(static order => order.Sequence is not null)
 			.Select(static order => (order.Market.MarketAddress,
 				order.Sequence.Value)).ToHashSet();
+
 		foreach (var market in markets)
 		{
 			if (!subscription.SecurityId.SecurityCode.IsEmpty() &&
@@ -747,6 +802,7 @@ public partial class ManifestTradeMessageAdapter
 			var seat = GetWalletSeat(market);
 			if (seat is null)
 				continue;
+
 			foreach (var order in market.Bids.Concat(market.Asks).Where(order =>
 				order.TraderIndex == seat.Index &&
 				!known.Contains((market.MarketAddress, order.Sequence))))
@@ -895,6 +951,7 @@ public partial class ManifestTradeMessageAdapter
 		ManifestTradeMarket[] markets;
 		using (_sync.EnterScope())
 			markets = [.. _marketsByAddress.Values];
+
 		foreach (var market in markets)
 			await RefreshMarketAsync(market, cancellationToken);
 	}

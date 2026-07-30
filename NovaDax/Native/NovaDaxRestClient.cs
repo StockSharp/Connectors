@@ -100,6 +100,7 @@ sealed class NovaDaxRestClient : BaseLogReceiver
 			null,
 			false,
 			cancellationToken);
+
 		foreach (var trade in trades ?? [])
 			trade.Pair = symbol;
 		return trades;
@@ -125,6 +126,7 @@ sealed class NovaDaxRestClient : BaseLogReceiver
 			null,
 			false,
 			cancellationToken);
+
 		foreach (var candle in candles ?? [])
 			candle.Pair = candle.Pair.IsEmpty(symbol);
 		return candles;
@@ -288,12 +290,14 @@ sealed class NovaDaxRestClient : BaseLogReceiver
 		{
 			var openOrders = await GetOpenOrdersAsync(
 				null, cancellationToken);
+
 			foreach (var market in (openOrders ?? [])
 				.Where(static order => !order.Pair.IsEmpty())
 				.Select(static order => order.Pair)
 				.Distinct(StringComparer.OrdinalIgnoreCase))
 				await CancelAllOrdersAsync(
 					market, cancellationToken);
+
 			return;
 		}
 

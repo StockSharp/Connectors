@@ -7,6 +7,7 @@ public partial class HashKeyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedBoard = lookupMsg.SecurityId.BoardCode;
@@ -24,6 +25,7 @@ public partial class HashKeyMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static market => market.Section)
 			.ThenBy(static market => market.Symbol, StringComparer.OrdinalIgnoreCase))
 		{
@@ -50,6 +52,7 @@ public partial class HashKeyMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -58,6 +61,7 @@ public partial class HashKeyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -117,6 +121,7 @@ public partial class HashKeyMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -178,6 +183,7 @@ public partial class HashKeyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -200,6 +206,7 @@ public partial class HashKeyMessageAdapter
 		}, cancellationToken);
 		var from = mdMsg.From?.ToUniversalTime();
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade => trade.Timestamp > 0 &&
 				(from is null || trade.Timestamp.FromMilliseconds() >= from.Value) &&
@@ -243,6 +250,7 @@ public partial class HashKeyMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -269,6 +277,7 @@ public partial class HashKeyMessageAdapter
 
 		var candles = await LoadCandlesAsync(symbol, interval, timeFrame, from, to,
 			count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(section, symbol, candle.OpenTime,
 				candle.Open, candle.High, candle.Low, candle.Close, candle.Volume,
@@ -377,6 +386,7 @@ public partial class HashKeyMessageAdapter
 	{
 		var result = new List<HashKeyCandle>();
 		var cursor = from;
+
 		while (cursor <= to && result.Count < maximum)
 		{
 			var pageLimit = Math.Min(1000, maximum - result.Count);
@@ -399,6 +409,7 @@ public partial class HashKeyMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.GroupBy(static candle => candle.OpenTime)
 			.Select(static group => group.First())
 			.OrderBy(static candle => candle.OpenTime)
@@ -483,6 +494,7 @@ public partial class HashKeyMessageAdapter
 			ids = [.. matches.Select(static pair => pair.Key)];
 			subscriptions = [.. matches.Select(static pair => pair.Value)];
 		}
+
 		for (var i = 0; i < ids.Length; i++)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -505,6 +517,7 @@ public partial class HashKeyMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -529,6 +542,7 @@ public partial class HashKeyMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendDepthAsync(pair.Value.Section, symbol, depth.Timestamp, depth.Bids,
 				depth.Asks, pair.Key, pair.Value.Depth, cancellationToken);
@@ -543,6 +557,7 @@ public partial class HashKeyMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendPublicTradeAsync(pair.Value.Section, symbol, new()
 			{
@@ -564,6 +579,7 @@ public partial class HashKeyMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol) &&
 				pair.Value.Interval.EqualsIgnoreCase(interval))];
+
 		foreach (var pair in subscriptions)
 			await SendCandleAsync(pair.Value.Section, symbol, candle.OpenTime,
 				candle.Open, candle.High, candle.Low, candle.Close, candle.Volume,

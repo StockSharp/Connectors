@@ -136,6 +136,7 @@ sealed class CoinGeckoRestClient : BaseLogReceiver
 		var result = new SortedDictionary<decimal, CoinGeckoCoinOhlc>();
 		var cursor = from.EnsureUtc();
 		to = to.EnsureUtc();
+
 		while (cursor < to)
 		{
 			var end = cursor + window;
@@ -147,14 +148,18 @@ sealed class CoinGeckoRestClient : BaseLogReceiver
 					CoinGeckoEnumConverter<CoinGeckoCoinIntervals>.ToWire(interval));
 			var page = await GetAsync<CoinGeckoCoinOhlc[]>(path,
 				cancellationToken) ?? [];
+
 			foreach (var item in page.Where(static item => item is not null))
 				result[item.Timestamp] = item;
+
 			if (result.Count > maximum)
 				foreach (var timestamp in result.Keys.Take(result.Count - maximum)
 					.ToArray())
 					result.Remove(timestamp);
+
 			cursor = end;
 		}
+
 		return [.. result.Values];
 	}
 

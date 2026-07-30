@@ -298,6 +298,7 @@ public partial class MetaApiMessageAdapter
 				if (specification?.Symbol.IsEmpty() == false)
 					_specifications[specification.Symbol] = specification;
 			}
+
 			foreach (var symbol in removed)
 				_specifications.Remove(symbol);
 		}

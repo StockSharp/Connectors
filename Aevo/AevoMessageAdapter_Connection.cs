@@ -109,6 +109,7 @@ public partial class AevoMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets)
 			{
 				var symbol = market.InstrumentName.Trim().ToUpperInvariant();

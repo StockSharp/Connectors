@@ -8,6 +8,7 @@ public partial class BYDFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class BYDFiMessageAdapter
 			products = [.. _products.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var product in products.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -44,6 +46,7 @@ public partial class BYDFiMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +56,7 @@ public partial class BYDFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -116,6 +120,7 @@ public partial class BYDFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -171,6 +176,7 @@ public partial class BYDFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -191,9 +197,11 @@ public partial class BYDFiMessageAdapter
 			.Where(trade => IsTradeInRange(trade, mdMsg.From, mdMsg.To))
 			.OrderBy(static trade => trade.Time)
 			.ToArray();
+
 		foreach (var trade in ordered)
 			await SendPublicTradeAsync(trade, mdMsg.TransactionId,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
@@ -215,6 +223,7 @@ public partial class BYDFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -238,9 +247,11 @@ public partial class BYDFiMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * maximum);
 		var candles = await LoadCandlesAsync(product.Symbol, timeFrame, from,
 			to, maximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(candle, timeFrame, mdMsg.TransactionId,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
@@ -301,6 +312,7 @@ public partial class BYDFiMessageAdapter
 		{
 			var result = new HashSet<string>(
 				StringComparer.OrdinalIgnoreCase);
+
 			foreach (var symbol in _level1Subscriptions.Values
 				.Select(static value => value.Symbol).Distinct(
 					StringComparer.OrdinalIgnoreCase))
@@ -308,14 +320,17 @@ public partial class BYDFiMessageAdapter
 				result.Add($"{symbol}@ticker");
 				result.Add($"{symbol}@realTicker@1000ms");
 			}
+
 			foreach (var group in _depthSubscriptions.Values.GroupBy(
 				static value => value.Symbol,
 				StringComparer.OrdinalIgnoreCase))
 				result.Add($"{group.Key}@depth{group.Max(
                     static value => value.Depth)}@100ms");
+
 			foreach (var candle in _candleSubscriptions.Values)
 				result.Add($"{candle.Symbol}@kline_" +
 					candle.TimeFrame.ToInterval());
+
 			streams = [.. result];
 		}
 		await SocketClient.SetStreamsAsync(streams, cancellationToken);
@@ -366,6 +381,7 @@ public partial class BYDFiMessageAdapter
 			targets = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var target in targets)
 			await SendWsTickerAsync(ticker, target, cancellationToken);
 	}
@@ -381,6 +397,7 @@ public partial class BYDFiMessageAdapter
 			targets = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var target in targets)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -407,6 +424,7 @@ public partial class BYDFiMessageAdapter
 			targets = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var target in targets)
 			await SendWsBookAsync(book, target.Depth, target.Id,
 				cancellationToken);
@@ -425,6 +443,7 @@ public partial class BYDFiMessageAdapter
 				pair.Value.Symbol.EqualsIgnoreCase(symbol) &&
 				pair.Value.TimeFrame == timeFrame).Select(
 				static pair => pair.Key)];
+
 		foreach (var target in targets)
 			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{
@@ -589,6 +608,7 @@ public partial class BYDFiMessageAdapter
 				static pair => pair.Value.Symbol,
 				StringComparer.OrdinalIgnoreCase).Select(group =>
 				(group.Key, group.Select(static pair => pair.Key).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			var trades = await RestClient.GetPublicTradesAsync(group.Symbol,
@@ -640,6 +660,7 @@ public partial class BYDFiMessageAdapter
 		var result = new List<BYDFiKline>();
 		var cursor = from.ToUniversalTime();
 		var upperBound = to.ToUniversalTime();
+
 		while (result.Count < maximum && cursor <= upperBound)
 		{
 			var pageSize = (maximum - result.Count).Min(1500).Max(1);
@@ -661,6 +682,7 @@ public partial class BYDFiMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.Where(static item => item?.OpenTime.ToLong() > 0)
 			.GroupBy(static item => item.OpenTime)
 			.Select(static group => group.First())

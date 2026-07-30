@@ -273,6 +273,7 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 
 		foreach (var queue in _eventQueues)
 			queue.Writer.TryComplete();
+
 		try
 		{
 			await Task.WhenAll(_eventWorkers.Where(task => task != null));
@@ -286,6 +287,7 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 	{
 		var wasConnected = false;
 		var failureCount = 0;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			WebSocket socket = null;
@@ -366,8 +368,10 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 			: IntrinioRealtimeProtocol.GetEquityAuthHeaders();
 
 		using var request = new HttpRequestMessage(HttpMethod.Get, authUri);
+
 		foreach (var header in authHeaders)
 			request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
 		using var response = await _http.SendAsync(request,
 			HttpCompletionOption.ResponseContentRead, cancellationToken);
 		var body = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -404,8 +408,10 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 		var socket = new ClientWebSocket();
 		socket.Options.KeepAliveInterval = _keepAliveInterval;
 		socket.Options.KeepAliveTimeout = _keepAliveInterval;
+
 		foreach (var header in socketHeaders)
 			socket.Options.SetRequestHeader(header.Key, header.Value);
+
 		try
 		{
 			await socket.ConnectAsync(socketUri, cancellationToken);
@@ -426,6 +432,7 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 		{
 			foreach (var channel in _channels)
 				await SendAsync(socket, EncodeJoin(channel), cancellationToken);
+
 			_socket = socket;
 		}
 		finally
@@ -564,6 +571,7 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 		{
 			using var stream = new MemoryStream();
 			WebSocketMessageType? type = null;
+
 			while (true)
 			{
 				var result = await socket.ReceiveAsync(

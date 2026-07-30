@@ -256,6 +256,7 @@ public partial class VALRMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -273,12 +274,14 @@ public partial class VALRMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, true,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -289,6 +292,7 @@ public partial class VALRMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -317,12 +321,14 @@ public partial class VALRMessageAdapter
 			orderId, statusMsg.Side, statusMsg.From, statusMsg.To, maximum,
 			true, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -360,6 +366,7 @@ public partial class VALRMessageAdapter
 
 		var sent = 0;
 		var openOrders = await RestClient.GetOpenOrdersAsync(cancellationToken);
+
 		foreach (var order in (openOrders ?? []).Where(order => order is not null &&
 			(symbol.IsEmpty() || order.CurrencyPair.EqualsIgnoreCase(symbol)) &&
 			(side is null || order.Side.ToStockSharp() == side)).Take(maximum))
@@ -379,6 +386,7 @@ public partial class VALRMessageAdapter
 				EndTime = to?.ToUniversalTime(),
 				IsShowZeroVolumeCancels = true,
 			}, cancellationToken);
+
 			foreach (var order in (history ?? []).Where(order => order is not null &&
 				(side is null || order.Side.ToStockSharp() == side)))
 				await SendOrderStatusAsync(order, transactionId, force,
@@ -391,6 +399,7 @@ public partial class VALRMessageAdapter
 			StartTime = from?.ToUniversalTime(),
 			EndTime = to?.ToUniversalTime(),
 		}, cancellationToken);
+
 		foreach (var trade in (trades ?? []).Where(trade => trade is not null &&
 			(symbol.IsEmpty() || trade.CurrencyPair.EqualsIgnoreCase(symbol)) &&
 			(side is null || trade.Side.ToStockSharp() == side)))
@@ -402,13 +411,16 @@ public partial class VALRMessageAdapter
 		bool force, CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(balance, transactionId, force,
 				cancellationToken);
+
 		var positions = await RestClient.GetOpenPositionsAsync(new()
 		{
 			Limit = 100,
 		}, cancellationToken);
+
 		foreach (var position in positions ?? [])
 			await SendPositionAsync(position, transactionId, force,
 				cancellationToken);
@@ -424,9 +436,11 @@ public partial class VALRMessageAdapter
 			portfolioSubscriptions = [.. _portfolioSubscriptions];
 			orderSubscriptions = [.. _orderSubscriptions];
 		}
+
 		foreach (var subscription in portfolioSubscriptions)
 			await SendPortfolioSnapshotAsync(subscription, false,
 				cancellationToken);
+
 		foreach (var subscription in orderSubscriptions)
 			await SendOrderSnapshotAsync(subscription.Key,
 				subscription.Value.Symbol, subscription.Value.OrderId,
@@ -743,6 +757,7 @@ public partial class VALRMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var subscription in subscriptions)
 			await SendBalanceAsync(update.Data.Currency.Symbol,
 				update.Data.Available, update.Data.Reserved, update.Data.Total,
@@ -756,6 +771,7 @@ public partial class VALRMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var order in update?.Data ?? [])
 			foreach (var subscription in subscriptions.Where(pair =>
 				MatchesOrderSubscription(pair.Value, order.CurrencyPair,
@@ -775,6 +791,7 @@ public partial class VALRMessageAdapter
 			subscriptions = [.. _orderSubscriptions.Where(pair =>
 				MatchesOrderSubscription(pair.Value, order.CurrencyPair,
 					order.OrderId, order.Side.ToStockSharp()))];
+
 		foreach (var subscription in subscriptions)
 			await SendOrderStatusAsync(order, subscription.Key, false,
 				cancellationToken);
@@ -791,6 +808,7 @@ public partial class VALRMessageAdapter
 			subscriptions = [.. _orderSubscriptions.Where(pair =>
 				MatchesOrderSubscription(pair.Value, trade.CurrencyPair,
 					trade.OrderId, trade.Side.ToStockSharp()))];
+
 		foreach (var subscription in subscriptions)
 			await SendAccountTradeAsync(trade, subscription.Key,
 				cancellationToken);
@@ -804,6 +822,7 @@ public partial class VALRMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var subscription in subscriptions)
 			await SendPositionAsync(update.Data, subscription, false,
 				cancellationToken);
@@ -818,6 +837,7 @@ public partial class VALRMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new PositionChangeMessage
 			{

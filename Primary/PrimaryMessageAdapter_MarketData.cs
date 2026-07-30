@@ -185,6 +185,7 @@ public partial class PrimaryMessageAdapter
         }
 
         await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
         if (mdMsg.IsHistoryOnly())
         {
             await SendSubscriptionFinishedAsync(
@@ -237,6 +238,7 @@ public partial class PrimaryMessageAdapter
                             mdMsg.Count.Value, int.MaxValue)),
                 ];
             }
+
             foreach (var trade in trades)
             {
                 await SendTick(
@@ -245,6 +247,7 @@ public partial class PrimaryMessageAdapter
                     mdMsg.SecurityId,
                     cancellationToken);
             }
+
             return;
         }
 

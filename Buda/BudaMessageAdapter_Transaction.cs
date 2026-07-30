@@ -119,6 +119,7 @@ public partial class BudaMessageAdapter
 		var market = cancelMsg.SecurityId.SecurityCode.IsEmpty()
 			? null
 			: GetMarket(cancelMsg.SecurityId);
+
 		foreach (var order in
 			await RestClient.CancelAllOrdersAsync(
 				market?.Id,
@@ -137,6 +138,7 @@ public partial class BudaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -177,6 +179,7 @@ public partial class BudaMessageAdapter
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"Buda.com portfolio subscription already exists.");
@@ -204,6 +207,7 @@ public partial class BudaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -235,6 +239,7 @@ public partial class BudaMessageAdapter
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"Buda.com order-status subscription already exists.");
@@ -323,12 +328,14 @@ public partial class BudaMessageAdapter
 		var maximum = (statusMsg.Count ?? 100)
 			.Max(1).Min(100).To<int>();
 		var orders = new List<BudaOrder>();
+
 		foreach (var market in markets)
 			orders.AddRange(await RestClient.GetOrdersAsync(
 				market.Id,
 				null,
 				maximum,
 				cancellationToken) ?? []);
+
 		foreach (var order in orders
 			.Where(order => MatchesOrder(order, statusMsg))
 			.GroupBy(

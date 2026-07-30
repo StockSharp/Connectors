@@ -72,6 +72,7 @@ sealed class OsmosisSocketClient : BaseLogReceiver
 			{
 				using var stream = new MemoryStream();
 				WebSocketReceiveResult result;
+
 				do
 				{
 					result = await _socket.ReceiveAsync(
@@ -85,6 +86,7 @@ sealed class OsmosisSocketClient : BaseLogReceiver
 					stream.Write(buffer, 0, result.Count);
 				}
 				while (!result.EndOfMessage);
+
 				if (result.MessageType != WebSocketMessageType.Text)
 					continue;
 				var message = JsonConvert.DeserializeObject<OsmosisSocketMessage>(
@@ -135,6 +137,7 @@ sealed class OsmosisSocketClient : BaseLogReceiver
 				"Osmosis returned invalid transaction bytes.", error);
 		}
 		var hash = Convert.ToHexString(SHA256.HashData(transactionBytes));
+
 		foreach (var item in execution.Events ?? [])
 		{
 			if (item?.Type != "token_swapped")

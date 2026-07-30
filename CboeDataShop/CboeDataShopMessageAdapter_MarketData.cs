@@ -100,6 +100,7 @@ public partial class CboeDataShopMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -157,6 +158,7 @@ public partial class CboeDataShopMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -179,6 +181,7 @@ public partial class CboeDataShopMessageAdapter
 			.ThrowIfEmpty(nameof(mdMsg.SecurityId.SecurityCode));
 		var isOption = IsOption(mdMsg.SecurityId, nativeCode, out var optionKey);
 		var securityId = mdMsg.SecurityId.Normalize(isOption, nativeCode);
+
 		foreach (var date in await GetRequestDates(mdMsg, cancellationToken))
 		{
 			if (isOption)
@@ -241,6 +244,7 @@ public partial class CboeDataShopMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -263,9 +267,11 @@ public partial class CboeDataShopMessageAdapter
 		IEnumerable<DateTime> orderedDates = mdMsg.From == null && mdMsg.Count != null
 			? dates.Reverse()
 			: dates;
+
 		foreach (var date in orderedDates)
 		{
 			long sequenceNumber = 0;
+
 			while (true)
 			{
 				var query = new CboeTradeQuery
@@ -290,12 +296,14 @@ public partial class CboeDataShopMessageAdapter
 				var validPage = page.WhereNotNull().ToArray();
 				if (validPage.Length == 0)
 					break;
+
 				foreach (var trade in validPage)
 				{
 					if (trade.CancelState == CboeCancelStates.None &&
 						trade.Price != null && trade.Size != null)
 						trades.Add((date, trade));
 				}
+
 				if (page.Length < query.Limit)
 					break;
 				var next = validPage.Max(item => item.SequenceNumber);
@@ -303,6 +311,7 @@ public partial class CboeDataShopMessageAdapter
 					break;
 				sequenceNumber = next + 1;
 			}
+
 			if (mdMsg.From == null && mdMsg.Count is long requested &&
 				trades.Count >= requested)
 			{

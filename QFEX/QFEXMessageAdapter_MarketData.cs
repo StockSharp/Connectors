@@ -20,10 +20,12 @@ public partial class QFEXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static item => item.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -50,6 +52,7 @@ public partial class QFEXMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -58,6 +61,7 @@ public partial class QFEXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -78,6 +82,7 @@ public partial class QFEXMessageAdapter
 		await SendReferenceLevel1Async(market, mdMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -116,6 +121,7 @@ public partial class QFEXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -169,6 +175,7 @@ public partial class QFEXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -220,6 +227,7 @@ public partial class QFEXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -245,10 +253,13 @@ public partial class QFEXMessageAdapter
 			from = earliest;
 		var candles = await LoadCandlesAsync(market.Symbol, interval, from, to,
 			count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market.Symbol, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -360,6 +371,7 @@ public partial class QFEXMessageAdapter
 				{
 					await SendOutErrorAsync(error, cancellationToken);
 				}
+
 			throw;
 		}
 	}
@@ -377,6 +389,7 @@ public partial class QFEXMessageAdapter
 		IEnumerable<QFEXMarketStreamKey> keys)
 	{
 		var added = new List<QFEXMarketStreamKey>();
+
 		foreach (var key in keys)
 		{
 			if (_streamReferences.TryGetValue(key, out var count))
@@ -387,6 +400,7 @@ public partial class QFEXMessageAdapter
 				added.Add(key);
 			}
 		}
+
 		return [.. added];
 	}
 
@@ -394,6 +408,7 @@ public partial class QFEXMessageAdapter
 		IEnumerable<QFEXMarketStreamKey> keys)
 	{
 		var removed = new List<QFEXMarketStreamKey>();
+
 		foreach (var key in keys)
 		{
 			if (!_streamReferences.TryGetValue(key, out var count))
@@ -406,6 +421,7 @@ public partial class QFEXMessageAdapter
 				removed.Add(key);
 			}
 		}
+
 		return [.. removed];
 	}
 
@@ -460,6 +476,7 @@ public partial class QFEXMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(update.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 		{
 			var message = new Level1ChangeMessage
@@ -506,6 +523,7 @@ public partial class QFEXMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -530,6 +548,7 @@ public partial class QFEXMessageAdapter
 			subscriptions = [.. _depthSubscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(book.Symbol))
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new QuoteChangeMessage
 			{
@@ -551,6 +570,7 @@ public partial class QFEXMessageAdapter
 			ids = [.. _tickSubscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -577,6 +597,7 @@ public partial class QFEXMessageAdapter
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(candle.Symbol) &&
 					pair.Value.Interval == interval)
 				.Select(static pair => (pair.Key, pair.Value.TimeFrame))];
+
 		foreach (var subscription in subscriptions)
 			await SendCandleAsync(candle.Symbol, candle,
 				subscription.TimeFrame, subscription.Id, cancellationToken);
@@ -691,6 +712,7 @@ public partial class QFEXMessageAdapter
 		bool isBids)
 	{
 		var quotes = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is not { Length: >= 2 })
@@ -704,6 +726,7 @@ public partial class QFEXMessageAdapter
 			if (volume > 0)
 				quotes.Add(new(price, volume));
 		}
+
 		var ordered = isBids
 			? quotes.OrderByDescending(static quote => quote.Price)
 			: quotes.OrderBy(static quote => quote.Price);

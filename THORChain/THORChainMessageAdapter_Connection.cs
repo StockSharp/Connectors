@@ -112,6 +112,7 @@ public partial class THORChainMessageAdapter
 		var result = new List<THORChainMarketDefinition>();
 		var assets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var item in Markets.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -141,6 +142,7 @@ public partial class THORChainMessageAdapter
 				SecurityCode = code,
 			});
 		}
+
 		return [.. result];
 	}
 
@@ -149,6 +151,7 @@ public partial class THORChainMessageAdapter
 	{
 		var pools = new Dictionary<string, THORChainPool>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var pool in source ?? [])
 		{
 			if (pool is null || pool.Status != THORChainPoolStatuses.Available ||
@@ -194,6 +197,7 @@ public partial class THORChainMessageAdapter
 			StringComparer.OrdinalIgnoreCase).ToDictionary(static group =>
 				group.Key, static group => group.Count(),
 				StringComparer.OrdinalIgnoreCase);
+
 		for (var i = 0; i < selected.Count; i++)
 		{
 			var item = selected[i];
@@ -252,6 +256,7 @@ public partial class THORChainMessageAdapter
 		THORChainMarket[] markets;
 		using (_sync.EnterScope())
 			markets = [.. _markets.Values];
+
 		foreach (var market in markets)
 		{
 			if (!byAsset.TryGetValue(market.Asset, out var pool) ||

@@ -54,8 +54,10 @@ partial class LsegRealTimeMessageAdapter
 
 				var bids = new List<QuoteChange>();
 				var asks = new List<QuoteChange>();
+
 				foreach (var entry in update.Entries)
 					ApplyEntry(entry, bids, asks);
+
 				if (isReset)
 				{
 					return new QuoteChangeMessage
@@ -167,6 +169,7 @@ partial class LsegRealTimeMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var ric = message.SecurityId.Ric.IsEmpty(message.SecurityId.SecurityCode);
 		if (ric.IsEmpty())
 		{
@@ -216,6 +219,7 @@ partial class LsegRealTimeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var client = GetClient();
 		if (!message.IsSubscribe)
 		{

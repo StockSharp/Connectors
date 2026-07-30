@@ -194,6 +194,7 @@ public partial class EodhdMessageAdapter
 			_forexQuotes = null;
 			_cryptoTrades = null;
 		}
+
 		foreach (var stream in streams.Where(stream => stream != null))
 			await DisposeStream(stream);
 

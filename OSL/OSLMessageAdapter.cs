@@ -173,6 +173,7 @@ public partial class OSLMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_symbols.Clear();
+
 			foreach (var symbol in symbols ?? [])
 				if (symbol?.Symbol.IsEmpty() == false &&
 					symbol.BaseCoin.IsEmpty() == false &&

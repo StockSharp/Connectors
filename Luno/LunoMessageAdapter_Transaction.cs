@@ -156,6 +156,7 @@ public partial class LunoMessageAdapter
 			? null
 			: GetMarket(cancelMsg.SecurityId).Symbol;
 		long? createdBefore = null;
+
 		while (true)
 		{
 			var orders = await RestClient.GetOrdersAsync(new()
@@ -165,6 +166,7 @@ public partial class LunoMessageAdapter
 				CreatedBefore = createdBefore,
 				Limit = 1000,
 			}, cancellationToken);
+
 			foreach (var order in orders.Where(order => order is not null &&
 				(cancelMsg.Side is null || order.Side.ToStockSharp() ==
 					cancelMsg.Side) &&
@@ -200,6 +202,7 @@ public partial class LunoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -217,12 +220,14 @@ public partial class LunoMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, true,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -233,6 +238,7 @@ public partial class LunoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -260,12 +266,14 @@ public partial class LunoMessageAdapter
 			statusMsg.Side, statusMsg.From, statusMsg.To, maximum, true,
 			cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -291,6 +299,7 @@ public partial class LunoMessageAdapter
 		var tradePairs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		if (!symbol.IsEmpty())
 			tradePairs.Add(symbol);
+
 		foreach (var isClosed in new[] { false, true })
 		{
 			if (sent >= maximum)
@@ -305,10 +314,12 @@ public partial class LunoMessageAdapter
 						.ToUnixTimeMilliseconds(),
 				Limit = maximum - sent,
 			}, cancellationToken);
+
 			foreach (var pair in orders.Where(static order =>
 				order?.Pair.IsEmpty() == false).Select(static order =>
 					order.Pair.NormalizeSymbol()))
 				tradePairs.Add(pair);
+
 			foreach (var order in orders.Where(order => order is not null &&
 				seen.Add(order.OrderId) &&
 				(side is null || order.Side.ToStockSharp() == side) &&
@@ -322,6 +333,7 @@ public partial class LunoMessageAdapter
 		}
 
 		var tradesSent = 0;
+
 		foreach (var pair in tradePairs.OrderBy(static value => value,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -341,6 +353,7 @@ public partial class LunoMessageAdapter
 				IsDescending = false,
 				Limit = maximum - tradesSent,
 			}, cancellationToken);
+
 			foreach (var trade in trades.Where(trade => trade is not null &&
 				(side is null || trade.Type.ToStockSharp() == side)))
 			{
@@ -355,6 +368,7 @@ public partial class LunoMessageAdapter
 		bool force, CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances)
 			await SendBalanceAsync(balance, transactionId, force,
 				cancellationToken);
@@ -370,9 +384,11 @@ public partial class LunoMessageAdapter
 			portfolioSubscriptions = [.. _portfolioSubscriptions];
 			orderSubscriptions = [.. _orderSubscriptions];
 		}
+
 		foreach (var subscription in portfolioSubscriptions)
 			await SendPortfolioSnapshotAsync(subscription, false,
 				cancellationToken);
+
 		foreach (var subscription in orderSubscriptions)
 			await SendOrderSnapshotAsync(subscription.Key,
 				subscription.Value.Symbol, subscription.Value.OrderId,
@@ -628,6 +644,7 @@ public partial class LunoMessageAdapter
 			subscriptions = [.. _orderSubscriptions.Where(pair =>
 				MatchesOrderSubscription(pair.Value, order.Pair, order.OrderId,
 					order.Side.ToStockSharp()))];
+
 		foreach (var subscription in subscriptions)
 			await SendOrderAsync(order, subscription.Key, false,
 				cancellationToken);
@@ -647,6 +664,7 @@ public partial class LunoMessageAdapter
 				MatchesOrderSubscription(pair.Value, order.Pair, order.OrderId,
 					order.Side.ToStockSharp()))];
 		var market = GetMarket(order.Pair);
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendOrderAsync(order, subscription.Key, false,
@@ -693,11 +711,13 @@ public partial class LunoMessageAdapter
 		if (asset.IsEmpty())
 		{
 			var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 			foreach (var balance in balances)
 				if (!balance.AccountId.IsEmpty())
 					using (_sync.EnterScope())
 						_accountAssets[balance.AccountId] =
 							balance.Asset.ToUpperInvariant();
+
 			using (_sync.EnterScope())
 				_accountAssets.TryGetValue(update.AccountId.ToString(
 					CultureInfo.InvariantCulture), out asset);
@@ -708,6 +728,7 @@ public partial class LunoMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
 		var reserved = (update.Balance - update.Available).Max(0m);
+
 		foreach (var subscription in subscriptions)
 			await SendBalanceAsync(asset, update.Balance, reserved, 0m, timestamp,
 				subscription, false, cancellationToken);

@@ -8,10 +8,12 @@ public partial class StandXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var instrument in GetInstruments().OrderBy(
 			static item => item.Symbol, StringComparer.OrdinalIgnoreCase))
 		{
@@ -39,6 +41,7 @@ public partial class StandXMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -47,6 +50,7 @@ public partial class StandXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -68,6 +72,7 @@ public partial class StandXMessageAdapter
 			cancellationToken);
 		await SendMarketAsync(market, mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -96,6 +101,7 @@ public partial class StandXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -119,6 +125,7 @@ public partial class StandXMessageAdapter
 		await SendBookAsync(book, 0, mdMsg.TransactionId, depth,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -148,6 +155,7 @@ public partial class StandXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -172,10 +180,13 @@ public partial class StandXMessageAdapter
 			.OrderBy(static trade => trade.Time.ToStandXTime())
 			.TakeLast(limit)
 			.ToArray();
+
 		for (var index = 0; index < trades.Length; index++)
 			await SendRecentTradeAsync(trades[index], mdMsg.TransactionId, index,
 				cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -204,6 +215,7 @@ public partial class StandXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -226,10 +238,13 @@ public partial class StandXMessageAdapter
 			to - TimeSpan.FromTicks(checked(timeFrame.Ticks * (long)count));
 		var candles = await LoadCandlesAsync(instrument.Symbol, from, to,
 			timeFrame, count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(instrument.Symbol, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -305,6 +320,7 @@ public partial class StandXMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(price.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendPriceAsync(price, id, cancellationToken);
 	}
@@ -319,6 +335,7 @@ public partial class StandXMessageAdapter
 			subscriptions = [.. _depthSubscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(book.Symbol))
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendBookAsync(book, sequence, subscription.Id,
 				subscription.Depth, cancellationToken);
@@ -334,6 +351,7 @@ public partial class StandXMessageAdapter
 			ids = [.. _tickSubscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendPublicTradeAsync(trade, id, cancellationToken);
 	}
@@ -462,11 +480,13 @@ public partial class StandXMessageAdapter
 		var from = to - TimeSpan.FromTicks(subscription.TimeFrame.Ticks * 3);
 		var candles = await LoadCandlesAsync(subscription.Symbol, from, to,
 			subscription.TimeFrame, 3, cancellationToken);
+
 		foreach (var candle in candles.Where(candle =>
 			candle.OpenTime >= subscription.LastOpenTime))
 			await SendCandleAsync(subscription.Symbol, candle,
 				subscription.TimeFrame, subscription.TransactionId,
 				cancellationToken);
+
 		if (candles.LastOrDefault() is { } last)
 			using (_sync.EnterScope())
 				subscription.LastOpenTime = last.OpenTime;
@@ -516,6 +536,7 @@ public partial class StandXMessageAdapter
 		bool isBids)
 	{
 		var quotes = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is not { Length: >= 2 })
@@ -529,6 +550,7 @@ public partial class StandXMessageAdapter
 			if (volume > 0)
 				quotes.Add(new(price, volume));
 		}
+
 		var ordered = isBids
 			? quotes.OrderByDescending(static quote => quote.Price)
 			: quotes.OrderBy(static quote => quote.Price);

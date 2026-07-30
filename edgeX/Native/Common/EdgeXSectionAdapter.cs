@@ -241,6 +241,7 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 		var lastTradeId = 0L;
 
 		var kline = await RestClient.GetKlineAsync(contractId, TimeSpan.FromMinutes(1).ToNativeKlineType(), "LAST_PRICE", _maxHistoryLimit, from, to, cancellationToken);
+
 		foreach (var row in GetKlineRows(kline).OrderBy(static r => r["klineTime"]?.Value<long>() ?? 0))
 		{
 			var time = ParseUnixMs(row["klineTime"]) ?? ParseUnixMs(row["endTime"]) ?? CurrentTime;
@@ -297,6 +298,7 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 		var lastOpenTime = from;
 
 		var kline = await RestClient.GetKlineAsync(contractId, timeFrame.ToNativeKlineType(), "LAST_PRICE", _maxHistoryLimit, from, to, cancellationToken);
+
 		foreach (var row in GetKlineRows(kline).OrderBy(static r => r["klineTime"]?.Value<long>() ?? 0))
 		{
 			var openTime = ParseUnixMs(row["klineTime"]) ?? CurrentTime;

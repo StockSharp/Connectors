@@ -32,8 +32,10 @@ public partial class GrvtMessageAdapter
 			if (tradeId.IsEmpty() || time < LatestTime || !_tradeIds.Add(tradeId))
 				return false;
 			_tradeIdOrder.Enqueue(tradeId);
+
 			while (_tradeIdOrder.Count > _maximumTradeIds)
 				_tradeIds.Remove(_tradeIdOrder.Dequeue());
+
 			if (time > LatestTime)
 				LatestTime = time;
 			return true;

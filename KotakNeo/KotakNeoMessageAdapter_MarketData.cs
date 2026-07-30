@@ -11,6 +11,7 @@ public partial class KotakNeoMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -73,6 +74,7 @@ public partial class KotakNeoMessageAdapter
 	private async ValueTask ProcessRealtimeSubscription(MarketDataMessage mdMsg, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (_marketClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 

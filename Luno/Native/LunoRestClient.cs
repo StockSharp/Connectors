@@ -175,6 +175,7 @@ sealed class LunoRestClient : BaseLogReceiver
 		bool canRetry, CancellationToken cancellationToken)
 	{
 		var requestPath = query.IsEmpty() ? path : $"{path}?{query}";
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await gate.WaitAsync(cancellationToken);

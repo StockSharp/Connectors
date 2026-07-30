@@ -8,10 +8,12 @@ public partial class OrderlyNetworkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static item => item.Symbol,
 			StringComparer.Ordinal))
 		{
@@ -40,6 +42,7 @@ public partial class OrderlyNetworkMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -48,6 +51,7 @@ public partial class OrderlyNetworkMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -69,6 +73,7 @@ public partial class OrderlyNetworkMessageAdapter
 		await SendLevel1SnapshotAsync(symbol, mdMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -95,6 +100,7 @@ public partial class OrderlyNetworkMessageAdapter
 			using (_sync.EnterScope())
 			{
 				_level1Subscriptions.Remove(mdMsg.TransactionId);
+
 				foreach (var topic in topics)
 					ReleaseReference(_publicStreamReferences, topic);
 			}
@@ -107,6 +113,7 @@ public partial class OrderlyNetworkMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -129,6 +136,7 @@ public partial class OrderlyNetworkMessageAdapter
 		await SendDepthSnapshotAsync(symbol, mdMsg.TransactionId, depth,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -169,6 +177,7 @@ public partial class OrderlyNetworkMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -189,6 +198,7 @@ public partial class OrderlyNetworkMessageAdapter
 		var to = (mdMsg.To ?? ServerTime).EnsureOrderlyUtc();
 		var trades = await RestClient.GetPublicTradesAsync(symbol, count,
 			cancellationToken);
+
 		foreach (var trade in trades
 			.Where(static item => item is not null && item.Timestamp > 0)
 			.Where(item => from is null ||
@@ -198,7 +208,9 @@ public partial class OrderlyNetworkMessageAdapter
 			.TakeLast(count))
 			await SendPublicTradeAsync(trade, mdMsg.TransactionId,
 				cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -236,6 +248,7 @@ public partial class OrderlyNetworkMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -262,13 +275,16 @@ public partial class OrderlyNetworkMessageAdapter
 				"Orderly candle start time cannot be later than end time.");
 		var candles = await RestClient.GetCandlesAsync(symbol, interval, from, to,
 			count, cancellationToken);
+
 		foreach (var candle in (candles?.Rows ?? [])
 			.Where(static item => item is not null && item.Timestamp > 0)
 			.OrderBy(static item => item.Timestamp)
 			.TakeLast(count))
 			await SendCandleAsync(symbol, candle, timeFrame, mdMsg.TransactionId,
 				cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -391,6 +407,7 @@ public partial class OrderlyNetworkMessageAdapter
 				{
 					await SendOutErrorAsync(error, cancellationToken);
 				}
+
 			throw;
 		}
 	}
@@ -400,6 +417,7 @@ public partial class OrderlyNetworkMessageAdapter
 	{
 		if (_publicSocket is null)
 			return;
+
 		foreach (var topic in topics)
 			await _publicSocket.UnsubscribeAsync(topic, cancellationToken);
 	}
@@ -547,6 +565,7 @@ public partial class OrderlyNetworkMessageAdapter
 				pair.Value.Symbol.Equals(quote.Symbol,
 					StringComparison.OrdinalIgnoreCase)).Select(static pair => pair.Key)];
 		var time = envelope.Timestamp.FromOrderlyMilliseconds();
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -577,6 +596,7 @@ public partial class OrderlyNetworkMessageAdapter
 			ids = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.Equals(ticker.Symbol,
 					StringComparison.OrdinalIgnoreCase)).Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -613,6 +633,7 @@ public partial class OrderlyNetworkMessageAdapter
 		var time = envelope.Timestamp.FromOrderlyMilliseconds();
 		var tradeId = CreateTradeId(trade.Symbol, envelope.Timestamp, trade.Price,
 			trade.Quantity, trade.Side);
+
 		foreach (var id in tickIds)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -625,6 +646,7 @@ public partial class OrderlyNetworkMessageAdapter
 				TradeVolume = trade.Quantity,
 				OriginSide = trade.Side.ToStockSharp(),
 			}, cancellationToken);
+
 		foreach (var id in level1Ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -659,6 +681,7 @@ public partial class OrderlyNetworkMessageAdapter
 		var closeTime = candle.EndTime > 0
 			? candle.EndTime.FromOrderlyMilliseconds()
 			: openTime + candle.Interval.ToOrderlyTimeFrame();
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{
@@ -709,6 +732,7 @@ public partial class OrderlyNetworkMessageAdapter
 			using (_sync.EnterScope())
 				_depthTimestamps[update.Symbol] = envelope.Timestamp;
 			UpdateServerTime(envelope.Timestamp);
+
 			foreach (var subscription in subscriptions)
 				await SendOutMessageAsync(new QuoteChangeMessage
 				{
@@ -733,6 +757,7 @@ public partial class OrderlyNetworkMessageAdapter
 		using (_sync.EnterScope())
 			symbols = [.. _depthSubscriptions.Values.Select(static item => item.Symbol)
 				.Distinct(StringComparer.OrdinalIgnoreCase)];
+
 		foreach (var symbol in symbols)
 		{
 			(long Id, int Depth)[] subscriptions;
@@ -762,6 +787,7 @@ public partial class OrderlyNetworkMessageAdapter
 		using (_sync.EnterScope())
 			_depthTimestamps[symbol] = timestamp;
 		UpdateServerTime(timestamp);
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new QuoteChangeMessage
 			{

@@ -44,6 +44,7 @@ public partial class TradovateMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var left = lookupMsg.Count?.Min(1000) ?? 1000;
 		var contracts = await _httpClient.SuggestContracts(lookupMsg.SecurityId.SecurityCode, (int)left, cancellationToken);
 
@@ -84,6 +85,7 @@ public partial class TradovateMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.SecurityCode;
 
 		if (mdMsg.IsSubscribe)
@@ -107,6 +109,7 @@ public partial class TradovateMessageAdapter
 	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.SecurityCode;
 
 		if (mdMsg.IsSubscribe)
@@ -133,6 +136,7 @@ public partial class TradovateMessageAdapter
 	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.SecurityCode;
 
 		if (mdMsg.IsSubscribe)
@@ -156,11 +160,14 @@ public partial class TradovateMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			var ids = _chartSubscriptions.Where(p => p.Value == mdMsg.OriginalTransactionId).Select(p => p.Key).ToArray();
+
 			foreach (var id in ids)
 				_chartSubscriptions.Remove(id);
+
 			_candleSubscriptions.Remove(mdMsg.OriginalTransactionId);
 			await _marketSocket.CancelChart(mdMsg.OriginalTransactionId, ids, cancellationToken);
 			return;
@@ -248,6 +255,7 @@ public partial class TradovateMessageAdapter
 	private async ValueTask OnDomReceived(TradovateDom dom, CancellationToken cancellationToken)
 	{
 		var securityId = await GetSecurityId(dom.ContractId, cancellationToken);
+
 		foreach (var pair in _depthSubscriptions.ToArray().Where(p => p.Value.SecurityCode.EqualsIgnoreCase(securityId.SecurityCode)))
 		{
 			await SendOutMessageAsync(new QuoteChangeMessage

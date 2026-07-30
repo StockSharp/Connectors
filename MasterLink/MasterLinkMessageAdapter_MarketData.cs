@@ -220,6 +220,7 @@ public partial class MasterLinkMessageAdapter
             trades = trades.TakeLast((int)mdMsg.Count.Value);
 
         var index = 0;
+
         foreach (var trade in trades)
         {
             await SendTick(

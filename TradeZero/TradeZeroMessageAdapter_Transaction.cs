@@ -20,8 +20,10 @@ public partial class TradeZeroMessageAdapter
 	private async Task<TradeZeroAccount[]> EnsureAccounts(CancellationToken cancellationToken)
 	{
 		var accounts = await _httpClient.GetAccounts(cancellationToken);
+
 		foreach (var account in accounts)
 			_accounts[account.Account] = account;
+
 		return accounts;
 	}
 
@@ -112,11 +114,13 @@ public partial class TradeZeroMessageAdapter
 
 		var account = await ResolveAccount(replaceMsg.PortfolioName, cancellationToken);
 		var canceled = await _httpClient.CancelOrder(account.Account, oldClientOrderId, cancellationToken);
+
 		for (var attempt = 0; canceled.GetStatus() is not TradeZeroOrderStatuses.Canceled && attempt < 10; attempt++)
 		{
 			await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);
 			canceled = await _httpClient.GetOrder(account.Account, oldClientOrderId, cancellationToken);
 		}
+
 		if (canceled.GetStatus() is not TradeZeroOrderStatuses.Canceled)
 			throw new InvalidOperationException($"TradeZero order '{oldClientOrderId}' was not canceled before replacement.");
 
@@ -151,10 +155,12 @@ public partial class TradeZeroMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 			return;
 
 		var accounts = await EnsureAccounts(cancellationToken);
+
 		foreach (var account in accounts)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -166,8 +172,10 @@ public partial class TradeZeroMessageAdapter
 
 			var pnl = await _httpClient.GetPnl(account.Account, cancellationToken);
 			await ProcessBalance(account, pnl, lookupMsg.TransactionId, cancellationToken);
+
 			foreach (var position in await _httpClient.GetPositions(account.Account, cancellationToken))
 				await ProcessPosition(position, lookupMsg.TransactionId, cancellationToken);
+
 			foreach (var positionPnl in pnl?.Pnl ?? pnl?.Positions ?? [])
 				await ProcessPositionPnl(account.Account, positionPnl, lookupMsg.TransactionId, DateTime.UtcNow, cancellationToken);
 
@@ -185,6 +193,7 @@ public partial class TradeZeroMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 			return;
 
@@ -225,6 +234,7 @@ public partial class TradeZeroMessageAdapter
 		if (message.Target == TradeZeroPnlTargets.PnlReturn && message.PnlReturn != null)
 		{
 			await ProcessBalance(account, message.PnlReturn, 0, cancellationToken, serverTime);
+
 			foreach (var position in message.PnlReturn.Positions ?? [])
 				await ProcessPositionPnl(accountId, position, 0, serverTime, cancellationToken);
 		}

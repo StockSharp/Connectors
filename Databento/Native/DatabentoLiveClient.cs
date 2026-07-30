@@ -235,11 +235,13 @@ internal sealed class DatabentoLiveClient : BaseLogReceiver
 					DatabentoLiveSubscription[] subscriptions;
 					lock (_subscriptionsSync)
 						subscriptions = _subscriptions.Values.ToArray();
+
 					foreach (var subscription in subscriptions)
 					{
 						await SendControl(subscription.ToRequest(NextSubscriptionId()), cancellationToken);
 						_sentSubscriptions.Add(subscription.Key);
 					}
+
 					await StartSession(cancellationToken);
 				}
 				finally
@@ -261,6 +263,7 @@ internal sealed class DatabentoLiveClient : BaseLogReceiver
 				this.AddWarningLog("Databento reconnect attempt {0} failed: {1}", attempt, ex.Message);
 			}
 		}
+
 		return false;
 	}
 
@@ -285,6 +288,7 @@ internal sealed class DatabentoLiveClient : BaseLogReceiver
 	{
 		using var buffer = new MemoryStream();
 		var one = new byte[1];
+
 		while (buffer.Length < _maximumControlLineLength)
 		{
 			var read = await stream.ReadAsync(one, cancellationToken);
@@ -294,6 +298,7 @@ internal sealed class DatabentoLiveClient : BaseLogReceiver
 				return Encoding.UTF8.GetString(buffer.GetBuffer(), 0, checked((int)buffer.Length)).TrimEnd('\r');
 			buffer.WriteByte(one[0]);
 		}
+
 		throw new InvalidDataException("The Databento gateway returned an oversized control line.");
 	}
 

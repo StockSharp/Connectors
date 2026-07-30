@@ -7,8 +7,10 @@ public partial class LsSecuritiesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in await GetRest().GetInstruments(cancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -31,6 +33,7 @@ public partial class LsSecuritiesMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -39,6 +42,7 @@ public partial class LsSecuritiesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var removed))
@@ -91,6 +95,7 @@ public partial class LsSecuritiesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var removed))
@@ -183,6 +188,7 @@ public partial class LsSecuritiesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		var timeFrame = mdMsg.GetTimeFrame();
@@ -190,6 +196,7 @@ public partial class LsSecuritiesMessageAdapter
 		var estimated = Math.Clamp(mdMsg.Count ?? 500, 1, 10000);
 		var from = (mdMsg.From ?? to - TimeSpan.FromTicks(timeFrame.Ticks * estimated *
 			(timeFrame >= TimeSpan.FromDays(1) ? 2 : 3))).ToUniversalTime();
+
 		foreach (var candle in await GetRest().GetCandles(mdMsg.SecurityId.SecurityCode, timeFrame,
 			from, to, mdMsg.Count, cancellationToken))
 		{
@@ -210,6 +217,7 @@ public partial class LsSecuritiesMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
 
@@ -250,6 +258,7 @@ public partial class LsSecuritiesMessageAdapter
 
 		if (price <= 0)
 			return;
+
 		foreach (var subscription in subscriptions.Where(s => s.DataType == DataType.Ticks))
 		{
 			await SendOutMessageAsync(new ExecutionMessage
@@ -275,6 +284,7 @@ public partial class LsSecuritiesMessageAdapter
 			s.DataType == DataType.MarketDepth &&
 			s.SecurityId.SecurityCode.NormalizeCode().EqualsIgnoreCase(code)).ToArray();
 		var serverTime = depth.Time.ToKoreaUtc();
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendOutMessageAsync(new QuoteChangeMessage

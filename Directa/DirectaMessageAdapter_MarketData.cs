@@ -88,6 +88,7 @@ public partial class DirectaMessageAdapter
                 null, cancellationToken);
             var seen = new HashSet<string>(
                 StringComparer.OrdinalIgnoreCase);
+
             foreach (var table in tables
                 .Where(IsTableLine)
                 .Distinct(StringComparer.OrdinalIgnoreCase))
@@ -113,6 +114,7 @@ public partial class DirectaMessageAdapter
 
                 var type =
                     DirectaProtocol.InferSecurityType(table);
+
                 foreach (var row in rows)
                 {
                     var parts =
@@ -181,6 +183,7 @@ public partial class DirectaMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveDataSubscription(
@@ -212,6 +215,7 @@ public partial class DirectaMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveDataSubscription(
@@ -243,6 +247,7 @@ public partial class DirectaMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             await RemoveDataSubscription(
@@ -276,6 +281,7 @@ public partial class DirectaMessageAdapter
                 decimal? Volume)>(ticks.Length);
             long previousVolume = 0;
             DateTime previousDate = default;
+
             foreach (var tick in ticks)
             {
                 var marketDate =
@@ -349,6 +355,7 @@ public partial class DirectaMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
             return;
         if (!message.IsHistoryOnly())
@@ -404,6 +411,7 @@ public partial class DirectaMessageAdapter
                     State = CandleStates.Finished,
                 }, cancellationToken);
         }
+
         await SendSubscriptionFinishedAsync(
             message.TransactionId, cancellationToken);
     }
@@ -807,6 +815,7 @@ public partial class DirectaMessageAdapter
     {
         if (template.Changes.Count == 0)
             return;
+
         foreach (var subscription in FindSubscriptions(
             ticker, DataType.Level1))
         {

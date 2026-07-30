@@ -146,6 +146,7 @@ public partial class RakutenRssMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!message.IsSubscribe)
 		{
@@ -169,6 +170,7 @@ public partial class RakutenRssMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!message.IsSubscribe)
 		{
@@ -191,8 +193,10 @@ public partial class RakutenRssMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await RefreshOrderIds();
+
 		foreach (var order in (await _client.ReadOrders()).OrderBy(item => item.Time))
 			await ProcessOrder(order, originalTransactionId, isLookup, cancellationToken);
+
 		foreach (var trade in (await _client.ReadExecutions()).OrderBy(item => item.Time))
 			await ProcessTrade(trade, originalTransactionId, isLookup, cancellationToken);
 	}
@@ -306,6 +310,7 @@ public partial class RakutenRssMessageAdapter
 		.TryAdd(PositionChangeTypes.Currency, CurrencyTypes.JPY), cancellationToken);
 		var previous = _positionIds.ToArray();
 		_positionIds.Clear();
+
 		foreach (var position in portfolio.Positions ?? [])
 		{
 			var securityId = position.Code.ToSecurityId(position.Market, position.IsDerivative);
@@ -326,6 +331,7 @@ public partial class RakutenRssMessageAdapter
 			.TryAdd(PositionChangeTypes.UnrealizedPnL, position.UnrealizedPnL)
 			.TryAdd(PositionChangeTypes.Currency, CurrencyTypes.JPY), cancellationToken);
 		}
+
 		if (!isLookup)
 		{
 			foreach (var pair in previous.Where(pair => !_positionIds.ContainsKey(pair.Key)))

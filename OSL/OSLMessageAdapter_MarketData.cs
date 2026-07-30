@@ -8,6 +8,7 @@ public partial class OSLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class OSLMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var symbol in symbols.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -48,6 +50,7 @@ public partial class OSLMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -57,6 +60,7 @@ public partial class OSLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -110,6 +114,7 @@ public partial class OSLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -165,6 +170,7 @@ public partial class OSLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -182,11 +188,13 @@ public partial class OSLMessageAdapter
 		var maximum = (mdMsg.Count ?? 100).Min(500).Max(1).To<int>();
 		var trades = await RestClient.GetPublicTradesAsync(product.Symbol,
 			maximum, cancellationToken);
+
 		foreach (var trade in (trades ?? []).Where(trade =>
 				IsTradeInRange(trade, mdMsg.From, mdMsg.To))
 			.OrderBy(static trade => trade.Timestamp.ToLong()))
 			await SendPublicTradeAsync(product.Symbol, trade,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
@@ -218,6 +226,7 @@ public partial class OSLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -241,6 +250,7 @@ public partial class OSLMessageAdapter
 			to.AddPeriods(timeFrame, -maximum);
 		var candles = await LoadCandlesAsync(product.Symbol, timeFrame, from,
 			to, maximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(product.Symbol, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
@@ -346,6 +356,7 @@ public partial class OSLMessageAdapter
 			targets = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var target in targets)
 			await SendTickerAsync(symbol, ticker, target, cancellationToken);
 	}
@@ -361,6 +372,7 @@ public partial class OSLMessageAdapter
 			targets = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var target in targets)
 			await SendBookAsync(symbol, book, target.Depth, target.Id,
 				cancellationToken);
@@ -377,6 +389,7 @@ public partial class OSLMessageAdapter
 			targets = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var target in targets)
 			await SendPublicTradeAsync(symbol, trade, target,
 				cancellationToken);
@@ -395,6 +408,7 @@ public partial class OSLMessageAdapter
 				pair.Value.TimeFrame.ToLegacyInterval().EqualsIgnoreCase(
 					candle.Interval)).Select(static pair =>
 				(pair.Key, pair.Value.TimeFrame))];
+
 		foreach (var target in targets)
 			await SendLegacyCandleAsync(candle, target.TimeFrame, target.Id,
 				cancellationToken);
@@ -511,6 +525,7 @@ public partial class OSLMessageAdapter
 		var result = new List<OSLCandle>();
 		var cursor = from.ToUniversalTime();
 		var upperBound = to.ToUniversalTime();
+
 		while (result.Count < maximum && cursor <= upperBound)
 		{
 			var pageSize = (maximum - result.Count).Min(1000).Max(1);
@@ -534,6 +549,7 @@ public partial class OSLMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.GroupBy(static candle => candle.OpenTime)
 			.Select(static group => group.First())
 			.OrderBy(static candle => candle.OpenTime)

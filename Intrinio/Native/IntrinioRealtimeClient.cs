@@ -148,6 +148,7 @@ sealed class IntrinioRealtimeClient : BaseLogReceiver, IDisposable
 		}
 
 		var errors = new List<Exception>();
+
 		foreach (var connection in new[] { equities, options })
 		{
 			if (connection == null)
@@ -226,6 +227,7 @@ sealed class IntrinioRealtimeClient : BaseLogReceiver, IDisposable
 	{
 		if (EventReceived is not { } handler)
 			return;
+
 		foreach (var subscription in MatchSubscriptions(update))
 		{
 			if (!subscription.TryEnterDelivery())

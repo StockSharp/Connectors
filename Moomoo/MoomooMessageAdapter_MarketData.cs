@@ -6,6 +6,7 @@ partial class MoomooMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		var nativeTypes = securityTypes.ToNativeTypes().Distinct().ToArray();
 		if (nativeTypes.Length == 0)
@@ -18,6 +19,7 @@ partial class MoomooMessageAdapter
 			];
 
 		var left = message.Count ?? long.MaxValue;
+
 		foreach (var nativeType in nativeTypes)
 		{
 			foreach (var info in await _client.GetSecurities(nativeType, cancellationToken))
@@ -62,6 +64,7 @@ partial class MoomooMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var code = message.SecurityId.SecurityCode;
 		if (message.IsSubscribe)
 		{
@@ -94,6 +97,7 @@ partial class MoomooMessageAdapter
 	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var code = message.SecurityId.SecurityCode;
 		if (message.IsSubscribe)
 		{
@@ -116,6 +120,7 @@ partial class MoomooMessageAdapter
 	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var code = message.SecurityId.SecurityCode;
 		if (message.IsSubscribe)
 		{
@@ -136,6 +141,7 @@ partial class MoomooMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var code = message.SecurityId.SecurityCode;
 		var timeFrame = message.GetTimeFrame();
 		var candleType = ToCandleType(timeFrame);
@@ -188,6 +194,7 @@ partial class MoomooMessageAdapter
 		foreach (var quote in response.S2C.BasicQotListList)
 		{
 			var subscriptions = _level1Subscriptions.Where(p => p.Value.SecurityCode.EqualsIgnoreCase(quote.Security.Code)).ToArray();
+
 			foreach (var subscription in subscriptions)
 			{
 				var message = new Level1ChangeMessage
@@ -282,6 +289,7 @@ partial class MoomooMessageAdapter
 			return;
 
 		var data = response.S2C;
+
 		foreach (var subscription in _tickSubscriptions.Where(p => p.Value.SecurityCode.EqualsIgnoreCase(data.Security.Code)).ToArray())
 		{
 			foreach (var ticker in data.TickerListList)
@@ -318,6 +326,7 @@ partial class MoomooMessageAdapter
 
 		var data = response.S2C;
 		var timeFrame = ToTimeFrame((QotCommon.KLType)data.KlType);
+
 		foreach (var subscription in _candleSubscriptions.Where(p => p.Value.SecurityId.SecurityCode.EqualsIgnoreCase(data.Security.Code) && p.Value.TimeFrame == timeFrame).ToArray())
 		{
 			foreach (var candle in data.KlListList.Where(c => !c.IsBlank))

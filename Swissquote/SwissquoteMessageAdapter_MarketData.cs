@@ -7,6 +7,7 @@ public partial class SwissquoteMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var accounts = await GetKnownAccounts(cancellationToken);
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -42,6 +43,7 @@ public partial class SwissquoteMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}

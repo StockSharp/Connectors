@@ -7,6 +7,7 @@ public partial class AmberdataMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		if (!message.SecurityId.BoardCode.IsEmpty() &&
 			!message.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.Amberdata))
@@ -48,6 +49,7 @@ public partial class AmberdataMessageAdapter
 			instrumentFilter, IsInactiveIncluded, MaximumItems, cancellationToken);
 		CacheReferences(references);
 		var skip = Math.Max(0L, message.Skip ?? 0);
+
 		foreach (var reference in references.Where(IsValidReference)
 			.OrderByDescending(static item => item.IsExchangeEnabled)
 			.ThenBy(static item => item.Exchange,
@@ -69,6 +71,7 @@ public partial class AmberdataMessageAdapter
 			if (--left == 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -77,6 +80,7 @@ public partial class AmberdataMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -101,6 +105,7 @@ public partial class AmberdataMessageAdapter
 			var trades = await SafeRest().GetTradesAsync(key, from, to,
 				GetHistoryLimit(remaining), cancellationToken);
 			var sent = 0;
+
 			foreach (var trade in trades)
 			{
 				ValidateIdentity(key, trade?.Exchange, trade?.Instrument,
@@ -109,6 +114,7 @@ public partial class AmberdataMessageAdapter
 					cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -116,6 +122,7 @@ public partial class AmberdataMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(AmberdataSocketChannels.Trades, key), 0, remaining,
 			cancellationToken);
@@ -127,6 +134,7 @@ public partial class AmberdataMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -151,6 +159,7 @@ public partial class AmberdataMessageAdapter
 			var tickers = await SafeRest().GetTickersAsync(key, from, to,
 				GetHistoryLimit(remaining), cancellationToken);
 			var sent = 0;
+
 			foreach (var ticker in tickers)
 			{
 				ValidateIdentity(key, ticker?.Exchange, ticker?.Instrument,
@@ -159,6 +168,7 @@ public partial class AmberdataMessageAdapter
 					cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -166,6 +176,7 @@ public partial class AmberdataMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(AmberdataSocketChannels.TickerSnapshots, key), 0, remaining,
 			cancellationToken);
@@ -177,6 +188,7 @@ public partial class AmberdataMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -203,10 +215,13 @@ public partial class AmberdataMessageAdapter
 			var rows = await SafeRest().GetOrderBooksAsync(key, from, to,
 				Math.Min(100000, GetHistoryLimit(remaining) * 2), depth,
 				cancellationToken);
+
 			foreach (var row in rows)
 				ValidateIdentity(key, row?.Exchange, row?.Instrument,
 					"order book");
+
 			var sent = 0;
+
 			foreach (var group in rows.Where(static row => row?.Timestamp is not null)
 				.GroupBy(static row => row.Timestamp.Value)
 				.OrderBy(static group => group.Key)
@@ -223,6 +238,7 @@ public partial class AmberdataMessageAdapter
 					message.TransactionId, sequence, cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -230,6 +246,7 @@ public partial class AmberdataMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(AmberdataSocketChannels.OrderSnapshots, key), depth, remaining,
 			cancellationToken);
@@ -241,6 +258,7 @@ public partial class AmberdataMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -271,6 +289,7 @@ public partial class AmberdataMessageAdapter
 			var candles = await SafeRest().GetOhlcvAsync(key, interval, from, to,
 				GetHistoryLimit(remaining), cancellationToken);
 			var sent = 0;
+
 			foreach (var candle in candles)
 			{
 				ValidateIdentity(key, candle?.Exchange, candle?.Instrument,
@@ -281,6 +300,7 @@ public partial class AmberdataMessageAdapter
 					lastCandleOpenTime = openTime;
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -288,6 +308,7 @@ public partial class AmberdataMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(AmberdataSocketChannels.Ohlcv, key), 0, remaining,
 			lastCandleOpenTime, cancellationToken);
@@ -549,6 +570,7 @@ public partial class AmberdataMessageAdapter
 				state = new();
 				_books.Add(key, state);
 			}
+
 			foreach (var side in sides)
 			{
 				if (side?.Levels is null || side.ExchangeTimestamp is null &&
@@ -577,6 +599,7 @@ public partial class AmberdataMessageAdapter
 				state.Sequence = Math.Max(state.Sequence, side.Sequence ?? 0);
 				isChanged = true;
 			}
+
 			if (!isChanged || state.Bids is null || state.Asks is null)
 				return false;
 			bids = state.Bids;
@@ -763,6 +786,7 @@ public partial class AmberdataMessageAdapter
 		IEnumerable<AmberdataBookLevel> levels, bool isBid, int depth)
 	{
 		var result = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level?.Price is not > 0 || level.Volume is null or < 0)
@@ -771,6 +795,7 @@ public partial class AmberdataMessageAdapter
 			if (level.Volume > 0)
 				result.Add(new(level.Price.Value, level.Volume.Value));
 		}
+
 		return SortLevels(result, isBid, depth);
 	}
 
@@ -778,6 +803,7 @@ public partial class AmberdataMessageAdapter
 		IEnumerable<AmberdataSocketBookLevel> levels, bool isBid, int depth)
 	{
 		var result = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level?.Price is not > 0 || level.Volume is null or < 0)
@@ -786,6 +812,7 @@ public partial class AmberdataMessageAdapter
 			if (level.Volume > 0)
 				result.Add(new(level.Price.Value, level.Volume.Value));
 		}
+
 		return SortLevels(result, isBid, depth);
 	}
 

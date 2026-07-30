@@ -6,6 +6,7 @@ public partial class TigerBrokersMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var requestedTypes = lookupMsg.GetSecurityTypes().ToHashSet();
 		var allTypes = requestedTypes.Count == 0;
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -15,6 +16,7 @@ public partial class TigerBrokersMessageAdapter
 			var markets = lookupMsg.SecurityId.BoardCode.IsEmpty()
 				? new[] { Market.US, Market.HK, Market.SG, Market.AU, Market.CN }
 				: [lookupMsg.SecurityId.BoardCode.ToMarket()];
+
 			foreach (var market in markets)
 			{
 				foreach (var stock in await _client.GetStocks(market, cancellationToken))
@@ -30,6 +32,7 @@ public partial class TigerBrokersMessageAdapter
 					if (await SendSecurity(instrument, lookupMsg, requestedTypes, cancellationToken) && --left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -53,6 +56,7 @@ public partial class TigerBrokersMessageAdapter
 						if (await SendSecurity(future.ToInstrument(), lookupMsg, requestedTypes, cancellationToken) && --left <= 0)
 							break;
 					}
+
 					if (left <= 0)
 						break;
 				}
@@ -64,6 +68,7 @@ public partial class TigerBrokersMessageAdapter
 		{
 			var underlying = lookupMsg.UnderlyingSecurityId.SecurityCode;
 			var market = lookupMsg.UnderlyingSecurityId.BoardCode.ToMarket();
+
 			foreach (var expiration in await _client.GetOptionExpirations(underlying, market, cancellationToken))
 			{
 				foreach (var expiry in expiration.Timestamps ?? [])
@@ -78,15 +83,19 @@ public partial class TigerBrokersMessageAdapter
 								if (await SendSecurity(instrument, lookupMsg, requestedTypes, cancellationToken) && --left <= 0)
 									break;
 							}
+
 							if (left <= 0)
 								break;
 						}
+
 						if (left <= 0)
 							break;
 					}
+
 					if (left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -111,6 +120,7 @@ public partial class TigerBrokersMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var instrument = ResolveInstrument(mdMsg.SecurityId);
 		var timeFrame = mdMsg.GetTimeFrame();
 
@@ -147,6 +157,7 @@ public partial class TigerBrokersMessageAdapter
 	private async ValueTask ProcessSubscription(MarketDataMessage mdMsg, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveSubscription(mdMsg.OriginalTransactionId);
@@ -238,6 +249,7 @@ public partial class TigerBrokersMessageAdapter
 	private async ValueTask OnQuoteReceived(QuoteBasicData data, CancellationToken cancellationToken)
 	{
 		var symbol = data.Identifier.IsEmpty(data.Symbol);
+
 		foreach (var subscription in FindSubscriptions(symbol, DataType.Level1).ToArray())
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage

@@ -89,9 +89,11 @@ public partial class OstiumMessageAdapter
 			var now = DateTime.UtcNow;
 			candles = [.. _candleSubscriptions.Values.Where(candle =>
 				now >= candle.NextPollTime)];
+
 			foreach (var candle in candles)
 				candle.NextPollTime = now + GetCandlePollInterval(
 					candle.TimeFrame);
+
 			refreshAccount = _rpcClient?.IsWalletConfigured == true &&
 				(_portfolioSubscriptionId != 0 ||
 					_orderStatusSubscriptionId != 0) &&
@@ -99,9 +101,11 @@ public partial class OstiumMessageAdapter
 			if (refreshAccount)
 				_lastAccountRefresh = now;
 		}
+
 		foreach (var candle in candles)
 			await RunSafelyAsync(ct => PollCandleAsync(candle, ct),
 				cancellationToken);
+
 		if (refreshAccount)
 			await RunSafelyAsync(RefreshAccountSubscriptionsAsync,
 				cancellationToken);
@@ -116,6 +120,7 @@ public partial class OstiumMessageAdapter
 		await Task.WhenAll(pairsTask, pricesTask);
 		var prices = await pricesTask;
 		var markets = new List<OstiumMarket>();
+
 		foreach (var pair in await pairsTask)
 		{
 			if (pair is null || pair.Id.IsEmpty() || pair.From.IsEmpty() ||
@@ -158,6 +163,7 @@ public partial class OstiumMessageAdapter
 				VolumeStep = 0.000001m,
 			});
 		}
+
 		if (markets.Count == 0)
 			throw new InvalidDataException(
 				"Ostium returned no usable perpetual markets.");
@@ -173,6 +179,7 @@ public partial class OstiumMessageAdapter
 			_markets.Clear();
 			_marketsByIndex.Clear();
 			_marketsByPricePair.Clear();
+
 			foreach (var market in markets)
 			{
 				_markets.Add(market.Symbol, market);
@@ -180,6 +187,7 @@ public partial class OstiumMessageAdapter
 				_marketsByPricePair.Add(market.PricePair, market);
 			}
 		}
+
 		foreach (var price in prices?.Prices ?? [])
 			if (price is not null)
 				StorePrice(price);

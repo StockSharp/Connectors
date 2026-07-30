@@ -131,6 +131,7 @@ public partial class ZerodhaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -140,6 +141,7 @@ public partial class ZerodhaMessageAdapter
 
 		EnsurePortfolio(statusMsg.PortfolioName);
 		var left = statusMsg.Count ?? long.MaxValue;
+
 		foreach (var order in (await GetRest().GetOrders(cancellationToken))
 			.OrderBy(o => o.OrderTimestamp.ParseKiteTime()))
 		{
@@ -170,6 +172,7 @@ public partial class ZerodhaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -223,6 +226,7 @@ public partial class ZerodhaMessageAdapter
 		}
 
 		var snapshots = new List<PortfolioPosition>();
+
 		foreach (var holding in await GetRest().GetHoldings(cancellationToken))
 		{
 			if (holding?.TradingSymbol.IsEmpty() != false || holding.Exchange.IsEmpty())
@@ -236,6 +240,7 @@ public partial class ZerodhaMessageAdapter
 				UnrealizedPnL = holding.PnL,
 			});
 		}
+
 		foreach (var position in await GetRest().GetNetPositions(cancellationToken))
 		{
 			if (position?.TradingSymbol.IsEmpty() != false || position.Exchange.IsEmpty())

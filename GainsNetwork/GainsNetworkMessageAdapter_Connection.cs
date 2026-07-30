@@ -147,6 +147,7 @@ public partial class GainsNetworkMessageAdapter
 		if (!Enum.IsDefined(variables.TradingState))
 			throw new InvalidDataException(
 				"Gains returned an unsupported trading state.");
+
 		foreach (var collateral in variables.Collaterals ?? [])
 			if (collateral?.Symbol.IsEmpty() != false ||
 				collateral.Address.IsEmpty() || collateral.CollateralIndex <= 0 ||
@@ -154,6 +155,7 @@ public partial class GainsNetworkMessageAdapter
 				collateral.Config.Decimals is < 0 or > 28)
 				throw new InvalidDataException(
 					"Gains returned an invalid collateral definition.");
+
 		var maximumLeverages = variables.PairInfos?.MaximumLeverages ?? [];
 		var activeSplits = FindActiveSplits(pairs, maximumLeverages);
 		var defaultCollateral = (variables.Collaterals ?? []).FirstOrDefault(
@@ -163,6 +165,7 @@ public partial class GainsNetworkMessageAdapter
 			? BigInteger.One.FromBaseUnits(defaultCollateral.Config.Decimals)
 			: 0.000001m;
 		var markets = new List<GainsMarket>(pairs.Length);
+
 		for (var pairIndex = 0; pairIndex < pairs.Length; pairIndex++)
 		{
 			var pair = pairs[pairIndex];
@@ -214,12 +217,14 @@ public partial class GainsNetworkMessageAdapter
 			};
 			markets.Add(market);
 		}
+
 		if (markets.Count == 0)
 			throw new InvalidDataException("Gains returned no usable markets.");
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
 			_marketsByIndex.Clear();
+
 			foreach (var market in markets)
 			{
 				if (!_markets.TryAdd(market.Symbol, market))
@@ -298,6 +303,7 @@ public partial class GainsNetworkMessageAdapter
 				price.Time = time;
 				changed.Add(point.PairIndex);
 			}
+
 			foreach (var point in frame.IndexPrices ?? [])
 			{
 				if (!_marketsByIndex.ContainsKey(point.PairIndex) ||
@@ -315,6 +321,7 @@ public partial class GainsNetworkMessageAdapter
 			}
 		}
 		UpdateServerTime(time);
+
 		foreach (var pairIndex in changed)
 			await PublishLevel1Async(pairIndex, cancellationToken);
 	}
@@ -382,6 +389,7 @@ public partial class GainsNetworkMessageAdapter
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
 		var result = new Dictionary<string, (int Suffix, int PairIndex)>(
 			StringComparer.OrdinalIgnoreCase);
+
 		for (var i = 0; i < pairs.Length; i++)
 		{
 			var asset = pairs[i]?.From;
@@ -394,6 +402,7 @@ public partial class GainsNetworkMessageAdapter
 				suffix > current.Suffix)
 				result[baseAsset] = (suffix, i);
 		}
+
 		return result.ToDictionary(static pair => pair.Key,
 			static pair => pair.Value.PairIndex, StringComparer.OrdinalIgnoreCase);
 	}

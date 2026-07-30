@@ -129,6 +129,7 @@ public partial class AerodromeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -157,6 +158,7 @@ public partial class AerodromeMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -168,6 +170,7 @@ public partial class AerodromeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -212,6 +215,7 @@ public partial class AerodromeMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -267,12 +271,15 @@ public partial class AerodromeMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -333,9 +340,11 @@ public partial class AerodromeMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(static group => group.First())];
 		var result = new List<(AerodromeToken, BigInteger)>();
+
 		foreach (var token in tokens)
 			result.Add((token, await RpcClient.GetBalanceAsync(token,
 				cancellationToken)));
+
 		return [.. result];
 	}
 
@@ -389,6 +398,7 @@ public partial class AerodromeMessageAdapter
 				.OrderBy(static swap => swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			var receipt = swap.State == OrderStates.Active
@@ -498,6 +508,7 @@ public partial class AerodromeMessageAdapter
 		var amount1 = BigInteger.Zero;
 		var isFound = false;
 		var topic = swap.Market.PoolType.GetSwapTopic();
+
 		foreach (var log in receipt.Logs ?? [])
 		{
 			if (log?.Address.IsEmpty() != false ||
@@ -531,6 +542,7 @@ public partial class AerodromeMessageAdapter
 			}
 			isFound = true;
 		}
+
 		if (!isFound)
 			throw new InvalidDataException(
 				$"Successful Aerodrome transaction " +

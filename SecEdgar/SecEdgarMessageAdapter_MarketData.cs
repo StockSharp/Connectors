@@ -23,6 +23,7 @@ public partial class SecEdgarMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		if (lookupMsg.Skip is < 0)
 			throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
 		if (lookupMsg.Count is <= 0)
@@ -47,6 +48,7 @@ public partial class SecEdgarMessageAdapter
 		var normalizedCik = query.NormalizeCik();
 		var skip = lookupMsg.Skip ?? 0;
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var company in (await GetCompaniesAsync(
 			cancellationToken))
 			.Where(company => query.IsEmpty() ||
@@ -75,6 +77,7 @@ public partial class SecEdgarMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg,
 			cancellationToken);
 	}
@@ -86,6 +89,7 @@ public partial class SecEdgarMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -129,6 +133,7 @@ public partial class SecEdgarMessageAdapter
 		var maximum = mdMsg.Count is > 0
 			? (int)Math.Min(mdMsg.Count.Value, int.MaxValue)
 			: 1000;
+
 		foreach (var filing in filings
 			.Where(filing => forms.Count == 0 ||
 				forms.Contains(filing.Form) ||
@@ -150,6 +155,7 @@ public partial class SecEdgarMessageAdapter
 			await SendOutMessageAsync(filing.ToNewsMessage(company,
 				mdMsg.TransactionId, WebsiteEndpoint),
 				cancellationToken);
+
 		await CompleteSubscriptionAsync(mdMsg, cancellationToken);
 	}
 
@@ -159,6 +165,7 @@ public partial class SecEdgarMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -176,6 +183,7 @@ public partial class SecEdgarMessageAdapter
 		var maximum = mdMsg.Count is > 0
 			? (int)Math.Min(mdMsg.Count.Value, MaximumFacts)
 			: MaximumFacts;
+
 		foreach (var fact in facts
 			.Where(fact => mdMsg.From is null ||
 				fact.FiledDate >=
@@ -209,6 +217,7 @@ public partial class SecEdgarMessageAdapter
 				Form = fact.Form,
 				Frame = fact.Frame,
 			}, cancellationToken);
+
 		await CompleteSubscriptionAsync(mdMsg, cancellationToken);
 	}
 

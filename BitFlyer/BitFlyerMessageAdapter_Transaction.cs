@@ -192,6 +192,7 @@ public partial class BitFlyerMessageAdapter
 					Count = 500,
 					State = BitFlyerOrderStates.Active,
 				}, cancellationToken);
+
 				foreach (var order in (childOrders ?? []).Where(order =>
 					order is not null && order.Side.ToStockSharp() == cancelMsg.Side))
 					await RestClient.CancelChildOrderAsync(new()
@@ -207,6 +208,7 @@ public partial class BitFlyerMessageAdapter
 				Count = 500,
 				State = BitFlyerOrderStates.Active,
 			}, cancellationToken);
+
 			foreach (var order in (parentOrders ?? []).Where(order => order is not null &&
 				(cancelMsg.Side is null ||
 					order.Side.ToStockSharp() == cancelMsg.Side)))
@@ -223,6 +225,7 @@ public partial class BitFlyerMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -245,12 +248,14 @@ public partial class BitFlyerMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -260,6 +265,7 @@ public partial class BitFlyerMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -280,6 +286,7 @@ public partial class BitFlyerMessageAdapter
 		var tracked = GetTrackedOrder(identifier);
 		var markets = GetOrderLookupMarkets(statusMsg, tracked);
 		var maximum = (statusMsg.Count ?? 500).Min(500).Max(1).To<int>();
+
 		foreach (var market in markets)
 		{
 			if (tracked?.IsParent != true)
@@ -294,6 +301,7 @@ public partial class BitFlyerMessageAdapter
 						!IsNativeChildOrderId(identifier) &&
 						!long.TryParse(identifier, out _) ? identifier : null,
 				}, cancellationToken);
+
 				foreach (var order in (childOrders ?? [])
 					.Where(order => IsMatchingOrder(order, identifier,
 						statusMsg.Side, statusMsg.From, statusMsg.To)))
@@ -308,6 +316,7 @@ public partial class BitFlyerMessageAdapter
 					ProductCode = market.ProductCode,
 					Count = maximum,
 				}, cancellationToken);
+
 				foreach (var order in (parentOrders ?? [])
 					.Where(order => IsMatchingOrder(order, identifier,
 						statusMsg.Side, statusMsg.From, statusMsg.To)))
@@ -327,6 +336,7 @@ public partial class BitFlyerMessageAdapter
 						!IsNativeChildOrderId(identifier) &&
 						!long.TryParse(identifier, out _) ? identifier : null,
 				}, cancellationToken);
+
 				foreach (var execution in (executions ?? []).Where(value =>
 					value is not null &&
 					(statusMsg.Side is null ||
@@ -338,12 +348,14 @@ public partial class BitFlyerMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -433,6 +445,7 @@ public partial class BitFlyerMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances ?? [])
 		{
 			if (balance?.CurrencyCode.IsEmpty() != false)
@@ -490,6 +503,7 @@ public partial class BitFlyerMessageAdapter
 				{
 					ProductCode = market.ProductCode,
 				}, cancellationToken);
+
 				foreach (var group in (positions ?? []).Where(static position =>
 					position is not null).GroupBy(static position =>
 						position.ProductCode, StringComparer.OrdinalIgnoreCase))
@@ -743,6 +757,7 @@ public partial class BitFlyerMessageAdapter
 				? new InvalidOperationException(
 					$"bitFlyer rejected the order: {update.Reason}")
 				: null;
+
 			foreach (var target in GetOrderTargets(tracked))
 				await SendTrackedOrderStateAsync(tracked, state,
 					update.OutstandingSize ?? (state == OrderStates.Done
@@ -755,6 +770,7 @@ public partial class BitFlyerMessageAdapter
 				update.ExecutionId is not > 0 || update.Price is not > 0 ||
 				update.Size is not > 0 || !AddAccountTrade(update.ExecutionId.Value))
 				continue;
+
 			foreach (var target in GetOrderTargets(tracked))
 				await SendOutMessageAsync(new ExecutionMessage
 				{
@@ -814,6 +830,7 @@ public partial class BitFlyerMessageAdapter
 				? new InvalidOperationException(
 					$"bitFlyer rejected the parent order: {update.Reason}")
 				: null;
+
 			foreach (var target in GetOrderTargets(tracked))
 				await SendTrackedOrderStateAsync(tracked, state,
 					state == OrderStates.Done ? 0m : tracked.Volume,

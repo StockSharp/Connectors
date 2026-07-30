@@ -12,6 +12,7 @@ public partial class QuiverQuantMessageAdapter
     {
         this.AddMarketDataSupport();
         this.AddSupportedMarketDataType(DataType.News);
+
         foreach (var dataType in QuiverQuantDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }

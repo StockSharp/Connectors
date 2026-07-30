@@ -24,8 +24,10 @@ public partial class FalconXMessageAdapter
 				throw new InvalidDataException(
 					"FalconX returned an empty account response.");
 			var pairs = await RestClient.GetPairsAsync(cancellationToken) ?? [];
+
 			foreach (var pair in pairs)
 				AddPair(pair);
+
 			if (pairs.Length == 0)
 				throw new InvalidDataException(
 					"FalconX returned no token pairs for this API key.");

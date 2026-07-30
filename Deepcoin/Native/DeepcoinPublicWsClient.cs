@@ -164,6 +164,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 			KeyValuePair<DeepcoinWsSubscriptionKey, long>[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions];
+
 			foreach (var subscription in subscriptions)
 				await SendSubscriptionAsync(client, subscription.Key, subscription.Value, true,
 					cancellationToken);
@@ -297,6 +298,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 		var envelope = Deserialize<DeepcoinWsMarketEnvelope>(payload);
 		if (TickerReceived is not { } handler)
 			return;
+
 		foreach (var ticker in envelope.Data ?? [])
 		{
 			var instrumentId = ResolveInstrument(ticker.InstrumentId);
@@ -312,6 +314,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 		var instrumentId = ResolveInstrument(envelope.InstrumentId);
 		if (instrumentId.IsEmpty() || TradeReceived is not { } handler)
 			return;
+
 		foreach (var trade in envelope.Data ?? [])
 			await handler(_productType, instrumentId, trade, cancellationToken);
 	}
@@ -337,6 +340,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 		var instrumentId = ResolveInstrument(envelope.InstrumentId);
 		if (instrumentId.IsEmpty() || CandleReceived is not { } handler)
 			return;
+
 		foreach (var candle in envelope.Data ?? [])
 			await handler(_productType, instrumentId, envelope.Period, candle, cancellationToken);
 	}

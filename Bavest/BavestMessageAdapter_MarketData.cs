@@ -24,6 +24,7 @@ public partial class BavestMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -75,6 +76,7 @@ public partial class BavestMessageAdapter
                 types.Contains(SecurityTypes.Stock);
             var includeEtfs = types.Count == 0 ||
                 types.Contains(SecurityTypes.Etf);
+
             foreach (var source in new[]
             {
                 (Enabled: includeStocks, Etfs: false,
@@ -85,6 +87,7 @@ public partial class BavestMessageAdapter
             {
                 if (!source.Enabled || remaining <= 0)
                     continue;
+
                 for (var page = 0;
                     page < MaxPages && remaining > 0;
                     page++)
@@ -95,6 +98,7 @@ public partial class BavestMessageAdapter
                         checked(page * PageSize),
                         SafeExchangeCode(),
                         cancellationToken);
+
                     foreach (var item in response.Data ?? [])
                     {
                         if (item is null ||
@@ -119,6 +123,7 @@ public partial class BavestMessageAdapter
                         if (remaining <= 0)
                             break;
                     }
+
                     if ((response.Data?.Length ?? 0) < PageSize ||
                         (response.Meta?.TotalCount is long total &&
                             (page + 1L) * PageSize >= total) ||
@@ -146,6 +151,7 @@ public partial class BavestMessageAdapter
     {
         var skip = initialSkip;
         var remaining = initialRemaining;
+
         for (var page = 0;
             page < MaxPages && remaining > 0;
             page++)
@@ -155,6 +161,7 @@ public partial class BavestMessageAdapter
                 PageSize,
                 checked(page * PageSize),
                 cancellationToken);
+
             foreach (var item in response.Data ?? [])
             {
                 if (item is null ||
@@ -179,6 +186,7 @@ public partial class BavestMessageAdapter
                 if (remaining <= 0)
                     break;
             }
+
             if ((response.Data?.Length ?? 0) < PageSize ||
                 (response.Meta?.TotalCount is long total &&
                     (page + 1L) * PageSize >= total) ||
@@ -197,6 +205,7 @@ public partial class BavestMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -275,6 +284,7 @@ public partial class BavestMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -313,6 +323,7 @@ public partial class BavestMessageAdapter
             cancellationToken);
         var remaining = mdMsg.Count ?? long.MaxValue;
         var seen = new HashSet<DateTime>();
+
         foreach (var item in (data?.Candles ?? [])
             .Where(item =>
                 item is not null &&
@@ -368,6 +379,7 @@ public partial class BavestMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -398,6 +410,7 @@ public partial class BavestMessageAdapter
             mdMsg.From,
             mdMsg.To,
             cancellationToken);
+
         foreach (var article in (response.Data ?? [])
             .Where(article =>
                 article is not null &&
@@ -451,6 +464,7 @@ public partial class BavestMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(

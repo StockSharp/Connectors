@@ -264,14 +264,19 @@ public partial class AnchorageMessageAdapter : MessageAdapter
 		using (_sync.EnterScope())
 		{
 			_products.Clear();
+
 			foreach (var product in products.Where(static item =>
 				item is not null && !item.Pair.IsEmpty()))
 				_products[product.Pair] = product;
+
 			_assets.Clear();
+
 			foreach (var asset in assets.Where(static item =>
 				item is not null && !item.AssetType.IsEmpty()))
 				_assets.TryAdd(asset.AssetType, asset);
+
 			_portfolios.Clear();
+
 			foreach (var account in accounts.Where(static item =>
 				item is not null && !item.Id.IsEmpty()))
 			{
@@ -284,6 +289,7 @@ public partial class AnchorageMessageAdapter : MessageAdapter
 					Kind = PortfolioKinds.Trading,
 				};
 			}
+
 			foreach (var vault in vaults.Where(static item =>
 				item is not null && !item.Id.IsEmpty()))
 			{
@@ -296,7 +302,9 @@ public partial class AnchorageMessageAdapter : MessageAdapter
 					Kind = PortfolioKinds.Vault,
 				};
 			}
+
 			_wallets.Clear();
+
 			foreach (var wallet in wallets.Where(static item =>
 				item is not null && !item.Id.IsEmpty()))
 				_wallets[wallet.Id] = wallet;

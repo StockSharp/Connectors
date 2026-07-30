@@ -192,11 +192,13 @@ sealed class InjectiveChainSocketClient : BaseLogReceiver
 			socket = _socket ?? throw new InvalidOperationException(
 				"Injective chain WebSocket is not connected.");
 		var buffer = new byte[81920];
+
 		while (!cancellationToken.IsCancellationRequested &&
 			socket.State == WebSocketState.Open)
 		{
 			using var stream = new MemoryStream();
 			WebSocketReceiveResult result;
+
 			do
 			{
 				result = await socket.ReceiveAsync(buffer, cancellationToken);
@@ -211,6 +213,7 @@ sealed class InjectiveChainSocketClient : BaseLogReceiver
 				stream.Write(buffer, 0, result.Count);
 			}
 			while (!result.EndOfMessage);
+
 			var text = Encoding.UTF8.GetString(stream.GetBuffer(), 0,
 				checked((int)stream.Length));
 			var envelope = JsonConvert.DeserializeObject<

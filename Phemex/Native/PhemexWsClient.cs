@@ -233,8 +233,10 @@ sealed class PhemexWsClient : BaseLogReceiver
 			PhemexWsChannel[] channels;
 			using (_sync.EnterScope())
 				channels = [.. _channels];
+
 			foreach (var channel in channels.Where(static channel => channel.Topic != "INDEX"))
 				await SendSubscriptionAsync(client, channel, true, cancellationToken);
+
 			foreach (var channel in channels.Where(static channel => channel.Topic == "INDEX")
 				.GroupBy(channel => _restClient.ResolveSection(channel.Symbol))
 				.Select(static group => group.First()))
@@ -496,6 +498,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 	{
 		if (IndexReceived is not { } handler)
 			return;
+
 		foreach (var ticker in tickers)
 		{
 			var normalized = PhemexRestClient.NormalizeFuturesTicker(new()

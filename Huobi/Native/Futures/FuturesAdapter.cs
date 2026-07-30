@@ -425,12 +425,14 @@ class FuturesAdapter(HuobiMessageAdapter parent, Authenticator authenticator, st
 		var now = DateTime.UtcNow;
 
 		var balances = await _httpClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances)
 		{
 			await ProcessBalanceAsync(now, balance, cancellationToken);
 		}
 
 		var positions = await _httpClient.GetPositionsAsync(cancellationToken);
+
 		foreach (var position in positions)
 		{
 			await ProcessPositionAsync(now, position, cancellationToken);

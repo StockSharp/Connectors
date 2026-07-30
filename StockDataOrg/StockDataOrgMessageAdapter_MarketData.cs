@@ -60,6 +60,7 @@ public partial class StockDataOrgMessageAdapter
                 providerTypes,
                 page,
                 cancellationToken);
+
             foreach (var entity in response.Data.Skip(innerSkip))
             {
                 innerSkip = 0;
@@ -93,6 +94,7 @@ public partial class StockDataOrgMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -181,6 +183,7 @@ public partial class StockDataOrgMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -218,6 +221,7 @@ public partial class StockDataOrgMessageAdapter
         var cursor = from;
         var requests = 0;
         var completed = false;
+
         while (cursor <= to && requests < MaxRequests)
         {
             var chunkTo = intraday
@@ -267,6 +271,7 @@ public partial class StockDataOrgMessageAdapter
                 chunkTo.UtcDateTime.Date.AddDays(1),
                 TimeSpan.Zero);
         }
+
         if (!completed &&
             cursor <= to &&
             requests >= MaxRequests)
@@ -276,6 +281,7 @@ public partial class StockDataOrgMessageAdapter
         }
 
         var target = mdMsg.Count ?? long.MaxValue;
+
         foreach (var item in values
             .OrderBy(value => value.Time)
             .Take(checked((int)Math.Min(target, int.MaxValue))))
@@ -310,6 +316,7 @@ public partial class StockDataOrgMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -361,6 +368,7 @@ public partial class StockDataOrgMessageAdapter
                 page,
                 pageSize,
                 cancellationToken);
+
             foreach (var article in response.Data)
             {
                 if (article is null ||
@@ -381,6 +389,7 @@ public partial class StockDataOrgMessageAdapter
                 if (values.Count >= target)
                     break;
             }
+
             if (response.Data.Length < pageSize ||
                 response.Meta?.Returned < pageSize)
             {

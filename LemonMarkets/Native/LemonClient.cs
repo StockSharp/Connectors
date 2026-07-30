@@ -120,9 +120,11 @@ sealed class LemonClient : BaseLogReceiver
 		var basePath = path.Split('?')[0];
 		var requestPath = path;
 		var cursors = new HashSet<string>(StringComparer.Ordinal);
+
 		while (result.Count < maxItems)
 		{
 			var page = await Get<LemonPage<T>>(requestPath, cancellationToken);
+
 			foreach (var item in page?.Data ?? [])
 			{
 				result.Add(item);
@@ -135,6 +137,7 @@ sealed class LemonClient : BaseLogReceiver
 				break;
 			requestPath = $"{basePath}?cursor={Escape(cursor)}";
 		}
+
 		return [.. result];
 	}
 

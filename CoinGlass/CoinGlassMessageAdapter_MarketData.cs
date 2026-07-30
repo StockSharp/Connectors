@@ -9,6 +9,7 @@ public partial class CoinGlassMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var instruments = await RestClient.GetInstrumentsAsync(
 			MarketType,
@@ -24,6 +25,7 @@ public partial class CoinGlassMessageAdapter
 		var left = Math.Min(
 			lookupMsg.Count ?? MaximumItems,
 			MaximumItems);
+
 		foreach (var instrument in instruments
 			.Where(instrument =>
 				Matches(instrument, requested))
@@ -72,6 +74,7 @@ public partial class CoinGlassMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -83,6 +86,7 @@ public partial class CoinGlassMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			using (_sync.EnterScope())
@@ -118,6 +122,7 @@ public partial class CoinGlassMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -135,6 +140,7 @@ public partial class CoinGlassMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -156,6 +162,7 @@ public partial class CoinGlassMessageAdapter
 		var from = (mdMsg.From ??
 			to - timeFrame * maximum)
 			.ToUniversalTime();
+
 		foreach (var candle in
 			(await RestClient.GetCandlesAsync(
 				instrument,
@@ -176,6 +183,7 @@ public partial class CoinGlassMessageAdapter
 				timeFrame,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(
 			mdMsg, cancellationToken);
 	}

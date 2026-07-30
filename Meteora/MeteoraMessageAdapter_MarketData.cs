@@ -8,6 +8,7 @@ public partial class MeteoraMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class MeteoraMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -41,6 +43,7 @@ public partial class MeteoraMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -50,6 +53,7 @@ public partial class MeteoraMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -73,6 +77,7 @@ public partial class MeteoraMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -87,6 +92,7 @@ public partial class MeteoraMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -113,6 +119,7 @@ public partial class MeteoraMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -128,6 +135,7 @@ public partial class MeteoraMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -148,16 +156,19 @@ public partial class MeteoraMessageAdapter
 		var trades = await LoadTradesAsync(market, from, to,
 			maximum.Min(MaximumHistoryTransactions), cancellationToken);
 		var delivered = 0;
+
 		foreach (var trade in trades)
 			if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken))
 				delivered++;
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -177,6 +188,7 @@ public partial class MeteoraMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -202,15 +214,18 @@ public partial class MeteoraMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * historyMaximum);
 		var candles = await LoadCandlesAsync(market, timeFrame, from, to,
 			historyMaximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || candles.Length >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -308,6 +323,7 @@ public partial class MeteoraMessageAdapter
 		var inspected = 0;
 		string before = null;
 		var isOldRangeReached = false;
+
 		while (inspected < MaximumHistoryTransactions &&
 			trades.Count < maximum && !isOldRangeReached)
 		{
@@ -317,6 +333,7 @@ public partial class MeteoraMessageAdapter
 				market.PoolAddress, before, pageSize, cancellationToken) ?? [];
 			if (signatures.Length == 0)
 				break;
+
 			foreach (var signature in signatures)
 			{
 				inspected++;
@@ -339,6 +356,7 @@ public partial class MeteoraMessageAdapter
 					continue;
 				var time = (transaction?.BlockTime ?? signature.BlockTime)?.FromUnix()
 					?? DateTime.UtcNow;
+
 				foreach (var meteoraEvent in MeteoraExtensions.DecodeEvents(
 					signature.Signature, transaction, time))
 				{
@@ -350,10 +368,12 @@ public partial class MeteoraMessageAdapter
 						trades.Add(trade);
 				}
 			}
+
 			before = signatures[^1].Signature;
 			if (signatures.Length < pageSize)
 				break;
 		}
+
 		return [.. trades.GroupBy(static trade => trade.Id,
 			StringComparer.Ordinal).Select(static group => group.First())
 			.OrderBy(static trade => trade.Time).TakeLast(maximum)];
@@ -405,6 +425,7 @@ public partial class MeteoraMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_tradeDeliveryOrder.Enqueue(key);
+
 			while (_tradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenTrades.Remove(_tradeDeliveryOrder.Dequeue());
 		}
@@ -443,6 +464,7 @@ public partial class MeteoraMessageAdapter
 					code, left, (left + window).Min(end), cancellationToken);
 				items.AddRange(page?.Data ?? []);
 			}
+
 			return [.. items.Where(item => item is not null &&
 				item.Timestamp > 0 && item.Open > 0 && item.High > 0 &&
 				item.Low > 0 && item.Close > 0)
@@ -522,6 +544,7 @@ public partial class MeteoraMessageAdapter
 			if (transaction?.Meta?.Error is not null)
 				return;
 			var time = transaction?.BlockTime?.FromUnix() ?? DateTime.UtcNow;
+
 			foreach (var meteoraEvent in MeteoraExtensions.DecodeEvents(signature,
 				transaction, time))
 			{
@@ -544,6 +567,7 @@ public partial class MeteoraMessageAdapter
 				var trade = ToTrade(market, meteoraEvent);
 				if (trade is null)
 					continue;
+
 				foreach (var target in targets)
 				{
 					if (target.Subscription.From is DateTime from &&
@@ -596,11 +620,13 @@ public partial class MeteoraMessageAdapter
 				.Select(group => (group.First().Value.Market,
 					group.Select(static pair => (pair.Key,
 						pair.Value.Depth)).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			try
 			{
 				await RefreshMarketAsync(group.Market, cancellationToken);
+
 				foreach (var target in group.Targets)
 					await SendDepthAsync(group.Market, target.Depth, target.Id,
 						cancellationToken);
@@ -622,11 +648,13 @@ public partial class MeteoraMessageAdapter
 					pair.Value.Market.PoolAddress, StringComparer.Ordinal)
 				.Select(group => (group.First().Value.Market,
 					group.Select(static pair => pair.Key).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			try
 			{
 				await RefreshMarketAsync(group.Market, cancellationToken);
+
 				foreach (var target in group.Targets)
 					await SendLevel1Async(group.Market, target,
 						cancellationToken);
@@ -647,6 +675,7 @@ public partial class MeteoraMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var from = item.Subscription.LastTime - TimeSpan.FromSeconds(1);
@@ -654,6 +683,7 @@ public partial class MeteoraMessageAdapter
 			var to = (item.Subscription.To ?? now).ToUniversalTime().Min(now);
 			var trades = await LoadTradesAsync(item.Subscription.Market, from,
 				to, MaximumHistoryTransactions, cancellationToken);
+
 			foreach (var trade in trades)
 			{
 				if (item.Subscription.From is DateTime requestedFrom &&
@@ -669,10 +699,12 @@ public partial class MeteoraMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeTicks(target);
@@ -688,6 +720,7 @@ public partial class MeteoraMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -699,6 +732,7 @@ public partial class MeteoraMessageAdapter
 			var candles = await LoadCandlesAsync(item.Subscription.Market,
 				item.Subscription.TimeFrame, from, to, maximum,
 				cancellationToken);
+
 			foreach (var candle in candles)
 			{
 				var key = $"{item.Id}:{candle.OpenTime.Ticks}";
@@ -724,10 +758,12 @@ public partial class MeteoraMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeCandles(target);
@@ -762,14 +798,17 @@ public partial class MeteoraMessageAdapter
 			current.ActiveId);
 		var scan = MaximumBinArraysPerSide * 8;
 		var indexes = new List<long>(scan * 2 + 1) { activeArrayIndex };
+
 		for (var distance = 1; distance <= scan; distance++)
 		{
 			indexes.Add(activeArrayIndex - distance);
 			indexes.Add(activeArrayIndex + distance);
 		}
+
 		var addresses = indexes.Select(index =>
 			MeteoraExtensions.BinArrayAddress(market.PoolAddress, index)).ToArray();
 		var decoded = new List<MeteoraBinArray>();
+
 		for (var offset = 0; offset < addresses.Length; offset += 100)
 		{
 			var chunkAddresses = addresses.Skip(offset).Take(100).ToArray();
@@ -779,6 +818,7 @@ public partial class MeteoraMessageAdapter
 				throw new InvalidDataException(
 					$"Meteora pool '{market.PoolAddress}' returned an incomplete " +
 					"bin-array snapshot.");
+
 			for (var index = 0; index < accounts.Length; index++)
 			{
 				var candidateIndex = indexes[offset + index];
@@ -789,6 +829,7 @@ public partial class MeteoraMessageAdapter
 					decoded.Add(array);
 			}
 		}
+
 		var arrays = decoded.Where(array => array.Index <= activeArrayIndex)
 			.OrderByDescending(static array => array.Index)
 			.Take(MaximumBinArraysPerSide)
@@ -847,6 +888,7 @@ public partial class MeteoraMessageAdapter
 			var retained = _tradeDeliveryOrder.Where(_seenTrades.Contains)
 				.ToArray();
 			_tradeDeliveryOrder.Clear();
+
 			foreach (var key in retained)
 				_tradeDeliveryOrder.Enqueue(key);
 		}
@@ -869,8 +911,10 @@ public partial class MeteoraMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -892,6 +936,7 @@ public partial class MeteoraMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

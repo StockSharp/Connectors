@@ -109,12 +109,14 @@ public partial class DeepBookMessageAdapter
 				expired.Add(pair.Key);
 				RemoveMarketSubscriptionNoLock(pair.Key);
 			}
+
 			foreach (var pair in _candleSubscriptions.Where(pair =>
 				pair.Value.To is DateTime end && now >= end).ToArray())
 			{
 				expired.Add(pair.Key);
 				RemoveMarketSubscriptionNoLock(pair.Key);
 			}
+
 			if (_apiClient is not null &&
 				(_level1Subscriptions.Count > 0 ||
 					_depthSubscriptions.Count > 0 ||
@@ -138,8 +140,10 @@ public partial class DeepBookMessageAdapter
 			await RunSafelyAsync(PollMarketDataAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
+
 		foreach (var target in expired.Distinct())
 			await SendSubscriptionFinishedAsync(target, cancellationToken);
+
 		_ = timeMsg;
 	}
 
@@ -170,6 +174,7 @@ public partial class DeepBookMessageAdapter
 		if (filters.Length == 0)
 			return markets;
 		var selected = new List<DeepBookMarket>();
+
 		foreach (var filter in filters)
 		{
 			var match = markets.FirstOrDefault(market =>
@@ -185,6 +190,7 @@ public partial class DeepBookMessageAdapter
 			if (!selected.Contains(match))
 				selected.Add(match);
 		}
+
 		return [.. selected];
 	}
 

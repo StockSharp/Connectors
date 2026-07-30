@@ -140,6 +140,7 @@ public partial class KotakNeoMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			_orderStatusSubscriptionId = 0;
@@ -148,11 +149,13 @@ public partial class KotakNeoMessageAdapter
 
 		var orders = await _restClient.GetOrders(cancellationToken);
 		EnsureResponse(orders, "order book");
+
 		foreach (var order in orders.Data ?? [])
 			await ProcessOrder(order, statusMsg.TransactionId, true, cancellationToken);
 
 		var trades = await _restClient.GetTrades(cancellationToken);
 		EnsureResponse(trades, "trade book");
+
 		foreach (var trade in trades.Data ?? [])
 			await ProcessTrade(trade, statusMsg.TransactionId, cancellationToken);
 
@@ -165,6 +168,7 @@ public partial class KotakNeoMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			_portfolioSubscriptionId = 0;
@@ -202,6 +206,7 @@ public partial class KotakNeoMessageAdapter
 
 		var positions = await _restClient.GetPositions(cancellationToken);
 		EnsureResponse(positions, "positions");
+
 		foreach (var position in positions.Data ?? [])
 		{
 			if (position == null || position.ExchangeSegment.IsEmpty())
@@ -226,6 +231,7 @@ public partial class KotakNeoMessageAdapter
 
 		var holdings = await _restClient.GetHoldings(cancellationToken);
 		EnsureResponse(holdings, "holdings");
+
 		foreach (var holding in holdings.Data ?? [])
 		{
 			if (holding == null || holding.ExchangeSegment.IsEmpty())

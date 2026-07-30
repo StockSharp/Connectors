@@ -18,6 +18,7 @@ public partial class BavestMessageAdapter
         this.AddSupportedMarketDataType(DataType.News);
         this.AddSupportedCandleTimeFrames(
             BavestExtensions.TimeFrames);
+
         foreach (var dataType in BavestDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }

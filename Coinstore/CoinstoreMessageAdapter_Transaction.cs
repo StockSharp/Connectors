@@ -187,6 +187,7 @@ public partial class CoinstoreMessageAdapter
 				? GetAllMarkets()
 				: [market],
 			cancellationToken);
+
 		foreach (var order in orders.Where(order =>
 			order?.Id.IsEmpty() == false &&
 			order.Action.ToSide() == cancelMsg.Side))
@@ -205,6 +206,7 @@ public partial class CoinstoreMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -226,12 +228,14 @@ public partial class CoinstoreMessageAdapter
 		}
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -242,6 +246,7 @@ public partial class CoinstoreMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -261,12 +266,14 @@ public partial class CoinstoreMessageAdapter
 			statusMsg, maximum, cancellationToken);
 		await SendSubscriptionResultAsync(
 			statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -276,6 +283,7 @@ public partial class CoinstoreMessageAdapter
 	{
 		var balances = await RestClient.GetBalancesAsync(
 			cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(
 				balance, originalTransactionId, cancellationToken);
@@ -308,6 +316,7 @@ public partial class CoinstoreMessageAdapter
 					}),
 				];
 			}
+
 			foreach (var market in markets)
 			{
 				var order = await RestClient.GetOrderAsync(
@@ -317,6 +326,7 @@ public partial class CoinstoreMessageAdapter
 						order, statusMsg.TransactionId,
 						cancellationToken);
 			}
+
 			return;
 		}
 
@@ -333,6 +343,7 @@ public partial class CoinstoreMessageAdapter
 				using (_sync.EnterScope())
 					markets = [.. _marketsBySecurity.Values];
 			}
+
 			foreach (var market in markets)
 				orders.AddRange(await RestClient.GetOrdersAsync(
 					market.Pair,
@@ -341,6 +352,7 @@ public partial class CoinstoreMessageAdapter
 					maximum,
 					cancellationToken) ?? []);
 		}
+
 		foreach (var order in orders
 			.Where(order => MatchesOrder(order, statusMsg))
 			.GroupBy(static order => order.Id, StringComparer.Ordinal)
@@ -388,9 +400,11 @@ public partial class CoinstoreMessageAdapter
 			_knownActiveOrderIds.Clear();
 			_knownActiveOrderIds.AddRange(currentIds);
 		}
+
 		foreach (var order in openOrders.OrderBy(GetOrderTimestamp))
 			await SendOrderAsync(
 				order, originalTransactionId, cancellationToken);
+
 		foreach (var orderId in removed)
 		{
 			var tracked = GetTrackedOrder(orderId);
@@ -431,6 +445,7 @@ public partial class CoinstoreMessageAdapter
 						: null)
 				.Where(static market => market is not null)
 				.Distinct()];
+
 		foreach (var market in trackedMarkets)
 			await SendPrivateTradesAsync(
 				market,
@@ -646,12 +661,14 @@ public partial class CoinstoreMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var orders = new List<CoinstoreOrder>();
+
 		foreach (var market in (markets ?? [])
 			.Where(static market => market is not null)
 			.Distinct())
 			orders.AddRange(
 				await RestClient.GetOpenOrdersAsync(
 					market.Pair, cancellationToken) ?? []);
+
 		return [.. orders];
 	}
 

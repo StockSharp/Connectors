@@ -8,6 +8,7 @@ public partial class THORChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class THORChainMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -42,6 +44,7 @@ public partial class THORChainMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -51,6 +54,7 @@ public partial class THORChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -79,6 +83,7 @@ public partial class THORChainMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -93,6 +98,7 @@ public partial class THORChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -112,16 +118,19 @@ public partial class THORChainMessageAdapter
 		var trades = await LoadTradesAsync(market, from, to, maximum,
 			cancellationToken);
 		var delivered = 0;
+
 		foreach (var trade in trades)
 			if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken))
 				delivered++;
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -141,6 +150,7 @@ public partial class THORChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -166,15 +176,18 @@ public partial class THORChainMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * historyCount);
 		var candles = await LoadCandlesAsync(market, timeFrame, from, to,
 			historyCount, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || candles.Length >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -272,6 +285,7 @@ public partial class THORChainMessageAdapter
 	{
 		maximum = maximum.Min(HistoryMaximum).Max(1);
 		var actions = new List<THORChainAction>();
+
 		for (var offset = 0; offset < HistoryMaximum &&
 			actions.Count < HistoryMaximum; offset += 50)
 		{
@@ -298,11 +312,14 @@ public partial class THORChainMessageAdapter
 			if (oldest < from)
 				break;
 		}
+
 		var result = new List<THORChainTrade>();
+
 		foreach (var action in actions)
 			if (TryCreateTrade(market, action, out var trade) &&
 				trade.Time >= from && trade.Time <= to)
 				result.Add(trade);
+
 		return [.. result.OrderBy(static trade => trade.Time)
 			.ThenBy(static trade => trade.Id, StringComparer.Ordinal)
 			.TakeLast(maximum)];
@@ -389,6 +406,7 @@ public partial class THORChainMessageAdapter
 			coin = found;
 			return true;
 		}
+
 		transaction = null;
 		coin = null;
 		return false;
@@ -404,6 +422,7 @@ public partial class THORChainMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_tradeDeliveryOrder.Enqueue(key);
+
 			while (_tradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenTrades.Remove(_tradeDeliveryOrder.Dequeue());
 		}
@@ -497,12 +516,14 @@ public partial class THORChainMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(group => (group.First().Value.Market,
 					group.Select(static pair => pair.Key).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			try
 			{
 				var snapshot = await LoadLevel1Async(group.Market,
 					cancellationToken);
+
 				foreach (var target in group.Targets)
 				{
 					var fingerprint = new Level1Fingerprint(snapshot.Bid,
@@ -550,6 +571,7 @@ public partial class THORChainMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -561,6 +583,7 @@ public partial class THORChainMessageAdapter
 				item.Subscription.Delivered).Min(HistoryMaximum).Max(1);
 			var trades = await LoadTradesAsync(item.Subscription.Market,
 				from, to, remaining, cancellationToken);
+
 			foreach (var trade in trades)
 			{
 				if (await SendTradeAsync(item.Subscription.Market, trade,
@@ -571,10 +594,12 @@ public partial class THORChainMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeTicks(target);
@@ -590,6 +615,7 @@ public partial class THORChainMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -601,6 +627,7 @@ public partial class THORChainMessageAdapter
 			var candles = await LoadCandlesAsync(item.Subscription.Market,
 				item.Subscription.TimeFrame, from, to, maximum,
 				cancellationToken);
+
 			foreach (var candle in candles)
 			{
 				var key = $"{item.Id}:{candle.OpenTime.Ticks}";
@@ -627,10 +654,12 @@ public partial class THORChainMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeCandles(target);
@@ -647,6 +676,7 @@ public partial class THORChainMessageAdapter
 			var retained = _tradeDeliveryOrder.Where(_seenTrades.Contains)
 				.ToArray();
 			_tradeDeliveryOrder.Clear();
+
 			foreach (var key in retained)
 				_tradeDeliveryOrder.Enqueue(key);
 		}
@@ -666,8 +696,10 @@ public partial class THORChainMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -691,6 +723,7 @@ public partial class THORChainMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

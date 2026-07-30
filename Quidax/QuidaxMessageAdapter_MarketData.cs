@@ -10,11 +10,13 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in GetMarkets().OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -49,6 +51,7 @@ public partial class QuidaxMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -61,6 +64,7 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -108,6 +112,7 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -164,6 +169,7 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -187,6 +193,7 @@ public partial class QuidaxMessageAdapter
 		var trades = await RestClient.GetPublicTradesAsync(
 			market.Id,
 			cancellationToken);
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade =>
 			{
@@ -207,6 +214,7 @@ public partial class QuidaxMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
@@ -231,6 +239,7 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -262,6 +271,7 @@ public partial class QuidaxMessageAdapter
 			from,
 			count,
 			cancellationToken);
+
 		foreach (var candle in (candles ?? [])
 			.Where(candle =>
 			{
@@ -277,6 +287,7 @@ public partial class QuidaxMessageAdapter
 				timeFrame,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(
 			mdMsg, cancellationToken);
 	}

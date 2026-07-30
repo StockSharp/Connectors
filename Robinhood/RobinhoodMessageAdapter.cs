@@ -108,12 +108,14 @@ public partial class RobinhoodMessageAdapter
 	private async Task PollQuotes(CancellationToken cancellationToken)
 	{
 		var subscriptions = _level1Subscriptions.ToArray();
+
 		foreach (var group in subscriptions
 			.GroupBy(p => p.Value.SecurityCode, StringComparer.OrdinalIgnoreCase)
 			.Select((p, index) => new { Item = p, Index = index })
 			.GroupBy(p => p.Index / 20))
 		{
 			var items = group.SelectMany(p => p.Item).ToArray();
+
 			foreach (var quote in await _client.GetQuotes(items.Select(p => p.Value.SecurityCode).Distinct(StringComparer.OrdinalIgnoreCase), cancellationToken) ?? [])
 				await ProcessQuote(quote, items, cancellationToken);
 		}
@@ -129,6 +131,7 @@ public partial class RobinhoodMessageAdapter
 			if (_portfolioSubscriptionId != 0)
 			{
 				await ProcessPortfolio(account, _portfolioSubscriptionId, cancellationToken);
+
 				foreach (var position in await _client.GetPositions(account.AccountNumber, cancellationToken) ?? [])
 					await ProcessPosition(account.AccountNumber, position, _portfolioSubscriptionId, cancellationToken);
 			}

@@ -178,6 +178,7 @@ public partial class SSIMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var account = ResolveAccount(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -219,6 +220,7 @@ public partial class SSIMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -230,15 +232,19 @@ public partial class SSIMessageAdapter
 					out removedAccounts))
 					return;
 			}
+
 			foreach (var account in removedAccounts)
 				await UnsubscribeTopicAsync(PortfolioTopic(account),
 					cancellationToken);
+
 			return;
 		}
 		var accounts = await GetAccountsAsync(cancellationToken);
+
 		foreach (var account in accounts)
 			await SendPortfolioSnapshotAsync(account,
 				lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsHistoryOnly())
 		{
 			using (_sync.EnterScope())
@@ -255,10 +261,12 @@ public partial class SSIMessageAdapter
 				using (_sync.EnterScope())
 					_portfolioSubscriptions.Remove(
 						lookupMsg.TransactionId);
+
 				foreach (var account in accounts)
 					await UnsubscribeTopicAsync(
 						PortfolioTopic(account),
 						CancellationToken.None);
+
 				throw;
 			}
 		}
@@ -291,13 +299,16 @@ public partial class SSIMessageAdapter
 			];
 			orderTargets = _orderSubscriptions.ToArray();
 		}
+
 		foreach (var target in portfolioTargets)
 			foreach (var portfolioAccount in target.Accounts)
 				await SendPortfolioSnapshotAsync(portfolioAccount,
 					target.Target, cancellationToken);
+
 		if (orderTargets.Length == 0)
 			return;
 		var configuredAccount = ResolveAccount(null);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(configuredAccount, target, null,
 				cancellationToken);
@@ -310,6 +321,7 @@ public partial class SSIMessageAdapter
 		var from = filter?.From?.ToUniversalTime() ??
 			CurrentTime.Date;
 		var to = filter?.To?.ToUniversalTime() ?? CurrentTime;
+
 		foreach (var value in await RestClient.GetOrdersAsync(account,
 			from, to, cancellationToken))
 		{
@@ -388,6 +400,7 @@ public partial class SSIMessageAdapter
 			targets = _orderSubscriptions.Count == 0
 				? [0]
 				: _orderSubscriptions.ToArray();
+
 		foreach (var target in targets)
 			await SendOrderAsync(order, target, cancellationToken);
 	}
@@ -445,6 +458,7 @@ public partial class SSIMessageAdapter
 				? [transactionId]
 				: _orderSubscriptions.ToArray();
 		}
+
 		foreach (var target in targets)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -476,6 +490,7 @@ public partial class SSIMessageAdapter
 						account.EqualsIgnoreCase))
 					.Select(static pair => (pair.Key, pair.Value))
 			];
+
 		foreach (var target in targets)
 			await SendOutMessageAsync(new PositionChangeMessage
 			{
@@ -525,6 +540,7 @@ public partial class SSIMessageAdapter
 			cancellationToken);
 		var positions = await RestClient.GetPositionsAsync(account,
 			cancellationToken);
+
 		foreach (var position in FindArray(positions, "equity"))
 		{
 			var symbol = FindString(position, "symbol");
@@ -546,7 +562,9 @@ public partial class SSIMessageAdapter
 				FindDecimal(position, "costPrice"), true),
 				cancellationToken);
 		}
+
 		var derivatives = FindObject(positions, "derivative");
+
 		foreach (var position in FindArray(derivatives,
 			"derOpenPositions", "openPositions"))
 		{
@@ -588,6 +606,7 @@ public partial class SSIMessageAdapter
 		params string[] names)
 	{
 		value = value?.UnwrapSSIData() ?? value;
+
 		foreach (var name in names)
 		{
 			var result = value?.GetValue(name,
@@ -595,6 +614,7 @@ public partial class SSIMessageAdapter
 			if (result is not null)
 				return result;
 		}
+
 		return null;
 	}
 
@@ -602,12 +622,14 @@ public partial class SSIMessageAdapter
 		params string[] names)
 	{
 		value = value?.UnwrapSSIData() ?? value;
+
 		foreach (var name in names)
 		{
 			if (value?.GetValue(name,
 				StringComparison.OrdinalIgnoreCase) is JArray array)
 				return array.OfType<JObject>().ToArray();
 		}
+
 		return [];
 	}
 
@@ -615,6 +637,7 @@ public partial class SSIMessageAdapter
 		params string[] names)
 	{
 		value = value?.UnwrapSSIData() ?? value;
+
 		foreach (var name in names)
 		{
 			var token = value?.GetValue(name,
@@ -623,6 +646,7 @@ public partial class SSIMessageAdapter
 				token.Type is not JTokenType.Null)
 				return token.Value<string>();
 		}
+
 		return null;
 	}
 
@@ -630,6 +654,7 @@ public partial class SSIMessageAdapter
 		params string[] names)
 	{
 		value = value?.UnwrapSSIData() ?? value;
+
 		foreach (var name in names)
 		{
 			var token = value?.GetValue(name,
@@ -644,6 +669,7 @@ public partial class SSIMessageAdapter
 				out var result))
 				return result;
 		}
+
 		return null;
 	}
 }

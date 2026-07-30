@@ -150,6 +150,7 @@ public partial class DirectaMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -204,6 +205,7 @@ public partial class DirectaMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -346,6 +348,7 @@ public partial class DirectaMessageAdapter
     {
         _portfolioName =
             account.Account.IsEmpty("DIRECTA");
+
         foreach (var originalId in
             GetPortfolioOutputIds())
         {

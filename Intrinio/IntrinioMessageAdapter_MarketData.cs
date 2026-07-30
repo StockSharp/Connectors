@@ -63,6 +63,7 @@ public partial class IntrinioMessageAdapter
 					Query = value,
 					PageSize = ToPageSize(left),
 				}, cancellationToken);
+
 				foreach (var security in response?.Securities ?? [])
 				{
 					await Emit(security?.ToSecurityMessage(lookupMsg.TransactionId));
@@ -74,6 +75,7 @@ public partial class IntrinioMessageAdapter
 			{
 				string nextPage = null;
 				var pages = new HashSet<string>(StringComparer.Ordinal);
+
 				do
 				{
 					var response = await client.GetSecurities(new()
@@ -85,12 +87,14 @@ public partial class IntrinioMessageAdapter
 						PageSize = ToPageSize(left),
 						NextPage = nextPage,
 					}, cancellationToken);
+
 					foreach (var security in response?.Securities ?? [])
 					{
 						await Emit(security?.ToSecurityMessage(lookupMsg.TransactionId));
 						if (left <= 0)
 							break;
 					}
+
 					nextPage = response?.NextPage;
 					EnsureNewPage(pages, nextPage, "securities");
 				}
@@ -109,6 +113,7 @@ public partial class IntrinioMessageAdapter
 			{
 				string nextPage = null;
 				var pages = new HashSet<string>(StringComparer.Ordinal);
+
 				do
 				{
 					var response = await client.GetOptions(underlying, new()
@@ -121,6 +126,7 @@ public partial class IntrinioMessageAdapter
 						PageSize = ToPageSize(left),
 						NextPage = nextPage,
 					}, cancellationToken);
+
 					foreach (var option in response?.Options ?? [])
 					{
 						if (option == null || (exactOption &&
@@ -133,6 +139,7 @@ public partial class IntrinioMessageAdapter
 						if (left <= 0)
 							break;
 					}
+
 					nextPage = response?.NextPage;
 					EnsureNewPage(pages, nextPage, "options");
 				}
@@ -148,6 +155,7 @@ public partial class IntrinioMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			var unsubscription = await SafeRealtime().UnsubscribeAsync(
@@ -189,6 +197,7 @@ public partial class IntrinioMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			var unsubscription = await SafeRealtime().UnsubscribeAsync(
@@ -226,6 +235,7 @@ public partial class IntrinioMessageAdapter
 			await SubscribeRealtime(mdMsg, isOption, optionKey, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
@@ -235,6 +245,7 @@ public partial class IntrinioMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -270,6 +281,7 @@ public partial class IntrinioMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -292,6 +304,7 @@ public partial class IntrinioMessageAdapter
 		};
 		var items = new List<IntrinioNewsItem>();
 		var pages = new HashSet<string>(StringComparer.Ordinal);
+
 		do
 		{
 			var response = await SafeRest().GetNews(request, cancellationToken);
@@ -306,6 +319,7 @@ public partial class IntrinioMessageAdapter
 			.Where(item => item.PublicationDate != null)
 			.OrderBy(item => item.PublicationDate)
 			.ToArray();
+
 		foreach (var item in SelectHistory(ordered, mdMsg.Count, mdMsg.From != null))
 		{
 			var securityId = mdMsg.SecurityId;
@@ -478,6 +492,7 @@ public partial class IntrinioMessageAdapter
 		};
 		var trades = new List<IntrinioSecurityTrade>();
 		var pages = new HashSet<string>(StringComparer.Ordinal);
+
 		do
 		{
 			var response = await SafeRest().GetSecurityTrades(identifier, request, cancellationToken);
@@ -490,6 +505,7 @@ public partial class IntrinioMessageAdapter
 		var securityId = mdMsg.SecurityId.NormalizeIntrinio(code, false, identifier);
 		var ordered = trades.Where(trade => trade.Timestamp != null && trade.Price != null)
 			.OrderBy(trade => trade.Timestamp).ToArray();
+
 		foreach (var trade in SelectHistory(ordered, mdMsg.Count, mdMsg.From != null))
 		{
 			await SendOutMessageAsync(new ExecutionMessage
@@ -521,6 +537,7 @@ public partial class IntrinioMessageAdapter
 		};
 		var trades = new List<RestOptionTrade>();
 		var pages = new HashSet<string>(StringComparer.Ordinal);
+
 		do
 		{
 			var response = await SafeRest().GetOptionTrades(identifier, request, cancellationToken);
@@ -533,6 +550,7 @@ public partial class IntrinioMessageAdapter
 		var securityId = mdMsg.SecurityId.NormalizeIntrinio(optionKey.Code, true, identifier);
 		var ordered = trades.Where(trade => trade.Timestamp != null && trade.Price != null)
 			.OrderBy(trade => trade.Timestamp).ToArray();
+
 		foreach (var trade in SelectHistory(ordered, mdMsg.Count, mdMsg.From != null))
 		{
 			await SendOutMessageAsync(new ExecutionMessage
@@ -571,9 +589,11 @@ public partial class IntrinioMessageAdapter
 				IsIncludeQuoteOnlyBars = false,
 			};
 			var pages = new HashSet<string>(StringComparer.Ordinal);
+
 			do
 			{
 				var response = await SafeRest().GetSecurityIntervals(identifier, request, cancellationToken);
+
 				foreach (var interval in response?.Intervals ?? [])
 				{
 					if (interval?.Time == null || interval.Open == null || interval.High == null ||
@@ -585,6 +605,7 @@ public partial class IntrinioMessageAdapter
 						interval.High.Value, interval.Low.Value, interval.Close.Value,
 						interval.Volume ?? 0));
 				}
+
 				request.NextPage = response?.NextPage;
 				EnsureNewPage(pages, request.NextPage, "equity intervals");
 			}
@@ -600,9 +621,11 @@ public partial class IntrinioMessageAdapter
 				PageSize = 10000,
 			};
 			var pages = new HashSet<string>(StringComparer.Ordinal);
+
 			do
 			{
 				var response = await SafeRest().GetStockPrices(identifier, request, cancellationToken);
+
 				foreach (var price in response?.StockPrices ?? [])
 				{
 					if (price?.Date == null)
@@ -617,6 +640,7 @@ public partial class IntrinioMessageAdapter
 					candles.Add((DateTime.SpecifyKind(price.Date.Value.Date, DateTimeKind.Utc),
 						open.Value, high.Value, low.Value, close.Value, volume ?? 0));
 				}
+
 				request.NextPage = response?.NextPage;
 				EnsureNewPage(pages, request.NextPage, "equity end-of-day prices");
 			}
@@ -626,6 +650,7 @@ public partial class IntrinioMessageAdapter
 		var securityId = mdMsg.SecurityId.NormalizeIntrinio(code, false, identifier);
 		var ordered = candles.Where(candle => candle.time >= from && candle.time <= to)
 			.OrderBy(candle => candle.time).ToArray();
+
 		foreach (var candle in SelectHistory(ordered, mdMsg.Count, mdMsg.From != null))
 		{
 			await SendCandle(mdMsg, securityId, timeFrame, candle.time,
@@ -656,6 +681,7 @@ public partial class IntrinioMessageAdapter
 				.Where(interval => interval.OpenTime.Value.ToUtc() >= from &&
 					interval.OpenTime.Value.ToUtc() <= to)
 				.ToArray();
+
 			foreach (var interval in SelectHistory(intervals, mdMsg.Count, mdMsg.From != null))
 			{
 				await SendCandle(mdMsg, securityId, timeFrame,
@@ -663,6 +689,7 @@ public partial class IntrinioMessageAdapter
 					interval.Low.Value, interval.Close.Value, interval.Volume ?? 0,
 					null, cancellationToken);
 			}
+
 			return;
 		}
 		if (timeFrame != TimeSpan.FromDays(1))
@@ -677,6 +704,7 @@ public partial class IntrinioMessageAdapter
 		};
 		var prices = new List<IntrinioOptionPriceEod>();
 		var pages = new HashSet<string>(StringComparer.Ordinal);
+
 		do
 		{
 			var response = await SafeRest().GetOptionPricesEod(identifier, request, cancellationToken);
@@ -687,6 +715,7 @@ public partial class IntrinioMessageAdapter
 		while (!request.NextPage.IsEmpty());
 
 		var parsed = new List<(DateTime time, IntrinioOptionPriceEod price)>();
+
 		foreach (var price in prices)
 		{
 			if (price.Open == null || price.High == null || price.Low == null || price.Close == null ||
@@ -697,8 +726,10 @@ public partial class IntrinioMessageAdapter
 			}
 			parsed.Add((DateTime.SpecifyKind(date.Date, DateTimeKind.Utc), price));
 		}
+
 		var ordered = parsed.Where(item => item.time >= from && item.time <= to)
 			.OrderBy(item => item.time).ToArray();
+
 		foreach (var item in SelectHistory(ordered, mdMsg.Count, mdMsg.From != null))
 		{
 			await SendCandle(mdMsg, securityId, timeFrame, item.time,
@@ -764,6 +795,7 @@ public partial class IntrinioMessageAdapter
 	private static DateTime? MaxTime(params DateTime?[] values)
 	{
 		DateTime? result = null;
+
 		foreach (var value in values)
 		{
 			if (value == null)
@@ -772,6 +804,7 @@ public partial class IntrinioMessageAdapter
 			if (result == null || utc > result)
 				result = utc;
 		}
+
 		return result;
 	}
 

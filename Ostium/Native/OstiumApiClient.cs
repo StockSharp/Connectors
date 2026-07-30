@@ -128,6 +128,7 @@ sealed class OstiumApiClient : BaseLogReceiver
 		var candles = new List<OstiumCandle>(maximumCandles.Min(1000));
 		var times = new HashSet<long>();
 		long? lastRequestTimestamp = null;
+
 		for (var page = 0; page < 20 && candles.Count < maximumCandles; page++)
 		{
 			var response = await SendAsync<OstiumOhlcResponse>(_ohlcEndpoint,
@@ -143,9 +144,11 @@ sealed class OstiumApiClient : BaseLogReceiver
 				.Where(static candle => candle is not null && candle.Time > 0)
 				.OrderBy(static candle => candle.Time)
 				.ToArray();
+
 			foreach (var candle in pageCandles)
 				if (times.Add(candle.Time))
 					candles.Add(candle);
+
 			if (pageCandles.Length == 0)
 				break;
 			var next = pageCandles[^1].Time;
@@ -153,6 +156,7 @@ sealed class OstiumApiClient : BaseLogReceiver
 				break;
 			cursorMilliseconds = next;
 		}
+
 		return new()
 		{
 			Data = [.. candles.OrderBy(static candle => candle.Time)
@@ -238,6 +242,7 @@ sealed class OstiumApiClient : BaseLogReceiver
 		var content = payload is null
 			? null
 			: JsonConvert.SerializeObject(payload, _settings);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRequestAsync(cancellationToken);

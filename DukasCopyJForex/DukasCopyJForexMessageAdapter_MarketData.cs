@@ -7,6 +7,7 @@ public partial class DukasCopyJForexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -59,6 +60,7 @@ public partial class DukasCopyJForexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveMarketSubscription(mdMsg, cancellationToken);
@@ -70,6 +72,7 @@ public partial class DukasCopyJForexMessageAdapter
 			var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 			var count = (int)Math.Clamp(mdMsg.Count ?? 10000, 1, 100000);
 			var from = (mdMsg.From ?? to - TimeSpan.FromDays(1)).ToUniversalTime();
+
 			foreach (var tick in await GetClient().GetTicks(mdMsg.SecurityId.SecurityCode.NormalizeDukasSymbol(),
 				from, to, count, cancellationToken))
 				await SendTick(mdMsg.TransactionId, mdMsg.SecurityId, dataType, tick, cancellationToken);
@@ -89,6 +92,7 @@ public partial class DukasCopyJForexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveMarketSubscription(mdMsg, cancellationToken);
@@ -101,6 +105,7 @@ public partial class DukasCopyJForexMessageAdapter
 			var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 			var count = (int)Math.Clamp(mdMsg.Count ?? 10000, 1, 100000);
 			var from = (mdMsg.From ?? to - TimeSpan.FromTicks(timeFrame.Ticks * count * 2L)).ToUniversalTime();
+
 			foreach (var bar in await GetClient().GetBars(mdMsg.SecurityId.SecurityCode.NormalizeDukasSymbol(),
 				timeFrame.ToNative(), from, to, count, cancellationToken))
 				await SendBar(mdMsg.TransactionId, mdMsg.SecurityId, timeFrame, mdMsg.DataType2, bar,
@@ -122,6 +127,7 @@ public partial class DukasCopyJForexMessageAdapter
 			return;
 
 		var symbol = tick.Symbol.NormalizeDukasSymbol();
+
 		foreach (var subscription in _marketSubscriptions.CachedValues.Where(s =>
 			s.SecurityId.SecurityCode.NormalizeDukasSymbol().EqualsIgnoreCase(symbol) &&
 			(s.DataType == DataType.Ticks || s.DataType == DataType.Level1 ||
@@ -141,6 +147,7 @@ public partial class DukasCopyJForexMessageAdapter
 		if (timeFrame == null)
 			return;
 		var symbol = bar.Symbol.NormalizeDukasSymbol();
+
 		foreach (var subscription in _marketSubscriptions.CachedValues.Where(s =>
 			s.SecurityId.SecurityCode.NormalizeDukasSymbol().EqualsIgnoreCase(symbol) &&
 			s.TimeFrame == timeFrame))

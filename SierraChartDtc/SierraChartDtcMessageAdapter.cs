@@ -170,8 +170,10 @@ public partial class SierraChartDtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		DisposeMainClient();
+
 		foreach (var client in _historyClients.SyncGet(set => set.ToArray()))
 			client.Dispose();
+
 		_historyClients.Clear();
 		_marketSubscriptions.Clear();
 		_symbols.Clear();

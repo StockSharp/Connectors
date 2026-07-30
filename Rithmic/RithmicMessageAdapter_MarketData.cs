@@ -322,10 +322,12 @@ public partial class RithmicMessageAdapter
 				continue;
 
 			var bids = new QuoteChange[msg.BidPrice.Count];
+
 			for (var i = 0; i < bids.Length; i++)
 				bids[i] = new QuoteChange((decimal)msg.BidPrice[i], i < msg.BidSize.Count ? msg.BidSize[i] : 0);
 
 			var asks = new QuoteChange[msg.AskPrice.Count];
+
 			for (var i = 0; i < asks.Length; i++)
 				asks[i] = new QuoteChange((decimal)msg.AskPrice[i], i < msg.AskSize.Count ? msg.AskSize[i] : 0);
 

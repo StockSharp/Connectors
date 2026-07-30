@@ -210,6 +210,7 @@ public partial class BitexbookMessageAdapter
 		else
 		{
 			await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 			await SendSubscriptionResultAsync(statusMsg, cancellationToken);
 		}
 	}

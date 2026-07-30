@@ -233,8 +233,10 @@ public partial class ZoomexMessageAdapter
 		if (!values.Add(value))
 			return false;
 		order.Enqueue(value);
+
 		while (order.Count > _maximumDeliveryKeys)
 			values.Remove(order.Dequeue());
+
 		return true;
 	}
 

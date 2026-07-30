@@ -139,6 +139,7 @@ public partial class NubraMessageAdapter
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId,
 			cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId ==
@@ -181,6 +182,7 @@ public partial class NubraMessageAdapter
 		long? count = null)
 	{
 		var left = count ?? long.MaxValue;
+
 		foreach (var order in (await _restClient.GetOrders(cancellationToken))
 			.Where(order => order != null)
 			.OrderBy(GetOrderTime))
@@ -210,6 +212,7 @@ public partial class NubraMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId ==
@@ -279,6 +282,7 @@ public partial class NubraMessageAdapter
 
 		var positions = (await _restClient.GetPositions(cancellationToken))
 			.Portfolio?.Positions ?? [];
+
 		foreach (var position in positions)
 		{
 			await SendOutMessageAsync(
@@ -318,6 +322,7 @@ public partial class NubraMessageAdapter
 
 		var holdings = (await _restClient.GetHoldings(cancellationToken))
 			.Portfolio?.Holdings ?? [];
+
 		foreach (var holding in holdings)
 		{
 			await SendOutMessageAsync(

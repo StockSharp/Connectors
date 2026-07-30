@@ -243,11 +243,14 @@ sealed class AnchorageSocketClient : BaseLogReceiver
 				subscriptions = [.. _subscriptions.Values];
 				orders = [.. _watchedOrders.Values];
 			}
+
 			foreach (var subscription in subscriptions)
 				await SendAsync(RefreshTimestamp(subscription), cancellationToken);
+
 			foreach (var order in orders)
 				await SendAsync(RefreshTimestamp(order), cancellationToken);
 		}
+
 		if (StateChanged is { } handler)
 			await handler(state, cancellationToken);
 	}

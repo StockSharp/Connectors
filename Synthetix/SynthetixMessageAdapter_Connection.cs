@@ -126,6 +126,7 @@ public partial class SynthetixMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets)
 			{
 				market.Symbol = market.Symbol.Trim().ToUpperInvariant();
@@ -145,6 +146,7 @@ public partial class SynthetixMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_prices.Clear();
+
 			foreach (var price in prices.Where(static price =>
 				price?.Symbol.IsEmpty() == false))
 				_prices[price.Symbol.Trim().ToUpperInvariant()] = price;

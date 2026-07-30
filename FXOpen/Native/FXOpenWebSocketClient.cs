@@ -390,8 +390,10 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
 		}
 		this.AddInfoLog("Restoring FXOpen subscriptions: {0} feed, {1} bars.",
 			feeds.Length, bars.Length);
+
 		foreach (var channel in feeds)
 			await SendFeedSubscriptionAsync(client, channel, true, cancellationToken);
+
 		foreach (var channel in bars)
 			await SendBarSubscriptionAsync(client, channel, true, cancellationToken);
 	}
@@ -593,6 +595,7 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
 		_feed = null;
 		_trade = null;
 		Exception failure = null;
+
 		foreach (var client in new[] { feed, trade })
 		{
 			if (client is null)
@@ -611,6 +614,7 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
 				client.Dispose();
 			}
 		}
+
 		if (failure is not null)
 			throw failure;
 	}

@@ -132,6 +132,7 @@ public partial class CoinSpotMessageAdapter
 			var market = GetMarket(group.Key);
 			if (market is null)
 				continue;
+
 			foreach (var pair in group)
 				await SendLevel1Async(
 					market,
@@ -150,6 +151,7 @@ public partial class CoinSpotMessageAdapter
 				group.Key,
 				maximum,
 				cancellationToken);
+
 			foreach (var pair in group)
 				await SendDepthAsync(
 					pair.Value.SecurityCode,
@@ -165,11 +167,13 @@ public partial class CoinSpotMessageAdapter
 		{
 			var trades = await RestClient.GetPublicTradesAsync(
 				group.Key, cancellationToken);
+
 			foreach (var trade in (trades ?? [])
 				.OrderBy(static trade => trade.Time))
 			{
 				if (!AddTrade(group.Key, trade.Id, false))
 					continue;
+
 				foreach (var pair in group)
 					await SendPublicTradeAsync(
 						pair.Value.SecurityCode,

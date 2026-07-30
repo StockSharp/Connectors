@@ -10,11 +10,13 @@ public partial class GMTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static item => item.Code,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -42,6 +44,7 @@ public partial class GMTradeMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -50,6 +53,7 @@ public partial class GMTradeMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -69,12 +73,14 @@ public partial class GMTradeMessageAdapter
 		var market = GetMarket(mdMsg.SecurityId);
 		await SendLevel1Async(market, mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -88,6 +94,7 @@ public partial class GMTradeMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -116,6 +123,7 @@ public partial class GMTradeMessageAdapter
 			.OrderBy(static trade => trade.Timestamp.EnsureUtc())
 			.TakeLast(limit)
 			.ToArray();
+
 		foreach (var trade in trades)
 		{
 			await SendPublicTradeAsync(market, trade, mdMsg.TransactionId,
@@ -123,13 +131,16 @@ public partial class GMTradeMessageAdapter
 			if (!mdMsg.IsHistoryOnly())
 				TryAcceptTrade(_seenPublicTrades, trade.Id);
 		}
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -143,6 +154,7 @@ public partial class GMTradeMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -174,10 +186,13 @@ public partial class GMTradeMessageAdapter
 			.OrderBy(static candle => candle.Timestamp)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -258,6 +273,7 @@ public partial class GMTradeMessageAdapter
 			subscriptions = [.. _level1Subscriptions
 				.Where(pair => pair.Value.MarketToken == market.MarketToken)
 				.Select(static pair => pair.Key)];
+
 		foreach (var transactionId in subscriptions)
 			await SendLevel1Async(market, transactionId, cancellationToken);
 	}
@@ -314,6 +330,7 @@ public partial class GMTradeMessageAdapter
 				To = serverTime.AddSeconds(2),
 			}, HistoryLimit, cancellationToken);
 			_lastPublicTradePoll = serverTime;
+
 			foreach (var trade in trades.Where(static trade => trade is not null)
 				.OrderBy(static trade => trade.Timestamp.EnsureUtc()))
 			{
@@ -323,9 +340,11 @@ public partial class GMTradeMessageAdapter
 				var targets = publicSubscriptions.Where(item =>
 					item.MarketToken == trade.MarketToken).Select(static item =>
 					item.TransactionId).ToArray();
+
 				foreach (var target in targets)
 					await SendPublicTradeAsync(market, trade, target,
 						cancellationToken);
+
 				await PublishLastTradeAsync(market, trade, cancellationToken);
 			}
 		}
@@ -342,6 +361,7 @@ public partial class GMTradeMessageAdapter
 				To = serverTime.AddSeconds(2),
 			}, HistoryLimit, cancellationToken);
 			_lastAccountTradePoll = serverTime;
+
 			foreach (var trade in trades.Where(static trade => trade is not null)
 				.OrderBy(static trade => trade.Timestamp.EnsureUtc()))
 				if (TryAcceptTrade(_seenAccountTrades, trade.Id))
@@ -380,6 +400,7 @@ public partial class GMTradeMessageAdapter
 		var price = trade.ExecutionPrice.FromOraclePrice(market.IndexDecimals,
 			"execution price");
 		var volume = GetTradeVolume(trade, market.IndexDecimals);
+
 		foreach (var target in targets)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -413,6 +434,7 @@ public partial class GMTradeMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Values.Where(item =>
 				item.IndexToken == candle.IndexToken &&
 				item.Resolution == candle.Resolution)];
+
 		foreach (var subscription in subscriptions)
 			if (TryGetMarketByToken(subscription.MarketToken, out var market))
 				await SendCandleAsync(market, candle, subscription.TimeFrame,

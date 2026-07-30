@@ -182,6 +182,7 @@ public partial class ZerodhaMessageAdapter
 
 		foreach (var item in await GetRest().GetInstruments(cancellationToken))
 			CacheInstrument(item);
+
 		if (token is > 0 && _instruments.TryGetValue(token.Value, out instrument))
 			return instrument;
 		if (_instrumentsBySymbol.TryGetValue(key, out instrument))

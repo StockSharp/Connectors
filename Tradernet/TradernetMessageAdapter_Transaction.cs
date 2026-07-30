@@ -117,6 +117,7 @@ public partial class TradernetMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -158,6 +159,7 @@ public partial class TradernetMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -318,6 +320,7 @@ public partial class TradernetMessageAdapter
             return;
 
         var orders = new Dictionary<long, TradernetOrder>();
+
         foreach (var order in
             await Rest.GetCurrentOrders(
                 false, cancellationToken))
@@ -334,6 +337,7 @@ public partial class TradernetMessageAdapter
                 .ToUniversalTime();
             var to = (filter.To ?? DateTime.UtcNow)
                 .ToUniversalTime();
+
             foreach (var order in
                 await Rest.GetHistoricalOrders(
                     from, to, cancellationToken))
@@ -345,6 +349,7 @@ public partial class TradernetMessageAdapter
 
         var skip = Math.Max(0, filter.Skip ?? 0);
         var left = filter.Count ?? long.MaxValue;
+
         foreach (var order in orders.Values
             .OrderBy(value => value.GetOrderTime()))
         {

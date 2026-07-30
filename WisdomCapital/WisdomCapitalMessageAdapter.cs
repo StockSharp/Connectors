@@ -329,6 +329,7 @@ public partial class WisdomCapitalMessageAdapter
                 pair.Key,
                 out var instrument))
                 continue;
+
             foreach (var dataType in pair.Value.Keys.ToArray())
             {
                 var messageCode = dataType == DataType.Ticks

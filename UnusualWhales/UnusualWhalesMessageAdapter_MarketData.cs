@@ -24,6 +24,7 @@ public partial class UnusualWhalesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -77,6 +78,7 @@ public partial class UnusualWhalesMessageAdapter
         var remaining = lookupMsg.Count ?? long.MaxValue;
         var seen = new HashSet<string>(
             StringComparer.OrdinalIgnoreCase);
+
         foreach (var listing in data?.Listings ?? [])
         {
             if (listing is null || listing.Ticker.IsEmpty())
@@ -123,6 +125,7 @@ public partial class UnusualWhalesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -196,6 +199,7 @@ public partial class UnusualWhalesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -236,6 +240,7 @@ public partial class UnusualWhalesMessageAdapter
             cancellationToken);
         var remaining = mdMsg.Count ?? long.MaxValue;
         var seen = new HashSet<DateTime>();
+
         foreach (var item in candles
             .Where(item => item is not null)
             .Select(item => new
@@ -296,6 +301,7 @@ public partial class UnusualWhalesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -326,6 +332,7 @@ public partial class UnusualWhalesMessageAdapter
             DateTime Time)>();
         var seen = new HashSet<string>(
             StringComparer.OrdinalIgnoreCase);
+
         for (var page = 1;
             page <= MaxPages && collected.Count < target;
             page++)
@@ -335,6 +342,7 @@ public partial class UnusualWhalesMessageAdapter
                 page,
                 perPage,
                 cancellationToken);
+
             foreach (var headline in headlines ?? [])
             {
                 if (headline is null ||
@@ -354,6 +362,7 @@ public partial class UnusualWhalesMessageAdapter
                 if (seen.Add(key))
                     collected.Add((headline, time));
             }
+
             if ((headlines?.Count ?? 0) < perPage)
                 break;
         }
@@ -398,6 +407,7 @@ public partial class UnusualWhalesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(

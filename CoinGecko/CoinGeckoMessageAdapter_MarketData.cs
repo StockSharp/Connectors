@@ -7,6 +7,7 @@ public partial class CoinGeckoMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		if (securityTypes.Count > 0 &&
 			!securityTypes.Contains(SecurityTypes.CryptoCurrency))
@@ -47,6 +48,7 @@ public partial class CoinGeckoMessageAdapter
 		if (coinsRequested && left > 0)
 		{
 			var quote = CoinGeckoExtensions.NormalizeCurrency(QuoteCurrency);
+
 			foreach (var coin in await GetCoinsAsync(cancellationToken))
 			{
 				if (!Matches(coin, value))
@@ -68,6 +70,7 @@ public partial class CoinGeckoMessageAdapter
 				var response = await SafeRest().SearchPoolsAsync(value,
 					OnchainNetwork?.Trim(), page, cancellationToken);
 				var resources = response?.Data ?? [];
+
 				foreach (var resource in resources)
 				{
 					var key = CreatePoolKey(resource, response?.Included);
@@ -79,6 +82,7 @@ public partial class CoinGeckoMessageAdapter
 					if (left <= 0)
 						break;
 				}
+
 				if (resources.Length < 20)
 					break;
 			}
@@ -92,6 +96,7 @@ public partial class CoinGeckoMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -120,6 +125,7 @@ public partial class CoinGeckoMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, key, securityId, remaining,
 			null, null, cancellationToken);
 		await SendSubscriptionResultAsync(message, cancellationToken);
@@ -130,6 +136,7 @@ public partial class CoinGeckoMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -167,11 +174,13 @@ public partial class CoinGeckoMessageAdapter
 				.OrderBy(static item => item.ServerTime)
 				.TakeLast(maximum)
 				.ToArray();
+
 			foreach (var trade in selected)
 			{
 				RememberTrade(trade.TradeStringId);
 				await SendOutMessageAsync(trade, cancellationToken);
 			}
+
 			if (remaining is > 0)
 				remaining = Math.Max(0, remaining.Value - selected.Length);
 		}
@@ -181,6 +190,7 @@ public partial class CoinGeckoMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, key, securityId, remaining,
 			null, null, cancellationToken);
 		await SendSubscriptionResultAsync(message, cancellationToken);
@@ -191,6 +201,7 @@ public partial class CoinGeckoMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -236,6 +247,7 @@ public partial class CoinGeckoMessageAdapter
 				cancellationToken)
 			: await GetPoolCandlesAsync(key, from, to, timeFrame, count,
 				cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(securityId, candle, timeFrame,
 				message.TransactionId, CandleStates.Finished, cancellationToken);
@@ -248,6 +260,7 @@ public partial class CoinGeckoMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, key, securityId, remaining,
 			timeFrame, candles.LastOrDefault(), cancellationToken);
 		await SendSubscriptionResultAsync(message, cancellationToken);
@@ -266,6 +279,7 @@ public partial class CoinGeckoMessageAdapter
 		{
 			foreach (var coin in coins.Where(static coin => coin?.Id.IsEmpty() == false))
 				_coins[coin.Id] = coin;
+
 			return [.. _coins.Values];
 		}
 	}
@@ -514,6 +528,7 @@ public partial class CoinGeckoMessageAdapter
 		var raw = new List<CoinGeckoPoolOhlcv>();
 		var seen = new HashSet<decimal>();
 		long? before = ToUnix(to) + 1;
+
 		while (raw.Count < maximum)
 		{
 			var page = await SafeRest().GetPoolOhlcvPageAsync(key.Network,
@@ -521,15 +536,18 @@ public partial class CoinGeckoMessageAdapter
 				Math.Min(1000, maximum - raw.Count), cancellationToken);
 			if (page.Length == 0)
 				break;
+
 			foreach (var item in page)
 				if (seen.Add(item.Timestamp))
 					raw.Add(item);
+
 			var oldest = page.Min(static item => item.Timestamp);
 			if (oldest.ToCoinGeckoTime() <= from ||
 				before == checked((long)oldest))
 				break;
 			before = checked((long)oldest);
 		}
+
 		var source = raw.Select(item => new CoinGeckoCandle
 		{
 			OpenTime = item.Timestamp.ToCoinGeckoTime(),
@@ -710,6 +728,7 @@ public partial class CoinGeckoMessageAdapter
 					update.QuoteCurrency.IsEmpty("usd")))];
 		var time = (update.Timestamp ?? ToUnix(CurrentTime))
 			.ToCoinGeckoTime();
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -742,6 +761,7 @@ public partial class CoinGeckoMessageAdapter
 				AddressEquals(item.Key.TokenAddress, update.TokenAddress))];
 		var time = (update.Timestamp ?? ToUnix(CurrentTime))
 			.ToCoinGeckoTime();
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -776,6 +796,7 @@ public partial class CoinGeckoMessageAdapter
 				item.DataType == DataType.Ticks &&
 				item.Key.Network.EqualsIgnoreCase(update.Network) &&
 				AddressEquals(item.Key.PoolAddress, update.PoolAddress))];
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendOutMessageAsync(new ExecutionMessage
@@ -822,6 +843,7 @@ public partial class CoinGeckoMessageAdapter
 				item.DataType.IsTFCandles && item.TimeFrame == timeFrame &&
 				item.Key.Network.EqualsIgnoreCase(update.Network) &&
 				AddressEquals(item.Key.PoolAddress, update.PoolAddress))];
+
 		foreach (var subscription in subscriptions)
 		{
 			CoinGeckoCandle finished = null;

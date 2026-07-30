@@ -126,6 +126,7 @@ class OandaStreamingClient(string endpoint, SecureString token, bool useCompress
 						const int maxLineErrorCount = 100;
 
 						string line;
+
 						while (!_parent.IsDisposed && !token.IsCancellationRequested && (line = await reader.ReadLineAsync(token).NoWait()) != null)
 						{
 							try

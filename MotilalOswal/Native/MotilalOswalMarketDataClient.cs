@@ -127,6 +127,7 @@ sealed class MotilalOswalMarketDataClient : BaseLogReceiver
 		memory.CopyTo(data.AsMemory(_pending.Length));
 
 		var completeLength = data.Length - data.Length % _packetLength;
+
 		for (var offset = 0; offset < completeLength; offset += _packetLength)
 		{
 			var packet = data.AsSpan(offset, _packetLength);

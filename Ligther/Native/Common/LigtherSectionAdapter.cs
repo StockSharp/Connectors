@@ -354,6 +354,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 		var lastOpen = from;
 
 		var rows = GetTradeRows(await RestClient.GetRecentTradesAsync(marketId, _maxTradesLimit, cancellationToken));
+
 		foreach (var candle in BuildCandles(rows, marketId, timeFrame, from, to))
 		{
 			candle.OriginalTransactionId = mdMsg.TransactionId;
@@ -539,6 +540,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 		var marketId = statusMsg.SecurityId.SecurityCode.IsEmpty() ? (int?)null : ResolveMarketId(statusMsg.SecurityId);
 
 		var inactive = await RestClient.GetAccountInactiveOrdersAsync(Owner.AccountIndex, 1.Max(statusMsg.Count?.To<int>() ?? 100), marketId, authToken, cancellationToken);
+
 		foreach (var order in (inactive["orders"] as JArray)?.OfType<JObject>() ?? [])
 		{
 			var id = order["market_id"]?.Value<int?>() ?? order["marketId"]?.Value<int?>();
@@ -566,6 +568,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 		}
 
 		var txs = await RestClient.GetAccountTxsAsync(1.Max(statusMsg.Count?.To<int>() ?? 100), Owner.AccountIndex, marketId, authToken, cancellationToken);
+
 		foreach (var tx in (txs["txs"] as JArray)?.OfType<JObject>() ?? [])
 		{
 			if (!tx["type"]?.Value<string>().EqualsIgnoreCase("trade") == true)

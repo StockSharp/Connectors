@@ -7,6 +7,7 @@ public partial class BitkubMessageAdapter
 		SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class BitkubMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static market => market.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -44,6 +46,7 @@ public partial class BitkubMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -52,6 +55,7 @@ public partial class BitkubMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -103,6 +107,7 @@ public partial class BitkubMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -162,6 +167,7 @@ public partial class BitkubMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -181,6 +187,7 @@ public partial class BitkubMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var trades = await RestClient.GetTradesAsync(market.Symbol, count,
 			cancellationToken);
+
 		foreach (var trade in trades.Where(trade =>
 		{
 			var time = trade.Timestamp.FromBitkubTimestamp();
@@ -313,6 +320,7 @@ public partial class BitkubMessageAdapter
 				trade.Amount, trade.Side);
 			if (!AddPublicTrade(symbol, tradeId))
 				continue;
+
 			foreach (var pair in tickSubscriptions)
 				await SendPublicTradeAsync(symbol, trade.Timestamp, trade.Price,
 					trade.Amount, trade.Side, pair.Key, cancellationToken);
@@ -320,11 +328,13 @@ public partial class BitkubMessageAdapter
 
 		if ((data.Bids?.Length ?? 0) == 0 && (data.Asks?.Length ?? 0) == 0)
 			return;
+
 		foreach (var pair in depthSubscriptions)
 			await SendDepthAsync(symbol, CurrentTime,
 				ToQuotes(data.Bids, false, pair.Value.Depth),
 				ToQuotes(data.Asks, true, pair.Value.Depth), pair.Key,
 				cancellationToken);
+
 		await SendBookLevel1Async(symbol, ToQuotes(data.Bids, false, 1),
 			ToQuotes(data.Asks, true, 1), cancellationToken);
 	}
@@ -336,11 +346,13 @@ public partial class BitkubMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendDepthAsync(symbol, CurrentTime,
 				ToQuotes(depth.Bids, false, pair.Value.Depth),
 				ToQuotes(depth.Asks, true, pair.Value.Depth), pair.Key,
 				cancellationToken);
+
 		await SendBookLevel1Async(symbol, ToQuotes(depth.Bids, false, 1),
 			ToQuotes(depth.Asks, true, 1), cancellationToken);
 	}
@@ -352,6 +364,7 @@ public partial class BitkubMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -378,6 +391,7 @@ public partial class BitkubMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{

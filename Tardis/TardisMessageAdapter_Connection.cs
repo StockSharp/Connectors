@@ -68,6 +68,7 @@ public partial class TardisMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_instruments.Clear();
+
 			foreach (var instrument in instruments.Where(IsValidInstrument))
 				_instruments[instrument.Key] = instrument;
 		}
@@ -114,6 +115,7 @@ public partial class TardisMessageAdapter
 				_streams.Clear();
 				_liveSubscriptions.Clear();
 			}
+
 			foreach (var stream in streams)
 			{
 				stream.MessageReceived -= OnStreamMessageAsync;

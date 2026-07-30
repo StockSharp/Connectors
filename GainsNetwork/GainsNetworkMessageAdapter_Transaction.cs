@@ -319,6 +319,7 @@ public partial class GainsNetworkMessageAdapter
 				(GetTradeType(item.Trade) == GainsTradeTypes.Stop) ==
 					cancelMsg.IsStop.Value)
 			.ToArray();
+
 		foreach (var order in orders)
 		{
 			var orderIndex = GetTradeIndex(order.Trade);
@@ -344,6 +345,7 @@ public partial class GainsNetworkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -365,12 +367,14 @@ public partial class GainsNetworkMessageAdapter
 		await SendPortfolioSnapshotAsync(await tradesTask, await variablesTask,
 			lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		using (_sync.EnterScope())
 			_nextAccountRefresh = CurrentTime + AccountRefreshInterval;
@@ -382,6 +386,7 @@ public partial class GainsNetworkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -401,12 +406,14 @@ public partial class GainsNetworkMessageAdapter
 		await SendOrderSnapshotAsync(await tradesTask, await historyTask,
 			statusMsg, false, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		using (_sync.EnterScope())
 			_nextAccountRefresh = CurrentTime + AccountRefreshInterval;
@@ -579,6 +586,7 @@ public partial class GainsNetworkMessageAdapter
 		var time = DateTime.UtcNow;
 		UpdateServerTime(time);
 		var userCollaterals = userVariables.Collaterals ?? [];
+
 		foreach (var collateral in Variables.Collaterals ?? [])
 		{
 			if (collateral is null || !collateral.IsActive)
@@ -594,12 +602,14 @@ public partial class GainsNetworkMessageAdapter
 			await SendOutMessageAsync(CreateBalanceMessage(collateral.Symbol,
 				value, transactionId, time), cancellationToken);
 		}
+
 		await SendOutMessageAsync(CreateBalanceMessage(_deployment.NativeSymbol,
 			(await nativeTask).FromBaseUnits(18), transactionId, time),
 			cancellationToken);
 
 		var currentPositions = new HashSet<string>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var container in trades.Where(static item => item?.Trade is not
 			null && item.Trade.IsOpen &&
 			GetTradeType(item.Trade) == GainsTradeTypes.Market))
@@ -664,6 +674,7 @@ public partial class GainsNetworkMessageAdapter
 			_knownPositions.Clear();
 			_knownPositions.UnionWith(currentPositions);
 		}
+
 		foreach (var key in removed)
 		{
 			var (pairIndex, tradeIndex) = ParsePositionKey(key);
@@ -694,6 +705,7 @@ public partial class GainsNetworkMessageAdapter
 		var pending = trades.Where(static item => item?.Trade is not null &&
 			item.Trade.IsOpen &&
 			GetTradeType(item.Trade) != GainsTradeTypes.Market).ToArray();
+
 		foreach (var item in pending)
 		{
 			var market = GetMarket(GetPairIndex(item.Trade));
@@ -703,6 +715,7 @@ public partial class GainsNetworkMessageAdapter
 		}
 
 		var historyIndices = new HashSet<int>();
+
 		foreach (var item in history.Where(static item => item is not null &&
 			IsExecutionAction(item.Action)))
 		{
@@ -734,6 +747,7 @@ public partial class GainsNetworkMessageAdapter
 			.Take((statusMsg.Count ?? int.MaxValue).Min(int.MaxValue).To<int>())
 			.OrderBy(static entry => entry.Order.ServerTime)
 			.ToArray();
+
 		foreach (var entry in selected)
 		{
 			UpdateServerTime(entry.Order.ServerTime);
@@ -752,9 +766,11 @@ public partial class GainsNetworkMessageAdapter
 				!historyIndices.Contains(pair.Key))
 				.Select(static pair => pair.Value)];
 			_knownOrders.Clear();
+
 			foreach (var pair in current)
 				_knownOrders.Add(pair.Key, pair.Value);
 		}
+
 		foreach (var item in removed)
 		{
 			var market = GetMarket(GetPairIndex(item.Trade));

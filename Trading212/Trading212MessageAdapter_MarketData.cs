@@ -7,9 +7,11 @@ public partial class Trading212MessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		await EnsureMetadata(cancellationToken);
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in _instruments.CachedValues.OrderBy(item => item.Ticker))
 		{
 			var securityType = instrument.Type.ToSecurityType();
@@ -32,6 +34,7 @@ public partial class Trading212MessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 }

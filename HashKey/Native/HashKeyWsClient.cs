@@ -189,6 +189,7 @@ sealed class HashKeyWsClient : BaseLogReceiver
 			Subscription[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions];
+
 			foreach (var subscription in subscriptions)
 				await SendSubscriptionAsync(client, subscription, true,
 					cancellationToken);

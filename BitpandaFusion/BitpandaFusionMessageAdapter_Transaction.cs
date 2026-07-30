@@ -141,6 +141,7 @@ public partial class BitpandaFusionMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -163,6 +164,7 @@ public partial class BitpandaFusionMessageAdapter
 			BoardCode = BoardCodes.BitpandaFusion,
 			OriginalTransactionId = lookupMsg.TransactionId,
 		}, cancellationToken);
+
 		foreach (var balance in await RestClient.GetBalancesAsync(null,
 			cancellationToken) ?? [])
 		{
@@ -192,6 +194,7 @@ public partial class BitpandaFusionMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -241,6 +244,7 @@ public partial class BitpandaFusionMessageAdapter
 			.Skip(skip.Min(int.MaxValue).To<int>());
 		if (statusMsg.Count is long requested)
 			selected = selected.Take(requested.Min(int.MaxValue).To<int>());
+
 		foreach (var order in selected)
 			await SendOrderAsync(order, statusMsg.TransactionId,
 				GetTrackedOrder(order.Id), cancellationToken);
@@ -256,6 +260,7 @@ public partial class BitpandaFusionMessageAdapter
 		var result = new List<BitpandaFusionOrder>();
 		var cursors = new HashSet<string>(StringComparer.Ordinal);
 		var cursor = initial.Cursor;
+
 		while (result.Count < maximum)
 		{
 			var left = maximum == long.MaxValue
@@ -278,6 +283,7 @@ public partial class BitpandaFusionMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return result;
 	}
 
@@ -289,6 +295,7 @@ public partial class BitpandaFusionMessageAdapter
 		var cursor = default(string);
 		var cursors = new HashSet<string>(StringComparer.Ordinal);
 		var sent = 0L;
+
 		while (sent < maximum)
 		{
 			var limit = maximum == long.MaxValue
@@ -304,6 +311,7 @@ public partial class BitpandaFusionMessageAdapter
 				Cursor = cursor,
 			}, cancellationToken);
 			var values = page?.Data ?? [];
+
 			foreach (var trade in values.Where(trade =>
 				MatchesTrade(trade, statusMsg)).OrderBy(GetTradeTime))
 			{
@@ -312,6 +320,7 @@ public partial class BitpandaFusionMessageAdapter
 				if (++sent >= maximum)
 					return;
 			}
+
 			var next = page?.Meta?.NextCursor;
 			if (page?.Meta?.IsNextPageAvailable != true || next.IsEmpty() ||
 				!cursors.Add(next) || values.Length == 0)

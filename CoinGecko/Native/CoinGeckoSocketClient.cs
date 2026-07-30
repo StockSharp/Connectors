@@ -191,15 +191,18 @@ sealed class CoinGeckoSocketClient : BaseLogReceiver
 		this.AddInfoLog("CoinGecko WebSocket state: {0}.", state);
 		if (state != ConnectionStates.Restored)
 			return;
+
 		await _subscriptionGate.WaitAsync(cancellationToken);
 		try
 		{
 			CoinGeckoStreamKey[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions];
+
 			foreach (var channel in subscriptions.Select(item => item.Channel).Distinct())
 				await SendChannelAsync(channel, CoinGeckoSocketCommands.Subscribe,
 					cancellationToken);
+
 			foreach (var subscription in subscriptions)
 				await SendDataAsync(subscription, true, cancellationToken);
 		}

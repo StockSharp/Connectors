@@ -10,6 +10,7 @@ public partial class RavenPackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -44,6 +45,7 @@ public partial class RavenPackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveLiveSubscription(mdMsg.OriginalTransactionId);
@@ -80,6 +82,7 @@ public partial class RavenPackMessageAdapter
 			var target = checked((int)Math.Min(remaining ?? MaxRecords, MaxRecords));
 			var records = await GetHistory(queryFrom, queryTo, resolved?.EntityId,
 				target, from == null, cancellationToken);
+
 			foreach (var item in records)
 			{
 				await SendNews(mdMsg.TransactionId,
@@ -177,6 +180,7 @@ public partial class RavenPackMessageAdapter
 		var response = await SafeRest().GetRecords(DatasetId, query, cancellationToken);
 		var records = new List<HistoricalRecord>();
 		var ids = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var record in response?.Records ?? [])
 		{
 			if (record == null || !record.MatchesEntity(entityId) ||
@@ -189,6 +193,7 @@ public partial class RavenPackMessageAdapter
 				continue;
 			records.Add(new(record, time));
 		}
+
 		var ordered = records.OrderBy(item => item.Time);
 		return (takeLast ? ordered.TakeLast(target) : ordered.Take(target)).ToArray();
 	}

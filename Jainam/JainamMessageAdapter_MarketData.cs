@@ -25,6 +25,7 @@ public partial class JainamMessageAdapter
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId,
             cancellationToken);
+
         var securityTypes = lookupMsg.GetSecurityTypes();
         var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -123,6 +124,7 @@ public partial class JainamMessageAdapter
         CancellationToken cancellationToken)
     {
         await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
         if (_socketClient == null)
             throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 

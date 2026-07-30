@@ -289,9 +289,11 @@ public partial class ExanteMessageAdapter
     private async Task StopStreams()
     {
         _connectionCts?.Cancel();
+
         foreach (var subscription in
             _marketSubscriptions.CachedValues)
             subscription.Cancellation.Cancel();
+
         _privateStreamCts?.Cancel();
 
         var tasks = _marketSubscriptions.CachedValues
@@ -317,6 +319,7 @@ public partial class ExanteMessageAdapter
         foreach (var subscription in
             _marketSubscriptions.CachedValues)
             subscription.Cancellation.Dispose();
+
         _marketSubscriptions.Clear();
         _privateStreamCts?.Dispose();
         _privateStreamCts = null;
@@ -339,6 +342,7 @@ public partial class ExanteMessageAdapter
     {
         if (symbol is null)
             return;
+
         foreach (var alias in aliases.Append(symbol.SymbolId)
             .Append(symbol.Ticker)
             .Where(a => !a.IsEmpty()))

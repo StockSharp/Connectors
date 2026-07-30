@@ -60,6 +60,7 @@ public partial class CurveMessageAdapter
 			{
 				var allPools = await ApiClient.GetAllPoolsAsync(
 					cancellationToken);
+
 				foreach (var pool in allPools)
 				{
 					if (pool?.Address.IsEmpty() != false)
@@ -71,6 +72,7 @@ public partial class CurveMessageAdapter
 			}
 
 			var selected = new List<CurveApiPool>();
+
 			foreach (var poolId in definitions.Select(static item => item.PoolId)
 				.Distinct(StringComparer.OrdinalIgnoreCase))
 			{
@@ -79,6 +81,7 @@ public partial class CurveMessageAdapter
 						$"Curve API has no Ethereum pool '{poolId}'.");
 				selected.Add(pool);
 			}
+
 			selected.AddRange(largePools
 				.Where(IsDiscoverablePool)
 				.OrderByDescending(static pool => pool.TotalValueLocked ?? 0m)
@@ -87,6 +90,7 @@ public partial class CurveMessageAdapter
 				.Take(MaximumDiscoveredPools));
 
 			var errors = new List<Exception>();
+
 			foreach (var source in selected)
 			{
 				try
@@ -240,6 +244,7 @@ public partial class CurveMessageAdapter
 			cancellationToken);
 
 		var coins = new CurveToken[source.Coins.Length];
+
 		for (var index = 0; index < source.Coins.Length; index++)
 		{
 			var apiAddress = source.Coins[index].Address.NormalizeAddress();
@@ -252,6 +257,7 @@ public partial class CurveMessageAdapter
 			coins[index] = await RpcClient.GetTokenAsync(source.Coins[index],
 				index, cancellationToken);
 		}
+
 		if (coins.Select(static coin => coin.Address).Distinct(
 			StringComparer.OrdinalIgnoreCase).Count() != coins.Length)
 			throw new InvalidDataException(
@@ -276,6 +282,7 @@ public partial class CurveMessageAdapter
 		var oriented = definitions is { Length: > 0 }
 			? definitions
 			: [new CurveMarketDefinition { PoolId = poolId }];
+
 		foreach (var definition in oriented)
 		{
 			if (definition.BaseToken.IsEmpty())
@@ -287,6 +294,7 @@ public partial class CurveMessageAdapter
 						RegisterMarket(CreateMarket(pool, pair.BaseToken,
 							pair.QuoteToken, null));
 					}
+
 				continue;
 			}
 
@@ -376,6 +384,7 @@ public partial class CurveMessageAdapter
 		if (Pools.IsEmpty())
 			return [];
 		var result = new List<CurveMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -403,6 +412,7 @@ public partial class CurveMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result];
 	}
 

@@ -152,12 +152,14 @@ public partial class SynFuturesMessageAdapter
 				(entry.Order.Size.ParseIntegerOrZero() >= 0
 					? Sides.Buy : Sides.Sell) == cancelMsg.Side)
 			.ToArray();
+
 		foreach (var group in entries.GroupBy(static entry =>
 			PairKey(entry.Market.InstrumentAddress, entry.Market.Expiry)))
 		{
 			var market = group.First().Market;
 			var tickGroups = group.GroupBy(static entry => entry.Order.Tick)
 				.ToArray();
+
 			for (var index = 0; index < tickGroups.Length; index += 8)
 			{
 				var batch = tickGroups.Skip(index).Take(8).ToArray();
@@ -169,6 +171,7 @@ public partial class SynFuturesMessageAdapter
 				var time = await RpcClient.GetReceiptTimeAsync(receipt,
 					cancellationToken);
 				var commission = SynFuturesRpcClient.GetCommission(receipt);
+
 				foreach (var entry in batch.SelectMany(static tickGroup => tickGroup))
 				{
 					var size = entry.Order.Size.ParseIntegerOrZero("order size");
@@ -189,6 +192,7 @@ public partial class SynFuturesMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -206,12 +210,14 @@ public partial class SynFuturesMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		_lastAccountRefresh = DateTime.UtcNow;
 		await UpdatePortfolioStreamAsync(cancellationToken);
@@ -223,6 +229,7 @@ public partial class SynFuturesMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -233,12 +240,14 @@ public partial class SynFuturesMessageAdapter
 		}
 		await SendOrderSnapshotAsync(statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		_lastAccountRefresh = DateTime.UtcNow;
 		await UpdatePortfolioStreamAsync(cancellationToken);
@@ -481,6 +490,7 @@ public partial class SynFuturesMessageAdapter
 		await Task.WhenAll(portfolioTask, balancesTask, ethTask);
 		var time = DateTime.UtcNow;
 		UpdateServerTime(time);
+
 		foreach (var balance in (await balancesTask)?.Portfolios ?? [])
 		{
 			if (balance?.Symbol.IsEmpty() != false || balance.Decimals is < 0 or > 28)
@@ -494,12 +504,14 @@ public partial class SynFuturesMessageAdapter
 			await SendOutMessageAsync(CreateBalanceMessage(balance.Symbol,
 				current, reserved, transactionId, time), cancellationToken);
 		}
+
 		await SendOutMessageAsync(CreateBalanceMessage("ETH",
 			(await ethTask).FromBaseUnits(18), 0m, transactionId, time),
 			cancellationToken);
 
 		var currentPositions = new HashSet<string>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var item in (await portfolioTask)?.Portfolios ?? [])
 		{
 			var market = GetMarket(item?.InstrumentAddress, item?.Expiry ?? 0);
@@ -543,6 +555,7 @@ public partial class SynFuturesMessageAdapter
 			_knownPositions.Clear();
 			_knownPositions.UnionWith(currentPositions);
 		}
+
 		foreach (var key in removed)
 		{
 			var separator = key.LastIndexOf('_');
@@ -576,6 +589,7 @@ public partial class SynFuturesMessageAdapter
 		var entries = new List<ExecutionMessage>();
 		var active = new Dictionary<string, SynFuturesOpenOrder>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var entry in GetOpenOrders(await portfolioTask))
 		{
 			var message = CreateOpenOrderMessage(entry.Market, entry.Order,
@@ -583,6 +597,7 @@ public partial class SynFuturesMessageAdapter
 			entries.Add(message);
 			active[message.OrderStringId] = entry.Order;
 		}
+
 		foreach (var order in (await ordersTask)?.Items ?? [])
 		{
 			var market = GetMarket(order?.InstrumentAddress, order?.Expiry ?? 0);
@@ -590,6 +605,7 @@ public partial class SynFuturesMessageAdapter
 				entries.Add(CreateHistoryOrderMessage(market, order,
 					statusMsg.TransactionId));
 		}
+
 		var selected = entries.Where(message =>
 				IsSecurityMatch(message.SecurityId, statusMsg) &&
 				IsOrderMatch(message, statusMsg))
@@ -598,8 +614,10 @@ public partial class SynFuturesMessageAdapter
 			.Take((statusMsg.Count ?? int.MaxValue).Min(int.MaxValue).To<int>())
 			.OrderBy(static message => message.ServerTime)
 			.ToArray();
+
 		foreach (var message in selected)
 			await SendOutMessageAsync(message, cancellationToken);
+
 		foreach (var trade in ((await tradesTask)?.Items ?? [])
 			.Where(static trade => trade is not null)
 			.OrderBy(static trade => trade.Timestamp))
@@ -618,9 +636,11 @@ public partial class SynFuturesMessageAdapter
 				!active.ContainsKey(pair.Key)).Select(static pair =>
 					(pair.Key, pair.Value))];
 			_knownOrders.Clear();
+
 			foreach (var pair in active)
 				_knownOrders.Add(pair.Key, pair.Value);
 		}
+
 		foreach (var removedOrder in removed)
 		{
 			var parsed = SynFuturesExtensions.ParseOrderKey(
@@ -828,6 +848,7 @@ public partial class SynFuturesMessageAdapter
 			var market = GetMarket(item?.InstrumentAddress, item?.Expiry ?? 0);
 			if (market is null)
 				continue;
+
 			foreach (var order in item.Orders ?? [])
 				if (order is not null &&
 					order.Size.ParseIntegerOrZero("order size") != 0)

@@ -157,6 +157,7 @@ sealed class NasdaqCloudDataServiceClient : BaseLogReceiver, IDisposable
 		where T : class
 	{
 		var address = new Uri(_address, relative);
+
 		for (var attempt = 0; attempt < 4; attempt++)
 		{
 			using var request = new HttpRequestMessage(HttpMethod.Get, address);

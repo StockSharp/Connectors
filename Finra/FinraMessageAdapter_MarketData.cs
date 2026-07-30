@@ -22,6 +22,7 @@ public partial class FinraMessageAdapter
 		{
 			var rows = await LoadSecurityRows(
 				value, cancellationToken);
+
 			foreach (var row in rows
 				.Where(r => !r.Symbol.IsEmpty())
 				.GroupBy(
@@ -109,6 +110,7 @@ public partial class FinraMessageAdapter
 		}
 
 		var sent = 0;
+
 		foreach (var observation in selected)
 		{
 			await SendOutMessageAsync(

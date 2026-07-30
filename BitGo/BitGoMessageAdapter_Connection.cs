@@ -24,8 +24,10 @@ public partial class BitGoMessageAdapter
 			_selectedAccount = SelectAccount(accounts);
 			var products = await RestClient.GetProductsAsync(AccountId,
 				cancellationToken);
+
 			foreach (var product in products)
 				AddProduct(product);
+
 			if (GetProducts().Length == 0)
 				throw new InvalidDataException(
 					"BitGo returned no Prime trading products for the selected account.");

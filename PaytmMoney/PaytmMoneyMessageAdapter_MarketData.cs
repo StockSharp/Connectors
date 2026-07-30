@@ -24,6 +24,7 @@ public partial class PaytmMoneyMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         var securityTypes = lookupMsg.GetSecurityTypes();
         var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -124,6 +125,7 @@ public partial class PaytmMoneyMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         var instrumentKey =
             mdMsg.SecurityId.ToInstrumentKey();
 
@@ -191,6 +193,7 @@ public partial class PaytmMoneyMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
             return;
 

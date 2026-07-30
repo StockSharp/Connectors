@@ -201,8 +201,10 @@ public partial class MiraeSharekhanMessageAdapter
 		var symbolKey = CreateSymbolKey(exchange, securityId.SecurityCode);
 		if (_instrumentsBySymbol.TryGetValue(symbolKey, out var instrument))
 			return instrument;
+
 		foreach (var item in await GetRest().GetInstruments(exchange, cancellationToken))
 			CacheInstrument(item);
+
 		if (_instrumentsBySymbol.TryGetValue(symbolKey, out instrument))
 			return instrument;
 		throw new InvalidOperationException($"Mirae Asset Sharekhan instrument " +

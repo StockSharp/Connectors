@@ -104,6 +104,7 @@ public partial class BitFlyerMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var subscriptionId in subscriptions)
 			await SendPortfolioSnapshotAsync(subscriptionId, cancellationToken);
 	}

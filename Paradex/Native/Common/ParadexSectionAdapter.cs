@@ -282,6 +282,7 @@ abstract class ParadexSectionAdapter : BaseNativeAdapter
 		var lastOpen = from;
 
 		var trades = GetTradeRows(await RestClient.GetTradesAsync(market, _maxTradesLimit, cancellationToken));
+
 		foreach (var candle in BuildCandles(market, trades, timeFrame, from, to))
 		{
 			candle.OriginalTransactionId = mdMsg.TransactionId;
@@ -431,6 +432,7 @@ abstract class ParadexSectionAdapter : BaseNativeAdapter
 		}
 
 		var ordersResponse = await RestClient.GetOrdersAsync(market, null, cancellationToken);
+
 		foreach (var order in ExtractObjects(ordersResponse, "results", "orders", "data", "list"))
 		{
 			var side = ParseSide(order["side"]?.Value<string>());
@@ -464,6 +466,7 @@ abstract class ParadexSectionAdapter : BaseNativeAdapter
 		}, cancellationToken);
 
 		var balances = await RestClient.GetBalancesAsync(null, cancellationToken);
+
 		foreach (var balance in ExtractObjects(balances, "results", "balances", "data", "list"))
 		{
 			var asset = ResolveAssetCode(balance);
@@ -496,6 +499,7 @@ abstract class ParadexSectionAdapter : BaseNativeAdapter
 		if (!IsSpotSection)
 		{
 			var positions = await RestClient.GetPositionsAsync(null, cancellationToken);
+
 			foreach (var position in ExtractObjects(positions, "results", "positions", "data", "list"))
 			{
 				var market = position["market"]?.Value<string>()?.ToUpperInvariant()
@@ -700,6 +704,7 @@ abstract class ParadexSectionAdapter : BaseNativeAdapter
 			return normalized;
 
 		var compact = secCode.Replace("-", string.Empty, StringComparison.Ordinal);
+
 		foreach (var symbol in _marketsBySymbol.Keys)
 		{
 			if (symbol.Replace("-", string.Empty, StringComparison.Ordinal).EqualsIgnoreCase(compact))

@@ -157,6 +157,7 @@ public partial class CoincallMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_instruments.Clear();
+
 			foreach (var instrument in instruments ?? [])
 			{
 				if (instrument?.Symbol.IsEmpty() != false)
@@ -206,6 +207,7 @@ public partial class CoincallMessageAdapter
 			if (!_seenTradeIds.Add(key))
 				return false;
 			_seenTradeOrder.Enqueue(key);
+
 			while (_seenTradeOrder.Count >
 				_maximumRememberedTradeIds)
 				_seenTradeIds.Remove(_seenTradeOrder.Dequeue());

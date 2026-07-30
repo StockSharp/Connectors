@@ -100,6 +100,7 @@ public partial class ReyaMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_accounts.Clear();
+
 			foreach (var account in accounts.Where(static account =>
 				account is not null && account.AccountId > 0))
 				_accounts.TryAdd(account.Type, account.AccountId);
@@ -163,6 +164,7 @@ public partial class ReyaMessageAdapter
 		{
 			_markets.Clear();
 			_prices.Clear();
+
 			foreach (var market in markets)
 			{
 				if (!_markets.TryAdd(market.Symbol, market))
@@ -170,10 +172,13 @@ public partial class ReyaMessageAdapter
 						"Reya returned duplicate symbol '" + market.Symbol + "'.");
 				_prices.Add(market.Symbol, new());
 			}
+
 			foreach (var summary in perpetualSummaries)
 				ApplySummaryUnsafe(summary);
+
 			foreach (var summary in spotSummaries)
 				ApplySummaryUnsafe(summary);
+
 			foreach (var price in prices)
 				ApplyPriceUnsafe(price);
 		}
@@ -270,9 +275,11 @@ public partial class ReyaMessageAdapter
 		DepthSubscription[] depths;
 		using (_sync.EnterScope())
 			depths = [.. _depthSubscriptions.Values];
+
 		foreach (var subscription in depths)
 			await SendDepthSnapshotAsync(subscription.Symbol,
 				subscription.TransactionId, subscription.Depth, cancellationToken);
+
 		long[] portfolios;
 		KeyValuePair<long, OrderStatusSubscription>[] orders;
 		using (_sync.EnterScope())
@@ -280,8 +287,10 @@ public partial class ReyaMessageAdapter
 			portfolios = [.. _portfolioSubscriptions];
 			orders = [.. _orderSubscriptions];
 		}
+
 		foreach (var transactionId in portfolios)
 			await SendPortfolioSnapshotAsync(transactionId, cancellationToken);
+
 		foreach (var (transactionId, subscription) in orders)
 			await SendOrderSnapshotAsync(subscription, transactionId,
 				cancellationToken);

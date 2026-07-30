@@ -182,6 +182,7 @@ public partial class LunoMessageAdapter
 				holder.Client)];
 			_marketStreams.Clear();
 		}
+
 		foreach (var socket in marketSockets)
 			await DisposeMarketSocketAsync(socket, cancellationToken);
 
@@ -239,8 +240,10 @@ public partial class LunoMessageAdapter
 				holder.Client)];
 			_marketStreams.Clear();
 		}
+
 		foreach (var socket in marketSockets)
 			socket.Dispose();
+
 		_userSocketClient?.Dispose();
 		_userSocketClient = null;
 		_restClient?.Dispose();

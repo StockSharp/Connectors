@@ -340,6 +340,7 @@ public partial class TpexMessageAdapter
         }
 
         var records = new List<TpexDailyRecord>();
+
         foreach (var month in months)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -377,6 +378,7 @@ public partial class TpexMessageAdapter
     {
         var month = new DateTime(from.Year, from.Month, 1);
         var last = new DateTime(to.Year, to.Month, 1);
+
         while (month <= last)
         {
             yield return month;

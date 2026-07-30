@@ -9,6 +9,7 @@ partial class QmtMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var markets = message.SecurityId.BoardCode?.ToUpperInvariant() switch
 		{
 			BoardCodes.Sse or "SH" => ["SH"],
@@ -68,6 +69,7 @@ partial class QmtMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var client = EnsureClient();
 		if (!message.IsSubscribe)
 		{
@@ -111,6 +113,7 @@ partial class QmtMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var client = EnsureClient();
 		if (!message.IsSubscribe)
 		{

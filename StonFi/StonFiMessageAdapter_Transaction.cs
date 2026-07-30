@@ -146,6 +146,7 @@ public partial class StonFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -175,6 +176,7 @@ public partial class StonFiMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -186,6 +188,7 @@ public partial class StonFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -230,6 +233,7 @@ public partial class StonFiMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -248,15 +252,19 @@ public partial class StonFiMessageAdapter
 			active = [.. _trackedSwaps.Values.Where(static swap =>
 				swap.State == OrderStates.Active)];
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var item in orderTargets)
 			await SendOrderSnapshotAsync(item.Value, item.Key, false,
 				cancellationToken);
@@ -330,6 +338,7 @@ public partial class StonFiMessageAdapter
 					.Select(static group => group.First())
 			];
 		var result = new List<(StonAssetInfo, BigInteger)>();
+
 		foreach (var asset in assets)
 		{
 			var walletAsset = await RestClient.GetWalletAssetAsync(
@@ -344,6 +353,7 @@ public partial class StonFiMessageAdapter
 						$"'{asset.GetSymbol()}' balance.");
 			result.Add((asset, balance));
 		}
+
 		return [.. result];
 	}
 
@@ -359,21 +369,24 @@ public partial class StonFiMessageAdapter
 	{
 		foreach (var item in balances)
 		{
-			var current = item.Balance.FromBaseUnits(
-				item.Asset.GetDecimals());
-			if (current == 0 && !item.Asset.IsNative())
-				continue;
-			var key = $"{target}:" +
-				item.Asset.Address.NormalizeTonAddress();
-			var fingerprint = new BalanceFingerprint(current);
-			using (_sync.EnterScope())
-			{
+				var current = item.Balance.FromBaseUnits(
+					item.Asset.GetDecimals());
+				if (current == 0 && !item.Asset.IsNative())
+					continue;
+
+				var key = $"{target}:" +
+					item.Asset.Address.NormalizeTonAddress();
+				var fingerprint = new BalanceFingerprint(current);
+
+				using (_sync.EnterScope())
+				{
 				if (!isForced && _balanceFingerprints.TryGetValue(key,
 					out var previous) && previous == fingerprint)
 					continue;
-				_balanceFingerprints[key] = fingerprint;
-			}
-			await SendOutMessageAsync(new PositionChangeMessage
+					_balanceFingerprints[key] = fingerprint;
+				}
+
+				await SendOutMessageAsync(new PositionChangeMessage
 			{
 				PortfolioName = GetPortfolioName(),
 				SecurityId = new()
@@ -399,6 +412,7 @@ public partial class StonFiMessageAdapter
 			since = until.AddDays(-30);
 		var operations = await RestClient.GetOperationsAsync(
 			TonClient.WalletAddress, since, until, cancellationToken);
+
 		foreach (var operation in operations)
 		{
 			if (operation is null ||
@@ -490,6 +504,7 @@ public partial class StonFiMessageAdapter
 			];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			if (subscription.States is { Length: > 0 } states &&
@@ -604,6 +619,7 @@ public partial class StonFiMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

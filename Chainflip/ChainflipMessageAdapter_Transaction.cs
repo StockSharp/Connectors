@@ -151,6 +151,7 @@ public partial class ChainflipMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -179,6 +180,7 @@ public partial class ChainflipMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -190,6 +192,7 @@ public partial class ChainflipMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -236,6 +239,7 @@ public partial class ChainflipMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -327,12 +331,15 @@ public partial class ChainflipMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -457,12 +464,14 @@ public partial class ChainflipMessageAdapter
 		var assets = ChainflipExtensions.Assets.Where(static asset =>
 			asset.IsEvm).ToArray();
 		var result = new List<(ChainflipAsset, BigInteger)>();
+
 		foreach (var asset in assets)
 		{
 			var client = GetEvmClient(asset.Chain);
 			result.Add((asset, await client.GetBalanceAsync(asset,
 				cancellationToken)));
 		}
+
 		return [.. result];
 	}
 
@@ -518,6 +527,7 @@ public partial class ChainflipMessageAdapter
 				.OrderBy(static swap => swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			if (swap.State == OrderStates.Active)
@@ -672,6 +682,7 @@ public partial class ChainflipMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

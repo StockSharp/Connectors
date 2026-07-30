@@ -50,6 +50,7 @@ public partial class CowProtocolMessageAdapter
 					error);
 			}
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -67,6 +68,7 @@ public partial class CowProtocolMessageAdapter
 						error.Message);
 				}
 			}
+
 			CowProtocolMarket[] markets;
 			using (_sync.EnterScope())
 				markets = [.. _markets.Values];
@@ -232,6 +234,7 @@ public partial class CowProtocolMessageAdapter
 			? Chain.GetDefaultMarkets()
 			: Markets;
 		var result = new List<CowProtocolMarketDefinition>();
+
 		foreach (var item in configured.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -251,6 +254,7 @@ public partial class CowProtocolMessageAdapter
 					: null,
 			});
 		}
+
 		if (result.Count == 0)
 			throw new InvalidOperationException(
 				"At least one CoW Protocol market must be configured.");

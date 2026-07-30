@@ -24,6 +24,7 @@ public partial class FinancialDatasetsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -85,6 +86,7 @@ public partial class FinancialDatasetsMessageAdapter
         var remaining = lookupMsg.Count ?? long.MaxValue;
         var seen = new HashSet<string>(
             StringComparer.OrdinalIgnoreCase);
+
         foreach (var value in responseTickers.Tickers ?? [])
         {
             var ticker = value?.Trim().ToUpperInvariant();
@@ -124,6 +126,7 @@ public partial class FinancialDatasetsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -182,6 +185,7 @@ public partial class FinancialDatasetsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -220,6 +224,7 @@ public partial class FinancialDatasetsMessageAdapter
             cancellationToken);
         var remaining = mdMsg.Count ?? long.MaxValue;
         var seen = new HashSet<DateTime>();
+
         foreach (var item in response.Prices
             .Where(item => item is not null)
             .Select(item => new
@@ -274,6 +279,7 @@ public partial class FinancialDatasetsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -304,6 +310,7 @@ public partial class FinancialDatasetsMessageAdapter
             NewsLimit));
         var response = await SafeClient().GetNews(
             ticker, target, cancellationToken);
+
         foreach (var item in response.News
             .Where(item =>
                 item is not null &&
@@ -362,6 +369,7 @@ public partial class FinancialDatasetsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(

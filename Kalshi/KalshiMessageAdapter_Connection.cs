@@ -19,9 +19,11 @@ public partial class KalshiMessageAdapter
 			{
 				Parent = this,
 			};
+
 			foreach (var market in await RestClient.GetMarketsAsync(1,
 				cancellationToken))
 				AddMarket(market);
+
 			_socketClient = new(SocketEndpoint, _authenticator,
 				ReConnectionSettings.WorkingTime,
 				ReConnectionSettings.ReAttemptCount)

@@ -142,6 +142,7 @@ public partial class LemonMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -168,6 +169,7 @@ public partial class LemonMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -205,10 +207,12 @@ public partial class LemonMarketsMessageAdapter
 		await Task.WhenAll(ordersTask, tradesTask);
 		var orders = await ordersTask ?? [];
 		var trades = await tradesTask ?? [];
+
 		foreach (var trade in trades)
 			RegisterTradeValue(trade);
 
 		var selectedOrderIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var order in orders.OrderByDescending(GetOrderTime))
 		{
 			if (!IsOrderMatch(order, filter))
@@ -228,6 +232,7 @@ public partial class LemonMarketsMessageAdapter
 		foreach (var trade in trades.Where(trade => trade != null &&
 			selectedOrderIds.Contains(trade.Order)).OrderBy(trade => trade.ExecutedAt))
 			await ProcessTrade(trade, originalTransactionId, isLookup, cancellationToken);
+
 		_lastEventRefresh = CurrentTime;
 	}
 
@@ -346,6 +351,7 @@ public partial class LemonMarketsMessageAdapter
 			.Where(id => !id.IsEmpty()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 		var orderIds = events.Select(item => item.Context?.Order)
 			.Where(id => !id.IsEmpty()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var tradeId in tradeIds)
 		{
 			var trade = await _client.GetTrade(_account.Id, tradeId, cancellationToken);
@@ -353,14 +359,17 @@ public partial class LemonMarketsMessageAdapter
 			if (trade?.Order.IsEmpty() == false)
 				orderIds.Add(trade.Order);
 		}
+
 		foreach (var orderId in orderIds)
 		{
 			var order = await _client.GetOrder(_account.Id, orderId, cancellationToken);
 			await ProcessOrder(order, _orderStatusSubscriptionId, false, false,
 				cancellationToken);
 		}
+
 		foreach (var item in events)
 			_processedEvents.Add(item.Id);
+
 		var newest = events.Length == 0 ? pollStarted
 			: events.Max(item => item.CreatedAt.NormalizeUtc());
 		_eventSince = (newest < pollStarted ? pollStarted : newest) - TimeSpan.FromSeconds(30);
@@ -404,8 +413,10 @@ public partial class LemonMarketsMessageAdapter
 			.Select(position => position.Instrument.Isin)
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
 		var previousIsins = _positionIsins.CopyAndClear();
+
 		foreach (var isin in currentIsins)
 			_positionIsins.Add(isin);
+
 		if (!isLookup)
 		{
 			foreach (var isin in previousIsins.Where(isin => !currentIsins.Contains(isin)))
@@ -444,6 +455,7 @@ public partial class LemonMarketsMessageAdapter
 			.TryAdd(PositionChangeTypes.Currency, position.Currency.ToCurrency()),
 				cancellationToken);
 		}
+
 		_lastPortfolioRefresh = CurrentTime;
 		_lastConnectionCheck = CurrentTime;
 	}

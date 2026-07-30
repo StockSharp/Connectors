@@ -270,6 +270,7 @@ public partial class TossSecuritiesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -309,6 +310,7 @@ public partial class TossSecuritiesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -401,6 +403,7 @@ public partial class TossSecuritiesMessageAdapter
         var regular = new List<(TossOrder order, long account)>();
         var conditional = new List<(
             TossConditionalOrder order, long account)>();
+
         foreach (var accountSequence in accountSequences)
         {
             foreach (var symbol in symbols)
@@ -472,6 +475,7 @@ public partial class TossSecuritiesMessageAdapter
             .OrderBy(item => item.time)
             .Skip((int)Math.Min(skip, int.MaxValue))
             .Take((int)Math.Min(count, int.MaxValue));
+
         foreach (var item in selected)
         {
             if (item.regular is not null)
@@ -493,6 +497,7 @@ public partial class TossSecuritiesMessageAdapter
                     cancellationToken);
             }
         }
+
         _lastOrderRefresh = DateTimeOffset.UtcNow;
     }
 
@@ -506,6 +511,7 @@ public partial class TossSecuritiesMessageAdapter
         CancellationToken cancellationToken)
     {
         string cursor = null;
+
         do
         {
             var page = await _restClient.GetOrders(
@@ -537,6 +543,7 @@ public partial class TossSecuritiesMessageAdapter
         CancellationToken cancellationToken)
     {
         string cursor = null;
+
         do
         {
             var page =
@@ -821,6 +828,7 @@ public partial class TossSecuritiesMessageAdapter
 
             var holdings = await _restClient.GetHoldings(
                 accountSequence, null, cancellationToken);
+
             foreach (var holding in holdings?.Items ?? [])
             {
                 await SendOutMessageAsync(

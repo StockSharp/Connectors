@@ -128,6 +128,7 @@ public partial class CopperMessageAdapter : MessageAdapter, IKeySecretAdapter
 		using (_sync.EnterScope())
 		{
 			_portfolios.Clear();
+
 			foreach (var portfolio in portfolios.Where(static item =>
 				item is not null && !item.Id.IsEmpty()))
 			{
@@ -140,6 +141,7 @@ public partial class CopperMessageAdapter : MessageAdapter, IKeySecretAdapter
 					IsClearLoop = portfolio.Type == CopperPortfolioTypes.ClearLoop,
 				};
 			}
+
 			foreach (var portfolio in clearLoopPortfolios.Where(static item =>
 				item is not null && !item.PortfolioId.IsEmpty() &&
 				!item.ClientAccountId.IsEmpty()))
@@ -164,6 +166,7 @@ public partial class CopperMessageAdapter : MessageAdapter, IKeySecretAdapter
 		using (_sync.EnterScope())
 		{
 			_currencies.Clear();
+
 			foreach (var currency in currencies.Where(static item =>
 				item is not null && !item.Currency.IsEmpty()))
 				_currencies.TryAdd(currency.Currency, currency);

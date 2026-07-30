@@ -240,11 +240,13 @@ sealed class OstiumSocketClient : BaseLogReceiver
 			socket = _socket ?? throw new InvalidOperationException(
 				"Ostium price stream is not connected.");
 		var buffer = new byte[81920];
+
 		while (!cancellationToken.IsCancellationRequested &&
 			socket.State == WebSocketState.Open)
 		{
 			using var stream = new MemoryStream();
 			WebSocketReceiveResult result;
+
 			do
 			{
 				result = await socket.ReceiveAsync(buffer, cancellationToken);
@@ -259,6 +261,7 @@ sealed class OstiumSocketClient : BaseLogReceiver
 				stream.Write(buffer, 0, result.Count);
 			}
 			while (!result.EndOfMessage);
+
 			var text = Encoding.UTF8.GetString(stream.GetBuffer(), 0,
 				checked((int)stream.Length));
 			await ProcessAsync(text, cancellationToken);
@@ -286,6 +289,7 @@ sealed class OstiumSocketClient : BaseLogReceiver
 				var snapshot = JsonConvert.DeserializeObject<OstiumPriceSnapshot>(
 					text, _settings) ?? throw new InvalidDataException(
 						"Ostium price stream returned an empty snapshot.");
+
 				foreach (var price in snapshot.Data ?? [])
 					if (price is not null && PriceReceived is not null)
 						await PriceReceived(price, cancellationToken);

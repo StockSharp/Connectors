@@ -9,6 +9,7 @@ public partial class SamcoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		await EnsureInstrumentsAsync(cancellationToken);
 		var board = lookupMsg.SecurityId.BoardCode?.Trim()
@@ -21,6 +22,7 @@ public partial class SamcoMessageAdapter
 			? lookupMsg.Count.Value
 			: long.MaxValue;
 		var sent = 0L;
+
 		foreach (var instrument in instruments)
 		{
 			if (!board.IsEmpty() &&
@@ -40,6 +42,7 @@ public partial class SamcoMessageAdapter
 			if (++sent >= maximum)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg,
 			cancellationToken);
 	}
@@ -84,6 +87,7 @@ public partial class SamcoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -107,6 +111,7 @@ public partial class SamcoMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = instrument;
 		await SubscribeFeedAsync(instrument, cancellationToken);
@@ -120,6 +125,7 @@ public partial class SamcoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -143,6 +149,7 @@ public partial class SamcoMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = instrument;
 		await SubscribeFeedAsync(instrument, cancellationToken);
@@ -156,6 +163,7 @@ public partial class SamcoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -175,6 +183,7 @@ public partial class SamcoMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		var instrument = await ResolveInstrumentAsync(mdMsg.SecurityId,
 			cancellationToken);
 		using (_sync.EnterScope())
@@ -190,6 +199,7 @@ public partial class SamcoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -219,6 +229,7 @@ public partial class SamcoMessageAdapter
 			? (int)Math.Min(mdMsg.Count.Value, int.MaxValue)
 			: int.MaxValue;
 		var selected = candles.TakeLast(count).ToArray();
+
 		foreach (var candle in selected)
 			await SendCandleAsync(candle, instrument, timeFrame,
 				mdMsg.TransactionId,
@@ -226,6 +237,7 @@ public partial class SamcoMessageAdapter
 					? CandleStates.Finished
 					: CandleStates.Active,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() ||
 			mdMsg.To is DateTime end &&
 			end.ToUniversalTime() <= CurrentTime)
@@ -234,6 +246,7 @@ public partial class SamcoMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -277,6 +290,7 @@ public partial class SamcoMessageAdapter
 			instrument))
 			await SendLevel1Async(target.Instrument, feed, target.Id,
 				cancellationToken);
+
 		foreach (var target in FindTargets(_depthSubscriptions,
 			instrument))
 			await SendDepthAsync(target.Instrument, feed.Bids,
@@ -302,6 +316,7 @@ public partial class SamcoMessageAdapter
 		}
 		if (!isNew)
 			return;
+
 		foreach (var target in tickTargets)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -431,6 +446,7 @@ public partial class SamcoMessageAdapter
 				.. _candleSubscriptions.Select(static pair =>
 					(pair.Key, pair.Value))
 			];
+
 		foreach (var subscription in subscriptions)
 		{
 			var from = subscription.Value.LastTime == default
@@ -441,6 +457,7 @@ public partial class SamcoMessageAdapter
 				subscription.Value.Instrument,
 				subscription.Value.TimeFrame, from, CurrentTime,
 				cancellationToken);
+
 			foreach (var candle in candles.Where(candle =>
 				candle.Time.UtcDateTime >=
 					subscription.Value.LastTime))
@@ -452,6 +469,7 @@ public partial class SamcoMessageAdapter
 							? CandleStates.Finished
 							: CandleStates.Active,
 					cancellationToken);
+
 			var last = candles.LastOrDefault();
 			if (last is not null)
 				subscription.Value.LastTime = last.Time.UtcDateTime;
@@ -470,6 +488,7 @@ public partial class SamcoMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(static group => group.First())
 				.ToArray();
+
 		foreach (var instrument in instruments)
 		{
 			var quote = await RestClient.GetQuoteAsync(instrument,

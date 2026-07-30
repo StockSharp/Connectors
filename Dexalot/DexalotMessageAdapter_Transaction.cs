@@ -177,6 +177,7 @@ public partial class DexalotMessageAdapter
 						cancelMsg.SecurityId.SecurityCode)) &&
 				(cancelMsg.Side is null ||
 					order.Side == cancelMsg.Side))];
+
 		foreach (var order in orders)
 			await CancelOrderCoreAsync(order.OrderId, order.Pair,
 				cancelMsg.TransactionId, cancellationToken);
@@ -189,6 +190,7 @@ public partial class DexalotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -213,6 +215,7 @@ public partial class DexalotMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -224,6 +227,7 @@ public partial class DexalotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -266,6 +270,7 @@ public partial class DexalotMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -351,13 +356,16 @@ public partial class DexalotMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, balances,
 					cancellationToken);
 		}
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
+
 		if (_trackedOrders.Count > 0 && RestClient.CanReadPrivateData)
 			await SendRecentFillsAsync(orderTargets, cancellationToken);
 	}
@@ -382,6 +390,7 @@ public partial class DexalotMessageAdapter
 				StringComparer.OrdinalIgnoreCase)
 			.ToArray();
 		var result = new List<(string, int, BigInteger, BigInteger)>();
+
 		foreach (var asset in assets)
 		{
 			var balance = await EvmClient.GetBalanceAsync(
@@ -390,6 +399,7 @@ public partial class DexalotMessageAdapter
 			result.Add((asset.Symbol, asset.Decimals, balance.Total,
 				balance.Available));
 		}
+
 		return [.. result];
 	}
 
@@ -434,6 +444,7 @@ public partial class DexalotMessageAdapter
 			remote = await RestClient.GetOrdersAsync(pair,
 				subscription.From, subscription.To, subscription.Maximum,
 				cancellationToken) ?? [];
+
 			foreach (var order in remote)
 				UpdateTrackedOrder(order);
 		}
@@ -444,6 +455,7 @@ public partial class DexalotMessageAdapter
 				.OrderBy(static order => order.Time)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var order in tracked)
 		{
 			if (skipped++ < subscription.Skip)
@@ -462,8 +474,10 @@ public partial class DexalotMessageAdapter
 			}
 			await SendTrackedOrderAsync(order, target, cancellationToken);
 		}
+
 		var trackedIds = tracked.Select(static order => order.OrderId)
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var order in remote.Where(order =>
 			!order.OrderId.IsEmpty() &&
 			!trackedIds.Contains(order.OrderId)))
@@ -570,6 +584,7 @@ public partial class DexalotMessageAdapter
 			.AddMinutes(-1);
 		var fills = await RestClient.GetFillsAsync(from, DateTime.UtcNow,
 			100, cancellationToken) ?? [];
+
 		foreach (var fill in fills)
 		{
 			var owner = tracked.FirstOrDefault(order =>
@@ -582,6 +597,7 @@ public partial class DexalotMessageAdapter
 				.Append(owner.TransactionId)
 				.Distinct()
 				.ToArray();
+
 			foreach (var target in targets)
 				await SendFillAsync(owner, fill, target,
 					cancellationToken);

@@ -12,6 +12,7 @@ public partial class BreezeMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -39,6 +40,7 @@ public partial class BreezeMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -61,6 +63,7 @@ public partial class BreezeMessageAdapter
 	private async ValueTask ProcessMarketSubscription(MarketDataMessage mdMsg, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (_marketClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 		var instrument = await _restClient.GetInstrument(mdMsg.SecurityId, cancellationToken);
@@ -97,6 +100,7 @@ public partial class BreezeMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var instrument = await _restClient.GetInstrument(mdMsg.SecurityId, cancellationToken);
 		var timeFrame = mdMsg.GetTimeFrame();
 		if (!mdMsg.IsSubscribe)
@@ -119,6 +123,7 @@ public partial class BreezeMessageAdapter
 			IEnumerable<BreezeCandle> candles = await _restClient.GetCandles(instrument, timeFrame, mdMsg.From, mdMsg.To, cancellationToken);
 			if (mdMsg.Count is long count)
 				candles = candles.TakeLast((int)Math.Min(count, int.MaxValue));
+
 			foreach (var candle in candles)
 			{
 				await SendOutMessageAsync(new TimeFrameCandleMessage
@@ -142,6 +147,7 @@ public partial class BreezeMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (timeFrame == TimeSpan.FromDays(1))
 			throw new NotSupportedException("Breeze provides daily candles through history only.");
 
@@ -237,6 +243,7 @@ public partial class BreezeMessageAdapter
 		};
 		if (timeFrame == default)
 			return default;
+
 		foreach (var pair in _candleSubscriptions.ToArray())
 		{
 			if (!pair.Value.TryGetValue(timeFrame, out var subscriptionId) || !_instruments.TryGetValue(pair.Key, out var instrument) || !Matches(candle, instrument))
@@ -255,6 +262,7 @@ public partial class BreezeMessageAdapter
 				State = CandleStates.Active,
 			}, cancellationToken);
 		}
+
 		return default;
 	}
 

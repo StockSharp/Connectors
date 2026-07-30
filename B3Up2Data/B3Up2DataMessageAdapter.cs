@@ -17,6 +17,7 @@ public partial class B3Up2DataMessageAdapter
         this.AddSupportedMarketDataType(DataType.Level1);
         this.AddSupportedCandleTimeFrames(
             B3Up2DataExtensions.TimeFrames);
+
         foreach (var dataType in B3Up2DataDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }
@@ -258,6 +259,7 @@ public partial class B3Up2DataMessageAdapter
         var markers = new HashSet<string>(
             StringComparer.Ordinal);
         string marker = null;
+
         for (var page = 0;
             page < MaxPages && result.Count < maxItems;
             page++)
@@ -280,6 +282,7 @@ public partial class B3Up2DataMessageAdapter
                     "B3 UP2DATA Azure listing repeated a continuation marker.");
             }
         }
+
         return [.. result];
     }
 
@@ -322,6 +325,7 @@ public partial class B3Up2DataMessageAdapter
             CancellationToken cancellationToken)
     {
         asOf = asOf.ToUtcDate();
+
         for (var offset = 0; offset < LookbackDays; offset++)
         {
             var date = asOf.AddDays(-offset);
@@ -330,6 +334,7 @@ public partial class B3Up2DataMessageAdapter
             if (blobs.Length > 0)
                 return (date, blobs[0]);
         }
+
         return null;
     }
 

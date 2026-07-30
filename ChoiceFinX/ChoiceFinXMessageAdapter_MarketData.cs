@@ -94,6 +94,7 @@ public partial class ChoiceFinXMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         var key = mdMsg.SecurityId.ToInstrumentKey();
 
         if (!mdMsg.IsSubscribe)
@@ -142,6 +143,7 @@ public partial class ChoiceFinXMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
             return;
 
@@ -190,6 +192,7 @@ public partial class ChoiceFinXMessageAdapter
                 },
                 cancellationToken);
         }
+
         await SendSubscriptionFinishedAsync(
             mdMsg.TransactionId, cancellationToken);
     }
@@ -219,6 +222,7 @@ public partial class ChoiceFinXMessageAdapter
             var ticks = await _restClient.GetTouchlines(
                 batch.Select(item => item.native),
                 cancellationToken);
+
             foreach (var tick in ticks)
             {
                 var key =
@@ -250,6 +254,7 @@ public partial class ChoiceFinXMessageAdapter
                     _securityIds.TryGetValue2(key) ??
                     tick.SegmentId.ToSecurityId(
                         tick.Token);
+
                 foreach (var subscription in
                     subscriptions.ToArray())
                 {

@@ -9,6 +9,7 @@ public partial class FmpMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var board = lookupMsg.SecurityId.BoardCode;
 		var native = lookupMsg.SecurityId.Native as string;
@@ -78,6 +79,7 @@ public partial class FmpMessageAdapter
 			var exchange = requestedMarkets.Length == 1 &&
 				requestedMarkets[0] == FmpMarkets.Stocks
 				? exactNative ? nativeKey.Exchange : StockExchange : null;
+
 			foreach (var item in await SafeRest().SearchSymbol(value, searchLimit, exchange,
 				cancellationToken) ?? [])
 			{
@@ -87,6 +89,7 @@ public partial class FmpMessageAdapter
 				if (left <= 0)
 					break;
 			}
+
 			if (left > 0)
 			{
 				foreach (var item in await SafeRest().SearchName(value, searchLimit, exchange,
@@ -118,22 +121,27 @@ public partial class FmpMessageAdapter
 			{
 				var pageSize = checked((int)Math.Clamp(Math.Min(skip, 1000) +
 					Math.Min(left, 1000), 1, 1000));
+
 				for (var page = 0; left > 0; page++)
 				{
 					var values = await SafeRest().GetStockScreener(StockExchange, page,
 						pageSize, cancellationToken) ?? [];
+
 					foreach (var item in values)
 					{
 						await Emit(item, market);
 						if (left <= 0)
 							break;
 					}
+
 					if (values.Length < pageSize)
 						break;
 					await IterationInterval.Delay(cancellationToken);
 				}
+
 				continue;
 			}
+
 			foreach (var item in await SafeRest().GetSymbols(market,
 				cancellationToken) ?? [])
 			{
@@ -151,6 +159,7 @@ public partial class FmpMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -191,6 +200,7 @@ public partial class FmpMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -220,6 +230,7 @@ public partial class FmpMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -259,6 +270,7 @@ public partial class FmpMessageAdapter
 		}
 
 		var parsed = new List<ParsedBar>(values.Length);
+
 		foreach (var value in values)
 		{
 			if (value == null)
@@ -272,6 +284,7 @@ public partial class FmpMessageAdapter
 
 		var left = mdMsg.Count ?? long.MaxValue;
 		var emitted = new HashSet<long>();
+
 		foreach (var item in parsed.OrderBy(item => item.OpenTime))
 		{
 			var open = item.Value.Open ?? item.Value.AdjustedOpen;
@@ -310,6 +323,7 @@ public partial class FmpMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -342,16 +356,19 @@ public partial class FmpMessageAdapter
 		var values = new List<FmpNewsItem>();
 		var links = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		var pageSize = checked((int)Math.Min(250, target));
+
 		for (var page = 0; page <= 100 && values.Count < target; page++)
 		{
 			var result = await SafeRest().GetNews(market,
 				hasSecurity ? key.Symbol : null, from, to, page, pageSize,
 				cancellationToken) ?? [];
+
 			foreach (var item in result)
 			{
 				if (item != null && (item.Url.IsEmpty() || links.Add(item.Url)))
 					values.Add(item);
 			}
+
 			if (result.Length < pageSize)
 				break;
 			await IterationInterval.Delay(cancellationToken);

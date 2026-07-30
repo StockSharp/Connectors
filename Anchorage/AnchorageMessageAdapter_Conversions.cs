@@ -358,9 +358,11 @@ public partial class AnchorageMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var target in subscriptions)
 			if (Matches(target.Value, order))
 				targets.Add(target.Key);
+
 		foreach (var target in targets)
 		{
 			await SendTradingOrderAsync(order, target, false, cancellationToken,

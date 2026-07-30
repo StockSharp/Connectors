@@ -8,6 +8,7 @@ public partial class CoinhakoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -43,6 +44,7 @@ public partial class CoinhakoMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -52,6 +54,7 @@ public partial class CoinhakoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -119,6 +122,7 @@ public partial class CoinhakoMessageAdapter
 			GetMarket(pair.Value.Symbol).CounterCurrency)
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToArray();
+
 		foreach (var counter in counters)
 		{
 			var prices = await RestClient.GetSpotsAsync(null, counter,

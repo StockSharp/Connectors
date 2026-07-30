@@ -203,6 +203,7 @@ sealed class QFEXMarketDataWebSocketClient : BaseLogReceiver
 			var messages = first == '['
 				? Deserialize<QFEXMarketDataMessage[]>(payload)
 				: [Deserialize<QFEXMarketDataMessage>(payload)];
+
 			foreach (var item in messages.Where(static item => item is not null))
 			{
 				if (item.Error is not null)

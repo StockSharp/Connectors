@@ -47,6 +47,7 @@ public partial class StonFiMessageAdapter
 					_marketsByPool.Add(
 						market.Pool.Address.NormalizeTonAddress(), market);
 				}
+
 				_lastEventBlock = Math.Max(0,
 					latest.Block.Number -
 						StonFiExtensions.MaximumEventBlockRange);
@@ -140,6 +141,7 @@ public partial class StonFiMessageAdapter
 			StringComparer.OrdinalIgnoreCase);
 		var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		var result = new List<StonMarket>();
+
 		foreach (var pool in pools)
 		{
 			var poolAddress = pool.Address.NormalizeTonAddress();
@@ -175,6 +177,7 @@ public partial class StonFiMessageAdapter
 				Asset1 = asset1,
 			});
 		}
+
 		if (result.Count == 0)
 			throw new InvalidDataException(
 				"STON.fi returned no usable liquidity pools.");

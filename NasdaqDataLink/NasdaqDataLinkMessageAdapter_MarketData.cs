@@ -32,6 +32,7 @@ public partial class NasdaqDataLinkMessageAdapter
 		else
 		{
 			var page = 1;
+
 			while (left > 0)
 			{
 				var response = await SafeClient().Search(new NasdaqDataLinkSearchQuery
@@ -41,6 +42,7 @@ public partial class NasdaqDataLinkMessageAdapter
 					Page = page,
 				}, cancellationToken);
 				var datasets = response?.Datasets ?? [];
+
 				foreach (var dataset in datasets.WhereNotNull())
 				{
 					if (!dataset.Matches(value) ||
@@ -87,6 +89,7 @@ public partial class NasdaqDataLinkMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -101,6 +104,7 @@ public partial class NasdaqDataLinkMessageAdapter
 
 		var result = await GetObservations(mdMsg, cancellationToken);
 		var sent = 0;
+
 		foreach (var row in result.Rows)
 		{
 			var open = result.Columns.Get(row, result.Columns.Open);
@@ -143,6 +147,7 @@ public partial class NasdaqDataLinkMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -169,6 +174,7 @@ public partial class NasdaqDataLinkMessageAdapter
 				$"Nasdaq Data Link series '{result.Code}' does not expose native OHLC columns.");
 
 		var sent = 0;
+
 		foreach (var row in result.Rows)
 		{
 			var open = result.Columns.Get(row, result.Columns.Open);
@@ -242,6 +248,7 @@ public partial class NasdaqDataLinkMessageAdapter
 			ValueColumn, OpenColumn, HighColumn, LowColumn, CloseColumn,
 			VolumeColumn, OpenInterestColumn);
 		var rows = data.Data ?? [];
+
 		foreach (var row in rows)
 			columns.Validate(row);
 

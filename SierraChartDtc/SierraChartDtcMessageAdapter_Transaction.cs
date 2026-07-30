@@ -126,6 +126,7 @@ public partial class SierraChartDtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -171,6 +172,7 @@ public partial class SierraChartDtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -414,6 +416,7 @@ public partial class SierraChartDtcMessageAdapter
 			_securityLookups.TryGetAndRemove(reject.RequestId, out var security))
 		{
 			await SendSubscriptionReplyAsync(security.Message.TransactionId, cancellationToken, error);
+
 			return;
 		}
 
@@ -433,11 +436,13 @@ public partial class SierraChartDtcMessageAdapter
 					symbol.Asks.Clear();
 				}
 			}
+
 			foreach (var id in ids)
 			{
 				_marketSubscriptions.Remove(id);
 				await SendSubscriptionReplyAsync(id, cancellationToken, error);
 			}
+
 			return;
 		}
 

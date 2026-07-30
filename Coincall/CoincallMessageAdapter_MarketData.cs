@@ -9,11 +9,13 @@ public partial class CoincallMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in GetInstruments().OrderBy(
 			static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
@@ -48,6 +50,7 @@ public partial class CoincallMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -59,6 +62,7 @@ public partial class CoincallMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -101,6 +105,7 @@ public partial class CoincallMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		_ = WsClient;
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
@@ -135,6 +140,7 @@ public partial class CoincallMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -180,6 +186,7 @@ public partial class CoincallMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		_ = WsClient;
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = new()
@@ -215,6 +222,7 @@ public partial class CoincallMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -244,6 +252,7 @@ public partial class CoincallMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 100)
 			.Max(1).Min(1000).To<int>();
+
 		foreach (var trade in
 			(await RestClient.GetTradesAsync(
 				instrument.Symbol,
@@ -264,12 +273,14 @@ public partial class CoincallMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		_ = WsClient;
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
@@ -304,6 +315,7 @@ public partial class CoincallMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -342,6 +354,7 @@ public partial class CoincallMessageAdapter
 			.ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 1000)
 			.Max(1).Min(5000).To<int>();
+
 		foreach (var candle in
 			(await RestClient.GetCandlesAsync(
 				instrument.Symbol,
@@ -359,12 +372,14 @@ public partial class CoincallMessageAdapter
 				candle,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		_ = WsClient;
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
@@ -407,6 +422,7 @@ public partial class CoincallMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					instrument.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendLevel1Async(
 				instrument,
@@ -427,6 +443,7 @@ public partial class CoincallMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					instrument.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(
 				instrument,
@@ -449,6 +466,7 @@ public partial class CoincallMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					instrument.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendTradeAsync(
 				instrument,
@@ -470,6 +488,7 @@ public partial class CoincallMessageAdapter
 				pair.Value.Symbol.EqualsIgnoreCase(
 					instrument.Symbol) &&
 				pair.Value.TimeFrame == candle.TimeFrame)];
+
 		foreach (var pair in subscriptions)
 			await SendCandleAsync(
 				instrument,

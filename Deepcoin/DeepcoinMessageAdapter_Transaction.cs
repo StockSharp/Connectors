@@ -228,6 +228,7 @@ public partial class DeepcoinMessageAdapter
 			.Select(static order => order.OrderId)
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToArray();
+
 		for (var offset = 0; offset < orderIds.Length; offset += 50)
 		{
 			var result = await RestClient.BatchCancelAsync(new()
@@ -248,6 +249,7 @@ public partial class DeepcoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -260,6 +262,7 @@ public partial class DeepcoinMessageAdapter
 		}
 
 		await EnsureInstrumentMapsAsync(cancellationToken);
+
 		foreach (var productType in new[] { DeepcoinProductTypes.Spot, DeepcoinProductTypes.Swap })
 			await SendOutMessageAsync(new PortfolioMessage
 			{
@@ -267,13 +270,16 @@ public partial class DeepcoinMessageAdapter
 				BoardCode = BoardCodes.Deepcoin,
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
+
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		await PrivateWsClient.SubscribeTableAsync(DeepcoinPrivateTables.Account,
 			cancellationToken);
@@ -286,6 +292,7 @@ public partial class DeepcoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -305,11 +312,13 @@ public partial class DeepcoinMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, symbol, statusMsg.From,
 			statusMsg.To, limit, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		await PrivateWsClient.SubscribeTableAsync(DeepcoinPrivateTables.Order,
 			cancellationToken);
@@ -331,6 +340,7 @@ public partial class DeepcoinMessageAdapter
 				cancellationToken) ?? [])
 				RegisterInstrument(instrument?.InstrumentId);
 		}
+
 		using (_sync.EnterScope())
 			_instrumentMapsLoaded = true;
 	}
@@ -343,6 +353,7 @@ public partial class DeepcoinMessageAdapter
 			foreach (var balance in await RestClient.GetBalancesAsync(productType,
 				cancellationToken) ?? [])
 				await SendBalanceAsync(productType, balance, originalTransactionId, cancellationToken);
+
 			foreach (var position in await RestClient.GetPositionsAsync(productType, null,
 				cancellationToken) ?? [])
 				await SendPositionAsync(position, originalTransactionId, cancellationToken);
@@ -357,12 +368,14 @@ public partial class DeepcoinMessageAdapter
 			: [ResolveProductType(symbol)];
 		var orders = new List<DeepcoinOrder>();
 		orders.AddRange(await LoadPendingOrdersAsync(symbol, limit, cancellationToken));
+
 		foreach (var productType in productTypes)
 			orders.AddRange(await LoadOrderHistoryAsync(productType, symbol, limit,
 				cancellationToken));
 
 		var fromUtc = from?.ToUniversalTime();
 		var toUtc = to?.ToUniversalTime();
+
 		foreach (var order in orders
 			.Where(static item => item?.OrderId.IsEmpty() == false)
 			.GroupBy(static item => item.OrderId, StringComparer.OrdinalIgnoreCase)
@@ -373,9 +386,11 @@ public partial class DeepcoinMessageAdapter
 			await SendOrderAsync(order, originalTransactionId, cancellationToken);
 
 		var fills = new List<DeepcoinFill>();
+
 		foreach (var productType in productTypes)
 			fills.AddRange(await LoadFillsAsync(productType, symbol, fromUtc, toUtc, limit,
 				cancellationToken));
+
 		foreach (var fill in fills
 			.Where(static item => item?.TradeId.IsEmpty() == false)
 			.GroupBy(static item => item.BillId.IsEmpty() ? item.TradeId : item.BillId,
@@ -390,6 +405,7 @@ public partial class DeepcoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var result = new List<DeepcoinOrder>();
+
 		for (var page = 1; result.Count < maximum; page++)
 		{
 			var limit = (maximum - result.Count).Min(100).Max(1);
@@ -403,6 +419,7 @@ public partial class DeepcoinMessageAdapter
 			if (items.Length < limit)
 				break;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 
@@ -412,6 +429,7 @@ public partial class DeepcoinMessageAdapter
 	{
 		var result = new List<DeepcoinOrder>();
 		string cursor = null;
+
 		while (result.Count < maximum)
 		{
 			var limit = (maximum - result.Count).Min(100).Max(1);
@@ -428,6 +446,7 @@ public partial class DeepcoinMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 
@@ -437,6 +456,7 @@ public partial class DeepcoinMessageAdapter
 	{
 		var result = new List<DeepcoinFill>();
 		string cursor = null;
+
 		while (result.Count < maximum)
 		{
 			var limit = (maximum - result.Count).Min(100).Max(1);
@@ -455,6 +475,7 @@ public partial class DeepcoinMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 

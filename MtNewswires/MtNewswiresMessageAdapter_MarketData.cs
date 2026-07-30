@@ -7,6 +7,7 @@ public partial class MtNewswiresMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveLiveSubscription(mdMsg.OriginalTransactionId);
@@ -50,6 +51,7 @@ public partial class MtNewswiresMessageAdapter
 			}
 
 			var articles = Normalize(response, queryFrom, queryTo, target, from == null);
+
 			foreach (var article in articles)
 			{
 				await SendNews(mdMsg.TransactionId, requestedSecurity, article,
@@ -58,6 +60,7 @@ public partial class MtNewswiresMessageAdapter
 				if (remaining is > 0 && --remaining == 0)
 					break;
 			}
+
 			liveCursor = queryTo;
 		}
 
@@ -75,8 +78,10 @@ public partial class MtNewswiresMessageAdapter
 			CursorUtc = liveCursor,
 			Remaining = remaining,
 		};
+
 		foreach (var key in remembered)
 			subscription.TryRemember(key);
+
 		AddLiveSubscription(subscription);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 	}
@@ -88,6 +93,7 @@ public partial class MtNewswiresMessageAdapter
 			return [];
 		var result = new List<TimedArticle>();
 		var seen = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var article in response ?? [])
 		{
 			if (article == null || !article.TryGetTime(out var time) ||
@@ -99,6 +105,7 @@ public partial class MtNewswiresMessageAdapter
 			if (seen.Add(key))
 				result.Add(new(article, time, key));
 		}
+
 		var ordered = result.OrderBy(article => article.Time);
 		return (takeLatest ? ordered.TakeLast(target) : ordered.Take(target)).ToArray();
 	}

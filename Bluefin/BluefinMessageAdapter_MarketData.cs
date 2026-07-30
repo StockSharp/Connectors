@@ -8,10 +8,12 @@ public partial class BluefinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static market => market.Symbol,
 			StringComparer.Ordinal))
 		{
@@ -40,6 +42,7 @@ public partial class BluefinMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -48,6 +51,7 @@ public partial class BluefinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -73,6 +77,7 @@ public partial class BluefinMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var stream = "Ticker";
 		var key = StreamKey(market.Symbol, stream);
 		var subscribe = false;
@@ -108,6 +113,7 @@ public partial class BluefinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -137,6 +143,7 @@ public partial class BluefinMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var stream = "Diff_Depth_200_ms";
 		var key = StreamKey(market.Symbol, stream);
 		var subscribe = false;
@@ -173,6 +180,7 @@ public partial class BluefinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -203,13 +211,16 @@ public partial class BluefinMessageAdapter
 			.OrderBy(static trade => trade.ExecutedAtMillis)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var trade in history)
 			await SendTradeAsync(trade, mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var stream = "Recent_Trade";
 		var key = StreamKey(market.Symbol, stream);
 		var subscribe = false;
@@ -245,6 +256,7 @@ public partial class BluefinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -269,6 +281,7 @@ public partial class BluefinMessageAdapter
 		var count = GetCandleCount(mdMsg, timeFrame, to);
 		var candles = await RestClient.GetCandlesAsync(market.Symbol, interval,
 			from, to, count, cancellationToken) ?? [];
+
 		foreach (var candle in candles
 			.Where(static candle => candle is { Length: >= 9 })
 			.OrderBy(static candle => candle[0], StringComparer.Ordinal))
@@ -276,11 +289,13 @@ public partial class BluefinMessageAdapter
 				mdMsg.TransactionId, GetCandleOpenTime(candle) + timeFrame <=
 					ServerTime ? CandleStates.Finished : CandleStates.Active,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var stream = "Candlestick_" + interval + "_Last";
 		var key = StreamKey(market.Symbol, stream);
 		var subscribe = false;
@@ -529,6 +544,7 @@ public partial class BluefinMessageAdapter
 				.Where(subscription => subscription.Symbol.Equals(ticker.Symbol,
 					StringComparison.Ordinal))
 				.Select(static subscription => subscription.TransactionId)];
+
 		foreach (var transactionId in transactions)
 			await SendLevel1Async(ticker, transactionId, cancellationToken);
 	}
@@ -550,6 +566,7 @@ public partial class BluefinMessageAdapter
 						StringComparison.Ordinal))
 					.Select(static subscription => subscription.TransactionId)];
 			}
+
 			foreach (var transactionId in transactions)
 				await SendTradeAsync(trade, transactionId, cancellationToken);
 		}
@@ -581,6 +598,7 @@ public partial class BluefinMessageAdapter
 		OrderBookState book;
 		using (_sync.EnterScope())
 			book = _books[update.Symbol];
+
 		foreach (var subscription in subscriptions)
 			await SendDepthAsync(update.Symbol, book,
 				subscription.TransactionId, subscription.Depth, cancellationToken);
@@ -610,6 +628,7 @@ public partial class BluefinMessageAdapter
 				messages.Add((subscription.TransactionId,
 					subscription.TimeFrame, candle, CandleStates.Active));
 			}
+
 		foreach (var item in messages)
 			await SendCandleAsync(item.Candle, item.TimeFrame,
 				item.TransactionId, item.State, cancellationToken);

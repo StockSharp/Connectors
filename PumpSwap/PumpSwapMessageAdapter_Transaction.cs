@@ -119,6 +119,7 @@ public partial class PumpSwapMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -146,6 +147,7 @@ public partial class PumpSwapMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -157,6 +159,7 @@ public partial class PumpSwapMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -201,6 +204,7 @@ public partial class PumpSwapMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -222,12 +226,15 @@ public partial class PumpSwapMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -300,6 +307,7 @@ public partial class PumpSwapMessageAdapter
 			("SOL", PumpSwapExtensions.SystemProgramAddress, 9,
 				await RpcClient.GetBalanceAsync(cancellationToken)),
 		};
+
 		for (var offset = 0; offset < tokens.Length; offset += 100)
 		{
 			var chunk = tokens.Skip(offset).Take(100).ToArray();
@@ -309,6 +317,7 @@ public partial class PumpSwapMessageAdapter
 					token.TokenProgram)).ToArray();
 			var accounts = await RpcClient.GetAccountsAsync(addresses,
 				cancellationToken);
+
 			for (var index = 0; index < chunk.Length; index++)
 			{
 				var token = chunk[index];
@@ -319,6 +328,7 @@ public partial class PumpSwapMessageAdapter
 				result.Add((token.Symbol, token.Mint, token.Decimals, amount));
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -372,6 +382,7 @@ public partial class PumpSwapMessageAdapter
 					swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			var receipt = swap.State == OrderStates.Active

@@ -12,21 +12,28 @@ public partial class OrderlyNetworkMessageAdapter
 		var market = GetMarket(symbol);
 		var volume = regMsg.Volume.Abs();
 		var orderType = regMsg.OrderType ?? OrderTypes.Limit;
+
 		if (orderType is not (OrderTypes.Limit or OrderTypes.Market))
 			throw new NotSupportedException(
 				LocalizedStrings.OrderUnsupportedType.Put(orderType, 0));
+
 		var isPostOnly = regMsg.PostOnly == true;
+
 		if (orderType == OrderTypes.Market && isPostOnly)
 			throw new InvalidOperationException(
 				"An Orderly market order cannot be post-only.");
+
 		var condition = regMsg.Condition as OrderlyNetworkOrderCondition ?? new();
 		ValidateOrder(market, orderType, volume, regMsg.Price,
 			condition.VisibleQuantity, condition.Slippage);
 		var clientOrderId = CreateClientOrderId(regMsg.TransactionId,
 			regMsg.UserOrderId);
+
 		using (_sync.EnterScope())
 			_transactionIds[clientOrderId] = regMsg.TransactionId;
+
 		OrderlyNetworkOrderAcceptance result;
+
 		try
 		{
 			result = await RestClient.PlaceOrderAsync(new()
@@ -49,14 +56,18 @@ public partial class OrderlyNetworkMessageAdapter
 				_transactionIds.Remove(clientOrderId);
 			throw;
 		}
+
 		if (result is null || result.OrderId <= 0)
 			throw new InvalidDataException(
 				"Orderly Network accepted the order without returning an order ID.");
+
 		if (!result.ErrorMessage.IsEmpty() &&
 			!result.ErrorMessage.EqualsIgnoreCase("none"))
 			throw new InvalidOperationException(
 				"Orderly Network rejected the order: " + result.ErrorMessage);
+
 		UpdateServerTime(RestClient.ServerTime);
+
 		await SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Transactions,
@@ -96,14 +107,17 @@ public partial class OrderlyNetworkMessageAdapter
 		var orderId = ResolveOrderId(replaceMsg.OldOrderId,
 			replaceMsg.OldOrderStringId, "replacement");
 		var orderType = replaceMsg.OrderType ?? OrderTypes.Limit;
+
 		if (orderType != OrderTypes.Limit)
 			throw new NotSupportedException(
 				"Orderly Network can amend active limit orders only.");
+
 		var volume = replaceMsg.Volume.Abs();
 		var condition = replaceMsg.Condition as OrderlyNetworkOrderCondition ??
 			new();
 		ValidateOrder(market, orderType, volume, replaceMsg.Price,
 			condition.VisibleQuantity, condition.Slippage);
+
 		var result = await RestClient.EditOrderAsync(new()
 		{
 			OrderId = orderId.ToString(CultureInfo.InvariantCulture),
@@ -121,10 +135,13 @@ public partial class OrderlyNetworkMessageAdapter
 					: null,
 			Side = replaceMsg.Side.ToOrderly(),
 		}, cancellationToken);
+
 		if (result is null)
 			throw new InvalidDataException(
 				"Orderly Network returned no order-edit result.");
+
 		UpdateServerTime(RestClient.ServerTime);
+
 		await SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Transactions,
@@ -198,6 +215,7 @@ public partial class OrderlyNetworkMessageAdapter
 		}
 		var orders = await RestClient.GetOrdersAsync(symbol, null, null, 1,
 			HistoryLimit, cancellationToken);
+
 		foreach (var order in orders.Where(static item => item is not null &&
 			item.OrderId > 0 && item.Status.ToStockSharp() == OrderStates.Active)
 			.Where(item => item.Side.ToStockSharp() == cancelMsg.Side))
@@ -211,6 +229,7 @@ public partial class OrderlyNetworkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -273,6 +292,7 @@ public partial class OrderlyNetworkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -329,8 +349,10 @@ public partial class OrderlyNetworkMessageAdapter
 		var positionsTask = RestClient.GetPositionsAsync(cancellationToken).AsTask();
 		await Task.WhenAll(holdingsTask, positionsTask);
 		UpdateServerTime(RestClient.ServerTime);
+
 		foreach (var holding in holdingsTask.Result?.Holdings ?? [])
 			await SendHoldingAsync(holding, transactionId, cancellationToken);
+
 		await SendPositionSnapshotAsync(positionsTask.Result?.Rows,
 			transactionId, cancellationToken);
 	}
@@ -367,12 +389,14 @@ public partial class OrderlyNetworkMessageAdapter
 			cancellationToken).AsTask();
 		await Task.WhenAll(ordersTask, tradesTask);
 		UpdateServerTime(RestClient.ServerTime);
+
 		foreach (var order in ordersTask.Result
 			.Where(static item => item is not null)
 			.Where(item => Matches(subscription, item))
 			.OrderBy(GetOrderTime)
 			.TakeLast(limit))
 			await SendOrderAsync(order, transactionId, cancellationToken);
+
 		foreach (var trade in tradesTask.Result
 			.Where(static item => item is not null)
 			.Where(item => Matches(subscription, item))
@@ -408,9 +432,11 @@ public partial class OrderlyNetworkMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var current = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var position in positions ?? [])
 			if (position?.Symbol.IsEmpty() == false && position.Quantity != 0)
 				current.Add(position.Symbol);
+
 		string[] missing;
 		using (_sync.EnterScope())
 		{
@@ -418,8 +444,10 @@ public partial class OrderlyNetworkMessageAdapter
 			_knownPositions.Clear();
 			_knownPositions.UnionWith(current);
 		}
+
 		foreach (var position in positions ?? [])
 			await SendPositionAsync(position, transactionId, cancellationToken);
+
 		foreach (var symbol in missing)
 			await SendOutMessageAsync(new PositionChangeMessage
 			{
@@ -542,6 +570,7 @@ public partial class OrderlyNetworkMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var target in targets)
 			foreach (var balance in envelope.Data.Balances.Entries ?? [])
 				if (balance?.Asset.IsEmpty() == false)
@@ -569,6 +598,7 @@ public partial class OrderlyNetworkMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var target in targets)
 			foreach (var position in envelope.Data.Positions ?? [])
 				await SendSocketPositionAsync(position, target,
@@ -630,6 +660,7 @@ public partial class OrderlyNetworkMessageAdapter
 			: report.MatchId;
 		var isNewTrade = report.TradeId > 0 && report.ExecutedQuantity > 0 &&
 			TryAcceptTrade(tradeId);
+
 		foreach (var target in targets)
 		{
 			await SendExecutionOrderAsync(report, target, cancellationToken);
@@ -709,9 +740,11 @@ public partial class OrderlyNetworkMessageAdapter
 		var symbols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		if (!message.SecurityId.SecurityCode.IsEmpty())
 			symbols.Add(GetSymbol(message.SecurityId));
+
 		foreach (var securityId in message.SecurityIds)
 			if (!securityId.SecurityCode.IsEmpty())
 				symbols.Add(GetSymbol(securityId));
+
 		long? orderId = message.OrderId;
 		if (orderId is null && !message.OrderStringId.IsEmpty())
 		{

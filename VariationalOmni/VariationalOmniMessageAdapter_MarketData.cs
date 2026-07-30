@@ -8,12 +8,14 @@ public partial class VariationalOmniMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		_ = Client;
 		await EnsureFreshStatisticsAsync(cancellationToken);
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var listing in GetListings().OrderBy(static item => item.Ticker,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -41,6 +43,7 @@ public partial class VariationalOmniMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -49,6 +52,7 @@ public partial class VariationalOmniMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		_ = Client;
 		if (!mdMsg.IsSubscribe)
 		{

@@ -16,6 +16,7 @@ public partial class PhemexMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_symbolSections.Clear();
+
 			foreach (var mapping in mappings)
 				_symbolSections[new(mapping.Symbol)] = mapping.Section;
 		}
@@ -26,6 +27,7 @@ public partial class PhemexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -34,6 +36,7 @@ public partial class PhemexMessageAdapter
 			(securityTypes.Count == 0 || securityTypes.Contains(SecurityTypes.CryptoCurrency)))
 		{
 			var symbols = await RestClient.GetSpotSymbolsAsync(cancellationToken);
+
 			foreach (var symbol in symbols)
 			{
 				if (symbol?.Symbol.IsEmpty() != false || !symbol.IsEnabled)
@@ -64,6 +67,7 @@ public partial class PhemexMessageAdapter
 			(securityTypes.Count == 0 || securityTypes.Contains(SecurityTypes.Future)))
 		{
 			var symbols = await RestClient.GetFuturesSymbolsAsync(cancellationToken);
+
 			foreach (var symbol in symbols)
 			{
 				if (symbol?.Symbol.IsEmpty() != false ||
@@ -101,6 +105,7 @@ public partial class PhemexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -114,6 +119,7 @@ public partial class PhemexMessageAdapter
 		var book = (await RestClient.GetBookTickersAsync(section, symbol, cancellationToken)).FirstOrDefault();
 		await SendLevel1SnapshotAsync(symbol, section, ticker, book, mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -143,6 +149,7 @@ public partial class PhemexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -157,6 +164,7 @@ public partial class PhemexMessageAdapter
 		await SendBookAsync(book?.Bids, book?.Asks, symbol, section, mdMsg.TransactionId,
 			book?.UpdateTime > 0 ? book.UpdateTime.ToUtcTime() : CurrentTime, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -183,6 +191,7 @@ public partial class PhemexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -198,6 +207,7 @@ public partial class PhemexMessageAdapter
 		var trades = await RestClient.GetTradesAsync(symbol, limit, cancellationToken);
 		string lastTradeId = null;
 		var lastTime = from ?? default;
+
 		foreach (var trade in trades.OrderBy(static trade => trade.Timestamp.ToUtcTime()))
 		{
 			var time = trade.Timestamp.ToUtcTime();
@@ -208,7 +218,9 @@ public partial class PhemexMessageAdapter
 			lastTradeId = trade.TradeId;
 			lastTime = time;
 		}
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -236,6 +248,7 @@ public partial class PhemexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -251,6 +264,7 @@ public partial class PhemexMessageAdapter
 		var count = GetCandleCount(mdMsg, timeFrame, to);
 		var candles = await RestClient.GetKlinesAsync(symbol, timeFrame, to, count, cancellationToken);
 		PhemexKline last = null;
+
 		foreach (var candle in candles.OrderBy(static candle => candle.Time))
 		{
 			var openTime = candle.Time.ToUtcTime();
@@ -263,7 +277,9 @@ public partial class PhemexMessageAdapter
 				cancellationToken);
 			last = candle;
 		}
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -393,6 +409,7 @@ public partial class PhemexMessageAdapter
 					.Where(pair => pair.Value.Section == section && pair.Value.Symbol.EqualsIgnoreCase(symbol))
 					.Select(static pair => pair.Key)];
 				var acceptedTicks = new List<long>();
+
 				foreach (var pair in _tickSubscriptions)
 				{
 					var state = pair.Value;
@@ -404,6 +421,7 @@ public partial class PhemexMessageAdapter
 					state.LastTime = time;
 					acceptedTicks.Add(pair.Key);
 				}
+
 				tickIds = [.. acceptedTicks];
 				candleEmissions = UpdateCandles(symbol, section, time,
 					trade.Price.ToDecimal() ?? 0m, trade.Size.ToDecimal() ?? 0m);
@@ -436,6 +454,7 @@ public partial class PhemexMessageAdapter
 		decimal price, decimal volume)
 	{
 		var emissions = new List<CandleEmission>();
+
 		foreach (var pair in _candleSubscriptions)
 		{
 			var state = pair.Value;
@@ -468,6 +487,7 @@ public partial class PhemexMessageAdapter
 			}
 			emissions.Add(ToEmission(pair.Key, state, CandleStates.Active));
 		}
+
 		return [.. emissions];
 	}
 
@@ -494,9 +514,11 @@ public partial class PhemexMessageAdapter
 				.Select(static pair => pair.Key)];
 		}
 		var time = message.Timestamp > 0 ? message.Timestamp.ToUtcTime() : CurrentTime;
+
 		foreach (var subscription in depthSubscriptions)
 			await SendBookAsync(message.Data.Bids, message.Data.Asks, symbol, section, subscription.Id,
 				time, subscription.Depth, cancellationToken);
+
 		foreach (var id in level1Subscriptions)
 			await SendBestQuotesAsync(message.Data.Bids, message.Data.Asks, symbol, section, id,
 				time, cancellationToken);
@@ -519,6 +541,7 @@ public partial class PhemexMessageAdapter
 					.Select(static pair => pair.Key)];
 			var time = index.UpdateTime > 0 ? index.UpdateTime.ToUtcTime() :
 				message.Timestamp > 0 ? message.Timestamp.ToUtcTime() : CurrentTime;
+
 			foreach (var id in ids)
 				await SendOutMessageAsync(new Level1ChangeMessage
 				{

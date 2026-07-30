@@ -8,10 +8,12 @@ public partial class OstiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static item => item.Symbol,
 			StringComparer.Ordinal))
 		{
@@ -40,6 +42,7 @@ public partial class OstiumMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -48,6 +51,7 @@ public partial class OstiumMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -70,15 +74,18 @@ public partial class OstiumMessageAdapter
 		if (price is null)
 		{
 			var prices = await ApiClient.GetPricesAsync(cancellationToken);
+
 			foreach (var item in prices?.Prices ?? [])
 				if (item is not null)
 					StorePrice(item);
+
 			price = GetPrice(market) ?? throw new InvalidDataException(
 				"Ostium returned no current price for " + market.Symbol + ".");
 		}
 		await SendLevel1Async(market, price, mdMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -116,6 +123,7 @@ public partial class OstiumMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -150,9 +158,11 @@ public partial class OstiumMessageAdapter
 			.OrderBy(static candle => candle.Time)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -213,6 +223,7 @@ public partial class OstiumMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value == market.PairIndex).Select(static pair => pair.Key)];
+
 		foreach (var transactionId in subscriptions)
 			await SendLevel1Async(market, price, transactionId,
 				cancellationToken);
@@ -260,6 +271,7 @@ public partial class OstiumMessageAdapter
 			.Where(static candle => candle is not null && candle.Time > 0)
 			.OrderBy(static candle => candle.Time)
 			.ToArray();
+
 		foreach (var candle in candles)
 		{
 			var openTime = candle.Time.FromUnix(false).EnsureOstiumUtc();

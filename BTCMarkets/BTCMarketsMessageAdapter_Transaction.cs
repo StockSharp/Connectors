@@ -183,14 +183,17 @@ public partial class BTCMarketsMessageAdapter
 			{
 				MarketIds = market is null ? [] : [market.MarketId],
 			}, cancellationToken);
+
 			foreach (var order in canceled ?? [])
 				await SendCanceledOrderAsync(order, market?.MarketId,
 					cancelMsg.TransactionId, cancellationToken);
+
 			return;
 		}
 
 		var orders = await LoadOpenOrdersAsync(market?.MarketId,
 			cancellationToken);
+
 		foreach (var order in orders)
 		{
 			if (order?.OrderId.IsEmpty() != false || order.Side is null)
@@ -215,6 +218,7 @@ public partial class BTCMarketsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -276,6 +280,7 @@ public partial class BTCMarketsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -341,6 +346,7 @@ public partial class BTCMarketsMessageAdapter
 		bool force, CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(balance, transactionId, force,
 				cancellationToken);
@@ -362,6 +368,7 @@ public partial class BTCMarketsMessageAdapter
 		{
 			var orders = await LoadOrdersAsync(subscription.MarketId, from, to,
 				maximum, cancellationToken);
+
 			foreach (var order in orders.Where(order =>
 				MatchesOrder(subscription, from, to, order)))
 				await SendOrderAsync(order, transactionId, force,
@@ -370,6 +377,7 @@ public partial class BTCMarketsMessageAdapter
 
 		var trades = await LoadUserTradesAsync(subscription.MarketId,
 			subscription.OrderId, from, to, maximum, cancellationToken);
+
 		foreach (var trade in trades.Where(trade =>
 			MatchesTrade(subscription, from, to, trade)))
 			await SendUserTradeAsync(trade, transactionId, !force,
@@ -384,6 +392,7 @@ public partial class BTCMarketsMessageAdapter
 		var lowerBound = from?.ToUniversalTime() ?? upperBound - TimeSpan.FromDays(7);
 		var result = new List<BTCMarketsOrder>();
 		string before = null;
+
 		while (result.Count < maximum)
 		{
 			var page = await RestClient.GetOrdersAsync(new()
@@ -405,6 +414,7 @@ public partial class BTCMarketsMessageAdapter
 				break;
 			before = page.Before;
 		}
+
 		return [.. result.Where(static order => !order.OrderId.IsEmpty())
 			.GroupBy(static order => order.OrderId,
 				StringComparer.OrdinalIgnoreCase)
@@ -418,6 +428,7 @@ public partial class BTCMarketsMessageAdapter
 	{
 		var result = new List<BTCMarketsOrder>();
 		string before = null;
+
 		while (true)
 		{
 			var page = await RestClient.GetOrdersAsync(new()
@@ -436,6 +447,7 @@ public partial class BTCMarketsMessageAdapter
 				break;
 			before = page.Before;
 		}
+
 		return [.. result.Where(static order => !order.OrderId.IsEmpty())
 			.GroupBy(static order => order.OrderId,
 				StringComparer.OrdinalIgnoreCase)
@@ -450,6 +462,7 @@ public partial class BTCMarketsMessageAdapter
 		var lowerBound = from?.ToUniversalTime() ?? upperBound - TimeSpan.FromDays(7);
 		var result = new List<BTCMarketsUserTrade>();
 		string before = null;
+
 		while (result.Count < maximum)
 		{
 			var page = await RestClient.GetUserTradesAsync(new()
@@ -471,6 +484,7 @@ public partial class BTCMarketsMessageAdapter
 				break;
 			before = page.Before;
 		}
+
 		return [.. result.Where(static trade => !trade.Id.IsEmpty())
 			.GroupBy(static trade => trade.Id, StringComparer.OrdinalIgnoreCase)
 			.Select(static group => group.First())
@@ -627,13 +641,16 @@ public partial class BTCMarketsMessageAdapter
 				.Select(static pair => (pair.Key, pair.Value))];
 			portfolios = [.. _portfolioSubscriptions];
 		}
+
 		foreach (var item in subscriptions)
 		{
 			await SendOrderAsync(order, item.Id, false, cancellationToken);
+
 			foreach (var trade in update.Trades ?? [])
 				await SendSocketUserTradeAsync(update, trade, item.Id,
 					cancellationToken);
 		}
+
 		foreach (var transactionId in portfolios)
 			await SendPortfolioSnapshotAsync(transactionId, false,
 				cancellationToken);
@@ -646,6 +663,7 @@ public partial class BTCMarketsMessageAdapter
 		long[] portfolios;
 		using (_sync.EnterScope())
 			portfolios = [.. _portfolioSubscriptions];
+
 		foreach (var transactionId in portfolios)
 			await SendPortfolioSnapshotAsync(transactionId, false,
 				cancellationToken);

@@ -153,6 +153,7 @@ public partial class IndodaxMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var pair in markets ?? [])
 			{
 				if (pair?.Id.IsEmpty() != false || pair.BaseCurrency.IsEmpty() ||
@@ -265,6 +266,7 @@ public partial class IndodaxMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (!order.ExchangeOrderId.IsEmpty())
 				_trackedOrders[order.ExchangeOrderId] = order;
 			if (!order.ClientOrderId.IsEmpty())

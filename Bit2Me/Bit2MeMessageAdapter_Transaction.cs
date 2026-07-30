@@ -124,6 +124,7 @@ public partial class Bit2MeMessageAdapter
 			StatusIn = "open,inactive",
 			Limit = 100,
 		}, cancellationToken);
+
 		foreach (var order in (orders ?? []).Where(order =>
 			order?.Id.IsEmpty() == false &&
 			(cancelMsg.Side is null ||
@@ -146,6 +147,7 @@ public partial class Bit2MeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -166,12 +168,14 @@ public partial class Bit2MeMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -181,6 +185,7 @@ public partial class Bit2MeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -205,12 +210,14 @@ public partial class Bit2MeMessageAdapter
 			statusMsg.From, statusMsg.To, maximum, statusMsg,
 			cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -218,6 +225,7 @@ public partial class Bit2MeMessageAdapter
 		long originalTransactionId, CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(balance, originalTransactionId,
 				cancellationToken);
@@ -237,6 +245,7 @@ public partial class Bit2MeMessageAdapter
 				Limit = maximum,
 			}, cancellationToken)
 			: [await RestClient.GetOrderAsync(orderId, cancellationToken)];
+
 		foreach (var order in (orders ?? [])
 			.Where(order => MatchesOrder(order, filter, from, to))
 			.OrderBy(GetOrderTime).TakeLast(maximum))
@@ -253,6 +262,7 @@ public partial class Bit2MeMessageAdapter
 			}, cancellationToken)
 			: await RestClient.GetOrderTradesAsync(orderId,
 				cancellationToken);
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade => MatchesTrade(trade, filter, from, to))
 			.OrderBy(GetTradeTime).TakeLast(maximum))
@@ -282,9 +292,11 @@ public partial class Bit2MeMessageAdapter
 				_knownActiveOrderIds.Clear();
 			_knownActiveOrderIds.AddRange(currentIds);
 		}
+
 		foreach (var order in orders.OrderBy(GetOrderTime))
 			await SendOrderAsync(order, originalTransactionId,
 				cancellationToken);
+
 		foreach (var orderId in removed)
 		{
 			try
@@ -308,6 +320,7 @@ public partial class Bit2MeMessageAdapter
 		{
 			Limit = 50,
 		}, cancellationToken);
+
 		foreach (var trade in (trades ?? []).OrderBy(GetTradeTime))
 			await SendTradeAsync(trade, originalTransactionId, true,
 				cancellationToken);

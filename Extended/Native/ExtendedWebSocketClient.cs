@@ -184,9 +184,11 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 				_lastSequence = null;
 				_subscriptionByTopic.Clear();
 				subscriptions = [.. _subscriptions];
+
 				foreach (var subscription in subscriptions)
 					_subscriptionByTopic[GetTopic(subscription)] = subscription;
 			}
+
 			foreach (var subscription in subscriptions)
 				await SendSubscriptionRequestAsync(client, subscription, true, false,
 					cancellationToken);
@@ -605,6 +607,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 			pending = [.. _pendingRequests.Values];
 			_pendingRequests.Clear();
 		}
+
 		foreach (var request in pending)
 			request.Completion.TrySetException(error);
 	}

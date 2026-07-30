@@ -124,6 +124,7 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 	{
 		var failures = 0;
 		var wasConnected = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
@@ -165,6 +166,7 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 				_socket = null;
 			}
 		}
+
 		if (!_initialConnection.Task.IsCompleted)
 			_initialConnection.TrySetCanceled(cancellationToken);
 		await Invoke(StateChanged, ConnectionStates.Disconnected, CancellationToken.None);
@@ -176,6 +178,7 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 		{
 			Token = (await _tokenProvider(cancellationToken)).ThrowIfEmpty("accessToken"),
 		}, cancellationToken);
+
 		while (true)
 		{
 			var content = await ReceiveText(socket, cancellationToken);
@@ -198,6 +201,7 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 		KiwoomStreamSubscription[] subscriptions;
 		lock (_sync)
 			subscriptions = [.. _subscriptions.Keys];
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendSubscription(socket, subscription, true, cancellationToken);
@@ -228,6 +232,7 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 			}
 			if (!response.TransactionName.EqualsIgnoreCase("REAL"))
 				continue;
+
 			foreach (var data in response.Data ?? [])
 			{
 				if (data.Values != null)
@@ -299,6 +304,7 @@ sealed class KiwoomWebSocketClient : BaseLogReceiver
 	{
 		var buffer = new byte[16 * 1024];
 		using var stream = new MemoryStream();
+
 		while (true)
 		{
 			var result = await socket.ReceiveAsync(buffer, cancellationToken);

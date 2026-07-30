@@ -103,6 +103,7 @@ public partial class ZeroHashMessageAdapter
 	{
 		var pageToken = string.Empty;
 		var seenTokens = new HashSet<string>(StringComparer.Ordinal);
+
 		for (var pageNumber = 0; pageNumber < 1000; pageNumber++)
 		{
 			var page = await RestClient.ListInstrumentsAsync(new()
@@ -111,8 +112,10 @@ public partial class ZeroHashMessageAdapter
 				PageToken = pageToken,
 			}, cancellationToken) ?? throw new InvalidDataException(
 				"Zero Hash returned an empty instrument page.");
+
 			foreach (var instrument in page.Instruments ?? [])
 				AddInstrument(instrument);
+
 			if (page.IsEndOfFile || page.NextPageToken.IsEmpty())
 				return;
 			if (!seenTokens.Add(page.NextPageToken))
@@ -120,6 +123,7 @@ public partial class ZeroHashMessageAdapter
 					"Zero Hash repeated an instrument page token.");
 			pageToken = page.NextPageToken;
 		}
+
 		throw new InvalidDataException(
 			"Zero Hash instrument pagination exceeded 1000 pages.");
 	}
@@ -137,6 +141,7 @@ public partial class ZeroHashMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var attempt = 0;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
@@ -187,10 +192,13 @@ public partial class ZeroHashMessageAdapter
 		var processedTime = result.ProcessedSentTime.TryParseZeroHashTime();
 		if (processedTime is DateTime time)
 			UpdateServerTime(time);
+
 		foreach (var order in result.Snapshot?.Orders ?? [])
 			await ProcessOrderAsync(order, 0, null, cancellationToken);
+
 		foreach (var execution in result.Update?.Executions ?? [])
 			await ProcessExecutionAsync(execution, 0, null, cancellationToken);
+
 		if (result.Update?.CancelReject is { } rejection)
 			await ProcessCancelRejectAsync(rejection, cancellationToken);
 	}
@@ -234,10 +242,12 @@ public partial class ZeroHashMessageAdapter
 
 		foreach (var subscription in marketSubscriptions)
 			subscription.Cancellation.Cancel();
+
 		orderCancellation?.Cancel();
 		connectionCancellation?.Cancel();
 
 		var errors = new List<Exception>();
+
 		foreach (var task in marketSubscriptions.Select(static value => value.Task)
 			.Append(orderTask).Where(static value => value is not null))
 		{
@@ -262,6 +272,7 @@ public partial class ZeroHashMessageAdapter
 
 		foreach (var subscription in marketSubscriptions)
 			subscription.Cancellation.Dispose();
+
 		orderCancellation?.Dispose();
 		connectionCancellation?.Dispose();
 		try

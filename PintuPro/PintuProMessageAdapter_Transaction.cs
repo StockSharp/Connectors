@@ -156,6 +156,7 @@ public partial class PintuProMessageAdapter
 		var markets = cancelMsg.SecurityId.SecurityCode.IsEmpty()
 			? GetSelectedMarkets(default)
 			: [GetMarket(cancelMsg.SecurityId)];
+
 		foreach (var market in markets)
 		{
 			if (cancelMsg.Side is null)
@@ -169,6 +170,7 @@ public partial class PintuProMessageAdapter
 
 			var openOrders = await LoadOpenOrdersAsync(market.Symbol,
 				cancelMsg.Side, 5000, cancellationToken);
+
 			foreach (var order in openOrders)
 			{
 				await RestClient.CancelOrderAsync(new()
@@ -189,6 +191,7 @@ public partial class PintuProMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -212,6 +215,7 @@ public partial class PintuProMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -223,6 +227,7 @@ public partial class PintuProMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -258,6 +263,7 @@ public partial class PintuProMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -276,6 +282,7 @@ public partial class PintuProMessageAdapter
 			IsUncertainPlacement(error))
 		{
 			var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
 			for (var attempt = 1; attempt <= 3; attempt++)
 			{
 				await Task.Delay(TimeSpan.FromMilliseconds(250 * attempt),
@@ -302,6 +309,7 @@ public partial class PintuProMessageAdapter
 				{
 				}
 			}
+
 			throw;
 		}
 	}
@@ -310,6 +318,7 @@ public partial class PintuProMessageAdapter
 		long originalTransactionId, CancellationToken cancellationToken)
 	{
 		var account = await RestClient.GetAccountAsync(cancellationToken);
+
 		foreach (var asset in account?.Assets ?? [])
 			await SendBalanceAsync(asset, originalTransactionId,
 				account.ServerTimestamp.FromPintuProTimestamp(CurrentTime),
@@ -340,6 +349,7 @@ public partial class PintuProMessageAdapter
 			if (exchangeOrderId.IsEmpty() && clientOrderId.IsEmpty())
 				exchangeOrderId = subscription.OrderIdentifier;
 			PintuProOrderDetailsData details = null;
+
 			foreach (var (start, end) in GetHistoryWindows(from, to))
 			{
 				try
@@ -359,12 +369,14 @@ public partial class PintuProMessageAdapter
 				{
 				}
 			}
+
 			if (details?.Order is null)
 				return;
 			if (details?.Order is not null && MatchesOrder(subscription,
 				details.Order))
 				await SendOrderAsync(details.Order, message.TransactionId,
 					cancellationToken);
+
 			foreach (var trade in details?.Trades ?? [])
 			{
 				if (trade?.OrderId.IsEmpty() != false)
@@ -373,11 +385,13 @@ public partial class PintuProMessageAdapter
 					await SendAccountTradeAsync(trade, message.TransactionId,
 						cancellationToken, false);
 			}
+
 			return;
 		}
 
 		var orders = await LoadOrdersAsync(subscription.Symbol,
 			subscription.Side, from, to, maximum, cancellationToken);
+
 		foreach (var order in orders.Where(order =>
 			MatchesOrder(subscription, order)))
 			await SendOrderAsync(order, message.TransactionId,
@@ -388,6 +402,7 @@ public partial class PintuProMessageAdapter
 			return;
 		var trades = await LoadTradesAsync(subscription.Symbol,
 			subscription.Side, from, to, remaining, cancellationToken);
+
 		foreach (var trade in trades.Where(trade =>
 			MatchesTrade(subscription, trade)))
 			await SendAccountTradeAsync(trade, message.TransactionId,
@@ -400,6 +415,7 @@ public partial class PintuProMessageAdapter
 	{
 		var values = new Dictionary<string, PintuProOrder>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var order in await LoadOpenOrdersAsync(symbol, side, maximum,
 			cancellationToken))
 			if (!order.OrderId.IsEmpty())
@@ -419,15 +435,19 @@ public partial class PintuProMessageAdapter
 					EndTime = end,
 				}, cancellationToken);
 				var pageValues = response?.Orders ?? [];
+
 				foreach (var order in pageValues)
 					if (order?.OrderId.IsEmpty() == false)
 						values[order.OrderId] = order;
+
 				if (pageValues.Length < 200)
 					break;
 			}
+
 			if (values.Count >= maximum)
 				break;
 		}
+
 		return [.. values.Values.OrderByDescending(static order =>
 			order.UpdatedAt).Take(maximum)];
 	}
@@ -436,6 +456,7 @@ public partial class PintuProMessageAdapter
 		Sides? side, int maximum, CancellationToken cancellationToken)
 	{
 		var values = new List<PintuProOrder>();
+
 		for (var page = 0; values.Count < maximum; page++)
 		{
 			var response = await RestClient.GetOpenOrdersAsync(new()
@@ -451,6 +472,7 @@ public partial class PintuProMessageAdapter
 				response.Count > 0 && values.Count >= response.Count)
 				break;
 		}
+
 		return [.. values.Take(maximum)];
 	}
 
@@ -460,6 +482,7 @@ public partial class PintuProMessageAdapter
 	{
 		var values = new Dictionary<string, PintuProAccountTrade>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var (start, end) in GetHistoryWindows(from, to))
 		{
 			for (var page = 0; values.Count < maximum; page++)
@@ -474,15 +497,19 @@ public partial class PintuProMessageAdapter
 					EndTime = end,
 				}, cancellationToken);
 				var pageValues = response?.Trades ?? [];
+
 				foreach (var trade in pageValues)
 					if (trade?.TradeId.IsEmpty() == false)
 						values[trade.TradeId] = trade;
+
 				if (pageValues.Length < 200)
 					break;
 			}
+
 			if (values.Count >= maximum)
 				break;
 		}
+
 		return [.. values.Values.OrderByDescending(static trade =>
 			trade.TradedAt).Take(maximum)];
 	}
@@ -491,6 +518,7 @@ public partial class PintuProMessageAdapter
 		DateTime from, DateTime to)
 	{
 		var cursor = to;
+
 		while (cursor > from)
 		{
 			var start = cursor - TimeSpan.FromHours(24) +
@@ -660,6 +688,7 @@ public partial class PintuProMessageAdapter
 			var targets = GetOrderTargets(order.Symbol.NormalizeSymbol(),
 				order.OrderId, order.ClientOrderId, order.Side.ToStockSharp(),
 				tracked?.TransactionId ?? 0);
+
 			foreach (var target in targets)
 				await SendOrderAsync(order, target, cancellationToken);
 		}
@@ -679,6 +708,7 @@ public partial class PintuProMessageAdapter
 			var targets = GetOrderTargets(trade.Symbol.NormalizeSymbol(),
 				trade.OrderId, trade.ClientOrderId, trade.Side.ToStockSharp(),
 				tracked?.TransactionId ?? 0);
+
 			foreach (var target in targets)
 				await SendAccountTradeAsync(trade, target, cancellationToken,
 					false);
@@ -694,6 +724,7 @@ public partial class PintuProMessageAdapter
 			subscriptions = [.. _portfolioSubscriptions];
 		var serverTime = message?.Timestamp.FromPintuProTimestamp(CurrentTime) ??
 			CurrentTime;
+
 		foreach (var subscriptionId in subscriptions)
 			foreach (var asset in message?.Data?.Assets ?? [])
 				await SendBalanceAsync(asset, subscriptionId, serverTime,
@@ -777,10 +808,12 @@ public partial class PintuProMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var pair in subscriptions)
 		{
 			var orders = await LoadOpenOrdersAsync(pair.Value.Symbol,
 				pair.Value.Side, 1000, cancellationToken);
+
 			foreach (var order in orders.Where(order =>
 				MatchesOrder(pair.Value, order)))
 				await SendOrderAsync(order, pair.Key, cancellationToken);

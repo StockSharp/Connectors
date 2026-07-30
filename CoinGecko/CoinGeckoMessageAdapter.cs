@@ -85,8 +85,10 @@ public partial class CoinGeckoMessageAdapter : MessageAdapter, ITokenAdapter
 			if (!_seenTradeIds.Add(tradeId))
 				return false;
 			_seenTradeOrder.Enqueue(tradeId);
+
 			while (_seenTradeOrder.Count > 50000)
 				_seenTradeIds.Remove(_seenTradeOrder.Dequeue());
+
 			return true;
 		}
 	}

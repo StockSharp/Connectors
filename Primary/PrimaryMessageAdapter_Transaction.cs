@@ -198,6 +198,7 @@ public partial class PrimaryMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId, cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -311,6 +312,7 @@ public partial class PrimaryMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -361,6 +363,7 @@ public partial class PrimaryMessageAdapter
         if (report is not null)
         {
             var sentCash = false;
+
             foreach (var settlement in
                 report.Detailed?.Values ??
                     Enumerable.Empty<PrimaryDetailedAccountReport>())

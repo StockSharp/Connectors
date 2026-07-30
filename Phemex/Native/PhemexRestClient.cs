@@ -179,6 +179,7 @@ sealed class PhemexRestClient : BaseLogReceiver
 	{
 		await EnsureProductsAsync(cancellationToken);
 		var balances = new List<PhemexBalance>();
+
 		foreach (var currency in _settleCurrencies)
 		{
 			var data = await SendApiPrivateAsync<PhemexWireFuturesAccountResult>(HttpMethod.Get,
@@ -198,6 +199,7 @@ sealed class PhemexRestClient : BaseLogReceiver
 			? _settleCurrencies
 			: [GetProduct(symbol).SettleCurrency];
 		var positions = new List<PhemexPosition>();
+
 		foreach (var currency in currencies.Distinct(StringComparer.OrdinalIgnoreCase))
 		{
 			var data = await SendApiPrivateAsync<PhemexWireFuturesAccountResult>(HttpMethod.Get,
@@ -425,6 +427,7 @@ sealed class PhemexRestClient : BaseLogReceiver
 					currency.Currency.ToUpperInvariant()), static currency => currency.ValueScale);
 			var contexts = new List<PhemexProductContext>();
 			var spotSymbols = new List<PhemexSymbol>();
+
 			foreach (var product in data.Products ?? [])
 			{
 				if (!product.Type.EqualsIgnoreCase("Spot") || product.Symbol.IsEmpty())
@@ -456,6 +459,7 @@ sealed class PhemexRestClient : BaseLogReceiver
 			}
 
 			var futuresSymbols = new List<PhemexFuturesSymbol>();
+
 			foreach (var product in data.PerpetualProducts ?? [])
 			{
 				if (product.Symbol.IsEmpty() || !product.Type.EqualsIgnoreCase("PerpetualV2") ||
@@ -489,11 +493,15 @@ sealed class PhemexRestClient : BaseLogReceiver
 			using (_productSync.EnterScope())
 			{
 				_currencyScales.Clear();
+
 				foreach (var pair in currencyScales)
 					_currencyScales.Add(pair.Key, pair.Value);
+
 				_products.Clear();
+
 				foreach (var context in contexts)
 					_products[new(context.Symbol)] = context;
+
 				_spotSymbols = [.. spotSymbols];
 				_futuresSymbols = [.. futuresSymbols];
 				_settleCurrencies = [.. futuresSymbols

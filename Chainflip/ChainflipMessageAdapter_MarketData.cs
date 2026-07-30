@@ -8,6 +8,7 @@ public partial class ChainflipMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class ChainflipMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class ChainflipMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -54,6 +57,7 @@ public partial class ChainflipMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -83,6 +87,7 @@ public partial class ChainflipMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -97,6 +102,7 @@ public partial class ChainflipMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -128,6 +134,7 @@ public partial class ChainflipMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -143,6 +150,7 @@ public partial class ChainflipMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -288,6 +296,7 @@ public partial class ChainflipMessageAdapter
 			depths = [.. _depthSubscriptions];
 			hasTicks = _tickSubscriptions.Count > 0;
 		}
+
 		foreach (var item in level1)
 			await PollOneAsync(async token =>
 			{
@@ -296,6 +305,7 @@ public partial class ChainflipMessageAdapter
 				await SendLevel1Async(item.Value.Market, prices, item.Key,
 					false, token);
 			}, cancellationToken);
+
 		foreach (var item in depths)
 			await PollOneAsync(async token =>
 			{
@@ -304,6 +314,7 @@ public partial class ChainflipMessageAdapter
 				await SendDepthAsync(item.Value.Market, book, item.Key,
 					false, token);
 			}, cancellationToken);
+
 		if (hasTicks)
 			await PollOneAsync(PollTradesAsync, cancellationToken);
 	}
@@ -324,12 +335,15 @@ public partial class ChainflipMessageAdapter
 		if (first > best)
 			return;
 		var last = Math.Min(best, first + MaxBlocksPerPoll - 1);
+
 		for (var blockNumber = first; blockNumber <= last; blockNumber++)
 		{
 			var block = await StateClient.GetBlockTradesAsync(blockNumber,
 				markets, cancellationToken);
+
 			foreach (var trade in block.Trades)
 				await DistributeTradeAsync(trade, cancellationToken);
+
 			using (_sync.EnterScope())
 				_lastFillBlock = blockNumber;
 		}
@@ -342,6 +356,7 @@ public partial class ChainflipMessageAdapter
 		using (_sync.EnterScope())
 			targets = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Market.Key.EqualsIgnoreCase(trade.Market.Key))];
+
 		foreach (var target in targets)
 		{
 			if (target.Value.To is DateTime end && trade.Time > end)
@@ -388,8 +403,10 @@ public partial class ChainflipMessageAdapter
 			if (!_seenMarketData.Add(key))
 				return false;
 			_marketDataDeliveryOrder.Enqueue(key);
+
 			while (_marketDataDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenMarketData.Remove(_marketDataDeliveryOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -405,6 +422,7 @@ public partial class ChainflipMessageAdapter
 		var retained = _marketDataDeliveryOrder.Where(
 			_seenMarketData.Contains).ToArray();
 		_marketDataDeliveryOrder.Clear();
+
 		foreach (var key in retained)
 			_marketDataDeliveryOrder.Enqueue(key);
 	}

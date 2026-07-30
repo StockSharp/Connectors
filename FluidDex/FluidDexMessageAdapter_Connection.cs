@@ -49,6 +49,7 @@ public partial class FluidDexMessageAdapter
 				{
 					var pools = await RpcClient.DiscoverPoolsAsync(
 						MaximumDiscoveredPools, cancellationToken);
+
 					foreach (var pool in pools)
 						RegisterPool(pool, null);
 				}
@@ -292,6 +293,7 @@ public partial class FluidDexMessageAdapter
 		if (Pools.IsEmpty())
 			return [];
 		var result = new List<FluidDexMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -320,6 +322,7 @@ public partial class FluidDexMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result];
 	}
 

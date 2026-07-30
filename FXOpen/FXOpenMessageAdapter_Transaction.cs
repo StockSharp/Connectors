@@ -207,6 +207,7 @@ public partial class FXOpenMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderSubscriptionId == statusMsg.OriginalTransactionId)
@@ -218,6 +219,7 @@ public partial class FXOpenMessageAdapter
 		ValidatePortfolio(statusMsg.PortfolioName);
 		var remaining = Math.Max(0, statusMsg.Count ?? long.MaxValue);
 		var skip = Math.Max(0, statusMsg.Skip ?? 0);
+
 		foreach (var trade in await RestClient.GetTradesAsync(cancellationToken))
 		{
 			if (!IsOrderMatch(trade, statusMsg))
@@ -258,6 +260,7 @@ public partial class FXOpenMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -465,6 +468,7 @@ public partial class FXOpenMessageAdapter
 			: TickTraderStreamingDirections.Forward;
 		var historyIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string lastId = null;
+
 		while (remaining > 0)
 		{
 			var report = await RestClient.GetTradeHistoryAsync(new()
@@ -478,6 +482,7 @@ public partial class FXOpenMessageAdapter
 			}, cancellationToken);
 			if (report is null)
 				break;
+
 			foreach (var record in report.Records ?? [])
 			{
 				if (!IsHistoryMatch(record, statusMsg))
@@ -493,6 +498,7 @@ public partial class FXOpenMessageAdapter
 				if (--remaining <= 0)
 					break;
 			}
+
 			if (remaining <= 0 || report.IsLastReport || report.LastId.IsEmpty() ||
 				report.LastId.EqualsIgnoreCase(lastId))
 				break;

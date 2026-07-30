@@ -8,6 +8,7 @@ public partial class CetusMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class CetusMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item => item.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -41,6 +43,7 @@ public partial class CetusMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -50,6 +53,7 @@ public partial class CetusMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -77,6 +81,7 @@ public partial class CetusMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -91,6 +96,7 @@ public partial class CetusMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -186,6 +192,7 @@ public partial class CetusMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
+
 		foreach (var item in subscriptions)
 		{
 			try
@@ -211,6 +218,7 @@ public partial class CetusMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_tradeDeliveryOrder.Enqueue(key);
+
 			while (_tradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenTrades.Remove(_tradeDeliveryOrder.Dequeue());
 		}
@@ -257,6 +265,7 @@ public partial class CetusMessageAdapter
 		_seenTrades.RemoveWhere(key => key.SubscriptionId == target);
 		var retained = _tradeDeliveryOrder.Where(_seenTrades.Contains).ToArray();
 		_tradeDeliveryOrder.Clear();
+
 		foreach (var key in retained)
 			_tradeDeliveryOrder.Enqueue(key);
 	}
@@ -266,8 +275,10 @@ public partial class CetusMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -280,6 +291,7 @@ public partial class CetusMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

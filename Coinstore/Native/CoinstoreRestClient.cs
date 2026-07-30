@@ -83,8 +83,10 @@ sealed class CoinstoreRestClient : BaseLogReceiver
 			$"v1/market/trade/{Uri.EscapeDataString(symbol)}",
 			Values(("size", 100)), null, false,
 			cancellationToken);
+
 		foreach (var trade in result ?? [])
 			trade.Pair = trade.Pair.IsEmpty(symbol);
+
 		return result;
 	}
 
@@ -185,8 +187,10 @@ sealed class CoinstoreRestClient : BaseLogReceiver
 				("pageNum", 1),
 				("pageSize", limit.Max(1).Min(100))),
 			null, true, cancellationToken);
+
 		foreach (var trade in result ?? [])
 			trade.Pair = symbol;
+
 		return result;
 	}
 
@@ -228,6 +232,7 @@ sealed class CoinstoreRestClient : BaseLogReceiver
 	{
 		var orders = await GetOpenOrdersAsync(
 			NormalizeOptionalSymbol(symbol), cancellationToken);
+
 		foreach (var group in (orders ?? [])
 			.Where(static order =>
 				order?.Id.IsEmpty() == false &&

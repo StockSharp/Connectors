@@ -109,6 +109,7 @@ public partial class GeminiMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateRestReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -156,6 +157,7 @@ public partial class GeminiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateRestReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -198,9 +200,12 @@ public partial class GeminiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(balance, originalTransactionId, cancellationToken);
+
 		var positions = await RestClient.GetPositionsAsync(cancellationToken);
+
 		foreach (var position in positions?.Positions ?? [])
 			await SendPositionAsync(position, originalTransactionId, cancellationToken);
 	}
@@ -232,11 +237,13 @@ public partial class GeminiMessageAdapter
 			.GroupBy(static order => order.OrderId, StringComparer.OrdinalIgnoreCase)
 			.Select(group => group.OrderByDescending(GetOrderTime).First())
 			.OrderBy(GetOrderTime).TakeLast(limit);
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, originalTransactionId, cancellationToken);
 
 		var fills = await RestClient.GetMyTradesAsync(symbol, timestamp, limit,
 			cancellationToken);
+
 		foreach (var fill in (fills ?? [])
 			.Where(fill => GetFillTime(fill) <= toUtc &&
 				(fromUtc is null || GetFillTime(fill) >= fromUtc.Value))
@@ -466,6 +473,7 @@ public partial class GeminiMessageAdapter
 		var serverTime = (update.UpdateTimeNanoseconds > 0
 			? update.UpdateTimeNanoseconds
 			: update.EventTimeNanoseconds).FromNanoseconds();
+
 		foreach (var balance in update.Balances ?? [])
 			if (!balance.Asset.IsEmpty())
 				await SendOutMessageAsync(new PositionChangeMessage
@@ -489,6 +497,7 @@ public partial class GeminiMessageAdapter
 		var serverTime = (update.UpdateTimeNanoseconds > 0
 			? update.UpdateTimeNanoseconds
 			: update.EventTimeNanoseconds).FromNanoseconds();
+
 		foreach (var position in update.Positions ?? [])
 		{
 			if (position.Symbol.IsEmpty())

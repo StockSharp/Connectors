@@ -247,6 +247,7 @@ public partial class DydxChainMessageAdapter
 			: GetMarket(cancelMsg.SecurityId).Ticker;
 		var orders = await ApiClient.GetOrdersAsync(Signer.WalletAddress,
 			SubaccountNumber, HistoryLimit, cancellationToken);
+
 		foreach (var order in orders.Where(order => order is not null &&
 			IsActive(order.Status) &&
 			(ticker.IsEmpty() || order.Ticker.Equals(ticker,
@@ -268,6 +269,7 @@ public partial class DydxChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -286,12 +288,14 @@ public partial class DydxChainMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -302,6 +306,7 @@ public partial class DydxChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -322,12 +327,14 @@ public partial class DydxChainMessageAdapter
 		await SendOrderSnapshotAsync(subscription, statusMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderStatusSubscriptions[statusMsg.TransactionId] = subscription;
 	}
@@ -672,6 +679,7 @@ public partial class DydxChainMessageAdapter
 		await SendSubaccountBalanceAsync(snapshot, target, cancellationToken);
 		await SendPerpetualPositionSnapshotAsync(
 			snapshot.OpenPerpetualPositions, [target], cancellationToken);
+
 		foreach (var position in snapshot.AssetPositions ?? [])
 			await SendAssetPositionAsync(position, target, cancellationToken);
 	}
@@ -690,12 +698,15 @@ public partial class DydxChainMessageAdapter
 		{
 			var snapshot = await ApiClient.GetSubaccountAsync(
 				Signer.WalletAddress, SubaccountNumber, cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendSubaccountBalanceAsync(snapshot, target,
 					cancellationToken);
+
 			await SendPerpetualPositionSnapshotAsync(
 				snapshot.OpenPerpetualPositions, portfolioTargets,
 				cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				foreach (var position in snapshot.AssetPositions ?? [])
 					await SendAssetPositionAsync(position, target,
@@ -707,11 +718,13 @@ public partial class DydxChainMessageAdapter
 				SubaccountNumber, HistoryLimit, cancellationToken);
 			var fills = await ApiClient.GetFillsAsync(Signer.WalletAddress,
 				SubaccountNumber, HistoryLimit, cancellationToken);
+
 			foreach (var target in orderTargets)
 			{
 				foreach (var order in orders.Where(item => item is not null &&
 					Matches(target.Value, item)))
 					await SendOrderAsync(order, target.Key, cancellationToken);
+
 				foreach (var fill in fills.Where(item => item is not null &&
 					Matches(target.Value, item)))
 					await SendFillAsync(fill, target.Key, false,
@@ -732,15 +745,19 @@ public partial class DydxChainMessageAdapter
 		long[] portfolioTargets;
 		using (_sync.EnterScope())
 			portfolioTargets = [.. _portfolioSubscriptions];
+
 		foreach (var target in portfolioTargets)
 			await SendSubaccountBalanceAsync(snapshot, target,
 				cancellationToken);
+
 		await SendPerpetualPositionSnapshotAsync(
 			snapshot.OpenPerpetualPositions, portfolioTargets,
 			cancellationToken);
+
 		foreach (var target in portfolioTargets)
 			foreach (var position in snapshot.AssetPositions ?? [])
 				await SendAssetPositionAsync(position, target, cancellationToken);
+
 		foreach (var order in snapshot.Orders ?? [])
 			await DispatchOrderAsync(order, cancellationToken);
 	}
@@ -757,17 +774,21 @@ public partial class DydxChainMessageAdapter
 		long[] portfolioTargets;
 		using (_sync.EnterScope())
 			portfolioTargets = [.. _portfolioSubscriptions];
+
 		foreach (var target in portfolioTargets)
 		{
 			foreach (var position in update.PerpetualPositions ?? [])
 				await SendPerpetualPositionAsync(position, target,
 					cancellationToken);
+
 			foreach (var position in update.AssetPositions ?? [])
 				await SendAssetPositionAsync(position, target,
 					cancellationToken);
 		}
+
 		foreach (var order in update.Orders ?? [])
 			await DispatchOrderAsync(order, cancellationToken);
+
 		foreach (var fill in update.Fills ?? [])
 			await DispatchFillAsync(fill, cancellationToken);
 	}
@@ -801,10 +822,12 @@ public partial class DydxChainMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var current = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var position in positions ?? [])
 			if (position?.Market.IsEmpty() == false &&
 				position.Status == DydxChainPositionStatuses.Open)
 				current.Add(position.Market.NormalizeTicker());
+
 		string[] missing;
 		using (_sync.EnterScope())
 		{
@@ -813,11 +836,13 @@ public partial class DydxChainMessageAdapter
 			_knownPositionTickers.Clear();
 			_knownPositionTickers.UnionWith(current);
 		}
+
 		foreach (var target in targets)
 		{
 			foreach (var position in positions ?? [])
 				await SendPerpetualPositionAsync(position, target,
 					cancellationToken);
+
 			foreach (var ticker in missing)
 				await SendOutMessageAsync(new PositionChangeMessage
 				{
@@ -892,9 +917,11 @@ public partial class DydxChainMessageAdapter
 		var tickers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		if (!message.SecurityId.SecurityCode.IsEmpty())
 			tickers.Add(GetMarket(message.SecurityId).Ticker);
+
 		foreach (var securityId in message.SecurityIds)
 			if (!securityId.SecurityCode.IsEmpty())
 				tickers.Add(GetMarket(securityId).Ticker);
+
 		string clientId = null;
 		if (!message.UserOrderId.IsEmpty())
 			clientId = ParseClientId(message.UserOrderId,
@@ -935,6 +962,7 @@ public partial class DydxChainMessageAdapter
 			SubaccountNumber, HistoryLimit, cancellationToken);
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var order in orders.Where(static item => item is not null)
 			.Where(item => Matches(subscription, item))
 			.OrderBy(GetOrderTime))
@@ -950,6 +978,7 @@ public partial class DydxChainMessageAdapter
 			SubaccountNumber, HistoryLimit, cancellationToken);
 		skipped = 0;
 		delivered = 0;
+
 		foreach (var fill in fills.Where(static item => item is not null)
 			.Where(item => Matches(subscription, item))
 			.OrderBy(static item => item.CreatedAt,
@@ -1005,6 +1034,7 @@ public partial class DydxChainMessageAdapter
 			foreach (var subscription in _orderStatusSubscriptions)
 				if (Matches(subscription.Value, order))
 					targets.Add(subscription.Key);
+
 		foreach (var target in targets)
 			await SendOrderAsync(order, target, cancellationToken);
 	}
@@ -1021,10 +1051,12 @@ public partial class DydxChainMessageAdapter
 				_ordersById.TryGetValue(fill.OrderId, out var identity) &&
 				identity.TransactionId > 0)
 				targets.Add(identity.TransactionId);
+
 			foreach (var subscription in _orderStatusSubscriptions)
 				if (Matches(subscription.Value, fill))
 					targets.Add(subscription.Key);
 		}
+
 		foreach (var target in targets)
 			await SendFillCoreAsync(fill, target, cancellationToken);
 	}

@@ -77,8 +77,10 @@ sealed class FyersTbtClient : BaseLogReceiver
 	private async ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
 	{
 		_books.Clear();
+
 		foreach (var symbols in _subscriptions.ToArray().Chunk(100))
 			await SendSubscription(true, symbols, cancellationToken);
+
 		await ResumeChannel(cancellationToken);
 	}
 

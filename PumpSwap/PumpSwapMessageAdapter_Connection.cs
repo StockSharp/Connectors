@@ -35,6 +35,7 @@ public partial class PumpSwapMessageAdapter
 				throw new InvalidOperationException(
 					"At least one PumpSwap pool address must be configured.");
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -51,6 +52,7 @@ public partial class PumpSwapMessageAdapter
 						definition.PoolAddress, error.Message);
 				}
 			}
+
 			using (_sync.EnterScope())
 				if (_markets.Count == 0)
 					throw errors.Count == 1
@@ -241,6 +243,7 @@ public partial class PumpSwapMessageAdapter
 						existing.PoolAddress);
 					_markets.Add(existing.SecurityCode, existing);
 				}
+
 				market.SecurityCode = BuildUniquePoolCode(pair,
 					market.PoolAddress);
 			}
@@ -262,6 +265,7 @@ public partial class PumpSwapMessageAdapter
 			Pools.EqualsIgnoreCase(_defaultPools))
 			return [];
 		var result = new List<PumpSwapMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -282,6 +286,7 @@ public partial class PumpSwapMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result.GroupBy(static definition =>
 			definition.PoolAddress, StringComparer.Ordinal)
 			.Select(static group => group.First())];
@@ -402,6 +407,7 @@ public partial class PumpSwapMessageAdapter
 			if (!_markets.ContainsKey(code))
 				return code;
 		}
+
 		return $"{pair}-{poolAddress.ToUpperInvariant()}";
 	}
 

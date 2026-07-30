@@ -172,6 +172,7 @@ sealed class ReyaRestClient : BaseLogReceiver
 			.TrimStart('/');
 		var json = body is null ? null : JsonConvert.SerializeObject(body,
 			_jsonSettings);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitRateLimitAsync(cancellationToken);

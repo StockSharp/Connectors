@@ -7,6 +7,7 @@ public partial class LemonMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var code = lookupMsg.SecurityId.SecurityCode?.ToUpperInvariant();
 		IEnumerable<LemonInstrument> instruments;
@@ -23,6 +24,7 @@ public partial class LemonMarketsMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var instrument in instruments)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -58,6 +60,7 @@ public partial class LemonMarketsMessageAdapter
 			await SendOutMessageAsync(message, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -66,6 +69,7 @@ public partial class LemonMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_level1Subscriptions.Remove(message.OriginalTransactionId);
@@ -96,25 +100,30 @@ public partial class LemonMarketsMessageAdapter
 
 		var instruments = await _client.GetInstruments(cancellationToken) ?? [];
 		_instruments.Clear();
+
 		foreach (var instrument in instruments)
 		{
 			if (instrument?.Isin.IsEmpty() == false)
 				_instruments[instrument.Isin] = instrument;
 		}
+
 		_lastInstrumentRefresh = CurrentTime;
 	}
 
 	private async Task RefreshLevel1(CancellationToken cancellationToken)
 	{
 		var subscriptions = _level1Subscriptions.ToArray();
+
 		foreach (var group in subscriptions.GroupBy(pair => pair.Value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var prices = await _client.GetPrices(group.Key, cancellationToken) ?? [];
+
 			foreach (var pair in group)
 				await SendLevel1(pair.Key, pair.Value, prices, cancellationToken);
 		}
+
 		_lastLevel1Refresh = CurrentTime;
 	}
 

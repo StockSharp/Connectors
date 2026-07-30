@@ -182,6 +182,7 @@ public partial class FmpMessageAdapter
 			_forexStream = null;
 			_cryptoStream = null;
 		}
+
 		foreach (var stream in streams.Where(stream => stream != null))
 			await DisposeStream(stream);
 

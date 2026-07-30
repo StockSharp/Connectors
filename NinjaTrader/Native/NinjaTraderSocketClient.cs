@@ -100,6 +100,7 @@ sealed class NinjaTraderSocketClient : BaseLogReceiver
 					if (envelope.Status == 200)
 					{
 						_authorization.TrySetResult();
+
 						foreach (var subscription in _subscriptions.ToArray())
 							await Send(subscription.Value.endpoint, subscription.Value.payload, cancellationToken);
 					}

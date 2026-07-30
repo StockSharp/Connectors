@@ -31,6 +31,7 @@ public partial class BcsMessageAdapter
 			{
 				var instruments = await _rest.GetInstrumentsByTickers(
 					[query], page, pageSize, cancellationToken) ?? [];
+
 				foreach (var instrument in instruments)
 				{
 					left = await SendInstrument(instrument, lookupMsg,
@@ -38,6 +39,7 @@ public partial class BcsMessageAdapter
 					if (left <= 0)
 						break;
 				}
+
 				if (instruments.Length < pageSize)
 					break;
 			}
@@ -50,6 +52,7 @@ public partial class BcsMessageAdapter
 				{
 					var instruments = await _rest.GetInstrumentsByType(
 						nativeType, page, pageSize, cancellationToken) ?? [];
+
 					foreach (var instrument in instruments)
 					{
 						left = await SendInstrument(instrument, lookupMsg,
@@ -57,9 +60,11 @@ public partial class BcsMessageAdapter
 						if (left <= 0)
 							break;
 					}
+
 					if (instruments.Length < pageSize)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -152,6 +157,7 @@ public partial class BcsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscription(message.OriginalTransactionId,
@@ -160,6 +166,7 @@ public partial class BcsMessageAdapter
 		}
 
 		var native = CreateNative(message.SecurityId, 3);
+
 		foreach (var quote in await _rest.GetQuotes(
 			[ToInstrument(message.SecurityId)], cancellationToken))
 		{
@@ -179,6 +186,7 @@ public partial class BcsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscription(message.OriginalTransactionId,
@@ -205,6 +213,7 @@ public partial class BcsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscription(message.OriginalTransactionId,
@@ -245,6 +254,7 @@ public partial class BcsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscription(message.OriginalTransactionId,
@@ -267,6 +277,7 @@ public partial class BcsMessageAdapter
 			var cursor = from.Value;
 			var emitted = new HashSet<DateTime>();
 			var left = message.Count ?? long.MaxValue;
+
 			while (cursor <= to && left > 0)
 			{
 				var chunkEnd = cursor + timeFrame.Multiply(1439);
@@ -354,6 +365,7 @@ public partial class BcsMessageAdapter
 	{
 		if (quote is null)
 			return;
+
 		foreach (var subscription in FindSubscriptions(
 			3, quote.Ticker, quote.ClassCode))
 		{
@@ -397,6 +409,7 @@ public partial class BcsMessageAdapter
 	{
 		if (book is null)
 			return;
+
 		foreach (var subscription in FindSubscriptions(
 			0, book.Ticker, book.ClassCode))
 		{
@@ -428,6 +441,7 @@ public partial class BcsMessageAdapter
 	{
 		if (trade is null)
 			return;
+
 		foreach (var subscription in FindSubscriptions(
 			2, trade.Ticker, trade.ClassCode))
 		{
@@ -461,6 +475,7 @@ public partial class BcsMessageAdapter
 	{
 		if (candle is null)
 			return;
+
 		foreach (var subscription in FindSubscriptions(
 			1, candle.Ticker, candle.ClassCode)
 			.Where(s => s.Native.TimeFrame.EqualsIgnoreCase(candle.TimeFrame)))

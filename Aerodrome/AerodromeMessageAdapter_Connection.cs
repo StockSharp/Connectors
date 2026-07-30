@@ -36,6 +36,7 @@ public partial class AerodromeMessageAdapter
 					error);
 			}
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -52,6 +53,7 @@ public partial class AerodromeMessageAdapter
 						definition.PoolId, error.Message);
 				}
 			}
+
 			AerodromeMarket[] markets;
 			using (_sync.EnterScope())
 				markets = [.. _markets.Values];
@@ -257,6 +259,7 @@ public partial class AerodromeMessageAdapter
 			throw new InvalidOperationException(
 				"At least one Aerodrome pool address must be configured.");
 		var result = new List<AerodromeMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -285,6 +288,7 @@ public partial class AerodromeMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result];
 	}
 

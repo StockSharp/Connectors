@@ -61,6 +61,7 @@ public partial class BmllMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -76,6 +77,7 @@ public partial class BmllMessageAdapter
 		var (from, to) = GetRange(mdMsg);
 		var request = BuildQuery(mdMsg.SecurityId, from, to, BmllDataKinds.Trades);
 		var left = GetRecordLimit(mdMsg);
+
 		await foreach (var record in SafeClient().Query(TradesDataset, request,
 			cancellationToken))
 		{
@@ -103,6 +105,7 @@ public partial class BmllMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 
@@ -111,6 +114,7 @@ public partial class BmllMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -126,6 +130,7 @@ public partial class BmllMessageAdapter
 		var (from, to) = GetRange(mdMsg);
 		var request = BuildQuery(mdMsg.SecurityId, from, to, BmllDataKinds.Level3);
 		var left = GetRecordLimit(mdMsg);
+
 		await foreach (var record in SafeClient().Query(Level3Dataset, request,
 			cancellationToken))
 		{
@@ -160,6 +165,7 @@ public partial class BmllMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 
@@ -168,6 +174,7 @@ public partial class BmllMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -185,6 +192,7 @@ public partial class BmllMessageAdapter
 		var left = GetRecordLimit(mdMsg);
 		var book = new BmllOrderBook();
 		string tradeDate = null;
+
 		await foreach (var record in SafeClient().Query(Level3Dataset, request,
 			cancellationToken))
 		{
@@ -214,6 +222,7 @@ public partial class BmllMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 
@@ -272,6 +281,7 @@ public partial class BmllMessageAdapter
 		var price = orders[0].Price;
 		var volume = 0m;
 		var count = 0;
+
 		foreach (var order in orders)
 		{
 			if (order.Price != price)
@@ -286,6 +296,7 @@ public partial class BmllMessageAdapter
 			volume += order.Volume;
 			count++;
 		}
+
 		result.Add(new(price, volume) { OrdersCount = count });
 		return [.. result];
 	}

@@ -39,6 +39,7 @@ public partial class ManifestTradeMessageAdapter
 					"At least one Manifest Trade market must be configured or " +
 					"discovered.");
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -55,6 +56,7 @@ public partial class ManifestTradeMessageAdapter
 						definition.MarketAddress, error.Message);
 				}
 			}
+
 			using (_sync.EnterScope())
 				if (_markets.Count == 0)
 					throw errors.Count == 1
@@ -173,6 +175,7 @@ public partial class ManifestTradeMessageAdapter
 					"remain active: {0}", error.Message);
 			}
 		}
+
 		foreach (var definition in configured)
 		{
 			definitions.TryGetValue(definition.MarketAddress,
@@ -185,6 +188,7 @@ public partial class ManifestTradeMessageAdapter
 				Ticker = discovered?.Ticker,
 			};
 		}
+
 		return [.. definitions.Values];
 	}
 
@@ -263,6 +267,7 @@ public partial class ManifestTradeMessageAdapter
 						existing.MarketAddress);
 					_markets.Add(existing.SecurityCode, existing);
 				}
+
 				market.SecurityCode = BuildUniqueMarketCode(pair,
 					market.MarketAddress);
 			}
@@ -283,6 +288,7 @@ public partial class ManifestTradeMessageAdapter
 		if (Markets.IsEmpty())
 			return [];
 		var result = new List<ManifestTradeMarketDefinition>();
+
 		foreach (var item in Markets.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -303,6 +309,7 @@ public partial class ManifestTradeMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result.GroupBy(static definition =>
 			definition.MarketAddress, StringComparer.Ordinal)
 			.Select(static group => group.First())];
@@ -461,6 +468,7 @@ public partial class ManifestTradeMessageAdapter
 			if (!_markets.ContainsKey(code))
 				return code;
 		}
+
 		return $"{pair}-{marketAddress.ToUpperInvariant()}";
 	}
 

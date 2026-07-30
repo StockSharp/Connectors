@@ -139,6 +139,7 @@ public partial class WisdomCapitalMessageAdapter
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId,
             cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -181,6 +182,7 @@ public partial class WisdomCapitalMessageAdapter
         long? count = null)
     {
         var left = count ?? long.MaxValue;
+
         foreach (var order in (await _restClient.GetOrders(
             cancellationToken))
             .Where(order => order != null && !order.OrderId.IsEmpty())
@@ -221,6 +223,7 @@ public partial class WisdomCapitalMessageAdapter
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId,
             cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -482,6 +485,7 @@ public partial class WisdomCapitalMessageAdapter
                 LocalizedStrings.OrderNoExchangeId.Put(
                     originalTransactionId));
         }
+
         foreach (var order in await _restClient.GetOrders(
             cancellationToken))
         {
@@ -496,6 +500,7 @@ public partial class WisdomCapitalMessageAdapter
                     transactionId == originalTransactionId)
                 return order;
         }
+
         throw new InvalidOperationException(
             $"Wisdom Capital XTS order '{orderId}' was not found in the current order book.");
     }

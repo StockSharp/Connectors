@@ -124,9 +124,12 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var data = await Get($"v1/market/lookup/{(message.SecurityId.SecurityCode ?? string.Empty).DataEscape()}.json", cancellationToken);
+
 		foreach (var item in data.SelectTokens("$..Data"))
 			await SendOutMessageAsync(new SecurityMessage { OriginalTransactionId = message.TransactionId, SecurityId = new() { SecurityCode = item.Value<string>("symbol"), BoardCode = BoardCodes.Nasdaq }, Name = item.Value<string>("description"), SecurityType = SecurityTypes.Stock, Currency = CurrencyTypes.USD, PriceStep = 0.01m }, cancellationToken);
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -134,6 +137,7 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 		var data = (await Get($"v1/market/quote/{message.SecurityId.SecurityCode.DataEscape()}.json?detailFlag=ALL", cancellationToken)).SelectToken("$..All");

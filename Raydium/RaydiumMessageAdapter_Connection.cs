@@ -41,6 +41,7 @@ public partial class RaydiumMessageAdapter
 					"At least one Raydium pool must be configured or discovered.");
 			var pools = new List<RaydiumPool>(definitions.Length);
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -56,6 +57,7 @@ public partial class RaydiumMessageAdapter
 						definition.PoolAddress, error.Message);
 				}
 			}
+
 			if (pools.Count == 0)
 				throw errors.Count == 1
 					? errors[0]
@@ -164,10 +166,12 @@ public partial class RaydiumMessageAdapter
 		var missing = explicitDefinitions.Where(definition =>
 			!pools.ContainsKey(definition.PoolAddress)).Select(
 				static definition => definition.PoolAddress).ToArray();
+
 		for (var offset = 0; offset < missing.Length; offset += 100)
 			foreach (var pool in await _apiClient.GetPoolsByIdsAsync(
 				missing.Skip(offset).Take(100), cancellationToken))
 				pools[pool.Id.NormalizePublicKey()] = pool;
+
 		var unresolvedPools = explicitDefinitions.Where(definition =>
 			!pools.ContainsKey(definition.PoolAddress)).Select(static definition =>
 				definition.PoolAddress).ToArray();
@@ -179,10 +183,12 @@ public partial class RaydiumMessageAdapter
 		var keys = new Dictionary<string, RaydiumApiPoolKeys>(
 			StringComparer.Ordinal);
 		var addresses = pools.Keys.ToArray();
+
 		for (var offset = 0; offset < addresses.Length; offset += 100)
 			foreach (var item in await _apiClient.GetPoolKeysAsync(
 				addresses.Skip(offset).Take(100), cancellationToken))
 				keys[item.Id.NormalizePublicKey()] = item;
+
 		var unresolvedKeys = explicitDefinitions.Where(definition =>
 			!keys.ContainsKey(definition.PoolAddress)).Select(static definition =>
 				definition.PoolAddress).ToArray();
@@ -281,6 +287,7 @@ public partial class RaydiumMessageAdapter
 						$"{reference.TokenB.Symbol}".ToUpperInvariant(),
 				};
 			}).ToArray();
+
 		foreach (var collision in markets.GroupBy(static market =>
 			market.SecurityCode, StringComparer.OrdinalIgnoreCase).Where(
 			static group => group.Count() > 1))
@@ -296,6 +303,7 @@ public partial class RaydiumMessageAdapter
 					throw new InvalidDataException(
 						$"Duplicate Raydium security code " +
 						$"'{market.SecurityCode}'.");
+
 				foreach (var pool in market.Pools)
 				{
 					if (!_marketsByPool.TryAdd(pool.PoolAddress, market))
@@ -313,6 +321,7 @@ public partial class RaydiumMessageAdapter
 		if (Pools.IsEmpty())
 			return [];
 		var result = new List<RaydiumMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -333,6 +342,7 @@ public partial class RaydiumMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result.GroupBy(static definition =>
 			definition.PoolAddress, StringComparer.Ordinal)
 			.Select(static group => group.First())];

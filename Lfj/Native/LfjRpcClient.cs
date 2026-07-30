@@ -640,6 +640,7 @@ sealed class LfjRpcClient : BaseLogReceiver
 				Method = method,
 				Parameters = parameters,
 			}, _jsonSettings);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRequestAsync(cancellationToken);

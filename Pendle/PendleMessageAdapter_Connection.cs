@@ -54,6 +54,7 @@ public partial class PendleMessageAdapter
 					static group => group.First(),
 					StringComparer.OrdinalIgnoreCase);
 			var errors = new List<Exception>();
+
 			foreach (var market in markets)
 			{
 				try
@@ -70,6 +71,7 @@ public partial class PendleMessageAdapter
 						market.Address, error.Message);
 				}
 			}
+
 			using (_sync.EnterScope())
 				if (_securities.Count == 0)
 					throw errors.Count == 1
@@ -129,6 +131,7 @@ public partial class PendleMessageAdapter
 				expired.Add(item.Key);
 				RemoveMarketSubscriptionNoLock(item.Key);
 			}
+
 			if (_rpcClient is not null && _httpClient is not null &&
 				(_level1Subscriptions.Count > 0 ||
 					_candleSubscriptions.Count > 0) &&
@@ -152,8 +155,10 @@ public partial class PendleMessageAdapter
 			await RunSafelyAsync(PollMarketAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
+
 		foreach (var target in expired)
 			await SendSubscriptionFinishedAsync(target, cancellationToken);
+
 		_ = timeMsg;
 	}
 

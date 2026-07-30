@@ -151,6 +151,7 @@ sealed class ProBitRestClient : BaseLogReceiver
 				return _accessToken;
 
 			var body = JsonConvert.SerializeObject(new ProBitTokenRequest(), _jsonSettings);
+
 			for (var attempt = 1; ; attempt++)
 			{
 				await WaitForRateLimitAsync(cancellationToken);

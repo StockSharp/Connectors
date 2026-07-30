@@ -13,6 +13,7 @@ public partial class ThetaDataMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -67,6 +68,7 @@ public partial class ThetaDataMessageAdapter
 		{
 			if (!Requested(market) || left <= 0)
 				continue;
+
 			foreach (var symbol in await SafeRest().GetSymbols(market, cancellationToken))
 			{
 				if (symbol?.Symbol.IsEmpty() != false ||
@@ -107,6 +109,7 @@ public partial class ThetaDataMessageAdapter
 					queryDate = expiry.Date;
 
 				var contracts = new List<ThetaOptionContract>();
+
 				for (var attempt = 0; attempt < 8; attempt++)
 				{
 					var values = await SafeRest().GetOptionContracts(root, queryDate.AddDays(-attempt),
@@ -139,6 +142,7 @@ public partial class ThetaDataMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -158,6 +162,7 @@ public partial class ThetaDataMessageAdapter
 			if (key.Market == ThetaDataMarkets.Indices)
 			{
 				var values = await LoadPrices(key, from, to, cancellationToken);
+
 				foreach (var item in SelectHistory(values, item => item.Time, mdMsg))
 				{
 					var message = CreatePriceLevel1(mdMsg.TransactionId, securityId,
@@ -171,6 +176,7 @@ public partial class ThetaDataMessageAdapter
 			else
 			{
 				var values = await LoadQuotes(key, from, to, cancellationToken);
+
 				foreach (var item in SelectHistory(values, item => item.Time, mdMsg))
 				{
 					var message = CreateQuoteLevel1(mdMsg.TransactionId, securityId,
@@ -205,6 +211,7 @@ public partial class ThetaDataMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -224,6 +231,7 @@ public partial class ThetaDataMessageAdapter
 		{
 			var (from, to) = GetHistoryRange(mdMsg);
 			var values = await LoadQuotes(key, from, to, cancellationToken);
+
 			foreach (var item in SelectHistory(values, item => item.Time, mdMsg))
 			{
 				var message = CreateDepth(mdMsg.TransactionId, securityId, item.Time,
@@ -256,6 +264,7 @@ public partial class ThetaDataMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -276,6 +285,7 @@ public partial class ThetaDataMessageAdapter
 		{
 			var (from, to) = GetHistoryRange(mdMsg);
 			var values = await LoadTrades(key, from, to, cancellationToken);
+
 			foreach (var item in SelectHistory(values, item => item.Time, mdMsg))
 			{
 				var message = CreateTick(mdMsg.TransactionId, securityId, item.Time,
@@ -294,6 +304,7 @@ public partial class ThetaDataMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (key.Market == ThetaDataMarkets.Stocks && StockVenue == ThetaDataStockVenues.UtpCta)
 		{
 			throw new NotSupportedException(
@@ -310,6 +321,7 @@ public partial class ThetaDataMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -332,6 +344,7 @@ public partial class ThetaDataMessageAdapter
 			var values = await SafeRest().GetEod(key, from.ToMarketDate(_marketTimeZone),
 				to.ToMarketDate(_marketTimeZone), cancellationToken);
 			var parsed = new List<ParsedEod>();
+
 			foreach (var value in values)
 			{
 				if (value == null || !TryGetEodOpenTime(value, out var openTime) ||
@@ -341,6 +354,7 @@ public partial class ThetaDataMessageAdapter
 				}
 				parsed.Add(new(value, openTime));
 			}
+
 			foreach (var item in SelectHistory(parsed, item => item.OpenTime, mdMsg, true))
 			{
 				if (!TryGetOhlc(item.Value, out var open, out var high, out var low,
@@ -368,10 +382,12 @@ public partial class ThetaDataMessageAdapter
 		else
 		{
 			var parsed = new List<ParsedBar>();
+
 			foreach (var session in GetSessions(from, to))
 			{
 				var values = await SafeRest().GetBars(key, session.Date, timeFrame,
 					session.Start, session.End, StockVenue, cancellationToken);
+
 				foreach (var value in values)
 				{
 					if (value != null && Extensions.TryParseMarketTime(value.Timestamp,
@@ -380,8 +396,10 @@ public partial class ThetaDataMessageAdapter
 						parsed.Add(new(value, openTime));
 					}
 				}
+
 				await IterationInterval.Delay(cancellationToken);
 			}
+
 			foreach (var item in SelectHistory(parsed, item => item.OpenTime, mdMsg, true))
 			{
 				if (!TryGetOhlc(item.Value, out var open, out var high, out var low,
@@ -415,10 +433,12 @@ public partial class ThetaDataMessageAdapter
 		DateTime to, CancellationToken cancellationToken)
 	{
 		var result = new List<ParsedQuote>();
+
 		foreach (var session in GetSessions(from, to))
 		{
 			var values = await SafeRest().GetHistoryQuotes(key, session.Date,
 				session.Start, session.End, StockVenue, cancellationToken);
+
 			foreach (var value in values)
 			{
 				if (value != null && Extensions.TryParseMarketTime(value.Timestamp,
@@ -427,8 +447,10 @@ public partial class ThetaDataMessageAdapter
 					result.Add(new(value, time));
 				}
 			}
+
 			await IterationInterval.Delay(cancellationToken);
 		}
+
 		return result;
 	}
 
@@ -436,10 +458,12 @@ public partial class ThetaDataMessageAdapter
 		DateTime to, CancellationToken cancellationToken)
 	{
 		var result = new List<ParsedTrade>();
+
 		foreach (var session in GetSessions(from, to))
 		{
 			var values = await SafeRest().GetHistoryTrades(key, session.Date,
 				session.Start, session.End, StockVenue, cancellationToken);
+
 			foreach (var value in values)
 			{
 				if (value != null && Extensions.TryParseMarketTime(value.Timestamp,
@@ -448,8 +472,10 @@ public partial class ThetaDataMessageAdapter
 					result.Add(new(value, time));
 				}
 			}
+
 			await IterationInterval.Delay(cancellationToken);
 		}
+
 		return result;
 	}
 
@@ -457,10 +483,12 @@ public partial class ThetaDataMessageAdapter
 		DateTime to, CancellationToken cancellationToken)
 	{
 		var result = new List<ParsedPrice>();
+
 		foreach (var session in GetSessions(from, to))
 		{
 			var values = await SafeRest().GetHistoryPrices(key, session.Date,
 				session.Start, session.End, cancellationToken);
+
 			foreach (var value in values)
 			{
 				if (value != null && Extensions.TryParseMarketTime(value.Timestamp,
@@ -469,8 +497,10 @@ public partial class ThetaDataMessageAdapter
 					result.Add(new(value, time));
 				}
 			}
+
 			await IterationInterval.Delay(cancellationToken);
 		}
+
 		return result;
 	}
 
@@ -549,6 +579,7 @@ public partial class ThetaDataMessageAdapter
 		EnsureRange(from, to);
 		var fromLocal = TimeZoneInfo.ConvertTimeFromUtc(from.ToUtc(), _marketTimeZone);
 		var toLocal = TimeZoneInfo.ConvertTimeFromUtc(to.ToUtc(), _marketTimeZone);
+
 		for (var date = fromLocal.Date; date <= toLocal.Date; date = date.AddDays(1))
 		{
 			var start = date == fromLocal.Date && fromLocal.TimeOfDay > SessionStart

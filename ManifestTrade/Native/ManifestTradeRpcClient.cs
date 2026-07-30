@@ -200,8 +200,10 @@ sealed class ManifestTradeRpcClient : BaseLogReceiver
 		var builder = new TransactionBuilder()
 			.SetFeePayer(_account.PublicKey)
 			.SetRecentBlockHash(latest.Value.Blockhash);
+
 		foreach (var instruction in list)
 			builder.AddInstruction(instruction);
+
 		var transaction = builder.Build(_account);
 		return await SendAsync<string>("sendTransaction",
 			new ManifestTradeRpcSendTransactionParameters
@@ -248,6 +250,7 @@ sealed class ManifestTradeRpcClient : BaseLogReceiver
 		ManifestTradeRpcParameters parameters, CancellationToken cancellationToken)
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRateLimitAsync(cancellationToken);

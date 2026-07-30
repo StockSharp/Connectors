@@ -7,6 +7,7 @@ public partial class DowJonesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveLiveSubscription(mdMsg.OriginalTransactionId);
@@ -38,6 +39,7 @@ public partial class DowJonesMessageAdapter
 			var target = checked((int)Math.Min(remaining ?? MaxNewsItems, MaxNewsItems));
 			var articles = await SearchNews(requestedSecurity, queryFrom, queryTo,
 				target, from == null, cancellationToken);
+
 			foreach (var article in articles)
 			{
 				await SendNews(mdMsg.TransactionId, requestedSecurity, article,
@@ -46,6 +48,7 @@ public partial class DowJonesMessageAdapter
 				if (remaining is > 0 && --remaining == 0)
 					break;
 			}
+
 			liveCursor = queryTo;
 		}
 
@@ -62,8 +65,10 @@ public partial class DowJonesMessageAdapter
 			CursorUtc = liveCursor,
 			Remaining = remaining,
 		};
+
 		foreach (var key in remembered)
 			subscription.TryRemember(key);
+
 		AddLiveSubscription(subscription);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 	}
@@ -107,6 +112,7 @@ public partial class DowJonesMessageAdapter
 			var response = await SafeClient().Search(request, cancellationToken);
 			var page = response?.Data ?? [];
 			var before = result.Count;
+
 			foreach (var resource in page)
 			{
 				if (resource == null || !resource.TryGetTime(out var time) ||

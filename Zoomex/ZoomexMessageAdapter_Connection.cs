@@ -22,6 +22,7 @@ public partial class ZoomexMessageAdapter
 			foreach (var category in Sections.Select(
 				static section => section.ToNative()))
 				await LoadProductsAsync(category, cancellationToken);
+
 			using (_sync.EnterScope())
 				if (_products.Count == 0)
 					throw new InvalidDataException(
@@ -40,6 +41,7 @@ public partial class ZoomexMessageAdapter
 			{
 				_privateSocket = CreatePrivateSocket();
 				await _privateSocket.ConnectAsync(cancellationToken);
+
 				foreach (var topic in new[]
 					{ "order", "execution", "position", "wallet" })
 					await _privateSocket.SubscribeAsync(topic,
@@ -111,10 +113,12 @@ public partial class ZoomexMessageAdapter
 	{
 		var cursor = default(string);
 		var seenCursors = new HashSet<string>(StringComparer.Ordinal);
+
 		for (var pageNumber = 0; pageNumber < 100; pageNumber++)
 		{
 			var page = await RestClient.GetProductsAsync(category, cursor,
 				1000, cancellationToken);
+
 			foreach (var product in page?.Items ?? [])
 			{
 				if (product?.Symbol.IsEmpty() != false ||
@@ -125,6 +129,7 @@ public partial class ZoomexMessageAdapter
 					_products[new(category,
 						product.Symbol.NormalizeSymbol())] = product;
 			}
+
 			var next = page?.NextPageCursor;
 			if (next.IsEmpty() || !seenCursors.Add(next))
 				break;
@@ -207,6 +212,7 @@ public partial class ZoomexMessageAdapter
 			_privateSocket = null;
 			sockets = [.. sockets, privateSocket];
 		}
+
 		foreach (var socket in sockets)
 		{
 			try
@@ -219,6 +225,7 @@ public partial class ZoomexMessageAdapter
 			}
 			socket.Dispose();
 		}
+
 		_restClient?.Dispose();
 		_restClient = null;
 		ClearState();
@@ -228,6 +235,7 @@ public partial class ZoomexMessageAdapter
 	{
 		foreach (var socket in _publicSockets.Values)
 			socket.Dispose();
+
 		_publicSockets.Clear();
 		_privateSocket?.Dispose();
 		_privateSocket = null;

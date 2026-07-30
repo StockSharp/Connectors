@@ -7,6 +7,7 @@ public partial class DaishinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		if (securityTypes.Any(type => type is not SecurityTypes.Stock and not SecurityTypes.Etf and
 			not SecurityTypes.Future and not SecurityTypes.Option))
@@ -16,6 +17,7 @@ public partial class DaishinMessageAdapter
 		var securities = await _client.GetSecuritiesAsync(
 			lookupMsg.SecurityId.SecurityCode, securityTypes, cancellationToken);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var security in securities)
 		{
 			CacheSecurity(security);
@@ -39,6 +41,7 @@ public partial class DaishinMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -47,6 +50,7 @@ public partial class DaishinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await _client.UnsubscribeAsync(mdMsg.OriginalTransactionId, cancellationToken);
@@ -72,6 +76,7 @@ public partial class DaishinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await _client.UnsubscribeAsync(mdMsg.OriginalTransactionId, cancellationToken);
@@ -92,6 +97,7 @@ public partial class DaishinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await _client.UnsubscribeAsync(mdMsg.OriginalTransactionId, cancellationToken);
@@ -120,6 +126,7 @@ public partial class DaishinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			_liveCandles.Remove(mdMsg.OriginalTransactionId);
@@ -152,6 +159,7 @@ public partial class DaishinMessageAdapter
 		var from = message.From is DateTime fromValue ? NormalizeUtc(fromValue) : DateTime.MinValue;
 		var to = message.To is DateTime toValue ? NormalizeUtc(toValue) : CurrentTime;
 		var left = message.Count ?? long.MaxValue;
+
 		foreach (var candle in (await _client.GetCandlesAsync(security, timeFrame,
 			count, cancellationToken)).Where(item => item.OpenTime >= from && item.OpenTime <= to))
 		{

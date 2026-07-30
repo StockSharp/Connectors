@@ -182,12 +182,14 @@ public partial class WooXMessageAdapter
 				? null
 				: GetSymbol(cancelMsg.SecurityId), "INCOMPLETE", null, null, 500,
 				cancellationToken);
+
 			foreach (var order in orders.Where(order => order.Side.ToStockSharp() == cancelMsg.Side))
 				await RestClient.CancelOrderAsync(new()
 				{
 					OrderId = order.OrderId,
 					Symbol = order.Symbol,
 				}, cancellationToken);
+
 			return;
 		}
 		if (!cancelMsg.SecurityId.SecurityCode.IsEmpty())
@@ -204,6 +206,7 @@ public partial class WooXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -221,11 +224,13 @@ public partial class WooXMessageAdapter
 		}, cancellationToken);
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		await PrivateWsClient.SubscribeBalancesAsync(cancellationToken);
 		await PrivateWsClient.SubscribePositionsAsync(cancellationToken);
@@ -236,6 +241,7 @@ public partial class WooXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -251,11 +257,13 @@ public partial class WooXMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, symbol, statusMsg.From,
 			statusMsg.To, limit, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		await PrivateWsClient.SubscribeExecutionsAsync(cancellationToken);
 	}
@@ -264,10 +272,13 @@ public partial class WooXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances.Data?.Holding ?? [])
 			await SendBalanceAsync(balance, balances.Timestamp, originalTransactionId,
 				cancellationToken);
+
 		var positions = await RestClient.GetPositionsAsync(cancellationToken);
+
 		foreach (var position in positions.Data?.Positions ?? [])
 			await SendPositionAsync(position, originalTransactionId, cancellationToken);
 	}
@@ -276,10 +287,12 @@ public partial class WooXMessageAdapter
 		DateTime? from, DateTime? to, int limit, CancellationToken cancellationToken)
 	{
 		var orders = await LoadOrdersAsync(symbol, null, from, to, limit, cancellationToken);
+
 		foreach (var order in orders.OrderBy(GetOrderTime))
 			await SendOrderAsync(order, originalTransactionId, cancellationToken);
 
 		var fills = await LoadTradesAsync(symbol, from, to, limit, cancellationToken);
+
 		foreach (var fill in fills.OrderBy(static item => item.ExecutedTimestamp.ToUtcSeconds()))
 			await SendFillAsync(fill, originalTransactionId, false, cancellationToken);
 	}
@@ -288,6 +301,7 @@ public partial class WooXMessageAdapter
 		DateTime? from, DateTime? to, int maximum, CancellationToken cancellationToken)
 	{
 		var result = new List<WooXOrder>();
+
 		for (var page = 1; result.Count < maximum; page++)
 		{
 			var size = (maximum - result.Count).Min(500).Max(1);
@@ -306,6 +320,7 @@ public partial class WooXMessageAdapter
 				meta.CurrentPage * meta.RecordsPerPage >= meta.Total)
 				break;
 		}
+
 		return [.. result.Where(static order => order?.OrderId > 0)
 			.GroupBy(static order => order.OrderId)
 			.Select(static group => group.OrderByDescending(GetOrderTime).First())
@@ -316,6 +331,7 @@ public partial class WooXMessageAdapter
 		DateTime? to, int maximum, CancellationToken cancellationToken)
 	{
 		var result = new List<WooXTrade>();
+
 		for (var page = 1; result.Count < maximum; page++)
 		{
 			var size = (maximum - result.Count).Min(500).Max(1);
@@ -333,6 +349,7 @@ public partial class WooXMessageAdapter
 				meta.CurrentPage * meta.RecordsPerPage >= meta.Total)
 				break;
 		}
+
 		return [.. result.Where(static fill => fill?.Id > 0)
 			.GroupBy(static fill => fill.Id)
 			.Select(static group => group.First())

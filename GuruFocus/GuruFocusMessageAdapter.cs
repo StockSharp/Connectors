@@ -16,6 +16,7 @@ public partial class GuruFocusMessageAdapter
         this.AddSupportedMarketDataType(DataType.News);
         this.AddSupportedCandleTimeFrames(
             GuruFocusExtensions.TimeFrames);
+
         foreach (var dataType in GuruFocusDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }

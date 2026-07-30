@@ -115,6 +115,7 @@ public partial class MStockMessageAdapter
 					value);
 				CacheSymbol(value.Exchange, value.Symbol, value);
 			}
+
 			_instrumentsLoaded = true;
 		}
 	}

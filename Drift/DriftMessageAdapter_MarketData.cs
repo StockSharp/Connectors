@@ -8,10 +8,12 @@ public partial class DriftMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static market => market.Symbol,
 			StringComparer.Ordinal))
 		{
@@ -39,6 +41,7 @@ public partial class DriftMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -47,6 +50,7 @@ public partial class DriftMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -70,6 +74,7 @@ public partial class DriftMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var subscribe = false;
 		using (_sync.EnterScope())
 		{
@@ -99,6 +104,7 @@ public partial class DriftMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -127,6 +133,7 @@ public partial class DriftMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var subscribe = false;
 		using (_sync.EnterScope())
 		{
@@ -161,6 +168,7 @@ public partial class DriftMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -184,6 +192,7 @@ public partial class DriftMessageAdapter
 			.To<int>();
 		var history = await RestClient.GetTradesAsync(market.Symbol, count,
 			cancellationToken);
+
 		foreach (var trade in history
 			.Where(static trade => trade is not null && trade.Timestamp > 0)
 			.Where(trade => from is null ||
@@ -192,11 +201,13 @@ public partial class DriftMessageAdapter
 			.OrderBy(static trade => trade.Timestamp))
 			await SendTradeAsync(trade, market.Symbol, mdMsg.TransactionId,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		if (market.MarketType != DriftMarketTypes.Perpetual)
 			throw new NotSupportedException(
 				"The current Drift DLOB streams perpetual trades only.");
@@ -233,6 +244,7 @@ public partial class DriftMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -261,6 +273,7 @@ public partial class DriftMessageAdapter
 			.Where(static candle => candle is not null && candle.Timestamp > 0)
 			.OrderBy(static candle => candle.Timestamp)
 			.ToArray();
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market.Symbol, candle, timeFrame,
 				mdMsg.TransactionId,
@@ -268,11 +281,13 @@ public partial class DriftMessageAdapter
 					? CandleStates.Finished
 					: CandleStates.Active,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var key = CandleKey(market.Symbol, resolution);
 		var subscribe = false;
 		using (_sync.EnterScope())
@@ -447,6 +462,7 @@ public partial class DriftMessageAdapter
 				if (ids.Length > 0)
 					changed.Add((market, ids));
 			}
+
 		foreach (var (market, transactions) in changed)
 			foreach (var transactionId in transactions)
 				await SendLevel1Async(market, transactionId, cancellationToken);
@@ -465,6 +481,7 @@ public partial class DriftMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Values.Where(subscription =>
 				subscription.Symbol.Equals(book.MarketName,
 					StringComparison.Ordinal))];
+
 		foreach (var subscription in subscriptions)
 			await SendDepthAsync(book, market, subscription.TransactionId,
 				subscription.Depth, cancellationToken);
@@ -489,6 +506,7 @@ public partial class DriftMessageAdapter
 				.Where(subscription => subscription.Symbol.Equals(symbol,
 					StringComparison.Ordinal))
 				.Select(static subscription => subscription.TransactionId)];
+
 		foreach (var transactionId in subscriptions)
 			await SendTradeAsync(trade, symbol, transactionId, cancellationToken);
 	}
@@ -516,6 +534,7 @@ public partial class DriftMessageAdapter
 				messages.Add((subscription.TransactionId,
 					subscription.TimeFrame, candle, CandleStates.Active));
 			}
+
 		foreach (var message in messages)
 			await SendCandleAsync(candle.Symbol, message.Candle,
 				message.TimeFrame, message.TransactionId, message.State,

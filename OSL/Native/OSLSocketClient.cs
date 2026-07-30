@@ -375,6 +375,7 @@ sealed class OSLSocketClient : BaseLogReceiver
 			subscribe = [.. _subscriptions.Except(_sentSubscriptions)];
 			unsubscribe = [.. _sentSubscriptions.Except(_subscriptions)];
 		}
+
 		foreach (var item in subscribe)
 		{
 			await SendSubscriptionAsync(_client, item, true,
@@ -382,6 +383,7 @@ sealed class OSLSocketClient : BaseLogReceiver
 			using (_sync.EnterScope())
 				_sentSubscriptions.Add(item);
 		}
+
 		foreach (var item in unsubscribe)
 		{
 			await SendSubscriptionAsync(_client, item, false,

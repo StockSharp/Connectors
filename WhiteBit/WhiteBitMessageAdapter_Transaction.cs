@@ -202,6 +202,7 @@ public partial class WhiteBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 
 		if (!lookupMsg.IsSubscribe)
@@ -228,6 +229,7 @@ public partial class WhiteBitMessageAdapter
 		{
 			foreach (var balance in await RestClient.GetMarginBalancesAsync(cancellationToken) ?? [])
 				await SendMarginBalanceAsync(balance, lookupMsg.TransactionId, cancellationToken);
+
 			foreach (var position in await RestClient.GetPositionsAsync(null, cancellationToken) ?? [])
 				await SendPositionAsync(position, lookupMsg.TransactionId, cancellationToken);
 		}
@@ -240,6 +242,7 @@ public partial class WhiteBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 
 		if (!statusMsg.IsSubscribe)
@@ -290,6 +293,7 @@ public partial class WhiteBitMessageAdapter
 	{
 		if (_portfolioSubscriptionId == 0)
 			return;
+
 		foreach (var balance in balances ?? [])
 			await SendSpotBalanceAsync(balance, _portfolioSubscriptionId, cancellationToken);
 	}
@@ -299,6 +303,7 @@ public partial class WhiteBitMessageAdapter
 	{
 		if (_portfolioSubscriptionId == 0)
 			return;
+
 		foreach (var balance in balances ?? [])
 		{
 			await SendMarginBalanceAsync(new WhiteBitMarginBalance
@@ -337,6 +342,7 @@ public partial class WhiteBitMessageAdapter
 	{
 		if (_portfolioSubscriptionId == 0)
 			return;
+
 		foreach (var position in positions ?? [])
 			await SendPositionAsync(position, _portfolioSubscriptionId, cancellationToken);
 	}

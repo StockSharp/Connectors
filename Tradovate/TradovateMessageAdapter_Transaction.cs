@@ -29,8 +29,10 @@ public partial class TradovateMessageAdapter
 	private async Task<TradovateAccount[]> EnsureAccounts(CancellationToken cancellationToken)
 	{
 		var accounts = await _httpClient.GetAccounts(cancellationToken);
+
 		foreach (var account in accounts)
 			_accounts[account.Id] = account;
+
 		return accounts;
 	}
 
@@ -127,10 +129,12 @@ public partial class TradovateMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 			return;
 
 		var accounts = await EnsureAccounts(cancellationToken);
+
 		foreach (var account in accounts)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -143,6 +147,7 @@ public partial class TradovateMessageAdapter
 
 		foreach (var position in await _httpClient.GetPositions(cancellationToken))
 			await ProcessPosition(position, cancellationToken);
+
 		foreach (var balance in await _httpClient.GetCashBalances(cancellationToken))
 			await ProcessCashBalance(balance, cancellationToken);
 
@@ -155,11 +160,13 @@ public partial class TradovateMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 			return;
 
 		var accounts = await EnsureAccounts(cancellationToken);
 		var versions = await _httpClient.GetOrderVersions(cancellationToken);
+
 		foreach (var version in versions)
 			_orderVersions[version.OrderId] = version;
 

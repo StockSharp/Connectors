@@ -72,11 +72,13 @@ public partial class InjectiveMessageAdapter
 				InjectiveMarketKinds.Derivative,
 			}
 			: [market.Kind];
+
 		foreach (var kind in kinds)
 		{
 			var orders = await RestClient.GetOrdersAsync(kind,
 				_subaccountId, market?.MarketId, false, null, null, HistoryLimit,
 				cancellationToken);
+
 			foreach (var order in orders.Where(item => item is not null &&
 				IsOrderActive(item) &&
 				(cancelMsg.Side is null ||
@@ -95,6 +97,7 @@ public partial class InjectiveMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -120,6 +123,7 @@ public partial class InjectiveMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -131,6 +135,7 @@ public partial class InjectiveMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -148,9 +153,11 @@ public partial class InjectiveMessageAdapter
 		}
 		var subscription = CreateOrderSubscription(statusMsg);
 		var orders = await GetOrderSnapshotAsync(subscription, cancellationToken);
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, statusMsg.TransactionId,
 				cancellationToken);
+
 		await SendHistoricalExecutionsAsync(subscription,
 			statusMsg.TransactionId, cancellationToken);
 		if (statusMsg.IsHistoryOnly())
@@ -160,6 +167,7 @@ public partial class InjectiveMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId, subscription);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -499,6 +507,7 @@ public partial class InjectiveMessageAdapter
 			? GetMarkets() : [subscription.Market];
 		var result = new Dictionary<string, InjectiveOrder>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var group in markets.GroupBy(static market => market.Kind))
 		{
 			var marketId = subscription.Market?.MarketId;
@@ -509,6 +518,7 @@ public partial class InjectiveMessageAdapter
 				marketId, true, subscription.From, subscription.To,
 				subscription.Limit, cancellationToken).AsTask();
 			await Task.WhenAll(activeTask, historyTask);
+
 			foreach (var order in (await activeTask).Concat(await historyTask)
 				.Where(item => item is not null && IsOrderMatch(item, subscription)))
 			{
@@ -517,6 +527,7 @@ public partial class InjectiveMessageAdapter
 					result[key] = order;
 			}
 		}
+
 		return [.. result.Values.OrderBy(static order => order.UpdatedAt)
 			.Skip(subscription.Skip).Take(subscription.Limit)];
 	}
@@ -534,6 +545,7 @@ public partial class InjectiveMessageAdapter
 				transactionId, cancellationToken);
 			return;
 		}
+
 		foreach (var kind in new[]
 		{
 			InjectiveMarketKinds.Spot,
@@ -620,15 +632,18 @@ public partial class InjectiveMessageAdapter
 			OriginalTransactionId = transactionId,
 			}.TryAdd(PositionChangeTypes.CurrentValue, usdValues.Sum(), true),
 				cancellationToken);
+
 		foreach (var balance in portfolio.BankBalances ?? [])
 			await SendBalanceAsync(balance?.Denom, balance?.Amount,
 				transactionId, cancellationToken);
+
 		foreach (var balance in (portfolio.Subaccounts ?? []).Where(item =>
 			item?.SubaccountId.Equals(_subaccountId,
 				StringComparison.OrdinalIgnoreCase) == true))
 			await SendBalanceAsync(balance.Denom,
 				balance.Deposit?.TotalBalance, transactionId, cancellationToken,
 				balance.Deposit?.AvailableBalance);
+
 		foreach (var item in portfolio.PositionsWithUpnl ?? [])
 			if (item?.Position is not null)
 				await SendPositionAsync(item.Position, transactionId,
@@ -751,6 +766,7 @@ public partial class InjectiveMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] keyed;
 		using (_sync.EnterScope())
 			keyed = [.. _orderSubscriptions];
+
 		foreach (var item in keyed.Where(item => IsOrderMatch(order, item.Value)))
 			await SendOrderAsync(order, item.Key, cancellationToken);
 	}
@@ -761,6 +777,7 @@ public partial class InjectiveMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var transactionId in subscriptions)
 			await SendPositionAsync(position, transactionId, cancellationToken);
 	}
@@ -773,6 +790,7 @@ public partial class InjectiveMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var transactionId in subscriptions)
 			await SendBalanceAsync(update.Denom, update.Amount, transactionId,
 				cancellationToken);

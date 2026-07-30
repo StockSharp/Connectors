@@ -7,6 +7,7 @@ public partial class CapitalFuturesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var symbol = lookupMsg.SecurityId.SecurityCode;
 		if (symbol.IsEmpty())
 			throw new NotSupportedException(
@@ -60,6 +61,7 @@ public partial class CapitalFuturesMessageAdapter
 		CapitalMarketDataKinds kind, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await _client.UnsubscribeAsync(mdMsg.OriginalTransactionId, cancellationToken);

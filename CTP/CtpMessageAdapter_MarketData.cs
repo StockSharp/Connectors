@@ -14,6 +14,7 @@ public partial class CtpMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (_securityLookup != null)
 			throw new InvalidOperationException("Only one CTP security lookup can be active at a time.");
 
@@ -51,6 +52,7 @@ public partial class CtpMessageAdapter
 	private async ValueTask ProcessMarketDataSubscription(MarketDataMessage mdMsg, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var instrumentId = mdMsg.SecurityId.SecurityCode;
 		if (instrumentId.IsEmpty())
 			throw new ArgumentException("CTP instrument ID is not specified.", nameof(mdMsg));

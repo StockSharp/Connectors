@@ -170,6 +170,7 @@ public partial class TradejiniMessageAdapter
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId,
             cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -180,6 +181,7 @@ public partial class TradejiniMessageAdapter
 
         EnsurePortfolio(statusMsg.PortfolioName);
         var left = statusMsg.Count ?? long.MaxValue;
+
         foreach (var order in
             (await _restClient.GetOrders(cancellationToken))
                 .Where(order => order != null)
@@ -236,6 +238,7 @@ public partial class TradejiniMessageAdapter
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId,
             cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -285,6 +288,7 @@ public partial class TradejiniMessageAdapter
                 isLookup,
                 cancellationToken);
         }
+
         foreach (var trade in
             await _restClient.GetTrades(cancellationToken))
         {

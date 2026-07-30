@@ -166,6 +166,7 @@ public partial class NadoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -182,12 +183,14 @@ public partial class NadoMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -197,6 +200,7 @@ public partial class NadoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -206,12 +210,14 @@ public partial class NadoMessageAdapter
 		}
 		await SendOrderSnapshotAsync(statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -386,6 +392,7 @@ public partial class NadoMessageAdapter
 				initial.Liabilities.TryParseX18(), true), cancellationToken);
 
 		var current = new HashSet<int>();
+
 		foreach (var balance in account.SpotBalances ?? [])
 		{
 			if (balance?.Balance is null || GetMarket(balance.ProductId) is null)
@@ -394,6 +401,7 @@ public partial class NadoMessageAdapter
 			await SendSpotBalanceAsync(balance, transactionId, time,
 				cancellationToken);
 		}
+
 		foreach (var balance in account.PerpetualBalances ?? [])
 		{
 			if (balance?.Balance is null || GetMarket(balance.ProductId) is null)
@@ -402,6 +410,7 @@ public partial class NadoMessageAdapter
 			await SendPerpetualBalanceAsync(balance, transactionId, time,
 				cancellationToken);
 		}
+
 		await SendMissingPositionsAsync(current, transactionId, time,
 			cancellationToken);
 	}
@@ -436,6 +445,7 @@ public partial class NadoMessageAdapter
 			.Skip(Math.Max(0, statusMsg.Skip ?? 0).To<int>())
 			.Take(limit)
 			.ToArray();
+
 		foreach (var message in messages)
 		{
 			UpdateServerTime(message.ServerTime);
@@ -452,6 +462,7 @@ public partial class NadoMessageAdapter
 			.Where(static transaction => transaction?.SubmissionIndex.IsEmpty() ==
 				false && !transaction.Timestamp.IsEmpty())
 			.ToArray();
+
 		foreach (var match in (matches.Matches ?? [])
 			.Where(static match => match is not null)
 			.Where(match => orderByDigest.ContainsKey(match.Digest))
@@ -651,6 +662,7 @@ public partial class NadoMessageAdapter
 			_knownPositions.Clear();
 			_knownPositions.UnionWith(current);
 		}
+
 		foreach (var productId in missing)
 		{
 			var market = GetMarket(productId);
@@ -858,9 +870,11 @@ public partial class NadoMessageAdapter
 		var result = new HashSet<int>();
 		if (!statusMsg.SecurityId.SecurityCode.IsEmpty())
 			result.Add(GetMarket(statusMsg.SecurityId).ProductId);
+
 		foreach (var securityId in statusMsg.SecurityIds)
 			if (!securityId.SecurityCode.IsEmpty())
 				result.Add(GetMarket(securityId).ProductId);
+
 		return result.Count > 0
 			? [.. result]
 			: [.. GetMarkets().Select(static market => market.ProductId)];

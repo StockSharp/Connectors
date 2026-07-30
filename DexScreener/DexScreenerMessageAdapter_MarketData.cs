@@ -9,6 +9,7 @@ public partial class DexScreenerMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		if (securityTypes.Count > 0 &&
 			!securityTypes.Contains(
@@ -35,6 +36,7 @@ public partial class DexScreenerMessageAdapter
 		var left = Math.Min(
 			lookupMsg.Count ?? MaximumItems,
 			MaximumItems);
+
 		foreach (var pair in pairs
 			.Where(pair =>
 				ChainId.IsEmpty() ||
@@ -62,6 +64,7 @@ public partial class DexScreenerMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -73,6 +76,7 @@ public partial class DexScreenerMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			using (_sync.EnterScope())
@@ -110,6 +114,7 @@ public partial class DexScreenerMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{

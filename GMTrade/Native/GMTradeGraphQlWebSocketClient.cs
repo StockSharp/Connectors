@@ -288,6 +288,7 @@ sealed class GMTradeGraphQlWebSocketClient : BaseLogReceiver
 			GMTradeGraphQlSubscription[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions.Values];
+
 			foreach (var subscription in subscriptions)
 				await SendSubscriptionAsync(client, subscription,
 					cancellationToken);

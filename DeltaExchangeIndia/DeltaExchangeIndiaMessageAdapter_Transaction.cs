@@ -194,8 +194,10 @@ public partial class DeltaExchangeIndiaMessageAdapter
 					cancelMsg.TransactionId,
 					true,
 					cancellationToken);
+
 			return;
 		}
+
 		foreach (var order in
 			await RestClient.GetOpenOrdersAsync(
 				product?.Id, cancellationToken) ?? [])
@@ -231,6 +233,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -265,6 +268,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				lookupMsg, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"Delta Exchange India portfolio subscription " +
@@ -291,6 +295,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -337,6 +342,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				statusMsg, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"Delta Exchange India order-status subscription " +
@@ -379,16 +385,19 @@ public partial class DeltaExchangeIndiaMessageAdapter
 		var positionsTask = RestClient.GetPositionsAsync(
 			cancellationToken).AsTask();
 		await Task.WhenAll(balancesTask, positionsTask);
+
 		foreach (var balance in await balancesTask ?? [])
 			await SendBalanceAsync(
 				balance,
 				originalTransactionId,
 				cancellationToken);
+
 		foreach (var position in await positionsTask ?? [])
 			await SendPositionAsync(
 				position,
 				originalTransactionId,
 				cancellationToken);
+
 		_ = force;
 	}
 
@@ -503,6 +512,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				50,
 				cancellationToken).AsTask();
 			await Task.WhenAll(openTask, historyTask);
+
 			foreach (var order in
 				(await openTask ?? [])
 				.Concat(await historyTask ?? [])
@@ -520,6 +530,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 					force,
 					cancellationToken);
 		}
+
 		foreach (var fill in
 			await RestClient.GetFillsAsync(
 				product?.Id,

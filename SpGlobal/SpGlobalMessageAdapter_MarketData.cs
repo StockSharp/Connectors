@@ -16,6 +16,7 @@ public partial class SpGlobalMessageAdapter
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var page = 1;
+
 		while (left > 0)
 		{
 			var query = new SpGlobalSymbolQuery
@@ -29,6 +30,7 @@ public partial class SpGlobalMessageAdapter
 				Page = page,
 			};
 			var response = await SafeClient().GetSymbols(query, cancellationToken);
+
 			foreach (var symbol in response.Results ?? [])
 			{
 				if (!symbol.Matches(identifier))
@@ -55,6 +57,7 @@ public partial class SpGlobalMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -75,18 +78,21 @@ public partial class SpGlobalMessageAdapter
 
 		var assessments = new List<SpGlobalAssessment>();
 		var page = 1;
+
 		do
 		{
 			query.Page = page;
 			var response = isHistorical
 				? await SafeClient().GetHistoricalAssessments(query, cancellationToken)
 				: await SafeClient().GetCurrentAssessments(query, cancellationToken);
+
 			foreach (var result in response.Results ?? [])
 			{
 				if (!result.Symbol.EqualsIgnoreCase(symbol))
 					continue;
 				assessments.AddRange((result.Data ?? []).Where(item => item.GetTime() != null));
 			}
+
 			var totalPages = response.Metadata?.GetTotalPages() ?? 1;
 			if (page >= totalPages.Max(1))
 				break;

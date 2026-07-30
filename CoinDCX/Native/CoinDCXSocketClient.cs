@@ -307,9 +307,11 @@ sealed class CoinDCXSocketClient : BaseLogReceiver
 		{
 			if (_restClient.IsCredentialsAvailable)
 				await SendPrivateJoinAsync(client, cancellationToken);
+
 			foreach (var channel in channels)
 				await SendChannelCommandAsync(CoinDCXSocketCommands.Join, channel,
 					cancellationToken);
+
 			ready.TrySetResult(true);
 			if (isRestoring && StateChanged is { } handler)
 				await handler(ConnectionStates.Restored, cancellationToken);

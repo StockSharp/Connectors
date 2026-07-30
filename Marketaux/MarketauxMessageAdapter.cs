@@ -14,6 +14,7 @@ public partial class MarketauxMessageAdapter
     {
         this.AddMarketDataSupport();
         this.AddSupportedMarketDataType(DataType.News);
+
         foreach (var dataType in MarketauxDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }

@@ -176,6 +176,7 @@ sealed class KalshiSocketClient : BaseLogReceiver
 		try
 		{
 			await EnsureConnectedAsync(cancellationToken);
+
 			foreach (var channel in new[]
 			{
 				KalshiSocketChannels.Fill,
@@ -193,6 +194,7 @@ sealed class KalshiSocketClient : BaseLogReceiver
 			using (_sync.EnterScope())
 			{
 				_isPrivateInitialized = false;
+
 				foreach (var channel in new[]
 				{
 					KalshiSocketChannels.Fill,
@@ -321,6 +323,7 @@ sealed class KalshiSocketClient : BaseLogReceiver
 			using (_sync.EnterScope())
 			{
 				_commands.Clear();
+
 				foreach (var subscription in _subscriptions.Values)
 				{
 					subscription.CommandId = 0;
@@ -333,6 +336,7 @@ sealed class KalshiSocketClient : BaseLogReceiver
 			Subscription[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions.Values];
+
 			foreach (var subscription in subscriptions)
 				await SendSubscribeAsync(subscription, cancellationToken);
 		}

@@ -161,6 +161,7 @@ public partial class CoinSpotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -189,12 +190,14 @@ public partial class CoinSpotMessageAdapter
 		}
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -205,6 +208,7 @@ public partial class CoinSpotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -223,12 +227,14 @@ public partial class CoinSpotMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(
 			statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 

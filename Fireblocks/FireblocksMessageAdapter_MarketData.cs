@@ -8,6 +8,7 @@ public partial class FireblocksMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.SecurityId.BoardCode.IsEmpty() &&
 			!lookupMsg.SecurityId.BoardCode.EqualsIgnoreCase(
@@ -56,6 +57,7 @@ public partial class FireblocksMessageAdapter
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var toSkip = Math.Max(0, lookupMsg.Skip ?? 0);
+
 		foreach (var asset in assets
 			.Where(static asset => !asset.LegacyId.IsEmpty())
 			.GroupBy(static asset => asset.LegacyId,
@@ -73,6 +75,7 @@ public partial class FireblocksMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -108,8 +111,10 @@ public partial class FireblocksMessageAdapter
 		if (decimals is not int count || count is < 0 or > 28)
 			return null;
 		var step = 1m;
+
 		for (var index = 0; index < count; index++)
 			step /= 10m;
+
 		return step;
 	}
 }

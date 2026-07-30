@@ -238,6 +238,7 @@ public partial class BitunixMessageAdapter
 				string[] symbols;
 				using (_sync.EnterScope())
 					symbols = symbol.IsEmpty() ? [.. _spotOrderSymbols] : [symbol];
+
 				foreach (var spotSymbol in symbols)
 				{
 					var orders = await SpotRestClient.GetSpotPendingOrdersAsync(spotSymbol,
@@ -261,6 +262,7 @@ public partial class BitunixMessageAdapter
 					Symbol = symbol,
 					Limit = 100,
 				}, cancellationToken);
+
 				foreach (var group in (pending?.Orders ?? [])
 					.Where(order => cancelMsg.Side is null || order.Side.ToSide() == cancelMsg.Side)
 					.GroupBy(static order => order.Symbol))
@@ -296,6 +298,7 @@ public partial class BitunixMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -325,6 +328,7 @@ public partial class BitunixMessageAdapter
 
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (!lookupMsg.IsHistoryOnly())
 		{
 			_portfolioSubscriptionId = lookupMsg.TransactionId;
@@ -337,6 +341,7 @@ public partial class BitunixMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -364,6 +369,7 @@ public partial class BitunixMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, symbol, statusMsg.From,
 			statusMsg.To, cancellationToken, section);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (!statusMsg.IsHistoryOnly())
 		{
 			_orderStatusSubscriptionId = statusMsg.TransactionId;
@@ -484,6 +490,7 @@ public partial class BitunixMessageAdapter
 				.GroupBy(static order => order.OrderId)
 				.Select(static group => group.First())
 				.OrderBy(static order => order.CreateTime);
+
 			foreach (var order in orders)
 				await SendFuturesOrderAsync(order, originalTransactionId, cancellationToken);
 
@@ -495,6 +502,7 @@ public partial class BitunixMessageAdapter
 				Skip = 0,
 				Limit = 100,
 			}, cancellationToken);
+
 			foreach (var trade in (trades?.Trades ?? []).OrderBy(static trade => trade.CreateTime))
 				await SendFuturesTradeAsync(trade, originalTransactionId, onlyNewFills,
 					cancellationToken);

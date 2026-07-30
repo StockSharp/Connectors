@@ -219,6 +219,7 @@ sealed class DriftDlobSocketClient : BaseLogReceiver
 			DriftDlobSubscribeRequest[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions.Values];
+
 			foreach (var request in subscriptions)
 				await SendAsync(client, request, cancellationToken);
 		}

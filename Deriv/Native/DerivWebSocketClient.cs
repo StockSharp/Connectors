@@ -137,6 +137,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 		{
 			_wireSubscriptions.Clear();
 			_wireRequestIds.Clear();
+
 			foreach (var subscription in _subscriptions.Values)
 			{
 				subscription.RequestId = 0;
@@ -293,6 +294,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		var socket = initialSocket;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			Exception failure = null;
@@ -325,6 +327,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 			ClearWireState(socket);
 
 			var restored = false;
+
 			for (var attempt = 1; attempt <= _reconnectAttempts &&
 				!cancellationToken.IsCancellationRequested; attempt++)
 			{
@@ -479,6 +482,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 	{
 		var buffer = new byte[16 * 1024];
 		using var stream = new MemoryStream();
+
 		while (true)
 		{
 			var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer),
@@ -520,6 +524,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 				_socket = null;
 			_wireSubscriptions.Clear();
 			_wireRequestIds.Clear();
+
 			foreach (var subscription in _subscriptions.Values)
 			{
 				subscription.RequestId = 0;
@@ -538,6 +543,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 				.Where(static item => item is not null)];
 			_pending.Clear();
 		}
+
 		foreach (var completion in completions)
 			completion.TrySetException(error);
 	}

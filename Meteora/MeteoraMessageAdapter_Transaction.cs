@@ -9,40 +9,53 @@ public partial class MeteoraMessageAdapter
 		EnsureTradingReady();
 		ValidatePortfolio(regMsg.PortfolioName);
 		var market = GetMarket(regMsg.SecurityId);
+
 		if (!market.IsDirectTradingSupported)
 			throw new NotSupportedException(
 				"Direct trading is unavailable for disabled pools or Token-2022 " +
 				"mints with transfer extensions.");
+
 		if (regMsg.Condition is not null)
 			throw new NotSupportedException(
 				"Meteora DLMM does not expose conditional orders.");
+
 		if (!regMsg.UserOrderId.IsEmpty())
 			throw new NotSupportedException(
 				"Meteora order identities are on-chain addresses or signatures.");
+
 		var orderType = regMsg.OrderType ??
 			(regMsg.Price > 0 ? OrderTypes.Limit : OrderTypes.Market);
+
 		if (orderType is not (OrderTypes.Market or OrderTypes.Limit))
 			throw new NotSupportedException(
 				$"Meteora does not support '{orderType}' orders.");
+
 		var volume = regMsg.Volume.Abs();
+
 		if (volume <= 0)
 			throw new InvalidOperationException(
 				"Meteora order volume must be positive.");
+
 		var baseUnits = volume.ToBaseUnits(market.TokenX.Decimals);
+
 		if (baseUnits <= 0)
 			throw new InvalidOperationException(
 				"Meteora order volume rounds to zero base units.");
+
 		await RefreshMarketAsync(market, cancellationToken);
 		var priorityFee = await GetPriorityFeeAsync(market, cancellationToken);
+
 		if (orderType == OrderTypes.Market)
 		{
 			if (regMsg.PostOnly == true)
 				throw new NotSupportedException(
 					"Post-only is not applicable to an immediate DLMM swap.");
+
 			if (regMsg.TimeInForce is TimeInForce.PutInQueue or
 				TimeInForce.MatchOrCancel)
 				throw new NotSupportedException(
 					"Meteora swaps execute immediately and do not rest in a queue.");
+
 			var quote = market.GetQuote(regMsg.Side, baseUnits,
 				SlippageTolerance);
 			var plan = MeteoraInstructionBuilder.BuildSwap(market, quote,
@@ -52,6 +65,7 @@ public partial class MeteoraMessageAdapter
 				plan.Instructions, cancellationToken, null);
 			var quoteAmount = quote.QuoteAmount.FromBaseUnits(
 				market.TokenY.Decimals);
+
 			await TrackOrderAsync(new()
 			{
 				TransactionId = regMsg.TransactionId,
@@ -72,12 +86,15 @@ public partial class MeteoraMessageAdapter
 		if (!market.IsLimitOrderPool)
 			throw new NotSupportedException(
 				"The selected Meteora pool does not support native limit orders.");
+
 		if (regMsg.Price <= 0)
 			throw new InvalidOperationException(
 				"A positive Meteora limit price is required.");
+
 		if (regMsg.TimeInForce is not (null or TimeInForce.PutInQueue))
 			throw new NotSupportedException(
 				"Meteora native limit orders are good-till-cancelled.");
+
 		var binId = market.PriceToBinId(regMsg.Price, regMsg.Side);
 		var arrayAddress = MeteoraExtensions.BinArrayAddress(market.PoolAddress,
 			MeteoraExtensions.GetBinArrayIndex(binId));
@@ -92,6 +109,7 @@ public partial class MeteoraMessageAdapter
 			MeteoraExtensions.GetRawPrice(market.BinStep,
 				limitPlan.BinId.Value), market.TokenX.Decimals,
 			market.TokenY.Decimals);
+
 		await TrackOrderAsync(new()
 		{
 			TransactionId = regMsg.TransactionId,
@@ -117,17 +135,22 @@ public partial class MeteoraMessageAdapter
 		ValidatePortfolio(replaceMsg.PortfolioName);
 		var original = ResolveTrackedOrder(replaceMsg.OldOrderStringId,
 			replaceMsg.OriginalTransactionId);
+
 		if (original.OrderType != OrderTypes.Limit ||
 			original.State != OrderStates.Active)
 			throw new InvalidOperationException(
 				"Only an active Meteora native limit order can be replaced.");
+
 		if (replaceMsg.Price <= 0 || replaceMsg.Volume <= 0)
 			throw new InvalidOperationException(
 				"Replacement price and volume must be positive.");
+
 		var market = GetMarket(replaceMsg.SecurityId);
+
 		if (!ReferenceEquals(market, original.Market))
 			throw new InvalidOperationException(
 				"A Meteora replacement must remain in the original pool.");
+
 		await RefreshMarketAsync(market, cancellationToken);
 		var priorityFee = await GetPriorityFeeAsync(market, cancellationToken);
 		var baseUnits = replaceMsg.Volume.Abs().ToBaseUnits(
@@ -148,12 +171,15 @@ public partial class MeteoraMessageAdapter
 			placePlan.Instructions.Skip(2)).ToArray();
 		var signature = await RpcClient.SendTransactionAsync(instructions,
 			cancellationToken, placePlan.AdditionalSigner);
+
 		using (_sync.EnterScope())
 			original.CancelSignature = signature;
+
 		var actualPrice = MeteoraExtensions.ToHumanPrice(
 			MeteoraExtensions.GetRawPrice(market.BinStep,
 				placePlan.BinId.Value), market.TokenX.Decimals,
 			market.TokenY.Decimals);
+
 		await TrackOrderAsync(new()
 		{
 			TransactionId = replaceMsg.TransactionId,
@@ -199,6 +225,7 @@ public partial class MeteoraMessageAdapter
 					order.Market.SecurityCode.EqualsIgnoreCase(
 						cancelMsg.SecurityId.SecurityCode)) &&
 				(cancelMsg.Side is null || order.Side == cancelMsg.Side))];
+
 		foreach (var order in orders)
 			await CancelTrackedOrderAsync(order, cancelMsg.TransactionId,
 				cancellationToken);
@@ -211,6 +238,7 @@ public partial class MeteoraMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -238,6 +266,7 @@ public partial class MeteoraMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -249,6 +278,7 @@ public partial class MeteoraMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -292,6 +322,7 @@ public partial class MeteoraMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -336,13 +367,17 @@ public partial class MeteoraMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var order in active)
 			await RefreshReceiptAsync(order, cancellationToken);
+
 		await RefreshIndexedLimitOrdersAsync(cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -408,6 +443,7 @@ public partial class MeteoraMessageAdapter
 		using (_sync.EnterScope())
 			markets = [.. _markets.Values.Where(static market =>
 				market.IsLimitOrderPool)];
+
 		foreach (var market in markets)
 		{
 			try
@@ -415,13 +451,16 @@ public partial class MeteoraMessageAdapter
 				var open = await _apiClient.GetOpenOrdersAsync(
 					RpcClient.WalletAddress, market.PoolAddress, 1000,
 					cancellationToken);
+
 				foreach (var item in open?.Data ?? [])
 					if (item is not null)
 						await ApplyOpenLimitOrderAsync(market, item,
 							cancellationToken);
+
 				var closed = await _apiClient.GetClosedOrdersAsync(
 					RpcClient.WalletAddress, market.PoolAddress, 1000,
 					cancellationToken);
+
 				foreach (var item in closed?.Data ?? [])
 					if (item is not null)
 						await ApplyClosedLimitOrderAsync(market, item,
@@ -496,6 +535,7 @@ public partial class MeteoraMessageAdapter
 			orders = [.. _trackedOrders.Values.Where(static order =>
 				order.OrderType == OrderTypes.Limit &&
 				order.State == OrderStates.Active && order.Receipt is not null)];
+
 		foreach (var order in orders)
 		{
 			if (await RpcClient.GetAccountAsync(order.OrderAddress,
@@ -555,6 +595,7 @@ public partial class MeteoraMessageAdapter
 			("SOL", MeteoraExtensions.SystemProgramAddress, 9,
 				await RpcClient.GetBalanceAsync(cancellationToken)),
 		};
+
 		for (var offset = 0; offset < tokens.Length; offset += 100)
 		{
 			var chunk = tokens.Skip(offset).Take(100).ToArray();
@@ -563,6 +604,7 @@ public partial class MeteoraMessageAdapter
 					token.Mint, token.TokenProgram)).ToArray();
 			var accounts = await RpcClient.GetAccountsAsync(addresses,
 				cancellationToken);
+
 			for (var index = 0; index < chunk.Length; index++)
 			{
 				var token = chunk[index];
@@ -572,6 +614,7 @@ public partial class MeteoraMessageAdapter
 				result.Add((token.Symbol, token.Mint, token.Decimals, amount));
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -625,6 +668,7 @@ public partial class MeteoraMessageAdapter
 					order.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var order in orders)
 		{
 			if (subscription.States is { Length: > 0 } states &&
@@ -732,6 +776,7 @@ public partial class MeteoraMessageAdapter
 				"contains no matching swap event.");
 		BigInteger baseAmount = 0;
 		BigInteger quoteAmount = 0;
+
 		foreach (var item in events)
 		{
 			var consumedInput = new BigInteger(item.InputAmount) -
@@ -747,6 +792,7 @@ public partial class MeteoraMessageAdapter
 				quoteAmount += consumedInput;
 			}
 		}
+
 		var volume = baseAmount.FromBaseUnits(order.Market.TokenX.Decimals);
 		var quote = quoteAmount.FromBaseUnits(order.Market.TokenY.Decimals);
 		if (volume <= 0 || quote <= 0)

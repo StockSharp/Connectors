@@ -8,10 +8,12 @@ public partial class SynFuturesMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets())
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -39,6 +41,7 @@ public partial class SynFuturesMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -47,6 +50,7 @@ public partial class SynFuturesMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -105,6 +109,7 @@ public partial class SynFuturesMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -166,6 +171,7 @@ public partial class SynFuturesMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -221,6 +227,7 @@ public partial class SynFuturesMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -254,9 +261,11 @@ public partial class SynFuturesMessageAdapter
 			.OrderBy(GetCandleTime)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -312,6 +321,7 @@ public partial class SynFuturesMessageAdapter
 					market.InstrumentAddress,
 					StringComparison.OrdinalIgnoreCase) &&
 					subscription.Market.Expiry == market.Expiry)];
+
 		foreach (var subscription in subscriptions)
 			await SendLevel1Async(market, subscription.TransactionId,
 				cancellationToken);
@@ -330,6 +340,7 @@ public partial class SynFuturesMessageAdapter
 					market.InstrumentAddress,
 					StringComparison.OrdinalIgnoreCase) &&
 					subscription.Market.Expiry == expiry)];
+
 		foreach (var subscription in subscriptions)
 			await SendDepthAsync(market, steps, subscription.TransactionId,
 				subscription.Depth, cancellationToken);
@@ -348,6 +359,7 @@ public partial class SynFuturesMessageAdapter
 					market.InstrumentAddress,
 					StringComparison.OrdinalIgnoreCase) &&
 					subscription.Market.Expiry == expiry)];
+
 		foreach (var subscription in subscriptions)
 		{
 			SynFuturesTrade[] selected;
@@ -357,9 +369,11 @@ public partial class SynFuturesMessageAdapter
 					.Where(trade => subscription.SeenTrades.Add(trade.Id))
 					.OrderBy(static trade => trade.Timestamp)
 					.TakeLast(subscription.Count)];
+
 			foreach (var trade in selected)
 				await SendTradeAsync(market, trade, subscription.TransactionId,
 					cancellationToken);
+
 			if (subscription.IsHistoryOnly)
 			{
 				await UnsubscribeTicksAsync(subscription.TransactionId,
@@ -383,6 +397,7 @@ public partial class SynFuturesMessageAdapter
 					market.InstrumentAddress,
 					StringComparison.OrdinalIgnoreCase) &&
 					subscription.Market.Expiry == expiry)];
+
 		foreach (var subscription in subscriptions)
 		{
 			var openTime = GetCandleTime(candle);
@@ -473,6 +488,7 @@ public partial class SynFuturesMessageAdapter
 	{
 		var response = await ApiClient.GetCandlesAsync(subscription.Market,
 			subscription.TimeFrame, ServerTime, 3, cancellationToken) ?? [];
+
 		foreach (var candle in response.Where(static candle => candle is not null &&
 				(candle.OpenTimestamp > 0 || candle.Timestamp > 0))
 			.OrderBy(GetCandleTime))

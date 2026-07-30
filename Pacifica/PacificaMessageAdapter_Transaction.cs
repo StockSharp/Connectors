@@ -13,15 +13,18 @@ public partial class PacificaMessageAdapter
 		var market = GetMarket(regMsg.SecurityId);
 		var volume = regMsg.Volume.Abs();
 		var orderType = regMsg.OrderType ?? OrderTypes.Limit;
+
 		if (orderType is not (OrderTypes.Limit or OrderTypes.Market))
 			throw new NotSupportedException(
 				LocalizedStrings.OrderUnsupportedType.Put(orderType, 0));
+
 		var condition = regMsg.Condition as PacificaOrderCondition ?? new();
 		var isReduceOnly = condition.IsReduceOnly ||
 			regMsg.PositionEffect == OrderPositionEffects.CloseOnly;
 		var price = orderType == OrderTypes.Limit ? regMsg.Price : (decimal?)null;
 		ValidateOrder(market, volume, price, condition);
 		var clientOrderId = CreateClientOrderId(regMsg.UserOrderId);
+
 		using (_sync.EnterScope())
 		{
 			if (_transactionByClientOrderId.ContainsKey(clientOrderId))
@@ -31,6 +34,7 @@ public partial class PacificaMessageAdapter
 			_transactionByClientOrderId.Add(clientOrderId,
 				regMsg.TransactionId);
 		}
+
 		try
 		{
 			PacificaActionResponse response;
@@ -59,11 +63,14 @@ public partial class PacificaMessageAdapter
 				if (regMsg.PostOnly == true)
 					throw new NotSupportedException(
 						"Pacifica market orders cannot be post-only.");
+
 				_ = regMsg.TimeInForce.ToPacifica(false, orderType);
 				var slippage = condition.SlippagePercent ?? MarketOrderSlippage;
+
 				if (slippage is <= 0 or > 100)
 					throw new InvalidOperationException(
 						"Pacifica slippage must be greater than zero and at most 100%.");
+
 				response = await Socket.CreateMarketOrderAsync(new()
 				{
 					Symbol = market.Symbol,
@@ -79,6 +86,7 @@ public partial class PacificaMessageAdapter
 						condition.StopLossLimitPrice, condition.TriggerPriceType),
 				}, Signer, DateTime.UtcNow, cancellationToken);
 			}
+
 			await SendActionOrderAsync(response, regMsg.TransactionId,
 				regMsg.TransactionId, market.Symbol, clientOrderId, regMsg.Side,
 				volume, price ?? 0m, orderType, condition, cancellationToken);
@@ -99,18 +107,22 @@ public partial class PacificaMessageAdapter
 		ValidatePortfolio(replaceMsg.PortfolioName);
 		var market = GetMarket(replaceMsg.SecurityId);
 		var orderType = replaceMsg.OrderType ?? OrderTypes.Limit;
+
 		if (orderType != OrderTypes.Limit)
 			throw new NotSupportedException(
 				"Pacifica can edit limit orders only.");
+
 		if (replaceMsg.PostOnly == false)
 			throw new NotSupportedException(
 				"Pacifica edits recreate the order as post-only.");
+
 		var volume = replaceMsg.Volume.Abs();
 		var condition = replaceMsg.Condition as PacificaOrderCondition ?? new();
 		ValidateOrder(market, volume, replaceMsg.Price, condition);
 		ResolveOrderIdentity(replaceMsg.OldOrderId,
 			replaceMsg.OldOrderStringId, null, "replacement",
 			out var orderId, out var clientOrderId);
+
 		var response = await Socket.EditOrderAsync(new()
 		{
 			Symbol = market.Symbol,
@@ -120,10 +132,12 @@ public partial class PacificaMessageAdapter
 			ClientOrderId = clientOrderId,
 		}, Signer, DateTime.UtcNow, cancellationToken);
 		var resultingClientOrderId = response.Data?.ClientOrderId ?? clientOrderId;
+
 		if (!resultingClientOrderId.IsEmpty())
 			using (_sync.EnterScope())
 				_transactionByClientOrderId[resultingClientOrderId] =
 					replaceMsg.TransactionId;
+
 		await SendActionOrderAsync(response, replaceMsg.TransactionId,
 			replaceMsg.TransactionId, market.Symbol, resultingClientOrderId,
 			replaceMsg.Side, volume, replaceMsg.Price, OrderTypes.Limit,
@@ -190,6 +204,7 @@ public partial class PacificaMessageAdapter
 		}
 		var orders = await RestClient.GetOrdersAsync(Signer.Account,
 			cancellationToken);
+
 		foreach (var order in orders.Where(order => order is not null &&
 			(order.Symbol.Equals(symbol, StringComparison.Ordinal) || symbol.IsEmpty()) &&
 			(cancelMsg.Side is null || order.Side.ToStockSharp() == cancelMsg.Side) &&
@@ -208,6 +223,7 @@ public partial class PacificaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -228,12 +244,14 @@ public partial class PacificaMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		try
 		{
@@ -255,6 +273,7 @@ public partial class PacificaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -271,12 +290,14 @@ public partial class PacificaMessageAdapter
 		}
 		await SendOrderSnapshotAsync(statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		try
 		{
@@ -326,6 +347,7 @@ public partial class PacificaMessageAdapter
 			.Skip(Math.Max(0, statusMsg.Skip ?? 0).To<int>())
 			.Take(limit)
 			.ToArray();
+
 		foreach (var message in messages)
 		{
 			UpdateServerTime(message.ServerTime);
@@ -335,6 +357,7 @@ public partial class PacificaMessageAdapter
 		var querySymbol = symbols.Count == 1 ? symbols.First() : null;
 		var trades = await LoadTradeHistoryAsync(querySymbol, statusMsg.From,
 			statusMsg.To, limit, cancellationToken);
+
 		foreach (var trade in trades
 			.Where(trade => IsTradeMatch(trade, statusMsg, symbols))
 			.OrderBy(static trade => trade.CreatedAt)
@@ -349,6 +372,7 @@ public partial class PacificaMessageAdapter
 	{
 		var result = new List<PacificaOrder>();
 		string cursor = null;
+
 		while (result.Count < maximum)
 		{
 			var pageLimit = (maximum - result.Count).Min(HistoryLimit).Max(1);
@@ -360,6 +384,7 @@ public partial class PacificaMessageAdapter
 				break;
 			cursor = page.NextCursor;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 
@@ -369,6 +394,7 @@ public partial class PacificaMessageAdapter
 	{
 		var result = new List<PacificaAccountTrade>();
 		string cursor = null;
+
 		while (result.Count < maximum)
 		{
 			var pageLimit = (maximum - result.Count).Min(HistoryLimit).Max(1);
@@ -380,6 +406,7 @@ public partial class PacificaMessageAdapter
 				break;
 			cursor = page.NextCursor;
 		}
+
 		return [.. result
 			.GroupBy(static trade => trade.HistoryId)
 			.Select(static group => group.First())
@@ -404,6 +431,7 @@ public partial class PacificaMessageAdapter
 			return;
 		}
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var position in positions)
 		{
 			if (position?.Symbol.IsEmpty() != false)
@@ -412,6 +440,7 @@ public partial class PacificaMessageAdapter
 			await SendPositionAsync(position, _portfolioSubscriptionId,
 				cancellationToken);
 		}
+
 		await SendMissingPositionsAsync(current, _portfolioSubscriptionId,
 			positions.Select(static position => position?.Timestamp ?? 0)
 				.DefaultIfEmpty().Max().ToPacificaTimeOrNow(), cancellationToken);
@@ -469,6 +498,7 @@ public partial class PacificaMessageAdapter
 			account.TotalMarginUsed.TryParseDecimal(), true)
 		.TryAdd(PositionChangeTypes.CurrentPrice,
 			account.AvailableToSpend.TryParseDecimal(), true), cancellationToken);
+
 		foreach (var balance in account.SpotBalances ?? [])
 			if (balance?.Symbol.IsEmpty() == false)
 				await SendOutMessageAsync(new PositionChangeMessage
@@ -507,6 +537,7 @@ public partial class PacificaMessageAdapter
 			account.TotalMarginUsed.TryParseDecimal(), true)
 		.TryAdd(PositionChangeTypes.CurrentPrice,
 			account.AvailableToSpend.TryParseDecimal(), true), cancellationToken);
+
 		foreach (var balance in account.SpotBalances ?? [])
 			if (balance?.Symbol.IsEmpty() == false)
 				await SendOutMessageAsync(new PositionChangeMessage
@@ -528,6 +559,7 @@ public partial class PacificaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var position in positions ?? [])
 		{
 			if (position?.Symbol.IsEmpty() != false)
@@ -535,6 +567,7 @@ public partial class PacificaMessageAdapter
 			current.Add(position.Symbol);
 			await SendPositionAsync(position, transactionId, cancellationToken);
 		}
+
 		await SendMissingPositionsAsync(current, transactionId, ServerTime,
 			cancellationToken);
 	}
@@ -550,6 +583,7 @@ public partial class PacificaMessageAdapter
 			_knownPositionSymbols.Clear();
 			_knownPositionSymbols.UnionWith(current);
 		}
+
 		foreach (var symbol in missing)
 			await SendOutMessageAsync(new PositionChangeMessage
 			{
@@ -888,9 +922,11 @@ public partial class PacificaMessageAdapter
 		var symbols = new HashSet<string>(StringComparer.Ordinal);
 		if (!statusMsg.SecurityId.SecurityCode.IsEmpty())
 			symbols.Add(GetMarket(statusMsg.SecurityId).Symbol);
+
 		foreach (var securityId in statusMsg.SecurityIds)
 			if (!securityId.SecurityCode.IsEmpty())
 				symbols.Add(GetMarket(securityId).Symbol);
+
 		return symbols;
 	}
 

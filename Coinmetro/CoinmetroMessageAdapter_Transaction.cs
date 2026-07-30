@@ -116,6 +116,7 @@ public partial class CoinmetroMessageAdapter
 		var market = cancelMsg.SecurityId.SecurityCode.IsEmpty()
 			? null
 			: GetMarket(cancelMsg.SecurityId);
+
 		foreach (var order in await RestClient.GetActiveOrdersAsync(
 			GetMarkets(), cancellationToken) ?? [])
 		{
@@ -142,6 +143,7 @@ public partial class CoinmetroMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -180,6 +182,7 @@ public partial class CoinmetroMessageAdapter
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"Coinmetro portfolio subscription already exists.");
@@ -204,6 +207,7 @@ public partial class CoinmetroMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -233,6 +237,7 @@ public partial class CoinmetroMessageAdapter
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"Coinmetro order-status subscription already exists.");
@@ -351,6 +356,7 @@ public partial class CoinmetroMessageAdapter
 		{
 			var maximum = (statusMsg.Count ?? 1000)
 				.Max(1).Min(10000).To<int>();
+
 			foreach (var order in
 				(await RestClient.GetActiveOrdersAsync(
 					GetMarkets(),
@@ -369,6 +375,7 @@ public partial class CoinmetroMessageAdapter
 		var to = statusMsg.To?.ToUniversalTime();
 		var fills = await RestClient.GetFillsAsync(
 			from, cancellationToken) ?? [];
+
 		foreach (var fill in fills.Where(fill =>
 			(from is null || fill.Time >= from) &&
 			(to is null || fill.Time <= to) &&
@@ -389,9 +396,11 @@ public partial class CoinmetroMessageAdapter
 				order,
 				originalTransactionId,
 				cancellationToken);
+
 		DateTime? from = _lastPrivatePoll == default
 			? null
 			: _lastPrivatePoll - PrivatePollingInterval;
+
 		foreach (var fill in await RestClient.GetFillsAsync(
 			from, cancellationToken) ?? [])
 			await SendFillAsync(
@@ -459,6 +468,7 @@ public partial class CoinmetroMessageAdapter
 			out var numericOrderId))
 			execution.OrderId = numericOrderId;
 		await SendOutMessageAsync(execution, cancellationToken);
+
 		foreach (var fill in order.Fills)
 			await SendFillAsync(
 				fill,

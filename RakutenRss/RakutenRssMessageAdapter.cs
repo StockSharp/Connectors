@@ -133,6 +133,7 @@ public partial class RakutenRssMessageAdapter
 		if (_client != null && CurrentTime - _lastMarketPoll >= HeartbeatInterval)
 		{
 			_lastMarketPoll = CurrentTime;
+
 			foreach (var pair in _subscriptions.ToArray())
 			{
 				try { await PollSubscription(pair.Key, pair.Value, cancellationToken); }

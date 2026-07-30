@@ -7,6 +7,7 @@ public partial class CryptoQuantMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		if (securityTypes.Count > 0 &&
 			!securityTypes.Contains(SecurityTypes.CryptoCurrency))
@@ -20,6 +21,7 @@ public partial class CryptoQuantMessageAdapter
 		var skip = Math.Max(0L, message.Skip ?? 0);
 		var left = Math.Max(0L,
 			Math.Min(message.Count ?? MaximumItems, MaximumItems));
+
 		foreach (var instrument in GetInstruments()
 			.Where(instrument => Matches(instrument, value))
 			.OrderBy(static instrument => instrument.Code,
@@ -38,6 +40,7 @@ public partial class CryptoQuantMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -46,6 +49,7 @@ public partial class CryptoQuantMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -66,6 +70,7 @@ public partial class CryptoQuantMessageAdapter
 		var rows = await SafeRest().GetOhlcvAsync(instrument, window, from, to,
 			limit, cancellationToken) ?? [];
 		var values = new SortedDictionary<DateTime, decimal>();
+
 		foreach (var row in rows.Where(static row => row is not null))
 		{
 			if (row.Close is null)
@@ -82,6 +87,7 @@ public partial class CryptoQuantMessageAdapter
 		selected = message.From is null
 			? selected.TakeLast(limit)
 			: selected.Take(limit);
+
 		foreach (var pair in selected)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -92,6 +98,7 @@ public partial class CryptoQuantMessageAdapter
 			}
 			.TryAdd(Level1Fields.ClosePrice, pair.Value), cancellationToken);
 		}
+
 		await FinishAsync(message, cancellationToken);
 	}
 
@@ -100,6 +107,7 @@ public partial class CryptoQuantMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -120,6 +128,7 @@ public partial class CryptoQuantMessageAdapter
 		var rows = await SafeRest().GetOhlcvAsync(instrument, window, from, to,
 			limit, cancellationToken) ?? [];
 		var values = new SortedDictionary<DateTime, CryptoQuantOhlcv>();
+
 		foreach (var row in rows.Where(static row => row is not null))
 		{
 			if (!row.IsComplete)
@@ -134,6 +143,7 @@ public partial class CryptoQuantMessageAdapter
 		selected = message.From is null
 			? selected.TakeLast(limit)
 			: selected.Take(limit);
+
 		foreach (var pair in selected)
 		{
 			var row = pair.Value;
@@ -152,6 +162,7 @@ public partial class CryptoQuantMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await FinishAsync(message, cancellationToken);
 	}
 

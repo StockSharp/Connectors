@@ -7,6 +7,7 @@ public partial class MiraeSharekhanMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var requestedBoard = lookupMsg.SecurityId.BoardCode.ToNativeExchange();
@@ -61,6 +62,7 @@ public partial class MiraeSharekhanMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}
@@ -89,6 +91,7 @@ public partial class MiraeSharekhanMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var removed))
@@ -142,6 +145,7 @@ public partial class MiraeSharekhanMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		var timeFrame = mdMsg.GetTimeFrame();
@@ -177,6 +181,7 @@ public partial class MiraeSharekhanMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 	}
 
@@ -229,6 +234,7 @@ public partial class MiraeSharekhanMessageAdapter
 			if (!_lastTicks.TryGetValue(streamKey, out var previous) || previous != tick)
 			{
 				_lastTicks[streamKey] = tick;
+
 				foreach (var subscription in subscriptions.Where(s => s.DataType == DataType.Ticks))
 				{
 					await SendOutMessageAsync(new ExecutionMessage
@@ -247,6 +253,7 @@ public partial class MiraeSharekhanMessageAdapter
 
 		if (bids.Length == 0 && asks.Length == 0)
 			return;
+
 		foreach (var subscription in subscriptions.Where(s => s.DataType == DataType.MarketDepth))
 		{
 			await SendOutMessageAsync(new QuoteChangeMessage

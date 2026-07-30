@@ -265,6 +265,7 @@ public partial class GmxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -294,6 +295,7 @@ public partial class GmxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -519,6 +521,7 @@ public partial class GmxMessageAdapter
 		PendingRequest[] requests;
 		using (_sync.EnterScope())
 			requests = [.. _pendingRequests.Values];
+
 		foreach (var request in requests)
 		{
 			var status = await ApiClient.GetOrderStatusAsync(request.RequestId,
@@ -528,8 +531,10 @@ public partial class GmxMessageAdapter
 				StringComparison.Ordinal))
 				throw new InvalidDataException(
 					"GMX returned an unexpected order status request ID.");
+
 			foreach (var orderId in status.OrderKeys ?? [])
 				TrackOrder(orderId, request.TransactionId);
+
 			if ((status.OrderKeys?.Length ?? 0) > 0)
 				request.OrderIds = status.OrderKeys;
 			var time = ParseApiTime(status.UpdatedAt) ?? DateTime.UtcNow;
@@ -557,6 +562,7 @@ public partial class GmxMessageAdapter
 			foreach (var order in request.Orders)
 				await SendPendingExecutionAsync(request, order, status, error, time,
 					cancellationToken);
+
 			return;
 		}
 		var market = GetMarketByAddress(request.MarketAddress);
@@ -565,6 +571,7 @@ public partial class GmxMessageAdapter
 		var ids = request.OrderIds is { Length: > 0 }
 			? request.OrderIds
 			: [request.RequestId];
+
 		foreach (var orderId in ids)
 		{
 			TrackOrder(orderId, request.TransactionId);
@@ -871,6 +878,7 @@ public partial class GmxMessageAdapter
 			var balances = await balancesTask;
 			var positions = await positionsTask;
 			var missingPositions = UpdateKnownPositions(positions);
+
 			foreach (var transactionId in portfolioSubscriptions)
 				await SendPortfolioSnapshotAsync(balances, positions,
 					transactionId, missingPositions, cancellationToken);
@@ -889,6 +897,7 @@ public partial class GmxMessageAdapter
 			await Task.WhenAll(ordersTask, tradesTask);
 			var orders = await ordersTask;
 			var newActions = new List<GmxTradeAction>();
+
 			foreach (var action in (await tradesTask)?.Trades ?? [])
 			{
 				if (action?.Id.IsEmpty() != false)
@@ -897,6 +906,7 @@ public partial class GmxMessageAdapter
 					if (_seenAccountTrades.Add(action.Id))
 						newActions.Add(action);
 			}
+
 			foreach (var (transactionId, subscription) in orderSubscriptions)
 			{
 				foreach (var order in orders ?? [])
@@ -905,6 +915,7 @@ public partial class GmxMessageAdapter
 					if (message is not null && IsOrderMatch(message, subscription))
 						await SendOutMessageAsync(message, cancellationToken);
 				}
+
 				foreach (var action in newActions)
 					foreach (var message in CreateTradeActionMessages(action,
 						transactionId))
@@ -932,6 +943,7 @@ public partial class GmxMessageAdapter
 	{
 		var time = DateTime.UtcNow;
 		UpdateServerTime(time);
+
 		foreach (var balance in balances ?? [])
 		{
 			if (balance?.Symbol.IsEmpty() != false ||
@@ -954,6 +966,7 @@ public partial class GmxMessageAdapter
 		}
 
 		var current = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var position in positions ?? [])
 		{
 			var market = GetMarketByAddress(position?.MarketAddress);
@@ -990,6 +1003,7 @@ public partial class GmxMessageAdapter
 		}
 
 		missingPositions ??= UpdateKnownPositions(current);
+
 		foreach (var key in missingPositions)
 		{
 			var sideSeparator = key.IndexOf(':');
@@ -1029,22 +1043,26 @@ public partial class GmxMessageAdapter
 		await Task.WhenAll(ordersTask, actionsTask);
 
 		var messages = new List<ExecutionMessage>();
+
 		foreach (var order in await ordersTask)
 		{
 			var message = CreateOrderMessage(order, transactionId);
 			if (message is not null && IsOrderMatch(message, subscription))
 				messages.Add(message);
 		}
+
 		foreach (var action in await actionsTask)
 		{
 			if (isMarkSeen && !action.Id.IsEmpty())
 				using (_sync.EnterScope())
 					_seenAccountTrades.Add(action.Id);
+
 			foreach (var message in CreateTradeActionMessages(action,
 				transactionId))
 				if (IsOrderMatch(message, subscription))
 					messages.Add(message);
 		}
+
 		foreach (var message in messages
 			.OrderByDescending(static message => message.ServerTime)
 			.Skip(subscription.Skip).Take(subscription.Limit)
@@ -1061,6 +1079,7 @@ public partial class GmxMessageAdapter
 	{
 		var result = new List<GmxTradeAction>();
 		string cursor = null;
+
 		while (result.Count < count)
 		{
 			var response = await ApiClient.SearchTradesAsync(new()
@@ -1078,6 +1097,7 @@ public partial class GmxMessageAdapter
 				break;
 			cursor = response.NextCursor;
 		}
+
 		return [.. result.OrderBy(static action => action.Timestamp)
 			.TakeLast(count)];
 	}
@@ -1299,6 +1319,7 @@ public partial class GmxMessageAdapter
 			if (raw.TryParseGmxScaled(0) is > 0)
 				return raw.ParseGmxContractPrice(market.IndexToken.Decimals,
 					"trade price");
+
 		return GetReferencePrice(market);
 	}
 
@@ -1356,12 +1377,14 @@ public partial class GmxMessageAdapter
 	private string[] UpdateKnownPositions(GmxPosition[] positions)
 	{
 		var current = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var position in positions ?? [])
 		{
 			var market = GetMarketByAddress(position?.MarketAddress);
 			if (market is not null && position.Key.IsEmpty() == false)
 				current.Add(PositionKey(market, position.IsLong, position.Key));
 		}
+
 		return UpdateKnownPositions(current);
 	}
 
@@ -1394,9 +1417,11 @@ public partial class GmxMessageAdapter
 		var markets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		if (!statusMsg.SecurityId.SecurityCode.IsEmpty())
 			markets.Add(GetMarket(statusMsg.SecurityId).Symbol);
+
 		foreach (var securityId in statusMsg.SecurityIds)
 			if (!securityId.SecurityCode.IsEmpty())
 				markets.Add(GetMarket(securityId).Symbol);
+
 		return new()
 		{
 			Symbols = [.. markets],

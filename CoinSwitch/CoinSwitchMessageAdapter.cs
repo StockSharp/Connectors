@@ -198,6 +198,7 @@ public partial class CoinSwitchMessageAdapter
 		{
 			_marketsBySecurity.Clear();
 			_marketsByNative.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.NativeSymbol.IsEmpty() != false ||
@@ -259,10 +260,12 @@ public partial class CoinSwitchMessageAdapter
 			if (!_seenPublicTradeIds.Add(key))
 				return false;
 			_seenPublicTradeOrder.Enqueue(key);
+
 			while (_seenPublicTradeOrder.Count >
 				_maximumRememberedTradeIds)
 				_seenPublicTradeIds.Remove(
 					_seenPublicTradeOrder.Dequeue());
+
 			return true;
 		}
 	}

@@ -7,6 +7,7 @@ public partial class FxcmMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -43,6 +44,7 @@ public partial class FxcmMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var old) &&
@@ -86,6 +88,7 @@ public partial class FxcmMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 
@@ -159,6 +162,7 @@ public partial class FxcmMessageAdapter
 		var time = price.Updated > 0
 			? DateTimeOffset.FromUnixTimeMilliseconds(price.Updated).UtcDateTime
 			: DateTime.UtcNow;
+
 		foreach (var subscription in _marketSubscriptions.CachedValues.Where(s =>
 			s.Symbol.EqualsIgnoreCase(price.Symbol)))
 		{

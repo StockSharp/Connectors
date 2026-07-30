@@ -62,6 +62,7 @@ public partial class MarqueeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var assetClasses = ToAssetClasses(securityTypes);
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -88,6 +89,7 @@ public partial class MarqueeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -102,12 +104,14 @@ public partial class MarqueeMessageAdapter
 				$"No entitled Marquee price measures are available for '{asset.GetSecurityCode()}'.");
 
 		var point = new DataPoint();
+
 		foreach (var group in providers.GroupBy(selection =>
 			(selection.Provider.DatasetId, selection.Provider.Frequency)))
 		{
 			var fields = group.Select(selection => selection.Field).Distinct().ToArray();
 			var rows = await SafeClient().GetLastData(group.Key.DatasetId, asset.Id, fields,
 				group.Key.Frequency.EqualsIgnoreCase(_realTime), cancellationToken);
+
 			foreach (var row in rows.OrderBy(row => row.GetTime() ?? DateTime.MinValue))
 				point.Apply(row);
 		}
@@ -141,6 +145,7 @@ public partial class MarqueeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -169,9 +174,11 @@ public partial class MarqueeMessageAdapter
 			throw new ArgumentOutOfRangeException(nameof(mdMsg.From), from, "The start date is after the end date.");
 
 		var candles = new SortedDictionary<DateTime, DataPoint>();
+
 		foreach (var group in providers.GroupBy(selection => selection.Provider.DatasetId))
 		{
 			var fields = group.Select(selection => selection.Field).Distinct().ToArray();
+
 			await foreach (var row in SafeClient().GetData(group.Key, asset.Id, fields, from, to,
 				cancellationToken).WithEnforcedCancellation(cancellationToken))
 			{
@@ -227,6 +234,7 @@ public partial class MarqueeMessageAdapter
 		IEnumerable<string> fields, bool preferRealTime, bool endOfDayOnly = false)
 	{
 		var result = new List<ProviderSelection>();
+
 		foreach (var field in fields)
 		{
 			var candidates = (availability?.Data ?? [])
@@ -241,6 +249,7 @@ public partial class MarqueeMessageAdapter
 			if (selected != null)
 				result.Add(new() { Field = field, Provider = selected });
 		}
+
 		return result.ToArray();
 	}
 
@@ -251,6 +260,7 @@ public partial class MarqueeMessageAdapter
 			return null;
 
 		var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var type in types)
 		{
 			switch (type)
@@ -289,6 +299,7 @@ public partial class MarqueeMessageAdapter
 					return null;
 			}
 		}
+
 		return result.ToArray();
 	}
 }

@@ -154,6 +154,7 @@ partial class PoloniexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 
 		if (!lookupMsg.IsSubscribe)
@@ -189,6 +190,7 @@ partial class PoloniexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 
 		if (!statusMsg.IsSubscribe)

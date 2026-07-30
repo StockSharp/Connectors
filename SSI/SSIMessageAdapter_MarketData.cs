@@ -9,6 +9,7 @@ public partial class SSIMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var requestedSymbol =
 			lookupMsg.SecurityId.SecurityCode?.Trim().ToUpperInvariant();
@@ -30,6 +31,7 @@ public partial class SSIMessageAdapter
 		var sent = 0L;
 		var symbols = new HashSet<string>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var board in boards)
 		{
 			foreach (var value in await RestClient.GetSecuritiesAsync(
@@ -44,9 +46,11 @@ public partial class SSIMessageAdapter
 				if (++sent >= maximum)
 					break;
 			}
+
 			if (sent >= maximum)
 				break;
 		}
+
 		if (requestedSymbol.IsEmpty() && sent < maximum)
 		{
 			foreach (var value in await RestClient.GetIndexesAsync(
@@ -84,6 +88,7 @@ public partial class SSIMessageAdapter
 					break;
 			}
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -144,6 +149,7 @@ public partial class SSIMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -169,6 +175,7 @@ public partial class SSIMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = security;
 		try
@@ -225,6 +232,7 @@ public partial class SSIMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -245,6 +253,7 @@ public partial class SSIMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		var security = Normalize(mdMsg.SecurityId);
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = security;
@@ -268,6 +277,7 @@ public partial class SSIMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -288,6 +298,7 @@ public partial class SSIMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		var security = Normalize(mdMsg.SecurityId);
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = security;
@@ -311,6 +322,7 @@ public partial class SSIMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -341,12 +353,14 @@ public partial class SSIMessageAdapter
 		var remaining = mdMsg.Count is > 0
 			? Math.Min(mdMsg.Count.Value, int.MaxValue)
 			: 1000;
+
 		for (var page = 1; remaining > 0; page++)
 		{
 			var pageSize = (int)Math.Min(remaining, 1000);
 			var candles = await RestClient.GetCandlesAsync(
 				security.SecurityCode, timeFrame, from, to, page,
 				pageSize, cancellationToken);
+
 			foreach (var candle in candles.Take(pageSize))
 				await SendCandleAsync(candle, security, timeFrame,
 					mdMsg.TransactionId,
@@ -354,10 +368,12 @@ public partial class SSIMessageAdapter
 						? CandleStates.Finished
 						: CandleStates.Active,
 					cancellationToken);
+
 			remaining -= candles.Length;
 			if (candles.Length < pageSize)
 				break;
 		}
+
 		if (mdMsg.IsHistoryOnly() ||
 			mdMsg.To is DateTime end &&
 			end.ToUniversalTime() <= CurrentTime)
@@ -366,6 +382,7 @@ public partial class SSIMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		var subscription = new CandleSubscription
 		{
 			SecurityId = security,
@@ -422,14 +439,18 @@ public partial class SSIMessageAdapter
 				var depth = value.ToSSIDepth();
 				var depthTargets = FindTargets(_depthSubscriptions,
 					depth.Symbol);
+
 				foreach (var target in depthTargets)
 					await SendDepthAsync(depth, target.SecurityId,
 						target.Id, cancellationToken);
+
 				var level1Targets = FindTargets(_level1Subscriptions,
 					depth.Symbol);
+
 				foreach (var target in level1Targets)
 					await SendLevel1DepthAsync(depth, target.SecurityId,
 						target.Id, cancellationToken);
+
 				return;
 			}
 			if (topic?.StartsWith("trade.",
@@ -452,18 +473,22 @@ public partial class SSIMessageAdapter
 							.Select(static pair =>
 								(pair.Key, pair.Value))
 					];
+
 				foreach (var target in targets)
 					await SendCandleAsync(candle,
 						target.Value.SecurityId,
 						target.Value.TimeFrame, target.Id,
 						CandleStates.Active, cancellationToken);
+
 				return;
 			}
 			var trade = value.ToSSITrade();
+
 			foreach (var target in FindTargets(_level1Subscriptions,
 				trade.Symbol))
 				await SendLevel1TradeAsync(trade, target.SecurityId,
 					target.Id, cancellationToken);
+
 			foreach (var target in FindTargets(_tickSubscriptions,
 				trade.Symbol))
 				await SendTickAsync(trade, target.SecurityId,

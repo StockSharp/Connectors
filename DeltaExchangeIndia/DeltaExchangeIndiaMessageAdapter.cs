@@ -185,6 +185,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 		{
 			_products.Clear();
 			_productsById.Clear();
+
 			foreach (var product in products ?? [])
 			{
 				if (product?.Symbol.IsEmpty() != false ||
@@ -238,8 +239,10 @@ public partial class DeltaExchangeIndiaMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_seenTradeOrder.Enqueue(key);
+
 			while (_seenTradeOrder.Count > _maximumSeenTrades)
 				_seenTrades.Remove(_seenTradeOrder.Dequeue());
+
 			return true;
 		}
 	}

@@ -10,6 +10,7 @@ public partial class AltCoinTraderMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 
 		var securityTypes = lookupMsg.GetSecurityTypes();
@@ -23,6 +24,7 @@ public partial class AltCoinTraderMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -77,6 +79,7 @@ public partial class AltCoinTraderMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -156,6 +159,7 @@ public partial class AltCoinTraderMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -247,6 +251,7 @@ public partial class AltCoinTraderMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -273,6 +278,7 @@ public partial class AltCoinTraderMessageAdapter
 			market.Symbol,
 			count,
 			cancellationToken);
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade =>
 			{
@@ -487,6 +493,7 @@ public partial class AltCoinTraderMessageAdapter
 					pair.Value.NativeSymbol.EqualsIgnoreCase(
 						ticker.Symbol)),
 			];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(
 				CreateLevel1Message(
@@ -511,6 +518,7 @@ public partial class AltCoinTraderMessageAdapter
 					pair.Value.NativeSymbol.EqualsIgnoreCase(
 						book.Symbol)),
 			];
+
 		foreach (var pair in subscriptions)
 			await SendDepthAsync(
 				pair.Value.SecurityCode,
@@ -542,6 +550,7 @@ public partial class AltCoinTraderMessageAdapter
 						pair.Value.NativeSymbol.EqualsIgnoreCase(
 							trade.Market)),
 				];
+
 			foreach (var pair in subscriptions)
 				await SendPublicTradeAsync(
 					pair.Value.SecurityCode,

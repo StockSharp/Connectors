@@ -122,6 +122,7 @@ public partial class MatchTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -144,6 +145,7 @@ public partial class MatchTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -217,6 +219,7 @@ public partial class MatchTraderMessageAdapter
 			return;
 		var historyTo = new DateTimeOffset((to ?? DateTime.UtcNow).ToUniversalTime());
 		var historyFrom = new DateTimeOffset((from ?? historyTo.UtcDateTime.AddDays(-30)).ToUniversalTime());
+
 		foreach (var operation in await _client.GetClosedPositions(historyFrom, historyTo,
 			cancellationToken))
 		{

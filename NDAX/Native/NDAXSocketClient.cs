@@ -417,6 +417,7 @@ sealed class NDAXSocketClient : BaseLogReceiver
 						remaining = [.. _subscriptions.Where(value =>
 							value.Kind == NdaxSubscriptionKinds.Ticker &&
 							value.InstrumentId == key.InstrumentId)];
+
 					foreach (var item in remaining)
 						await SubscribeCoreAsync(item, 0, cancellationToken);
 				}

@@ -112,11 +112,13 @@ public partial class PublicMessageAdapter
 			return;
 
 		var account = ResolveAccount(null);
+
 		foreach (var group in subscriptions.Select((item, index) => new { Item = item, Index = index }).GroupBy(p => p.Index / 100))
 		{
 			var items = group.Select(p => p.Item).ToArray();
 			var instruments = items.Select(p => p.Value).DistinctBy(p => (p.SecurityId.SecurityCode.ToUpperInvariant(), p.InstrumentType))
 				.Select(p => new PublicInstrumentKey { Symbol = p.SecurityId.SecurityCode, Type = p.InstrumentType }).ToArray();
+
 			foreach (var quote in await _client.GetQuotes(account.AccountId, instruments, cancellationToken))
 				await ProcessQuote(quote, items, cancellationToken);
 		}
@@ -134,6 +136,7 @@ public partial class PublicMessageAdapter
 				await ProcessPortfolio(portfolio, _portfolioSubscriptionId, cancellationToken);
 
 			var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 			foreach (var order in portfolio?.Orders ?? [])
 			{
 				seen.Add(order.OrderId);

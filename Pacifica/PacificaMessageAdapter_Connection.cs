@@ -112,9 +112,12 @@ public partial class PacificaMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets)
 				_markets.Add(market.Symbol.Trim(), market);
+
 			_prices.Clear();
+
 			foreach (var price in prices)
 				if (price?.Symbol.IsEmpty() == false &&
 					_markets.ContainsKey(price.Symbol))

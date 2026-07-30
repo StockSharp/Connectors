@@ -7,6 +7,7 @@ public partial class GlassnodeMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		if (securityTypes.Count > 0 &&
 			!securityTypes.Contains(SecurityTypes.CryptoCurrency))
@@ -20,6 +21,7 @@ public partial class GlassnodeMessageAdapter
 		var skip = Math.Max(0L, message.Skip ?? 0);
 		var left = Math.Max(0L,
 			Math.Min(message.Count ?? MaximumItems, MaximumItems));
+
 		foreach (var asset in GetAssets()
 			.Where(asset => Matches(asset, value))
 			.OrderBy(static asset => asset.Id, StringComparer.OrdinalIgnoreCase))
@@ -37,6 +39,7 @@ public partial class GlassnodeMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -45,6 +48,7 @@ public partial class GlassnodeMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -63,6 +67,7 @@ public partial class GlassnodeMessageAdapter
 		var points = await SafeRest().GetClosePricesAsync(asset.Id,
 			timeFrame.ToInterval(), from, to, cancellationToken) ?? [];
 		var values = new SortedDictionary<DateTime, decimal>();
+
 		foreach (var point in points.Where(static point => point is not null))
 		{
 			if (point.Value is null)
@@ -79,6 +84,7 @@ public partial class GlassnodeMessageAdapter
 		selected = message.From is null
 			? selected.TakeLast(limit)
 			: selected.Take(limit);
+
 		foreach (var pair in selected)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -89,6 +95,7 @@ public partial class GlassnodeMessageAdapter
 			}
 			.TryAdd(Level1Fields.ClosePrice, pair.Value), cancellationToken);
 		}
+
 		await FinishAsync(message, cancellationToken);
 	}
 
@@ -97,6 +104,7 @@ public partial class GlassnodeMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -116,6 +124,7 @@ public partial class GlassnodeMessageAdapter
 		var points = await SafeRest().GetOhlcAsync(asset.Id, interval, from, to,
 			cancellationToken) ?? [];
 		var values = new SortedDictionary<DateTime, GlassnodeOhlcValue>();
+
 		foreach (var point in points.Where(static point => point is not null))
 		{
 			var value = point.GetValues();
@@ -131,6 +140,7 @@ public partial class GlassnodeMessageAdapter
 		selected = message.From is null
 			? selected.TakeLast(limit)
 			: selected.Take(limit);
+
 		foreach (var pair in selected)
 		{
 			var value = pair.Value;
@@ -148,6 +158,7 @@ public partial class GlassnodeMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await FinishAsync(message, cancellationToken);
 	}
 

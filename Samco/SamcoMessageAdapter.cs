@@ -116,6 +116,7 @@ public partial class SamcoMessageAdapter
 				CacheSymbol(reference.Exchange,
 					reference.Name, reference);
 			}
+
 			_instrumentsLoaded = true;
 		}
 	}

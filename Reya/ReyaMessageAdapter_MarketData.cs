@@ -8,6 +8,7 @@ public partial class ReyaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
@@ -49,6 +50,7 @@ public partial class ReyaMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -108,6 +110,7 @@ public partial class ReyaMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -172,6 +175,7 @@ public partial class ReyaMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -197,6 +201,7 @@ public partial class ReyaMessageAdapter
 		{
 			var page = await RestClient.GetSpotExecutionsAsync(market.Symbol, from,
 				to, cancellationToken);
+
 			foreach (var trade in (page?.Data ?? [])
 				.Where(static trade => trade is not null && trade.Timestamp > 0)
 				.OrderBy(static trade => trade.Timestamp)
@@ -208,6 +213,7 @@ public partial class ReyaMessageAdapter
 		{
 			var page = await RestClient.GetPerpetualExecutionsAsync(market.Symbol,
 				from, to, cancellationToken);
+
 			foreach (var trade in (page?.Data ?? [])
 				.Where(static trade => trade is not null && trade.Timestamp > 0)
 				.OrderBy(static trade => trade.Timestamp)
@@ -255,6 +261,7 @@ public partial class ReyaMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -286,6 +293,7 @@ public partial class ReyaMessageAdapter
 			.OrderBy(static candle => candle.OpenTime)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market.Symbol, candle, timeFrame,
 				mdMsg.TransactionId, candle.OpenTime + timeFrame <= ServerTime
@@ -506,6 +514,7 @@ public partial class ReyaMessageAdapter
 			subscriptions = GetLevel1IdsUnsafe(envelope.Data.Symbol);
 		}
 		UpdateServerTime(envelope.Timestamp ?? envelope.Data.UpdatedAt);
+
 		foreach (var transactionId in subscriptions)
 			await SendLevel1SnapshotAsync(envelope.Data.Symbol, transactionId,
 				cancellationToken);
@@ -524,6 +533,7 @@ public partial class ReyaMessageAdapter
 			subscriptions = GetLevel1IdsUnsafe(envelope.Data.Symbol);
 		}
 		UpdateServerTime(envelope.Timestamp ?? envelope.Data.UpdatedAt);
+
 		foreach (var transactionId in subscriptions)
 			await SendLevel1SnapshotAsync(envelope.Data.Symbol, transactionId,
 				cancellationToken);
@@ -541,6 +551,7 @@ public partial class ReyaMessageAdapter
 			subscriptions = GetLevel1IdsUnsafe(envelope.Data.Symbol);
 		}
 		UpdateServerTime(envelope.Timestamp ?? envelope.Data.UpdatedAt);
+
 		foreach (var transactionId in subscriptions)
 			await SendLevel1SnapshotAsync(envelope.Data.Symbol, transactionId,
 				cancellationToken);
@@ -559,6 +570,7 @@ public partial class ReyaMessageAdapter
 		var state = envelope.Data.Type == ReyaDepthTypes.Snapshot
 			? QuoteChangeStates.SnapshotComplete
 			: QuoteChangeStates.Increment;
+
 		foreach (var subscription in subscriptions)
 			await SendDepthAsync(envelope.Data, subscription.TransactionId,
 				subscription.Depth, state, cancellationToken);
@@ -575,6 +587,7 @@ public partial class ReyaMessageAdapter
 			await OnWalletPerpetualExecutionsAsync(envelope, cancellationToken);
 			return;
 		}
+
 		foreach (var trade in envelope.Data ?? [])
 		{
 			if (trade?.Symbol.IsEmpty() != false || trade.SequenceNumber <= 0 ||
@@ -584,8 +597,10 @@ public partial class ReyaMessageAdapter
 			long[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = GetTickIdsUnsafe(trade.Symbol);
+
 			foreach (var transactionId in subscriptions)
 				await SendPublicTradeAsync(trade, transactionId, cancellationToken);
+
 			await UpdateCandlesAsync(trade.Symbol, trade.Timestamp,
 				trade.Price.ParseReyaDecimal("execution price"),
 				trade.Quantity.ParseReyaDecimal("execution quantity"),
@@ -604,6 +619,7 @@ public partial class ReyaMessageAdapter
 			await OnWalletSpotExecutionsAsync(envelope, cancellationToken);
 			return;
 		}
+
 		foreach (var trade in envelope.Data ?? [])
 		{
 			if (trade?.Symbol.IsEmpty() != false || trade.SequenceNumber <= 0 ||
@@ -613,8 +629,10 @@ public partial class ReyaMessageAdapter
 			long[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = GetTickIdsUnsafe(trade.Symbol);
+
 			foreach (var transactionId in subscriptions)
 				await SendPublicTradeAsync(trade, transactionId, cancellationToken);
+
 			await UpdateCandlesAsync(trade.Symbol, trade.Timestamp,
 				trade.Price.ParseReyaDecimal("execution price"),
 				trade.Quantity.ParseReyaDecimal("execution quantity"),
@@ -668,6 +686,7 @@ public partial class ReyaMessageAdapter
 			}
 		}
 		UpdateServerTime(tradeTime);
+
 		foreach (var message in messages)
 			await SendCandleAsync(symbol, message.Candle, message.TimeFrame,
 				message.TransactionId, message.State, cancellationToken);
@@ -747,6 +766,7 @@ public partial class ReyaMessageAdapter
 		{
 			foreach (var channel in subscribed)
 				await Socket.UnsubscribeAsync(channel, cancellationToken);
+
 			throw;
 		}
 	}
@@ -822,6 +842,7 @@ public partial class ReyaMessageAdapter
 		bool isBids, bool isSnapshot)
 	{
 		var quotes = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is null)
@@ -831,6 +852,7 @@ public partial class ReyaMessageAdapter
 			if (!isSnapshot || volume > 0)
 				quotes.Add(new(price, volume));
 		}
+
 		var ordered = isBids
 			? quotes.OrderByDescending(static quote => quote.Price)
 			: quotes.OrderBy(static quote => quote.Price);
@@ -851,6 +873,7 @@ public partial class ReyaMessageAdapter
 			throw new InvalidDataException(
 				"Reya returned candle arrays with different lengths.");
 		var result = new CandleState[timestamps.Length];
+
 		for (var i = 0; i < result.Length; i++)
 			result[i] = new()
 			{
@@ -860,6 +883,7 @@ public partial class ReyaMessageAdapter
 				LowPrice = low[i].ParseReyaDecimal("candle low price"),
 				ClosePrice = close[i].ParseReyaDecimal("candle close price"),
 			};
+
 		return result;
 	}
 

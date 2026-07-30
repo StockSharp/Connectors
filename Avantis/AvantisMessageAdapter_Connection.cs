@@ -85,6 +85,7 @@ public partial class AvantisMessageAdapter
 	{
 		var data = await ApiClient.GetMarketsAsync(cancellationToken);
 		var markets = new List<AvantisMarket>();
+
 		foreach (var pair in data.Pairs ?? [])
 		{
 			if (pair is null || !pair.IsPairListed || pair.Index < 0 ||
@@ -132,6 +133,7 @@ public partial class AvantisMessageAdapter
 				PriceStep = AvantisExtensions.PriceStep(exponent),
 			});
 		}
+
 		if (markets.Count == 0)
 			throw new InvalidDataException(
 				"Avantis returned no listed perpetual markets.");
@@ -146,6 +148,7 @@ public partial class AvantisMessageAdapter
 		{
 			_markets.Clear();
 			_marketsByIndex.Clear();
+
 			foreach (var market in markets)
 			{
 				_markets.Add(market.Symbol, market);

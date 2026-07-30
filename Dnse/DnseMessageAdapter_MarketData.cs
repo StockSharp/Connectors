@@ -42,6 +42,7 @@ public partial class DnseMessageAdapter
                 page,
                 cancellationToken);
             var instruments = response?.Data ?? [];
+
             foreach (var instrument in instruments)
             {
                 if (instrument?.Symbol.IsEmpty() != false)
@@ -128,6 +129,7 @@ public partial class DnseMessageAdapter
             {
                 _marketSubscriptions.Remove(
                     mdMsg.OriginalTransactionId);
+
                 foreach (var channel in old.Channels ?? [])
                 {
                     await RemoveNativeReference(
@@ -180,6 +182,7 @@ public partial class DnseMessageAdapter
                         native.Symbol,
                         CancellationToken.None);
                 }
+
                 throw;
             }
 
@@ -198,6 +201,7 @@ public partial class DnseMessageAdapter
 
         await SendSubscriptionResultAsync(
             mdMsg, cancellationToken);
+
         if (mdMsg.IsHistoryOnly())
         {
             await SendSubscriptionFinishedAsync(
@@ -296,6 +300,7 @@ public partial class DnseMessageAdapter
                 limit,
                 false,
                 cancellationToken);
+
             foreach (var trade in trades
                 .OrderBy(item => item.Time.ToDnseTime()))
             {
@@ -310,6 +315,7 @@ public partial class DnseMessageAdapter
         {
             var candles = await LoadCandles(
                 mdMsg, native, timeFrame.Value, cancellationToken);
+
             for (var index = 0; index < candles.Length; index++)
             {
                 var candle = candles[index];
@@ -360,6 +366,7 @@ public partial class DnseMessageAdapter
                 decimal close, decimal volume)>();
         var cursor = from;
         var visited = new HashSet<long>();
+
         for (var page = 0; page < 100; page++)
         {
             var response = await _rest.GetCandles(
@@ -377,6 +384,7 @@ public partial class DnseMessageAdapter
                 response?.Closes?.Length ?? 0,
                 response?.Volumes?.Length ?? 0,
             }.Min();
+
             for (var index = 0; index < count; index++)
             {
                 DateTime time;
@@ -443,6 +451,7 @@ public partial class DnseMessageAdapter
             return;
         var native = definition.ToNative();
         CacheSecurity(native);
+
         foreach (var subscription in FindSubscriptions(
             definition.Symbol,
             definition.BoardId,
@@ -462,6 +471,7 @@ public partial class DnseMessageAdapter
     {
         if (trade?.Symbol.IsEmpty() != false)
             return;
+
         foreach (var subscription in FindSubscriptions(
             trade.Symbol, trade.BoardId))
         {
@@ -490,6 +500,7 @@ public partial class DnseMessageAdapter
     {
         if (quote?.Symbol.IsEmpty() != false)
             return;
+
         foreach (var subscription in FindSubscriptions(
             quote.Symbol, quote.BoardId))
         {
@@ -523,6 +534,7 @@ public partial class DnseMessageAdapter
         var timeFrame = candle.Resolution.ToTimeFrame();
         if (timeFrame == default)
             return;
+
         foreach (var subscription in _marketSubscriptions.CachedValues
             .Where(item =>
                 item.TimeFrame == timeFrame &&

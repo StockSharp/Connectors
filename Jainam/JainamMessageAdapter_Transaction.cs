@@ -216,6 +216,7 @@ public partial class JainamMessageAdapter
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId,
             cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -256,6 +257,7 @@ public partial class JainamMessageAdapter
         long? count = null)
     {
         var left = count ?? long.MaxValue;
+
         foreach (var order in (await _restClient.GetOrders(cancellationToken))
             .Where(order => order != null)
             .OrderBy(GetOrderTime))
@@ -294,6 +296,7 @@ public partial class JainamMessageAdapter
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId,
             cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -576,6 +579,7 @@ public partial class JainamMessageAdapter
                 transactionId == originalTransactionId)
                 return order;
         }
+
         throw new InvalidOperationException(
             $"Jainam order '{orderId}' was not found in the current order book.");
     }

@@ -27,6 +27,7 @@ partial class ETradeMessageAdapter
 	{
 		var response = await Get("v1/accounts/list.json", cancellationToken);
 		var accounts = ToItems(response?["AccountListResponse"]?["Accounts"]?["Account"]).ToArray();
+
 		foreach (var account in accounts)
 		{
 			var id = account.Value<string>("accountId");
@@ -37,6 +38,7 @@ partial class ETradeMessageAdapter
 				_accountKeys[key] = key;
 			}
 		}
+
 		return accounts;
 	}
 
@@ -127,6 +129,7 @@ partial class ETradeMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -150,6 +153,7 @@ partial class ETradeMessageAdapter
 			.TryAdd(PositionChangeTypes.Currency, CurrencyTypes.USD), cancellationToken);
 
 			var portfolio = await Get($"v1/accounts/{key.DataEscape()}/portfolio.json?view=QUICK", cancellationToken);
+
 			foreach (var position in portfolio.SelectTokens("$..Position").SelectMany(ToItems))
 			{
 				var product = position["Product"] ?? position["product"];
@@ -173,11 +177,13 @@ partial class ETradeMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
 		var accountKey = await ResolveAccount(message.PortfolioName, cancellationToken);
 		var response = await Get($"v1/accounts/{accountKey.DataEscape()}/orders.json", cancellationToken);
+
 		foreach (var order in response.SelectTokens("$..Order").SelectMany(ToItems))
 		{
 			var detail = ToItems(order["OrderDetail"]).FirstOrDefault();

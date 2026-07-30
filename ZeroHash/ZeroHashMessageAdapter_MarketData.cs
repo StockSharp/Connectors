@@ -8,6 +8,7 @@ public partial class ZeroHashMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.SecurityId.BoardCode.IsEmpty() &&
 			!lookupMsg.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.ZeroHash))
@@ -30,6 +31,7 @@ public partial class ZeroHashMessageAdapter
 		var requestedCode = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0L, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0L, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var instrument in instruments
 			.Where(item => requestedCode.IsEmpty() || item.Symbol.Equals(
 				requestedCode, StringComparison.OrdinalIgnoreCase))
@@ -50,6 +52,7 @@ public partial class ZeroHashMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -76,6 +79,7 @@ public partial class ZeroHashMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -150,6 +154,7 @@ public partial class ZeroHashMessageAdapter
 		MarketSubscription subscription, CancellationToken cancellationToken)
 	{
 		var attempt = 0;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
@@ -325,6 +330,7 @@ public partial class ZeroHashMessageAdapter
 		decimal priceScale, decimal quantityScale, bool isBid, int depth)
 	{
 		var aggregated = new Dictionary<decimal, decimal>();
+
 		foreach (var level in levels ?? [])
 		{
 			var price = ZeroHashExtensions.UnscaleValue(level?.Price, priceScale);
@@ -335,6 +341,7 @@ public partial class ZeroHashMessageAdapter
 			aggregated[price.Value] = aggregated.TryGetValue(price.Value,
 				out var existing) ? existing + volume.Value : volume.Value;
 		}
+
 		return [.. aggregated
 			.Select(static pair => new QuoteChange(pair.Key, pair.Value))
 			.OrderBy(quote => quote.Price * (isBid ? -1 : 1))

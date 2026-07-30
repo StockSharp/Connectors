@@ -123,6 +123,7 @@ public partial class RainMessageAdapter
 				!order.ClientOrderId.IsEmpty() &&
 				(symbol.IsEmpty() || order.Symbol.EqualsIgnoreCase(symbol)) &&
 				(cancelMsg.Side is null || order.Side == cancelMsg.Side))];
+
 		foreach (var order in orders)
 		{
 			await RestClient.CancelOrderAsync(order.ClientOrderId,
@@ -140,6 +141,7 @@ public partial class RainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -165,9 +167,11 @@ public partial class RainMessageAdapter
 			OriginalTransactionId = lookupMsg.TransactionId,
 		}, cancellationToken);
 		var accounts = await RestClient.GetAccountsAsync(cancellationToken);
+
 		foreach (var account in accounts)
 			await SendBalanceAsync(account, lookupMsg.TransactionId, true,
 				cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -175,6 +179,7 @@ public partial class RainMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		try
@@ -197,6 +202,7 @@ public partial class RainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -226,14 +232,17 @@ public partial class RainMessageAdapter
 			Maximum = (statusMsg.Count ?? 1000).Min(5000).Max(1).To<int>(),
 		};
 		var orders = await LoadOrdersAsync(subscription, cancellationToken);
+
 		foreach (var order in orders)
 			await SendOrderWithTradesAsync(order, statusMsg.TransactionId,
 				true, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		try
@@ -261,6 +270,7 @@ public partial class RainMessageAdapter
 		}
 
 		var result = new List<RainOrder>();
+
 		for (var offset = 0; result.Count < subscription.Maximum;)
 		{
 			var limit = (subscription.Maximum - result.Count).Min(100).Max(1);
@@ -272,6 +282,7 @@ public partial class RainMessageAdapter
 				break;
 			offset += page.Length;
 		}
+
 		return [.. result.Where(static order =>
 				order?.ClientOrderId.IsEmpty() == false)
 			.GroupBy(static order => order.ClientOrderId,
@@ -289,6 +300,7 @@ public partial class RainMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var target in targets)
 			foreach (var account in payload.Accounts)
 				await SendBalanceAsync(account, target, false,
@@ -300,6 +312,7 @@ public partial class RainMessageAdapter
 	{
 		if (payload?.Orders is not { Length: > 0 })
 			return;
+
 		foreach (var order in payload.Orders.Where(static value =>
 			value is not null))
 		{
@@ -311,6 +324,7 @@ public partial class RainMessageAdapter
 			var tracked = MatchTrackedOrder(order);
 			if (tracked is not null)
 				targets.Add(tracked.TransactionId);
+
 			foreach (var target in targets)
 				await SendOrderWithTradesAsync(order, target, false,
 					cancellationToken);
@@ -349,6 +363,7 @@ public partial class RainMessageAdapter
 		long targetId, bool isForced, CancellationToken cancellationToken)
 	{
 		await SendOrderAsync(order, targetId, isForced, cancellationToken);
+
 		foreach (var trade in order?.Trades ?? [])
 			await SendAccountTradeAsync(order, trade, targetId,
 				cancellationToken);
@@ -545,6 +560,7 @@ public partial class RainMessageAdapter
 		Dictionary<string, TValue> values, long targetId)
 	{
 		var prefix = targetId.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key => key.StartsWith(prefix,
 			StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

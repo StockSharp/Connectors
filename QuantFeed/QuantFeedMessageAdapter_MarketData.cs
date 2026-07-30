@@ -7,6 +7,7 @@ public partial class QuantFeedMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -47,6 +48,7 @@ public partial class QuantFeedMessageAdapter
 			await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 			if (file.Header?.Kind != QuantFeedFileKinds.Reference)
 				continue;
+
 			await foreach (var record in file.Reader.ReadRowsAsync(cancellationToken))
 			{
 				var row = QuantFeedRowParser.ParseReference(file.Header, record,
@@ -66,6 +68,7 @@ public partial class QuantFeedMessageAdapter
 				await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 				if (file.Header?.Kind != QuantFeedFileKinds.MarketData)
 					continue;
+
 				await foreach (var record in file.Reader.ReadRowsAsync(cancellationToken))
 				{
 					var row = QuantFeedRowParser.ParseMarket(file.Header, record,
@@ -85,6 +88,7 @@ public partial class QuantFeedMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -98,6 +102,7 @@ public partial class QuantFeedMessageAdapter
 
 		var requestKey = mdMsg.SecurityId.GetQuantFeedKey();
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		await foreach (var row in ReadMarketRows(mdMsg, cancellationToken))
 		{
 			var rowKey = row.ToKey();
@@ -132,6 +137,7 @@ public partial class QuantFeedMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -145,6 +151,7 @@ public partial class QuantFeedMessageAdapter
 
 		var requestKey = mdMsg.SecurityId.GetQuantFeedKey();
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		await foreach (var row in ReadMarketRows(mdMsg, cancellationToken))
 		{
 			var rowKey = row.ToKey();
@@ -170,6 +177,7 @@ public partial class QuantFeedMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -184,6 +192,7 @@ public partial class QuantFeedMessageAdapter
 		var requestKey = mdMsg.SecurityId.GetQuantFeedKey();
 		var book = new QuantFeedOrderBook();
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		await foreach (var row in ReadMarketRows(mdMsg, cancellationToken))
 		{
 			var rowKey = row.ToKey();
@@ -218,6 +227,7 @@ public partial class QuantFeedMessageAdapter
 			await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 			if (file.Header?.Kind != QuantFeedFileKinds.MarketData)
 				continue;
+
 			await foreach (var record in file.Reader.ReadRowsAsync(cancellationToken))
 			{
 				yield return QuantFeedRowParser.ParseMarket(file.Header, record,

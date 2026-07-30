@@ -123,6 +123,7 @@ public partial class BackpackMessageAdapter
 			cancellationToken);
 		if (orders is null)
 			return;
+
 		foreach (var order in orders.Where(order => order?.Id.IsEmpty() == false &&
 			(cancelMsg.Side is null || order.Side.ToStockSharp() == cancelMsg.Side)))
 			await RestClient.CancelOrderAsync(new()
@@ -137,6 +138,7 @@ public partial class BackpackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -179,6 +181,7 @@ public partial class BackpackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -219,10 +222,12 @@ public partial class BackpackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances?.Entries ?? [])
 			await SendBalanceAsync(balance, originalTransactionId, cancellationToken);
 
 		var positions = await RestClient.GetPositionsAsync(new(), cancellationToken);
+
 		foreach (var position in positions ?? [])
 			await SendPositionAsync(position, originalTransactionId, CurrentTime,
 				cancellationToken);
@@ -241,11 +246,13 @@ public partial class BackpackMessageAdapter
 			.Select(static group => group.OrderByDescending(GetOrderTime).First())
 			.OrderBy(GetOrderTime)
 			.TakeLast(limit);
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, originalTransactionId, null, null,
 				cancellationToken);
 
 		var fills = await LoadFillsAsync(symbol, from, to, limit, cancellationToken);
+
 		foreach (var fill in fills.OrderBy(GetFillTime))
 			await SendFillAsync(fill, originalTransactionId, false, cancellationToken);
 	}
@@ -254,6 +261,7 @@ public partial class BackpackMessageAdapter
 		DateTime? from, DateTime? to, int maximum, CancellationToken cancellationToken)
 	{
 		var result = new List<BackpackOrder>();
+
 		for (var offset = 0; result.Count < maximum;)
 		{
 			var size = (maximum - result.Count).Min(1000).Max(1);
@@ -276,6 +284,7 @@ public partial class BackpackMessageAdapter
 				page.Min(GetOrderTime) < fromTime.ToUniversalTime())
 				break;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 
@@ -283,6 +292,7 @@ public partial class BackpackMessageAdapter
 		DateTime? to, int maximum, CancellationToken cancellationToken)
 	{
 		var result = new List<BackpackFill>();
+
 		for (var offset = 0; result.Count < maximum;)
 		{
 			var size = (maximum - result.Count).Min(1000).Max(1);
@@ -301,6 +311,7 @@ public partial class BackpackMessageAdapter
 			if (page.Length < size)
 				break;
 		}
+
 		return [.. result.GroupBy(static fill => fill.TradeId)
 			.Select(static group => group.First())
 			.Take(maximum)];

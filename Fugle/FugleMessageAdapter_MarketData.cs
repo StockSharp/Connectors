@@ -15,6 +15,7 @@ public partial class FugleMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -63,6 +64,7 @@ public partial class FugleMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var security = mdMsg.SecurityId.ParseFugleSecurity();
 		var subscription = CreateSubscription(mdMsg, security, security.ToSubscriptionChannel(dataType));
 
@@ -89,6 +91,7 @@ public partial class FugleMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var security = mdMsg.SecurityId.ParseFugleSecurity();
 		var timeFrame = mdMsg.GetTimeFrame();
 		_ = timeFrame.ToFugleTimeFrame(security.Kind);

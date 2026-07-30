@@ -33,6 +33,7 @@ public partial class ToobitMessageAdapter
 	{
 		EnsureConnected();
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		await _adapters.CachedValues.Select(a => a.PortfolioLookupAsync(lookupMsg, cancellationToken)).WhenAll();
 		if (lookupMsg.IsSubscribe)
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -44,6 +45,7 @@ public partial class ToobitMessageAdapter
 	{
 		EnsureConnected();
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		await _adapters.CachedValues.Select(a => a.OrderStatusAsync(statusMsg, cancellationToken)).WhenAll();
 		if (statusMsg.IsSubscribe)
 			await SendSubscriptionResultAsync(statusMsg, cancellationToken);

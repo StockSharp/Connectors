@@ -9,6 +9,7 @@ public partial class EuronextWebServicesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Count is > 0 or null)
         {
             var id = lookupMsg.SecurityId.GetEuronextId();
@@ -37,6 +38,7 @@ public partial class EuronextWebServicesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -67,6 +69,7 @@ public partial class EuronextWebServicesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -97,6 +100,7 @@ public partial class EuronextWebServicesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -140,6 +144,7 @@ public partial class EuronextWebServicesMessageAdapter
                     value.Time <= mdMsg.To))
             .OrderBy(value => value.Time)
             .Take(count);
+
         foreach (var value in values)
         {
             await SendOutMessageAsync(
@@ -162,6 +167,7 @@ public partial class EuronextWebServicesMessageAdapter
                 },
                 cancellationToken);
         }
+
         await CompleteSubscription(mdMsg, cancellationToken);
     }
 
@@ -172,6 +178,7 @@ public partial class EuronextWebServicesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -225,6 +232,7 @@ public partial class EuronextWebServicesMessageAdapter
                     value.Time <= mdMsg.To))
             .OrderBy(value => value.Time)
             .Take(count);
+
         foreach (var value in values)
         {
             await SendOutMessageAsync(
@@ -246,6 +254,7 @@ public partial class EuronextWebServicesMessageAdapter
                 },
                 cancellationToken);
         }
+
         await CompleteSubscription(mdMsg, cancellationToken);
     }
 

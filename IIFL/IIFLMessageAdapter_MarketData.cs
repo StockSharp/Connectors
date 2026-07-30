@@ -19,6 +19,7 @@ public partial class IIFLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var board = lookupMsg.SecurityId.BoardCode?.Trim()
 			.ToUpperInvariant();
@@ -52,6 +53,7 @@ public partial class IIFLMessageAdapter
 			? lookupMsg.Count.Value
 			: long.MaxValue;
 		var sent = 0L;
+
 		foreach (var instrument in instruments)
 		{
 			var securityId = instrument.ToSecurityId();
@@ -69,6 +71,7 @@ public partial class IIFLMessageAdapter
 			if (++sent >= maximum)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -126,6 +129,7 @@ public partial class IIFLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -150,6 +154,7 @@ public partial class IIFLMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = instrument;
 		try
@@ -173,6 +178,7 @@ public partial class IIFLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -197,6 +203,7 @@ public partial class IIFLMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = instrument;
 		try
@@ -220,6 +227,7 @@ public partial class IIFLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -240,6 +248,7 @@ public partial class IIFLMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		var instrument = await ResolveInstrumentAsync(mdMsg.SecurityId,
 			cancellationToken);
 		using (_sync.EnterScope())
@@ -265,6 +274,7 @@ public partial class IIFLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -292,6 +302,7 @@ public partial class IIFLMessageAdapter
 			? (int)Math.Min(mdMsg.Count.Value, int.MaxValue)
 			: int.MaxValue;
 		var selected = candles.TakeLast(count).ToArray();
+
 		foreach (var candle in selected)
 			await SendCandleAsync(candle, instrument, timeFrame,
 				mdMsg.TransactionId,
@@ -308,6 +319,7 @@ public partial class IIFLMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -422,6 +434,7 @@ public partial class IIFLMessageAdapter
 			instrument))
 			await SendLevel1Async(target.Instrument, feed, target.Id,
 				cancellationToken);
+
 		foreach (var target in FindTargets(_depthSubscriptions,
 			instrument))
 			await SendDepthAsync(target.Instrument, feed.Bids,
@@ -447,6 +460,7 @@ public partial class IIFLMessageAdapter
 		}
 		if (!isNew)
 			return;
+
 		foreach (var target in tickTargets)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -544,6 +558,7 @@ public partial class IIFLMessageAdapter
 			if (obj.FindIIFL("initialTimestamp", "timestamp",
 				"time") is not null)
 				yield return obj;
+
 			foreach (var property in obj.Properties())
 				foreach (var nested in ExtractCandleObjects(
 					property.Value))
@@ -602,6 +617,7 @@ public partial class IIFLMessageAdapter
 				.. _candleSubscriptions.Select(static pair =>
 					(pair.Key, pair.Value))
 			];
+
 		foreach (var subscription in subscriptions)
 		{
 			var from = subscription.Value.LastTime == default
@@ -612,6 +628,7 @@ public partial class IIFLMessageAdapter
 				subscription.Value.Instrument,
 				subscription.Value.TimeFrame, from, CurrentTime,
 				cancellationToken);
+
 			foreach (var candle in candles.Where(candle =>
 				candle.Time.UtcDateTime >=
 					subscription.Value.LastTime))
@@ -623,6 +640,7 @@ public partial class IIFLMessageAdapter
 							? CandleStates.Finished
 							: CandleStates.Active,
 					cancellationToken);
+
 			var last = candles.LastOrDefault();
 			if (last is not null)
 				subscription.Value.LastTime = last.Time.UtcDateTime;
@@ -648,10 +666,12 @@ public partial class IIFLMessageAdapter
 				.Select(static group => group.First())
 				.ToArray();
 		}
+
 		foreach (var batch in instruments.Chunk(100))
 		{
 			var response = await RestClient.GetQuotesAsync(batch,
 				cancellationToken);
+
 			foreach (var quote in response.ToIIFLObjects())
 			{
 				var exchange = quote.FindIIFLString("exchange");
@@ -668,9 +688,11 @@ public partial class IIFLMessageAdapter
 					ToMarketFeed(quote), cancellationToken);
 			}
 		}
+
 		foreach (var instrument in depth)
 		{
 			var targets = FindTargets(_depthSubscriptions, instrument);
+
 			foreach (var target in targets.Take(1))
 			{
 				var response = await RestClient.GetDepthAsync(
@@ -685,6 +707,7 @@ public partial class IIFLMessageAdapter
 					marketDepth.FindIIFL("bids") as JArray);
 				var asks = ToDepthLevels(
 					marketDepth.FindIIFL("asks") as JArray);
+
 				foreach (var depthTarget in targets)
 					await SendDepthAsync(depthTarget.Instrument,
 						bids, asks, CurrentTime, depthTarget.Id,

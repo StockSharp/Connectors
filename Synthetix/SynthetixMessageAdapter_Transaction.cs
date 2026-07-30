@@ -128,6 +128,7 @@ public partial class SynthetixMessageAdapter
 					(order.Type.ToStockSharpOrderType() ==
 						OrderTypes.Conditional) == cancelMsg.IsStop)
 				.ToArray();
+
 			foreach (var chunk in orders.Chunk(50))
 			{
 				var response = await ApiClient.CancelOrdersAsync(new()
@@ -147,6 +148,7 @@ public partial class SynthetixMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -170,6 +172,7 @@ public partial class SynthetixMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		try
@@ -191,6 +194,7 @@ public partial class SynthetixMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -216,6 +220,7 @@ public partial class SynthetixMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId, subscription);
 		try
@@ -370,9 +375,11 @@ public partial class SynthetixMessageAdapter
 			portfolios = [.. _portfolioSubscriptions];
 			orders = [.. _orderSubscriptions];
 		}
+
 		foreach (var transactionId in portfolios)
 			await SendPortfolioSnapshotAsync(transactionId, false,
 				cancellationToken);
+
 		foreach (var (transactionId, subscription) in orders)
 			await SendOrderSnapshotAsync(subscription, transactionId, false,
 				cancellationToken);
@@ -426,6 +433,7 @@ public partial class SynthetixMessageAdapter
 		foreach (var collateral in account.Collaterals ?? [])
 			await SendCollateralAsync(collateral, transactionId, isForce,
 				cancellationToken);
+
 		foreach (var position in await positionsTask ?? [])
 			await SendPositionAsync(position, transactionId, isForce,
 				cancellationToken);
@@ -553,9 +561,11 @@ public partial class SynthetixMessageAdapter
 			.Skip(subscription.Skip)
 			.Take(subscription.Limit)
 			.ToArray();
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, transactionId, isForce,
 				cancellationToken);
+
 		foreach (var trade in (await tradesTask)?.Trades ?? [])
 			await SendAccountTradeAsync(trade, subscription, transactionId,
 				cancellationToken);
@@ -702,6 +712,7 @@ public partial class SynthetixMessageAdapter
 			long[] portfolios;
 			using (_sync.EnterScope())
 				portfolios = [.. _portfolioSubscriptions];
+
 			foreach (var transactionId in portfolios)
 				await SendPositionAsync(position, transactionId, false,
 					cancellationToken);
@@ -771,6 +782,7 @@ public partial class SynthetixMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			if (IsOrderMatch(order, subscription))
 				await SendOrderAsync(order, transactionId, false,
@@ -812,6 +824,7 @@ public partial class SynthetixMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendAccountTradeAsync(trade, subscription, transactionId,
 				cancellationToken);
@@ -836,6 +849,7 @@ public partial class SynthetixMessageAdapter
 			update.MaintenanceMargin.TryParseSynthetixDecimal() ?? 0m,
 			update.TotalUnrealizedPnl.TryParseSynthetixDecimal() ?? 0m,
 			update.Debt.TryParseSynthetixDecimal() ?? 0m);
+
 		foreach (var transactionId in subscriptions)
 		{
 			var changed = false;
@@ -910,9 +924,11 @@ public partial class SynthetixMessageAdapter
 			_accountFingerprints.Remove(transactionId);
 			var prefix = transactionId.ToString(CultureInfo.InvariantCulture) +
 				":";
+
 			foreach (var key in _collateralFingerprints.Keys.Where(key =>
 				key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 				_collateralFingerprints.Remove(key);
+
 			foreach (var key in _positionFingerprints.Keys.Where(key =>
 				key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 				_positionFingerprints.Remove(key);
@@ -928,9 +944,11 @@ public partial class SynthetixMessageAdapter
 			_orderSubscriptions.Remove(transactionId);
 			var prefix = transactionId.ToString(CultureInfo.InvariantCulture) +
 				":";
+
 			foreach (var key in _orderFingerprints.Keys.Where(key =>
 				key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 				_orderFingerprints.Remove(key);
+
 			foreach (var key in _seenAccountTrades.Where(key =>
 				key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 				_seenAccountTrades.Remove(key);

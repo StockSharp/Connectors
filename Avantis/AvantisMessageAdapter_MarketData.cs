@@ -8,10 +8,12 @@ public partial class AvantisMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static item => item.Symbol,
 			StringComparer.Ordinal))
 		{
@@ -40,6 +42,7 @@ public partial class AvantisMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -48,6 +51,7 @@ public partial class AvantisMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -70,6 +74,7 @@ public partial class AvantisMessageAdapter
 		await SendLevel1Async(market, snapshot, mdMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -205,6 +210,7 @@ public partial class AvantisMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value == update.PairIndex).Select(static pair => pair.Key)];
+
 		foreach (var transactionId in subscriptions)
 			await SendLevel1Async(market, update, transactionId,
 				cancellationToken);

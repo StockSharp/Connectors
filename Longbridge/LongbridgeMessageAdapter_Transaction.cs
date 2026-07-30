@@ -13,9 +13,11 @@ public partial class LongbridgeMessageAdapter
 				? LongbridgeOrderTypes.LimitIfTouched : LongbridgeOrderTypes.MarketIfTouched,
 			_ => LongbridgeOrderTypes.Limit,
 		};
+
 		ValidateOrder(regMsg.Volume, regMsg.Price, nativeType, condition);
 		var nativeTimeInForce = regMsg.TillDate != null
 			? LongbridgeTimeInForces.GoodTillDate : condition?.NativeTimeInForce ?? LongbridgeTimeInForces.Day;
+
 		var request = new LongbridgeSubmitOrderRequest
 		{
 			Symbol = regMsg.SecurityId.ToNativeSymbol(),
@@ -34,9 +36,11 @@ public partial class LongbridgeMessageAdapter
 			ClientRequestId = regMsg.TransactionId.ToString(
 				CultureInfo.InvariantCulture),
 		};
+
 		var response = await _restClient.SubmitOrder(request, cancellationToken);
 		var orderId = response?.OrderId.ThrowIfEmpty("OrderId");
 		_orderTransactions[orderId] = regMsg.TransactionId;
+
 		await SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Transactions,
@@ -89,6 +93,7 @@ public partial class LongbridgeMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -99,13 +104,17 @@ public partial class LongbridgeMessageAdapter
 		var orders = hasRange
 			? await _restClient.GetHistoryOrders(statusMsg.From, statusMsg.To, cancellationToken)
 			: await _restClient.GetTodayOrders(cancellationToken);
+
 		foreach (var order in orders?.Orders ?? [])
 			await ProcessOrder(order, statusMsg.TransactionId, cancellationToken);
+
 		var executions = hasRange
 			? await _restClient.GetHistoryExecutions(statusMsg.From, statusMsg.To, cancellationToken)
 			: await _restClient.GetTodayExecutions(cancellationToken);
+
 		foreach (var execution in executions?.Trades ?? [])
 			await ProcessExecution(execution, statusMsg.TransactionId, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 		else
@@ -119,6 +128,7 @@ public partial class LongbridgeMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 			return;
 		if (!lookupMsg.PortfolioName.IsEmpty() && !lookupMsg.PortfolioName.EqualsIgnoreCase(Portfolio))
@@ -132,13 +142,16 @@ public partial class LongbridgeMessageAdapter
 			PortfolioName = Portfolio,
 			BoardCode = "LONG",
 		}, cancellationToken);
+
 		foreach (var balance in (await _restClient.GetBalances(cancellationToken))?.List ?? [])
 			await ProcessBalance(balance, lookupMsg.TransactionId, cancellationToken);
+
 		foreach (var channel in (await _restClient.GetPositions(cancellationToken))?.List ?? [])
 		{
 			foreach (var position in channel.Positions ?? [])
 				await ProcessPosition(position, lookupMsg.TransactionId, cancellationToken);
 		}
+
 		await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, cancellationToken);
 	}
 

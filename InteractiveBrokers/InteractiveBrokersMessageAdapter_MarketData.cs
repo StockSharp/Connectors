@@ -2682,6 +2682,7 @@ public partial class InteractiveBrokersMessageAdapter
 
 			// read derivative sec types list
 			var derivativeSecTypes = new string[await socket.ReadIntAsync(cancellationToken)];
+
 			for (var j = 0; j < derivativeSecTypes.Length; ++j)
 			{
 				derivativeSecTypes[j] = await socket.ReadStringAsync(cancellationToken);

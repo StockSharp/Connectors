@@ -125,6 +125,7 @@ public partial class DeepBookMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -153,6 +154,7 @@ public partial class DeepBookMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -164,6 +166,7 @@ public partial class DeepBookMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -206,6 +209,7 @@ public partial class DeepBookMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -224,10 +228,12 @@ public partial class DeepBookMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await SuiClient.GetBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -246,6 +252,7 @@ public partial class DeepBookMessageAdapter
 		DeepBookToken[] tokens;
 		using (_sync.EnterScope())
 			tokens = [.. _tokens.Values];
+
 		foreach (var token in tokens.OrderBy(static item => item.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -301,6 +308,7 @@ public partial class DeepBookMessageAdapter
 					swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			if (subscription.States is { Length: > 0 } states &&

@@ -228,6 +228,7 @@ sealed class OrderlyNetworkRestClient : BaseLogReceiver
 			pathWithQuery = "/" + pathWithQuery;
 		var json = body is null ? null : JsonConvert.SerializeObject(body,
 			_jsonSettings);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitRateLimitAsync(cancellationToken);

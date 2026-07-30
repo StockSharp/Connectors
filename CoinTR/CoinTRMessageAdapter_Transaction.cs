@@ -146,6 +146,7 @@ public partial class CoinTRMessageAdapter
 			: GetMarket(cancelMsg.SecurityId).Symbol;
 		var orders = await RestClient.GetOpenOrdersAsync(
 			symbol, cancellationToken) ?? [];
+
 		foreach (var group in orders
 			.Where(order => !order.Symbol.IsEmpty() &&
 				!order.OrderId.IsEmpty() &&
@@ -155,6 +156,7 @@ public partial class CoinTRMessageAdapter
 				StringComparer.OrdinalIgnoreCase))
 		{
 			var ids = group.Select(order => order.OrderId).ToArray();
+
 			for (var index = 0; index < ids.Length; index += 50)
 				await RestClient.BatchCancelOrdersAsync(
 					group.Key, ids.Skip(index).Take(50),
@@ -169,6 +171,7 @@ public partial class CoinTRMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		var portfolioName = GetPortfolioName();
 		if (!lookupMsg.PortfolioName.IsEmpty() &&
@@ -235,6 +238,7 @@ public partial class CoinTRMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -498,6 +502,7 @@ public partial class CoinTRMessageAdapter
 				? [feeDetail]
 				: feeDetail.Children<JProperty>()
 					.Select(static property => property.Value);
+
 		foreach (var candidate in candidates)
 		{
 			var fee = candidate["totalFee"]?.Value<decimal?>();
@@ -506,6 +511,7 @@ public partial class CoinTRMessageAdapter
 			if (fee is not null || !currency.IsEmpty())
 				return (fee, currency);
 		}
+
 		return default;
 	}
 }

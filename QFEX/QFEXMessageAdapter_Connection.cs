@@ -114,6 +114,7 @@ public partial class QFEXMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets)
 				_markets.Add(market.Symbol.Trim(), market);
 		}
@@ -150,6 +151,7 @@ public partial class QFEXMessageAdapter
 		_tradeSocket = null;
 		_marketSocket = null;
 		_restClient = null;
+
 		foreach (var socket in new Disposable[] { tradeSocket, marketSocket }
 			.Where(static socket => socket is not null))
 		{
@@ -171,6 +173,7 @@ public partial class QFEXMessageAdapter
 			}
 			socket.Dispose();
 		}
+
 		restClient?.Dispose();
 		ClearState();
 	}

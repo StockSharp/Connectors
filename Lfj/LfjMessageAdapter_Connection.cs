@@ -36,6 +36,7 @@ public partial class LfjMessageAdapter
 					error);
 			}
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -52,6 +53,7 @@ public partial class LfjMessageAdapter
 						definition.PoolId, error.Message);
 				}
 			}
+
 			LfjMarket[] markets;
 			using (_sync.EnterScope())
 				markets = [.. _markets.Values];
@@ -267,6 +269,7 @@ public partial class LfjMessageAdapter
 			throw new InvalidOperationException(
 				"At least one LFJ pool address must be configured.");
 		var result = new List<LfjMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -295,6 +298,7 @@ public partial class LfjMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result];
 	}
 

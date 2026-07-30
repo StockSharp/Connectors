@@ -81,6 +81,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_feeds.Clear();
+
 			foreach (var value in values.Take(MaximumFeeds))
 			{
 				if (value?.FeedId.IsEmpty() != false)
@@ -186,8 +187,10 @@ public partial class ChainlinkDataStreamsMessageAdapter
 			_liveSubscriptions.Clear();
 			_retiredPools.Clear();
 		}
+
 		foreach (var pool in pools)
 			pool.Stop();
+
 		foreach (var pool in pools)
 		{
 			DetachPool(pool);
@@ -200,6 +203,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 				pool.Dispose();
 			}
 		}
+
 		_rest?.Dispose();
 		_rest = null;
 	}

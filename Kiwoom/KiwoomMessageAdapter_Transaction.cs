@@ -143,6 +143,7 @@ public partial class KiwoomMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -166,6 +167,7 @@ public partial class KiwoomMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -220,6 +222,7 @@ public partial class KiwoomMessageAdapter
 		IEnumerable<KiwoomOrderExecution> orders = await _rest.GetOrders(from, to, cancellationToken);
 		if (count is > 0)
 			orders = orders.OrderByDescending(order => order.Time).Take((int)Math.Min(count.Value, int.MaxValue));
+
 		foreach (var order in orders.OrderBy(order => order.Time))
 			await ProcessExecution(order, originalTransactionId, cancellationToken);
 	}

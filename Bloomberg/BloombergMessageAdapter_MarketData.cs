@@ -6,6 +6,7 @@ partial class BloombergMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var symbol = message.SecurityId.SecurityCode;
 		if (symbol.IsEmpty())
 		{
@@ -14,6 +15,7 @@ partial class BloombergMessageAdapter
 		}
 
 		var securityTypes = message.GetSecurityTypes();
+
 		foreach (var info in await _client.LookupSecurityAsync(symbol, cancellationToken))
 		{
 			if (!info.Error.IsEmpty())
@@ -68,6 +70,7 @@ partial class BloombergMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_client.UnsubscribeMarketData(message.OriginalTransactionId);
@@ -100,6 +103,7 @@ partial class BloombergMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 

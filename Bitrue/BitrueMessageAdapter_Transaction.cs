@@ -267,7 +267,9 @@ public partial class BitrueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
+
 		foreach (var section in Sections.Distinct())
 			EnsurePrivateReady(section);
 
@@ -279,6 +281,7 @@ public partial class BitrueMessageAdapter
 		}
 
 		await EnsureInstrumentsAsync(cancellationToken);
+
 		foreach (var section in Sections.Distinct())
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -290,8 +293,10 @@ public partial class BitrueMessageAdapter
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
 		}
+
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, cancellationToken);
@@ -307,7 +312,9 @@ public partial class BitrueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
+
 		foreach (var enabledSection in Sections.Distinct())
 			EnsurePrivateReady(enabledSection);
 
@@ -345,6 +352,7 @@ public partial class BitrueMessageAdapter
 			statusMsg.From, statusMsg.To, limit, cancellationToken,
 			statusMsg.OrderStringId, statusMsg.OrderId);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
@@ -384,6 +392,7 @@ public partial class BitrueMessageAdapter
 		if (IsSectionEnabled(BitrueSections.Spot))
 		{
 			var account = await SpotRestClient.GetAccountAsync(cancellationToken);
+
 			foreach (var balance in account?.Balances ?? [])
 				await SendSpotBalanceAsync(balance.Asset, balance.Free.ToDecimal(),
 					balance.Locked.ToDecimal(), account.UpdateTime, originalTransactionId,
@@ -393,11 +402,13 @@ public partial class BitrueMessageAdapter
 		if (IsSectionEnabled(BitrueSections.Futures))
 		{
 			var accountData = await FuturesRestClient.GetAccountAsync(cancellationToken);
+
 			foreach (var account in accountData?.Accounts ?? [])
 			{
 				await SendFuturesBalanceAsync(account.MarginCoin, account.Equity,
 					account.Locked, account.RealizedProfit, account.UnrealizedProfit, 0,
 					originalTransactionId, cancellationToken);
+
 				foreach (var group in account.PositionGroups ?? [])
 				{
 					foreach (var position in group?.Positions ?? [])
@@ -428,6 +439,7 @@ public partial class BitrueMessageAdapter
 			if (symbols.Length == 0 && !onlyNewFills)
 				this.AddWarningLog(
 					"Bitrue spot order lookup requires a symbol; no previously used symbols are known.");
+
 			foreach (var spotSymbol in symbols.Distinct(StringComparer.OrdinalIgnoreCase))
 			{
 				var orders = new List<BitrueSpotOrder>();
@@ -492,6 +504,7 @@ public partial class BitrueMessageAdapter
 			if (symbols.Length == 0 && !onlyNewFills)
 				this.AddWarningLog(
 					"Bitrue futures order lookup requires a symbol; no previously used symbols are known.");
+
 			foreach (var futuresSymbol in symbols.Distinct(StringComparer.OrdinalIgnoreCase))
 			{
 				var orders = orderId.IsEmpty()
@@ -504,6 +517,7 @@ public partial class BitrueMessageAdapter
 						ClientOrderId = long.TryParse(orderId, NumberStyles.None,
 							CultureInfo.InvariantCulture, out _) ? null : orderId,
 					}, cancellationToken);
+
 				foreach (var order in (orders ?? [])
 					.Where(static item => item is not null && item.OrderId > 0)
 					.Where(item => IsWithin(GetFuturesOrderTime(item), fromUtc, toUtc))
@@ -640,6 +654,7 @@ public partial class BitrueMessageAdapter
 				balance.Locked.ToDecimal() ?? 0m, 0m, 0m, envelope.EventTime,
 				_portfolioSubscriptionId, cancellationToken);
 		}
+
 		foreach (var position in envelope?.Account?.Positions ?? [])
 			await SendFuturesPrivatePositionAsync(position, envelope.EventTime,
 				cancellationToken);

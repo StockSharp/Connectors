@@ -7,6 +7,7 @@ public partial class WooXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		await EnsureSymbolsAsync(cancellationToken);
 		var securityTypes = lookupMsg.GetSecurityTypes();
@@ -41,6 +42,7 @@ public partial class WooXMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -49,6 +51,7 @@ public partial class WooXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -59,11 +62,13 @@ public partial class WooXMessageAdapter
 		var symbol = GetSymbol(mdMsg.SecurityId);
 		await SendLevel1SnapshotAsync(symbol, mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		EnsureRealtimeReady();
 
 		var topics = symbol.StartsWith("PERP_", StringComparison.OrdinalIgnoreCase)
@@ -74,10 +79,12 @@ public partial class WooXMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_level1Subscriptions.Add(mdMsg.TransactionId, new() { Symbol = symbol });
+
 			foreach (var topic in topics)
 				if (AddReference(_streamReferences, new(topic, symbol, default)))
 					subscribe.Add(topic);
 		}
+
 		foreach (var topic in subscribe)
 			await ChangeLevel1StreamAsync(topic, symbol, true, cancellationToken);
 	}
@@ -87,6 +94,7 @@ public partial class WooXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -101,11 +109,13 @@ public partial class WooXMessageAdapter
 			? book.Timestamp.ToWooXTime()
 			: CurrentTime, mdMsg.TransactionId, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		EnsureRealtimeReady();
 
 		var key = new StreamKey(WooXWsTopics.OrderBook, symbol, default);
@@ -128,6 +138,7 @@ public partial class WooXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -140,15 +151,18 @@ public partial class WooXMessageAdapter
 		var from = mdMsg.From?.ToUniversalTime();
 		var count = (mdMsg.Count ?? 100).Min(10000).Max(1).To<int>();
 		var trades = await LoadMarketTradesAsync(symbol, from, to, count, cancellationToken);
+
 		foreach (var trade in trades)
 			await SendTradeAsync(trade, mdMsg.TransactionId, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		EnsureRealtimeReady();
 
 		var key = new StreamKey(WooXWsTopics.Trade, symbol, default);
@@ -167,6 +181,7 @@ public partial class WooXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -182,15 +197,18 @@ public partial class WooXMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await LoadCandlesAsync(symbol, timeFrame, from, to, count,
 			cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(candle, timeFrame, mdMsg.TransactionId, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		EnsureRealtimeReady();
 
 		var key = new StreamKey(WooXWsTopics.Candle, symbol, timeFrame);
@@ -280,6 +298,7 @@ public partial class WooXMessageAdapter
 		}
 
 		var result = new List<WooXMarketTrade>();
+
 		for (var page = 1; result.Count < count; page++)
 		{
 			var size = (count - result.Count).Min(100).Max(1);
@@ -300,6 +319,7 @@ public partial class WooXMessageAdapter
 				meta.CurrentPage * meta.RecordsPerPage >= meta.Total)
 				break;
 		}
+
 		return [.. result.OrderBy(static item => item.ExecutedTimestamp.ToUtcSeconds())
 			.TakeLast(count)];
 	}
@@ -324,6 +344,7 @@ public partial class WooXMessageAdapter
 		}
 
 		var result = new List<WooXCandle>();
+
 		for (var page = 1; result.Count < count; page++)
 		{
 			var size = (count - result.Count).Min(1000).Max(1);
@@ -343,6 +364,7 @@ public partial class WooXMessageAdapter
 				meta.CurrentPage * meta.RecordsPerPage >= meta.Total)
 				break;
 		}
+
 		return [.. result.GroupBy(static item => item.StartTimestamp)
 			.Select(static group => group.First())
 			.OrderBy(static item => item.StartTimestamp)
@@ -361,6 +383,7 @@ public partial class WooXMessageAdapter
 					? new[] { WooXWsTopics.Ticker, WooXWsTopics.BestBidOffer,
 						WooXWsTopics.IndexPrice, WooXWsTopics.MarkPrice }
 					: new[] { WooXWsTopics.Ticker, WooXWsTopics.BestBidOffer };
+
 				foreach (var topic in topics)
 					if (ReleaseReference(_streamReferences,
 						new(topic, subscription.Symbol, default)))
@@ -420,6 +443,7 @@ public partial class WooXMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(ticker.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendTickerAsync(ticker, timestamp, id, cancellationToken);
 	}
@@ -432,6 +456,7 @@ public partial class WooXMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(bestBidOffer.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -453,6 +478,7 @@ public partial class WooXMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(price.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 		{
 			var message = new Level1ChangeMessage
@@ -476,6 +502,7 @@ public partial class WooXMessageAdapter
 			subscriptions = [.. _depthSubscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(book.Symbol))
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendBookAsync(book.Symbol, book.Bids, book.Asks,
 				timestamp > 0 ? timestamp.ToUtcTime() : CurrentTime,
@@ -490,6 +517,7 @@ public partial class WooXMessageAdapter
 			ids = [.. _tickSubscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendTradeAsync(trade, timestamp, id, cancellationToken);
 	}
@@ -504,6 +532,7 @@ public partial class WooXMessageAdapter
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(candle.Symbol) &&
 					pair.Value.TimeFrame == timeFrame)
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendCandleAsync(candle, timeFrame, timestamp, id, cancellationToken);
 	}

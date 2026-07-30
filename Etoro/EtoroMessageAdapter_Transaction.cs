@@ -116,6 +116,7 @@ public partial class EtoroMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -140,6 +141,7 @@ public partial class EtoroMessageAdapter
 				var history = await _rest.GetTradeHistory(IsDemo, from, page, pageSize, cancellationToken);
 				await EnsureInstruments((history ?? []).Where(t => t != null).Select(t => t.InstrumentId),
 					cancellationToken);
+
 				foreach (var trade in history ?? [])
 				{
 					if (to != null && trade.CloseTimestamp.UtcKind() > to.Value)
@@ -147,6 +149,7 @@ public partial class EtoroMessageAdapter
 					if (await ProcessTradeHistory(trade, statusMsg.TransactionId, cancellationToken) && --left <= 0)
 						break;
 				}
+
 				if (history == null || history.Length < pageSize)
 					break;
 				page++;
@@ -167,6 +170,7 @@ public partial class EtoroMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -447,6 +451,7 @@ public partial class EtoroMessageAdapter
 			.ToArray();
 		var currentInstruments = positionGroups.Select(g => g.Key).ToHashSet();
 		var previousInstruments = _portfolioInstruments.CopyAndClear();
+
 		foreach (var instrumentId in currentInstruments)
 			_portfolioInstruments.Add(instrumentId);
 
@@ -507,17 +512,21 @@ public partial class EtoroMessageAdapter
 				.Concat((portfolio.Positions ?? []).Where(p => p != null).Select(p => p.InstrumentId)),
 			cancellationToken);
 		var sent = new HashSet<long>();
+
 		foreach (var order in (portfolio.Orders ?? []).Where(o => o != null))
 		{
 			if (sent.Add(order.OrderId))
 				await ProcessWorkingOrder(order, originalTransactionId, cancellationToken);
 		}
+
 		foreach (var order in (portfolio.OrdersForOpen ?? []).Where(o => o != null))
 		{
 			if (sent.Add(order.OrderId))
 				await ProcessPendingOpenOrder(order, originalTransactionId, cancellationToken);
 		}
+
 		var positions = (portfolio.Positions ?? []).Where(p => p != null).ToDictionary(p => p.PositionId);
+
 		foreach (var order in (portfolio.OrdersForClose ?? []).Where(o => o != null))
 		{
 			if (sent.Add(order.OrderId))
@@ -525,6 +534,7 @@ public partial class EtoroMessageAdapter
 					positions.TryGetValue(order.PositionId, out var position) ? [position] : [],
 					originalTransactionId, cancellationToken);
 		}
+
 		foreach (var order in (portfolio.OrdersForCloseMultiple ?? []).Where(o => o != null))
 		{
 			if (sent.Add(order.OrderId))
@@ -536,6 +546,7 @@ public partial class EtoroMessageAdapter
 				await ProcessPendingCloseOrder(order, affected, originalTransactionId, cancellationToken);
 			}
 		}
+
 		foreach (var position in (portfolio.Positions ?? []).Where(p => p != null))
 		{
 			if (position.PositionId > 0)

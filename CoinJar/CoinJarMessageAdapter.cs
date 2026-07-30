@@ -165,6 +165,7 @@ public partial class CoinJarMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_products.Clear();
+
 			foreach (var product in products ?? [])
 				if (product?.Id.IsEmpty() == false &&
 					product.BaseCurrency?.Code.IsEmpty() == false &&

@@ -143,6 +143,7 @@ public partial class QuidaxMessageAdapter
 			? null
 			: GetMarket(cancelMsg.SecurityId);
 		var orders = new List<QuidaxOrder>();
+
 		foreach (var state in _activeOrderStates)
 			orders.AddRange(await RestClient.GetOrdersAsync(
 				market?.Id,
@@ -178,6 +179,7 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -209,6 +211,7 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionResultAsync(
 			lookupMsg,
 			cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
@@ -216,6 +219,7 @@ public partial class QuidaxMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -227,6 +231,7 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -251,6 +256,7 @@ public partial class QuidaxMessageAdapter
 		await SendSubscriptionResultAsync(
 			statusMsg,
 			cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
@@ -258,6 +264,7 @@ public partial class QuidaxMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -267,6 +274,7 @@ public partial class QuidaxMessageAdapter
 	{
 		var wallets = await RestClient.GetWalletsAsync(
 			cancellationToken);
+
 		foreach (var wallet in wallets ?? [])
 			await SendWalletAsync(
 				wallet,
@@ -337,6 +345,7 @@ public partial class QuidaxMessageAdapter
 			statusMsg.To is not null
 				? _allOrderStates
 				: _activeOrderStates;
+
 		foreach (var state in states)
 			orders.AddRange(await RestClient.GetOrdersAsync(
 				market,
@@ -366,12 +375,14 @@ public partial class QuidaxMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var orders = new List<QuidaxOrder>();
+
 		foreach (var state in _activeOrderStates)
 			orders.AddRange(await RestClient.GetOrdersAsync(
 				null,
 				state,
 				100,
 				cancellationToken) ?? []);
+
 		foreach (var order in orders
 			.GroupBy(
 				static order => order.Id,
@@ -388,6 +399,7 @@ public partial class QuidaxMessageAdapter
 			null,
 			100,
 			cancellationToken);
+
 		foreach (var trade in trades ?? [])
 			await SendPrivateTradeAsync(
 				trade,
@@ -407,6 +419,7 @@ public partial class QuidaxMessageAdapter
 			order,
 			originalTransactionId,
 			cancellationToken);
+
 		foreach (var trade in order?.Trades ?? [])
 			await SendPrivateTradeAsync(
 				trade,

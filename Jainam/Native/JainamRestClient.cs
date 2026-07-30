@@ -277,6 +277,7 @@ sealed class JainamRestClient : BaseLogReceiver
     public async Task<JainamHolding[]> GetHoldings(CancellationToken cancellationToken)
     {
         var result = new List<JainamHolding>();
+
         foreach (var product in new[] { "cnc", "mtf", "mis" })
         {
             result.AddRange(await GetArray<JainamHolding>(
@@ -284,6 +285,7 @@ sealed class JainamRestClient : BaseLogReceiver
                 true,
                 cancellationToken));
         }
+
         return [.. result];
     }
 
@@ -515,6 +517,7 @@ sealed class JainamRestClient : BaseLogReceiver
         IEnumerable<JToken> items = token is JContainer container
             ? container.DescendantsAndSelf()
             : [token];
+
         foreach (var item in items)
         {
             if (item is not JProperty property ||
@@ -530,6 +533,7 @@ sealed class JainamRestClient : BaseLogReceiver
             if (!value.IsEmpty())
                 return value;
         }
+
         return null;
     }
 

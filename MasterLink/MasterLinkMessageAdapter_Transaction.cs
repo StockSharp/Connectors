@@ -215,6 +215,7 @@ public partial class MasterLinkMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId, cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -250,6 +251,7 @@ public partial class MasterLinkMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -336,6 +338,7 @@ public partial class MasterLinkMessageAdapter
         var left = filter?.Count ?? long.MaxValue;
         var orders = (await SafeClient().GetOrders(
             symbol, "All", cancellationToken)) ?? [];
+
         foreach (var order in orders.OrderBy(GetOrderTime))
         {
             if (!MatchesOrderFilter(order, filter))
@@ -352,6 +355,7 @@ public partial class MasterLinkMessageAdapter
         {
             var fills = (await SafeClient().GetFills(
                 symbol, cancellationToken)) ?? [];
+
             foreach (var fill in fills.OrderBy(GetFillTime))
             {
                 if (!MatchesFillFilter(fill, filter))
@@ -462,6 +466,7 @@ public partial class MasterLinkMessageAdapter
                 CurrencyTypes.TWD),
                 cancellationToken);
         }
+
         _lastPortfolioRefresh = CurrentTime;
     }
 

@@ -175,6 +175,7 @@ public partial class BYDFiMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_products.Clear();
+
 			foreach (var product in products ?? [])
 				if (product?.Symbol.IsEmpty() == false &&
 					product.Status.EqualsIgnoreCase("NORMAL"))

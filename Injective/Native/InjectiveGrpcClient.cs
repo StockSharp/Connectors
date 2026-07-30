@@ -168,8 +168,10 @@ sealed class InjectiveGrpcClient : BaseLogReceiver
 			states = [.. _streams.Values];
 			_streams.Clear();
 		}
+
 		foreach (var state in states)
 			state.Source.Cancel();
+
 		foreach (var state in states)
 		{
 			try
@@ -243,6 +245,7 @@ sealed class InjectiveGrpcClient : BaseLogReceiver
 	{
 		var descriptor = new Method<byte[], byte[]>(MethodType.ServerStreaming,
 			service, method, _marshaller, _marshaller);
+
 		for (var attempt = 0; !cancellationToken.IsCancellationRequested;
 			attempt++)
 		{
@@ -251,6 +254,7 @@ sealed class InjectiveGrpcClient : BaseLogReceiver
 				using var call = _invoker.AsyncServerStreamingCall(descriptor,
 					null, new CallOptions(cancellationToken: cancellationToken),
 					request);
+
 				while (await call.ResponseStream.MoveNext(cancellationToken))
 				{
 					attempt = 0;

@@ -160,6 +160,7 @@ public partial class BtcTurkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -180,12 +181,14 @@ public partial class BtcTurkMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -195,6 +198,7 @@ public partial class BtcTurkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -219,12 +223,14 @@ public partial class BtcTurkMessageAdapter
 			statusMsg.From, statusMsg.To, maximum, statusMsg,
 			cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -232,6 +238,7 @@ public partial class BtcTurkMessageAdapter
 		long originalTransactionId, CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(balance, originalTransactionId,
 				cancellationToken);
@@ -251,6 +258,7 @@ public partial class BtcTurkMessageAdapter
 				To = to,
 				Count = maximum,
 			}, cancellationToken);
+
 		foreach (var order in (orders ?? [])
 			.Where(order => MatchesOrder(order, filter, from, to))
 			.OrderBy(GetOrderTime).TakeLast(maximum))
@@ -264,6 +272,7 @@ public partial class BtcTurkMessageAdapter
 			From = from,
 			To = to,
 		}, cancellationToken);
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade => MatchesTrade(trade, filter, from, to))
 			.OrderBy(GetTradeTime).TakeLast(maximum))
@@ -294,9 +303,11 @@ public partial class BtcTurkMessageAdapter
 				_knownActiveOrderIds.Clear();
 			_knownActiveOrderIds.AddRange(currentIds);
 		}
+
 		foreach (var order in active.OrderBy(GetOrderTime))
 			await SendOrderAsync(order, originalTransactionId,
 				cancellationToken);
+
 		foreach (var orderId in removed)
 		{
 			try
@@ -318,6 +329,7 @@ public partial class BtcTurkMessageAdapter
 
 		var trades = await RestClient.GetTradesAsync(new(),
 			cancellationToken);
+
 		foreach (var trade in (trades ?? []).OrderBy(GetTradeTime))
 			await SendTradeAsync(trade, originalTransactionId, true,
 				cancellationToken);

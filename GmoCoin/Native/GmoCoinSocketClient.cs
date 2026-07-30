@@ -185,6 +185,7 @@ sealed class GmoCoinSocketClient : BaseLogReceiver
 				SubscriptionKey[] subscriptions;
 				using (_sync.EnterScope())
 					subscriptions = [.. _subscriptions];
+
 				foreach (var subscription in subscriptions)
 					await SendSubscriptionAsync(client, subscription, true,
 						cancellationToken);
@@ -365,6 +366,7 @@ sealed class GmoCoinSocketClient : BaseLogReceiver
 			while (true)
 			{
 				await Task.Delay(TimeSpan.FromMinutes(45), cancellationToken);
+
 				while (true)
 				{
 					try

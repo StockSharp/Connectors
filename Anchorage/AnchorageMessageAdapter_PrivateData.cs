@@ -8,6 +8,7 @@ public partial class AnchorageMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -18,6 +19,7 @@ public partial class AnchorageMessageAdapter
 		await RefreshReferenceDataAsync(cancellationToken);
 		var selected = SelectPortfolios(GetPortfolios(),
 			lookupMsg.PortfolioName);
+
 		foreach (var portfolio in selected)
 			await SendOutMessageAsync(new PortfolioMessage
 			{
@@ -26,6 +28,7 @@ public partial class AnchorageMessageAdapter
 				ClientCode = portfolio.Id,
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
+
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, true, selected,
 			cancellationToken);
 
@@ -36,6 +39,7 @@ public partial class AnchorageMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions[lookupMsg.TransactionId] = new()
 			{
@@ -50,6 +54,7 @@ public partial class AnchorageMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -94,6 +99,7 @@ public partial class AnchorageMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -118,12 +124,14 @@ public partial class AnchorageMessageAdapter
 		AnchorageWallet[] wallets;
 		using (_sync.EnterScope())
 			wallets = [.. _wallets.Values];
+
 		foreach (var portfolio in portfolios)
 		{
 			if (portfolio.Kind == PortfolioKinds.Trading)
 			{
 				var balances = await RestClient.GetTradingBalancesAsync(portfolio.Id,
 					cancellationToken);
+
 				foreach (var group in balances.Where(static item =>
 					item?.Balance?.AssetType.IsEmpty() == false).GroupBy(item =>
 						item.Balance.AssetType, StringComparer.OrdinalIgnoreCase))
@@ -144,6 +152,7 @@ public partial class AnchorageMessageAdapter
 					.Where(static asset => asset?.AssetType.IsEmpty() == false)
 					.GroupBy(static asset => asset.AssetType,
 						StringComparer.OrdinalIgnoreCase);
+
 				foreach (var group in assets)
 				{
 					var current = group.Sum(static asset =>
@@ -256,6 +265,7 @@ public partial class AnchorageMessageAdapter
 
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var order in orders.Where(item => Matches(subscription, item))
 			.OrderBy(static item => item.SubmitTime.ToAnchorageTime(
 				DateTime.UnixEpoch)))
@@ -272,10 +282,12 @@ public partial class AnchorageMessageAdapter
 			var trades = await RestClient.GetTradesAsync(subscription.From,
 				subscription.To, order.AccountId, order.Symbol, order.OrderId,
 				HistoryLimit, cancellationToken);
+
 			foreach (var trade in trades.OrderBy(static item =>
 				item.Timestamp.ToAnchorageTime(DateTime.UnixEpoch)))
 				await SendTradeAsync(trade, target, order, cancellationToken);
 		}
+
 		if (delivered < subscription.Maximum)
 		{
 			foreach (var transfer in transfers.Where(item =>
@@ -334,11 +346,13 @@ public partial class AnchorageMessageAdapter
 		{
 			await RefreshReferenceDataAsync(cancellationToken);
 			var portfolios = GetPortfolios();
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target.Key, false,
 					SelectPortfolios(portfolios, target.Value.PortfolioName),
 					cancellationToken);
 		}
+
 		foreach (var (id, localId) in activeOrders)
 		{
 			var order = await RestClient.GetTradingOrderAsync(id,
@@ -347,6 +361,7 @@ public partial class AnchorageMessageAdapter
 			await SendTradingOrderAsync(order, localId, false, cancellationToken,
 				null);
 		}
+
 		foreach (var (id, localId) in activeTransfers)
 		{
 			var transfer = await RestClient.GetTransferAsync(id,
@@ -355,6 +370,7 @@ public partial class AnchorageMessageAdapter
 			await SendTransferAsync(transfer, localId, false, cancellationToken,
 				null);
 		}
+
 		foreach (var (id, localId) in activeTransactions)
 		{
 			var transaction = await RestClient.GetTransactionAsync(id,
@@ -365,6 +381,7 @@ public partial class AnchorageMessageAdapter
 			await SendTransactionAsync(transaction, localId, false,
 				cancellationToken, null, operation);
 		}
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -397,6 +414,7 @@ public partial class AnchorageMessageAdapter
 		Dictionary<string, T> fingerprints, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in fingerprints.Keys.Where(key => key.StartsWith(prefix,
 			StringComparison.Ordinal)).ToArray())
 			fingerprints.Remove(key);

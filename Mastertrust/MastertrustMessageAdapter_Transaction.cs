@@ -176,6 +176,7 @@ public partial class MastertrustMessageAdapter
         CancellationToken cancellationToken)
     {
         await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -185,6 +186,7 @@ public partial class MastertrustMessageAdapter
 
         EnsurePortfolio(statusMsg.PortfolioName);
         var left = statusMsg.Count ?? long.MaxValue;
+
         foreach (var order in (await _restClient.GetOrders(cancellationToken))
             .Where(order => order != null)
             .OrderBy(GetOrderTime))
@@ -233,6 +235,7 @@ public partial class MastertrustMessageAdapter
         CancellationToken cancellationToken)
     {
         await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -276,6 +279,7 @@ public partial class MastertrustMessageAdapter
                 isLookup,
                 cancellationToken);
         }
+
         foreach (var trade in await _restClient.GetTrades(cancellationToken))
         {
             await ProcessTrade(

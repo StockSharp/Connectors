@@ -9,6 +9,7 @@ public partial class BenzingaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -36,6 +37,7 @@ public partial class BenzingaMessageAdapter
 		var types = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var quote in response?.Quotes ?? [])
 		{
 			if (left <= 0)
@@ -52,6 +54,7 @@ public partial class BenzingaMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -60,6 +63,7 @@ public partial class BenzingaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -92,6 +96,7 @@ public partial class BenzingaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -122,6 +127,7 @@ public partial class BenzingaMessageAdapter
 		var response = responses.FirstOrDefault(value =>
 			value?.Symbol.EqualsIgnoreCase(key.Symbol) == true) ?? responses.FirstOrDefault();
 		var parsed = new List<ParsedCandle>();
+
 		foreach (var candle in response?.Candles ?? [])
 		{
 			if (candle == null || candle.Open == null || candle.High == null ||
@@ -162,6 +168,7 @@ public partial class BenzingaMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 
@@ -170,6 +177,7 @@ public partial class BenzingaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveLiveSubscription(mdMsg.OriginalTransactionId);
@@ -205,6 +213,7 @@ public partial class BenzingaMessageAdapter
 		{
 			var target = checked((int)Math.Min(remaining ?? MaxNewsItems, MaxNewsItems));
 			var items = await GetNewsHistory(symbol, from, to, target, cancellationToken);
+
 			foreach (var entry in items)
 			{
 				await SendNews(mdMsg.TransactionId, requestedSecurityId, entry.Item,
@@ -332,11 +341,13 @@ public partial class BenzingaMessageAdapter
 		var pageSize = Math.Min(100, Math.Max(1, target));
 		var maximumPages = Math.Min(100001,
 			Math.Max(10, (target + pageSize - 1) / pageSize + 10));
+
 		for (var page = 0; page < maximumPages && values.Count < target; page++)
 		{
 			var response = await SafeRest().GetNews(symbol, NewsChannels, from, to,
 				page, pageSize, cancellationToken) ?? [];
 			var previousIdCount = ids.Count;
+
 			foreach (var item in response)
 			{
 				if (item == null || item.Id is not { } id || !ids.Add(id) ||
@@ -347,6 +358,7 @@ public partial class BenzingaMessageAdapter
 				}
 				values.Add((item, time));
 			}
+
 			if (response.Length < pageSize || ids.Count == previousIdCount)
 				break;
 			if (values.Count < target)

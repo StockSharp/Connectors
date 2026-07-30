@@ -129,6 +129,7 @@ public partial class SunIoMessageAdapter
 		var result = new List<SunIoMarketDefinition>();
 		var addresses = new HashSet<string>(StringComparer.Ordinal);
 		var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var item in Markets.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -158,6 +159,7 @@ public partial class SunIoMessageAdapter
 				SecurityCode = code,
 			});
 		}
+
 		if (result.Count > 100)
 			throw new FormatException(
 				"SUN.io market configuration cannot exceed 100 tokens.");
@@ -168,6 +170,7 @@ public partial class SunIoMessageAdapter
 		SunIoMarketDefinition[] definitions)
 	{
 		var tokens = new Dictionary<string, SunIoToken>(StringComparer.Ordinal);
+
 		foreach (var token in source ?? [])
 		{
 			if (token is null || token.Address.IsEmpty())
@@ -178,6 +181,7 @@ public partial class SunIoMessageAdapter
 				throw new InvalidDataException(
 					$"SUN.io returned duplicate token '{token.Address}'.");
 		}
+
 		if (!tokens.TryGetValue(SunIoExtensions.NativeTrxAddress,
 			out _trxToken))
 			throw new InvalidDataException(
@@ -211,6 +215,7 @@ public partial class SunIoMessageAdapter
 			StringComparer.OrdinalIgnoreCase).ToDictionary(static group =>
 				group.Key, static group => group.Count(),
 				StringComparer.OrdinalIgnoreCase);
+
 		foreach (var item in selected)
 		{
 			var suffix = symbolCounts[item.Token.Symbol] == 1
@@ -257,6 +262,7 @@ public partial class SunIoMessageAdapter
 				.. _marketsByAddress.Keys];
 		var tokens = await ApiClient.GetTokensAsync(addresses,
 			cancellationToken);
+
 		foreach (var token in tokens)
 		{
 			if (token is null || token.Address.IsEmpty())

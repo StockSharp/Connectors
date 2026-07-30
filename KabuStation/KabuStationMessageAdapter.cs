@@ -142,6 +142,7 @@ public partial class KabuStationMessageAdapter
 	{
 		if (!reconnect || _rest == null)
 			return;
+
 		foreach (var security in _registeredSecurities.Values.ToArray())
 			await _rest.Register(security, cancellationToken);
 	}

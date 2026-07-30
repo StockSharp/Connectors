@@ -213,6 +213,7 @@ public partial class MercadoBitcoinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -222,6 +223,7 @@ public partial class MercadoBitcoinMessageAdapter
 		}
 
 		var accounts = GetSelectedAccounts(lookupMsg.PortfolioName);
+
 		foreach (var account in accounts)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -233,13 +235,16 @@ public partial class MercadoBitcoinMessageAdapter
 			await SendBalanceSnapshotAsync(account, lookupMsg.TransactionId,
 				true, cancellationToken);
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions[lookupMsg.TransactionId] =
 				[.. accounts.Select(static value => value.Id)];
@@ -251,6 +256,7 @@ public partial class MercadoBitcoinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -303,6 +309,7 @@ public partial class MercadoBitcoinMessageAdapter
 						CreatedAtFrom = from?.ToUnixSeconds(),
 						CreatedAtTo = to?.ToUnixSeconds(),
 					}, cancellationToken);
+
 				foreach (var order in (orders ?? []).Take(maximum))
 					await SendOrderAsync(account, order,
 						statusMsg.TransactionId, true, cancellationToken);
@@ -313,6 +320,7 @@ public partial class MercadoBitcoinMessageAdapter
 				{
 					Size = maximum,
 				}, cancellationToken);
+
 				foreach (var order in page?.Items ?? [])
 				{
 					if (statusMsg.Side is not null &&
@@ -325,12 +333,14 @@ public partial class MercadoBitcoinMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -458,9 +468,11 @@ public partial class MercadoBitcoinMessageAdapter
 				{
 					Side = subscription.Side?.ToMercadoBitcoin(),
 				}, cancellationToken);
+
 			foreach (var order in orders ?? [])
 				await SendOrderAsync(account, order, originalTransactionId, false,
 					cancellationToken);
+
 			return;
 		}
 
@@ -468,6 +480,7 @@ public partial class MercadoBitcoinMessageAdapter
 		{
 			Size = 500,
 		}, cancellationToken);
+
 		foreach (var order in page?.Items ?? [])
 		{
 			if (subscription.Side is not null &&
@@ -484,6 +497,7 @@ public partial class MercadoBitcoinMessageAdapter
 	{
 		var balances = await RestClient.GetBalancesAsync(account.Id,
 			cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(account, balance, originalTransactionId,
 				force, cancellationToken);
@@ -561,6 +575,7 @@ public partial class MercadoBitcoinMessageAdapter
 			foreach (var execution in order.Executions ?? [])
 				await SendAccountTradeAsync(account, order, execution,
 					originalTransactionId, cancellationToken);
+
 			return;
 		}
 

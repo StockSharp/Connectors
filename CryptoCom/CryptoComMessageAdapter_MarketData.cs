@@ -7,10 +7,12 @@ public partial class CryptoComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in await RestClient.GetInstrumentsAsync(cancellationToken))
 		{
 			if (instrument?.Symbol.IsEmpty() != false || !instrument.IsTradable)
@@ -72,6 +74,7 @@ public partial class CryptoComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -86,6 +89,7 @@ public partial class CryptoComMessageAdapter
 			await SendTickerAsync(ticker, symbol, mdMsg.TransactionId, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -109,6 +113,7 @@ public partial class CryptoComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -124,6 +129,7 @@ public partial class CryptoComMessageAdapter
 			QuoteChangeStates.SnapshotComplete, mdMsg.TransactionId, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -152,6 +158,7 @@ public partial class CryptoComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -165,6 +172,7 @@ public partial class CryptoComMessageAdapter
 			mdMsg.Count, cancellationToken);
 		string lastTradeId = null;
 		var lastTime = mdMsg.From ?? default;
+
 		foreach (var trade in trades)
 		{
 			await SendPublicTradeAsync(trade, symbol, mdMsg.TransactionId, cancellationToken);
@@ -173,6 +181,7 @@ public partial class CryptoComMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -201,6 +210,7 @@ public partial class CryptoComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -214,6 +224,7 @@ public partial class CryptoComMessageAdapter
 		var candles = await LoadCandlesAsync(symbol, timeFrame, mdMsg.From,
 			mdMsg.To ?? DateTime.UtcNow, mdMsg.Count, cancellationToken);
 		var lastOpenTime = mdMsg.From ?? default;
+
 		foreach (var candle in candles)
 		{
 			await SendCandleAsync(candle, symbol, timeFrame, mdMsg.TransactionId, cancellationToken);
@@ -221,6 +232,7 @@ public partial class CryptoComMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -322,6 +334,7 @@ public partial class CryptoComMessageAdapter
 				break;
 
 			var minimum = cursor;
+
 			foreach (var trade in batch)
 			{
 				var time = trade.Time.FromUnix(false);
@@ -361,6 +374,7 @@ public partial class CryptoComMessageAdapter
 				break;
 
 			var minimum = batch.Min(static candle => candle.OpenTime);
+
 			foreach (var candle in batch)
 			{
 				var openTime = candle.OpenTime.FromUnix(false);
@@ -415,6 +429,7 @@ public partial class CryptoComMessageAdapter
 					await SendBookAsync(subscription.Value.Symbol, item.Bids, item.Asks, item.Time,
 						item.Sequence, QuoteChangeStates.SnapshotComplete, subscription.Key, cancellationToken);
 				}
+
 				continue;
 			}
 
@@ -424,8 +439,10 @@ public partial class CryptoComMessageAdapter
 			{
 				this.AddWarningLog("Crypto.com order-book sequence gap on {0}: previous={1}, expected={2}.",
 					result.Subscription, item.PreviousSequence, subscriptions.First().Value.LastSequence);
+
 				foreach (var subscription in subscriptions)
 					subscription.Value.LastSequence = 0;
+
 				await MarketWsClient.ResubscribeAsync(result.Subscription, cancellationToken);
 				return;
 			}
@@ -450,6 +467,7 @@ public partial class CryptoComMessageAdapter
 				subscriptions = [.. _tickSubscriptions.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(symbol))];
 
 			var time = trade.Time.FromUnix(false);
+
 			foreach (var subscription in subscriptions)
 			{
 				var state = subscription.Value;

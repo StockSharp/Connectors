@@ -10,6 +10,7 @@ public partial class NDAXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -21,6 +22,7 @@ public partial class NDAXMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in instruments.OrderBy(static value =>
 			value.Symbol, StringComparer.OrdinalIgnoreCase))
 		{
@@ -48,6 +50,7 @@ public partial class NDAXMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -57,6 +60,7 @@ public partial class NDAXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -108,6 +112,7 @@ public partial class NDAXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -165,6 +170,7 @@ public partial class NDAXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -185,6 +191,7 @@ public partial class NDAXMessageAdapter
 			var trades = await RestClient.GetTradesAsync(instrument.Symbol,
 				cancellationToken);
 			var maximum = (mdMsg.Count ?? 1000).Min(5000).Max(1).To<int>();
+
 			foreach (var trade in (trades ?? [])
 				.Where(trade => trade is not null &&
 					(mdMsg.From is null || trade.Timestamp >=
@@ -230,6 +237,7 @@ public partial class NDAXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -253,6 +261,7 @@ public partial class NDAXMessageAdapter
 			to.AddPeriods(timeFrame, -maximum);
 		var candles = await LoadCandlesAsync(instrument, timeFrame, from, to,
 			maximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(instrument, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
@@ -368,6 +377,7 @@ public partial class NDAXMessageAdapter
 			targets = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.InstrumentId == level1.InstrumentId).Select(
 				static pair => pair.Key)];
+
 		foreach (var target in targets)
 			await SendLevel1Async(level1, target, cancellationToken);
 	}
@@ -435,6 +445,7 @@ public partial class NDAXMessageAdapter
 			if (isSnapshot)
 			{
 				state.Levels.Clear();
+
 				foreach (var group in entries.Where(static entry =>
 					entry.Price > 0 && entry.Quantity > 0 &&
 					entry.Side is NdaxSides.Buy or NdaxSides.Sell)
@@ -443,6 +454,7 @@ public partial class NDAXMessageAdapter
 					state.Levels[group.Key] = new(
 						group.Sum(static entry => entry.Quantity),
 						group.Sum(static entry => entry.OrderCount));
+
 				state.IsSnapshotReady = true;
 				state.IsRefreshPending = false;
 				state.Sequence = sequence;
@@ -453,6 +465,7 @@ public partial class NDAXMessageAdapter
 			{
 				if (!state.IsSnapshotReady)
 					return;
+
 				foreach (var entry in entries.OrderBy(static value =>
 					value.UpdateId))
 				{
@@ -469,6 +482,7 @@ public partial class NDAXMessageAdapter
 						state.Levels[key] = new(entry.Quantity,
 							entry.OrderCount);
 				}
+
 				bids = GetChangedBookSide(state, changed, Sides.Buy);
 				asks = GetChangedBookSide(state, changed, Sides.Sell);
 			}
@@ -482,6 +496,7 @@ public partial class NDAXMessageAdapter
 		var serverTime = entries.Select(static entry =>
 			entry.Timestamp.FromNdaxTime()).Where(static value =>
 			value != default).DefaultIfEmpty(CurrentTime).Max();
+
 		foreach (var target in targets)
 			await SendOutMessageAsync(new QuoteChangeMessage
 			{
@@ -520,8 +535,10 @@ public partial class NDAXMessageAdapter
 			}
 			received = fresh.Length > 0 ? fresh[0] : expected;
 			var hasGap = last > 0 && received > expected;
+
 			for (var i = 1; !hasGap && i < fresh.Length; i++)
 				hasGap = fresh[i] > fresh[i - 1] + 1;
+
 			if (hasGap)
 			{
 				state.IsSnapshotReady = false;
@@ -582,6 +599,7 @@ public partial class NDAXMessageAdapter
 		bool isSnapshot, CancellationToken cancellationToken)
 	{
 		_ = isSnapshot;
+
 		foreach (var trade in (trades ?? []).Where(static value =>
 			value is not null).OrderBy(static value => value.Timestamp))
 		{
@@ -593,6 +611,7 @@ public partial class NDAXMessageAdapter
 				targets = [.. _tickSubscriptions.Where(pair =>
 					pair.Value.InstrumentId == trade.InstrumentId).Select(
 					static pair => pair.Key)];
+
 			foreach (var target in targets)
 				await SendPublicTradeAsync(instrument, trade, target,
 					cancellationToken);
@@ -603,6 +622,7 @@ public partial class NDAXMessageAdapter
 		bool isSnapshot, CancellationToken cancellationToken)
 	{
 		_ = isSnapshot;
+
 		foreach (var candle in candles ?? [])
 		{
 			if (candle is null)
@@ -630,6 +650,7 @@ public partial class NDAXMessageAdapter
 					instrument.Symbol);
 				continue;
 			}
+
 			foreach (var target in targets)
 				await SendCandleAsync(instrument, candle, target.TimeFrame,
 					target.Id, cancellationToken);
@@ -760,6 +781,7 @@ public partial class NDAXMessageAdapter
 		var result = new List<NdaxCandle>();
 		var cursor = from.ToUtcTime();
 		var upperBound = to.ToUtcTime();
+
 		while (result.Count < maximum && cursor < upperBound)
 		{
 			var pageSize = (maximum - result.Count).Min(1000).Max(1);
@@ -775,6 +797,7 @@ public partial class NDAXMessageAdapter
 				break;
 			cursor = windowEnd;
 		}
+
 		return [.. result.GroupBy(static candle =>
 				candle.PreviousTimestamp > 0
 					? candle.PreviousTimestamp

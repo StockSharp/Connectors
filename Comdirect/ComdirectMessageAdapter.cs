@@ -173,6 +173,7 @@ public partial class ComdirectMessageAdapter
         var depots = await Rest.GetDepots(cancellationToken);
         _depotsByName.Clear();
         _depotsById.Clear();
+
         foreach (var depot in depots)
         {
             if (depot?.DepotId.IsEmpty() != false)
@@ -222,6 +223,7 @@ public partial class ComdirectMessageAdapter
     {
         if (instrument is null)
             return;
+
         foreach (var alias in aliases.Append(instrument.InstrumentId)
             .Append(instrument.Wkn).Append(instrument.Isin)
             .Append(instrument.Mnemonic).Where(a => !a.IsEmpty()))

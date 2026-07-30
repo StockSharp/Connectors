@@ -240,6 +240,7 @@ sealed class DeepcoinPrivateWsClient : BaseLogReceiver
 	{
 		if (handler is null)
 			return;
+
 		foreach (var item in result ?? [])
 		{
 			if (item is not null && item.Data is not null)

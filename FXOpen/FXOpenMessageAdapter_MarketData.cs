@@ -7,6 +7,7 @@ public partial class FXOpenMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
@@ -66,6 +67,7 @@ public partial class FXOpenMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			this.AddDebugLog("FXOpen unsubscribing feed transaction {0}.",
@@ -93,6 +95,7 @@ public partial class FXOpenMessageAdapter
 				cancellationToken);
 			this.AddDebugLog("FXOpen loaded {0} historical {1} records for {2}.",
 				history.Length, dataType, symbol);
+
 			foreach (var tick in history)
 				await SendFeed(mdMsg.TransactionId, dataType, depth, tick, cancellationToken);
 		}
@@ -204,6 +207,7 @@ public partial class FXOpenMessageAdapter
 		{
 			var from = requestedFrom.EnsureUtc();
 			var cursor = from;
+
 			while (cursor <= to && loaded < requested)
 			{
 				var pageSize = (int)Math.Min(1000, requested - loaded);
@@ -223,6 +227,7 @@ public partial class FXOpenMessageAdapter
 		else
 		{
 			var cursor = to;
+
 			while (loaded < requested)
 			{
 				var pageSize = (int)Math.Min(1000, requested - loaded);
@@ -249,6 +254,7 @@ public partial class FXOpenMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			this.AddDebugLog("FXOpen unsubscribing candle transaction {0}.",
@@ -284,6 +290,7 @@ public partial class FXOpenMessageAdapter
 				cancellationToken);
 			this.AddDebugLog("FXOpen loaded {0} historical bars for {1} {2} {3}.",
 				bars.Length, symbol, periodicity, priceType);
+
 			foreach (var bar in bars)
 			{
 				await SendOutMessageAsync(new TimeFrameCandleMessage
@@ -371,6 +378,7 @@ public partial class FXOpenMessageAdapter
 		if (_webSocketClient is null)
 			return;
 		await _webSocketClient.UnsubscribeBarsAsync(removed.Symbol, cancellationToken);
+
 		foreach (var item in remaining)
 			await _webSocketClient.SubscribeBarAsync(item.Symbol, item.TimeFrame.ToNative(),
 				item.PriceType, cancellationToken);
@@ -390,18 +398,21 @@ public partial class FXOpenMessageAdapter
 		{
 			var from = requestedFrom.EnsureUtc();
 			var cursor = from;
+
 			while (cursor <= to && result.Count < requested)
 			{
 				var pageSize = (int)Math.Min(1000, requested - result.Count);
 				var page = await RestClient.GetBarsAsync(symbol, periodicity, priceType, cursor,
 					pageSize, cancellationToken);
 				var bars = page?.Bars ?? [];
+
 				foreach (var bar in bars)
 				{
 					var time = bar.Timestamp.EnsureUtc();
 					if (time >= from && time <= to)
 						result[time] = bar;
 				}
+
 				if (bars.Length < pageSize)
 					break;
 				var next = bars.Max(static bar => bar.Timestamp).EnsureUtc().AddMilliseconds(1);
@@ -413,14 +424,17 @@ public partial class FXOpenMessageAdapter
 		else
 		{
 			var cursor = to;
+
 			while (result.Count < requested)
 			{
 				var pageSize = (int)Math.Min(1000, requested - result.Count);
 				var page = await RestClient.GetBarsAsync(symbol, periodicity, priceType, cursor,
 					-pageSize, cancellationToken);
 				var bars = page?.Bars ?? [];
+
 				foreach (var bar in bars)
 					result[bar.Timestamp.EnsureUtc()] = bar;
+
 				if (bars.Length < pageSize)
 					break;
 				var next = bars.Min(static bar => bar.Timestamp).EnsureUtc().AddMilliseconds(-1);
@@ -442,6 +456,7 @@ public partial class FXOpenMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _feedSubscriptions.Where(pair =>
 					pair.Value.Symbol.EqualsIgnoreCase(tick.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendFeed(pair.Key, pair.Value.DataType, pair.Value.Depth, tick,
 				cancellationToken);
@@ -484,6 +499,7 @@ public partial class FXOpenMessageAdapter
 	{
 		if (result?.SymbolAlias.IsEmpty() != false)
 			return;
+
 		foreach (var update in result.Updates ?? [])
 		{
 			var timeFrame = update.Periodicity.ToTimeFrame();
@@ -498,6 +514,7 @@ public partial class FXOpenMessageAdapter
 			var openTime = update.Timestamp.EnsureUtc();
 			var close = update.Close ?? (update.PriceType == TickTraderPriceTypes.Bid
 				? result.BidClose : result.AskClose) ?? update.Open;
+
 			foreach (var pair in subscriptions)
 			{
 				await SendOutMessageAsync(new TimeFrameCandleMessage

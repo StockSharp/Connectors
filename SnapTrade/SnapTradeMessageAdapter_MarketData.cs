@@ -16,6 +16,7 @@ public partial class SnapTradeMessageAdapter
 		CacheSymbols(symbols);
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? 20);
+
 		foreach (var symbol in symbols)
 		{
 			if (symbol?.Symbol.IsEmpty() != false)
@@ -37,6 +38,7 @@ public partial class SnapTradeMessageAdapter
 			await SendOutMessageAsync(message, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -45,6 +47,7 @@ public partial class SnapTradeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_level1Subscriptions.Remove(message.OriginalTransactionId);
@@ -86,11 +89,13 @@ public partial class SnapTradeMessageAdapter
 		_quoteCursor = (start + count) % symbols.Length;
 		var quotes = await _client.GetQuotes(ResolvePortfolio(null), batch,
 			cancellationToken) ?? [];
+
 		foreach (var quote in quotes)
 		{
 			if (quote?.Symbol == null)
 				continue;
 			CacheSymbols([quote.Symbol]);
+
 			foreach (var pair in subscriptions.Where(pair =>
 				pair.Value.SecurityCode.EqualsIgnoreCase(quote.Symbol.Symbol) ||
 				pair.Value.SecurityCode.EqualsIgnoreCase(quote.Symbol.RawSymbol)))

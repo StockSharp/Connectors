@@ -7,6 +7,7 @@ public partial class BloFinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -49,6 +50,7 @@ public partial class BloFinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -63,6 +65,7 @@ public partial class BloFinMessageAdapter
 			throw new InvalidDataException($"BloFin returned no ticker for '{symbol}'.");
 		await SendTickerAsync(ticker, mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -85,6 +88,7 @@ public partial class BloFinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -102,6 +106,7 @@ public partial class BloFinMessageAdapter
 		await SendBookAsync(book, QuoteChangeStates.SnapshotComplete, symbol,
 			mdMsg.TransactionId, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -130,6 +135,7 @@ public partial class BloFinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -141,6 +147,7 @@ public partial class BloFinMessageAdapter
 		var from = mdMsg.From?.ToUniversalTime() ?? DateTime.MinValue;
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var limit = (mdMsg.Count ?? 100).Min(100).Max(1).To<int>();
+
 		foreach (var trade in (await RestClient.GetTradesAsync(symbol, limit, cancellationToken) ?? [])
 			.Where(trade => trade.Timestamp > 0 && trade.Timestamp.ToUtcTime() >= from &&
 				trade.Timestamp.ToUtcTime() <= to)
@@ -148,6 +155,7 @@ public partial class BloFinMessageAdapter
 			await SendTradeAsync(trade, mdMsg.TransactionId, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -170,6 +178,7 @@ public partial class BloFinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -186,10 +195,12 @@ public partial class BloFinMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * requestedCount);
 		var candles = await LoadCandlesAsync(symbol, interval, from, to, requestedCount,
 			cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(symbol, candle, timeFrame, mdMsg.TransactionId, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -219,6 +230,7 @@ public partial class BloFinMessageAdapter
 		var candles = new List<BloFinCandle>();
 		var timestamps = new HashSet<long>();
 		var cursor = to.ToUnixMilliseconds() + 1;
+
 		while (candles.Count < requestedCount)
 		{
 			var limit = (requestedCount - candles.Count).Min(1440).Max(1);
@@ -231,17 +243,20 @@ public partial class BloFinMessageAdapter
 			}, cancellationToken) ?? [];
 			if (page.Length == 0)
 				break;
+
 			foreach (var candle in page)
 			{
 				var time = candle.Timestamp.ToUtcTime();
 				if (time >= from && time <= to && timestamps.Add(candle.Timestamp))
 					candles.Add(candle);
 			}
+
 			var earliest = page.Min(static candle => candle.Timestamp);
 			if (earliest <= from.ToUnixMilliseconds() || earliest >= cursor || page.Length < limit)
 				break;
 			cursor = earliest;
 		}
+
 		return [.. candles.OrderBy(static candle => candle.Timestamp).TakeLast(requestedCount)];
 	}
 
@@ -316,6 +331,7 @@ public partial class BloFinMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.InstrumentId.EqualsIgnoreCase(ticker.InstrumentId))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendTickerAsync(ticker, id, cancellationToken);
 	}
@@ -329,6 +345,7 @@ public partial class BloFinMessageAdapter
 				.Where(pair => (pair.Value.IsFiveLevels ? "books5" : "books") == channel)
 				.Where(pair => pair.Value.InstrumentId.EqualsIgnoreCase(instrumentId))
 				.Select(static pair => (pair.Key, pair.Value.InstrumentId, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendBookAsync(book, state, subscription.Symbol, subscription.Id,
 				state == QuoteChangeStates.Increment ? int.MaxValue : subscription.Depth,
@@ -343,6 +360,7 @@ public partial class BloFinMessageAdapter
 			ids = [.. _tickSubscriptions
 				.Where(pair => pair.Value.InstrumentId.EqualsIgnoreCase(trade.InstrumentId))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendTradeAsync(trade, id, cancellationToken);
 	}
@@ -356,6 +374,7 @@ public partial class BloFinMessageAdapter
 				.Where(pair => ("candle" + pair.Value.TimeFrame.ToBloFinInterval().ToBloFin()) == channel)
 				.Where(pair => pair.Value.InstrumentId.EqualsIgnoreCase(instrumentId))
 				.Select(static pair => (pair.Key, pair.Value.InstrumentId, pair.Value.TimeFrame))];
+
 		foreach (var subscription in subscriptions)
 			await SendCandleAsync(subscription.Symbol, candle, subscription.TimeFrame,
 				subscription.Id, cancellationToken);

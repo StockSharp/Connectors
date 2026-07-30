@@ -8,6 +8,7 @@ partial class TradingTechnologiesMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var query = message.SecurityId.SecurityCode;
 		if (query.IsEmpty())
 		{
@@ -70,6 +71,7 @@ partial class TradingTechnologiesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var client = EnsureClient();
 
 		if (!message.IsSubscribe)

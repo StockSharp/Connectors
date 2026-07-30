@@ -90,8 +90,10 @@ public partial class LsSecuritiesMessageAdapter
 			_stream.OrderReceived += ProcessRealtimeOrder;
 			_stream.Error += SendOutErrorAsync;
 			_stream.StateChanged += SendOutConnectionStateAsync;
+
 			foreach (var code in new[] { "SC0", "SC1", "SC2", "SC3", "SC4" })
 				await _stream.Subscribe(code, string.Empty, true, cancellationToken);
+
 			await _stream.Connect(cancellationToken);
 			await base.ConnectAsync(connectMsg, cancellationToken);
 		}
@@ -156,6 +158,7 @@ public partial class LsSecuritiesMessageAdapter
 	{
 		if (_instruments.Count > 0)
 			return;
+
 		foreach (var instrument in await GetRest().GetInstruments(cancellationToken))
 			CacheInstrument(instrument);
 	}

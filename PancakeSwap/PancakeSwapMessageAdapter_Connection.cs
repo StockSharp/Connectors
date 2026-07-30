@@ -46,6 +46,7 @@ public partial class PancakeSwapMessageAdapter
 					"Configured PancakeSwap market definitions are invalid.",
 					error);
 			}
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -67,6 +68,7 @@ public partial class PancakeSwapMessageAdapter
 				PancakeSwapGraphClient>[] graphClients;
 			using (_sync.EnterScope())
 				graphClients = [.. _graphClients];
+
 			foreach (var graph in graphClients)
 			{
 				try
@@ -328,6 +330,7 @@ public partial class PancakeSwapMessageAdapter
 				Markets.EqualsIgnoreCase(_defaultMarkets)))
 			return [];
 		var result = new List<PancakeSwapMarketDefinition>();
+
 		foreach (var item in Markets.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -355,6 +358,7 @@ public partial class PancakeSwapMessageAdapter
 				Fee = fee,
 			});
 		}
+
 		return [.. result];
 	}
 
@@ -411,8 +415,10 @@ public partial class PancakeSwapMessageAdapter
 			graphClients = [.. _graphClients.Values];
 			_graphClients.Clear();
 		}
+
 		foreach (var graphClient in graphClients)
 			graphClient.Dispose();
+
 		_rpcClient?.Dispose();
 		_rpcClient = null;
 		ClearState();

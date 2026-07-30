@@ -158,6 +158,7 @@ public partial class Trading212MessageAdapter
 		await Task.WhenAll(exchangesTask, instrumentsTask);
 
 		_scheduleExchanges.Clear();
+
 		foreach (var exchange in await exchangesTask ?? [])
 		{
 			foreach (var schedule in exchange?.WorkingSchedules ?? [])
@@ -168,11 +169,13 @@ public partial class Trading212MessageAdapter
 		}
 
 		_instruments.Clear();
+
 		foreach (var instrument in await instrumentsTask ?? [])
 		{
 			if (instrument?.Ticker.IsEmpty() == false)
 				_instruments[instrument.Ticker] = instrument;
 		}
+
 		_lastMetadataRefresh = CurrentTime;
 	}
 

@@ -200,10 +200,12 @@ public partial class IndependentReserveMessageAdapter
 		IEnumerable<string> secondaryCurrencies)
 	{
 		var markets = new List<MarketDefinition>();
+
 		foreach (var primary in primaryCurrencies ?? [])
 		{
 			if (primary?.Currency.IsEmpty() != false || !primary.IsTradeEnabled)
 				continue;
+
 			foreach (var secondaryValue in secondaryCurrencies ?? [])
 			{
 				if (secondaryValue.IsEmpty())
@@ -229,8 +231,10 @@ public partial class IndependentReserveMessageAdapter
 		{
 			_markets.Clear();
 			_primaryMarkets.Clear();
+
 			foreach (var market in markets)
 				_markets[market.Symbol] = market;
+
 			foreach (var group in markets.GroupBy(static value =>
 				value.PrimaryCurrency, StringComparer.OrdinalIgnoreCase))
 				_primaryMarkets[group.Key] = [.. group];
@@ -343,6 +347,7 @@ public partial class IndependentReserveMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (!order.ExchangeOrderId.IsEmpty())
 				_trackedOrders[order.ExchangeOrderId] = order;
 			if (!order.ClientOrderId.IsEmpty())

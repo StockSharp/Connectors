@@ -8,6 +8,7 @@ public partial class VALRMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class VALRMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -44,6 +46,7 @@ public partial class VALRMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -52,6 +55,7 @@ public partial class VALRMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -112,6 +116,7 @@ public partial class VALRMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -174,6 +179,7 @@ public partial class VALRMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -197,6 +203,7 @@ public partial class VALRMessageAdapter
 			StartTime = from,
 			EndTime = mdMsg.To is null ? null : to,
 		}, cancellationToken);
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade => trade is not null &&
 				(from is null || trade.TradedAt.ToVALRTime(DateTime.MinValue) >= from) &&
@@ -242,6 +249,7 @@ public partial class VALRMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -270,6 +278,7 @@ public partial class VALRMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await DownloadCandlesAsync(market, period, timeFrame,
 			from, to, count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
@@ -346,6 +355,7 @@ public partial class VALRMessageAdapter
 	{
 		var values = new SortedDictionary<DateTime, VALRCandle>();
 		var cursor = to;
+
 		while (values.Count < count && cursor >= from)
 		{
 			var pageCount = (count - values.Count).Min(300).Max(1);
@@ -360,6 +370,7 @@ public partial class VALRMessageAdapter
 				EndTime = new DateTimeOffset(cursor).ToUnixTimeSeconds(),
 				Limit = pageCount,
 			}, cancellationToken);
+
 			foreach (var candle in page ?? [])
 			{
 				if (candle is null)
@@ -368,10 +379,12 @@ public partial class VALRMessageAdapter
 				if (openTime >= from && openTime <= to)
 					values[openTime] = candle;
 			}
+
 			if (pageFrom <= from || page is not { Length: > 0 })
 				break;
 			cursor = pageFrom.AddSeconds(-1);
 		}
+
 		return [.. values.Values.TakeLast(count)];
 	}
 
@@ -441,6 +454,7 @@ public partial class VALRMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var subscription in subscriptions)
 			await SendMarketSummaryAsync(market, update.Data, subscription.Key,
 				cancellationToken);
@@ -456,6 +470,7 @@ public partial class VALRMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var subscription in subscriptions)
 			await SendBookAsync(market, update.Data, subscription.Value.Depth,
 				subscription.Key, cancellationToken);
@@ -471,6 +486,7 @@ public partial class VALRMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var subscription in subscriptions)
 			await SendPublicTradeAsync(market, update.Data, subscription.Key,
 				cancellationToken);
@@ -486,6 +502,7 @@ public partial class VALRMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _candleSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var subscription in subscriptions)
 			await SendCandleAsync(market, update.Data,
 				subscription.Value.TimeFrame, subscription.Key, cancellationToken);

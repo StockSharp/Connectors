@@ -8,6 +8,7 @@ public partial class KalshiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		if (securityTypes.Count > 0 &&
@@ -55,6 +56,7 @@ public partial class KalshiMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in markets
 			.Where(static market => market?.Ticker.IsEmpty() == false)
 			.OrderBy(static market => market.Ticker,
@@ -75,6 +77,7 @@ public partial class KalshiMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -83,6 +86,7 @@ public partial class KalshiMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -108,6 +112,7 @@ public partial class KalshiMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -133,6 +138,7 @@ public partial class KalshiMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -160,6 +166,7 @@ public partial class KalshiMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -187,6 +194,7 @@ public partial class KalshiMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -212,17 +220,20 @@ public partial class KalshiMessageAdapter
 		// order-book subscriptions start from their snapshots
 		var trades = await RestClient.GetTradesAsync(market.Ticker, from, to,
 			maximum, cancellationToken);
+
 		foreach (var trade in trades
 			.Where(static trade => trade?.TradeId.IsEmpty() == false)
 			.OrderBy(static trade => trade.CreatedTime.TryParseKalshiTime() ??
 				DateTime.UnixEpoch))
 			await SendTickAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -248,6 +259,7 @@ public partial class KalshiMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -275,6 +287,7 @@ public partial class KalshiMessageAdapter
 		var period = timeFrame.TotalMinutes.To<int>();
 		var candles = await RestClient.GetCandlesticksAsync(market.Ticker,
 			from, to, period, cancellationToken);
+
 		foreach (var candle in candles.OrderBy(static candle => candle.EndTime)
 			.TakeLast(maximum))
 		{
@@ -311,6 +324,7 @@ public partial class KalshiMessageAdapter
 				State = CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 	}
 
@@ -509,6 +523,7 @@ public partial class KalshiMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Values.Where(subscription =>
 				subscription.Ticker.Equals(market.Ticker,
 					StringComparison.OrdinalIgnoreCase))];
+
 		foreach (var subscription in subscriptions)
 			await SendDepthAsync(market, state, subscription.TransactionId,
 				subscription.Depth, cancellationToken);
@@ -534,6 +549,7 @@ public partial class KalshiMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Values.Where(subscription =>
 				subscription.Ticker.Equals(market.Ticker,
 					StringComparison.OrdinalIgnoreCase))];
+
 		foreach (var subscription in subscriptions)
 			await SendLevel1Async(market, subscription.TransactionId, time,
 				cancellationToken);
@@ -553,6 +569,7 @@ public partial class KalshiMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Values.Where(subscription =>
 				subscription.Ticker.Equals(market.Ticker,
 					StringComparison.OrdinalIgnoreCase))];
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{

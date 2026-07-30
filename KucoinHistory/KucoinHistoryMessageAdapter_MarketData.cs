@@ -311,6 +311,7 @@ partial class KucoinHistoryMessageAdapter
 				await streamReader.ReadLineAsync(cancellationToken);
 
 				string line;
+
 				while ((line = await streamReader.ReadLineAsync(cancellationToken)) != null)
 				{
 					if (line.IsEmptyOrWhiteSpace())
@@ -496,6 +497,7 @@ partial class KucoinHistoryMessageAdapter
 					if (--left <= 0)
 						break;
 				}
+
 				break;
 			}
 

@@ -158,6 +158,7 @@ public partial class BitkubMessageAdapter
 		if (!cancelMsg.SecurityId.SecurityCode.IsEmpty())
 		{
 			var market = GetMarket(cancelMsg.SecurityId);
+
 			foreach (var order in await RestClient.GetOpenOrdersAsync(market.Symbol,
 				cancellationToken))
 				if (order?.OrderId.IsEmpty() == false &&
@@ -193,6 +194,7 @@ public partial class BitkubMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -215,12 +217,14 @@ public partial class BitkubMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -230,6 +234,7 @@ public partial class BitkubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -276,6 +281,7 @@ public partial class BitkubMessageAdapter
 			using (_sync.EnterScope())
 				active = [.. _trackedOrders.Where(pair =>
 					_activeOrderIds.Contains(pair.Key))];
+
 			foreach (var pair in active.TakeLast(maximum))
 				await SendTrackedOrderAsync(pair.Key, pair.Value, OrderStates.Active,
 					pair.Value.Volume, statusMsg.TransactionId, CurrentTime,
@@ -283,12 +289,14 @@ public partial class BitkubMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -318,10 +326,12 @@ public partial class BitkubMessageAdapter
 
 		var left = maximum;
 		string cursor = null;
+
 		do
 		{
 			var response = await RestClient.GetOrderHistoryAsync(symbol,
 				left.Min(100), cursor, filter.From, filter.To, cancellationToken);
+
 			foreach (var trade in (response.Result ?? []).Where(trade =>
 				trade is not null &&
 				(filter.Side is null || trade.Side.ToStockSharp() == filter.Side))
@@ -332,6 +342,7 @@ public partial class BitkubMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			cursor = response.Pagination?.HasNext == true
 				? response.Pagination.Cursor
 				: null;
@@ -519,6 +530,7 @@ public partial class BitkubMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions.Where(pair =>
 				MatchesOrderSubscription(pair.Value, symbol, update.OrderId, side))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -569,6 +581,7 @@ public partial class BitkubMessageAdapter
 				MatchesOrderSubscription(pair.Value, symbol, update.OrderId, side))];
 			portfolioSubscriptions = [.. _portfolioSubscriptions];
 		}
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -604,6 +617,7 @@ public partial class BitkubMessageAdapter
 		{
 			_lastBalanceRefresh = DateTime.UtcNow;
 			var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 			foreach (var subscription in subscriptions)
 				foreach (var balance in balances)
 					await SendBalanceAsync(balance, subscription, cancellationToken);

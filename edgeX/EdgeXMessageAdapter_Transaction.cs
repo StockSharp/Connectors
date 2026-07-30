@@ -29,6 +29,7 @@ public partial class EdgeXMessageAdapter
 		EnsureConnected();
 
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		await _adapters.CachedValues.Select(a => a.PortfolioLookupAsync(lookupMsg, cancellationToken)).WhenAll();
 
 		if (lookupMsg.IsSubscribe)
@@ -41,6 +42,7 @@ public partial class EdgeXMessageAdapter
 		EnsureConnected();
 
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		await _adapters.CachedValues.Select(a => a.OrderStatusAsync(statusMsg, cancellationToken)).WhenAll();
 
 		if (statusMsg.IsSubscribe)

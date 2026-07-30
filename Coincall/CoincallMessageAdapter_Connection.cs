@@ -158,10 +158,13 @@ public partial class CoincallMessageAdapter
 	{
 		foreach (var ticker in message?.Tickers ?? [])
 			await ProcessTickerAsync(ticker, cancellationToken);
+
 		if (message?.Book is not null)
 			await ProcessBookAsync(message.Book, cancellationToken);
+
 		foreach (var trade in message?.Trades ?? [])
 			await ProcessTradeAsync(trade, cancellationToken);
+
 		if (message?.Candle is not null)
 			await ProcessCandleAsync(message.Candle, cancellationToken);
 		if (_orderStatusSubscriptionId != 0)
@@ -171,6 +174,7 @@ public partial class CoincallMessageAdapter
 					order,
 					_orderStatusSubscriptionId,
 					cancellationToken);
+
 			foreach (var fill in message?.Fills ?? [])
 				await SendFillAsync(
 					fill,

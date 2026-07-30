@@ -43,6 +43,7 @@ sealed class FugleRestClient : BaseLogReceiver
 				return _securities;
 
 			var stockPages = new List<FugleTickerListResponse>();
+
 			foreach (var type in new[] { "EQUITY", "INDEX", "WARRANT" })
 			{
 				foreach (var exchange in new[] { "TWSE", "TPEx" })
@@ -50,6 +51,7 @@ sealed class FugleRestClient : BaseLogReceiver
 			}
 
 			var futuresPages = new List<FugleTickerListResponse>();
+
 			foreach (var type in new[] { "FUTURE", "OPTION" })
 			{
 				foreach (var session in new[] { "REGULAR", "AFTERHOURS" })

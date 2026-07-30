@@ -189,6 +189,7 @@ public partial class ApexOmniMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady(false);
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -212,6 +213,7 @@ public partial class ApexOmniMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
@@ -222,6 +224,7 @@ public partial class ApexOmniMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady(false);
 		if (!statusMsg.IsSubscribe)
 		{
@@ -240,6 +243,7 @@ public partial class ApexOmniMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
 	}
@@ -267,9 +271,11 @@ public partial class ApexOmniMessageAdapter
 		var balance = await RestClient.GetAccountBalanceAsync(cancellationToken);
 		await SendAccountBalanceAsync(balance, transactionId, ServerTime,
 			cancellationToken);
+
 		foreach (var wallet in account.ContractWallets ?? [])
 			await SendWalletAsync(wallet, transactionId, ServerTime,
 				cancellationToken);
+
 		foreach (var position in account.Positions ?? [])
 			await SendPositionAsync(position, transactionId, ServerTime,
 				cancellationToken);
@@ -288,6 +294,7 @@ public partial class ApexOmniMessageAdapter
 			cancellationToken);
 		var history = await LoadOrderHistoryAsync(symbol, statusMsg?.From,
 			statusMsg?.To, maximum, cancellationToken);
+
 		foreach (var order in openOrders.Concat(history)
 			.Where(order => IsMatchingOrder(order, statusMsg))
 			.GroupBy(static order => order.EffectiveId.IsEmpty()
@@ -300,6 +307,7 @@ public partial class ApexOmniMessageAdapter
 
 		var fills = await LoadFillsAsync(symbol, statusMsg?.From,
 			statusMsg?.To, maximum, cancellationToken);
+
 		foreach (var fill in fills
 			.Where(fill => IsMatchingFill(fill, statusMsg))
 			.GroupBy(static fill => fill.EffectiveId,
@@ -315,6 +323,7 @@ public partial class ApexOmniMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var result = new List<ApexOmniOrder>();
+
 		for (var page = 0; result.Count < maximum; page++)
 		{
 			var limit = (maximum - result.Count).Min(100).Max(1);
@@ -333,6 +342,7 @@ public partial class ApexOmniMessageAdapter
 				result.Count >= response.TotalSize)
 				break;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 
@@ -341,6 +351,7 @@ public partial class ApexOmniMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var result = new List<ApexOmniFill>();
+
 		for (var page = 0; result.Count < maximum; page++)
 		{
 			var limit = (maximum - result.Count).Min(100).Max(1);
@@ -359,6 +370,7 @@ public partial class ApexOmniMessageAdapter
 				result.Count >= response.TotalSize)
 				break;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 
@@ -382,13 +394,16 @@ public partial class ApexOmniMessageAdapter
 				.Concat(contents.Wallets ?? []))
 				await SendWalletAsync(wallet, _portfolioSubscriptionId,
 					serverTime, cancellationToken);
+
 			foreach (var position in contents.Positions ?? [])
 				await SendPositionAsync(position, _portfolioSubscriptionId,
 					serverTime, cancellationToken);
 		}
+
 		foreach (var order in contents.Orders ?? [])
 			foreach (var target in GetPrivateTargets(order?.EffectiveClientId))
 				await SendOrderAsync(order, target, cancellationToken);
+
 		foreach (var fill in contents.Fills ?? [])
 			foreach (var target in GetPrivateTargets(fill?.EffectiveClientId))
 				await SendFillAsync(fill, target, cancellationToken);

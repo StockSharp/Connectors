@@ -159,6 +159,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 	{
 		foreach (var ticker in message?.Tickers ?? [])
 			await ProcessTickerAsync(ticker, cancellationToken);
+
 		if (message?.Book is not null)
 			await ProcessBookAsync(message.Book, cancellationToken);
 		if (message?.Trade is not null)
@@ -173,6 +174,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 					_orderStatusSubscriptionId,
 					false,
 					cancellationToken);
+
 			if (message?.Fill is not null)
 				await SendFillAsync(
 					message.Fill,
@@ -247,6 +249,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				client.Dispose();
 			}
 		}
+
 		_privateWsClient = null;
 		_publicWsClient = null;
 		_restClient?.Dispose();

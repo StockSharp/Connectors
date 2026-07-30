@@ -8,6 +8,7 @@ public partial class RainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class RainMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var product in products.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class RainMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -54,6 +57,7 @@ public partial class RainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -111,6 +115,7 @@ public partial class RainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -158,6 +163,7 @@ public partial class RainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -201,6 +207,7 @@ public partial class RainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -224,6 +231,7 @@ public partial class RainMessageAdapter
 			to.AddPeriods(timeFrame, -maximum);
 		var candles = await LoadCandlesAsync(product.Symbol, timeFrame, from,
 			to, maximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(product.Symbol, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
@@ -410,6 +418,7 @@ public partial class RainMessageAdapter
 			transactionIds = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var trade in payload.Trades.Where(static value =>
 			value is not null).OrderBy(static value => value.Date))
 			foreach (var transactionId in transactionIds)
@@ -439,6 +448,7 @@ public partial class RainMessageAdapter
 				symbol);
 			return;
 		}
+
 		foreach (var subscription in subscriptions)
 			await SendCandleAsync(symbol, payload.Candle,
 				subscription.TimeFrame, subscription.Id, cancellationToken);
@@ -456,6 +466,7 @@ public partial class RainMessageAdapter
 			transactionIds = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var transactionId in transactionIds)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -481,6 +492,7 @@ public partial class RainMessageAdapter
 			transactionIds = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var transactionId in transactionIds)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -559,6 +571,7 @@ public partial class RainMessageAdapter
 		var result = new List<RainCandle>();
 		var cursor = from.ToUtcTime();
 		var upperBound = to.ToUtcTime();
+
 		while (result.Count < maximum && cursor <= upperBound)
 		{
 			var pageSize = (maximum - result.Count).Min(500).Max(1);
@@ -582,6 +595,7 @@ public partial class RainMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.GroupBy(static candle => candle.Time.ToUtcTime())
 			.Select(static group => group.First())
 			.OrderBy(static candle => candle.Time)

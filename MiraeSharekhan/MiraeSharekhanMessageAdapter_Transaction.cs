@@ -93,6 +93,7 @@ public partial class MiraeSharekhanMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -101,6 +102,7 @@ public partial class MiraeSharekhanMessageAdapter
 		}
 		EnsurePortfolio(statusMsg.PortfolioName);
 		var left = statusMsg.Count ?? long.MaxValue;
+
 		foreach (var order in (await GetRest().GetOrders(CustomerId, cancellationToken))
 			.OrderBy(order => order.GetTime()))
 		{
@@ -113,6 +115,7 @@ public partial class MiraeSharekhanMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		if (statusMsg.IsHistoryOnly())
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 		else
@@ -128,6 +131,7 @@ public partial class MiraeSharekhanMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -149,6 +153,7 @@ public partial class MiraeSharekhanMessageAdapter
 	private async ValueTask RefreshOrderStatus(CancellationToken cancellationToken)
 	{
 		_lastOrderRefresh = DateTime.UtcNow;
+
 		foreach (var order in await GetRest().GetOrders(CustomerId, cancellationToken))
 			await ProcessOrder(order, _orderStatusSubscriptionId, false, cancellationToken);
 	}

@@ -9,11 +9,13 @@ public partial class ZondaCryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in GetMarkets().OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -47,6 +49,7 @@ public partial class ZondaCryptoMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -58,6 +61,7 @@ public partial class ZondaCryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -147,6 +151,7 @@ public partial class ZondaCryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -242,6 +247,7 @@ public partial class ZondaCryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -276,6 +282,7 @@ public partial class ZondaCryptoMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 100)
 			.Max(1).Min(100).To<int>();
+
 		foreach (var trade in (await RestClient.GetTradesAsync(
 			market.Code,
 			maximum,
@@ -296,6 +303,7 @@ public partial class ZondaCryptoMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
@@ -350,6 +358,7 @@ public partial class ZondaCryptoMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(
 					market.Code))];
+
 		foreach (var pair in subscriptions)
 			await SendLevel1Async(
 				market,
@@ -372,6 +381,7 @@ public partial class ZondaCryptoMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(
 					market.Code))];
+
 		foreach (var pair in subscriptions)
 			await SendTradeAsync(
 				market,
@@ -429,6 +439,7 @@ public partial class ZondaCryptoMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(
 					market.Code))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(
 				market,
@@ -559,10 +570,13 @@ public partial class ZondaCryptoMessageAdapter
 				Sequence = book?.Sequence ?? 0,
 				Time = book?.Time ?? CurrentTime,
 			};
+
 			foreach (var quote in book?.Bids ?? [])
 				state.Bids[quote.Price] = quote.Volume;
+
 			foreach (var quote in book?.Asks ?? [])
 				state.Asks[quote.Price] = quote.Volume;
+
 			_orderBooks[marketCode] = state;
 		}
 	}
@@ -581,6 +595,7 @@ public partial class ZondaCryptoMessageAdapter
 				state = new();
 				_orderBooks[marketCode] = state;
 			}
+
 			foreach (var change in changes ?? [])
 			{
 				var side = change.Side == Sides.Buy
@@ -591,6 +606,7 @@ public partial class ZondaCryptoMessageAdapter
 				else
 					side[change.Price] = change.Volume;
 			}
+
 			if (sequence > 0)
 				state.Sequence = sequence;
 			if (time != default)

@@ -32,8 +32,10 @@ public partial class ApexOmniMessageAdapter
 			if (tradeId.IsEmpty() || time < LatestTime || !_tradeIds.Add(tradeId))
 				return false;
 			_tradeIdOrder.Enqueue(tradeId);
+
 			while (_tradeIdOrder.Count > _maximumTradeIds)
 				_tradeIds.Remove(_tradeIdOrder.Dequeue());
+
 			if (time > LatestTime)
 				LatestTime = time;
 			return true;
@@ -231,8 +233,10 @@ public partial class ApexOmniMessageAdapter
 			if (!_fillFingerprints.Add(fingerprint))
 				return false;
 			_fillFingerprintOrder.Enqueue(fingerprint);
+
 			while (_fillFingerprintOrder.Count > _maximumFillFingerprints)
 				_fillFingerprints.Remove(_fillFingerprintOrder.Dequeue());
+
 			return true;
 		}
 	}

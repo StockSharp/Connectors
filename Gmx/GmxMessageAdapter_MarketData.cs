@@ -8,6 +8,7 @@ public partial class GmxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
@@ -40,6 +41,7 @@ public partial class GmxMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -48,6 +50,7 @@ public partial class GmxMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -73,6 +76,7 @@ public partial class GmxMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -87,6 +91,7 @@ public partial class GmxMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -112,6 +117,7 @@ public partial class GmxMessageAdapter
 			: 100)).Min(HistoryLimit).Max(1).To<int>();
 		var history = await ReadTradesAsync(market, from, to, count,
 			cancellationToken);
+
 		foreach (var trade in history)
 		{
 			await SendPublicTradeAsync(market, trade, mdMsg.TransactionId,
@@ -119,11 +125,13 @@ public partial class GmxMessageAdapter
 			using (_sync.EnterScope())
 				_seenPublicTrades.Add(trade.Id);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -138,6 +146,7 @@ public partial class GmxMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -171,9 +180,11 @@ public partial class GmxMessageAdapter
 			.OrderBy(static candle => candle.Timestamp)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var candle in selected)
 			await SendCandleAsync(market, candle, timeFrame, mdMsg.TransactionId,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -199,6 +210,7 @@ public partial class GmxMessageAdapter
 		MarketSubscription[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Values];
+
 		foreach (var subscription in subscriptions)
 		{
 			var market = GetMarketByAddress(subscription.MarketAddress);
@@ -265,6 +277,7 @@ public partial class GmxMessageAdapter
 			var market = GetMarketByAddress(trade.MarketAddress);
 			if (market is null)
 				continue;
+
 			foreach (var transactionId in transactionIds)
 				await SendPublicTradeAsync(market, trade, transactionId,
 					cancellationToken);
@@ -277,6 +290,7 @@ public partial class GmxMessageAdapter
 		CandleSubscription[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _candleSubscriptions.Values];
+
 		foreach (var group in subscriptions.GroupBy(static item =>
 			(item.MarketAddress, item.TimeFrame)))
 		{
@@ -290,6 +304,7 @@ public partial class GmxMessageAdapter
 				.ToArray();
 			if (ordered.Length == 0)
 				continue;
+
 			foreach (var subscription in group)
 			{
 				var latestTime = ordered[^1].Timestamp.FromGmxMilliseconds();
@@ -312,6 +327,7 @@ public partial class GmxMessageAdapter
 	{
 		var result = new List<GmxTradeAction>();
 		string cursor = null;
+
 		while (result.Count < count)
 		{
 			var response = await ApiClient.SearchTradesAsync(new()
@@ -344,6 +360,7 @@ public partial class GmxMessageAdapter
 				break;
 			cursor = response.NextCursor;
 		}
+
 		return [.. result.OrderBy(static trade => trade.Timestamp).TakeLast(count)];
 	}
 

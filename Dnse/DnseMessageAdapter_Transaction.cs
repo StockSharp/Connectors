@@ -146,6 +146,7 @@ public partial class DnseMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -177,6 +178,7 @@ public partial class DnseMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -229,6 +231,7 @@ public partial class DnseMessageAdapter
         var accounts = SelectAccounts(filter?.PortfolioName);
         var skip = Math.Max(0, filter?.Skip ?? 0);
         var remaining = filter?.Count ?? long.MaxValue;
+
         foreach (var account in accounts)
         {
             foreach (var order in await _rest.GetOrders(
@@ -421,6 +424,7 @@ public partial class DnseMessageAdapter
             : details.LastQuantity > 0
                 ? [details]
                 : [];
+
         foreach (var report in reports)
         {
             if (report.LastQuantity <= 0)

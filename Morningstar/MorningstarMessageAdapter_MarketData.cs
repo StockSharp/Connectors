@@ -20,10 +20,12 @@ public partial class MorningstarMessageAdapter
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var token = default(string);
 		var seenTokens = new HashSet<string>(StringComparer.Ordinal);
+
 		while (left > 0)
 		{
 			var response = await SafeClient().GetInvestments(InvestmentSource, Universe,
 				board, token, cancellationToken);
+
 			foreach (var investment in response.Investments ?? [])
 			{
 				CacheInvestment(investment);
@@ -51,6 +53,7 @@ public partial class MorningstarMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -80,6 +83,7 @@ public partial class MorningstarMessageAdapter
 				$"Morningstar returned no daily OHLCV values for '{identifier}'.");
 
 		var securityId = GetResultSecurityId(mdMsg.SecurityId, investment);
+
 		foreach (var point in data)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -104,6 +108,7 @@ public partial class MorningstarMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -138,6 +143,7 @@ public partial class MorningstarMessageAdapter
 				$"Morningstar returned no complete daily OHLCV values for '{identifier}'.");
 
 		var securityId = GetResultSecurityId(mdMsg.SecurityId, investment);
+
 		foreach (var point in data)
 		{
 			await SendOutMessageAsync(new TimeFrameCandleMessage

@@ -111,6 +111,7 @@ public partial class OrcaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -138,6 +139,7 @@ public partial class OrcaMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -149,6 +151,7 @@ public partial class OrcaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -193,6 +196,7 @@ public partial class OrcaMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -214,12 +218,15 @@ public partial class OrcaMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -291,6 +298,7 @@ public partial class OrcaMessageAdapter
 			("SOL", OrcaExtensions.SystemProgramAddress, 9,
 				await RpcClient.GetBalanceAsync(cancellationToken)),
 		};
+
 		for (var offset = 0; offset < tokens.Length; offset += 100)
 		{
 			var chunk = tokens.Skip(offset).Take(100).ToArray();
@@ -299,6 +307,7 @@ public partial class OrcaMessageAdapter
 					token.Mint, token.TokenProgram)).ToArray();
 			var accounts = await RpcClient.GetAccountsAsync(addresses,
 				cancellationToken);
+
 			for (var index = 0; index < chunk.Length; index++)
 			{
 				var token = chunk[index];
@@ -308,6 +317,7 @@ public partial class OrcaMessageAdapter
 				result.Add((token.Symbol, token.Mint, token.Decimals, amount));
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -361,6 +371,7 @@ public partial class OrcaMessageAdapter
 					swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			var receipt = swap.State == OrderStates.Active
@@ -461,6 +472,7 @@ public partial class OrcaMessageAdapter
 				"no matching trade event.");
 		BigInteger baseAmount = 0;
 		BigInteger quoteAmount = 0;
+
 		foreach (var orcaEvent in events)
 		{
 			if (isAToB)
@@ -476,6 +488,7 @@ public partial class OrcaMessageAdapter
 				quoteAmount += orcaEvent.InputAmount;
 			}
 		}
+
 		var volume = baseAmount.FromBaseUnits(swap.Market.TokenA.Decimals);
 		var quote = quoteAmount.FromBaseUnits(swap.Market.TokenB.Decimals);
 		if (volume <= 0 || quote <= 0)

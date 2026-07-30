@@ -8,10 +8,12 @@ public partial class InjectiveMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static market => market.Code,
 			StringComparer.Ordinal))
 		{
@@ -37,6 +39,7 @@ public partial class InjectiveMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -45,6 +48,7 @@ public partial class InjectiveMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -69,6 +73,7 @@ public partial class InjectiveMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -99,6 +104,7 @@ public partial class InjectiveMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -126,6 +132,7 @@ public partial class InjectiveMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -151,6 +158,7 @@ public partial class InjectiveMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -174,15 +182,18 @@ public partial class InjectiveMessageAdapter
 			.To<int>();
 		var trades = await RestClient.GetTradesAsync(market, null, from, to,
 			count, cancellationToken);
+
 		foreach (var trade in trades.Where(static item => item is not null)
 			.OrderBy(static item => item.ExecutedAt).TakeLast(count))
 			await SendTradeAsync(market, trade, mdMsg.TransactionId, false,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -207,6 +218,7 @@ public partial class InjectiveMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -238,6 +250,7 @@ public partial class InjectiveMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -375,6 +388,7 @@ public partial class InjectiveMessageAdapter
 			history.Closes?.Length ?? 0, history.Volumes?.Length ?? 0,
 		}.Min();
 		var lastOpen = default(DateTime);
+
 		for (var index = 0; index < count; index++)
 		{
 			var openTime = history.Times[index].FromInjectiveSeconds();
@@ -396,6 +410,7 @@ public partial class InjectiveMessageAdapter
 					? CandleStates.Finished : CandleStates.Active,
 			}, cancellationToken);
 		}
+
 		return lastOpen;
 	}
 
@@ -405,6 +420,7 @@ public partial class InjectiveMessageAdapter
 		var history = await RestClient.GetCandlesAsync(subscription.Market,
 			subscription.TimeFrame, null, ServerTime, 2, cancellationToken);
 		var times = history?.Times ?? [];
+
 		for (var index = 0; index < times.Length; index++)
 		{
 			var openTime = times[index].FromInjectiveSeconds();
@@ -466,12 +482,15 @@ public partial class InjectiveMessageAdapter
 				item.Market.MarketId.Equals(market.MarketId,
 					StringComparison.OrdinalIgnoreCase))];
 		}
+
 		foreach (var subscription in depthSubscriptions)
 			await SendDepthAsync(market, update.Orderbook,
 				subscription.TransactionId, subscription.Depth, cancellationToken);
+
 		var bid = GetLevel(market, update.Orderbook.Buys?.FirstOrDefault());
 		var ask = GetLevel(market, update.Orderbook.Sells?.FirstOrDefault());
 		var time = GetBookTime(update.Orderbook);
+
 		foreach (var subscription in level1Subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -519,9 +538,11 @@ public partial class InjectiveMessageAdapter
 			if (_seenTrades.Count > 32768)
 				_seenTrades.Clear();
 		}
+
 		foreach (var subscription in tickSubscriptions)
 			await SendTradeAsync(market, trade, subscription.TransactionId,
 				false, cancellationToken);
+
 		var price = market.Kind == InjectiveMarketKinds.Spot
 			? market.ToPrice(trade.Price?.Price)
 			: market.ToPrice(trade.PositionDelta?.ExecutionPrice);
@@ -530,6 +551,7 @@ public partial class InjectiveMessageAdapter
 			: market.ToQuantity(trade.PositionDelta?.ExecutionQuantity);
 		var time = trade.ExecutedAt > 0
 			? trade.ExecutedAt.FromInjectiveMilliseconds() : ServerTime;
+
 		foreach (var subscription in level1Subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -540,6 +562,7 @@ public partial class InjectiveMessageAdapter
 			.TryAdd(Level1Fields.LastTradePrice, price)
 			.TryAdd(Level1Fields.LastTradeVolume, volume)
 			.TryAdd(Level1Fields.LastTradeTime, time), cancellationToken);
+
 		foreach (var transactionId in orderSubscriptions)
 			await SendTradeAsync(market, trade, transactionId, true,
 				cancellationToken);
@@ -560,6 +583,7 @@ public partial class InjectiveMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Values.Where(item =>
 				item.Market.MarketId.Equals(market.MarketId,
 					StringComparison.OrdinalIgnoreCase))];
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{

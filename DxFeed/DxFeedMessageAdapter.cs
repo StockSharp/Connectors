@@ -248,6 +248,7 @@ public partial class DxFeedMessageAdapter
 				await SafeClient().UnsubscribeFeed(DxFeedEventTypes.Profile,
 					securityId.SecurityCode, null, null, cancellationToken);
 			}
+
 			await SendSubscriptionResultAsync(context.Message, cancellationToken);
 		}
 

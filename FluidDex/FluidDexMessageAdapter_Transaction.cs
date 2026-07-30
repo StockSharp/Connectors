@@ -128,6 +128,7 @@ public partial class FluidDexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -156,6 +157,7 @@ public partial class FluidDexMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -167,6 +169,7 @@ public partial class FluidDexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -211,6 +214,7 @@ public partial class FluidDexMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -266,12 +270,15 @@ public partial class FluidDexMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -332,9 +339,11 @@ public partial class FluidDexMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(static group => group.First())];
 		var result = new List<(FluidDexToken, BigInteger)>();
+
 		foreach (var token in tokens)
 			result.Add((token, await RpcClient.GetBalanceAsync(token,
 				cancellationToken)));
+
 		return [.. result];
 	}
 
@@ -388,6 +397,7 @@ public partial class FluidDexMessageAdapter
 				.OrderBy(static swap => swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			var receipt = swap.State == OrderStates.Active
@@ -497,6 +507,7 @@ public partial class FluidDexMessageAdapter
 		var amount1 = BigInteger.Zero;
 		var isFound = false;
 		var topic = FluidDexExtensions.SwapTopic;
+
 		foreach (var log in receipt.Logs ?? [])
 		{
 			if (log?.Address.IsEmpty() != false ||
@@ -533,6 +544,7 @@ public partial class FluidDexMessageAdapter
 			}
 			isFound = true;
 		}
+
 		if (!isFound)
 			throw new InvalidDataException(
 				$"Successful Fluid DEX transaction " +

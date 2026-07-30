@@ -110,6 +110,7 @@ internal sealed class LsSecuritiesWebSocketClient : BaseLogReceiver
 	{
 		var failures = 0;
 		var wasConnected = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
@@ -253,6 +254,7 @@ internal sealed class LsSecuritiesWebSocketClient : BaseLogReceiver
 		var buffer = new byte[16 * 1024];
 		using var stream = new MemoryStream();
 		WebSocketMessageType? type = null;
+
 		while (true)
 		{
 			var result = await socket.ReceiveAsync(buffer, cancellationToken);

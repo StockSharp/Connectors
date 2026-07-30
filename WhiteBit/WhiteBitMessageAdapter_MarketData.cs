@@ -7,16 +7,19 @@ public partial class WhiteBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in await RestClient.GetMarketsAsync(cancellationToken) ?? [])
 		{
 			if (market?.Name.IsEmpty() != false)
 				continue;
 
 			var sections = GetMarketSections(market);
+
 			foreach (var section in sections)
 			{
 				if (!IsSectionEnabled(section))
@@ -69,6 +72,7 @@ public partial class WhiteBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -97,6 +101,7 @@ public partial class WhiteBitMessageAdapter
 		.TryAdd(Level1Fields.BestAskVolume, book.Asks?.FirstOrDefault()?.Amount.ToDecimal()), cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -122,6 +127,7 @@ public partial class WhiteBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -138,6 +144,7 @@ public partial class WhiteBitMessageAdapter
 			mdMsg.TransactionId, depth, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -167,6 +174,7 @@ public partial class WhiteBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -188,6 +196,7 @@ public partial class WhiteBitMessageAdapter
 
 		long? lastTradeId = null;
 		var lastTime = from ?? default;
+
 		foreach (var trade in trades)
 		{
 			await SendPublicTradeAsync(trade, symbol, boardCode, mdMsg.TransactionId, cancellationToken);
@@ -196,6 +205,7 @@ public partial class WhiteBitMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -223,6 +233,7 @@ public partial class WhiteBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		if (!mdMsg.IsSubscribe)
@@ -238,6 +249,7 @@ public partial class WhiteBitMessageAdapter
 		var candles = await LoadCandlesAsync(symbol, timeFrame, mdMsg.From, mdMsg.To ?? DateTime.UtcNow,
 			mdMsg.Count, cancellationToken);
 		var lastOpenTime = mdMsg.From ?? default;
+
 		foreach (var candle in candles)
 		{
 			await SendCandleAsync(candle, symbol, boardCode, timeFrame,
@@ -246,6 +258,7 @@ public partial class WhiteBitMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -456,6 +469,7 @@ public partial class WhiteBitMessageAdapter
 			using (_sync.EnterScope())
 			{
 				var accepted = new List<(long, TickSubscription)>();
+
 				foreach (var pair in _tickSubscriptions)
 				{
 					var state = pair.Value;
@@ -468,6 +482,7 @@ public partial class WhiteBitMessageAdapter
 					state.LastTime = trade.Time.ToUtcTime();
 					accepted.Add((pair.Key, state));
 				}
+
 				subscriptions = [.. accepted];
 			}
 
@@ -490,6 +505,7 @@ public partial class WhiteBitMessageAdapter
 			using (_sync.EnterScope())
 			{
 				var accepted = new List<(long, CandleSubscription)>();
+
 				foreach (var pair in _candleSubscriptions)
 				{
 					var state = pair.Value;
@@ -501,6 +517,7 @@ public partial class WhiteBitMessageAdapter
 					state.LastOpenTime = openTime;
 					accepted.Add((pair.Key, state));
 				}
+
 				subscriptions = [.. accepted];
 			}
 
@@ -519,6 +536,7 @@ public partial class WhiteBitMessageAdapter
 		var start = from ?? to - TimeSpan.FromTicks(timeFrame.Ticks * requested);
 		var result = new List<WhiteBitCandle>();
 		var cursor = start;
+
 		while (cursor <= to && result.Count < requested)
 		{
 			var pageSize = (requested - result.Count).Min(1440).To<int>();

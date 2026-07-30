@@ -24,6 +24,7 @@ public partial class B3Up2DataMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -72,6 +73,7 @@ public partial class B3Up2DataMessageAdapter
                     B3Up2DataDataKinds.SecurityMaster,
                     "TckrSymb",
                     "SctyCtgyNm");
+
                 foreach (var row in table.Rows)
                 {
                     if (remaining <= 0)
@@ -117,6 +119,7 @@ public partial class B3Up2DataMessageAdapter
                     table,
                     B3Up2DataDataKinds.IndexEod,
                     "TckrSymb");
+
                 foreach (var row in table.Rows)
                 {
                     if (remaining <= 0)
@@ -161,6 +164,7 @@ public partial class B3Up2DataMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -250,6 +254,7 @@ public partial class B3Up2DataMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -290,6 +295,7 @@ public partial class B3Up2DataMessageAdapter
             from = earliest;
 
         var remaining = mdMsg.Count ?? long.MaxValue;
+
         for (var date = from;
             date <= to && remaining > 0;
             date = date.AddDays(1))
@@ -356,6 +362,7 @@ public partial class B3Up2DataMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -383,6 +390,7 @@ public partial class B3Up2DataMessageAdapter
         {
             var entries = await ListAll(
                 SafeBlobPrefix(), target, cancellationToken);
+
             foreach (var entry in entries)
             {
                 await SendOutMessageAsync(
@@ -394,6 +402,7 @@ public partial class B3Up2DataMessageAdapter
                         entry.LastModified ?? DateTime.UtcNow),
                     cancellationToken);
             }
+
             await CompleteSubscription(mdMsg, cancellationToken);
             return;
         }
@@ -403,6 +412,7 @@ public partial class B3Up2DataMessageAdapter
         if (mdMsg.From is null && mdMsg.To is null)
         {
             var asOf = DateTime.UtcNow.ToUtcDate();
+
             for (var offset = 0;
                 offset < LookbackDays && emitted < target;
                 offset++)
@@ -431,6 +441,7 @@ public partial class B3Up2DataMessageAdapter
             var earliest = to.AddDays(-(LookbackDays - 1));
             if (from < earliest)
                 from = earliest;
+
             for (var date = from;
                 date <= to && emitted < target;
                 date = date.AddDays(1))
@@ -459,6 +470,7 @@ public partial class B3Up2DataMessageAdapter
         CancellationToken cancellationToken)
     {
         var emitted = 0;
+
         foreach (var blob in blobs)
         {
             var download = await SafeClient().DownloadBlob(
@@ -473,6 +485,7 @@ public partial class B3Up2DataMessageAdapter
                 cancellationToken);
             emitted++;
         }
+
         return emitted;
     }
 

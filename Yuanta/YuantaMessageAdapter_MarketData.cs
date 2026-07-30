@@ -7,6 +7,7 @@ public partial class YuantaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var symbol = lookupMsg.SecurityId.SecurityCode;
 		if (symbol.IsEmpty())
 			throw new NotSupportedException(
@@ -14,6 +15,7 @@ public partial class YuantaMessageAdapter
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedType = securityTypes.Count == 1 ? securityTypes.First() : (SecurityTypes?)null;
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var security in await _client.GetSecuritiesAsync(lookupMsg.GetLookupMarkets(),
 			symbol, requestedType, cancellationToken))
 		{
@@ -35,6 +37,7 @@ public partial class YuantaMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -49,6 +52,7 @@ public partial class YuantaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await _client.UnsubscribeAsync(mdMsg.OriginalTransactionId, cancellationToken);
@@ -64,6 +68,7 @@ public partial class YuantaMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		await _client.SubscribeAsync(CreateSubscription(mdMsg, security,
 			YuantaMarketDataKinds.Trades, DataType.Ticks), cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -85,6 +90,7 @@ public partial class YuantaMessageAdapter
 		YuantaMarketDataKinds kind, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await _client.UnsubscribeAsync(mdMsg.OriginalTransactionId, cancellationToken);
@@ -95,6 +101,7 @@ public partial class YuantaMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		var security = mdMsg.SecurityId.ParseYuantaSecurity(mdMsg.SecurityType);
 		CacheSecurity(security);
 		await _client.SubscribeAsync(CreateSubscription(mdMsg, security, kind, dataType), cancellationToken);
@@ -106,6 +113,7 @@ public partial class YuantaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			_liveCandles.Remove(mdMsg.OriginalTransactionId);
@@ -140,6 +148,7 @@ public partial class YuantaMessageAdapter
 		var count = (int)Math.Min(mdMsg.Count ?? 1000, int.MaxValue);
 		if (count <= 0)
 			return;
+
 		foreach (var tick in (await _client.GetTicksAsync(security, from, to, count, cancellationToken))
 			.Where(item => item.ServerTime >= from && item.ServerTime <= to)
 			.OrderBy(item => item.ServerTime).Take(count))
@@ -158,6 +167,7 @@ public partial class YuantaMessageAdapter
 		var lookbackTicks = Math.Min(to.Ticks, timeFrame.Ticks * lookbackBars);
 		var from = NormalizeUtc(mdMsg.From ?? to - TimeSpan.FromTicks(lookbackTicks));
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		foreach (var candle in (await _client.GetCandlesAsync(security, timeFrame,
 			from, to, cancellationToken)).Where(item => item.OpenTime >= from && item.OpenTime <= to)
 			.OrderBy(item => item.OpenTime))

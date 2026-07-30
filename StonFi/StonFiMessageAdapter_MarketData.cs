@@ -8,6 +8,7 @@ public partial class StonFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var types = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class StonFiMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(
 			static item => item.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -44,6 +46,7 @@ public partial class StonFiMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +56,7 @@ public partial class StonFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -79,6 +83,7 @@ public partial class StonFiMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -93,6 +98,7 @@ public partial class StonFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -123,12 +129,14 @@ public partial class StonFiMessageAdapter
 		if (trades.Length > maximum)
 			trades = [.. trades.TakeLast(maximum)];
 		var delivered = 0;
+
 		foreach (var trade in trades)
 		{
 			if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken))
 				delivered++;
 		}
+
 		if (historyOnly || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg,
@@ -153,6 +161,7 @@ public partial class StonFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -200,6 +209,7 @@ public partial class StonFiMessageAdapter
 			To = to,
 			Maximum = maximum,
 		};
+
 		foreach (var candle in candles)
 		{
 			var state = candle.OpenTime + timeFrame <= DateTime.UtcNow
@@ -211,6 +221,7 @@ public partial class StonFiMessageAdapter
 			if (state == CandleStates.Active)
 				subscription.CurrentCandle = candle;
 		}
+
 		if (historyOnly || subscription.Delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg,
@@ -359,6 +370,7 @@ public partial class StonFiMessageAdapter
 		if (fromBlock > toBlock)
 			return [];
 		var result = new List<StonEvent>();
+
 		for (var current = fromBlock; current <= toBlock;)
 		{
 			var end = Math.Min(toBlock,
@@ -369,6 +381,7 @@ public partial class StonFiMessageAdapter
 				break;
 			current = end + 1;
 		}
+
 		return [.. result];
 	}
 
@@ -378,6 +391,7 @@ public partial class StonFiMessageAdapter
 		KeyValuePair<long, Level1Subscription>[] level1;
 		using (_sync.EnterScope())
 			level1 = [.. _level1Subscriptions];
+
 		foreach (var item in level1)
 			await PollSafelyAsync(token => SendLevel1Async(
 				item.Value.Market, item.Key, false, token),
@@ -412,6 +426,7 @@ public partial class StonFiMessageAdapter
 	{
 		var grouped = new Dictionary<string, List<StonTrade>>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var item in events.OrderBy(
 			static value => value?.Block?.Number ?? int.MinValue)
 			.ThenBy(static value => value?.TransactionIndex ??
@@ -434,6 +449,7 @@ public partial class StonFiMessageAdapter
 			trades.Add(trade);
 			await DispatchTradeAsync(market, trade, cancellationToken);
 		}
+
 		foreach (var pair in grouped)
 		{
 			StonMarket market;
@@ -452,6 +468,7 @@ public partial class StonFiMessageAdapter
 		using (_sync.EnterScope())
 			targets = [.. _tickSubscriptions.Where(item =>
 				ReferenceEquals(item.Value.Market, market))];
+
 		foreach (var item in targets)
 		{
 			var subscription = item.Value;
@@ -487,6 +504,7 @@ public partial class StonFiMessageAdapter
 		using (_sync.EnterScope())
 			targets = [.. _candleSubscriptions.Where(item =>
 				ReferenceEquals(item.Value.Market, market))];
+
 		foreach (var item in targets)
 		{
 			var subscription = item.Value;
@@ -498,6 +516,7 @@ public partial class StonFiMessageAdapter
 				.ToArray();
 			if (values.Length == 0)
 				continue;
+
 			foreach (var incoming in StonFiExtensions.AggregateTrades(
 				values, subscription.TimeFrame))
 			{
@@ -559,6 +578,7 @@ public partial class StonFiMessageAdapter
 				item.Value.CurrentCandle is not null &&
 				item.Value.CurrentCandle.OpenTime +
 					item.Value.TimeFrame <= DateTime.UtcNow)];
+
 		foreach (var item in targets)
 		{
 			var sent = await SendCandleAsync(item.Value.Market,
@@ -674,8 +694,10 @@ public partial class StonFiMessageAdapter
 			if (!_seenMarketData.Add(key))
 				return false;
 			_deliveryOrder.Enqueue(key);
+
 			while (_deliveryOrder.Count > _maximumDeliveryKeys)
 				_seenMarketData.Remove(_deliveryOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -691,6 +713,7 @@ public partial class StonFiMessageAdapter
 		var retained = _deliveryOrder.Where(_seenMarketData.Contains)
 			.ToArray();
 		_deliveryOrder.Clear();
+
 		foreach (var item in retained)
 			_deliveryOrder.Enqueue(item);
 	}

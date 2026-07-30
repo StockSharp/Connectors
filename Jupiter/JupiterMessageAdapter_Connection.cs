@@ -123,6 +123,7 @@ public partial class JupiterMessageAdapter
 		var result = new List<JupiterMarketDefinition>();
 		var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		var pairs = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var item in SpotMarkets.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -155,6 +156,7 @@ public partial class JupiterMessageAdapter
 				SecurityCode = code,
 			});
 		}
+
 		return result.ToArray();
 	}
 
@@ -164,6 +166,7 @@ public partial class JupiterMessageAdapter
 		var expected = (mints ?? []).Select(static mint =>
 			mint.NormalizePublicKey()).Distinct(StringComparer.Ordinal).ToArray();
 		var result = new Dictionary<string, JupiterToken>(StringComparer.Ordinal);
+
 		for (var offset = 0; offset < expected.Length; offset += 100)
 			foreach (var token in await ApiClient.GetTokensAsync(
 				expected.Skip(offset).Take(100), cancellationToken))
@@ -182,6 +185,7 @@ public partial class JupiterMessageAdapter
 					: token.Name.Trim();
 				result[mint] = token;
 			}
+
 		var missing = expected.Where(mint => !result.ContainsKey(mint))
 			.ToArray();
 		if (missing.Length > 0)
@@ -196,6 +200,7 @@ public partial class JupiterMessageAdapter
 	private void RegisterMarkets(IEnumerable<JupiterMarketDefinition> definitions)
 	{
 		var markets = new List<JupiterMarket>();
+
 		foreach (var definition in definitions)
 		{
 			var baseToken = GetToken(definition.BaseMint);
@@ -214,6 +219,7 @@ public partial class JupiterMessageAdapter
 						: 0m,
 			});
 		}
+
 		if (IsPerpetualsEnabled)
 			foreach (var asset in new[]
 			{

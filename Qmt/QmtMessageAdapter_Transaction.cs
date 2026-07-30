@@ -76,6 +76,7 @@ partial class QmtMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == message.OriginalTransactionId)
@@ -101,18 +102,21 @@ partial class QmtMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var response = await EnsureClient().GetAccountsAsync(cancellationToken);
+
 		foreach (var account in response.Accounts ?? [])
 		{
 			if (!portfolioName.IsEmpty() && !account.AccountId.EqualsIgnoreCase(portfolioName))
 				continue;
 			await SendPortfolioAsync(account.AccountId, originalTransactionId, cancellationToken);
 		}
+
 		foreach (var asset in response.Assets ?? [])
 		{
 			if (!portfolioName.IsEmpty() && !asset.AccountId.EqualsIgnoreCase(portfolioName))
 				continue;
 			await SendAssetAsync(asset, originalTransactionId, cancellationToken);
 		}
+
 		foreach (var position in await EnsureClient().GetPositionsAsync(cancellationToken))
 		{
 			if (!portfolioName.IsEmpty() && !position.AccountId.EqualsIgnoreCase(portfolioName))
@@ -126,6 +130,7 @@ partial class QmtMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == message.OriginalTransactionId)
@@ -139,6 +144,7 @@ partial class QmtMessageAdapter
 				continue;
 			await SendOrderAsync(order, message.TransactionId, true, cancellationToken);
 		}
+
 		foreach (var fill in await EnsureClient().GetFillsAsync(cancellationToken))
 		{
 			if (!message.PortfolioName.IsEmpty() && !fill.AccountId.EqualsIgnoreCase(message.PortfolioName))

@@ -164,6 +164,7 @@ public partial class QFEXMessageAdapter
 		}
 		var orders = await TradeSocket.GetOpenOrdersAsync(symbol, HistoryLimit,
 			cancellationToken);
+
 		foreach (var order in orders.Where(order =>
 			order?.OrderId.IsEmpty() == false &&
 			(cancelMsg.Side is null ||
@@ -189,6 +190,7 @@ public partial class QFEXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -209,12 +211,14 @@ public partial class QFEXMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		try
 		{
@@ -236,6 +240,7 @@ public partial class QFEXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -245,12 +250,14 @@ public partial class QFEXMessageAdapter
 		}
 		await SendOrderSnapshotAsync(statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -260,6 +267,7 @@ public partial class QFEXMessageAdapter
 		var portfolio = await RestClient.GetPortfolioAsync(cancellationToken);
 		await SendBalanceAsync(portfolio?.Balance, transactionId,
 			cancellationToken);
+
 		foreach (var position in portfolio?.Positions ?? [])
 			await SendPositionAsync(position, transactionId, cancellationToken);
 	}
@@ -294,6 +302,7 @@ public partial class QFEXMessageAdapter
 			.Skip(Math.Max(0, statusMsg.Skip ?? 0).To<int>())
 			.Take(limit)
 			.ToArray();
+
 		foreach (var message in messages)
 		{
 			UpdateServerTime(message.ServerTime);
@@ -312,6 +321,7 @@ public partial class QFEXMessageAdapter
 			.OrderBy(static trade => trade.Timestamp)
 			.Skip(Math.Max(0, statusMsg.Skip ?? 0).To<int>())
 			.Take(limit);
+
 		foreach (var trade in filteredTrades)
 			await SendUserTradeAsync(trade, statusMsg.TransactionId, false,
 				cancellationToken);
@@ -647,9 +657,11 @@ public partial class QFEXMessageAdapter
 		var symbols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		if (!statusMsg.SecurityId.SecurityCode.IsEmpty())
 			symbols.Add(GetMarket(statusMsg.SecurityId).Symbol);
+
 		foreach (var securityId in statusMsg.SecurityIds)
 			if (!securityId.SecurityCode.IsEmpty())
 				symbols.Add(GetMarket(securityId).Symbol);
+
 		return symbols;
 	}
 

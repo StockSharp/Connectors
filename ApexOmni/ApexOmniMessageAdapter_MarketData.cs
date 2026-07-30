@@ -8,6 +8,7 @@ public partial class ApexOmniMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -47,6 +48,7 @@ public partial class ApexOmniMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -55,6 +57,7 @@ public partial class ApexOmniMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -114,6 +117,7 @@ public partial class ApexOmniMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -169,6 +173,7 @@ public partial class ApexOmniMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -184,6 +189,7 @@ public partial class ApexOmniMessageAdapter
 		var subscription = new TickSubscription { Instrument = instrument };
 		var from = mdMsg.From?.ToUniversalTime();
 		var to = mdMsg.To?.ToUniversalTime();
+
 		foreach (var trade in trades
 			.Where(item => item is not null)
 			.OrderBy(static item => item.Time))
@@ -198,6 +204,7 @@ public partial class ApexOmniMessageAdapter
 			await SendTradeAsync(instrument, trade, id, mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -235,6 +242,7 @@ public partial class ApexOmniMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -267,6 +275,7 @@ public partial class ApexOmniMessageAdapter
 			Instrument = instrument,
 			TimeFrame = timeFrame,
 		};
+
 		foreach (var candle in candles
 			.Where(static item => item is not null)
 			.OrderBy(static item => item.Start))
@@ -279,6 +288,7 @@ public partial class ApexOmniMessageAdapter
 					: CandleStates.Active,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -389,6 +399,7 @@ public partial class ApexOmniMessageAdapter
 				.Where(pair => ReferenceEquals(pair.Value.Instrument, instrument))
 				.Select(static pair => pair.Key)];
 		var time = timestamp > 0 ? timestamp.ToApexOmniTime() : ServerTime;
+
 		foreach (var transactionId in subscriptions)
 			await SendTickerAsync(instrument, ticker, transactionId, time,
 				cancellationToken);
@@ -406,6 +417,7 @@ public partial class ApexOmniMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				ReferenceEquals(pair.Value.Instrument, instrument))];
 		var time = timestamp > 0 ? timestamp.ToApexOmniTime() : ServerTime;
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendBookAsync(instrument, book, transactionId,
 				subscription.Depth, time, cancellationToken);
@@ -428,12 +440,15 @@ public partial class ApexOmniMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var accepted = new List<long>();
+
 			foreach (var (transactionId, subscription) in _tickSubscriptions)
 				if (ReferenceEquals(subscription.Instrument, instrument) &&
 					subscription.TryAccept(id, time))
 					accepted.Add(transactionId);
+
 			subscriptions = [.. accepted];
 		}
+
 		foreach (var transactionId in subscriptions)
 			await SendTradeAsync(instrument, trade, id, transactionId,
 				cancellationToken);
@@ -453,6 +468,7 @@ public partial class ApexOmniMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var accepted = new List<KeyValuePair<long, CandleSubscription>>();
+
 			foreach (var pair in _candleSubscriptions)
 			{
 				if (!ReferenceEquals(pair.Value.Instrument, instrument) ||
@@ -463,8 +479,10 @@ public partial class ApexOmniMessageAdapter
 				pair.Value.LastOpenTime = openTime;
 				accepted.Add(pair);
 			}
+
 			subscriptions = [.. accepted];
 		}
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendCandleAsync(instrument, candle, transactionId,
 				subscription.TimeFrame, candle.IsConfirmed

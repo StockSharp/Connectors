@@ -9,6 +9,7 @@ public partial class CoinWMessageAdapter
 		{
 			_spotPairIds.Clear();
 			_spotSymbols.Clear();
+
 			foreach (var ticker in tickers)
 			{
 				if (ticker?.Symbol.IsEmpty() != false || ticker.PairId.IsEmpty())
@@ -28,6 +29,7 @@ public partial class CoinWMessageAdapter
 			_futuresNativeSymbols.Clear();
 			_futuresSymbols.Clear();
 			_futuresContractSizes.Clear();
+
 			foreach (var instrument in instruments)
 			{
 				if (instrument?.NativeSymbol.IsEmpty() != false)
@@ -45,6 +47,7 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -94,6 +97,7 @@ public partial class CoinWMessageAdapter
 			(securityTypes.Count == 0 || securityTypes.Contains(SecurityTypes.Future)))
 		{
 			var instruments = await RestClient.GetFuturesInstrumentsAsync(cancellationToken);
+
 			foreach (var instrument in instruments)
 			{
 				if (instrument?.NativeSymbol.IsEmpty() != false)
@@ -134,6 +138,7 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -165,6 +170,7 @@ public partial class CoinWMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -191,6 +197,7 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -219,6 +226,7 @@ public partial class CoinWMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -247,6 +255,7 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -264,6 +273,7 @@ public partial class CoinWMessageAdapter
 		if (section == CoinWSections.Spot)
 		{
 			var trades = await RestClient.GetSpotTradesAsync(symbol, from, to, cancellationToken);
+
 			foreach (var trade in trades.OrderBy(static item => item.Time.ToCoinWUtcTime()).TakeLast(limit))
 			{
 				var time = trade.Time.ToCoinWUtcTime();
@@ -278,6 +288,7 @@ public partial class CoinWMessageAdapter
 		else
 		{
 			var trades = await RestClient.GetFuturesTradesAsync(GetFuturesNativeSymbol(symbol), cancellationToken);
+
 			foreach (var trade in trades.OrderBy(static item => item.Time).TakeLast(limit))
 			{
 				var time = trade.Time.ToUtcTime();
@@ -291,6 +302,7 @@ public partial class CoinWMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -319,6 +331,7 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -338,6 +351,7 @@ public partial class CoinWMessageAdapter
 		if (section == CoinWSections.Spot)
 		{
 			var candles = await RestClient.GetSpotCandlesAsync(symbol, timeFrame, mdMsg.From, to, cancellationToken);
+
 			foreach (var candle in candles.OrderBy(static item => item.OpenTime))
 			{
 				await SendCandleAsync(candle.OpenTime.ToUtcTime(), candle.OpenPrice, candle.HighPrice,
@@ -350,6 +364,7 @@ public partial class CoinWMessageAdapter
 		{
 			var candles = await RestClient.GetFuturesCandlesAsync(GetFuturesNativeSymbol(symbol), timeFrame,
 				mdMsg.From, to, count, cancellationToken);
+
 			foreach (var candle in candles.OrderBy(static item => item.OpenTime))
 			{
 				await SendCandleAsync(candle.OpenTime.ToUtcTime(), candle.OpenPrice, candle.HighPrice,
@@ -360,6 +375,7 @@ public partial class CoinWMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -477,6 +493,7 @@ public partial class CoinWMessageAdapter
 			subscriptions = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Section == section && pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in subscriptions)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -528,10 +545,12 @@ public partial class CoinWMessageAdapter
 		}
 
 		var serverTime = update.Time > 0 ? update.Time.ToUtcTime() : CurrentTime;
+
 		foreach (var subscription in depthSubscriptions)
 			await SendBookAsync(update.Bids, update.Asks, symbol, section, subscription.Id,
 				update.IsSnapshot ? QuoteChangeStates.SnapshotComplete : QuoteChangeStates.Increment,
 				update.LastSequence, serverTime, subscription.State.Depth, cancellationToken);
+
 		foreach (var id in level1Subscriptions)
 			await SendBestQuotesAsync(update.Bids, update.Asks, symbol, section, id, serverTime, cancellationToken);
 	}
@@ -549,6 +568,7 @@ public partial class CoinWMessageAdapter
 			using (_sync.EnterScope())
 			{
 				var accepted = new List<long>();
+
 				foreach (var pair in _tickSubscriptions)
 				{
 					var state = pair.Value;
@@ -560,8 +580,10 @@ public partial class CoinWMessageAdapter
 					state.LastTime = time;
 					accepted.Add(pair.Key);
 				}
+
 				subscriptions = [.. accepted];
 			}
+
 			foreach (var id in subscriptions)
 				await SendTradeAsync(update.Id, update.Price, update.Volume, time,
 					update.Side.ToStockSharpSide(), symbol, section, id, cancellationToken);
@@ -586,9 +608,11 @@ public partial class CoinWMessageAdapter
 					pair.Value.Symbol.EqualsIgnoreCase(symbol) &&
 					(pair.Value.LastOpenTime == default || openTime >= pair.Value.LastOpenTime))
 				.Select(static pair => pair.Key)];
+
 			foreach (var id in subscriptions)
 				_candleSubscriptions[id].LastOpenTime = openTime;
 		}
+
 		foreach (var id in subscriptions)
 			await SendCandleAsync(openTime, update.OpenPrice, update.HighPrice, update.LowPrice,
 				update.ClosePrice, update.Volume, symbol, section, timeFrame.Value, id, cancellationToken);

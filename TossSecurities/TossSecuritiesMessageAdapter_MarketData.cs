@@ -47,6 +47,7 @@ public partial class TossSecuritiesMessageAdapter
                 requested.Contains(
                     indicator.code,
                     StringComparer.OrdinalIgnoreCase))];
+
         foreach (var (code, name, type) in indicators)
         {
             var message = CreateIndicatorSecurity(
@@ -65,6 +66,7 @@ public partial class TossSecuritiesMessageAdapter
         {
             var stockSymbols = requested.Where(
                 symbol => !IsMarketIndicator(symbol));
+
             foreach (var chunk in stockSymbols.Chunk(200))
             {
                 foreach (var stock in await _restClient.GetStocks(
@@ -79,6 +81,7 @@ public partial class TossSecuritiesMessageAdapter
                     if (--left <= 0)
                         break;
                 }
+
                 if (left <= 0)
                     break;
             }
@@ -130,6 +133,7 @@ public partial class TossSecuritiesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             _marketSubscriptions.Remove(
@@ -151,6 +155,7 @@ public partial class TossSecuritiesMessageAdapter
         }
 
         await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
         if (mdMsg.IsHistoryOnly())
         {
             await SendSubscriptionFinishedAsync(
@@ -223,6 +228,7 @@ public partial class TossSecuritiesMessageAdapter
                 trades = trades.TakeLast(
                     (int)mdMsg.Count.Value);
             }
+
             foreach (var trade in trades)
             {
                 await SendTrade(
@@ -241,6 +247,7 @@ public partial class TossSecuritiesMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             _marketSubscriptions.Remove(
@@ -251,6 +258,7 @@ public partial class TossSecuritiesMessageAdapter
         var timeFrame = mdMsg.GetTimeFrame();
         ValidateTimeFrame(mdMsg.SecurityId, timeFrame);
         var candles = await LoadCandles(mdMsg, cancellationToken);
+
         for (var index = 0; index < candles.Length; index++)
         {
             var state = mdMsg.IsHistoryOnly() ||
@@ -286,6 +294,7 @@ public partial class TossSecuritiesMessageAdapter
         }
 
         await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
         if (mdMsg.IsHistoryOnly())
         {
             await SendSubscriptionFinishedAsync(
@@ -326,6 +335,7 @@ public partial class TossSecuritiesMessageAdapter
                 AdjustedCandles,
                 cancellationToken);
             var rows = page?.Candles ?? [];
+
             foreach (var candle in rows)
             {
                 if (candle.Timestamp > before ||
@@ -429,6 +439,7 @@ public partial class TossSecuritiesMessageAdapter
                 IsMarketIndicator(item.SecurityId.SecurityCode) ==
                     indicators)
             .ToArray();
+
         foreach (var chunk in selected
             .Select(item => item.SecurityId.SecurityCode)
             .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -439,6 +450,7 @@ public partial class TossSecuritiesMessageAdapter
                     chunk, cancellationToken)
                 : await _restClient.GetPrices(
                     chunk, cancellationToken);
+
             foreach (var price in prices)
             {
                 foreach (var subscription in selected.Where(
@@ -478,6 +490,7 @@ public partial class TossSecuritiesMessageAdapter
         var candles = (page?.Candles ?? [])
             .OrderBy(candle => candle.Timestamp)
             .ToArray();
+
         for (var index = 0; index < candles.Length; index++)
         {
             var state = index < candles.Length - 1

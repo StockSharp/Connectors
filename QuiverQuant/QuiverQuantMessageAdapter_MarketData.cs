@@ -24,6 +24,7 @@ public partial class QuiverQuantMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -48,6 +49,7 @@ public partial class QuiverQuantMessageAdapter
         var remaining = lookupMsg.Count ?? long.MaxValue;
         var seen = new HashSet<string>(
             StringComparer.OrdinalIgnoreCase);
+
         foreach (var company in companies ?? [])
         {
             if (company is null || company.Ticker.IsEmpty())
@@ -84,6 +86,7 @@ public partial class QuiverQuantMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -130,6 +133,7 @@ public partial class QuiverQuantMessageAdapter
                 page,
                 perPage,
                 cancellationToken);
+
             foreach (var article in articles ?? [])
             {
                 if (article is null ||
@@ -148,6 +152,7 @@ public partial class QuiverQuantMessageAdapter
                 if (seen.Add(key))
                     collected.Add((article, time));
             }
+
             if ((articles?.Count ?? 0) < perPage)
                 break;
         }
@@ -155,6 +160,7 @@ public partial class QuiverQuantMessageAdapter
         var securityId = ticker.IsEmpty()
             ? default
             : mdMsg.SecurityId.Normalize(ticker);
+
         foreach (var item in collected
             .OrderByDescending(item => item.Time)
             .Take(target)
@@ -187,6 +193,7 @@ public partial class QuiverQuantMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(

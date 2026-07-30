@@ -83,6 +83,7 @@ sealed class FivePaisaFeedClient : BaseLogReceiver
 		}, _jsonSettings), cancellationToken);
 
 		var subscriptions = _subscriptions.ToArray();
+
 		for (var i = 0; i < subscriptions.Length; i += 100)
 			await SendMarketSubscription(true, subscriptions.Skip(i).Take(100).ToArray(), cancellationToken);
 	}
@@ -121,11 +122,13 @@ sealed class FivePaisaFeedClient : BaseLogReceiver
 				?? throw new InvalidOperationException("5paisa returned an empty market-feed message.");
 			if (MarketDataReceived is not { } handler)
 				return;
+
 			foreach (var update in updates)
 			{
 				if (update?.Token > 0)
 					await handler(update, cancellationToken);
 			}
+
 			return;
 		}
 

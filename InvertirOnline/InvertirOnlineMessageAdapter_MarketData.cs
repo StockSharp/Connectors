@@ -220,6 +220,7 @@ public partial class InvertirOnlineMessageAdapter
         }
 
         await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
         if (mdMsg.IsHistoryOnly())
         {
             await SendSubscriptionFinishedAsync(
@@ -303,6 +304,7 @@ public partial class InvertirOnlineMessageAdapter
         CancellationToken cancellationToken)
     {
         var subscriptions = _marketSubscriptions.Values.ToArray();
+
         foreach (var group in subscriptions.GroupBy(
             item => item.Native.GroupKey,
             StringComparer.OrdinalIgnoreCase))

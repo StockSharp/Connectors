@@ -80,6 +80,7 @@ sealed class ManifestTradeSocketClient : BaseLogReceiver
 		await _socket.ConnectAsync(_endpoint, cancellationToken);
 		_receiveTask = ReceiveLoopAsync(_lifetime.Token);
 		var confirmations = new List<Task<long>>(markets.Length * 2);
+
 		foreach (var market in markets)
 		{
 			confirmations.Add(await SubscribeAccountAsync(market,
@@ -87,6 +88,7 @@ sealed class ManifestTradeSocketClient : BaseLogReceiver
 			confirmations.Add(await SubscribeLogsAsync(market,
 				cancellationToken));
 		}
+
 		await Task.WhenAll(confirmations).WaitAsync(cancellationToken);
 	}
 
@@ -170,6 +172,7 @@ sealed class ManifestTradeSocketClient : BaseLogReceiver
 			{
 				using var stream = new MemoryStream();
 				WebSocketReceiveResult result;
+
 				do
 				{
 					result = await _socket.ReceiveAsync(
@@ -183,6 +186,7 @@ sealed class ManifestTradeSocketClient : BaseLogReceiver
 					stream.Write(buffer, 0, result.Count);
 				}
 				while (!result.EndOfMessage);
+
 				if (result.MessageType != WebSocketMessageType.Text)
 					continue;
 				var json = Encoding.UTF8.GetString(stream.GetBuffer(), 0,

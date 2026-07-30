@@ -97,6 +97,7 @@ public partial class GrowwMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			_orderStatusSubscriptionId = 0;
@@ -115,6 +116,7 @@ public partial class GrowwMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			_portfolioSubscriptionId = 0;
@@ -140,8 +142,10 @@ public partial class GrowwMessageAdapter
 	{
 		if (_isInstrumentCacheLoaded)
 			return;
+
 		foreach (var instrument in await _rest.GetInstruments(cancellationToken))
 			CacheSecurity(GrowwSecurityInfo.FromInstrument(instrument));
+
 		_isInstrumentCacheLoaded = true;
 	}
 
@@ -152,9 +156,11 @@ public partial class GrowwMessageAdapter
 			await ProcessOrder(order, originId, includeTrades, cancellationToken);
 			if (!includeTrades || order.FilledQuantity is not > 0 || order.OrderId.IsEmpty() || order.Segment.IsEmpty())
 				continue;
+
 			foreach (var trade in await _rest.GetTrades(order.OrderId, order.Segment, cancellationToken))
 				await ProcessTrade(trade, originId, cancellationToken);
 		}
+
 		_lastOrderRefresh = CurrentTime;
 	}
 
@@ -184,6 +190,7 @@ public partial class GrowwMessageAdapter
 		var segments = profile.ActiveSegments is { Length: > 0 }
 			? profile.ActiveSegments.Where(segment => segment is "CASH" or "FNO" or "COMMODITY")
 			: ["CASH", "FNO", "COMMODITY"];
+
 		foreach (var segment in segments.Distinct(StringComparer.OrdinalIgnoreCase))
 		{
 			foreach (var position in await _rest.GetPositions(segment, cancellationToken))
@@ -403,6 +410,7 @@ public partial class GrowwMessageAdapter
 					return false;
 				transactionId = checked(transactionId * 36 + digit);
 			}
+
 			return true;
 		}
 		catch (OverflowException)

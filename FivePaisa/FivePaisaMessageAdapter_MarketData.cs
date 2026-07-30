@@ -12,6 +12,7 @@ public partial class FivePaisaMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -75,6 +76,7 @@ public partial class FivePaisaMessageAdapter
 	private async ValueTask ProcessNormalSubscription(MarketDataMessage mdMsg, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (_feedClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
@@ -108,6 +110,7 @@ public partial class FivePaisaMessageAdapter
 	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var depth = mdMsg.MaxDepth ?? 20;
 		if (depth > 20)
 			throw new ArgumentOutOfRangeException(nameof(mdMsg.MaxDepth), depth, "5paisa supports at most 20 market-depth levels.");
@@ -135,6 +138,7 @@ public partial class FivePaisaMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (!mdMsg.IsHistoryOnly())

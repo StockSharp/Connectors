@@ -9,6 +9,7 @@ public partial class SierraChartDtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (_capabilities?.IsSecurityDefinitionsSupported == false)
 			throw new NotSupportedException("The connected DTC server does not advertise security-definition support.");
 
@@ -125,6 +126,7 @@ public partial class SierraChartDtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -149,6 +151,7 @@ public partial class SierraChartDtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 
@@ -168,6 +171,7 @@ public partial class SierraChartDtcMessageAdapter
 		bool isDepth, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -438,6 +442,7 @@ public partial class SierraChartDtcMessageAdapter
 					},
 				}, cancellationToken);
 			}
+
 			return;
 		}
 
@@ -446,6 +451,7 @@ public partial class SierraChartDtcMessageAdapter
 		if (mdMsg.Count is long candleCount && candles.LongLength > candleCount)
 			candles = [.. candles.TakeLast((int)Math.Min(candleCount, int.MaxValue))];
 		var timeFrame = TimeSpan.FromSeconds(intervalSeconds);
+
 		foreach (var record in candles)
 		{
 			await SendOutMessageAsync(new TimeFrameCandleMessage
@@ -475,6 +481,7 @@ public partial class SierraChartDtcMessageAdapter
 		if (!_symbolsById.TryGetValue(snapshot.SymbolId, out var state))
 			return;
 		var serverTime = snapshot.BidAskTime ?? snapshot.LastTime ?? CurrentTime;
+
 		foreach (var subscription in GetSubscriptions(state, DataType.Level1))
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -541,6 +548,7 @@ public partial class SierraChartDtcMessageAdapter
 	{
 		if (securityState == null)
 			return;
+
 		foreach (var subscription in GetSubscriptions(state, DataType.Level1))
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -557,6 +565,7 @@ public partial class SierraChartDtcMessageAdapter
 		if (!_symbolsById.TryGetValue(trade.SymbolId, out var state))
 			return;
 		var time = trade.Time ?? CurrentTime;
+
 		foreach (var subscription in GetSubscriptions(state, DataType.Ticks))
 		{
 			await SendOutMessageAsync(new ExecutionMessage
@@ -576,6 +585,7 @@ public partial class SierraChartDtcMessageAdapter
 				},
 			}, cancellationToken);
 		}
+
 		foreach (var subscription in GetSubscriptions(state, DataType.Level1))
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -595,6 +605,7 @@ public partial class SierraChartDtcMessageAdapter
 	{
 		if (!_symbolsById.TryGetValue(bidAsk.SymbolId, out var state))
 			return;
+
 		foreach (var subscription in GetSubscriptions(state, DataType.Level1))
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -628,6 +639,7 @@ public partial class SierraChartDtcMessageAdapter
 		};
 		if (field == null || session.Value == null)
 			return;
+
 		foreach (var subscription in GetSubscriptions(state, DataType.Level1))
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -686,6 +698,7 @@ public partial class SierraChartDtcMessageAdapter
 		{
 			QuoteChange? bestBid = bids.Length > 0 ? bids[0] : null;
 			QuoteChange? bestAsk = asks.Length > 0 ? asks[0] : null;
+
 			foreach (var subscription in GetSubscriptions(state, DataType.Level1))
 			{
 				await SendOutMessageAsync(new Level1ChangeMessage

@@ -6,11 +6,13 @@ public partial class SaxoMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var count = (int)Math.Clamp(lookupMsg.Count ?? 100, 1, 1000);
 		var response = await _client.Rest.FindInstruments(lookupMsg.SecurityId.SecurityCode,
 			securityTypes.ToSaxoAssetTypes(), count, _client.Session.AccountKey, cancellationToken);
 		var left = count;
+
 		foreach (var summary in response.Data ?? [])
 		{
 			if (left <= 0)
@@ -18,6 +20,7 @@ public partial class SaxoMessageAdapter
 			if (summary.SummaryType.ContainsIgnoreCase("OptionRoot"))
 			{
 				var space = await _client.Rest.GetOptionSpace(summary.Identifier, _client.Session.ClientKey, cancellationToken);
+
 				foreach (var option in (space.OptionSpace ?? []).SelectMany(s => s.SpecificOptions ?? []))
 				{
 					var details = await _client.Rest.GetInstrument(option.Uic, space.AssetType.IsEmpty(summary.AssetType),
@@ -30,6 +33,7 @@ public partial class SaxoMessageAdapter
 				(summary.AssetType.EqualsIgnoreCase("ContractFutures") && summary.DisplayHint.EqualsIgnoreCase("Continuous")))
 			{
 				var space = await _client.Rest.GetFutureSpace(summary.Identifier, cancellationToken);
+
 				foreach (var future in space.Elements ?? [])
 				{
 					var details = await _client.Rest.GetInstrument(future.Uic, future.AssetType.IsEmpty(summary.AssetType),
@@ -46,6 +50,7 @@ public partial class SaxoMessageAdapter
 					left--;
 			}
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -61,6 +66,7 @@ public partial class SaxoMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await _client.UnsubscribeCandles(mdMsg.OriginalTransactionId, cancellationToken);
@@ -89,6 +95,7 @@ public partial class SaxoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await _client.UnsubscribePrice(mdMsg.OriginalTransactionId, cancellationToken);
@@ -201,6 +208,7 @@ public partial class SaxoMessageAdapter
 		DateTimeOffset? cursor = mdMsg.To is null ? null : new(mdMsg.To.Value.ToUniversalTime());
 		var remaining = (int)Math.Clamp(mdMsg.Count ?? (from is null ? 1200 : 12000), 1, 12000);
 		var samples = new SortedDictionary<DateTime, SaxoChartSample>();
+
 		while (remaining > 0)
 		{
 			var requestCount = Math.Min(remaining, 1200);
@@ -209,18 +217,21 @@ public partial class SaxoMessageAdapter
 			var page = response.Data ?? [];
 			if (page.Length == 0)
 				break;
+
 			foreach (var sample in page)
 			{
 				var time = sample.Time.UtcKind();
 				if (from is null || time >= from)
 					samples[time] = sample;
 			}
+
 			remaining -= page.Length;
 			var oldest = page.Min(s => s.Time).UtcKind();
 			if ((from is not null && oldest <= from) || page.Length < requestCount)
 				break;
 			cursor = new DateTimeOffset(oldest.AddTicks(-1));
 		}
+
 		foreach (var sample in samples.Values)
 			await SendCandle(mdMsg.TransactionId, mdMsg.SecurityId, timeFrame, sample, CandleStates.Finished, cancellationToken);
 	}

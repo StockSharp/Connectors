@@ -87,6 +87,7 @@ public partial class MorningstarMessageAdapter
 	{
 		if (investment == null)
 			return;
+
 		foreach (var alias in investment.GetAliases())
 			_investments[alias] = investment;
 	}

@@ -68,6 +68,7 @@ public partial class CryptoQuantMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_instruments.Clear();
+
 			foreach (var instrument in instruments)
 				_instruments[instrument.Key] = instrument;
 		}
@@ -78,6 +79,7 @@ public partial class CryptoQuantMessageAdapter
 	{
 		var result = new Dictionary<string, CryptoQuantInstrument>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var endpoint in endpoints ?? [])
 		{
 			if (endpoint?.Path.IsEmpty() != false)
@@ -117,6 +119,7 @@ public partial class CryptoQuantMessageAdapter
 				];
 
 			var tokens = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 			foreach (var token in parameters
 				.Where(static parameter => parameter is not null)
 				.SelectMany(static parameter => parameter.Token ?? []))
@@ -157,6 +160,7 @@ public partial class CryptoQuantMessageAdapter
 				}
 			}
 		}
+
 		return [.. result.Values];
 	}
 

@@ -8,6 +8,7 @@ public partial class JupiterMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class JupiterMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -43,6 +45,7 @@ public partial class JupiterMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -52,6 +55,7 @@ public partial class JupiterMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -79,6 +83,7 @@ public partial class JupiterMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -248,6 +253,7 @@ public partial class JupiterMessageAdapter
 		KeyValuePair<long, Level1Subscription>[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _level1Subscriptions];
+
 		foreach (var group in targets.GroupBy(static pair =>
 			pair.Value.Market.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -255,6 +261,7 @@ public partial class JupiterMessageAdapter
 			var snapshot = market.Kind == JupiterMarketKinds.Spot
 				? await LoadSpotLevel1Async(market, cancellationToken)
 				: await LoadPerpetualLevel1Async(market, cancellationToken);
+
 			foreach (var target in group)
 				await SendLevel1Async(market, target.Key, false, snapshot,
 					cancellationToken);
@@ -266,8 +273,10 @@ public partial class JupiterMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -285,6 +294,7 @@ public partial class JupiterMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

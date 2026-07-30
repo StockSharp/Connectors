@@ -13,6 +13,7 @@ public partial class AliceBlueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -86,6 +87,7 @@ public partial class AliceBlueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (_marketClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
@@ -137,6 +139,7 @@ public partial class AliceBlueMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (!mdMsg.IsHistoryOnly())

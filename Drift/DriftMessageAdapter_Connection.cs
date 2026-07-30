@@ -91,6 +91,7 @@ public partial class DriftMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets)
 			{
 				market.Symbol = market.Symbol.Trim().ToUpperInvariant();
@@ -192,6 +193,7 @@ public partial class DriftMessageAdapter
 		_dlobSocket = null;
 		_restClient = null;
 		_signer = null;
+
 		foreach (var socket in new BaseLogReceiver[] { dataSocket, dlobSocket })
 		{
 			if (socket is null)
@@ -209,6 +211,7 @@ public partial class DriftMessageAdapter
 			}
 			socket.Dispose();
 		}
+
 		rest?.Dispose();
 		signer?.Dispose();
 		ClearState();

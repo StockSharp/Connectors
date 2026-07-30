@@ -44,6 +44,7 @@ public partial class ComdirectMessageAdapter
         }
 
         var left = message.Count ?? long.MaxValue;
+
         foreach (var venue in venues)
         {
             if (left <= 0)

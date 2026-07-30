@@ -318,6 +318,7 @@ sealed class MarketauxRestClient :
         CancellationToken cancellationToken)
     {
         var requestAddress = BuildAddress(path, query ?? []);
+
         for (var attempt = 0; attempt < 4; attempt++)
         {
             try

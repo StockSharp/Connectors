@@ -147,6 +147,7 @@ public partial class MotilalOswalMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -156,6 +157,7 @@ public partial class MotilalOswalMessageAdapter
 
 		EnsurePortfolio(statusMsg.PortfolioName);
 		var left = statusMsg.Count ?? long.MaxValue;
+
 		foreach (var order in (await _restClient.GetOrders(cancellationToken))
 			.Where(o => o != null)
 			.OrderBy(o => GetOrderTime(o)))
@@ -186,6 +188,7 @@ public partial class MotilalOswalMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)

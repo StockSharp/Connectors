@@ -180,6 +180,7 @@ public partial class MaxExchangeMessageAdapter
 				? GetAllMarkets()
 				: [market],
 			cancellationToken);
+
 		foreach (var order in orders.Where(order =>
 			order?.Id.IsEmpty() == false &&
 			order.Action.ToSide() == cancelMsg.Side))
@@ -198,6 +199,7 @@ public partial class MaxExchangeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -219,12 +221,14 @@ public partial class MaxExchangeMessageAdapter
 		}
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -235,6 +239,7 @@ public partial class MaxExchangeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -254,12 +259,14 @@ public partial class MaxExchangeMessageAdapter
 			statusMsg, maximum, cancellationToken);
 		await SendSubscriptionResultAsync(
 			statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -269,6 +276,7 @@ public partial class MaxExchangeMessageAdapter
 	{
 		var balances = await RestClient.GetBalancesAsync(
 			cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(
 				balance, originalTransactionId, cancellationToken);
@@ -301,6 +309,7 @@ public partial class MaxExchangeMessageAdapter
 					}),
 				];
 			}
+
 			foreach (var market in markets)
 			{
 				var order = await RestClient.GetOrderAsync(
@@ -310,6 +319,7 @@ public partial class MaxExchangeMessageAdapter
 						order, statusMsg.TransactionId,
 						cancellationToken);
 			}
+
 			return;
 		}
 
@@ -326,6 +336,7 @@ public partial class MaxExchangeMessageAdapter
 				using (_sync.EnterScope())
 					markets = [.. _marketsBySecurity.Values];
 			}
+
 			foreach (var market in markets)
 				orders.AddRange(await RestClient.GetOrdersAsync(
 					market.Pair,
@@ -334,6 +345,7 @@ public partial class MaxExchangeMessageAdapter
 					maximum,
 					cancellationToken) ?? []);
 		}
+
 		foreach (var order in orders
 			.Where(order => MatchesOrder(order, statusMsg))
 			.GroupBy(static order => order.Id, StringComparer.Ordinal)
@@ -381,9 +393,11 @@ public partial class MaxExchangeMessageAdapter
 			_knownActiveOrderIds.Clear();
 			_knownActiveOrderIds.AddRange(currentIds);
 		}
+
 		foreach (var order in openOrders.OrderBy(GetOrderTimestamp))
 			await SendOrderAsync(
 				order, originalTransactionId, cancellationToken);
+
 		foreach (var orderId in removed)
 		{
 			var tracked = GetTrackedOrder(orderId);
@@ -424,6 +438,7 @@ public partial class MaxExchangeMessageAdapter
 						: null)
 				.Where(static market => market is not null)
 				.Distinct()];
+
 		foreach (var market in trackedMarkets)
 			await SendPrivateTradesAsync(
 				market,
@@ -632,12 +647,14 @@ public partial class MaxExchangeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var orders = new List<MaxExchangeOrder>();
+
 		foreach (var market in (markets ?? [])
 			.Where(static market => market is not null)
 			.Distinct())
 			orders.AddRange(
 				await RestClient.GetOpenOrdersAsync(
 					market.Pair, cancellationToken) ?? []);
+
 		return [.. orders];
 	}
 

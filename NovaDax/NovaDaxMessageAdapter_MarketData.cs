@@ -9,6 +9,7 @@ public partial class NovaDaxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -20,6 +21,7 @@ public partial class NovaDaxMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -51,6 +53,7 @@ public partial class NovaDaxMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -60,6 +63,7 @@ public partial class NovaDaxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -119,6 +123,7 @@ public partial class NovaDaxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -185,6 +190,7 @@ public partial class NovaDaxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -209,6 +215,7 @@ public partial class NovaDaxMessageAdapter
 			var to = (mdMsg.To ?? DateTime.UtcNow).ToUtc();
 			var trades = await RestClient.GetPublicTradesAsync(
 				market.Pair, cancellationToken);
+
 			foreach (var trade in (trades ?? [])
 				.Where(trade =>
 				{
@@ -271,6 +278,7 @@ public partial class NovaDaxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -308,6 +316,7 @@ public partial class NovaDaxMessageAdapter
 			from,
 			to,
 			cancellationToken);
+
 		foreach (var candle in (candles ?? [])
 			.Where(candle =>
 			{
@@ -322,6 +331,7 @@ public partial class NovaDaxMessageAdapter
 				timeFrame,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(
 			mdMsg, cancellationToken);
 	}
@@ -457,6 +467,7 @@ public partial class NovaDaxMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(ticker.Pair))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(
 				CreateLevel1Message(market, ticker, pair.Key),
@@ -474,6 +485,7 @@ public partial class NovaDaxMessageAdapter
 				pair.Value.NativeSymbol.EqualsIgnoreCase(book.Pair) &&
 				(book.Limit <= 0 ||
 					pair.Value.StreamDepth == book.Limit))];
+
 		foreach (var pair in subscriptions)
 			await SendDepthAsync(
 				pair.Value.SecurityCode, book, pair.Key,
@@ -489,6 +501,7 @@ public partial class NovaDaxMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(push.Pair))];
+
 		for (var index = 0; index < (push.Data?.Length ?? 0); index++)
 		{
 			var trade = push.Data[index];
@@ -497,6 +510,7 @@ public partial class NovaDaxMessageAdapter
 				: $"{push.EventId}-{index}";
 			if (!AddTrade(push.Pair, tradeId, false))
 				continue;
+
 			foreach (var pair in subscriptions)
 				await SendPublicTradeAsync(
 					pair.Value.SecurityCode, trade, tradeId,

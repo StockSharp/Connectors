@@ -6,6 +6,7 @@ partial class TradeStationMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var code = message.SecurityId.SecurityCode;
 		if (code.IsEmpty())
 		{
@@ -14,6 +15,7 @@ partial class TradeStationMessageAdapter
 		}
 
 		var types = message.GetSecurityTypes();
+
 		foreach (var symbol in (await _client.GetSymbols([code], cancellationToken))?.Symbols ?? [])
 		{
 			var security = new SecurityMessage
@@ -44,6 +46,7 @@ partial class TradeStationMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.IsSubscribe)
 		{
 			_level1Subscriptions[message.TransactionId] = message.SecurityId;
@@ -59,6 +62,7 @@ partial class TradeStationMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -129,6 +133,7 @@ partial class TradeStationMessageAdapter
 		var subscriptions = _level1Subscriptions
 			.Where(p => p.Value.SecurityCode.EqualsIgnoreCase(quote.Symbol))
 			.ToArray();
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage

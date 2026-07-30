@@ -67,6 +67,7 @@ public partial class PhemexMessageAdapter
 	protected override async ValueTask TimeAsync(TimeMessage timeMsg, CancellationToken cancellationToken)
 	{
 		_ = timeMsg;
+
 		foreach (var client in GetClients())
 			await client.PingAsync(cancellationToken);
 	}

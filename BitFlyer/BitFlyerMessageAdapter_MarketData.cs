@@ -7,6 +7,7 @@ public partial class BitFlyerMessageAdapter
 		SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class BitFlyerMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.ProductCode,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class BitFlyerMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +56,7 @@ public partial class BitFlyerMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -110,6 +114,7 @@ public partial class BitFlyerMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -171,6 +176,7 @@ public partial class BitFlyerMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -193,6 +199,7 @@ public partial class BitFlyerMessageAdapter
 		}, cancellationToken);
 		var from = mdMsg.From?.ToUniversalTime();
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
+
 		foreach (var execution in (executions ?? [])
 			.Where(value => value is not null &&
 				value.ExecutionDate.ToUtcDateTime(DateTime.MinValue) >=
@@ -311,6 +318,7 @@ public partial class BitFlyerMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.ProductCode.EqualsIgnoreCase(market.ProductCode))];
+
 		foreach (var pair in subscriptions)
 			await SendTickerAsync(ticker, pair.Key, cancellationToken);
 	}
@@ -324,11 +332,13 @@ public partial class BitFlyerMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.ProductCode.EqualsIgnoreCase(market.ProductCode))];
+
 		foreach (var execution in executions ?? [])
 		{
 			if (execution is null || !AddPublicTrade(market.ProductCode,
 				execution.Id))
 				continue;
+
 			foreach (var pair in subscriptions)
 				await SendPublicExecutionAsync(market.ProductCode, execution,
 					pair.Key, cancellationToken, false);
@@ -346,6 +356,7 @@ public partial class BitFlyerMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.ProductCode.EqualsIgnoreCase(market.ProductCode))];
+
 		foreach (var pair in subscriptions)
 			await SendCurrentBoardAsync(market.ProductCode, pair.Value.Depth,
 				pair.Key, cancellationToken);

@@ -7,6 +7,7 @@ public partial class PhillipPoemsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (_client == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
@@ -38,6 +39,7 @@ public partial class PhillipPoemsMessageAdapter
 
 		var skip = Math.Max(0, message.Skip ?? 0);
 		var left = Math.Max(0, message.Count ?? long.MaxValue);
+
 		foreach (var counter in counters)
 		{
 			var security = CreateSecurity(counter, message.TransactionId);
@@ -53,6 +55,7 @@ public partial class PhillipPoemsMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -61,6 +64,7 @@ public partial class PhillipPoemsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_level1Subscriptions.Remove(message.OriginalTransactionId);
@@ -70,11 +74,13 @@ public partial class PhillipPoemsMessageAdapter
 		var counter = await ResolveCounter(message.SecurityId, cancellationToken);
 		var securityId = counter.ToSecurityId(DefaultExchange);
 		var response = await _client.GetPrices([counter.CounterId], cancellationToken);
+
 		foreach (var price in response.PriceList ?? [])
 		{
 			CachePrice(price);
 			await SendLevel1(message.TransactionId, securityId, price, cancellationToken);
 		}
+
 		if (!message.IsHistoryOnly())
 			_level1Subscriptions[message.TransactionId] = new()
 			{
@@ -89,6 +95,7 @@ public partial class PhillipPoemsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_tickSubscriptions.Remove(message.OriginalTransactionId);
@@ -113,6 +120,7 @@ public partial class PhillipPoemsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_depthSubscriptions.Remove(message.OriginalTransactionId);
@@ -148,13 +156,16 @@ public partial class PhillipPoemsMessageAdapter
 		_level1Cursor = (start + batch.Length) % counters.Length;
 		var response = await _client.GetPrices(batch.Select(counter => counter.CounterId).ToArray(),
 			cancellationToken);
+
 		foreach (var price in response.PriceList ?? [])
 		{
 			var counter = CachePrice(price);
+
 			foreach (var pair in subscriptions.Where(pair =>
 				pair.Value.Counter.CounterId.EqualsIgnoreCase(price.CounterId) ||
 				pair.Value.SecurityId.SecurityCode.EqualsIgnoreCase(price.Symbol)))
 				await SendLevel1(pair.Key, pair.Value.SecurityId, price, cancellationToken);
+
 			if (counter != null)
 				CacheCounter(counter);
 		}
@@ -214,6 +225,7 @@ public partial class PhillipPoemsMessageAdapter
 
 		var left = Math.Max(0, requestedCount ?? (isInitial ? long.MaxValue : 100));
 		var page = 1;
+
 		do
 		{
 			var size = (int)Math.Clamp(left == long.MaxValue ? 100 : left, 1, 100);
@@ -222,6 +234,7 @@ public partial class PhillipPoemsMessageAdapter
 				to?.ToExchangeLocal(exchange).ToString("HH:mm", CultureInfo.InvariantCulture),
 				size, page, cancellationToken);
 			var occurrences = new Dictionary<string, int>(StringComparer.Ordinal);
+
 			foreach (var trade in (response.TimeSales ?? [])
 				.OrderBy(item => item.Time.ToUtc(exchange, CurrentTime)))
 			{
@@ -252,6 +265,7 @@ public partial class PhillipPoemsMessageAdapter
 				if (left != long.MaxValue && --left <= 0)
 					break;
 			}
+
 			if (!isInitial || left <= 0 || page >= Math.Max(1, response.TotalPages))
 				break;
 			page++;

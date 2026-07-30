@@ -351,6 +351,7 @@ public partial class KrxOpenApiMessageAdapter
         bool ascending)
     {
         var step = ascending ? 1 : -1;
+
         for (var date = start.Date;
             ascending ? date <= end.Date : date >= end.Date;
             date = date.AddDays(step))

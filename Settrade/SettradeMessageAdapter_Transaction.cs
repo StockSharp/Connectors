@@ -205,6 +205,7 @@ public partial class SettradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var account = ResolveAccount(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -247,6 +248,7 @@ public partial class SettradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -278,9 +280,11 @@ public partial class SettradeMessageAdapter
 		if (portfolioTargets.Length == 0 && orderTargets.Length == 0)
 			return;
 		var account = ResolveAccount(null);
+
 		foreach (var target in portfolioTargets)
 			await SendPortfolioSnapshotAsync(account, target,
 				cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(account, target, null,
 				cancellationToken);
@@ -298,6 +302,7 @@ public partial class SettradeMessageAdapter
 				continue;
 			await SendOrderAsync(order, target, cancellationToken);
 		}
+
 		foreach (var trade in await RestClient.GetTradesAsync(account,
 			AccountType, cancellationToken))
 			await SendTradeAsync(trade, target, cancellationToken);
@@ -330,6 +335,7 @@ public partial class SettradeMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = _orderSubscriptions.ToArray();
+
 		foreach (var target in targets)
 			await SendOrderAsync(order, target, cancellationToken);
 	}
@@ -428,6 +434,7 @@ public partial class SettradeMessageAdapter
 			FindDecimal(info, "totalMr", "total_mr", "totalMM"), true)
 		.TryAdd(PositionChangeTypes.Currency, CurrencyTypes.THB),
 			cancellationToken);
+
 		foreach (var position in await RestClient.GetPortfoliosAsync(
 			account, AccountType, cancellationToken))
 		{
@@ -512,6 +519,7 @@ public partial class SettradeMessageAdapter
 		params string[] names)
 	{
 		value = Unwrap(value);
+
 		foreach (var name in names)
 		{
 			var token = value?.GetValue(name,
@@ -520,6 +528,7 @@ public partial class SettradeMessageAdapter
 				token.Type is not JTokenType.Null)
 				return token.Value<string>();
 		}
+
 		return null;
 	}
 
@@ -527,6 +536,7 @@ public partial class SettradeMessageAdapter
 		params string[] names)
 	{
 		value = Unwrap(value);
+
 		foreach (var name in names)
 		{
 			var token = value?.GetValue(name,
@@ -541,6 +551,7 @@ public partial class SettradeMessageAdapter
 				out var result))
 				return result;
 		}
+
 		return null;
 	}
 
@@ -548,6 +559,7 @@ public partial class SettradeMessageAdapter
 		params string[] names)
 	{
 		value = Unwrap(value);
+
 		foreach (var name in names)
 		{
 			var token = value?.GetValue(name,
@@ -572,6 +584,7 @@ public partial class SettradeMessageAdapter
 					DateTimeStyles.AdjustToUniversal, out var parsed))
 				return parsed;
 		}
+
 		return null;
 	}
 }

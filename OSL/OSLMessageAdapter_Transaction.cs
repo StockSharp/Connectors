@@ -174,14 +174,17 @@ public partial class OSLMessageAdapter
 			{
 				Symbol = symbol,
 			}, cancellationToken);
+
 			foreach (var order in cancelled ?? [])
 				await SendOrderAsync(order, cancelMsg.TransactionId, true,
 					cancellationToken);
+
 			return;
 		}
 
 		var open = await RestClient.GetOpenOrdersAsync(symbol, null, null,
 			null, null, 100, cancellationToken);
+
 		foreach (var order in (open ?? []).Where(order =>
 			order?.Side.IsEmpty() == false &&
 			order.Side.ToStockSharpSide() == cancelMsg.Side))
@@ -206,6 +209,7 @@ public partial class OSLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -229,10 +233,12 @@ public partial class OSLMessageAdapter
 			BoardCode = BoardCodes.OSL,
 			OriginalTransactionId = lookupMsg.TransactionId,
 		}, cancellationToken);
+
 		foreach (var asset in await RestClient.GetAssetsAsync(null,
 			cancellationToken) ?? [])
 			await SendBalanceAsync(asset, lookupMsg.TransactionId, true,
 				cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -240,6 +246,7 @@ public partial class OSLMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		try
@@ -262,6 +269,7 @@ public partial class OSLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -298,9 +306,11 @@ public partial class OSLMessageAdapter
 			Maximum = (statusMsg.Count ?? 1000).Min(5000).Max(1).To<int>(),
 		};
 		var orders = await LoadOrdersAsync(subscription, cancellationToken);
+
 		foreach (var order in orders)
 			await SendOrderWithFillsAsync(order, statusMsg.TransactionId,
 				true, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
@@ -319,21 +329,25 @@ public partial class OSLMessageAdapter
 			await AcquirePrivateStreamAsync(OSLWsChannels.Fill, "default",
 				cancellationToken);
 			fillAcquired = true;
+
 			foreach (var symbol in subscription.StreamSymbols)
 			{
 				await AcquirePrivateStreamAsync(OSLWsChannels.Orders, symbol,
 					cancellationToken);
 				acquiredSymbols.Add(symbol);
 			}
+
 			await SendSubscriptionResultAsync(statusMsg, cancellationToken);
 		}
 		catch
 		{
 			using (_sync.EnterScope())
 				_orderSubscriptions.Remove(statusMsg.TransactionId);
+
 			foreach (var symbol in acquiredSymbols)
 				await ReleasePrivateStreamAsync(OSLWsChannels.Orders, symbol,
 					cancellationToken);
+
 			if (fillAcquired)
 				await ReleasePrivateStreamAsync(OSLWsChannels.Fill,
 					"default", cancellationToken);
@@ -395,6 +409,7 @@ public partial class OSLMessageAdapter
 			MatchesOrder(subscription, order)));
 
 		string cursor = null;
+
 		while (result.Count < subscription.Maximum)
 		{
 			var limit = (subscription.Maximum - result.Count).Min(100).Max(1);
@@ -433,6 +448,7 @@ public partial class OSLMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var target in targets)
 			foreach (var asset in assets)
 				await SendBalanceAsync(asset, target, false,
@@ -452,6 +468,7 @@ public partial class OSLMessageAdapter
 		var tracked = MatchTrackedOrder(order);
 		if (tracked is not null)
 			targets.Add(tracked.TransactionId);
+
 		foreach (var target in targets)
 			await SendOrderAsync(order, target, false, cancellationToken);
 	}
@@ -470,6 +487,7 @@ public partial class OSLMessageAdapter
 			GetTrackedOrder(fill.ClientOrderId);
 		if (tracked is not null)
 			targets.Add(tracked.TransactionId);
+
 		foreach (var target in targets)
 			await SendAccountTradeAsync(fill, target, cancellationToken);
 	}
@@ -515,6 +533,7 @@ public partial class OSLMessageAdapter
 		if (order?.OrderId.IsEmpty() != false ||
 			order.EffectiveSymbol.IsEmpty() || executed <= 0)
 			return;
+
 		foreach (var fill in await RestClient.GetFillsAsync(
 			order.EffectiveSymbol, order.OrderId, null, null, null, 100,
 			cancellationToken) ?? [])
@@ -526,8 +545,10 @@ public partial class OSLMessageAdapter
 	{
 		if (order is null || order.EffectiveSymbol.IsEmpty())
 			return default;
+
 		var tracked = MatchTrackedOrder(order);
 		var clientOrderId = order.EffectiveClientOrderId;
+
 		if (tracked is not null)
 		{
 			if (!order.OrderId.IsEmpty())
@@ -537,6 +558,7 @@ public partial class OSLMessageAdapter
 			tracked.State = order.Status.ToStockSharpOrderState();
 			TrackOrder(tracked, tracked.OrderId, tracked.ClientOrderId);
 		}
+
 		var total = tracked?.Volume ??
 			order.OriginalQuantity.ToDecimal() ??
 			order.NewSize.ToDecimal() ?? order.Size.ToDecimal();
@@ -547,14 +569,17 @@ public partial class OSLMessageAdapter
 				? order.AveragePrice.ToDecimal()
 				: null);
 		var average = order.EffectiveAveragePrice.ToDecimal();
+
 		if ((executed ?? 0m) <= 0)
 			average = null;
+
 		var fingerprint = new OrderFingerprint(order.Status, total, executed,
 			price, average);
 		var identity = order.OrderId.IsEmpty()
 			? clientOrderId
 			: order.OrderId;
 		var key = $"{targetId}:{identity}";
+
 		using (_sync.EnterScope())
 		{
 			if (!isForced && _orderFingerprints.TryGetValue(key,
@@ -562,15 +587,19 @@ public partial class OSLMessageAdapter
 				return default;
 			_orderFingerprints[key] = fingerprint;
 		}
+
 		decimal? balance = total is decimal volume
 			? (volume - (executed ?? 0m)).Max(0m)
 			: null;
+
 		if (state == OrderStates.Done)
 			balance = 0m;
+
 		var side = order.Side.IsEmpty()
 			? tracked?.Side ?? throw new InvalidDataException(
 				$"OSL order '{identity}' has no side.")
 			: order.Side.ToStockSharpSide();
+
 		return SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Transactions,
@@ -740,9 +769,11 @@ public partial class OSLMessageAdapter
 		}
 		if (subscription is null)
 			return;
+
 		foreach (var symbol in subscription.StreamSymbols ?? [])
 			await ReleasePrivateStreamAsync(OSLWsChannels.Orders, symbol,
 				cancellationToken);
+
 		await ReleasePrivateStreamAsync(OSLWsChannels.Fill, "default",
 			cancellationToken);
 	}
@@ -759,6 +790,7 @@ public partial class OSLMessageAdapter
 		Dictionary<string, TValue> values, long targetId)
 	{
 		var prefix = targetId.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key => key.StartsWith(prefix,
 			StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

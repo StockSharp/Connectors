@@ -189,6 +189,7 @@ public partial class BudaMessageAdapter
 		{
 			_marketsBySecurity.Clear();
 			_marketsByNative.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Id.IsEmpty() != false ||
@@ -267,10 +268,12 @@ public partial class BudaMessageAdapter
 			if (!_seenPublicTradeIds.Add(key))
 				return false;
 			_seenPublicTradeOrder.Enqueue(key);
+
 			while (_seenPublicTradeOrder.Count >
 				_maximumRememberedTradeIds)
 				_seenPublicTradeIds.Remove(
 					_seenPublicTradeOrder.Dequeue());
+
 			return true;
 		}
 	}

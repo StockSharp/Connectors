@@ -129,11 +129,13 @@ public partial class CoinhakoMessageAdapter
 		if (currencies.Length == 0)
 			throw new InvalidOperationException(
 				"At least one Coinhako counter currency must be configured.");
+
 		foreach (var currency in currencies)
 			if (currency.Length is < 2 or > 16 ||
 				!currency.All(static character => char.IsLetterOrDigit(character)))
 				throw new InvalidOperationException(
 					$"Invalid Coinhako counter currency '{currency}'.");
+
 		return currencies;
 	}
 
@@ -142,6 +144,7 @@ public partial class CoinhakoMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var price in prices ?? [])
 			{
 				if (!TryCreateMarket(price, out var market))

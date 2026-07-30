@@ -111,6 +111,7 @@ public partial class WhiteBitMessageAdapter
 		WhiteBitWsClient[] candleClients;
 		using (_sync.EnterScope())
 			candleClients = [.. _candleWsClients.Values];
+
 		foreach (var client in candleClients)
 			await client.PingAsync(cancellationToken);
 	}
@@ -123,6 +124,7 @@ public partial class WhiteBitMessageAdapter
 			candleClients = [.. _candleWsClients.Values];
 			_candleWsClients.Clear();
 		}
+
 		foreach (var client in candleClients)
 		{
 			try
@@ -226,6 +228,7 @@ public partial class WhiteBitMessageAdapter
 				{
 					foreach (var balance in await RestClient.GetMarginBalancesAsync(cancellationToken) ?? [])
 						await SendMarginBalanceAsync(balance, _portfolioSubscriptionId, cancellationToken);
+
 					foreach (var position in await RestClient.GetPositionsAsync(null, cancellationToken) ?? [])
 						await SendPositionAsync(position, _portfolioSubscriptionId, cancellationToken);
 				}
@@ -238,6 +241,7 @@ public partial class WhiteBitMessageAdapter
 					await SendOrderAsync(order, InferBoardCode(order, null), ParseTransactionId(order.ClientOrderId),
 						_orderStatusSubscriptionId, null, 0m, 0m, null, null, cancellationToken);
 				}
+
 				if (IsSectionEnabled(WhiteBitSections.Margin) || IsSectionEnabled(WhiteBitSections.Futures))
 				{
 					foreach (var order in await RestClient.GetConditionalOrdersAsync(null, cancellationToken) ?? [])
@@ -247,6 +251,7 @@ public partial class WhiteBitMessageAdapter
 							cancellationToken);
 					}
 				}
+
 				foreach (var trade in await RestClient.GetExecutedHistoryAsync(null, 100, cancellationToken) ?? [])
 					await SendUserTradeAsync(trade, _orderStatusSubscriptionId, cancellationToken);
 			}

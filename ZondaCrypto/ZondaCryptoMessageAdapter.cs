@@ -203,6 +203,7 @@ public partial class ZondaCryptoMessageAdapter
 		{
 			_marketsBySecurity.Clear();
 			_marketsByNative.Clear();
+
 			foreach (var market in (tickers ?? [])
 				.Select(static ticker => ticker?.Market)
 				.Where(static market =>
@@ -284,10 +285,12 @@ public partial class ZondaCryptoMessageAdapter
 			if (!_seenPublicTradeIds.Add(key))
 				return false;
 			_seenPublicTradeOrder.Enqueue(key);
+
 			while (_seenPublicTradeOrder.Count >
 				_maximumRememberedTradeIds)
 				_seenPublicTradeIds.Remove(
 					_seenPublicTradeOrder.Dequeue());
+
 			return true;
 		}
 	}

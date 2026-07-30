@@ -20,6 +20,7 @@ sealed class QuantFeedCatalog
 			throw new DirectoryNotFoundException($"QuantHouse data directory '{root}' was not found.");
 
 		var sources = new List<QuantFeedDataSource>();
+
 		foreach (var path in EnumerateFiles(root, isRecursive))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -46,6 +47,7 @@ sealed class QuantFeedCatalog
 			? QuantFeedExtensions.ToUtc(fromTime).Date.AddDays(-1) : (DateTime?)null;
 		var to = message.To is { } toTime
 			? QuantFeedExtensions.ToUtc(toTime).Date.AddDays(1) : (DateTime?)null;
+
 		foreach (var source in _sources)
 		{
 			if (source.DateHint is { } date &&
@@ -83,6 +85,7 @@ sealed class QuantFeedCatalog
 		while (pending.Count > 0)
 		{
 			var directory = pending.Pop();
+
 			foreach (var file in directory.EnumerateFiles())
 				yield return file.FullName;
 			if (!isRecursive)
@@ -164,6 +167,7 @@ sealed class QuantFeedDataSource
 		{
 			for (var index = owners.Count - 1; index >= 0; index--)
 				owners[index].Dispose();
+
 			throw;
 		}
 	}

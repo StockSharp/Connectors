@@ -10,6 +10,7 @@ public partial class TradejiniMessageAdapter
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId,
             cancellationToken);
+
         var securityTypes = lookupMsg.GetSecurityTypes();
         var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -86,6 +87,7 @@ public partial class TradejiniMessageAdapter
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId,
             cancellationToken);
+
         if (!mdMsg.IsSubscribe)
             return;
 

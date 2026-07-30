@@ -24,6 +24,7 @@ public partial class TradingEconomicsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -74,6 +75,7 @@ public partial class TradingEconomicsMessageAdapter
         var remaining = lookupMsg.Count ?? long.MaxValue;
         var seen = new HashSet<string>(
             StringComparer.OrdinalIgnoreCase);
+
         foreach (var market in markets ?? [])
         {
             if (market is null ||
@@ -113,6 +115,7 @@ public partial class TradingEconomicsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -186,6 +189,7 @@ public partial class TradingEconomicsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -224,6 +228,7 @@ public partial class TradingEconomicsMessageAdapter
             cancellationToken);
         var remaining = mdMsg.Count ?? long.MaxValue;
         var seen = new HashSet<DateTime>();
+
         foreach (var item in (bars ?? [])
             .Where(item => item is not null)
             .Select(item => new
@@ -278,6 +283,7 @@ public partial class TradingEconomicsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -308,6 +314,7 @@ public partial class TradingEconomicsMessageAdapter
         var target = checked((int)Math.Min(
             mdMsg.Count ?? NewsLimit,
             NewsLimit));
+
         foreach (var item in (articles ?? [])
             .Where(item =>
                 item is not null &&
@@ -369,6 +376,7 @@ public partial class TradingEconomicsMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(

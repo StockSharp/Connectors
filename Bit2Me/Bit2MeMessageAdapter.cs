@@ -154,6 +154,7 @@ public partial class Bit2MeMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Symbol.IsEmpty() != false)

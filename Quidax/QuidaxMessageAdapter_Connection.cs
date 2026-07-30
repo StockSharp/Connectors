@@ -126,6 +126,7 @@ public partial class QuidaxMessageAdapter
 			var market = GetMarket(group.Key);
 			if (market is null)
 				continue;
+
 			foreach (var pair in group)
 				await SendLevel1Async(
 					market,
@@ -144,6 +145,7 @@ public partial class QuidaxMessageAdapter
 				group.Key,
 				maximum,
 				cancellationToken);
+
 			foreach (var pair in group)
 				await SendDepthAsync(
 					pair.Value.SecurityCode,
@@ -159,12 +161,14 @@ public partial class QuidaxMessageAdapter
 		{
 			var trades = await RestClient.GetPublicTradesAsync(
 				group.Key, cancellationToken);
+
 			foreach (var trade in (trades ?? [])
 				.OrderBy(static trade => trade.Timestamp))
 			{
 				var tradeId = GetPublicTradeId(trade);
 				if (!AddTrade(group.Key, tradeId, false))
 					continue;
+
 				foreach (var pair in group)
 					await SendPublicTradeAsync(
 						pair.Value.SecurityCode,

@@ -14,6 +14,7 @@ public partial class FinancialDatasetsMessageAdapter
         this.AddSupportedMarketDataType(DataType.News);
         this.AddSupportedCandleTimeFrames(
             FinancialDatasetsExtensions.TimeFrames);
+
         foreach (var dataType in FinancialDatasetsDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }

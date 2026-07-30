@@ -7,6 +7,7 @@ public partial class BitvavoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -42,6 +43,7 @@ public partial class BitvavoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -90,6 +92,7 @@ public partial class BitvavoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -149,6 +152,7 @@ public partial class BitvavoMessageAdapter
 
 				await SendDepthSnapshotAsync(market, snapshot, mdMsg.TransactionId, depth,
 					cancellationToken);
+
 				foreach (var update in pending)
 					await ProcessDepthUpdateAsync(mdMsg.TransactionId, subscription, update,
 						cancellationToken);
@@ -172,6 +176,7 @@ public partial class BitvavoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -184,6 +189,7 @@ public partial class BitvavoMessageAdapter
 		var from = mdMsg.From?.ToUniversalTime();
 		var count = (mdMsg.Count ?? 1000).Min(10000).Max(1).To<int>();
 		var trades = await LoadTradesAsync(market, from, to, count, cancellationToken);
+
 		foreach (var trade in trades)
 			await SendTradeAsync(market, trade, mdMsg.TransactionId, cancellationToken);
 
@@ -221,6 +227,7 @@ public partial class BitvavoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -244,6 +251,7 @@ public partial class BitvavoMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await LoadCandlesAsync(market, timeFrame, from, to, count,
 			cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame, mdMsg.TransactionId,
 				cancellationToken);
@@ -329,6 +337,7 @@ public partial class BitvavoMessageAdapter
 		var result = new List<BitvavoPublicTrade>();
 		var lowerBound = from ?? to - TimeSpan.FromDays(1);
 		var cursorEnd = to;
+
 		while (result.Count < count && cursorEnd >= lowerBound)
 		{
 			var windowStart = cursorEnd - TimeSpan.FromDays(1);
@@ -371,6 +380,7 @@ public partial class BitvavoMessageAdapter
 		var result = new List<BitvavoCandle>();
 		var lowerBound = from.ToUniversalTime();
 		var cursorEnd = to.ToUniversalTime();
+
 		while (result.Count < count && cursorEnd >= lowerBound)
 		{
 			var pageSize = (count - result.Count).Min(1440).Max(1);
@@ -475,6 +485,7 @@ public partial class BitvavoMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Market.EqualsIgnoreCase(ticker.Market))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -497,6 +508,7 @@ public partial class BitvavoMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Market.EqualsIgnoreCase(ticker.Market))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(CreateLevel1Message(ticker, id), cancellationToken);
 	}
@@ -509,6 +521,7 @@ public partial class BitvavoMessageAdapter
 			ids = [.. _tickSubscriptions
 				.Where(pair => pair.Value.Market.EqualsIgnoreCase(trade.Market))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendTradeAsync(trade.Market, trade, id, cancellationToken);
 	}
@@ -523,6 +536,7 @@ public partial class BitvavoMessageAdapter
 				.Where(pair => pair.Value.Market.EqualsIgnoreCase(update.Market) &&
 					pair.Value.TimeFrame == timeFrame)
 				.Select(static pair => pair.Key)];
+
 		foreach (var candle in update.Candles ?? [])
 			foreach (var id in ids)
 				await SendCandleAsync(update.Market, candle, timeFrame, id,
@@ -540,6 +554,7 @@ public partial class BitvavoMessageAdapter
 				subscriptions = [.. _depthSubscriptions
 					.Where(pair => pair.Value.Market.EqualsIgnoreCase(update.Market))
 					.Select(static pair => (pair.Key, pair.Value))];
+
 			foreach (var item in subscriptions)
 			{
 				if (!item.Subscription.IsSnapshotReady)
@@ -606,6 +621,7 @@ public partial class BitvavoMessageAdapter
 			using (_sync.EnterScope())
 				subscriptions = [.. _depthSubscriptions
 					.Select(static pair => (pair.Key, pair.Value))];
+
 			foreach (var item in subscriptions)
 				await ResynchronizeDepthAsync(item.Id, item.Subscription,
 					cancellationToken);
@@ -691,8 +707,10 @@ public partial class BitvavoMessageAdapter
 		if (decimals is null or < 0 or > 28)
 			return null;
 		var step = 1m;
+
 		for (var i = 0; i < decimals.Value; i++)
 			step /= 10m;
+
 		return step;
 	}
 

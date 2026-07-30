@@ -13,10 +13,12 @@ public partial class PacificaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static item => item.Symbol,
 			StringComparer.Ordinal))
 		{
@@ -44,6 +46,7 @@ public partial class PacificaMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -52,6 +55,7 @@ public partial class PacificaMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -72,6 +76,7 @@ public partial class PacificaMessageAdapter
 		await SendLevel1SnapshotAsync(market, mdMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -110,6 +115,7 @@ public partial class PacificaMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -134,6 +140,7 @@ public partial class PacificaMessageAdapter
 			await SendBookAsync(market.Symbol, snapshot, mdMsg.TransactionId, depth,
 				cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -174,6 +181,7 @@ public partial class PacificaMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -199,10 +207,13 @@ public partial class PacificaMessageAdapter
 			.OrderBy(static trade => trade.CreatedAt)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var trade in trades)
 			await SendPublicTradeAsync(market.Symbol, trade, mdMsg.TransactionId,
 				cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -242,6 +253,7 @@ public partial class PacificaMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -269,13 +281,16 @@ public partial class PacificaMessageAdapter
 				"Pacifica candle start time cannot be later than end time.");
 		var candles = await RestClient.GetCandlesAsync(market.Symbol, interval,
 			from, to, count, cancellationToken);
+
 		foreach (var candle in (candles ?? [])
 			.Where(static candle => candle is not null)
 			.OrderBy(static candle => candle.OpenTime)
 			.TakeLast(count))
 			await SendCandleAsync(candle, timeFrame, mdMsg.TransactionId,
 				cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -380,6 +395,7 @@ public partial class PacificaMessageAdapter
 				{
 					await SendOutErrorAsync(error, cancellationToken);
 				}
+
 			throw;
 		}
 	}
@@ -396,6 +412,7 @@ public partial class PacificaMessageAdapter
 		IEnumerable<PacificaSubscriptionKey> keys)
 	{
 		var added = new List<PacificaSubscriptionKey>();
+
 		foreach (var key in keys)
 		{
 			if (_streamReferences.TryGetValue(key, out var count))
@@ -406,6 +423,7 @@ public partial class PacificaMessageAdapter
 				added.Add(key);
 			}
 		}
+
 		return [.. added];
 	}
 
@@ -413,6 +431,7 @@ public partial class PacificaMessageAdapter
 		IEnumerable<PacificaSubscriptionKey> keys)
 	{
 		var removed = new List<PacificaSubscriptionKey>();
+
 		foreach (var key in keys)
 		{
 			if (!_streamReferences.TryGetValue(key, out var count))
@@ -425,6 +444,7 @@ public partial class PacificaMessageAdapter
 				removed.Add(key);
 			}
 		}
+
 		return [.. removed];
 	}
 
@@ -453,6 +473,7 @@ public partial class PacificaMessageAdapter
 					.Where(pair => pair.Value.Symbol.Equals(price.Symbol,
 						StringComparison.Ordinal))
 					.Select(static pair => pair.Key)];
+
 			foreach (var id in ids)
 				await SendPriceAsync(price, id, cancellationToken);
 		}
@@ -471,6 +492,7 @@ public partial class PacificaMessageAdapter
 				.Where(pair => pair.Value.Symbol.Equals(quote.Symbol,
 					StringComparison.Ordinal))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -502,6 +524,7 @@ public partial class PacificaMessageAdapter
 				.Where(pair => pair.Value.Symbol.Equals(book.Symbol,
 					StringComparison.Ordinal))
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendBookAsync(book.Symbol, book, subscription.Id,
 				subscription.Depth, cancellationToken);
@@ -529,9 +552,11 @@ public partial class PacificaMessageAdapter
 						StringComparison.Ordinal))
 					.Select(static pair => pair.Key)];
 			}
+
 			foreach (var id in tickIds)
 				await SendPublicTradeAsync(trade.Symbol, trade, id,
 					cancellationToken);
+
 			foreach (var id in level1Ids)
 				await SendOutMessageAsync(new Level1ChangeMessage
 				{
@@ -561,6 +586,7 @@ public partial class PacificaMessageAdapter
 					StringComparison.Ordinal) &&
 					pair.Value.Interval == candle.Interval)
 				.Select(static pair => (pair.Key, pair.Value.TimeFrame))];
+
 		foreach (var subscription in subscriptions)
 			await SendCandleAsync(candle, subscription.TimeFrame,
 				subscription.Id, cancellationToken);
@@ -693,6 +719,7 @@ public partial class PacificaMessageAdapter
 		int depth, bool isBids)
 	{
 		var quotes = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is null)
@@ -708,6 +735,7 @@ public partial class PacificaMessageAdapter
 					OrdersCount = level.OrdersCount,
 				});
 		}
+
 		var ordered = isBids
 			? quotes.OrderByDescending(static quote => quote.Price)
 			: quotes.OrderBy(static quote => quote.Price);

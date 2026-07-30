@@ -60,6 +60,7 @@ partial class HitBtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.ToCurrency();
 		RememberSecurity(symbol, mdMsg.SecurityId);
 
@@ -83,6 +84,7 @@ partial class HitBtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.ToCurrency();
 		RememberSecurity(symbol, mdMsg.SecurityId);
 
@@ -106,6 +108,7 @@ partial class HitBtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.ToCurrency();
 		RememberSecurity(symbol, mdMsg.SecurityId);
 
@@ -151,6 +154,7 @@ partial class HitBtcMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.ToCurrency();
 		var timeFrame = mdMsg.GetTimeFrame();
 		var period = timeFrame.ToNative();

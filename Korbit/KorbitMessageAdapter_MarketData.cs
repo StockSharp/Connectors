@@ -8,6 +8,7 @@ public partial class KorbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class KorbitMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -49,6 +51,7 @@ public partial class KorbitMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -57,6 +60,7 @@ public partial class KorbitMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -112,6 +116,7 @@ public partial class KorbitMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -167,6 +172,7 @@ public partial class KorbitMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -189,6 +195,7 @@ public partial class KorbitMessageAdapter
 		}, cancellationToken);
 		var from = mdMsg.From?.ToUniversalTime();
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
+
 		foreach (var trade in (response ?? [])
 			.Where(trade => trade is not null &&
 				(from is null || trade.Timestamp.FromKorbitTimestamp(
@@ -229,6 +236,7 @@ public partial class KorbitMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -256,6 +264,7 @@ public partial class KorbitMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await DownloadCandlesAsync(market.Symbol, interval, from,
 			to, count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market.Symbol, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
@@ -310,6 +319,7 @@ public partial class KorbitMessageAdapter
 		var values = new SortedDictionary<long, KorbitCandle>();
 		var fromTimestamp = new DateTimeOffset(from).ToUnixTimeMilliseconds();
 		var cursor = new DateTimeOffset(to).ToUnixTimeMilliseconds();
+
 		while (values.Count < count && cursor >= fromTimestamp)
 		{
 			var pageSize = (count - values.Count).Min(200).Max(1);
@@ -323,10 +333,12 @@ public partial class KorbitMessageAdapter
 			}, cancellationToken) ?? [];
 			if (page.Length == 0)
 				break;
+
 			foreach (var candle in page)
 				if (candle is not null && candle.Timestamp >= fromTimestamp &&
 					candle.Timestamp <= cursor)
 					values[candle.Timestamp] = candle;
+
 			var earliest = page.Where(static candle => candle is not null)
 				.Select(static candle => candle.Timestamp).DefaultIfEmpty().Min();
 			if (earliest <= fromTimestamp || earliest <= 0 ||
@@ -334,6 +346,7 @@ public partial class KorbitMessageAdapter
 				break;
 			cursor = earliest - 1;
 		}
+
 		return [.. values.Values.TakeLast(count)];
 	}
 
@@ -391,6 +404,7 @@ public partial class KorbitMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(symbol, message.Data, pair.Value.Depth, pair.Key,
 				cancellationToken);
@@ -407,6 +421,7 @@ public partial class KorbitMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendTickerAsync(symbol, message.Data, pair.Key,
 				cancellationToken, message.Timestamp);
@@ -419,6 +434,7 @@ public partial class KorbitMessageAdapter
 		if (message?.Symbol.IsEmpty() != false)
 			return;
 		var symbol = GetMarket(message.Symbol).Symbol;
+
 		foreach (var trade in (message.Data ?? []).OrderBy(static value =>
 			value.Timestamp))
 		{
@@ -428,9 +444,11 @@ public partial class KorbitMessageAdapter
 			using (_sync.EnterScope())
 				tickSubscriptions = [.. _tickSubscriptions.Where(pair =>
 					pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 			foreach (var pair in tickSubscriptions)
 				await SendPublicTradeAsync(symbol, trade, pair.Key,
 					cancellationToken, false);
+
 			if (message.IsSnapshot != true)
 				await UpdateCandlesAsync(symbol, trade, cancellationToken);
 		}
@@ -528,6 +546,7 @@ public partial class KorbitMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _candleSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
+
 		foreach (var pair in subscriptions)
 		{
 			KorbitCandle value;

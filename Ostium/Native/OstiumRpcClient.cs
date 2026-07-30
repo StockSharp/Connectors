@@ -493,6 +493,7 @@ sealed class OstiumRpcClient : BaseLogReceiver
 				Method = method,
 				Parameters = parameters,
 			}, _settings);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRequestAsync(cancellationToken);

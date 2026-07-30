@@ -85,6 +85,7 @@ public partial class ReyaMessageAdapter
 			: GetMarket(cancelMsg.SecurityId).Symbol;
 		var orders = await RestClient.GetOpenOrdersAsync(_ownerAddress,
 			cancellationToken);
+
 		foreach (var order in orders
 			.Where(static order => order?.OrderId.IsEmpty() == false)
 			.Where(order => symbol.IsEmpty() || order.Symbol.Equals(symbol,
@@ -107,6 +108,7 @@ public partial class ReyaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		var channels = PortfolioChannels();
@@ -156,6 +158,7 @@ public partial class ReyaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		var channels = OrderChannels();
@@ -485,6 +488,7 @@ public partial class ReyaMessageAdapter
 			.Take(subscription.Limit)
 			.OrderBy(static message => message.ServerTime)
 			.ToArray();
+
 		foreach (var message in orders)
 			await SendOutMessageAsync(message, cancellationToken);
 
@@ -500,6 +504,7 @@ public partial class ReyaMessageAdapter
 			.OrderBy(static trade => trade.Timestamp))
 			await SendAccountTradeAsync(trade, transactionId, false,
 				cancellationToken);
+
 		foreach (var trade in ((await spotTask)?.Data ?? [])
 			.Where(static trade => trade is not null)
 			.Where(trade => IsTradeMatch(trade.Symbol,
@@ -575,6 +580,7 @@ public partial class ReyaMessageAdapter
 		long transactionId, CancellationToken cancellationToken)
 	{
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var position in positions ?? [])
 		{
 			if (position?.Symbol.IsEmpty() != false)
@@ -582,6 +588,7 @@ public partial class ReyaMessageAdapter
 			current.Add(PositionKey(position.AccountId, position.Symbol));
 			await SendPositionAsync(position, transactionId, cancellationToken);
 		}
+
 		await SendMissingPositionsAsync(current, _knownPositions, transactionId,
 			cancellationToken);
 	}
@@ -615,6 +622,7 @@ public partial class ReyaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var balance in balances ?? [])
 		{
 			if (balance?.Asset.IsEmpty() != false)
@@ -622,6 +630,7 @@ public partial class ReyaMessageAdapter
 			current.Add(PositionKey(balance.AccountId, balance.Asset));
 			await SendBalanceAsync(balance, transactionId, cancellationToken);
 		}
+
 		await SendMissingPositionsAsync(current, _knownBalances, transactionId,
 			cancellationToken);
 	}
@@ -660,11 +669,13 @@ public partial class ReyaMessageAdapter
 			subscriptions = [.. _portfolioSubscriptions
 				.Append(transactionId).Distinct()];
 		}
+
 		foreach (var key in missing)
 		{
 			var separator = key.IndexOf(':');
 			if (separator <= 0 || separator + 1 >= key.Length)
 				continue;
+
 			foreach (var subscriptionId in subscriptions)
 				await SendOutMessageAsync(new PositionChangeMessage
 				{
@@ -759,6 +770,7 @@ public partial class ReyaMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var position in envelope.Data ?? [])
 			foreach (var transactionId in subscriptions)
 				await SendPositionAsync(position, transactionId, cancellationToken);
@@ -774,6 +786,7 @@ public partial class ReyaMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var balance in envelope.Data ?? [])
 			foreach (var transactionId in subscriptions)
 				await SendBalanceAsync(balance, transactionId, cancellationToken);
@@ -788,10 +801,12 @@ public partial class ReyaMessageAdapter
 		KeyValuePair<long, OrderStatusSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var order in envelope.Data ?? [])
 		{
 			if (order?.OrderId.IsEmpty() != false)
 				continue;
+
 			foreach (var (transactionId, subscription) in subscriptions)
 			{
 				var message = CreateOrderMessage(order, transactionId);
@@ -811,6 +826,7 @@ public partial class ReyaMessageAdapter
 		KeyValuePair<long, OrderStatusSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var trade in envelope.Data ?? [])
 		{
 			if (trade?.Symbol.IsEmpty() != false || trade.SequenceNumber <= 0 ||
@@ -818,6 +834,7 @@ public partial class ReyaMessageAdapter
 				continue;
 			var side = trade.Side.ToStockSharp();
 			var time = trade.Timestamp.FromReyaMillisecondsOrNow();
+
 			foreach (var (transactionId, subscription) in subscriptions)
 				if (IsTradeMatch(trade.Symbol, side, time, null, null,
 					subscription))
@@ -836,6 +853,7 @@ public partial class ReyaMessageAdapter
 		KeyValuePair<long, OrderStatusSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var trade in envelope.Data ?? [])
 		{
 			if (trade?.Symbol.IsEmpty() != false || trade.SequenceNumber <= 0 ||
@@ -846,6 +864,7 @@ public partial class ReyaMessageAdapter
 			var orderId = GetAccountOrderId(trade);
 			var userOrderId = GetClientOrderId(orderId)?.ToString(
 				CultureInfo.InvariantCulture);
+
 			foreach (var (transactionId, subscription) in subscriptions)
 				if (IsTradeMatch(trade.Symbol, side, time, orderId,
 					userOrderId, subscription))
@@ -929,9 +948,11 @@ public partial class ReyaMessageAdapter
 		var result = new HashSet<string>(StringComparer.Ordinal);
 		if (!statusMsg.SecurityId.SecurityCode.IsEmpty())
 			result.Add(GetMarket(statusMsg.SecurityId).Symbol);
+
 		foreach (var securityId in statusMsg.SecurityIds)
 			if (!securityId.SecurityCode.IsEmpty())
 				result.Add(GetMarket(securityId).Symbol);
+
 		return [.. result];
 	}
 

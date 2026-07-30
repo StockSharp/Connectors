@@ -178,6 +178,7 @@ public partial class CoinsPhMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Symbol.IsEmpty() != false || market.BaseAsset.IsEmpty() ||
@@ -218,8 +219,10 @@ public partial class CoinsPhMessageAdapter
 		if (precision <= 0)
 			return 1m;
 		var value = 1m;
+
 		for (var i = 0; i < precision.Min(28); i++)
 			value /= 10m;
+
 		return value;
 	}
 

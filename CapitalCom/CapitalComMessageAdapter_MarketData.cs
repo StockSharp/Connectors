@@ -7,6 +7,7 @@ public partial class CapitalComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var count = (int)Math.Clamp(lookupMsg.Count ?? 10000, 1, 10000);
 		var nativeEpic = lookupMsg.SecurityId.Native as string;
@@ -24,6 +25,7 @@ public partial class CapitalComMessageAdapter
 		var query = lookupMsg.SecurityId.SecurityCode;
 		var response = await _rest.GetMarkets(query, cancellationToken);
 		var sent = 0;
+
 		foreach (var summary in response.Markets ?? [])
 		{
 			if (sent >= count)
@@ -47,6 +49,7 @@ public partial class CapitalComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var old) &&
@@ -90,6 +93,7 @@ public partial class CapitalComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_candleSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var old))
@@ -291,6 +295,7 @@ public partial class CapitalComMessageAdapter
 		var serverTime = quote.Timestamp > 0
 			? DateTimeOffset.FromUnixTimeMilliseconds(quote.Timestamp).UtcDateTime
 			: DateTime.UtcNow;
+
 		foreach (var subscription in _marketSubscriptions.CachedValues.Where(s =>
 			s.Epic.EqualsIgnoreCase(quote.Epic)))
 		{
@@ -318,6 +323,7 @@ public partial class CapitalComMessageAdapter
 
 		var timeFrame = ohlc.Resolution.ToTimeFrame();
 		var openTime = DateTimeOffset.FromUnixTimeMilliseconds(ohlc.Timestamp);
+
 		foreach (var subscription in _candleSubscriptions.CachedValues.Where(s =>
 			s.Epic.EqualsIgnoreCase(ohlc.Epic) && s.TimeFrame == timeFrame))
 		{

@@ -7,6 +7,7 @@ public partial class StocksTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		await EnsureInstrumentsAsync(cancellationToken);
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
@@ -14,6 +15,7 @@ public partial class StocksTraderMessageAdapter
 		var instruments = GetInstruments()
 			.OrderBy(static instrument => instrument.Ticker)
 			.ToArray();
+
 		foreach (var instrument in instruments)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -47,6 +49,7 @@ public partial class StocksTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)

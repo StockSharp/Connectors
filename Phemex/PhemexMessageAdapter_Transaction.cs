@@ -234,6 +234,7 @@ public partial class PhemexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -256,6 +257,7 @@ public partial class PhemexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -292,9 +294,11 @@ public partial class PhemexMessageAdapter
 		if (IsSectionEnabled(PhemexSections.Futures))
 		{
 			var balances = await RestClient.GetFuturesBalancesAsync(cancellationToken);
+
 			foreach (var balance in balances?.Balances ?? [])
 				await SendBalanceAsync(balance, PhemexSections.Futures, null, originalTransactionId,
 					CurrentTime, cancellationToken);
+
 			foreach (var isolate in balances?.Isolates ?? [])
 			{
 				foreach (var balance in isolate.Balances ?? [])
@@ -302,6 +306,7 @@ public partial class PhemexMessageAdapter
 						$"{isolate.Symbol}:{isolate.IsolatedMode}", originalTransactionId,
 						CurrentTime, cancellationToken);
 			}
+
 			foreach (var position in await RestClient.GetFuturesPositionsAsync(null, cancellationToken))
 				await SendPositionAsync(position, originalTransactionId, cancellationToken);
 		}
@@ -332,6 +337,7 @@ public partial class PhemexMessageAdapter
 				.Select(static group => group.First())
 				.OrderBy(static order => order.UpdateTime)
 				.TakeLast(limit);
+
 			foreach (var order in orders)
 				await SendOrderAsync(order, item.Section, originalTransactionId, cancellationToken);
 
@@ -374,6 +380,7 @@ public partial class PhemexMessageAdapter
 		var depoName = data.Type.EqualsIgnoreCase("CROSS") || data.Type.IsEmpty()
 			? null
 			: $"{data.Symbol}:{data.Type}";
+
 		foreach (var balance in data.Balances ?? [])
 			await SendBalanceAsync(balance, section, depoName, _portfolioSubscriptionId, time,
 				cancellationToken);

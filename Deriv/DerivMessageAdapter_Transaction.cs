@@ -184,6 +184,7 @@ public partial class DerivMessageAdapter
 				await WebSocketClient.UnsubscribeAsync(subscription.NativeKey,
 					cancellationToken);
 		}
+
 		this.AddInfoLog("Deriv contract {0} closed through {1} for {2}.",
 			contractId, isCancellation ? "cancel" : "sell", close.SoldFor);
 	}
@@ -193,6 +194,7 @@ public partial class DerivMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsureAuthenticated();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -249,6 +251,7 @@ public partial class DerivMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureAuthenticated();
 		if (!lookupMsg.IsSubscribe)
 		{

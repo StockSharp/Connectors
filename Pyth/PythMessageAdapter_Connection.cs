@@ -62,6 +62,7 @@ public partial class PythMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_instruments.Clear();
+
 			foreach (var instrument in instruments ?? [])
 			{
 				if (!IsSupportedInstrument(instrument))
@@ -279,6 +280,7 @@ public partial class PythMessageAdapter
 			finished = [.. _liveSubscriptions.Keys];
 			_liveSubscriptions.Clear();
 		}
+
 		foreach (var transactionId in finished)
 			await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
 	}

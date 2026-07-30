@@ -412,8 +412,10 @@ sealed class NovaDaxWsClient : BaseLogReceiver
 			".TRADE", StringComparison.OrdinalIgnoreCase))
 		{
 			var trades = payload.ToObject<NovaDaxTrade[]>() ?? [];
+
 			foreach (var trade in trades)
 				trade.Pair = symbol;
+
 			if (trades.Length > 0 && TradesReceived is { } handler)
 				await handler(new NovaDaxTradePush
 				{

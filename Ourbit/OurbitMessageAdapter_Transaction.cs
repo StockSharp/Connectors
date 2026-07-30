@@ -173,6 +173,7 @@ public partial class OurbitMessageAdapter
 					continue;
 				}
 				var orders = await SpotRestClient.GetOpenOrdersAsync(symbol, cancellationToken) ?? [];
+
 				foreach (var group in orders
 					.Where(order => cancelMsg.Side is null ||
 						order.Side.EqualsIgnoreCase(cancelMsg.Side == Sides.Buy ? "BUY" : "SELL"))
@@ -199,6 +200,7 @@ public partial class OurbitMessageAdapter
 					continue;
 				}
 				var orders = await FuturesRestClient.GetOpenOrdersAsync(symbol, cancellationToken) ?? [];
+
 				foreach (var group in orders
 					.Where(order => cancelMsg.Side is null || order.Side.ToSide() == cancelMsg.Side)
 					.GroupBy(static order => order.Symbol))
@@ -221,6 +223,7 @@ public partial class OurbitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -231,6 +234,7 @@ public partial class OurbitMessageAdapter
 		if (_spotRestClient?.IsCredentialsAvailable != true &&
 			_futuresRestClient?.IsCredentialsAvailable != true)
 			throw new InvalidOperationException("Ourbit API key and secret are required for portfolio data.");
+
 		foreach (var section in Sections)
 		{
 			var available = section == OurbitSections.Spot
@@ -245,8 +249,10 @@ public partial class OurbitMessageAdapter
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
 		}
+
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (!lookupMsg.IsHistoryOnly())
 		{
 			_portfolioSubscriptionId = lookupMsg.TransactionId;
@@ -259,6 +265,7 @@ public partial class OurbitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -278,6 +285,7 @@ public partial class OurbitMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, symbol, statusMsg.From, statusMsg.To,
 			cancellationToken, section);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (!statusMsg.IsHistoryOnly())
 		{
 			_orderStatusSubscriptionId = statusMsg.TransactionId;
@@ -291,6 +299,7 @@ public partial class OurbitMessageAdapter
 		if (_spotRestClient?.IsCredentialsAvailable == true)
 		{
 			var account = await SpotRestClient.GetAccountAsync(cancellationToken);
+
 			foreach (var balance in account?.Balances ?? [])
 				await SendSpotBalanceAsync(balance, account.UpdateTime ?? 0,
 					originalTransactionId, cancellationToken);
@@ -299,6 +308,7 @@ public partial class OurbitMessageAdapter
 		{
 			foreach (var balance in await FuturesRestClient.GetBalancesAsync(cancellationToken) ?? [])
 				await SendFuturesBalanceAsync(balance, 0, originalTransactionId, cancellationToken);
+
 			foreach (var position in await FuturesRestClient.GetPositionsAsync(cancellationToken) ?? [])
 				await SendFuturesPositionAsync(position, 0, originalTransactionId, cancellationToken);
 		}
@@ -320,10 +330,12 @@ public partial class OurbitMessageAdapter
 					startTime is null ? null : new DateTimeOffset(startTime.Value).ToUnixTimeMilliseconds(),
 					endTime is null ? null : new DateTimeOffset(endTime.Value).ToUnixTimeMilliseconds(),
 					1000, cancellationToken) ?? []);
+
 			foreach (var order in orders.Where(static order => order?.OrderId.IsEmpty() == false)
 				.GroupBy(static order => order.OrderId).Select(static group => group.First())
 				.OrderBy(static order => order.Time))
 				await SendSpotOrderAsync(order, originalTransactionId, cancellationToken);
+
 			if (!symbol.IsEmpty())
 			{
 				foreach (var fill in await SpotRestClient.GetFillsAsync(symbol,
@@ -349,10 +361,12 @@ public partial class OurbitMessageAdapter
 			};
 			orders.AddRange(await FuturesRestClient.GetOrderHistoryAsync(historyRequest,
 				cancellationToken) ?? []);
+
 			foreach (var order in orders.Where(static order => order?.OrderId.IsEmpty() == false)
 				.GroupBy(static order => order.OrderId).Select(static group => group.First())
 				.OrderBy(static order => order.CreateTime))
 				await SendFuturesOrderAsync(order, originalTransactionId, cancellationToken);
+
 			foreach (var fill in await FuturesRestClient.GetFillsAsync(historyRequest,
 				cancellationToken) ?? [])
 				await SendFuturesFillAsync(fill, originalTransactionId, cancellationToken);

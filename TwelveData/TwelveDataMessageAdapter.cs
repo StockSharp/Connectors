@@ -150,6 +150,7 @@ public partial class TwelveDataMessageAdapter
 		{
 			subscriptions = _liveSubscriptions.Values
 				.Where(subscription => Matches(price, subscription.Key)).ToArray();
+
 			foreach (var subscription in subscriptions)
 			{
 				if (subscription.Remaining is > 0 && --subscription.Remaining == 0)
@@ -168,6 +169,7 @@ public partial class TwelveDataMessageAdapter
 		}
 
 		var serverTime = Extensions.FromUnixSeconds(price.Timestamp.Value);
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage

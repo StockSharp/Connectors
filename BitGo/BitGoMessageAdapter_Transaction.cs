@@ -124,6 +124,7 @@ public partial class BitGoMessageAdapter
 			Side = cancelMsg.Side,
 			Limit = HistoryLimit,
 		};
+
 		foreach (var order in await LoadOrdersAsync(filter, cancellationToken))
 		{
 			if (order.Status is not (BitGoOrderStatuses.PendingOpen or
@@ -151,6 +152,7 @@ public partial class BitGoMessageAdapter
 				throw;
 			}
 		}
+
 		SchedulePoll();
 	}
 
@@ -160,6 +162,7 @@ public partial class BitGoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -183,6 +186,7 @@ public partial class BitGoMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -194,6 +198,7 @@ public partial class BitGoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -219,6 +224,7 @@ public partial class BitGoMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId, filter);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -393,6 +399,7 @@ public partial class BitGoMessageAdapter
 	{
 		var time = DateTime.UtcNow;
 		UpdateServerTime(time);
+
 		foreach (var balance in balances.Where(static value =>
 			value is not null && !value.Currency.IsEmpty()))
 		{
@@ -425,11 +432,14 @@ public partial class BitGoMessageAdapter
 			.Skip(filter.Skip)
 			.Take(filter.Limit)
 			.ToArray();
+
 		foreach (var order in selectedOrders)
 			await ProcessOrderAsync(order, transactionId, null, cancellationToken);
+
 		var ids = selectedOrders.Select(static order => order.GetId())
 			.Where(static id => !id.IsEmpty())
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var trade in await LoadTradesAsync(filter, cancellationToken))
 			if (ids.Contains(trade.OrderId))
 				await ProcessTradeAsync(trade, transactionId, null,
@@ -455,6 +465,7 @@ public partial class BitGoMessageAdapter
 		}
 		var result = new List<BitGoOrder>();
 		const int pageSize = 100;
+
 		for (var offset = 0; offset < 100000; offset += pageSize)
 		{
 			var page = await RestClient.GetOrdersAsync(AccountId, new()
@@ -469,6 +480,7 @@ public partial class BitGoMessageAdapter
 				filter.Skip + filter.Limit)
 				break;
 		}
+
 		return [.. result
 			.GroupBy(static order => order.GetId(),
 				StringComparer.OrdinalIgnoreCase)
@@ -481,6 +493,7 @@ public partial class BitGoMessageAdapter
 	{
 		var result = new List<BitGoTrade>();
 		const int pageSize = 100;
+
 		for (var offset = 0; offset < 100000; offset += pageSize)
 		{
 			var page = await RestClient.GetTradesAsync(AccountId, new()
@@ -496,6 +509,7 @@ public partial class BitGoMessageAdapter
 				filter.Skip + filter.Limit * 10)
 				break;
 		}
+
 		return [.. result
 			.GroupBy(static trade => trade.Id,
 				StringComparer.OrdinalIgnoreCase)
@@ -517,10 +531,12 @@ public partial class BitGoMessageAdapter
 		{
 			var balances = await RestClient.GetBalancesAsync(AccountId,
 				IsIncludeUnsettledInAvailable, cancellationToken);
+
 			foreach (var transactionId in portfolios)
 				await SendBalancesAsync(balances, transactionId,
 					cancellationToken);
 		}
+
 		foreach (var (transactionId, filter) in orders)
 			await SendOrderSnapshotAsync(filter, transactionId,
 				cancellationToken);
@@ -546,6 +562,7 @@ public partial class BitGoMessageAdapter
 		var targets = directTarget != 0
 			? [directTarget]
 			: GetOrderTargets(message);
+
 		foreach (var target in targets)
 		{
 			var fingerprint = target.ToString(CultureInfo.InvariantCulture) +
@@ -559,6 +576,7 @@ public partial class BitGoMessageAdapter
 			clone.OriginalTransactionId = target;
 			await SendOutMessageAsync(clone, cancellationToken);
 		}
+
 		if (order.Status is BitGoOrderStatuses.Canceled or
 			BitGoOrderStatuses.Completed or BitGoOrderStatuses.Error)
 			using (_sync.EnterScope())
@@ -580,6 +598,7 @@ public partial class BitGoMessageAdapter
 		var time = update.Time.ToBitGoTime() ??
 			update.LastFillDate.ToBitGoTime() ?? DateTime.UtcNow;
 		UpdateServerTime(time);
+
 		foreach (var target in targets)
 			await SendTradeAsync(update.GetId(), tradeId, order.SecurityId,
 				update.Side.ToStockSharp(), price.Value, volume.Value, time,
@@ -615,6 +634,7 @@ public partial class BitGoMessageAdapter
 			: GetTradeTargets(order, tracked);
 		var time = GetTradeTime(trade);
 		UpdateServerTime(time);
+
 		foreach (var target in targets)
 			await SendTradeAsync(trade.OrderId, trade.Id,
 				product.ToStockSharp(), trade.Side.ToStockSharp(), price.Value,
@@ -764,6 +784,7 @@ public partial class BitGoMessageAdapter
 			if (_pendingCancels.TryGetValue(message.OrderStringId,
 				out var cancelTransactionId))
 				targets.Add(cancelTransactionId);
+
 			foreach (var (transactionId, filter) in _orderSubscriptions)
 				if (IsOrderMatch(message, filter))
 					targets.Add(transactionId);

@@ -31,6 +31,7 @@ public partial class DefinedgeMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         var securityTypes = lookupMsg.GetSecurityTypes();
         var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -231,6 +232,7 @@ public partial class DefinedgeMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
             return;
         if (!mdMsg.IsHistoryOnly())
@@ -315,6 +317,7 @@ public partial class DefinedgeMessageAdapter
         }
 
         var sequence = 0L;
+
         foreach (var row in ordered)
         {
             await SendOutMessageAsync(new ExecutionMessage
@@ -609,6 +612,7 @@ public partial class DefinedgeMessageAdapter
         CopyQuote(
             update, quote, "uc", "upper_circuit");
         CopyQuote(update, quote, "ft", "feed_time");
+
         for (var index = 1; index <= 5; index++)
         {
             CopyQuote(
@@ -642,6 +646,7 @@ public partial class DefinedgeMessageAdapter
                 $"so{index}",
                 $"best_ask_orders{index}");
         }
+
         return update;
     }
 

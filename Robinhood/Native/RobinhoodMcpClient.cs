@@ -36,6 +36,7 @@ sealed class RobinhoodMcpClient : Disposable
 		await Notify("notifications/initialized", new McpEmptyParams(), cancellationToken);
 
 		var tools = await Send<McpEmptyParams, McpToolsResult>("tools/list", new(), cancellationToken);
+
 		foreach (var tool in tools.Tools ?? [])
 			_tools.Add(tool.Name);
 	}

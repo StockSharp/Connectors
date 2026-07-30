@@ -165,6 +165,7 @@ public partial class RainMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_products.Clear();
+
 			foreach (var product in products ?? [])
 				if (product?.Symbol.IsEmpty() == false &&
 					product.BaseCurrency?.Code.IsEmpty() == false &&

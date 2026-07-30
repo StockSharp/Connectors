@@ -124,6 +124,7 @@ public partial class IIFLMessageAdapter
 				_instrumentDetails[key] = instrument;
 				CacheInstrument(instrument.ToReference());
 			}
+
 			_loadedExchanges.Add(exchange);
 		}
 		return values;
@@ -185,6 +186,7 @@ public partial class IIFLMessageAdapter
 				if (!known.InstrumentId.IsEmpty())
 					return known;
 			}
+
 			foreach (var exchange in IIFLExtensions.Exchanges)
 			{
 				await LoadExchangeAsync(exchange, cancellationToken);

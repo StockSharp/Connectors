@@ -154,6 +154,7 @@ public partial class IndependentReserveMessageAdapter
 					cancelMsg.Side)).ToArray();
 			if (orders.Length == 0)
 				break;
+
 			foreach (var order in orders)
 			{
 				var canceled = await RestClient.CancelOrderAsync(new()
@@ -163,6 +164,7 @@ public partial class IndependentReserveMessageAdapter
 				await SendOrderAsync(canceled, cancelMsg.TransactionId, true,
 					cancellationToken);
 			}
+
 			if ((page?.Data?.Length ?? 0) < 100)
 				break;
 		}
@@ -174,6 +176,7 @@ public partial class IndependentReserveMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -191,12 +194,14 @@ public partial class IndependentReserveMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, true,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -207,6 +212,7 @@ public partial class IndependentReserveMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -233,12 +239,14 @@ public partial class IndependentReserveMessageAdapter
 			statusMsg.Side, statusMsg.From, statusMsg.To, maximum, true,
 			cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -266,10 +274,12 @@ public partial class IndependentReserveMessageAdapter
 				PageIndex = 1,
 				PageSize = maximum.Min(50),
 			}, cancellationToken);
+
 			foreach (var trade in trades?.Data ?? [])
 				if (MatchesTrade(symbol, side, from, to, trade))
 					await SendUserTradeAsync(trade, transactionId,
 						cancellationToken);
+
 			return;
 		}
 
@@ -278,6 +288,7 @@ public partial class IndependentReserveMessageAdapter
 			market = GetMarket(symbol);
 		var sent = 0;
 		var openPageSize = maximum.Min(100);
+
 		for (var pageIndex = 1; sent < maximum; pageIndex++)
 		{
 			var page = await RestClient.GetOpenOrdersAsync(new()
@@ -287,6 +298,7 @@ public partial class IndependentReserveMessageAdapter
 				PageIndex = pageIndex,
 				PageSize = openPageSize,
 			}, cancellationToken);
+
 			foreach (var order in page?.Data ?? [])
 			{
 				if (!MatchesOrder(symbol, side, from, to, order))
@@ -296,11 +308,13 @@ public partial class IndependentReserveMessageAdapter
 				if (++sent >= maximum)
 					break;
 			}
+
 			if ((page?.Data?.Length ?? 0) < openPageSize)
 				break;
 		}
 
 		var closedPageSize = (maximum - sent).Min(5000).Max(1);
+
 		for (var pageIndex = 1; sent < maximum; pageIndex++)
 		{
 			var page = await RestClient.GetClosedOrdersAsync(new()
@@ -312,6 +326,7 @@ public partial class IndependentReserveMessageAdapter
 				IsIncludeTotals = false,
 				FromTimestampUtc = from?.ToUniversalTime().ToApiTime(),
 			}, cancellationToken);
+
 			foreach (var order in page?.Data ?? [])
 			{
 				if (!MatchesOrder(symbol, side, from, to, order))
@@ -321,11 +336,13 @@ public partial class IndependentReserveMessageAdapter
 				if (++sent >= maximum)
 					break;
 			}
+
 			if ((page?.Data?.Length ?? 0) < closedPageSize)
 				break;
 		}
 
 		var tradesSent = 0;
+
 		for (var pageIndex = 1; tradesSent < maximum; pageIndex++)
 		{
 			var page = await RestClient.GetTradesAsync(new()
@@ -336,6 +353,7 @@ public partial class IndependentReserveMessageAdapter
 				ToTimestampUtc = to?.ToUniversalTime().ToApiTime(),
 				IsIncludeTotals = false,
 			}, cancellationToken);
+
 			foreach (var trade in page?.Data ?? [])
 			{
 				if (!MatchesTrade(symbol, side, from, to, trade))
@@ -344,6 +362,7 @@ public partial class IndependentReserveMessageAdapter
 					cancellationToken);
 				tradesSent++;
 			}
+
 			if ((page?.Data?.Length ?? 0) < 50)
 				break;
 		}
@@ -353,6 +372,7 @@ public partial class IndependentReserveMessageAdapter
 		bool force, CancellationToken cancellationToken)
 	{
 		var accounts = await RestClient.GetAccountsAsync(cancellationToken);
+
 		foreach (var account in accounts ?? [])
 			await SendBalanceAsync(account, transactionId, force,
 				cancellationToken);
@@ -372,9 +392,11 @@ public partial class IndependentReserveMessageAdapter
 				portfolioSubscriptions = [.. _portfolioSubscriptions];
 				orderSubscriptions = [.. _orderSubscriptions];
 			}
+
 			foreach (var subscription in portfolioSubscriptions)
 				await SendPortfolioSnapshotAsync(subscription, false,
 					cancellationToken);
+
 			foreach (var subscription in orderSubscriptions)
 				await SendOrderSnapshotAsync(subscription.Key,
 					subscription.Value.Symbol, subscription.Value.OrderId,
@@ -610,12 +632,14 @@ public partial class IndependentReserveMessageAdapter
 			return;
 
 		var trackedOrders = new HashSet<TrackedOrder>();
+
 		foreach (var identifier in GetSocketOrderIdentifiers(payload))
 		{
 			var tracked = GetTrackedOrder(identifier);
 			if (tracked is not null)
 				trackedOrders.Add(tracked);
 		}
+
 		foreach (var tracked in trackedOrders)
 		{
 			try
@@ -631,6 +655,7 @@ public partial class IndependentReserveMessageAdapter
 						MatchesOrderSubscription(pair.Value, tracked.Symbol,
 							order.OrderGuid.ToString("D"), tracked.ClientOrderId,
 							order.Type.ToStockSharp()))];
+
 				foreach (var subscription in subscriptions)
 				{
 					await SendOrderAsync(order, subscription.Key, false,
@@ -643,6 +668,7 @@ public partial class IndependentReserveMessageAdapter
 						PageIndex = 1,
 						PageSize = 50,
 					}, cancellationToken);
+
 					foreach (var trade in trades?.Data ?? [])
 						await SendUserTradeAsync(trade, subscription.Key,
 							cancellationToken);

@@ -80,10 +80,12 @@ public partial class FireblocksMessageAdapter
 					"Fireblocks returned an empty create-transaction response.");
 			var fireblocksId = created.Id.ThrowIfEmpty(
 				nameof(FireblocksCreateTransactionResponse.Id));
+
 			foreach (var message in created.SystemMessages ?? [])
 				if (!message.Message.IsEmpty())
 					this.AddWarningLog("Fireblocks {0}: {1}", message.Type,
 						message.Message);
+
 			try
 			{
 				transaction = await RestClient.GetTransactionAsync(fireblocksId,
@@ -183,6 +185,7 @@ public partial class FireblocksMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -191,6 +194,7 @@ public partial class FireblocksMessageAdapter
 		}
 		var accounts = await RefreshVaultsAsync(cancellationToken);
 		var selected = SelectVaults(accounts, lookupMsg.PortfolioName);
+
 		foreach (var account in selected)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -201,6 +205,7 @@ public partial class FireblocksMessageAdapter
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
 		}
+
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, true,
 			selected, cancellationToken);
 		if (lookupMsg.IsHistoryOnly())
@@ -210,6 +215,7 @@ public partial class FireblocksMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions[lookupMsg.TransactionId] = new()
 			{
@@ -224,6 +230,7 @@ public partial class FireblocksMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -267,6 +274,7 @@ public partial class FireblocksMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -337,6 +345,7 @@ public partial class FireblocksMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var accounts = await RefreshVaultsAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target.Key, false,
 					SelectVaults(accounts, target.Value.PortfolioName),
@@ -376,6 +385,7 @@ public partial class FireblocksMessageAdapter
 		foreach (var account in accounts)
 		{
 			var portfolioName = account.GetPortfolioName();
+
 			foreach (var asset in account.Assets ?? [])
 			{
 				if (asset.Id.IsEmpty())
@@ -455,6 +465,7 @@ public partial class FireblocksMessageAdapter
 
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var transaction in transactions
 			.Where(transaction => Matches(subscription, transaction))
 			.OrderBy(transaction => transaction.CreatedAt ?? 0m))
@@ -696,6 +707,7 @@ public partial class FireblocksMessageAdapter
 		Dictionary<string, T> fingerprints, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in fingerprints.Keys.Where(key => key.StartsWith(
 			prefix, StringComparison.Ordinal)).ToArray())
 			fingerprints.Remove(key);

@@ -111,6 +111,7 @@ partial class OpenMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_orderStatusSubscriptions.Remove(message.OriginalTransactionId);
@@ -122,10 +123,12 @@ partial class OpenMarketsMessageAdapter
 			: [ResolveAccount(message.PortfolioName)];
 		var from = (message.From ?? CurrentTime.AddDays(-3)).ToUtc();
 		var to = (message.To ?? CurrentTime).ToUtc();
+
 		foreach (var account in accounts)
 		{
 			foreach (var order in await _client.GetOrders(account, cancellationToken) ?? [])
 				await ProcessOrder(order, message.TransactionId, cancellationToken);
+
 			foreach (var trade in await _client.GetTrades(account, from, to, cancellationToken) ?? [])
 				await ProcessTrade(trade, message.TransactionId, false, cancellationToken);
 		}
@@ -145,6 +148,7 @@ partial class OpenMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_portfolioSubscriptions.Remove(message.OriginalTransactionId);
@@ -155,6 +159,7 @@ partial class OpenMarketsMessageAdapter
 			? _accounts
 			: [_accounts.First(account =>
 				account.AccountCode.EqualsIgnoreCase(ResolveAccount(message.PortfolioName)))];
+
 		foreach (var account in accounts)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -188,6 +193,7 @@ partial class OpenMarketsMessageAdapter
 				if (!accountCode.IsEmpty() && accountCodes.Contains(accountCode))
 					await ProcessCash(accountCode, balance, message.TransactionId, cancellationToken);
 			}
+
 			foreach (var position in positions)
 			{
 				var accountCode = ResolveAccountForPortfolio(position.PortfolioCode,

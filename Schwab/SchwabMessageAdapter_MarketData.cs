@@ -6,6 +6,7 @@ partial class SchwabMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var response = await _client.Lookup(message.SecurityId.SecurityCode ?? string.Empty, cancellationToken);
 		var types = message.GetSecurityTypes();
 		var left = message.Count ?? long.MaxValue;
@@ -28,6 +29,7 @@ partial class SchwabMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -35,6 +37,7 @@ partial class SchwabMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -63,6 +66,7 @@ partial class SchwabMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -70,6 +74,7 @@ partial class SchwabMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_level1Subscriptions.Remove(message.OriginalTransactionId, out var securityId))
@@ -86,6 +91,7 @@ partial class SchwabMessageAdapter
 	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_depthSubscriptions.Remove(message.OriginalTransactionId, out var subscription))

@@ -154,6 +154,7 @@ public partial class ComdirectMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -187,6 +188,7 @@ public partial class ComdirectMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -288,6 +290,7 @@ public partial class ComdirectMessageAdapter
                 .Append(depot.DefaultSettlementAccountId)
                 .Where(id => !id.IsEmpty())
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
             foreach (var balance in balances.Where(b =>
                 settlementIds.Contains(b.AccountId) ||
                 settlementIds.Contains(b.Account?.AccountId)))
@@ -323,6 +326,7 @@ public partial class ComdirectMessageAdapter
             return;
 
         var orders = new List<ComdirectOrder>();
+
         foreach (var depot in ResolveDepots(filter.PortfolioName))
         {
             orders.AddRange(await Rest.GetOrders(
@@ -331,6 +335,7 @@ public partial class ComdirectMessageAdapter
 
         var skip = Math.Max(0, filter.Skip ?? 0);
         var left = filter.Count ?? long.MaxValue;
+
         foreach (var order in orders.OrderBy(o =>
             o.CreationTimestamp.ParseTimestamp(DateTime.MinValue)))
         {

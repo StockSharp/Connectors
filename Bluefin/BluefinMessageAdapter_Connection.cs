@@ -116,6 +116,7 @@ public partial class BluefinMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets)
 			{
 				market.Symbol = market.Symbol.Trim().ToUpperInvariant();
@@ -123,6 +124,7 @@ public partial class BluefinMessageAdapter
 					throw new InvalidDataException(
 						$"Bluefin returned duplicate market '{market.Symbol}'.");
 			}
+
 			_contractsConfig = info.ContractsConfig;
 		}
 		if (info.ServerTimeAtMillis > 0)

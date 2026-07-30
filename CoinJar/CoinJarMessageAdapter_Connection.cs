@@ -98,6 +98,7 @@ public partial class CoinJarMessageAdapter
 					book.Bids.Clear();
 					book.Asks.Clear();
 				}
+
 				foreach (var subscription in _depthSubscriptions.Values)
 				{
 					subscription.Bids.Clear();
@@ -123,12 +124,15 @@ public partial class CoinJarMessageAdapter
 			orders = [.. _orderSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		}
+
 		foreach (var transactionId in portfolios)
 			await SendPortfolioSnapshotAsync(transactionId, true,
 				cancellationToken);
+
 		foreach (var item in orders)
 			await SendOrderSnapshotAsync(item.Id, item.Subscription, null, null,
 				1000, true, cancellationToken);
+
 		await SendOutConnectionStateAsync(state, cancellationToken);
 	}
 

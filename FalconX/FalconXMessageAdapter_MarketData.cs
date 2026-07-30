@@ -8,6 +8,7 @@ public partial class FalconXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.SecurityId.BoardCode.IsEmpty() &&
 			!lookupMsg.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.FalconX))
@@ -23,8 +24,10 @@ public partial class FalconXMessageAdapter
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 			return;
 		}
+
 		foreach (var pair in await RestClient.GetPairsAsync(cancellationToken) ?? [])
 			AddPair(pair);
+
 		FalconXTokenPair[] pairs;
 		using (_sync.EnterScope())
 			pairs = [.. _pairs.Values];
@@ -42,6 +45,7 @@ public partial class FalconXMessageAdapter
 		}
 		var skip = Math.Max(0L, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0L, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var pair in pairs
 			.Where(pair => requestedCode.IsEmpty() || pair.GetKey().Equals(
 				requestedCode, StringComparison.OrdinalIgnoreCase))
@@ -62,6 +66,7 @@ public partial class FalconXMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -82,6 +87,7 @@ public partial class FalconXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -97,6 +103,7 @@ public partial class FalconXMessageAdapter
 		if (mdMsg.IsHistoryOnly() || mdMsg.From is not null || mdMsg.To is not null)
 			throw new NotSupportedException(
 				"FalconX price streams do not publish historical market data.");
+
 		var pair = GetPair(mdMsg.SecurityId);
 		var depth = dataType == DataType.MarketDepth
 			? (mdMsg.MaxDepth ?? QuoteLevels.Length).Max(1).Min(
@@ -154,6 +161,7 @@ public partial class FalconXMessageAdapter
 				subscriptions = [.. _marketSubscriptions.Where(pair =>
 					pair.Value.Pair.GetKey().Equals(group.Key,
 						StringComparison.OrdinalIgnoreCase))];
+
 			foreach (var (transactionId, subscription) in subscriptions)
 			{
 				if (subscription.DataType == DataType.Level1)
@@ -211,6 +219,7 @@ public partial class FalconXMessageAdapter
 		var previousQuantity = 0m;
 		var previousNotional = 0m;
 		var levels = new List<QuoteChange>();
+
 		foreach (var item in prices.OrderBy(static price => price.Quantity))
 		{
 			var price = isBid ? item.SellPrice : item.BuyPrice;
@@ -226,6 +235,7 @@ public partial class FalconXMessageAdapter
 			if (incrementalNotional > 0)
 				levels.Add(new(incrementalNotional / volume, volume));
 		}
+
 		return [.. levels
 			.GroupBy(static quote => quote.Price)
 			.Select(static group => new QuoteChange(group.Key,

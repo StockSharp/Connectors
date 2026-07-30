@@ -107,6 +107,7 @@ sealed class MoomooClient : Disposable
 	{
 		var result = new List<QotCommon.KLine>();
 		ByteString nextKey = null;
+
 		do
 		{
 			var builder = QotRequestHistoryKL.C2S.CreateBuilder()
@@ -129,6 +130,7 @@ sealed class MoomooClient : Disposable
 			nextKey = response.S2C.HasNextReqKey && response.S2C.NextReqKey.Length > 0 ? response.S2C.NextReqKey : null;
 		}
 		while (nextKey is not null);
+
 		return [.. result];
 	}
 

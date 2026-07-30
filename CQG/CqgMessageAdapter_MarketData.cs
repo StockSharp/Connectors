@@ -8,6 +8,7 @@ public partial class CqgMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var symbol = lookupMsg.SecurityId.SecurityCode;
 		if (symbol.IsEmpty())
 			throw new InvalidOperationException("CQG security lookup requires an exact CQG symbol.");
@@ -31,6 +32,7 @@ public partial class CqgMessageAdapter
 	protected override async ValueTask OnTicksSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await UnsubscribeMarket(mdMsg.OriginalTransactionId, cancellationToken);
@@ -58,6 +60,7 @@ public partial class CqgMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_subscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var old))
@@ -90,6 +93,7 @@ public partial class CqgMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await UnsubscribeMarket(mdMsg.OriginalTransactionId, cancellationToken);
@@ -198,8 +202,10 @@ public partial class CqgMessageAdapter
 		if (report.SymbolResolutionReport?.ContractMetadata is { } metadata)
 		{
 			var contract = CacheContract(metadata);
+
 			foreach (var subscription in _subscriptions.CachedValues.Where(s => s.Symbol.EqualsIgnoreCase(metadata.ContractSymbol)))
 				subscription.ContractId = metadata.ContractId;
+
 			if (_subscriptions.CachedValues.Any(s => s.Symbol.EqualsIgnoreCase(metadata.ContractSymbol)))
 				await RestoreSymbolSubscriptions(contract, cancellationToken);
 		}
@@ -240,11 +246,14 @@ public partial class CqgMessageAdapter
 		var subscriptions = _subscriptions.CachedValues
 			.Where(s => s.Symbol.EqualsIgnoreCase(contract.Metadata.ContractSymbol) ||
 				s.Symbol.EqualsIgnoreCase(contract.Metadata.DialectContractSymbol)).ToArray();
+
 		foreach (var subscription in subscriptions)
 			subscription.ContractId = contract.Metadata.ContractId;
+
 		if (subscriptions.Any(s => !s.DataType.IsTFCandles &&
 			(!s.IsHistoryOnly || s.DataType == DataType.Level1 || s.DataType == DataType.MarketDepth)))
 			await RefreshMarketSubscription(contract.Metadata.ContractSymbol, cancellationToken);
+
 		foreach (var subscription in subscriptions.Where(s => s.DataType.IsTFCandles))
 		{
 			subscription.ContractId = contract.Metadata.ContractId;
@@ -252,6 +261,7 @@ public partial class CqgMessageAdapter
 			_requestTransactions[subscription.RequestId] = subscription.TransactionId;
 			await SendTimeBarRequest(subscription, cancellationToken);
 		}
+
 		foreach (var subscription in subscriptions.Where(s => s.DataType == DataType.Ticks &&
 			s.HistoryRequestId != 0))
 			await RequestTimeAndSales(subscription, cancellationToken);
@@ -275,6 +285,7 @@ public partial class CqgMessageAdapter
 				subscription.RequestId = requestId;
 				subscription.ContractId = contract.Metadata.ContractId;
 			}
+
 			_requestTransactions[requestId] = subscriptions[0].TransactionId;
 		}
 		var request = new MarketDataSubscription
@@ -326,6 +337,7 @@ public partial class CqgMessageAdapter
 			_asks[data.ContractId] = [];
 			depthChanged = true;
 		}
+
 		foreach (var quote in data.Quotes)
 		{
 			if (quote.HasQuoteUtcTime)
@@ -363,6 +375,7 @@ public partial class CqgMessageAdapter
 					break;
 			}
 		}
+
 		foreach (var values in data.MarketValues)
 		{
 			level1
@@ -374,6 +387,7 @@ public partial class CqgMessageAdapter
 				.TryAdd(Level1Fields.OpenInterest, values.OpenInterest?.ToDecimal());
 			hasLevel1 = true;
 		}
+
 		_lastQuoteTimes[data.ContractId] = quoteTime;
 		if (hasLevel1)
 		{
@@ -390,6 +404,7 @@ public partial class CqgMessageAdapter
 		{
 			var bids = _bids.SafeAdd(data.ContractId, _ => []);
 			var asks = _asks.SafeAdd(data.ContractId, _ => []);
+
 			foreach (var subscription in subscriptions.Where(s => s.DataType == DataType.MarketDepth))
 				await SendOutMessageAsync(new QuoteChangeMessage
 				{
@@ -405,11 +420,13 @@ public partial class CqgMessageAdapter
 		{
 			var oneShots = subscriptions.Where(s => s.IsHistoryOnly &&
 				(s.DataType == DataType.Level1 || s.DataType == DataType.MarketDepth)).ToArray();
+
 			foreach (var subscription in oneShots)
 			{
 				_subscriptions.Remove(subscription.TransactionId);
 				await SendSubscriptionFinishedAsync(subscription.TransactionId, cancellationToken);
 			}
+
 			if (oneShots.Length > 0)
 				await RefreshMarketSubscription(contract.Metadata.ContractSymbol, cancellationToken);
 		}
@@ -478,12 +495,14 @@ public partial class CqgMessageAdapter
 			return;
 		}
 		var time = subscription.From ?? DateTime.UtcNow;
+
 		foreach (var quote in report.Quotes.Where(q => q.Type == 0))
 		{
 			if (quote.HasQuoteUtcTime)
 				time = ToServerTime(quote.QuoteUtcTime);
 			await SendTick(subscription, quote, time, contract.Metadata.CorrectPriceScale, cancellationToken);
 		}
+
 		if (report.IsReportComplete)
 		{
 			_requestTransactions.Remove(report.RequestId);
@@ -536,6 +555,7 @@ public partial class CqgMessageAdapter
 			await SendSubscriptionFinishedAsync(subscription.TransactionId, cancellationToken);
 			return;
 		}
+
 		foreach (var bar in report.TimeBars.OrderBy(b => b.BarUtcTime))
 		{
 			var scale = contract.Metadata.CorrectPriceScale;
@@ -556,6 +576,7 @@ public partial class CqgMessageAdapter
 				State = report.StatusCode == 3 && report.TimeBars.Last() == bar ? CandleStates.Active : CandleStates.Finished,
 			}, cancellationToken);
 		}
+
 		if (report.IsReportComplete && subscription.IsHistoryOnly)
 		{
 			_requestTransactions.Remove(report.RequestId);

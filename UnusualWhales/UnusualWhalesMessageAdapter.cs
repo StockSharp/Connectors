@@ -14,6 +14,7 @@ public partial class UnusualWhalesMessageAdapter
         this.AddSupportedMarketDataType(DataType.News);
         this.AddSupportedCandleTimeFrames(
             UnusualWhalesExtensions.TimeFrames);
+
         foreach (var dataType in UnusualWhalesDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }

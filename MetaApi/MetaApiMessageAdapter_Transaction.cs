@@ -177,6 +177,7 @@ public partial class MetaApiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			using (_sync.EnterScope())
@@ -217,6 +218,7 @@ public partial class MetaApiMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			using (_sync.EnterScope())
@@ -272,6 +274,7 @@ public partial class MetaApiMessageAdapter
 			throw new ArgumentException("MetaApi order history start time exceeds end time.");
 		var history = new List<MetaApiOrder>();
 		var deals = new List<MetaApiDeal>();
+
 		for (var offset = 0; history.Count < fetchLimit; offset += 1000)
 		{
 			var pageLimit = Math.Min(1000, fetchLimit - history.Count);
@@ -281,6 +284,7 @@ public partial class MetaApiMessageAdapter
 			if (page.Length < pageLimit)
 				break;
 		}
+
 		for (var offset = 0; deals.Count < fetchLimit; offset += 1000)
 		{
 			var pageLimit = Math.Min(1000, fetchLimit - deals.Count);
@@ -299,6 +303,7 @@ public partial class MetaApiMessageAdapter
 			.Where(item => IsOrderMatch(item, filter))
 			.OrderByDescending(static item => item.DoneTime ?? item.Time)
 			.Skip(skip).Take(maximum).ToArray();
+
 		foreach (var order in orders)
 		{
 			using (_sync.EnterScope())
@@ -306,11 +311,14 @@ public partial class MetaApiMessageAdapter
 			await SendOrderAsync(order, filter.TransactionId, true,
 				cancellationToken);
 		}
+
 		var selectedIds = orders.Select(static item => item.Id)
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var deal in deals.Where(item => selectedIds.Contains(item.OrderId))
 			.OrderBy(static item => item.Time))
 			await SendDealAsync(deal, filter.TransactionId, true, cancellationToken);
+
 		this.AddDebugLog("MetaApi order lookup returned {0} orders and {1} deals.",
 			orders.Length, deals.Count);
 	}
@@ -326,9 +334,11 @@ public partial class MetaApiMessageAdapter
 		{
 			_accountInformation = account;
 			_positions.Clear();
+
 			foreach (var position in positions)
 				if (position?.Id.IsEmpty() == false)
 					_positions[position.Id] = position;
+
 			_receivedPositions = true;
 		}
 		await SendPortfolioAsync(originalTransactionId, account,
@@ -411,14 +421,17 @@ public partial class MetaApiMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_orders.Clear();
+
 			foreach (var order in orders)
 				if (order?.Id.IsEmpty() == false)
 					_orders[order.Id] = order;
+
 			_receivedOrders = true;
 			transactionId = _orderStatusSubscriptionId;
 		}
 		if (transactionId == 0)
 			return;
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, transactionId, false, cancellationToken);
 	}
@@ -430,9 +443,11 @@ public partial class MetaApiMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_positions.Clear();
+
 			foreach (var position in positions)
 				if (position?.Id.IsEmpty() == false)
 					_positions[position.Id] = position;
+
 			_receivedPositions = true;
 			transactionId = _portfolioSubscriptionId;
 		}
@@ -462,6 +477,7 @@ public partial class MetaApiMessageAdapter
 						affectedSymbols.Add(position.Symbol);
 				}
 			}
+
 			foreach (var id in removedPositionIds)
 			{
 				if (_positions.Remove(id, out var removed))
@@ -470,6 +486,7 @@ public partial class MetaApiMessageAdapter
 						affectedSymbols.Add(removed.Symbol);
 				}
 			}
+
 			portfolioTransactionId = _portfolioSubscriptionId;
 		}
 		if (portfolioTransactionId != 0)
@@ -488,6 +505,7 @@ public partial class MetaApiMessageAdapter
 			foreach (var order in updatedOrders.Concat(historyOrders))
 				if (order?.Id.IsEmpty() == false)
 					_orders[order.Id] = order;
+
 			foreach (var id in completedOrderIds)
 			{
 				if (_orders.TryGetValue(id, out var order) &&
@@ -498,14 +516,17 @@ public partial class MetaApiMessageAdapter
 					order.DoneTime = DateTime.UtcNow;
 				}
 			}
+
 			orderTransactionId = _orderStatusSubscriptionId;
 		}
+
 		foreach (var order in updatedOrders.Concat(historyOrders))
 		{
 			if (ShouldReportOrder(order?.Id, orderTransactionId))
 				await SendOrderAsync(order, orderTransactionId, false,
 					cancellationToken);
 		}
+
 		foreach (var id in completedOrderIds)
 		{
 			MetaApiOrder order;
@@ -515,6 +536,7 @@ public partial class MetaApiMessageAdapter
 				await SendOrderAsync(order, orderTransactionId, false,
 					cancellationToken);
 		}
+
 		await ProcessDealsAsync(packet.Deals ?? [],
 			cancellationToken);
 	}
@@ -525,6 +547,7 @@ public partial class MetaApiMessageAdapter
 		long transactionId;
 		using (_sync.EnterScope())
 			transactionId = _orderStatusSubscriptionId;
+
 		foreach (var deal in deals)
 		{
 			if (ShouldReportDeal(deal, transactionId))
@@ -684,6 +707,7 @@ public partial class MetaApiMessageAdapter
 				.Where(static symbol => !symbol.IsEmpty())
 				.Concat(_positionSignatures.Keys)
 				.Distinct(StringComparer.OrdinalIgnoreCase)];
+
 		foreach (var symbol in symbols)
 			await SendPositionAsync(symbol, originalTransactionId, isForced,
 				cancellationToken);

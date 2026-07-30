@@ -11,11 +11,13 @@ public partial class CoinmetroMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in GetMarkets().OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -49,6 +51,7 @@ public partial class CoinmetroMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -60,6 +63,7 @@ public partial class CoinmetroMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -147,6 +151,7 @@ public partial class CoinmetroMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -224,6 +229,7 @@ public partial class CoinmetroMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -253,6 +259,7 @@ public partial class CoinmetroMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 1000)
 			.Max(1).Min(10000).To<int>();
+
 		foreach (var trade in (await RestClient.GetTradesAsync(
 			market.Pair,
 			mdMsg.From,
@@ -273,6 +280,7 @@ public partial class CoinmetroMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
@@ -316,6 +324,7 @@ public partial class CoinmetroMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -338,6 +347,7 @@ public partial class CoinmetroMessageAdapter
 			.ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 10000)
 			.Max(1).Min(10000).To<int>();
+
 		foreach (var candle in (await RestClient.GetCandlesAsync(
 			market.Pair,
 			timeFrame,
@@ -354,6 +364,7 @@ public partial class CoinmetroMessageAdapter
 				candle,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(
 			mdMsg, cancellationToken);
 	}
@@ -375,12 +386,14 @@ public partial class CoinmetroMessageAdapter
 			ticks = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Pair.EqualsIgnoreCase(market.Pair))];
 		}
+
 		foreach (var pair in level1)
 			await SendLevel1Async(
 				market,
 				ticker,
 				pair.Key,
 				cancellationToken);
+
 		if (ticker.Price <= 0 ||
 			ticker.Volume <= 0 ||
 			ticks.Length == 0)
@@ -401,6 +414,7 @@ public partial class CoinmetroMessageAdapter
 		};
 		if (!AddTrade(market.Pair, trade.Id))
 			return;
+
 		foreach (var pair in ticks)
 			await SendTradeAsync(
 				market,
@@ -437,6 +451,7 @@ public partial class CoinmetroMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Pair.EqualsIgnoreCase(market.Pair))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(
 				market,
@@ -604,10 +619,13 @@ public partial class CoinmetroMessageAdapter
 			{
 				Sequence = book?.Sequence ?? 0,
 			};
+
 			foreach (var quote in book?.Bids ?? [])
 				state.Bids[quote.Price] = quote.Volume;
+
 			foreach (var quote in book?.Asks ?? [])
 				state.Asks[quote.Price] = quote.Volume;
+
 			_orderBooks[pair] = state;
 		}
 	}
@@ -621,16 +639,19 @@ public partial class CoinmetroMessageAdapter
 			if (!_orderBooks.TryGetValue(
 				market.Pair, out var state))
 				return false;
+
 			foreach (var quote in update.Bids)
 				ApplyQuoteDelta(
 					state.Bids,
 					quote,
 					market.BookAmountPrecision);
+
 			foreach (var quote in update.Asks)
 				ApplyQuoteDelta(
 					state.Asks,
 					quote,
 					market.BookAmountPrecision);
+
 			if (update.Sequence > 0)
 				state.Sequence = update.Sequence;
 			return update.Checksum == 0 ||
@@ -686,21 +707,26 @@ public partial class CoinmetroMessageAdapter
 		CoinmetroMarket market)
 	{
 		var value = new StringBuilder();
+
 		foreach (var item in state.Asks.OrderBy(
 			static item => item.Key.ToString(
 				CultureInfo.InvariantCulture),
 			StringComparer.Ordinal))
 			AppendChecksumLevel(value, item, market);
+
 		foreach (var item in state.Bids.OrderBy(
 			static item => item.Key.ToString(
 				CultureInfo.InvariantCulture),
 			StringComparer.Ordinal))
 			AppendChecksumLevel(value, item, market);
+
 		var checksum = uint.MaxValue;
+
 		foreach (var item in Encoding.UTF8.GetBytes(
 			value.ToString()))
 			checksum = _crc32Table[(checksum ^ item) & 0xff] ^
 				checksum >> 8;
+
 		return unchecked((int)(checksum ^ uint.MaxValue));
 	}
 
@@ -720,15 +746,19 @@ public partial class CoinmetroMessageAdapter
 	private static uint[] CreateCrc32Table()
 	{
 		var result = new uint[256];
+
 		for (uint index = 0; index < result.Length; index++)
 		{
 			var value = index;
+
 			for (var bit = 0; bit < 8; bit++)
 				value = (value & 1) != 0
 					? 0xedb88320U ^ value >> 1
 					: value >> 1;
+
 			result[index] = value;
 		}
+
 		return result;
 	}
 

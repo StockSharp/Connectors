@@ -119,6 +119,7 @@ partial class BloombergMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == message.OriginalTransactionId)
@@ -128,8 +129,10 @@ partial class BloombergMessageAdapter
 
 		EnsureEmsxTrading(false);
 		_orderStatusSubscriptionId = message.TransactionId;
+
 		foreach (var order in _orders.Values.OrderBy(order => order.Sequence))
 			await SendEmsxOrderAsync(order, message.TransactionId, cancellationToken);
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -137,6 +140,7 @@ partial class BloombergMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == message.OriginalTransactionId)
@@ -146,6 +150,7 @@ partial class BloombergMessageAdapter
 
 		EnsureEmsxTrading(false);
 		_portfolioSubscriptionId = message.TransactionId;
+
 		foreach (var account in _orders.Values
 			.Select(order => order.Account)
 			.Where(account => !account.IsEmpty())
@@ -155,6 +160,7 @@ partial class BloombergMessageAdapter
 			_announcedPortfolios[account] = 0;
 			await SendPortfolioAsync(account, message.TransactionId, cancellationToken);
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 

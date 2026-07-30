@@ -90,6 +90,7 @@ public partial class StandXMessageAdapter
 			using (_sync.EnterScope())
 				candles = [.. _candleSubscriptions.Values];
 		}
+
 		foreach (var candle in candles)
 		{
 			try
@@ -147,6 +148,7 @@ public partial class StandXMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_instruments.Clear();
+
 			foreach (var instrument in instruments)
 				_instruments[instrument.Symbol.Trim()] = instrument;
 		}
@@ -161,6 +163,7 @@ public partial class StandXMessageAdapter
 		_orderSocket = null;
 		_marketSocket = null;
 		_restClient = null;
+
 		foreach (var client in new Disposable[] { orderSocket, marketSocket }
 			.Where(static client => client is not null))
 		{
@@ -182,6 +185,7 @@ public partial class StandXMessageAdapter
 			}
 			client.Dispose();
 		}
+
 		restClient?.Dispose();
 		ClearState();
 	}

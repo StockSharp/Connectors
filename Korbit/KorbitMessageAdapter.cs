@@ -148,6 +148,7 @@ public partial class KorbitMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Symbol.IsEmpty() != false)
@@ -296,6 +297,7 @@ public partial class KorbitMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (order.ExchangeOrderId > 0)
 				_trackedOrders[order.ExchangeOrderId.ToString(
 					CultureInfo.InvariantCulture)] = order;

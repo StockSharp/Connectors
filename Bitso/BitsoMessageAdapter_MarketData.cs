@@ -7,6 +7,7 @@ public partial class BitsoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedBook = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class BitsoMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static market => market.Book,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -42,6 +44,7 @@ public partial class BitsoMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -50,6 +53,7 @@ public partial class BitsoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -103,6 +107,7 @@ public partial class BitsoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -163,6 +168,7 @@ public partial class BitsoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -184,6 +190,7 @@ public partial class BitsoMessageAdapter
 			Book = book,
 			Limit = count,
 		}, cancellationToken);
+
 		foreach (var trade in (trades ?? []).Where(trade =>
 		{
 			var time = trade.CreatedAt.ToUtcDateTime(DateTime.MinValue);
@@ -321,6 +328,7 @@ public partial class BitsoMessageAdapter
 		var serverTime = trade.CreatedAt > 0
 			? trade.CreatedAt.FromMilliseconds()
 			: CurrentTime;
+
 		foreach (var pair in tickSubscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -333,6 +341,7 @@ public partial class BitsoMessageAdapter
 				TradeVolume = trade.Amount,
 				OriginSide = trade.TakerSide == 0 ? Sides.Buy : Sides.Sell,
 			}, cancellationToken);
+
 		foreach (var pair in level1Subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -358,6 +367,7 @@ public partial class BitsoMessageAdapter
 				pair.Value.Book.EqualsIgnoreCase(book))];
 		}
 		var serverTime = sent > 0 ? sent.FromMilliseconds() : CurrentTime;
+
 		foreach (var pair in depthSubscriptions)
 			await SendDepthAsync(book, serverTime,
 				ToQuotes(orders.Bids, false, pair.Value.Depth),
@@ -366,6 +376,7 @@ public partial class BitsoMessageAdapter
 
 		var bids = ToQuotes(orders.Bids, false, 1);
 		var asks = ToQuotes(orders.Asks, true, 1);
+
 		foreach (var pair in level1Subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{

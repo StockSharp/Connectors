@@ -7,12 +7,14 @@ public partial class TardisMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		var value = (message.SecurityId.Native as string)
 			.IsEmpty(message.SecurityId.SecurityCode).IsEmpty(message.Name)?.Trim();
 		var skip = Math.Max(0L, message.Skip ?? 0);
 		var left = Math.Max(0L,
 			Math.Min(message.Count ?? MaximumItems, MaximumItems));
+
 		foreach (var instrument in GetInstruments()
 			.Where(instrument => Matches(instrument, value))
 			.OrderBy(static instrument => instrument.Id,
@@ -33,6 +35,7 @@ public partial class TardisMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -65,6 +68,7 @@ public partial class TardisMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -120,6 +124,7 @@ public partial class TardisMessageAdapter
 			from = new DateTime(from.Year, from.Month, from.Day, 0, 0, 0,
 				DateTimeKind.Utc);
 		var sent = 0;
+
 		await foreach (var update in SafeMachine().ReplayAsync(Exchange, key,
 			from, to, cancellationToken))
 		{
@@ -166,6 +171,7 @@ public partial class TardisMessageAdapter
 				cancellationToken) && ++sent >= limit)
 				break;
 		}
+
 		return sent;
 	}
 
@@ -292,6 +298,7 @@ public partial class TardisMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _liveSubscriptions.Values.Where(item =>
 				item.Key == update.Key)];
+
 		foreach (var subscription in subscriptions)
 		{
 			if (!IsLiveSubscriptionActive(subscription))
@@ -540,6 +547,7 @@ public partial class TardisMessageAdapter
 		string side, bool isIncrement)
 	{
 		var result = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level?.Price is not > 0 || level.Amount is null or < 0)
@@ -548,6 +556,7 @@ public partial class TardisMessageAdapter
 			if (isIncrement || level.Amount > 0)
 				result.Add(new(level.Price.Value, level.Amount.Value));
 		}
+
 		return [.. result];
 	}
 
@@ -555,6 +564,7 @@ public partial class TardisMessageAdapter
 		bool isBid)
 	{
 		var valid = new List<TardisBookLevel>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is null || level.Price is null && level.Amount is null)
@@ -565,6 +575,7 @@ public partial class TardisMessageAdapter
 			if (level.Amount > 0)
 				valid.Add(level);
 		}
+
 		return isBid
 			? valid.OrderByDescending(static level => level.Price).FirstOrDefault()
 			: valid.OrderBy(static level => level.Price).FirstOrDefault();

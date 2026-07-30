@@ -7,6 +7,7 @@ public partial class MetaApiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var count = (int)Math.Clamp(lookupMsg.Count ?? 10000, 1, 10000);
 		var query = (lookupMsg.SecurityId.Native as string)
@@ -41,6 +42,7 @@ public partial class MetaApiMessageAdapter
 				symbols = [.. symbols.Where(symbol =>
 					symbol.Contains(query, StringComparison.OrdinalIgnoreCase))];
 			var loaded = new List<MetaApiSymbolSpecification>();
+
 			foreach (var symbol in symbols.Take(count))
 			{
 				var specification = await Rest.GetSpecificationAsync(PortfolioName,
@@ -51,10 +53,12 @@ public partial class MetaApiMessageAdapter
 				using (_sync.EnterScope())
 					_specifications[specification.Symbol] = specification;
 			}
+
 			specifications = [.. loaded];
 		}
 
 		var sent = 0;
+
 		foreach (var specification in specifications
 			.OrderBy(static item => item.Symbol, StringComparer.OrdinalIgnoreCase))
 		{
@@ -70,6 +74,7 @@ public partial class MetaApiMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			sent++;
 		}
+
 		this.AddDebugLog("MetaApi security lookup returned {0} symbols.", sent);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
@@ -79,6 +84,7 @@ public partial class MetaApiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(mdMsg.OriginalTransactionId,
@@ -116,6 +122,7 @@ public partial class MetaApiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(mdMsg.OriginalTransactionId,
@@ -134,6 +141,7 @@ public partial class MetaApiMessageAdapter
 		{
 			var ticks = await Rest.GetHistoricalTicksAsync(PortfolioName, symbol,
 				mdMsg.From?.ToUniversalTime(), 0, remaining, cancellationToken) ?? [];
+
 			foreach (var tick in ticks.OrderBy(static item => item.Time))
 			{
 				if (!IsInRange(tick.Time, mdMsg.From, mdMsg.To))
@@ -165,6 +173,7 @@ public partial class MetaApiMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(mdMsg.OriginalTransactionId,
@@ -201,6 +210,7 @@ public partial class MetaApiMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(mdMsg.OriginalTransactionId,
@@ -222,6 +232,7 @@ public partial class MetaApiMessageAdapter
 			var candles = await Rest.GetHistoricalCandlesAsync(PortfolioName, symbol,
 				nativeTimeFrame, mdMsg.To?.ToUniversalTime(), remaining,
 				cancellationToken) ?? [];
+
 			foreach (var candle in candles.OrderBy(static item => item.Time))
 			{
 				if (!IsInRange(candle.Time, mdMsg.From, mdMsg.To))
@@ -316,6 +327,7 @@ public partial class MetaApiMessageAdapter
 				await SendPriceAsync(subscription.TransactionId,
 					subscription.SecurityId, price, cancellationToken);
 		}
+
 		foreach (var tick in packet.Ticks ?? [])
 		{
 			foreach (var subscription in GetMarketSubscriptions(tick.Symbol,
@@ -323,6 +335,7 @@ public partial class MetaApiMessageAdapter
 				await SendTickAsync(subscription.TransactionId,
 					subscription.SecurityId, tick, cancellationToken);
 		}
+
 		foreach (var book in packet.Books ?? [])
 		{
 			foreach (var subscription in GetMarketSubscriptions(book.Symbol,
@@ -330,6 +343,7 @@ public partial class MetaApiMessageAdapter
 				await SendBookAsync(subscription.TransactionId,
 					subscription.SecurityId, book, cancellationToken);
 		}
+
 		foreach (var candle in packet.Candles ?? [])
 		{
 			foreach (var subscription in GetMarketSubscriptions(candle.Symbol,

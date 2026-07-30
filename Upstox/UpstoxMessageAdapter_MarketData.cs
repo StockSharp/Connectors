@@ -237,6 +237,7 @@ public partial class UpstoxMessageAdapter
 		foreach (var pair in info.SegmentStatus)
 		{
 			var isTrading = pair.Value is MarketStatus.NormalOpen or MarketStatus.PreOpenStart or MarketStatus.ClosingStart;
+
 			foreach (var instrumentKey in _marketSubscriptions.Keys.Where(k => k.StartsWith(pair.Key + "|", StringComparison.OrdinalIgnoreCase)).ToArray())
 			{
 				if (!_marketSubscriptions.TryGetValue(instrumentKey, out var subscriptions) || !subscriptions.TryGetValue(DataType.Level1, out var transactionId))

@@ -310,6 +310,7 @@ sealed class PolymarketSocketClient : BaseLogReceiver
 			else
 				throw new InvalidDataException(
 					"Polymarket WebSocket returned a non-JSON message: " + payload);
+
 			foreach (var item in events)
 			{
 				if (item?.EventType is null)

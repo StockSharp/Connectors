@@ -155,6 +155,7 @@ public partial class SnapTradeMessageAdapter
 					return true;
 			}
 		}
+
 		return false;
 	}
 

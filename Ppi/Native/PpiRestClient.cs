@@ -440,6 +440,7 @@ sealed class PpiRestClient : BaseLogReceiver
         CancellationToken cancellationToken)
     {
         var serialized = body?.ToString(Formatting.None);
+
         for (var attempt = 0; ; attempt++)
         {
             await Throttle(cancellationToken);

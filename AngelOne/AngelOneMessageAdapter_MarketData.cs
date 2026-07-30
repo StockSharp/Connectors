@@ -72,6 +72,7 @@ public partial class AngelOneMessageAdapter
 	private async ValueTask ProcessRealtimeSubscription(MarketDataMessage mdMsg, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (_marketClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
@@ -110,6 +111,7 @@ public partial class AngelOneMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 

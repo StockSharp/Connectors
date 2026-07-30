@@ -54,6 +54,7 @@ sealed class LfjSocketClient : BaseLogReceiver
 			_socket = socket;
 			_lifetime = lifetime;
 			_receiveTask = ReceiveLoopAsync(lifetime.Token);
+
 			foreach (var market in markets
 				.GroupBy(static market => market.PoolId,
 					StringComparer.OrdinalIgnoreCase)
@@ -217,6 +218,7 @@ sealed class LfjSocketClient : BaseLogReceiver
 			"The LFJ WebSocket is not connected.");
 		using var target = new MemoryStream();
 		var buffer = new byte[8192];
+
 		while (true)
 		{
 			var result = await socket.ReceiveAsync(buffer, cancellationToken);

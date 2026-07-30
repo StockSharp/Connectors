@@ -131,6 +131,7 @@ public partial class DexalotMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_socketMessages.Enqueue(message);
+
 			while (_socketMessages.Count > 10_000)
 				_socketMessages.Dequeue();
 		}
@@ -149,6 +150,7 @@ public partial class DexalotMessageAdapter
 		if (filters.Length == 0)
 			return pairs;
 		var result = new List<DexalotPair>();
+
 		foreach (var filter in filters)
 		{
 			var pair = pairs.SingleOrDefault(item =>
@@ -159,6 +161,7 @@ public partial class DexalotMessageAdapter
 			if (!result.Contains(pair))
 				result.Add(pair);
 		}
+
 		return [.. result];
 	}
 

@@ -38,6 +38,7 @@ public partial class MeteoraMessageAdapter
 				throw new InvalidOperationException(
 					"At least one Meteora pool must be configured or discovered.");
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -53,6 +54,7 @@ public partial class MeteoraMessageAdapter
 						definition.PoolAddress, error.Message);
 				}
 			}
+
 			using (_sync.EnterScope())
 				if (_markets.Count == 0)
 					throw errors.Count == 1
@@ -169,6 +171,7 @@ public partial class MeteoraMessageAdapter
 					error.Message);
 			}
 		}
+
 		foreach (var definition in explicitDefinitions)
 		{
 			MeteoraApiPool apiPool = null;
@@ -196,6 +199,7 @@ public partial class MeteoraMessageAdapter
 					definition.PoolAddress)?.ApiPool,
 			};
 		}
+
 		return [.. definitions.Values];
 	}
 
@@ -296,6 +300,7 @@ public partial class MeteoraMessageAdapter
 						existing.PoolAddress);
 					_markets.Add(existing.SecurityCode, existing);
 				}
+
 				market.SecurityCode = BuildUniquePoolCode(pair,
 					market.PoolAddress);
 			}
@@ -316,6 +321,7 @@ public partial class MeteoraMessageAdapter
 		if (Pools.IsEmpty())
 			return [];
 		var result = new List<MeteoraMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -336,6 +342,7 @@ public partial class MeteoraMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result.GroupBy(static definition =>
 			definition.PoolAddress, StringComparer.Ordinal)
 			.Select(static group => group.First())];
@@ -456,6 +463,7 @@ public partial class MeteoraMessageAdapter
 			if (!_markets.ContainsKey(code))
 				return code;
 		}
+
 		return $"{pair}-{poolAddress.ToUpperInvariant()}";
 	}
 

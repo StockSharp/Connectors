@@ -8,6 +8,7 @@ public partial class ZeroXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class ZeroXMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -42,6 +44,7 @@ public partial class ZeroXMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -51,6 +54,7 @@ public partial class ZeroXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -75,6 +79,7 @@ public partial class ZeroXMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -151,12 +156,14 @@ public partial class ZeroXMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(group => (group.First().Value.Market,
 					group.Select(static pair => pair.Key).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			try
 			{
 				var snapshot = await LoadLevel1Async(group.Market,
 					cancellationToken);
+
 				foreach (var target in group.Targets)
 					await SendOutMessageAsync(new Level1ChangeMessage
 					{
@@ -184,8 +191,10 @@ public partial class ZeroXMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 

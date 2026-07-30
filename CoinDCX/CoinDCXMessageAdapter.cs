@@ -195,6 +195,7 @@ public partial class CoinDCXMessageAdapter
 		{
 			_markets.Clear();
 			_pairs.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Name.IsEmpty() != false || market.Pair.IsEmpty() ||
@@ -230,8 +231,10 @@ public partial class CoinDCXMessageAdapter
 		if (precision <= 0)
 			return 1m;
 		var value = 1m;
+
 		for (var i = 0; i < precision.Min(28); i++)
 			value /= 10m;
+
 		return value;
 	}
 

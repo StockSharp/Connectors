@@ -7,6 +7,7 @@ public partial class DeepcoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -43,6 +44,7 @@ public partial class DeepcoinMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}
@@ -55,6 +57,7 @@ public partial class DeepcoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -71,6 +74,7 @@ public partial class DeepcoinMessageAdapter
 			throw new InvalidDataException($"Deepcoin returned no ticker for '{symbol}'.");
 		await SendTickerAsync(ticker, mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -97,6 +101,7 @@ public partial class DeepcoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -114,6 +119,7 @@ public partial class DeepcoinMessageAdapter
 		await SendBookAsync(symbol, book.Bids, book.Asks, QuoteChangeStates.SnapshotComplete,
 			CurrentTime, mdMsg.TransactionId, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -141,6 +147,7 @@ public partial class DeepcoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -154,6 +161,7 @@ public partial class DeepcoinMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var limit = (mdMsg.Count ?? 100).Min(500).Max(1).To<int>();
 		RegisterInstrument(symbol);
+
 		foreach (var trade in (await RestClient.GetTradesAsync(symbol, limit, cancellationToken) ?? [])
 			.Where(static item => item?.TradeId.IsEmpty() == false)
 			.GroupBy(static item => item.TradeId)
@@ -163,6 +171,7 @@ public partial class DeepcoinMessageAdapter
 			await SendTradeAsync(trade, mdMsg.TransactionId, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -189,6 +198,7 @@ public partial class DeepcoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -207,10 +217,12 @@ public partial class DeepcoinMessageAdapter
 		RegisterInstrument(symbol);
 		var candles = await LoadCandlesAsync(symbol, interval, from, to, requestedCount,
 			cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(symbol, candle, timeFrame, mdMsg.TransactionId, cancellationToken);
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -241,6 +253,7 @@ public partial class DeepcoinMessageAdapter
 		var candles = new List<DeepcoinCandle>();
 		var timestamps = new HashSet<long>();
 		var cursor = to.ToUnixMilliseconds() + 1;
+
 		while (candles.Count < requestedCount)
 		{
 			var limit = (requestedCount - candles.Count).Min(300).Max(1);
@@ -253,17 +266,20 @@ public partial class DeepcoinMessageAdapter
 			}, cancellationToken) ?? [];
 			if (page.Length == 0)
 				break;
+
 			foreach (var candle in page)
 			{
 				var time = candle.Timestamp.ToUtcTime();
 				if (time >= from && time <= to && timestamps.Add(candle.Timestamp))
 					candles.Add(candle);
 			}
+
 			var earliest = page.Min(static candle => candle.Timestamp);
 			if (earliest.ToUtcTime() <= from || earliest >= cursor || page.Length < limit)
 				break;
 			cursor = earliest;
 		}
+
 		return [.. candles.OrderBy(static candle => candle.Timestamp).TakeLast(requestedCount)];
 	}
 
@@ -340,6 +356,7 @@ public partial class DeepcoinMessageAdapter
 				.Where(pair => pair.Value.ProductType == productType &&
 					pair.Value.InstrumentId.EqualsIgnoreCase(instrumentId))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendTickerAsync(instrumentId, ticker, id, cancellationToken);
 	}
@@ -354,6 +371,7 @@ public partial class DeepcoinMessageAdapter
 				.Where(pair => pair.Value.ProductType == productType &&
 					pair.Value.InstrumentId.EqualsIgnoreCase(instrumentId))
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendBookAsync(instrumentId, book.Bids, book.Asks, state,
 				timestamp > 0 ? timestamp.ToUtcTime() : CurrentTime, subscription.Id,
@@ -370,6 +388,7 @@ public partial class DeepcoinMessageAdapter
 				.Where(pair => pair.Value.ProductType == productType &&
 					pair.Value.InstrumentId.EqualsIgnoreCase(instrumentId))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendTradeAsync(instrumentId, trade, id, cancellationToken);
 	}
@@ -385,6 +404,7 @@ public partial class DeepcoinMessageAdapter
 					pair.Value.InstrumentId.EqualsIgnoreCase(instrumentId) &&
 					pair.Value.TimeFrame.ToDeepcoinWsInterval() == period)
 				.Select(static pair => (pair.Key, pair.Value.TimeFrame))];
+
 		foreach (var subscription in subscriptions)
 			await SendCandleAsync(instrumentId, candle, subscription.TimeFrame,
 				subscription.Id, cancellationToken);

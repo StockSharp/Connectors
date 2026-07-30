@@ -101,6 +101,7 @@ public partial class TigerBrokersMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			_orderStatusSubscriptionId = 0;
@@ -109,6 +110,7 @@ public partial class TigerBrokersMessageAdapter
 
 		foreach (var order in await _client.GetOrders(statusMsg.PortfolioName.IsEmpty(Account), statusMsg.From, statusMsg.To, cancellationToken))
 			await ProcessOrder(order, statusMsg.TransactionId, true, cancellationToken);
+
 		foreach (var transaction in await _client.GetTransactions(statusMsg.PortfolioName.IsEmpty(Account), statusMsg.From, statusMsg.To, cancellationToken))
 			await ProcessTransaction(transaction, statusMsg.TransactionId, cancellationToken);
 
@@ -121,6 +123,7 @@ public partial class TigerBrokersMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			_portfolioSubscriptionId = 0;
@@ -143,6 +146,7 @@ public partial class TigerBrokersMessageAdapter
 	private async ValueTask SendPortfolio(string account, long originalTransactionId, CancellationToken cancellationToken)
 	{
 		var assets = await _client.GetAssets(account, cancellationToken);
+
 		foreach (var segment in assets.Data?.Segments ?? [])
 		{
 			await SendOutMessageAsync(new PositionChangeMessage

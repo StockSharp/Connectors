@@ -430,6 +430,7 @@ sealed class ExanteRestClient : BaseLogReceiver
         CancellationToken cancellationToken)
     {
         var attempt = 0;
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try
@@ -456,6 +457,7 @@ sealed class ExanteRestClient : BaseLogReceiver
                     .ReadAsStreamAsync(cancellationToken);
                 using var reader = new StreamReader(
                     stream, Encoding.UTF8, true, 4096, false);
+
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var line = await reader.ReadLineAsync(
@@ -593,8 +595,10 @@ sealed class ExanteRestClient : BaseLogReceiver
     {
         _http.Dispose();
         _streamHttp.Dispose();
+
         foreach (var gate in _rateGates.Values)
             gate.Dispose();
+
         base.DisposeManaged();
     }
 }

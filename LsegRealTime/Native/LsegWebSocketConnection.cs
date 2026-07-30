@@ -162,6 +162,7 @@ internal sealed class LsegWebSocketConnection : IDisposable
 					continue;
 
 				var json = Encoding.UTF8.GetString(content.GetBuffer(), 0, checked((int)content.Length));
+
 				foreach (var message in DeserializeMessages(json))
 					await ProcessMessageAsync(message, cancellationToken);
 			}

@@ -148,6 +148,7 @@ public partial class BitFlyerMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.ProductCode.IsEmpty() != false)
@@ -238,6 +239,7 @@ public partial class BitFlyerMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (!order.AcceptanceId.IsEmpty())
 				_trackedOrders[order.AcceptanceId] = order;
 			if (!order.NativeOrderId.IsEmpty())

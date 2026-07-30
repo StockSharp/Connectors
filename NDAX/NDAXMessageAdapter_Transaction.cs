@@ -147,17 +147,20 @@ public partial class NDAXMessageAdapter
 			using (_sync.EnterScope())
 				trackedOrders = [.. _ordersByClientId.Values.Distinct()
 					.Where(static order => order.State != OrderStates.Done)];
+
 			foreach (var tracked in trackedOrders)
 			{
 				tracked.State = OrderStates.Done;
 				await SendTrackedOrderAsync(tracked,
 					cancelMsg.TransactionId, cancellationToken, 0m);
 			}
+
 			return;
 		}
 
 		var orders = await SocketClient.GetOpenOrdersAsync(EffectiveAccountId,
 			cancellationToken);
+
 		foreach (var order in (orders ?? []).Where(order => order is not null &&
 			(instrumentId is null || order.InstrumentId == instrumentId) &&
 			(cancelMsg.Side is null || order.Side.ToSide() ==
@@ -178,6 +181,7 @@ public partial class NDAXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -203,14 +207,17 @@ public partial class NDAXMessageAdapter
 		}, cancellationToken);
 		var positions = await SocketClient.GetPositionsAsync(
 			EffectiveAccountId, cancellationToken);
+
 		foreach (var position in positions ?? [])
 			await SendPositionAsync(position, lookupMsg.TransactionId, true,
 				cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await CompletePortfolioAsync(lookupMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		try
@@ -232,6 +239,7 @@ public partial class NDAXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -269,6 +277,7 @@ public partial class NDAXMessageAdapter
 			.OrderBy(static order => order.ReceiveTime)
 			.TakeLast(subscription.Maximum)
 			.ToArray();
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, statusMsg.TransactionId, true,
 				cancellationToken);
@@ -276,6 +285,7 @@ public partial class NDAXMessageAdapter
 		var trades = await SocketClient.GetAccountTradesAsync(
 			EffectiveAccountId, 0, subscription.Maximum,
 			cancellationToken);
+
 		foreach (var trade in (trades ?? []).Where(trade =>
 			MatchesTrade(subscription, trade)).OrderBy(static trade =>
 			trade.TradeTimeMilliseconds > 0
@@ -289,6 +299,7 @@ public partial class NDAXMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		try
@@ -313,6 +324,7 @@ public partial class NDAXMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var target in targets)
 			await SendPositionAsync(position, target, false,
 				cancellationToken);
@@ -331,6 +343,7 @@ public partial class NDAXMessageAdapter
 		var tracked = GetTrackedOrder(order.OrderId, order.ClientOrderId);
 		if (tracked is not null)
 			targets.Add(tracked.TransactionId);
+
 		foreach (var target in targets)
 			await SendOrderAsync(order, target, false, cancellationToken);
 	}
@@ -348,6 +361,7 @@ public partial class NDAXMessageAdapter
 		var tracked = GetTrackedOrder(trade.OrderId, trade.ClientOrderId);
 		if (tracked is not null)
 			targets.Add(tracked.TransactionId);
+
 		foreach (var target in targets)
 			await SendAccountTradeAsync(trade, target, cancellationToken);
 	}
@@ -636,6 +650,7 @@ public partial class NDAXMessageAdapter
 		Dictionary<string, TValue> values, long targetId)
 	{
 		var prefix = targetId.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key => key.StartsWith(prefix,
 			StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

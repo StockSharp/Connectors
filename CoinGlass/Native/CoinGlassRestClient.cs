@@ -326,11 +326,13 @@ sealed class CoinGlassRestClient : BaseLogReceiver
 		if (data is not JObject exchanges)
 			return [];
 		var result = new List<CoinGlassInstrument>();
+
 		foreach (var property in exchanges.Properties())
 		{
 			if (!exchange.IsEmpty() &&
 				!property.Name.EqualsIgnoreCase(exchange))
 				continue;
+
 			foreach (var value in
 				(property.Value as JArray ?? []).OfType<JObject>())
 			{
@@ -364,6 +366,7 @@ sealed class CoinGlassRestClient : BaseLogReceiver
 				});
 			}
 		}
+
 		return [.. result];
 	}
 

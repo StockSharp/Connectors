@@ -155,6 +155,7 @@ public partial class FxcmMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -173,6 +174,7 @@ public partial class FxcmMessageAdapter
 		if (includePositions)
 		{
 			var left = statusMsg.Count ?? long.MaxValue;
+
 			foreach (var position in (await GetRest().GetClosedPositions(cancellationToken))
 				.OrderBy(p => p.Time.ToDateTime()))
 			{
@@ -203,6 +205,7 @@ public partial class FxcmMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -214,6 +217,7 @@ public partial class FxcmMessageAdapter
 		}
 
 		var accounts = await GetRest().GetAccounts(cancellationToken);
+
 		foreach (var account in accounts)
 		{
 			var portfolio = GetPortfolioName(account);
@@ -225,11 +229,13 @@ public partial class FxcmMessageAdapter
 		}
 
 		_positions.Clear();
+
 		foreach (var position in await GetRest().GetOpenPositions(cancellationToken))
 		{
 			if (position.TradeId is > 0)
 				_positions[position.TradeId.Value] = position;
 		}
+
 		foreach (var group in GetPositionKeys())
 			await SendPositionGroup(group.Portfolio, group.Symbol, lookupMsg.TransactionId, cancellationToken);
 

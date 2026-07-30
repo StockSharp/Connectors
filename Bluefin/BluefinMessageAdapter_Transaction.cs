@@ -80,6 +80,7 @@ public partial class BluefinMessageAdapter
 			.Where(order => cancelMsg.IsStop is null ||
 				IsStopOrder(order.Type) == cancelMsg.IsStop.Value)
 			.ToArray();
+
 		foreach (var group in orders.GroupBy(static order => order.Symbol,
 			StringComparer.Ordinal))
 			foreach (var chunk in group.Chunk(10))
@@ -88,6 +89,7 @@ public partial class BluefinMessageAdapter
 					Symbol = group.Key,
 					OrderHashes = [.. chunk.Select(static order => order.OrderHash)],
 				}, cancellationToken);
+
 		SchedulePrivatePoll();
 	}
 
@@ -97,6 +99,7 @@ public partial class BluefinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -123,6 +126,7 @@ public partial class BluefinMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		await AddPortfolioSubscriptionAsync(lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -134,6 +138,7 @@ public partial class BluefinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureTradingReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -165,6 +170,7 @@ public partial class BluefinMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		await AddOrderSubscriptionAsync(statusMsg.TransactionId, subscription,
 			cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -391,10 +397,12 @@ public partial class BluefinMessageAdapter
 		if (accountTask is not null)
 		{
 			var account = await accountTask;
+
 			foreach (var transactionId in portfolios)
 				await SendPortfolioSnapshotAsync(account, transactionId, false,
 					cancellationToken);
 		}
+
 		foreach (var (transactionId, subscription) in orders)
 		{
 			var openTask = RestClient.GetOpenOrdersAsync(subscription.Symbol,
@@ -457,6 +465,7 @@ public partial class BluefinMessageAdapter
 		foreach (var asset in account.Assets ?? [])
 			await SendAssetAsync(asset, transactionId, isForce,
 				cancellationToken);
+
 		foreach (var position in account.Positions ?? [])
 			await SendPositionAsync(position, transactionId, isForce,
 				cancellationToken);
@@ -581,6 +590,7 @@ public partial class BluefinMessageAdapter
 			if (changed)
 				await SendOutMessageAsync(message, cancellationToken);
 		}
+
 		foreach (var trade in (trades ?? [])
 			.Where(static trade => trade is not null && trade.ExecutedAtMillis > 0)
 			.OrderBy(static trade => trade.ExecutedAtMillis))
@@ -733,6 +743,7 @@ public partial class BluefinMessageAdapter
 			UpdatedAtMillis = payload.UpdatedAtMillis,
 			Assets = payload.Assets,
 		};
+
 		foreach (var transactionId in subscriptions)
 			await SendPortfolioSnapshotAsync(account, transactionId, false,
 				cancellationToken);
@@ -764,6 +775,7 @@ public partial class BluefinMessageAdapter
 			IsolatedMarginE9 = payload.IsolatedMarginE9,
 			UpdatedAtMillis = payload.UpdatedAtMillis,
 		};
+
 		foreach (var transactionId in subscriptions)
 			await SendPositionAsync(position, transactionId, false,
 				cancellationToken);
@@ -777,6 +789,7 @@ public partial class BluefinMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			if (IsOrderMatch(order, subscription))
 				await SendOutMessageAsync(CreateOrderMessage(order, transactionId),
@@ -791,6 +804,7 @@ public partial class BluefinMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendAccountTradeAsync(trade, subscription, transactionId,
 				cancellationToken);

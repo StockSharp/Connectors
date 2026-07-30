@@ -115,6 +115,7 @@ sealed class OneInchHttpClient : BaseLogReceiver
 	{
 		path = path.ThrowIfEmpty(nameof(path)).TrimStart('/');
 		var relative = $"{(int)_chain}/{path}";
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRequestAsync(cancellationToken);

@@ -30,6 +30,7 @@ public partial class ShioajiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var requestedTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -58,6 +59,7 @@ public partial class ShioajiMessageAdapter
 				continue;
 
 			var response = await _rest.GetContracts(nativeType, cancellationToken);
+
 			foreach (var contract in response.Contracts ?? [])
 			{
 				if (contract?.Code.IsEmpty() != false)
@@ -70,6 +72,7 @@ public partial class ShioajiMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}
@@ -103,6 +106,7 @@ public partial class ShioajiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.GetTimeFrame() != TimeSpan.FromMinutes(1))
@@ -117,6 +121,7 @@ public partial class ShioajiMessageAdapter
 		string quoteType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (!_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var removed))
@@ -213,6 +218,7 @@ public partial class ShioajiMessageAdapter
 		var toLocal = to.ToTaiwanLocal();
 		var countOnly = mdMsg.From == null && mdMsg.To == null && mdMsg.Count is > 0;
 		var ticks = new List<HistoricalTick>();
+
 		for (var date = fromLocal.Date; date <= toLocal.Date; date = date.AddDays(1))
 		{
 			var response = await _rest.GetTicks(new()
@@ -225,6 +231,7 @@ public partial class ShioajiMessageAdapter
 
 			var length = new[] { response.DateTimes?.Length ?? 0, response.Close?.Length ?? 0,
 				response.Volume?.Length ?? 0 }.Min();
+
 			for (var i = 0; i < length; i++)
 			{
 				if (response.DateTimes[i].ParseTaiwanTime() is not DateTime time || time < from || time > to)
@@ -241,6 +248,7 @@ public partial class ShioajiMessageAdapter
 					TickType = At(response.TickType, i),
 				});
 			}
+
 			if (countOnly)
 				break;
 		}
@@ -250,6 +258,7 @@ public partial class ShioajiMessageAdapter
 			selected = selected.TakeLast((int)Math.Min(Math.Max(0, count), int.MaxValue));
 
 		var index = 0;
+
 		foreach (var tick in selected)
 		{
 			await SendOutMessageAsync(new ExecutionMessage
@@ -277,6 +286,7 @@ public partial class ShioajiMessageAdapter
 		var fromLocal = from.ToTaiwanLocal().Date;
 		var toLocal = to.ToTaiwanLocal().Date;
 		var candles = new List<HistoricalCandle>();
+
 		for (var chunkStart = fromLocal; chunkStart <= toLocal;)
 		{
 			var chunkEnd = chunkStart.AddDays(29);
@@ -291,6 +301,7 @@ public partial class ShioajiMessageAdapter
 			var length = new[] { response.DateTimes?.Length ?? 0, response.Open?.Length ?? 0,
 				response.High?.Length ?? 0, response.Low?.Length ?? 0, response.Close?.Length ?? 0,
 				response.Volume?.Length ?? 0 }.Min();
+
 			for (var i = 0; i < length; i++)
 			{
 				if (response.DateTimes[i].ParseTaiwanTime() is not DateTime time || time < from || time > to)
@@ -306,12 +317,14 @@ public partial class ShioajiMessageAdapter
 					Turnover = At(response.Amount, i) ?? 0,
 				});
 			}
+
 			chunkStart = chunkEnd.AddDays(1);
 		}
 
 		IEnumerable<HistoricalCandle> selected = candles.OrderBy(candle => candle.Time);
 		if (mdMsg.Count is long count)
 			selected = selected.TakeLast((int)Math.Min(Math.Max(0, count), int.MaxValue));
+
 		foreach (var candle in selected)
 		{
 			await SendOutMessageAsync(new TimeFrameCandleMessage
@@ -341,6 +354,7 @@ public partial class ShioajiMessageAdapter
 			: eventName.StartsWith("bidask_", StringComparison.OrdinalIgnoreCase)
 				? DataType.MarketDepth
 				: DataType.Level1;
+
 		foreach (var subscription in _marketSubscriptions.Values.Where(subscription =>
 			subscription.DataType == dataType && subscription.Contract.IsSameInstrument(data.Code, data.Exchange)))
 		{
@@ -407,6 +421,7 @@ public partial class ShioajiMessageAdapter
 	{
 		if (data?.Code.IsEmpty() != false)
 			return;
+
 		foreach (var subscription in _marketSubscriptions.Values.Where(subscription =>
 			subscription.DataType == DataType.Level1 && subscription.Contract.IsSameInstrument(data.Code, data.Exchange)))
 		{
@@ -463,11 +478,13 @@ public partial class ShioajiMessageAdapter
 	{
 		var length = Math.Min(prices?.Length ?? 0, volumes?.Length ?? 0);
 		var result = new List<QuoteChange>(length);
+
 		for (var i = 0; i < length; i++)
 		{
 			if (prices[i].ToDecimalValue() is decimal price && price > 0)
 				result.Add(new(price, volumes[i]));
 		}
+
 		return [.. (isBids ? result.OrderByDescending(quote => quote.Price) : result.OrderBy(quote => quote.Price))];
 	}
 

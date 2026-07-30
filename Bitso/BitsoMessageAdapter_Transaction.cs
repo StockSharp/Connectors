@@ -194,8 +194,10 @@ public partial class BitsoMessageAdapter
 			order?.OrderId.IsEmpty() == false &&
 			(cancelMsg.Side is null || order.Side.ToStockSharp() == cancelMsg.Side))
 			.Select(static order => order.OrderId).ToArray();
+
 		foreach (var batch in ids.Chunk(50))
 			_ = await RestClient.CancelOrdersAsync(batch, cancellationToken);
+
 		using (_sync.EnterScope())
 			foreach (var id in ids)
 				_knownActiveOrderIds.Remove(id);
@@ -206,6 +208,7 @@ public partial class BitsoMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -226,12 +229,14 @@ public partial class BitsoMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -240,6 +245,7 @@ public partial class BitsoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -262,12 +268,14 @@ public partial class BitsoMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, book, orderId,
 			statusMsg.From, statusMsg.To, maximum, statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -275,6 +283,7 @@ public partial class BitsoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in balances?.Items ?? [])
 			await SendBalanceAsync(balance, originalTransactionId, cancellationToken);
 	}
@@ -290,6 +299,7 @@ public partial class BitsoMessageAdapter
 				Limit = maximum,
 			}, cancellationToken)
 			: await RestClient.GetOrdersAsync([orderId], cancellationToken);
+
 		foreach (var order in (orders ?? []).Where(order =>
 			(orderId.IsEmpty() || order.OrderId.EqualsIgnoreCase(orderId)) &&
 			MatchesOrder(order, filter, from, to))
@@ -304,6 +314,7 @@ public partial class BitsoMessageAdapter
 				Limit = maximum.Min(100),
 			}, cancellationToken)
 			: await RestClient.GetOrderTradesAsync(orderId, cancellationToken);
+
 		foreach (var trade in (trades ?? []).Where(trade =>
 			(orderId.IsEmpty() || trade.OrderId.EqualsIgnoreCase(orderId)) &&
 			MatchesTrade(trade, filter, from, to))
@@ -330,9 +341,11 @@ public partial class BitsoMessageAdapter
 				_knownActiveOrderIds.Clear();
 			_knownActiveOrderIds.AddRange(currentIds);
 		}
+
 		foreach (var order in orders.OrderBy(GetOrderTime))
 			await SendOrderAsync(order, originalTransactionId, null,
 				cancellationToken);
+
 		foreach (var orderId in removed)
 		{
 			var tracked = GetTrackedOrder(orderId);
@@ -343,6 +356,7 @@ public partial class BitsoMessageAdapter
 
 		var trades = await RestClient.GetUserTradesAsync(new() { Limit = 100 },
 			cancellationToken);
+
 		foreach (var trade in (trades ?? []).OrderBy(GetTradeTime))
 			await SendTradeAsync(trade, originalTransactionId, true,
 				cancellationToken);

@@ -139,24 +139,32 @@ public partial class OstiumMessageAdapter
 				"Ostium limit order '" + orderId + "' is no longer active.");
 		var market = GetMarket(pairIndex) ?? throw new InvalidDataException(
 			"Ostium account references unknown pair " + pairIndex + ".");
+
 		if (!replaceMsg.SecurityId.SecurityCode.IsEmpty() &&
 			GetMarket(replaceMsg.SecurityId).PairIndex != pairIndex)
 			throw new InvalidOperationException(
 				"Replacement security does not match the Ostium order.");
+
 		var currentCollateral = existing.Collateral.ParseScaled(6,
 			"order collateral");
+
 		if (replaceMsg.Volume > 0 && replaceMsg.Volume != currentCollateral)
 			throw new NotSupportedException(
 				"Ostium cannot change limit-order collateral in place.");
+
 		var price = replaceMsg.Price;
+
 		if (price <= 0)
 			throw new ArgumentOutOfRangeException(nameof(replaceMsg.Price));
+
 		var supplied = replaceMsg.Condition as OstiumOrderCondition;
 		var isStop = existing.LimitType.Equals("STOP",
 			StringComparison.OrdinalIgnoreCase);
+
 		if (supplied is not null && supplied.IsStopOrder != isStop)
 			throw new NotSupportedException(
 				"Ostium cannot change a limit order into a stop order in place.");
+
 		var takeProfit = supplied is null
 			? existing.TakeProfitPrice.ParseScaled(18, "take profit")
 			: supplied.TakeProfitPrice;
@@ -165,6 +173,7 @@ public partial class OstiumMessageAdapter
 			: supplied.StopLossPrice;
 		var side = existing.IsBuy ? Sides.Buy : Sides.Sell;
 		ValidateProtectionPrices(side, price, takeProfit, stopLoss);
+
 		var receipt = await RpcClient.SendAndWaitAsync(
 			RpcClient.CreateUpdateLimitTransaction(pairIndex, positionIndex,
 				price.ToBaseUnits(18, nameof(replaceMsg.Price)),
@@ -173,8 +182,10 @@ public partial class OstiumMessageAdapter
 			TransactionTimeout, cancellationToken);
 		var time = await RpcClient.GetReceiptTimeAsync(receipt,
 			cancellationToken);
+
 		TrackOrder(orderId, replaceMsg.TransactionId);
 		UpdateServerTime(time);
+
 		await SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Transactions,
@@ -244,6 +255,7 @@ public partial class OstiumMessageAdapter
 		var pairIndex = cancelMsg.SecurityId.SecurityCode.IsEmpty()
 			? (int?)null
 			: GetMarket(cancelMsg.SecurityId).PairIndex;
+
 		foreach (var limit in limits.Where(static item => item is not null)
 			.Where(item => pairIndex is null ||
 				GetPairIndex(item.Pair) == pairIndex)
@@ -280,6 +292,7 @@ public partial class OstiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -298,12 +311,14 @@ public partial class OstiumMessageAdapter
 		await SendPortfolioSnapshotAsync(trades, lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		_lastAccountRefresh = DateTime.UtcNow;
 	}
@@ -314,6 +329,7 @@ public partial class OstiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -329,12 +345,14 @@ public partial class OstiumMessageAdapter
 		await SendOrderSnapshotAsync(await limitsTask, await ordersTask,
 			statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		_lastAccountRefresh = DateTime.UtcNow;
 	}
@@ -346,10 +364,12 @@ public partial class OstiumMessageAdapter
 		if ((regMsg.OrderType ?? OrderTypes.Market) != OrderTypes.Market)
 			throw new NotSupportedException(
 				"Ostium positions are closed with market execution.");
+
 		if (condition.PositionIndex is not int positionIndex ||
 			positionIndex is < 0 or > byte.MaxValue)
 			throw new InvalidOperationException(
 				"Ostium close-position orders require PositionIndex.");
+
 		var trades = await ApiClient.GetOpenTradesAsync(RpcClient.WalletAddress,
 			HistoryLimit, cancellationToken);
 		var position = trades.FirstOrDefault(item => item is not null &&
@@ -359,22 +379,28 @@ public partial class OstiumMessageAdapter
 				"Ostium position '" + market.PairIndex + ":" + positionIndex +
 				"' is no longer open.");
 		var expectedSide = position.IsBuy ? Sides.Sell : Sides.Buy;
+
 		if (regMsg.Side != expectedSide)
 			throw new InvalidOperationException(
 				"Ostium close-position side must oppose the open position.");
+
 		var collateral = position.Collateral.ParseScaled(6,
 			"position collateral");
 		var closePercentage = condition.ClosePercentage ??
 			(regMsg.Volume > 0 ? regMsg.Volume / collateral * 100m : 100m);
 		closePercentage = decimal.Round(closePercentage, 2,
 			MidpointRounding.AwayFromZero);
+
 		if (closePercentage is <= 0 or > 100)
 			throw new ArgumentOutOfRangeException(nameof(regMsg.Volume),
 				regMsg.Volume, "Close amount exceeds the open position.");
+
 		var current = await RefreshPriceAsync(market, cancellationToken);
+
 		if (!current.IsMarketOpen)
 			throw new InvalidOperationException(
 				"Ostium market '" + market.Symbol + "' is currently closed.");
+
 		var receipt = await RpcClient.SendAndWaitAsync(
 			RpcClient.CreateCloseTradeTransaction(market.PairIndex,
 				positionIndex, closePercentage.ToBaseUnits(2,
@@ -387,13 +413,16 @@ public partial class OstiumMessageAdapter
 		var initiated = RpcClient.TryGetMarketCloseEvent(receipt, time) ??
 			throw new InvalidDataException(
 				"Ostium close receipt contains no initiation event.");
+
 		if (initiated.PairIndex != market.PairIndex)
 			throw new InvalidDataException(
 				"Ostium close event references a different market.");
+
 		var orderId = "close:" + initiated.OrderId;
 		TrackOrder(orderId, regMsg.TransactionId);
 		UpdateServerTime(time);
 		var closedCollateral = collateral * closePercentage / 100m;
+
 		await SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Transactions,
@@ -457,6 +486,7 @@ public partial class OstiumMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var response = await ApiClient.GetPricesAsync(cancellationToken);
+
 		foreach (var price in response?.Prices ?? [])
 			if (price is not null)
 				StorePrice(price);
@@ -518,6 +548,7 @@ public partial class OstiumMessageAdapter
 			cancellationToken);
 
 		var currentMarkets = new HashSet<int>();
+
 		foreach (var group in trades.Where(static trade => trade is not null)
 			.GroupBy(static trade => GetPairIndex(trade.Pair)))
 		{
@@ -531,6 +562,7 @@ public partial class OstiumMessageAdapter
 			decimal weightedLeverage = 0m;
 			decimal collateralTotal = 0m;
 			var currentPrice = GetPrice(market)?.Mid;
+
 			foreach (var position in group)
 			{
 				var collateral = position.Collateral.ParseScaled(6,
@@ -552,6 +584,7 @@ public partial class OstiumMessageAdapter
 				if (currentPrice is decimal price)
 					unrealized += sign * quantity * (price - openPrice);
 			}
+
 			currentMarkets.Add(group.Key);
 			await SendOutMessageAsync(new PositionChangeMessage
 			{
@@ -582,6 +615,7 @@ public partial class OstiumMessageAdapter
 			_knownPositionMarkets.Clear();
 			_knownPositionMarkets.UnionWith(currentMarkets);
 		}
+
 		foreach (var pairIndex in missing)
 		{
 			var market = GetMarket(pairIndex);
@@ -606,6 +640,7 @@ public partial class OstiumMessageAdapter
 		orders ??= [];
 		var entries = new List<(ExecutionMessage Order,
 			ExecutionMessage Fill)>();
+
 		foreach (var limit in limits.Where(static item => item is not null))
 		{
 			var market = GetMarket(GetPairIndex(limit.Pair));
@@ -613,6 +648,7 @@ public partial class OstiumMessageAdapter
 				entries.Add((CreateLimitOrderMessage(limit, market,
 					statusMsg.TransactionId), null));
 		}
+
 		foreach (var order in orders.Where(static item => item is not null))
 		{
 			var market = GetMarket(GetPairIndex(order.Pair));
@@ -635,6 +671,7 @@ public partial class OstiumMessageAdapter
 			.Take((statusMsg.Count ?? int.MaxValue).Min(int.MaxValue).To<int>())
 			.OrderBy(static entry => entry.Order.ServerTime)
 			.ToArray();
+
 		foreach (var entry in selected)
 		{
 			UpdateServerTime(entry.Order.ServerTime);
@@ -653,9 +690,11 @@ public partial class OstiumMessageAdapter
 			removed = [.. _knownLimits.Where(pair =>
 				!current.ContainsKey(pair.Key)).Select(static pair => pair.Value)];
 			_knownLimits.Clear();
+
 			foreach (var pair in current)
 				_knownLimits.Add(pair.Key, pair.Value);
 		}
+
 		foreach (var limit in removed)
 		{
 			var pairIndex = GetPairIndex(limit.Pair);

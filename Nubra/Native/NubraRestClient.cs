@@ -137,6 +137,7 @@ sealed class NubraRestClient : BaseLogReceiver
 				return _instruments;
 
 			var instruments = new List<NubraInstrument>();
+
 			foreach (var exchange in new[] { "NSE", "BSE", "MCX" })
 			{
 				var path =

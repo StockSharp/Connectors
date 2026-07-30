@@ -114,6 +114,7 @@ public partial class BTSEMessageAdapter
 	private void EnsurePrivateReady()
 	{
 		EnsureConnected();
+
 		foreach (var section in Sections)
 			EnsurePrivateReady(section);
 	}
@@ -233,6 +234,7 @@ public partial class BTSEMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var registry = section == BTSESections.Spot ? _spotMarkets : _futuresMarkets;
+
 			foreach (var market in markets ?? [])
 				if (market?.Symbol.IsEmpty() == false)
 					registry[NormalizeSymbol(market.Symbol)] = market;

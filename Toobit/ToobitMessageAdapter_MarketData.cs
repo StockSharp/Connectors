@@ -7,9 +7,11 @@ public partial class ToobitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 
 		var securityTypes = lookupMsg.GetSecurityTypes();
+
 		foreach (var adapter in _adapters.CachedValues)
 		{
 			if (securityTypes.Count == 0 || securityTypes.Contains(adapter.SecurityType))

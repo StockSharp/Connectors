@@ -127,6 +127,7 @@ sealed class FalconXMarketSocketClient : FalconXSocketClient
 		Subscription[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _subscriptions.Values];
+
 		foreach (var subscription in subscriptions)
 			await SendAsync(CreateSubscriptionRequest(subscription,
 				Guid.NewGuid().ToString("D")), cancellationToken);
@@ -250,8 +251,10 @@ sealed class FalconXMarketSocketClient : FalconXSocketClient
 			_commands.Clear();
 			_subscriptions.Clear();
 		}
+
 		foreach (var command in commands)
 			command.Completion.TrySetCanceled(cancellationToken);
+
 		await base.DisconnectAsync(cancellationToken);
 	}
 }

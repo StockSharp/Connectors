@@ -8,6 +8,7 @@ public partial class PancakeSwapMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class PancakeSwapMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderByDescending(
 			static item => item.TotalValueLockedUsd).ThenBy(
 			static item => item.SecurityCode,
@@ -45,6 +47,7 @@ public partial class PancakeSwapMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -54,6 +57,7 @@ public partial class PancakeSwapMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -78,6 +82,7 @@ public partial class PancakeSwapMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -92,6 +97,7 @@ public partial class PancakeSwapMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -114,16 +120,19 @@ public partial class PancakeSwapMessageAdapter
 		var trades = await LoadTradesAsync(market, from, to, historyMaximum,
 			cancellationToken);
 		var delivered = 0;
+
 		foreach (var trade in trades)
 			if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken))
 				delivered++;
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -143,6 +152,7 @@ public partial class PancakeSwapMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -169,9 +179,11 @@ public partial class PancakeSwapMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * historyMaximum);
 		var candles = await LoadCandlesAsync(market, timeFrame, from, to,
 			historyMaximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now ||
 			candles.Length >= maximum)
@@ -179,6 +191,7 @@ public partial class PancakeSwapMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -336,6 +349,7 @@ public partial class PancakeSwapMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_tradeDeliveryOrder.Enqueue(key);
+
 			while (_tradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenTrades.Remove(_tradeDeliveryOrder.Dequeue());
 		}
@@ -428,12 +442,14 @@ public partial class PancakeSwapMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(group => (group.First().Value.Market,
 					group.Select(static pair => pair.Key).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			try
 			{
 				var snapshot = await LoadLevel1Async(group.Market,
 					cancellationToken);
+
 				foreach (var target in group.Targets)
 					await SendLevel1Async(group.Market, target,
 						snapshot.Bid, snapshot.Ask,
@@ -455,6 +471,7 @@ public partial class PancakeSwapMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var from = item.Subscription.LastTime - TimeSpan.FromSeconds(1);
@@ -462,6 +479,7 @@ public partial class PancakeSwapMessageAdapter
 				.ToUniversalTime().Min(DateTime.UtcNow);
 			var trades = await LoadTradesAsync(item.Subscription.Market,
 				from, to, 1000, cancellationToken);
+
 			foreach (var trade in trades)
 			{
 				if (item.Subscription.From is DateTime requestedFrom &&
@@ -478,10 +496,12 @@ public partial class PancakeSwapMessageAdapter
 					item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeTicks(target);
@@ -497,6 +517,7 @@ public partial class PancakeSwapMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -508,6 +529,7 @@ public partial class PancakeSwapMessageAdapter
 			var candles = await LoadCandlesAsync(item.Subscription.Market,
 				item.Subscription.TimeFrame, from, to, maximum,
 				cancellationToken);
+
 			foreach (var candle in candles)
 			{
 				var key = $"{item.Id}:{candle.OpenTime.Ticks}";
@@ -536,10 +558,12 @@ public partial class PancakeSwapMessageAdapter
 					item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeCandles(target);
@@ -556,6 +580,7 @@ public partial class PancakeSwapMessageAdapter
 			var retained = _tradeDeliveryOrder.Where(_seenTrades.Contains)
 				.ToArray();
 			_tradeDeliveryOrder.Clear();
+
 			foreach (var key in retained)
 				_tradeDeliveryOrder.Enqueue(key);
 		}
@@ -578,8 +603,10 @@ public partial class PancakeSwapMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -603,6 +630,7 @@ public partial class PancakeSwapMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

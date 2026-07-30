@@ -9,6 +9,7 @@ public partial class BirdeyeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		if (securityTypes.Count > 0 &&
 			!securityTypes.Contains(
@@ -43,6 +44,7 @@ public partial class BirdeyeMessageAdapter
 		var left = Math.Min(
 			lookupMsg.Count ?? MaximumItems,
 			MaximumItems);
+
 		foreach (var token in tokens
 			.Where(token => Matches(token, requested))
 			.OrderByDescending(static token =>
@@ -67,6 +69,7 @@ public partial class BirdeyeMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -78,6 +81,7 @@ public partial class BirdeyeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			using (_sync.EnterScope())
@@ -116,6 +120,7 @@ public partial class BirdeyeMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -145,6 +150,7 @@ public partial class BirdeyeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			using (_sync.EnterScope())
@@ -179,6 +185,7 @@ public partial class BirdeyeMessageAdapter
 		var from = (mdMsg.From ??
 			to - timeFrame * maximum)
 			.ToUniversalTime();
+
 		foreach (var candle in
 			(await RestClient.GetCandlesAsync(
 				token.Address,
@@ -198,12 +205,14 @@ public partial class BirdeyeMessageAdapter
 				timeFrame,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		if (!StreamingEnabled || mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -279,6 +288,7 @@ public partial class BirdeyeMessageAdapter
 					candle.Address) &&
 				pair.Value.TimeFrame == candle.TimeFrame)];
 		}
+
 		foreach (var pair in level1)
 			await SendOutMessageAsync(
 				new Level1ChangeMessage
@@ -302,6 +312,7 @@ public partial class BirdeyeMessageAdapter
 					Level1Fields.State,
 					SecurityStates.Trading),
 				cancellationToken);
+
 		foreach (var pair in candles)
 			await SendCandleAsync(
 				pair.Value.Token,

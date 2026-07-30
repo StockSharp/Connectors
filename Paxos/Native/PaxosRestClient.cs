@@ -104,6 +104,7 @@ sealed class PaxosRestClient : BaseLogReceiver
 		var result = new List<PaxosCandle>();
 		string cursor = null;
 		var visited = new HashSet<string>(StringComparer.Ordinal);
+
 		while (result.Count < maximum)
 		{
 			var requestPath = AddCursor(path, cursor);
@@ -119,6 +120,7 @@ sealed class PaxosRestClient : BaseLogReceiver
 				break;
 			cursor = response.NextPageCursor;
 		}
+
 		return [.. result];
 	}
 
@@ -271,6 +273,7 @@ sealed class PaxosRestClient : BaseLogReceiver
 		var result = new List<TItem>();
 		string cursor = null;
 		var visited = new HashSet<string>(StringComparer.Ordinal);
+
 		while (result.Count < maximum)
 		{
 			var path = AddCursor(firstPath, cursor);
@@ -284,6 +287,7 @@ sealed class PaxosRestClient : BaseLogReceiver
 				break;
 			cursor = response.NextPageCursor;
 		}
+
 		return [.. result];
 	}
 

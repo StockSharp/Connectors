@@ -178,6 +178,7 @@ public partial class SunIoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -206,6 +207,7 @@ public partial class SunIoMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -217,6 +219,7 @@ public partial class SunIoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -261,6 +264,7 @@ public partial class SunIoMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -325,12 +329,15 @@ public partial class SunIoMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -448,6 +455,7 @@ public partial class SunIoMessageAdapter
 		SunIoMarket[] markets;
 		using (_sync.EnterScope())
 			markets = [.. _markets.Values];
+
 		foreach (var market in markets)
 		{
 			var raw = await ApiClient.GetTokenBalanceAsync(market.Token.Address,
@@ -460,6 +468,7 @@ public partial class SunIoMessageAdapter
 				BoardCode = BoardCodes.SunIo,
 			}, current));
 		}
+
 		return [.. result];
 	}
 
@@ -473,17 +482,19 @@ public partial class SunIoMessageAdapter
 		balances, CancellationToken cancellationToken)
 	{
 		foreach (var balance in balances)
-		{
-			var fingerprint = new BalanceFingerprint(balance.Current, 0m);
-			var key = $"{target}:{balance.Code}";
-			using (_sync.EnterScope())
 			{
+				var fingerprint = new BalanceFingerprint(balance.Current, 0m);
+				var key = $"{target}:{balance.Code}";
+
+				using (_sync.EnterScope())
+				{
 				if (!isForced && _balanceFingerprints.TryGetValue(key,
 					out var previous) && previous == fingerprint)
 					continue;
-				_balanceFingerprints[key] = fingerprint;
-			}
-			await SendOutMessageAsync(new PositionChangeMessage
+					_balanceFingerprints[key] = fingerprint;
+				}
+
+				await SendOutMessageAsync(new PositionChangeMessage
 			{
 				PortfolioName = GetPortfolioName(),
 				SecurityId = balance.SecurityId,
@@ -507,12 +518,15 @@ public partial class SunIoMessageAdapter
 			local = [.. _trackedSwaps.Values];
 		var combined = remote.ToDictionary(static swap =>
 			swap.TransactionHash, StringComparer.OrdinalIgnoreCase);
+
 		foreach (var swap in local)
 			combined[swap.TransactionHash] = swap;
+
 		var swaps = combined.Values.Where(swap => Matches(subscription, swap))
 			.OrderBy(static swap => swap.SubmittedTime).ToArray();
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			if (subscription.States is { Length: > 0 } states &&
@@ -548,15 +562,18 @@ public partial class SunIoMessageAdapter
 	{
 		var result = new List<TrackedSwap>();
 		string offset = null;
+
 		for (var page = 0; result.Count < HistoryMaximum; page++)
 		{
 			var response = await ApiClient.GetRouterTransactionsAsync(null,
 				Signer.WalletAddress, from, to, 100, offset,
 				cancellationToken);
 			var items = response.Items ?? [];
+
 			foreach (var transaction in items)
 				if (TryCreateWalletSwap(transaction, out var swap))
 					result.Add(swap);
+
 			if (items.Length == 0 || response.Meta?.IsMoreAvailable != true)
 				break;
 			var next = items[^1].Offset;
@@ -567,6 +584,7 @@ public partial class SunIoMessageAdapter
 			if (page >= HistoryMaximum / 100)
 				break;
 		}
+
 		return [.. result.GroupBy(static swap => swap.TransactionHash,
 				StringComparer.OrdinalIgnoreCase)
 			.Select(static group => group.OrderByDescending(swap =>
@@ -582,6 +600,7 @@ public partial class SunIoMessageAdapter
 			SunIoMarket[] markets;
 			using (_sync.EnterScope())
 				markets = [.. _markets.Values];
+
 			foreach (var market in markets)
 			{
 				if (!TryCreateTrade(market, transaction, out var trade))
@@ -602,6 +621,7 @@ public partial class SunIoMessageAdapter
 				};
 				return true;
 			}
+
 			return false;
 		}
 		catch (Exception error) when (error is InvalidDataException or

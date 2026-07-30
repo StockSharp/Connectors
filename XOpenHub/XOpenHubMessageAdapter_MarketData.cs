@@ -7,8 +7,10 @@ public partial class XOpenHubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var types = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var native in _symbols.Values.OrderBy(s => s.Symbol))
 		{
 			var security = new SecurityMessage
@@ -35,6 +37,7 @@ public partial class XOpenHubMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -43,6 +46,7 @@ public partial class XOpenHubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsSubscribe)
 		{
 			var symbol = ResolveSymbol(mdMsg.SecurityId);
@@ -74,6 +78,7 @@ public partial class XOpenHubMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_candleSubscriptions.TryGetValue(mdMsg.OriginalTransactionId, out var subscription))
@@ -100,6 +105,7 @@ public partial class XOpenHubMessageAdapter
 		var data = await _command.GetChartRange(symbol.Symbol, period, from, to, cancellationToken);
 		var divider = (decimal)Math.Pow(10, data?.Digits ?? symbol.Digits);
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		foreach (var rate in (data?.Rates ?? []).OrderBy(r => r.Time))
 		{
 			var openTime = DateTimeOffset.FromUnixTimeMilliseconds(rate.Time);
@@ -146,6 +152,7 @@ public partial class XOpenHubMessageAdapter
 			symbol.Low = tick.Low;
 			symbol.Time = tick.Timestamp;
 		}
+
 		foreach (var pair in _level1Subscriptions.ToArray()
 			.Where(p => p.Value.EqualsIgnoreCase(tick.Symbol)))
 			await SendTick(pair.Key, tick, cancellationToken);

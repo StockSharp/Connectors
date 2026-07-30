@@ -152,6 +152,7 @@ public partial class QuoddMessageAdapter
 		}
 
 		var emitted = new List<long>(subscriptions.Length);
+
 		foreach (var subscription in subscriptions)
 		{
 			var message = snap.ToLevel1Message(subscription.TransactionId,
@@ -179,6 +180,7 @@ public partial class QuoddMessageAdapter
 					finished.Add(transactionId);
 				}
 			}
+
 			unsubscribe = finished.Count > 0 && !_liveSubscriptions.Values.Any(subscription =>
 				subscription.AssetType == assetType &&
 				subscription.Ticker.EqualsIgnoreCase(snap.Ticker));
@@ -186,6 +188,7 @@ public partial class QuoddMessageAdapter
 
 		foreach (var transactionId in finished)
 			await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
+
 		if (unsubscribe)
 			_client?.Unsubscribe(assetType, snap.Ticker);
 	}

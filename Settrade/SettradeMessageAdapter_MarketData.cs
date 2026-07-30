@@ -9,6 +9,7 @@ public partial class SettradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var symbol = lookupMsg.SecurityId.SecurityCode?.Trim();
 		if (!symbol.IsEmpty())
@@ -41,6 +42,7 @@ public partial class SettradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -91,6 +93,7 @@ public partial class SettradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -132,6 +135,7 @@ public partial class SettradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -163,11 +167,13 @@ public partial class SettradeMessageAdapter
 		var candles = await RestClient.GetCandlesAsync(
 			security.SecurityCode, interval, maximum,
 			mdMsg.From, mdMsg.To, cancellationToken);
+
 		foreach (var candle in candles.ToCandles().Take(maximum))
 			await SendCandleAsync(candle, security, timeFrame,
 				mdMsg.TransactionId, candle.Time + timeFrame <= CurrentTime
 					? CandleStates.Finished
 					: CandleStates.Active, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() ||
 			mdMsg.To is DateTime end &&
 			end.ToUniversalTime() <= CurrentTime)
@@ -176,6 +182,7 @@ public partial class SettradeMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		var subscription = new CandleSubscription
 		{
 			SecurityId = security,
@@ -228,23 +235,28 @@ public partial class SettradeMessageAdapter
 				var value = SettradeProtoDecoder.DecodeLevel1(payload);
 				var targets = FindTargets(_level1Subscriptions,
 					value.Symbol);
+
 				foreach (var target in targets)
 					await SendLevel1Async(value, null, target.SecurityId,
 						target.Id, cancellationToken);
+
 				return;
 			}
 			if (topic.StartsWith("proto/topic/bidofferv3/",
 				StringComparison.Ordinal))
 			{
 				var value = SettradeProtoDecoder.DecodeOrderBook(payload);
+
 				foreach (var target in FindTargets(
 					_level1Subscriptions, value.Symbol))
 					await SendLevel1Async(null, value,
 						target.SecurityId, target.Id, cancellationToken);
+
 				foreach (var target in FindTargets(
 					_depthSubscriptions, value.Symbol))
 					await SendOrderBookAsync(value, target.SecurityId,
 						target.Id, cancellationToken);
+
 				return;
 			}
 			if (topic.StartsWith("proto/topic/cdlv3/",
@@ -264,11 +276,13 @@ public partial class SettradeMessageAdapter
 							.Select(static pair =>
 								(pair.Key, pair.Value))
 					];
+
 				foreach (var target in targets)
 					await SendCandleAsync(value,
 						target.Value.SecurityId,
 						target.Value.TimeFrame, target.Id,
 						CandleStates.Active, cancellationToken);
+
 				return;
 			}
 			if (topic.Contains("/ordereqv3",

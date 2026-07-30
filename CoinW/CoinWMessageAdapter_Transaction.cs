@@ -182,6 +182,7 @@ public partial class CoinWMessageAdapter
 			if (section != CoinWSections.Futures)
 				throw new NotSupportedException("CoinW position closing is available only for futures.");
 			await RestClient.CloseAllFuturesPositionsAsync(GetFuturesNativeSymbol(symbol), cancellationToken);
+
 			foreach (var position in await RestClient.GetFuturesPositionsAsync(cancellationToken))
 			{
 				if (ResolveFuturesSymbol(position.NativeSymbol).EqualsIgnoreCase(symbol))
@@ -223,6 +224,7 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -245,6 +247,7 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -275,6 +278,7 @@ public partial class CoinWMessageAdapter
 			var assets = await RestClient.GetFuturesAssetsAsync("USDT", cancellationToken);
 			if (assets is not null)
 				await SendFuturesAssetsAsync("USDT", assets, originalTransactionId, cancellationToken);
+
 			foreach (var position in await RestClient.GetFuturesPositionsAsync(cancellationToken))
 				await SendFuturesPositionAsync(position, originalTransactionId, cancellationToken);
 		}
@@ -285,11 +289,13 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var sections = section is null ? Sections.ToArray() : [section.Value];
+
 		foreach (var current in sections)
 		{
 			if (current == CoinWSections.Spot)
 			{
 				var symbols = symbol.IsEmpty() ? GetKnownSymbols(CoinWSections.Spot) : [symbol];
+
 				foreach (var currentSymbol in symbols)
 				{
 					var from = range?.From?.ToUnixMilliseconds();
@@ -307,6 +313,7 @@ public partial class CoinWMessageAdapter
 						From = from,
 						To = to,
 					}, cancellationToken));
+
 					foreach (var order in orders
 						.Where(static item => item?.OrderId.IsEmpty() == false)
 						.GroupBy(static item => item.OrderId, StringComparer.OrdinalIgnoreCase)
@@ -316,6 +323,7 @@ public partial class CoinWMessageAdapter
 						order.Symbol = order.Symbol.IsEmpty(currentSymbol);
 						await SendSpotOrderAsync(order, originalTransactionId, cancellationToken);
 					}
+
 					foreach (var trade in (await RestClient.GetSpotUserTradesAsync(new()
 					{
 						Symbol = currentSymbol,
@@ -332,11 +340,13 @@ public partial class CoinWMessageAdapter
 			else
 			{
 				var symbols = symbol.IsEmpty() ? GetKnownSymbols(CoinWSections.Futures) : [symbol];
+
 				foreach (var currentSymbol in symbols)
 				{
 					var native = GetFuturesNativeSymbol(currentSymbol);
 					var orders = new List<CoinWFuturesOrder>();
 					orders.AddRange(await RestClient.GetFuturesOpenOrdersAsync(native, limit, cancellationToken));
+
 					foreach (var originType in new[] { "plan", "execute", "planTrigger" })
 						orders.AddRange(await RestClient.GetFuturesOrderHistoryAsync(new()
 						{
@@ -344,6 +354,7 @@ public partial class CoinWMessageAdapter
 							OriginType = originType,
 							PageSize = limit,
 						}, cancellationToken));
+
 					foreach (var order in orders
 						.Where(static item => item?.OrderId.IsEmpty() == false)
 						.GroupBy(static item => item.OrderId, StringComparer.OrdinalIgnoreCase)

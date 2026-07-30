@@ -120,6 +120,7 @@ public partial class LsSecuritiesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -129,6 +130,7 @@ public partial class LsSecuritiesMessageAdapter
 
 		EnsurePortfolio(statusMsg.PortfolioName);
 		var left = statusMsg.Count ?? long.MaxValue;
+
 		foreach (var order in (await GetRest().GetOrders(cancellationToken)).OrderBy(o => o.Time))
 		{
 			var time = order.Time.ToKoreaUtc();
@@ -155,6 +157,7 @@ public partial class LsSecuritiesMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)

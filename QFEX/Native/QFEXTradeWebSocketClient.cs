@@ -342,6 +342,7 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 			QFEXTradeChannels[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions];
+
 			foreach (var subscription in subscriptions)
 				await SendAsync(client, CreateSubscription(subscription, true),
 					cancellationToken);
@@ -423,6 +424,7 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 			var messages = first == '['
 				? Deserialize<QFEXTradeMessage[]>(payload)
 				: [Deserialize<QFEXTradeMessage>(payload)];
+
 			foreach (var item in messages.Where(static item => item is not null))
 				await ProcessAsync(item, cancellationToken);
 		}

@@ -160,11 +160,14 @@ public partial class OrderlyNetworkMessageAdapter
 			portfolios = [.. _portfolioSubscriptions];
 			orders = [.. _orderSubscriptions.Keys];
 		}
+
 		foreach (var subscriptionId in portfolios)
 			await SendPortfolioSnapshotAsync(subscriptionId, cancellationToken);
+
 		foreach (var subscriptionId in orders)
 			await SendOrderSnapshotAsync(subscriptionId, null, null, null,
 				HistoryLimit, cancellationToken);
+
 		await SendOutConnectionStateAsync(state, cancellationToken);
 	}
 
@@ -179,6 +182,7 @@ public partial class OrderlyNetworkMessageAdapter
 			foreach (var market in markets)
 				if (market?.Symbol.IsEmpty() == false)
 					_markets[market.Symbol] = market;
+
 			foreach (var future in futures ?? [])
 				if (future?.Symbol.IsEmpty() == false)
 					_futures[future.Symbol] = future;

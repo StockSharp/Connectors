@@ -188,6 +188,7 @@ public partial class OsmosisMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -216,6 +217,7 @@ public partial class OsmosisMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -227,6 +229,7 @@ public partial class OsmosisMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -269,6 +272,7 @@ public partial class OsmosisMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -366,12 +370,15 @@ public partial class OsmosisMessageAdapter
 		{
 			var balances = await ApiClient.GetBalancesAsync(
 				Signer.WalletAddress, cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -435,6 +442,7 @@ public partial class OsmosisMessageAdapter
 		var outputDenomination = swap.Side == Sides.Sell
 			? swap.Market.QuoteToken.Denomination
 			: swap.Market.BaseToken.Denomination;
+
 		foreach (var item in transaction.Events ?? [])
 		{
 			if (item?.Type != "token_swapped")
@@ -461,6 +469,7 @@ public partial class OsmosisMessageAdapter
 				return false;
 			}
 		}
+
 		var quoteAmount = swap.Side == Sides.Sell ? output : input;
 		if (quoteAmount is not BigInteger amount || amount <= 0)
 			return false;
@@ -486,6 +495,7 @@ public partial class OsmosisMessageAdapter
 		OsmosisToken[] tokens;
 		using (_sync.EnterScope())
 			tokens = [.. _tokens.Values];
+
 		foreach (var token in tokens.OrderBy(static item => item.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -539,6 +549,7 @@ public partial class OsmosisMessageAdapter
 					swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			if (subscription.States is { Length: > 0 } states &&

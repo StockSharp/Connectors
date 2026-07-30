@@ -35,6 +35,7 @@ public partial class IQFeedMessageAdapter : MessageAdapter
 			_markets[lmMsg.Id] = lmMsg;
 
 			_roots.Clear();
+
 			foreach (var kv in _markets)
 				_roots[kv.Key] = TryFindRoot(kv.Value);
 		}
@@ -423,6 +424,7 @@ public partial class IQFeedMessageAdapter : MessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, token);
+
 		await foreach (var candleMsg in candles.WithEnforcedCancellation(token))
 		{
 			candleMsg.OriginalTransactionId = mdMsg.TransactionId;
@@ -478,6 +480,7 @@ public partial class IQFeedMessageAdapter : MessageAdapter
 		var skip = lookupMsg.Skip ?? 0;
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var boards = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		await foreach (var secMsg in securities.WithEnforcedCancellation(token))
 		{
 			if (!secMsg.IsMatch(lookupMsg, securityTypes))
@@ -516,6 +519,7 @@ public partial class IQFeedMessageAdapter : MessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken token)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, token);
+
 		if (lookupMsg.Count == 0)
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, token);
@@ -536,6 +540,7 @@ public partial class IQFeedMessageAdapter : MessageAdapter
 			var skip = lookupMsg.Skip ?? 0;
 			var left = lookupMsg.Count ?? long.MaxValue;
 			var boards = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 			await foreach (var msg in _lookupFeed.RequestSecurities(lookupMsg, securityTypes, token).WithEnforcedCancellation(token))
 			{
 				if (!msg.IsMatch(lookupMsg, securityTypes))

@@ -67,6 +67,7 @@ public partial class QuestradeMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -76,13 +77,16 @@ public partial class QuestradeMessageAdapter
 		var accounts = statusMsg.PortfolioName.IsEmpty()
 			? _accounts
 			: [ResolveAccount(statusMsg.PortfolioName)];
+
 		foreach (var account in accounts)
 		{
 			foreach (var order in (await _client.GetOrders(account.Number, statusMsg.From, statusMsg.To, cancellationToken)).Orders ?? [])
 				await ProcessOrder(order, account.Number, statusMsg.TransactionId, cancellationToken);
+
 			foreach (var execution in (await _client.GetExecutions(account.Number, statusMsg.From, statusMsg.To, cancellationToken)).Executions ?? [])
 				await ProcessExecution(execution, account.Number, statusMsg.TransactionId, cancellationToken);
 		}
+
 		if (statusMsg.IsHistoryOnly())
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 		else
@@ -96,11 +100,13 @@ public partial class QuestradeMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 			return;
 		var accounts = lookupMsg.PortfolioName.IsEmpty()
 			? _accounts
 			: [ResolveAccount(lookupMsg.PortfolioName)];
+
 		foreach (var account in accounts)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -114,11 +120,14 @@ public partial class QuestradeMessageAdapter
 				?? (balances.CombinedBalances ?? []).FirstOrDefault();
 			if (combined != null)
 				await ProcessCombinedBalance(account.Number, combined, lookupMsg.TransactionId, cancellationToken);
+
 			foreach (var balance in balances.PerCurrencyBalances ?? [])
 				await ProcessBalance(account.Number, balance, lookupMsg.TransactionId, cancellationToken);
+
 			foreach (var position in (await _client.GetPositions(account.Number, cancellationToken)).Positions ?? [])
 				await ProcessPosition(account.Number, position, lookupMsg.TransactionId, cancellationToken);
 		}
+
 		await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, cancellationToken);
 	}
 

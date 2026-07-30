@@ -88,9 +88,11 @@ public partial class SynFuturesMessageAdapter
 			var now = DateTime.UtcNow;
 			candles = [.. _candleSubscriptions.Values.Where(candle =>
 				now >= candle.NextPollTime)];
+
 			foreach (var candle in candles)
 				candle.NextPollTime = now + GetCandlePollInterval(
 					candle.TimeFrame);
+
 			refreshAccount = _rpcClient?.IsWalletConfigured == true &&
 				(_portfolioSubscriptionId != 0 ||
 					_orderStatusSubscriptionId != 0) &&
@@ -98,9 +100,11 @@ public partial class SynFuturesMessageAdapter
 			if (refreshAccount)
 				_lastAccountRefresh = now;
 		}
+
 		foreach (var candle in candles)
 			await RunSafelyAsync(ct => PollCandleAsync(candle, ct),
 				cancellationToken);
+
 		if (refreshAccount)
 			await RunSafelyAsync(RefreshAccountSubscriptionsAsync,
 				cancellationToken);
@@ -119,6 +123,7 @@ public partial class SynFuturesMessageAdapter
 		if (markets.Length == 0)
 			throw new InvalidDataException(
 				"SynFutures returned no usable perpetual markets.");
+
 		foreach (var market in markets)
 		{
 			market.Symbol = market.Symbol.Trim().ToUpperInvariant();
@@ -126,6 +131,7 @@ public partial class SynFuturesMessageAdapter
 			if (market.UpdateTime > 0)
 				UpdateServerTime(market.UpdateTime.ToUtc());
 		}
+
 		var duplicate = markets.GroupBy(static market => market.Symbol,
 			StringComparer.OrdinalIgnoreCase).FirstOrDefault(
 			static group => group.Count() > 1);
@@ -137,6 +143,7 @@ public partial class SynFuturesMessageAdapter
 		{
 			_markets.Clear();
 			_marketsByPair.Clear();
+
 			foreach (var market in markets)
 			{
 				_markets.Add(market.Symbol, market);

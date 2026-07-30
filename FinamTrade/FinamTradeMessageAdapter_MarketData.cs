@@ -30,10 +30,12 @@ public partial class FinamTradeMessageAdapter
 		else
 		{
 			string cursor = null;
+
 			while (left > 0)
 			{
 				var page = await _rest.GetAssets(cursor, cancellationToken);
 				var assets = page?.Assets ?? [];
+
 				foreach (var asset in assets)
 				{
 					if (asset is null || asset.IsArchived ||
@@ -125,8 +127,10 @@ public partial class FinamTradeMessageAdapter
 	private static decimal DecimalPower(int power)
 	{
 		var result = 1m;
+
 		for (var i = 0; i < power; i++)
 			result *= 10m;
+
 		return result;
 	}
 
@@ -136,6 +140,7 @@ public partial class FinamTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscription(message.OriginalTransactionId,
@@ -167,6 +172,7 @@ public partial class FinamTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscription(message.OriginalTransactionId,
@@ -198,6 +204,7 @@ public partial class FinamTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscription(message.OriginalTransactionId,
@@ -234,6 +241,7 @@ public partial class FinamTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscription(message.OriginalTransactionId,

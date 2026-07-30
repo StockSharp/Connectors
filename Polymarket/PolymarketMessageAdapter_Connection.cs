@@ -148,11 +148,13 @@ public partial class PolymarketMessageAdapter
 		var definitions = await RestClient.GetMarketsAsync(cancellationToken);
 		var markets = new List<PolymarketMarket>();
 		var usedCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var definition in definitions ?? [])
 		{
 			if (definition?.ConditionId.IsEmpty() != false ||
 				definition.Tokens is null)
 				continue;
+
 			foreach (var token in definition.Tokens)
 			{
 				if (token?.TokenId.IsEmpty() != false)
@@ -192,6 +194,7 @@ public partial class PolymarketMessageAdapter
 				});
 			}
 		}
+
 		if (markets.Count == 0)
 			throw new InvalidDataException(
 				"Polymarket returned no usable outcome tokens.");
@@ -199,6 +202,7 @@ public partial class PolymarketMessageAdapter
 		{
 			_markets.Clear();
 			_marketsByToken.Clear();
+
 			foreach (var market in markets)
 			{
 				_markets.Add(market.SecurityCode, market);

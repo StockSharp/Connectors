@@ -95,6 +95,7 @@ public partial class PaxosMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in valid)
 				_markets[market.Market] = market;
 		}
@@ -111,12 +112,14 @@ public partial class PaxosMessageAdapter
 		var profiles = await RestClient.GetProfilesAsync(PageSize, MaximumItems,
 			cancellationToken);
 		var references = new List<PortfolioReference>();
+
 		foreach (var group in profiles.Where(static profile =>
 			profile?.Id.IsEmpty() == false).GroupBy(profile =>
 			profile.Nickname.IsEmpty() ? profile.Id : profile.Nickname,
 			StringComparer.OrdinalIgnoreCase))
 		{
 			var duplicates = group.Count() > 1;
+
 			foreach (var profile in group)
 			{
 				var suffix = duplicates
@@ -129,9 +132,11 @@ public partial class PaxosMessageAdapter
 				});
 			}
 		}
+
 		using (_sync.EnterScope())
 		{
 			_portfolios.Clear();
+
 			foreach (var portfolio in references)
 				_portfolios[portfolio.Name] = portfolio;
 		}
@@ -184,6 +189,7 @@ public partial class PaxosMessageAdapter
 			_restClient = null;
 		}
 		var errors = new List<Exception>();
+
 		foreach (var socket in sockets)
 		{
 			UnsubscribeSocket(socket);
@@ -204,6 +210,7 @@ public partial class PaxosMessageAdapter
 				errors.Add(error);
 			}
 		}
+
 		try
 		{
 			rest?.Dispose();

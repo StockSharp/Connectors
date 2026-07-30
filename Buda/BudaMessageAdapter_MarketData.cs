@@ -9,11 +9,13 @@ public partial class BudaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in GetMarkets().OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -47,6 +49,7 @@ public partial class BudaMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -58,6 +61,7 @@ public partial class BudaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -89,6 +93,7 @@ public partial class BudaMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -105,6 +110,7 @@ public partial class BudaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -198,6 +204,7 @@ public partial class BudaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -231,6 +238,7 @@ public partial class BudaMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 100)
 			.Max(1).Min(100).To<int>();
+
 		foreach (var trade in (await RestClient.GetTradesAsync(
 			market.Id,
 			mdMsg.From,
@@ -248,6 +256,7 @@ public partial class BudaMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
@@ -295,6 +304,7 @@ public partial class BudaMessageAdapter
 		KeyValuePair<long, MarketSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions];
+
 		foreach (var group in subscriptions.GroupBy(
 			static pair => pair.Value.NativeSymbol,
 			StringComparer.OrdinalIgnoreCase))
@@ -304,6 +314,7 @@ public partial class BudaMessageAdapter
 				continue;
 			var ticker = await RestClient.GetTickerAsync(
 				market.Id, cancellationToken);
+
 			foreach (var pair in group)
 				await SendLevel1Async(
 					market,
@@ -328,6 +339,7 @@ public partial class BudaMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(market.Id))];
+
 		foreach (var pair in subscriptions)
 			await SendTradeAsync(
 				market,
@@ -355,6 +367,7 @@ public partial class BudaMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(market.Id))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(
 				market,
@@ -468,10 +481,13 @@ public partial class BudaMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var state = new BookState();
+
 			foreach (var quote in book?.Bids ?? [])
 				state.Bids[quote.Price] = quote.Volume;
+
 			foreach (var quote in book?.Asks ?? [])
 				state.Asks[quote.Price] = quote.Volume;
+
 			_orderBooks[marketId] = state;
 		}
 	}

@@ -190,9 +190,11 @@ public partial class TokocryptoMessageAdapter
 			var markets = market is null
 				? GetAllMarkets()
 				: [market];
+
 			foreach (var item in markets)
 				await RestClient.CancelAllOrdersAsync(
 					item.Pair, cancellationToken);
+
 			using (_sync.EnterScope())
 				_knownActiveOrderIds.Clear();
 			return;
@@ -203,6 +205,7 @@ public partial class TokocryptoMessageAdapter
 				? GetAllMarkets()
 				: [market],
 			cancellationToken);
+
 		foreach (var order in orders.Where(order =>
 			order?.Id.IsEmpty() == false &&
 			order.Action.ToSide() == cancelMsg.Side))
@@ -221,6 +224,7 @@ public partial class TokocryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -242,12 +246,14 @@ public partial class TokocryptoMessageAdapter
 		}
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -258,6 +264,7 @@ public partial class TokocryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -277,12 +284,14 @@ public partial class TokocryptoMessageAdapter
 			statusMsg, maximum, cancellationToken);
 		await SendSubscriptionResultAsync(
 			statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -292,6 +301,7 @@ public partial class TokocryptoMessageAdapter
 	{
 		var balances = await RestClient.GetBalancesAsync(
 			cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(
 				balance, originalTransactionId, cancellationToken);
@@ -324,6 +334,7 @@ public partial class TokocryptoMessageAdapter
 					}),
 				];
 			}
+
 			foreach (var market in markets)
 			{
 				var order = await RestClient.GetOrderAsync(
@@ -333,6 +344,7 @@ public partial class TokocryptoMessageAdapter
 						order, statusMsg.TransactionId,
 						cancellationToken);
 			}
+
 			return;
 		}
 
@@ -349,6 +361,7 @@ public partial class TokocryptoMessageAdapter
 				using (_sync.EnterScope())
 					markets = [.. _marketsBySecurity.Values];
 			}
+
 			foreach (var market in markets)
 				orders.AddRange(await RestClient.GetOrdersAsync(
 					market.Pair,
@@ -357,6 +370,7 @@ public partial class TokocryptoMessageAdapter
 					maximum,
 					cancellationToken) ?? []);
 		}
+
 		foreach (var order in orders
 			.Where(order => MatchesOrder(order, statusMsg))
 			.GroupBy(static order => order.Id, StringComparer.Ordinal)
@@ -404,9 +418,11 @@ public partial class TokocryptoMessageAdapter
 			_knownActiveOrderIds.Clear();
 			_knownActiveOrderIds.AddRange(currentIds);
 		}
+
 		foreach (var order in openOrders.OrderBy(GetOrderTimestamp))
 			await SendOrderAsync(
 				order, originalTransactionId, cancellationToken);
+
 		foreach (var orderId in removed)
 		{
 			var tracked = GetTrackedOrder(orderId);
@@ -447,6 +463,7 @@ public partial class TokocryptoMessageAdapter
 						: null)
 				.Where(static market => market is not null)
 				.Distinct()];
+
 		foreach (var market in trackedMarkets)
 			await SendPrivateTradesAsync(
 				market,
@@ -596,16 +613,18 @@ public partial class TokocryptoMessageAdapter
 				trade?.TradeId.IsEmpty() == false)
 			.OrderBy(GetTradeTimestamp))
 		{
-			var added = AddTrade(
-				market.Pair, trade.TradeId, true);
-			if (onlyNew && !added)
-				continue;
-			var tracked = GetTrackedOrder(trade.OrderId);
-			if (trade.Action.EqualsIgnoreCase("self-trade") &&
-				tracked is null)
-				continue;
-			var execution = new ExecutionMessage
-			{
+				var added = AddTrade(
+					market.Pair, trade.TradeId, true);
+				if (onlyNew && !added)
+					continue;
+
+				var tracked = GetTrackedOrder(trade.OrderId);
+				if (trade.Action.EqualsIgnoreCase("self-trade") &&
+					tracked is null)
+					continue;
+
+				var execution = new ExecutionMessage
+				{
 				DataTypeEx = DataType.Transactions,
 				SecurityId = market.ToStockSharp(),
 				ServerTime = GetTradeTime(trade),
@@ -619,16 +638,18 @@ public partial class TokocryptoMessageAdapter
 				TradeVolume = trade.BaseAmount,
 				Commission = trade.Fee,
 				CommissionCurrency = trade.FeeSymbol,
-				TransactionId = tracked?.TransactionId ?? 0,
-				OriginalTransactionId = originalTransactionId,
-			};
-			if (long.TryParse(trade.OrderId, NumberStyles.None,
-				CultureInfo.InvariantCulture, out var orderId))
-				execution.OrderId = orderId;
-			if (long.TryParse(trade.TradeId, NumberStyles.None,
-				CultureInfo.InvariantCulture, out var tradeId))
-				execution.TradeId = tradeId;
-			await SendOutMessageAsync(execution, cancellationToken);
+					TransactionId = tracked?.TransactionId ?? 0,
+					OriginalTransactionId = originalTransactionId,
+				};
+
+				if (long.TryParse(trade.OrderId, NumberStyles.None,
+					CultureInfo.InvariantCulture, out var orderId))
+					execution.OrderId = orderId;
+				if (long.TryParse(trade.TradeId, NumberStyles.None,
+					CultureInfo.InvariantCulture, out var tradeId))
+					execution.TradeId = tradeId;
+
+				await SendOutMessageAsync(execution, cancellationToken);
 		}
 	}
 
@@ -655,12 +676,14 @@ public partial class TokocryptoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var orders = new List<TokocryptoOrder>();
+
 		foreach (var market in (markets ?? [])
 			.Where(static market => market is not null)
 			.Distinct())
 			orders.AddRange(
 				await RestClient.GetOpenOrdersAsync(
 					market.Pair, cancellationToken) ?? []);
+
 		return [.. orders];
 	}
 

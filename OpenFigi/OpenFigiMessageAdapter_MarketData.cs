@@ -9,6 +9,7 @@ public partial class OpenFigiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		if (lookupMsg.Skip is < 0)
 			throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
 		if (lookupMsg.Count is <= 0)
@@ -31,6 +32,7 @@ public partial class OpenFigiMessageAdapter
 		var types = lookupMsg.GetSecurityTypes();
 		var skip = lookupMsg.Skip ?? 0;
 		var left = lookupMsg.Count ?? MaximumResults;
+
 		foreach (var instrument in instruments
 			.Where(static item => !item.Figi.IsEmpty())
 			.GroupBy(static item => item.Figi,
@@ -56,6 +58,7 @@ public partial class OpenFigiMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg,
 			cancellationToken);
 	}

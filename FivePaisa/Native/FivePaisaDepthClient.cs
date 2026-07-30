@@ -63,6 +63,7 @@ sealed class FivePaisaDepthClient : BaseLogReceiver
 	private async ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
 	{
 		var subscriptions = _subscriptions.ToArray();
+
 		for (var i = 0; i < subscriptions.Length; i += 50)
 			await Send(true, subscriptions.Skip(i).Take(50).ToArray(), cancellationToken);
 	}
@@ -91,6 +92,7 @@ sealed class FivePaisaDepthClient : BaseLogReceiver
 
 		if (updates == null || DepthReceived is not { } handler)
 			return;
+
 		foreach (var update in updates)
 		{
 			if (update != null && (update.Token > 0 || update.ScripCode > 0) && update.Details != null)

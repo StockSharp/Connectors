@@ -276,6 +276,7 @@ sealed class BalancerApiClient : BaseLogReceiver
 		int maximum)
 	{
 		var result = new List<BalancerPool>(maximum);
+
 		foreach (var item in source ?? [])
 		{
 			try
@@ -291,6 +292,7 @@ sealed class BalancerApiClient : BaseLogReceiver
 			if (result.Count == maximum)
 				break;
 		}
+
 		return [.. result];
 	}
 

@@ -190,12 +190,14 @@ public partial class CoinDCXMessageAdapter
 				_activeOrderIds.Contains(pair.Key) &&
 				(cancelMsg.Side is null || pair.Value.Side == cancelMsg.Side))
 				.Select(static pair => (pair.Value.Market, pair.Value.Side)).Distinct()];
+
 		foreach (var group in groups)
 			await RestClient.CancelAllAsync(new()
 			{
 				Market = group.market,
 				Side = group.side.ToCoinDCX(),
 			}, cancellationToken);
+
 		using (_sync.EnterScope())
 			foreach (var orderId in _trackedOrders.Where(pair =>
 				cancelMsg.Side is null || pair.Value.Side == cancelMsg.Side)
@@ -208,6 +210,7 @@ public partial class CoinDCXMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -230,12 +233,14 @@ public partial class CoinDCXMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -245,6 +250,7 @@ public partial class CoinDCXMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -285,6 +291,7 @@ public partial class CoinDCXMessageAdapter
 					Market = market,
 					Side = statusMsg.Side?.ToCoinDCX(),
 				}, cancellationToken);
+
 				foreach (var order in (orders ?? []).TakeLast(maximum))
 					await SendOrderAsync(order, statusMsg.TransactionId, null,
 						cancellationToken);
@@ -296,6 +303,7 @@ public partial class CoinDCXMessageAdapter
 					active = [.. _trackedOrders.Where(pair =>
 						_activeOrderIds.Contains(pair.Key) &&
 						(statusMsg.Side is null || pair.Value.Side == statusMsg.Side))];
+
 				foreach (var pair in active.TakeLast(maximum))
 					await SendTrackedOrderAsync(pair.Key, pair.Value,
 						OrderStates.Active, pair.Value.Volume,
@@ -310,6 +318,7 @@ public partial class CoinDCXMessageAdapter
 				ToTimestamp = statusMsg.To?.ToUniversalTime().ToMilliseconds(),
 				Symbol = market,
 			}, cancellationToken);
+
 			foreach (var trade in trades ?? [])
 				if (statusMsg.Side is null || trade.Side.ToStockSharp() == statusMsg.Side)
 					await SendAccountTradeAsync(trade, statusMsg.TransactionId,
@@ -317,12 +326,14 @@ public partial class CoinDCXMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -454,6 +465,7 @@ public partial class CoinDCXMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var subscriptionId in subscriptions)
 			foreach (var balance in balances ?? [])
 				await SendBalanceAsync(balance.Currency, balance.Balance,
@@ -491,6 +503,7 @@ public partial class CoinDCXMessageAdapter
 				subscriptions = [.. _orderSubscriptions.Where(pair =>
 					MatchesOrderSubscription(pair.Value, market.Market,
 						order.OrderId, side))];
+
 			foreach (var pair in subscriptions)
 				await SendOutMessageAsync(new ExecutionMessage
 				{
@@ -537,6 +550,7 @@ public partial class CoinDCXMessageAdapter
 				subscriptions = [.. _orderSubscriptions.Where(pair =>
 					MatchesOrderSubscription(pair.Value, market.Market,
 						trade.OrderId, side))];
+
 			foreach (var pair in subscriptions)
 				await SendOutMessageAsync(new ExecutionMessage
 				{

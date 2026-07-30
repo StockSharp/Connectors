@@ -164,6 +164,7 @@ public partial class GMTradeMessageAdapter
 			},
 		};
 		var serverTime = default(DateTime);
+
 		foreach (var market in source)
 		{
 			var code = GMTradeExtensions.CreateSecurityCode(market.Meta.Name);
@@ -238,6 +239,7 @@ public partial class GMTradeMessageAdapter
 		_marketSocket = null;
 		_rpcClient = null;
 		_restClient = null;
+
 		foreach (var socket in new[] { candleSocket, marketSocket }
 			.Where(static socket => socket is not null))
 		{
@@ -251,6 +253,7 @@ public partial class GMTradeMessageAdapter
 			}
 			socket.Dispose();
 		}
+
 		rpcClient?.Dispose();
 		restClient?.Dispose();
 		ClearState();

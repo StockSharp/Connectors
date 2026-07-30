@@ -71,6 +71,7 @@ public partial class XOpenHubMessageAdapter
 		try
 		{
 			await command.Connect(Login, Password?.UnSecure(), "StockSharp", cancellationToken);
+
 			foreach (var symbol in await command.GetAllSymbols(cancellationToken) ?? [])
 			{
 				if (!symbol.Symbol.IsEmpty())

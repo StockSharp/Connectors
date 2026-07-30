@@ -82,6 +82,7 @@ public partial class ThetaDataMessageAdapter
 		}
 
 		var emitted = new List<LiveSubscription>();
+
 		foreach (var subscription in subscriptions)
 		{
 			Message message = null;
@@ -166,6 +167,7 @@ public partial class ThetaDataMessageAdapter
 		ThetaStreamKey[] keys)
 	{
 		await Task.Yield();
+
 		foreach (var key in keys)
 		{
 			try

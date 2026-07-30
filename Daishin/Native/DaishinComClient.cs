@@ -241,6 +241,7 @@ sealed class DaishinComClient : BaseLogReceiver
 		{
 			if (Level1Received is not { } handler)
 				return;
+
 			foreach (var subscription in MatchSubscriptions(
 				DaishinMarketDataKinds.Current, update.SecurityType, update.Code))
 				await handler(subscription, update, cancellationToken);
@@ -251,6 +252,7 @@ sealed class DaishinComClient : BaseLogReceiver
 		{
 			if (BookReceived is not { } handler)
 				return;
+
 			foreach (var subscription in MatchSubscriptions(
 				DaishinMarketDataKinds.MarketDepth, update.SecurityType, update.Code))
 				await handler(subscription, update, cancellationToken);

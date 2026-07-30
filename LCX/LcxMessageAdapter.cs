@@ -176,11 +176,13 @@ public partial class LcxMessageAdapter
 		{
 			_markets.Clear();
 			_tickers.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Symbol.IsEmpty() == false)
 					_markets[market.Symbol] = market;
 			}
+
 			foreach (var ticker in tickers ?? [])
 			{
 				if (ticker?.Symbol.IsEmpty() == false)
@@ -252,10 +254,12 @@ public partial class LcxMessageAdapter
 			if (!_seenTradeIds.Add(key))
 				return false;
 			_seenTradeOrder.Enqueue(key);
+
 			while (_seenTradeOrder.Count >
 				_maximumRememberedTradeIds)
 				_seenTradeIds.Remove(
 					_seenTradeOrder.Dequeue());
+
 			return true;
 		}
 	}

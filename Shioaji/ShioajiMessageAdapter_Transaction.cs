@@ -146,6 +146,7 @@ public partial class ShioajiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -154,11 +155,13 @@ public partial class ShioajiMessageAdapter
 		}
 
 		var left = statusMsg.Count ?? long.MaxValue;
+
 		foreach (var account in FilterAccounts(statusMsg.PortfolioName))
 		{
 			var trades = (await _rest.GetTrades(account, cancellationToken))
 				.Where(trade => trade?.Order != null)
 				.OrderBy(GetOrderTime);
+
 			foreach (var trade in trades)
 			{
 				var time = GetOrderTime(trade);
@@ -170,9 +173,11 @@ public partial class ShioajiMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}
+
 		_lastOrderRefresh = CurrentTime;
 
 		if (statusMsg.IsHistoryOnly())
@@ -189,6 +194,7 @@ public partial class ShioajiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -217,6 +223,7 @@ public partial class ShioajiMessageAdapter
 			foreach (var trade in await _rest.GetTrades(account, cancellationToken))
 				await ProcessTrade(trade, originId, true, cancellationToken);
 		}
+
 		_lastOrderRefresh = CurrentTime;
 	}
 
@@ -282,6 +289,7 @@ public partial class ShioajiMessageAdapter
 				.TryAdd(PositionChangeTypes.UnrealizedPnL, position.ProfitLoss, true), cancellationToken);
 			}
 		}
+
 		_lastPortfolioRefresh = CurrentTime;
 	}
 
@@ -444,6 +452,7 @@ public partial class ShioajiMessageAdapter
 					return trade.Order.Id;
 			}
 		}
+
 		throw new InvalidOperationException(LocalizedStrings.OrderNoExchangeId.Put(originalTransactionId));
 	}
 
@@ -457,6 +466,7 @@ public partial class ShioajiMessageAdapter
 			if (trade != null)
 				return trade;
 		}
+
 		return null;
 	}
 

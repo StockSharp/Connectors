@@ -385,10 +385,12 @@ sealed class ReyaSocketClient : BaseLogReceiver
 				var keys = _pending.Keys.Where(key => key.EndsWith(suffix,
 					StringComparison.Ordinal)).ToArray();
 				pending = keys.Select(key => _pending[key]).ToArray();
+
 				foreach (var key in keys)
 					_pending.Remove(key);
 			}
 		}
+
 		foreach (var completion in pending)
 			completion.TrySetException(error);
 	}

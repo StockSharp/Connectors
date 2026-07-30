@@ -196,8 +196,10 @@ sealed class FlattradeRestClient : BaseLogReceiver
 		}
 
 		var items = JsonConvert.DeserializeObject<TItem[]>(content, _jsonSettings) ?? [];
+
 		foreach (var item in items)
 			EnsureSuccess(item, path);
+
 		return items;
 	}
 
@@ -217,6 +219,7 @@ sealed class FlattradeRestClient : BaseLogReceiver
 
 		var arrayStart = content.IndexOf('[');
 		var itemStart = arrayStart + 1;
+
 		while (itemStart < content.Length && char.IsWhiteSpace(content[itemStart]))
 			itemStart++;
 
@@ -261,12 +264,14 @@ sealed class FlattradeRestClient : BaseLogReceiver
 			return [];
 
 		var instruments = new List<FlattradeInstrument>();
+
 		while (await csv.NextLineAsync(cancellationToken))
 		{
 			var instrument = ReadInstrument(csv);
 			if (instrument != null)
 				instruments.Add(instrument);
 		}
+
 		return [.. instruments];
 	}
 
@@ -296,8 +301,10 @@ sealed class FlattradeRestClient : BaseLogReceiver
 	private static string[] ReadColumns(FastCsvReader csv, int count)
 	{
 		var values = new string[count];
+
 		for (var i = 0; i < count; i++)
 			values[i] = csv.ReadString()?.Trim();
+
 		return values;
 	}
 

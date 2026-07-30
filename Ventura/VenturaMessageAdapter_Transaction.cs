@@ -122,6 +122,7 @@ public partial class VenturaMessageAdapter
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId,
 			cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId ==
@@ -164,6 +165,7 @@ public partial class VenturaMessageAdapter
 		long? count = null)
 	{
 		var left = count ?? long.MaxValue;
+
 		foreach (var order in (await _restClient.GetOrders(
 			cancellationToken))
 			.Where(order => order != null && !order.OrderId.IsEmpty())
@@ -204,6 +206,7 @@ public partial class VenturaMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId ==

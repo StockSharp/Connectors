@@ -155,6 +155,7 @@ public partial class ZondaCryptoMessageAdapter
 		var market = cancelMsg.SecurityId.SecurityCode.IsEmpty()
 			? null
 			: GetMarket(cancelMsg.SecurityId);
+
 		foreach (var offer in await RestClient.GetOffersAsync(
 			market?.Code, cancellationToken) ?? [])
 		{
@@ -182,6 +183,7 @@ public partial class ZondaCryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -222,6 +224,7 @@ public partial class ZondaCryptoMessageAdapter
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"zondacrypto portfolio subscription already exists.");
@@ -249,6 +252,7 @@ public partial class ZondaCryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -280,6 +284,7 @@ public partial class ZondaCryptoMessageAdapter
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"zondacrypto order-status subscription already " +
@@ -353,6 +358,7 @@ public partial class ZondaCryptoMessageAdapter
 			: GetMarket(statusMsg.SecurityId);
 		var maximum = (statusMsg.Count ?? 100)
 			.Max(1).Min(200).To<int>();
+
 		foreach (var offer in (await RestClient.GetOffersAsync(
 			market?.Code, cancellationToken) ?? [])
 			.Where(offer => MatchesOrder(offer, statusMsg))

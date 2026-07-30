@@ -8,6 +8,7 @@ public partial class DexalotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class DexalotMessageAdapter
 			pairs = [.. _pairs.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var pair in pairs.OrderBy(static item => item.Pair,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class DexalotMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -54,6 +57,7 @@ public partial class DexalotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -90,6 +94,7 @@ public partial class DexalotMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions.Add(mdMsg.TransactionId,
 				new() { Pair = pair });
@@ -112,6 +117,7 @@ public partial class DexalotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -150,6 +156,7 @@ public partial class DexalotMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -175,6 +182,7 @@ public partial class DexalotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -229,6 +237,7 @@ public partial class DexalotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -317,6 +326,7 @@ public partial class DexalotMessageAdapter
 			messages = [.. _socketMessages];
 			_socketMessages.Clear();
 		}
+
 		foreach (var message in messages)
 		{
 			try
@@ -362,9 +372,11 @@ public partial class DexalotMessageAdapter
 			depths = [.. _depthSubscriptions.Where(item =>
 				item.Value.Pair.Pair.EqualsIgnoreCase(pair.Pair))];
 		}
+
 		foreach (var target in level1)
 			await SendLevel1Async(pair, book, target.Key,
 				cancellationToken);
+
 		foreach (var target in depths)
 			await SendDepthAsync(pair, book, target.Value.Depth,
 				target.Key, cancellationToken);
@@ -382,6 +394,7 @@ public partial class DexalotMessageAdapter
 			targets = [.. _tickSubscriptions.Where(item =>
 				item.Value.Pair.Pair.EqualsIgnoreCase(pair.Pair))];
 		var finished = new List<(long Id, DexalotPair Pair)>();
+
 		foreach (var target in targets)
 		{
 			foreach (var trade in trades)
@@ -396,12 +409,14 @@ public partial class DexalotMessageAdapter
 				if (target.Value.Delivered >= target.Value.Maximum)
 					break;
 			}
+
 			if (target.Value.HistoryOnly ||
 				target.Value.Delivered >= target.Value.Maximum ||
 				target.Value.To is DateTime end &&
 				DateTime.UtcNow >= end)
 				finished.Add((target.Key, target.Value.Pair));
 		}
+
 		foreach (var target in finished)
 		{
 			using (_sync.EnterScope())
@@ -435,6 +450,7 @@ public partial class DexalotMessageAdapter
 				.Where(item => item.Pair.Pair.EqualsIgnoreCase(pair.Pair))
 				.Select(static item => item.TimeFrame)
 				.Distinct()];
+
 		foreach (var timeFrame in timeFrames)
 			await DeliverCandlesAsync(pair,
 				AggregateTrades(trades, timeFrame), timeFrame,
@@ -452,6 +468,7 @@ public partial class DexalotMessageAdapter
 				(timeFrame is null ||
 					item.Value.TimeFrame == timeFrame.Value))];
 		var finished = new List<(long Id, CandleSubscription Subscription)>();
+
 		foreach (var target in targets)
 		{
 			foreach (var candle in candles)
@@ -471,12 +488,14 @@ public partial class DexalotMessageAdapter
 				if (target.Value.Delivered >= target.Value.Maximum)
 					break;
 			}
+
 			if (target.Value.HistoryOnly ||
 				target.Value.Delivered >= target.Value.Maximum ||
 				target.Value.To is DateTime end &&
 				DateTime.UtcNow >= end)
 				finished.Add((target.Key, target.Value));
 		}
+
 		foreach (var target in finished)
 		{
 			using (_sync.EnterScope())
@@ -520,6 +539,7 @@ public partial class DexalotMessageAdapter
 		JToken value)
 	{
 		var result = new List<DexalotBookLevel>();
+
 		foreach (var chunk in value as JArray ?? [])
 		{
 			var prices = SplitWireNumbers(chunk.Value<string>("prices"));
@@ -528,6 +548,7 @@ public partial class DexalotMessageAdapter
 			if (prices.Length != volumes.Length)
 				throw new InvalidDataException(
 					"Dexalot WebSocket returned mismatched book arrays.");
+
 			for (var index = 0; index < prices.Length; index++)
 			{
 				var price = prices[index].ParseInteger()
@@ -542,6 +563,7 @@ public partial class DexalotMessageAdapter
 					});
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -554,6 +576,7 @@ public partial class DexalotMessageAdapter
 			_ => [],
 		};
 		var result = new List<DexalotTrade>();
+
 		foreach (var item in items.OfType<JObject>())
 		{
 			var id = item["execId"]?.ToString()
@@ -575,6 +598,7 @@ public partial class DexalotMessageAdapter
 				Side = item["takerSide"].ToSide(),
 			});
 		}
+
 		return [.. result.Where(static item =>
 			item.Price > 0 && item.Volume > 0)];
 	}
@@ -617,6 +641,7 @@ public partial class DexalotMessageAdapter
 			_ => [],
 		};
 		var result = new List<DexalotCandle>();
+
 		foreach (var item in items.OfType<JObject>())
 		{
 			if (!DateTime.TryParse(item.Value<string>("date"),
@@ -636,6 +661,7 @@ public partial class DexalotMessageAdapter
 					.ParseDecimal("volume"),
 			});
 		}
+
 		return [.. result.Where(static item =>
 			item.Open > 0 && item.High > 0 && item.Low > 0 &&
 			item.Close > 0 && item.Volume >= 0)];
@@ -830,8 +856,10 @@ public partial class DexalotMessageAdapter
 			if (!_seenMarketData.Add(key))
 				return false;
 			_deliveryOrder.Enqueue(key);
+
 			while (_deliveryOrder.Count > _maximumDeliveryKeys)
 				_seenMarketData.Remove(_deliveryOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -843,6 +871,7 @@ public partial class DexalotMessageAdapter
 		var retained = _deliveryOrder.Where(_seenMarketData.Contains)
 			.ToArray();
 		_deliveryOrder.Clear();
+
 		foreach (var item in retained)
 			_deliveryOrder.Enqueue(item);
 	}

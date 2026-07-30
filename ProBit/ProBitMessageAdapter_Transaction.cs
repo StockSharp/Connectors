@@ -159,6 +159,7 @@ public partial class ProBitMessageAdapter
 		var symbol = cancelMsg.SecurityId.SecurityCode.IsEmpty()
 			? null
 			: GetSymbol(cancelMsg.SecurityId);
+
 		foreach (var order in await RestClient.GetOpenOrdersAsync(symbol, cancellationToken))
 		{
 			if (order?.Id.IsEmpty() != false || order.MarketId.IsEmpty() ||
@@ -179,6 +180,7 @@ public partial class ProBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -196,11 +198,13 @@ public partial class ProBitMessageAdapter
 		}, cancellationToken);
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -210,6 +214,7 @@ public partial class ProBitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -240,11 +245,13 @@ public partial class ProBitMessageAdapter
 		await SendOrderSnapshotAsync(statusMsg.TransactionId, subscription, statusMsg.From,
 			statusMsg.To, limit, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 	}
@@ -266,6 +273,7 @@ public partial class ProBitMessageAdapter
 				subscription.OrderIdentifier, subscription.ClientOrderId, cancellationToken))
 				if (Matches(subscription, order))
 					await SendOrderAsync(order, originalTransactionId, cancellationToken);
+
 			return;
 		}
 
@@ -277,6 +285,7 @@ public partial class ProBitMessageAdapter
 			.Select(static group => group.OrderByDescending(order => order.Time.ToUtcTime()).First())
 			.OrderByDescending(static order => order.Time.ToUtcTime())
 			.Take(limit);
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, originalTransactionId, cancellationToken);
 
@@ -294,6 +303,7 @@ public partial class ProBitMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var subscriptionId in subscriptions)
 			foreach (var balance in message?.Data ?? [])
 				await SendBalanceAsync(balance, subscriptionId, CurrentTime, cancellationToken);
@@ -315,6 +325,7 @@ public partial class ProBitMessageAdapter
 			var targets = GetOrderTargets(order);
 			if (targets.Length == 0)
 				targets = [0];
+
 			foreach (var target in targets)
 				await SendOrderAsync(order, target, cancellationToken);
 		}
@@ -330,6 +341,7 @@ public partial class ProBitMessageAdapter
 			var targets = GetOrderTargets(trade);
 			if (targets.Length == 0)
 				targets = [0];
+
 			foreach (var target in targets)
 				await SendAccountTradeAsync(trade, target, cancellationToken, false);
 		}

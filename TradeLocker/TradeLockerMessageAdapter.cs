@@ -122,6 +122,7 @@ public partial class TradeLockerMessageAdapter
 					return true;
 			}
 		}
+
 		return false;
 	}
 

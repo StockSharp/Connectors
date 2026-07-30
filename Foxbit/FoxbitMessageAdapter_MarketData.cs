@@ -8,6 +8,7 @@ public partial class FoxbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedMarket = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class FoxbitMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class FoxbitMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -54,6 +57,7 @@ public partial class FoxbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -105,6 +109,7 @@ public partial class FoxbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -163,6 +168,7 @@ public partial class FoxbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -182,6 +188,7 @@ public partial class FoxbitMessageAdapter
 		var from = mdMsg.From?.ToUniversalTime() ?? to - TimeSpan.FromDays(1);
 		var trades = await LoadPublicTradesAsync(market.Symbol, from, to,
 			maximum, cancellationToken);
+
 		foreach (var trade in trades)
 			await SendPublicTradeAsync(market.Symbol, trade,
 				mdMsg.TransactionId, cancellationToken);
@@ -217,6 +224,7 @@ public partial class FoxbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -240,6 +248,7 @@ public partial class FoxbitMessageAdapter
 			to.SubtractPeriods(timeFrame, maximum);
 		var candles = await LoadCandlesAsync(market.Symbol, timeFrame, from,
 			to, maximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market.Symbol, candle, timeFrame,
 				mdMsg.TransactionId, null, cancellationToken);
@@ -349,6 +358,7 @@ public partial class FoxbitMessageAdapter
 			transactionIds = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.MarketSymbol.EqualsIgnoreCase(marketSymbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var transactionId in transactionIds)
 			await SendSocketTickerAsync(marketSymbol, ticker, transactionId,
 				cancellationToken);
@@ -370,12 +380,14 @@ public partial class FoxbitMessageAdapter
 				pair.Value.MarketSymbol.EqualsIgnoreCase(marketSymbol))
 				.Select(static pair => (pair.Key, pair.Value))];
 		}
+
 		foreach (var trade in trades.Where(static trade => trade is not null)
 			.OrderBy(static trade => trade.Timestamp))
 		{
 			foreach (var transactionId in tickIds)
 				await SendSocketTradeAsync(marketSymbol, trade, transactionId,
 					cancellationToken);
+
 			foreach (var item in candleSubscriptions)
 				await UpdateLiveCandleAsync(item.Id, item.Subscription, trade,
 					cancellationToken);
@@ -400,6 +412,7 @@ public partial class FoxbitMessageAdapter
 				pair.Value.MarketSymbol.EqualsIgnoreCase(marketSymbol))
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
 		}
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new QuoteChangeMessage
 			{
@@ -463,6 +476,7 @@ public partial class FoxbitMessageAdapter
 		}
 		var bids = ToQuotes(update.Bids);
 		var asks = ToQuotes(update.Asks);
+
 		foreach (var transactionId in transactionIds)
 			await SendOutMessageAsync(new QuoteChangeMessage
 			{
@@ -688,6 +702,7 @@ public partial class FoxbitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var result = new List<FoxbitPublicTrade>();
+
 		for (var page = 1; result.Count < maximum; page++)
 		{
 			var pageSize = (maximum - result.Count).Min(200).Max(1);
@@ -705,6 +720,7 @@ public partial class FoxbitMessageAdapter
 			if (items.Length < pageSize)
 				break;
 		}
+
 		return [.. result.Where(static trade => !trade.Id.IsEmpty())
 			.GroupBy(static trade => trade.Id,
 				StringComparer.OrdinalIgnoreCase)
@@ -720,6 +736,7 @@ public partial class FoxbitMessageAdapter
 		var result = new List<FoxbitCandle>();
 		var cursor = from.ToUtcTime();
 		var upperBound = to.ToUtcTime();
+
 		while (result.Count < maximum && cursor <= upperBound)
 		{
 			var pageSize = (maximum - result.Count).Min(500).Max(1);
@@ -741,6 +758,7 @@ public partial class FoxbitMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.GroupBy(static candle => candle.OpenTime)
 			.Select(static group => group.First())
 			.OrderBy(static candle => candle.OpenTime)

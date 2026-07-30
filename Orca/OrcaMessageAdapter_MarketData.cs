@@ -8,6 +8,7 @@ public partial class OrcaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class OrcaMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -41,6 +43,7 @@ public partial class OrcaMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -50,6 +53,7 @@ public partial class OrcaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -73,6 +77,7 @@ public partial class OrcaMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -87,6 +92,7 @@ public partial class OrcaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -107,16 +113,19 @@ public partial class OrcaMessageAdapter
 		var trades = await LoadTradesAsync(market, from, to,
 			maximum.Min(MaximumHistoryTransactions), cancellationToken);
 		var delivered = 0;
+
 		foreach (var trade in trades)
 			if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken))
 				delivered++;
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -136,6 +145,7 @@ public partial class OrcaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -161,15 +171,18 @@ public partial class OrcaMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * historyMaximum);
 		var candles = await LoadCandlesAsync(market, timeFrame, from, to,
 			historyMaximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || candles.Length >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -244,6 +257,7 @@ public partial class OrcaMessageAdapter
 		var inspected = 0;
 		string before = null;
 		var isOldRangeReached = false;
+
 		while (inspected < MaximumHistoryTransactions &&
 			trades.Count < maximum && !isOldRangeReached)
 		{
@@ -253,6 +267,7 @@ public partial class OrcaMessageAdapter
 				market.PoolAddress, before, pageSize, cancellationToken) ?? [];
 			if (signatures.Length == 0)
 				break;
+
 			foreach (var signature in signatures)
 			{
 				inspected++;
@@ -275,6 +290,7 @@ public partial class OrcaMessageAdapter
 					continue;
 				var time = (transaction?.BlockTime ?? signature.BlockTime)?.FromUnix()
 					?? DateTime.UtcNow;
+
 				foreach (var orcaEvent in OrcaExtensions.DecodeEvents(
 					signature.Signature,
 					transaction?.Meta?.LogMessages ?? [], time))
@@ -287,10 +303,12 @@ public partial class OrcaMessageAdapter
 						trades.Add(trade);
 				}
 			}
+
 			before = signatures[^1].Signature;
 			if (signatures.Length < pageSize)
 				break;
 		}
+
 		return [.. trades.GroupBy(static trade => trade.Id,
 			StringComparer.Ordinal).Select(static group => group.First())
 			.OrderBy(static trade => trade.Time).TakeLast(maximum)];
@@ -342,6 +360,7 @@ public partial class OrcaMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_tradeDeliveryOrder.Enqueue(key);
+
 			while (_tradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenTrades.Remove(_tradeDeliveryOrder.Dequeue());
 		}
@@ -438,6 +457,7 @@ public partial class OrcaMessageAdapter
 				var trade = ToTrade(market, orcaEvent);
 				if (trade is null)
 					continue;
+
 				foreach (var target in targets)
 				{
 					if (target.Subscription.From is DateTime from &&
@@ -488,11 +508,13 @@ public partial class OrcaMessageAdapter
 					pair.Value.Market.PoolAddress, StringComparer.Ordinal)
 				.Select(group => (group.First().Value.Market,
 					group.Select(static pair => pair.Key).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			try
 			{
 				await RefreshMarketAsync(group.Market, cancellationToken);
+
 				foreach (var target in group.Targets)
 					await SendLevel1Async(group.Market, target,
 						cancellationToken);
@@ -513,6 +535,7 @@ public partial class OrcaMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var from = item.Subscription.LastTime - TimeSpan.FromSeconds(1);
@@ -520,6 +543,7 @@ public partial class OrcaMessageAdapter
 			var to = (item.Subscription.To ?? now).ToUniversalTime().Min(now);
 			var trades = await LoadTradesAsync(item.Subscription.Market, from,
 				to, MaximumHistoryTransactions, cancellationToken);
+
 			foreach (var trade in trades)
 			{
 				if (item.Subscription.From is DateTime requestedFrom &&
@@ -535,10 +559,12 @@ public partial class OrcaMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeTicks(target);
@@ -554,6 +580,7 @@ public partial class OrcaMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -565,6 +592,7 @@ public partial class OrcaMessageAdapter
 			var candles = await LoadCandlesAsync(item.Subscription.Market,
 				item.Subscription.TimeFrame, from, to, maximum,
 				cancellationToken);
+
 			foreach (var candle in candles)
 			{
 				var key = $"{item.Id}:{candle.OpenTime.Ticks}";
@@ -590,10 +618,12 @@ public partial class OrcaMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeCandles(target);
@@ -645,9 +675,11 @@ public partial class OrcaMessageAdapter
 				$"Orca pool '{market.PoolAddress}' tick-array snapshot is " +
 				"incomplete.");
 		var arrays = new OrcaTickArray[addresses.Length];
+
 		for (var index = 0; index < arrays.Length; index++)
 			arrays[index] = OrcaExtensions.DecodeTickArray(addresses[index],
 				accounts[index], market.PoolAddress, starts[index]);
+
 		using (_sync.EnterScope())
 		{
 			market.FeeRate = current.FeeRate;
@@ -667,6 +699,7 @@ public partial class OrcaMessageAdapter
 			var retained = _tradeDeliveryOrder.Where(_seenTrades.Contains)
 				.ToArray();
 			_tradeDeliveryOrder.Clear();
+
 			foreach (var key in retained)
 				_tradeDeliveryOrder.Enqueue(key);
 		}
@@ -689,8 +722,10 @@ public partial class OrcaMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -712,6 +747,7 @@ public partial class OrcaMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

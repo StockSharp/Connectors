@@ -175,6 +175,7 @@ public partial class HashKeyMessageAdapter
 		var hasSymbol = !cancelMsg.SecurityId.SecurityCode.IsEmpty();
 		if (hasSymbol && requestedSection is null)
 			requestedSection = ResolveSection(cancelMsg.SecurityId);
+
 		foreach (var section in Sections.Where(section =>
 			requestedSection is null || requestedSection == section))
 		{
@@ -195,6 +196,7 @@ public partial class HashKeyMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -203,6 +205,7 @@ public partial class HashKeyMessageAdapter
 		}
 
 		var requested = lookupMsg.PortfolioName;
+
 		foreach (var section in Sections)
 		{
 			var portfolio = GetPortfolioName(section);
@@ -215,15 +218,18 @@ public partial class HashKeyMessageAdapter
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
 		}
+
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, cancellationToken,
 			requested);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -232,6 +238,7 @@ public partial class HashKeyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -268,12 +275,14 @@ public partial class HashKeyMessageAdapter
 			statusMsg.From, statusMsg.To, maximum, cancellationToken,
 			requestedSection, orderId, statusMsg);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -285,6 +294,7 @@ public partial class HashKeyMessageAdapter
 				GetPortfolioName(HashKeySections.Spot))))
 		{
 			var account = await RestClient.GetSpotAccountAsync(cancellationToken);
+
 			foreach (var balance in account?.Balances ?? [])
 				await SendSpotBalanceAsync(balance, originalTransactionId,
 					cancellationToken);
@@ -294,10 +304,12 @@ public partial class HashKeyMessageAdapter
 			(!requestedPortfolio.IsEmpty() && !requestedPortfolio.EqualsIgnoreCase(
 				GetPortfolioName(HashKeySections.Futures))))
 			return;
+
 		foreach (var balance in await RestClient.GetFuturesBalancesAsync(
 			cancellationToken) ?? [])
 			await SendFuturesBalanceAsync(balance, originalTransactionId,
 				cancellationToken);
+
 		foreach (var position in await RestClient.GetFuturesPositionsAsync(null,
 			cancellationToken) ?? [])
 			await SendFuturesPositionAsync(position, originalTransactionId,
@@ -354,6 +366,7 @@ public partial class HashKeyMessageAdapter
 					EndTime = to?.ToUniversalTime().ToMilliseconds(),
 					Limit = maximum,
 				}, cancellationToken) ?? []);
+
 				foreach (var order in orders.Where(order =>
 					MatchesOrder(order, filter, from, to))
 					.GroupBy(static order => order.OrderId)
@@ -367,6 +380,7 @@ public partial class HashKeyMessageAdapter
 			else
 			{
 				var orders = new List<HashKeyFuturesOrder>();
+
 				foreach (var marketSymbol in GetQuerySymbols(HashKeySections.Futures,
 					symbol))
 					foreach (var type in new[]
@@ -390,6 +404,7 @@ public partial class HashKeyMessageAdapter
 							Limit = maximum.Min(500),
 						}, cancellationToken) ?? []);
 					}
+
 				foreach (var order in orders.Where(order =>
 					MatchesOrder(order, filter, from, to))
 					.GroupBy(static order => order.OrderId)
@@ -422,16 +437,19 @@ public partial class HashKeyMessageAdapter
 				EndTime = to?.ToUniversalTime().ToMilliseconds(),
 				Limit = maximum,
 			}, cancellationToken);
+
 			foreach (var trade in (trades ?? []).Where(trade =>
 				(orderId.IsEmpty() || trade.OrderId.EqualsIgnoreCase(orderId)) &&
 				MatchesTrade(trade, filter, from, to))
 				.OrderBy(static trade => trade.Time).TakeLast(maximum))
 				await SendSpotTradeAsync(trade, originalTransactionId, false,
 					cancellationToken);
+
 			return;
 		}
 
 		var futuresTrades = new List<HashKeyFuturesTrade>();
+
 		foreach (var marketSymbol in GetQuerySymbols(HashKeySections.Futures, symbol))
 			futuresTrades.AddRange(await RestClient.GetFuturesTradesAsync(new()
 			{
@@ -440,6 +458,7 @@ public partial class HashKeyMessageAdapter
 				EndTime = to?.ToUniversalTime().ToMilliseconds(),
 				Limit = maximum,
 			}, cancellationToken) ?? []);
+
 		foreach (var trade in futuresTrades.Where(trade =>
 			(orderId.IsEmpty() || trade.OrderId.EqualsIgnoreCase(orderId)) &&
 			MatchesTrade(trade, filter, from, to))
@@ -703,6 +722,7 @@ public partial class HashKeyMessageAdapter
 		if (section is not HashKeySections actualSection ||
 			!IsSectionEnabled(actualSection))
 			return;
+
 		foreach (var balance in update.Balances ?? [])
 		{
 			if (balance?.Asset.IsEmpty() != false)

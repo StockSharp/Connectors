@@ -8,6 +8,7 @@ public partial class AnchorageMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.SecurityId.BoardCode.IsEmpty() &&
 			!lookupMsg.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.Anchorage))
@@ -45,6 +46,7 @@ public partial class AnchorageMessageAdapter
 				break;
 			await SendOutMessageAsync(security, cancellationToken);
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -105,8 +107,10 @@ public partial class AnchorageMessageAdapter
 		if (decimals is not int count || count is < 0 or > 28)
 			return null;
 		var step = 1m;
+
 		for (var index = 0; index < count; index++)
 			step /= 10m;
+
 		return step;
 	}
 
@@ -132,6 +136,7 @@ public partial class AnchorageMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -220,6 +225,7 @@ public partial class AnchorageMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _marketSubscriptions.Where(item =>
 				item.Value.Product.Pair.EqualsIgnoreCase(product.Pair))];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendMarketDataAsync(product, payload.Bids, payload.Asks,
 				message.Timestamp, transactionId, subscription.DataType,
@@ -232,6 +238,7 @@ public partial class AnchorageMessageAdapter
 		KeyValuePair<long, MarketSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _marketSubscriptions];
+
 		foreach (var group in subscriptions.GroupBy(static item =>
 			item.Value.Product.Pair, StringComparer.OrdinalIgnoreCase))
 		{
@@ -242,6 +249,7 @@ public partial class AnchorageMessageAdapter
 				cancellationToken);
 			if (snapshot is null)
 				continue;
+
 			foreach (var (transactionId, subscription) in group)
 				await SendMarketDataAsync(product, snapshot.Bids, snapshot.Asks,
 					snapshot.Timestamp, transactionId, subscription.DataType,
@@ -292,6 +300,7 @@ public partial class AnchorageMessageAdapter
 		bool isBid, int depth)
 	{
 		var result = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is null)
@@ -305,6 +314,7 @@ public partial class AnchorageMessageAdapter
 			if (volume > 0)
 				result.Add(new(price, volume));
 		}
+
 		return [.. (isBid
 			? result.OrderByDescending(static quote => quote.Price)
 			: result.OrderBy(static quote => quote.Price)).Take(depth)];

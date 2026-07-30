@@ -7,6 +7,7 @@ public partial class GmoCoinMessageAdapter
 		SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class GmoCoinMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -42,6 +44,7 @@ public partial class GmoCoinMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -50,6 +53,7 @@ public partial class GmoCoinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -111,6 +115,7 @@ public partial class GmoCoinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -174,6 +179,7 @@ public partial class GmoCoinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -191,6 +197,7 @@ public partial class GmoCoinMessageAdapter
 		var maximum = (mdMsg.Count ?? 100).Min(10000).Max(1).To<int>();
 		var trades = await DownloadPublicTradesAsync(market, mdMsg, maximum,
 			cancellationToken);
+
 		foreach (var trade in trades)
 			await SendPublicTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken);
@@ -230,6 +237,7 @@ public partial class GmoCoinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -256,9 +264,11 @@ public partial class GmoCoinMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await DownloadCandlesAsync(market, interval, timeFrame,
 			from, to, count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 	}
 
@@ -306,6 +316,7 @@ public partial class GmoCoinMessageAdapter
 		var from = message.From?.ToUniversalTime();
 		var to = (message.To ?? DateTime.UtcNow).ToUniversalTime();
 		var values = new List<GmoCoinPublicTrade>();
+
 		for (var page = 1; values.Count < maximum && page <= 100; page++)
 		{
 			var response = await RestClient.GetTradesAsync(new()
@@ -315,6 +326,7 @@ public partial class GmoCoinMessageAdapter
 				Count = (maximum - values.Count).Min(100).Max(1),
 			}, cancellationToken);
 			var items = response?.Items ?? [];
+
 			foreach (var trade in items)
 			{
 				if (trade is null)
@@ -323,11 +335,13 @@ public partial class GmoCoinMessageAdapter
 				if ((from is null || time >= from) && time <= to)
 					values.Add(trade);
 			}
+
 			if (items.Length < 100 || (from is DateTime lower &&
 				items.Any(item => item?.Timestamp.FromGmoCoinTime(
 					DateTime.MaxValue) < lower)))
 				break;
 		}
+
 		return [.. values.OrderBy(static trade => trade.Timestamp)
 			.TakeLast(maximum)];
 	}
@@ -356,6 +370,7 @@ public partial class GmoCoinMessageAdapter
 		{
 			var date = to.AddHours(9).Date;
 			var firstDate = from.AddHours(9).Date;
+
 			for (; date >= firstDate && values.Count < count;
 				date = date.AddDays(-1))
 			{
@@ -437,6 +452,7 @@ public partial class GmoCoinMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendTickerAsync(ticker, pair.Key, cancellationToken);
 	}
@@ -451,6 +467,7 @@ public partial class GmoCoinMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(market, book.Timestamp, book.Bids, book.Asks,
 				pair.Value.Depth, pair.Key, cancellationToken);
@@ -470,6 +487,7 @@ public partial class GmoCoinMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendPublicTradeAsync(market, tradeId, trade.Timestamp,
 				trade.Price, trade.Size, trade.Side, pair.Key, cancellationToken,

@@ -8,6 +8,7 @@ public partial class MercadoBitcoinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class MercadoBitcoinMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class MercadoBitcoinMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +56,7 @@ public partial class MercadoBitcoinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -115,6 +119,7 @@ public partial class MercadoBitcoinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -180,6 +185,7 @@ public partial class MercadoBitcoinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -204,6 +210,7 @@ public partial class MercadoBitcoinMessageAdapter
 			To = queryFrom is null ? null : to.ToUnixSeconds(),
 			Limit = maximum,
 		}, cancellationToken);
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade => trade is not null &&
 				(from is null || trade.Timestamp.FromMercadoBitcoinTimestamp(
@@ -249,6 +256,7 @@ public partial class MercadoBitcoinMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -273,9 +281,11 @@ public partial class MercadoBitcoinMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await DownloadCandlesAsync(market, resolution, from, to,
 			count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 	}
 
@@ -310,6 +320,7 @@ public partial class MercadoBitcoinMessageAdapter
 	{
 		var values = new SortedDictionary<long, CandleValue>();
 		var cursor = to;
+
 		while (values.Count < count && cursor >= from)
 		{
 			var pageSize = (count - values.Count).Min(1000).Max(1);
@@ -321,6 +332,7 @@ public partial class MercadoBitcoinMessageAdapter
 				CountBack = pageSize,
 			}, cancellationToken);
 			var pageValues = ToCandles(page);
+
 			foreach (var candle in pageValues)
 			{
 				var time = candle.OpenTime.FromMercadoBitcoinTimestamp(
@@ -328,6 +340,7 @@ public partial class MercadoBitcoinMessageAdapter
 				if (time >= from && time <= to)
 					values[candle.OpenTime] = candle;
 			}
+
 			if (pageValues.Length < pageSize)
 				break;
 			var earliest = pageValues.Min(static value => value.OpenTime);
@@ -337,6 +350,7 @@ public partial class MercadoBitcoinMessageAdapter
 				break;
 			cursor = earliestTime.AddSeconds(-1);
 		}
+
 		return [.. values.Values.TakeLast(count)];
 	}
 
@@ -354,10 +368,12 @@ public partial class MercadoBitcoinMessageAdapter
 			candles.Volumes?.Length ?? 0,
 		}.Min();
 		var values = new CandleValue[count];
+
 		for (var i = 0; i < count; i++)
 			values[i] = new(candles.OpenTimes[i], candles.OpenPrices[i],
 				candles.HighPrices[i], candles.LowPrices[i],
 				candles.ClosePrices[i], candles.Volumes[i]);
+
 		return values;
 	}
 
@@ -414,6 +430,7 @@ public partial class MercadoBitcoinMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendTickerAsync(market, ticker.Data, pair.Key,
 				cancellationToken);
@@ -430,6 +447,7 @@ public partial class MercadoBitcoinMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(market, book.Data.Timestamp, book.Data.Bids,
 				book.Data.Asks, pair.Value.Depth, pair.Key, cancellationToken);
@@ -448,6 +466,7 @@ public partial class MercadoBitcoinMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendPublicTradeAsync(market, trade.Data.TradeId,
 				trade.Data.Timestamp, trade.Data.Price, trade.Data.Volume,

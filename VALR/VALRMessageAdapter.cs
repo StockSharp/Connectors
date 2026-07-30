@@ -181,6 +181,7 @@ public partial class VALRMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var pair in pairs ?? [])
 			{
 				if (pair?.Symbol.IsEmpty() != false || !pair.IsActive ||
@@ -212,8 +213,10 @@ public partial class VALRMessageAdapter
 	private static decimal Pow10(int power)
 	{
 		var value = 1m;
+
 		for (var i = 0; i < power; i++)
 			value *= 10m;
+
 		return value;
 	}
 
@@ -272,6 +275,7 @@ public partial class VALRMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (!order.ExchangeOrderId.IsEmpty())
 				_trackedOrders[order.ExchangeOrderId] = order;
 			if (!order.CustomerOrderId.IsEmpty())

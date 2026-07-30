@@ -9,6 +9,7 @@ public partial class JQuantsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		var types = lookupMsg.GetSecurityTypes();
 		var requested = (lookupMsg.SecurityId.Native as string)
 			.IsEmpty(lookupMsg.SecurityId.SecurityCode)
@@ -41,6 +42,7 @@ public partial class JQuantsMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in instruments
 			.GroupBy(static value => value.NativeId,
 				StringComparer.OrdinalIgnoreCase)
@@ -59,6 +61,7 @@ public partial class JQuantsMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg,
 			cancellationToken);
 	}
@@ -71,6 +74,7 @@ public partial class JQuantsMessageAdapter
 	{
 		var date = PreviousWeekday(CurrentTime.Date);
 		JObject[] values = [];
+
 		for (var attempt = 0;
 			attempt < 3 && values.Length == 0;
 			attempt++, date = PreviousWeekday(date.AddDays(-1)))
@@ -79,6 +83,7 @@ public partial class JQuantsMessageAdapter
 					cancellationToken)
 				: await RestClient.GetOptionsAsync(exactCode, date,
 					cancellationToken);
+
 		return values
 			.Select(value => value.ToDerivative(kind))
 			.Where(value => !value.Code.IsEmpty() &&
@@ -95,6 +100,7 @@ public partial class JQuantsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -136,6 +142,7 @@ public partial class JQuantsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -155,6 +162,7 @@ public partial class JQuantsMessageAdapter
 			? (int)Math.Min(mdMsg.Count.Value, int.MaxValue)
 			: int.MaxValue;
 		var trades = new List<JQuantsTrade>();
+
 		for (var date = from.Date;
 			date <= to.Date && trades.Count < maximum;
 			date = date.AddDays(1))
@@ -165,6 +173,7 @@ public partial class JQuantsMessageAdapter
 			trades.AddRange(await RestClient.GetTradesAsync(
 				instrument.Code, date, cancellationToken));
 		}
+
 		foreach (var trade in trades
 			.Where(trade => trade.Time.UtcDateTime >= from &&
 				trade.Time.UtcDateTime <= to)
@@ -180,6 +189,7 @@ public partial class JQuantsMessageAdapter
 				TradeVolume = trade.Volume,
 				ServerTime = trade.Time.UtcDateTime,
 			}, cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(mdMsg,
 			cancellationToken);
 	}
@@ -191,6 +201,7 @@ public partial class JQuantsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -218,6 +229,7 @@ public partial class JQuantsMessageAdapter
 			.ToUniversalTime();
 		var bars = await LoadBarsAsync(instrument, timeFrame,
 			from, to, cancellationToken);
+
 		foreach (var bar in bars
 			.Where(bar => bar.Time.UtcDateTime >= from &&
 				bar.Time.UtcDateTime <= to)
@@ -238,6 +250,7 @@ public partial class JQuantsMessageAdapter
 				OpenInterest = bar.OpenInterest,
 				State = CandleStates.Finished,
 			}, cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(mdMsg,
 			cancellationToken);
 	}
@@ -265,6 +278,7 @@ public partial class JQuantsMessageAdapter
 		}
 
 		var result = new List<JQuantsBar>();
+
 		for (var date = from.Date; date <= to.Date;
 			date = date.AddDays(1))
 		{
@@ -283,6 +297,7 @@ public partial class JQuantsMessageAdapter
 				.Select(static value => value.ToBar(false))
 				.Where(static bar => bar.Time != default));
 		}
+
 		return [.. result.OrderBy(static bar => bar.Time)];
 	}
 
@@ -336,6 +351,7 @@ public partial class JQuantsMessageAdapter
 		while (value.DayOfWeek is DayOfWeek.Saturday or
 			DayOfWeek.Sunday)
 			value = value.AddDays(-1);
+
 		return value;
 	}
 

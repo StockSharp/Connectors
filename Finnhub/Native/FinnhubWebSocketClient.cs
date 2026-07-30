@@ -116,6 +116,7 @@ sealed class FinnhubWebSocketClient : BaseLogReceiver
 	{
 		var failures = 0;
 		var wasConnected = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
@@ -170,6 +171,7 @@ sealed class FinnhubWebSocketClient : BaseLogReceiver
 		string[] symbols;
 		lock (_symbolsSync)
 			symbols = [.. _symbols];
+
 		foreach (var symbol in symbols)
 			await SendSubscription(socket, symbol, true, cancellationToken);
 	}
@@ -227,6 +229,7 @@ sealed class FinnhubWebSocketClient : BaseLogReceiver
 	{
 		var buffer = new byte[16 * 1024];
 		using var stream = new MemoryStream();
+
 		while (true)
 		{
 			var result = await socket.ReceiveAsync(buffer, cancellationToken);

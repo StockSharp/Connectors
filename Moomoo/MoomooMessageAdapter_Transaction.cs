@@ -76,6 +76,7 @@ partial class MoomooMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -92,6 +93,7 @@ partial class MoomooMessageAdapter
 
 			if (funds is not null)
 				await ProcessFunds(account, funds, message.TransactionId, cancellationToken);
+
 			foreach (var position in await _client.GetPositions(account, cancellationToken))
 				await ProcessPosition(account, position, message.TransactionId, cancellationToken);
 		}
@@ -103,6 +105,7 @@ partial class MoomooMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -112,6 +115,7 @@ partial class MoomooMessageAdapter
 			{
 				foreach (var order in await _client.GetOrders(account, true, message.From, message.To, cancellationToken))
 					await ProcessOrder(account, order, message.TransactionId, cancellationToken);
+
 				foreach (var fill in await _client.GetFills(account, true, message.From, message.To, cancellationToken))
 					await ProcessFill(account, fill, message.TransactionId, cancellationToken);
 			}
@@ -120,6 +124,7 @@ partial class MoomooMessageAdapter
 			{
 				foreach (var order in await _client.GetOrders(account, false, null, null, cancellationToken))
 					await ProcessOrder(account, order, message.TransactionId, cancellationToken);
+
 				foreach (var fill in await _client.GetFills(account, false, null, null, cancellationToken))
 					await ProcessFill(account, fill, message.TransactionId, cancellationToken);
 			}

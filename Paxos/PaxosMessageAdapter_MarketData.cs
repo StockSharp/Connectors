@@ -11,6 +11,7 @@ public partial class PaxosMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.SecurityId.BoardCode.IsEmpty() &&
 			!lookupMsg.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.Paxos))
@@ -40,6 +41,7 @@ public partial class PaxosMessageAdapter
 			.Select(static group => group.First())
 			.OrderBy(static security => security.SecurityId.SecurityCode,
 				StringComparer.OrdinalIgnoreCase);
+
 		foreach (var security in securities)
 		{
 			if (!requestedCode.IsEmpty() &&
@@ -53,6 +55,7 @@ public partial class PaxosMessageAdapter
 				break;
 			await SendOutMessageAsync(security, cancellationToken);
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -127,6 +130,7 @@ public partial class PaxosMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!message.IsSubscribe)
 		{
@@ -169,6 +173,7 @@ public partial class PaxosMessageAdapter
 			await CompleteMarketSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_marketSubscriptions.Add(message.TransactionId, new()
 			{
@@ -196,6 +201,7 @@ public partial class PaxosMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!message.IsSubscribe)
 		{
@@ -228,6 +234,7 @@ public partial class PaxosMessageAdapter
 				execution.ExecutedAt.ToPaxosTime(DateTime.UnixEpoch) <= to)
 			.OrderBy(static execution => execution.ExecutedAt.ToPaxosTime(
 				DateTime.UnixEpoch)).TakeLast(limit).ToArray();
+
 		foreach (var execution in selected)
 		{
 			await SendPublicExecutionAsync(market.Market, execution,
@@ -240,6 +247,7 @@ public partial class PaxosMessageAdapter
 			await CompleteMarketSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_marketSubscriptions.Add(message.TransactionId, new()
 			{
@@ -267,6 +275,7 @@ public partial class PaxosMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!message.IsSubscribe)
 			return;
@@ -288,11 +297,13 @@ public partial class PaxosMessageAdapter
 			.To<int>();
 		var candles = await RestClient.GetCandlesAsync(market.Market, increment,
 			from, to, PageSize, count, cancellationToken);
+
 		foreach (var candle in candles.Where(static candle => candle is not null)
 			.OrderBy(static candle => candle.Timestamp.ToPaxosTime(
 				DateTime.UnixEpoch)).TakeLast(count))
 			await SendCandleAsync(market.Market, candle, timeFrame,
 				message.TransactionId, cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(message, cancellationToken);
 	}
 
@@ -460,6 +471,7 @@ public partial class PaxosMessageAdapter
 				(item.Value.DataType == DataType.Level1 ||
 					item.Value.DataType == DataType.MarketDepth))];
 		}
+
 		foreach (var (transactionId, subscription) in subscriptions)
 		{
 			if (subscription.DataType == DataType.Level1)
@@ -508,6 +520,7 @@ public partial class PaxosMessageAdapter
 				(item.Value.DataType == DataType.Level1 ||
 					item.Value.DataType == DataType.MarketDepth))];
 		}
+
 		foreach (var (transactionId, subscription) in subscriptions)
 		{
 			if (subscription.DataType == DataType.Level1)
@@ -545,6 +558,7 @@ public partial class PaxosMessageAdapter
 				item.Value.Market.Market.EqualsIgnoreCase(execution.Market) &&
 				(item.Value.DataType == DataType.Ticks ||
 					item.Value.DataType == DataType.Level1))];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendPublicExecutionAsync(execution.Market, execution,
 				transactionId, subscription.DataType, cancellationToken);
@@ -558,8 +572,10 @@ public partial class PaxosMessageAdapter
 			if (!_seenPublicTrades.Add(key))
 				return false;
 			_publicTradeOrder.Enqueue(key);
+
 			while (_publicTradeOrder.Count > 10000)
 				_seenPublicTrades.Remove(_publicTradeOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -646,8 +662,10 @@ public partial class PaxosMessageAdapter
 		{
 			_books[market.Market] = new();
 			var state = _books[market.Market];
+
 			foreach (var quote in bids)
 				state.Bids[quote.Price] = quote.Volume;
+
 			foreach (var quote in asks)
 				state.Asks[quote.Price] = quote.Volume;
 		}
@@ -730,6 +748,7 @@ public partial class PaxosMessageAdapter
 		bool isBid, int depth)
 	{
 		var result = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is null)
@@ -742,6 +761,7 @@ public partial class PaxosMessageAdapter
 			if (amount > 0)
 				result.Add(new(price, amount));
 		}
+
 		return [.. (isBid
 			? result.OrderByDescending(static quote => quote.Price)
 			: result.OrderBy(static quote => quote.Price)).Take(depth)];

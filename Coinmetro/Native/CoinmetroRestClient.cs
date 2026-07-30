@@ -309,6 +309,7 @@ sealed class CoinmetroRestClient : BaseLogReceiver
 				static group => group.First(),
 				StringComparer.OrdinalIgnoreCase);
 		var result = new List<CoinmetroMarket>();
+
 		foreach (var spec in marketSpecs ?? [])
 		{
 			tickerMap.TryGetValue(spec.Pair, out var ticker);
@@ -339,6 +340,7 @@ sealed class CoinmetroRestClient : BaseLogReceiver
 				IsMarginSupported = spec.IsMarginSupported,
 			});
 		}
+
 		return [.. result.OrderBy(
 			static market => market.SecurityCode,
 			StringComparer.OrdinalIgnoreCase)];

@@ -161,6 +161,7 @@ public partial class PpiMessageAdapter
         }
 
         await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
         if (mdMsg.IsHistoryOnly())
         {
             await SendSubscriptionFinishedAsync(
@@ -234,6 +235,7 @@ public partial class PpiMessageAdapter
                 [.. values.TakeLast(
                     (int)Math.Min(mdMsg.Count.Value, int.MaxValue))];
             }
+
             foreach (var value in values)
             {
                 await SendTick(
@@ -242,6 +244,7 @@ public partial class PpiMessageAdapter
                     mdMsg.SecurityId,
                     cancellationToken);
             }
+
             return;
         }
 
@@ -270,6 +273,7 @@ public partial class PpiMessageAdapter
                 [.. values.TakeLast(
                     (int)Math.Min(mdMsg.Count.Value, int.MaxValue))];
             }
+
             for (var index = 0; index < values.Length; index++)
             {
                 var value = values[index];
@@ -306,6 +310,7 @@ public partial class PpiMessageAdapter
                     subscription.Native.Settlement.EqualsIgnoreCase(
                         update.Settlement)))
             .ToArray();
+
         foreach (var subscription in subscriptions)
         {
             if (subscription.DataType == DataType.Level1)

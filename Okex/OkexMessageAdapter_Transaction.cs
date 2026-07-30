@@ -194,8 +194,10 @@ public partial class OkexMessageAdapter
 
 		foreach (var o in recentOrders)
 			await ProcessOkexTransaction(o, GetOrCreateTransactionId(o), message.TransactionId, token);
+
 		foreach (var o in openOrders)
 			await ProcessOkexTransaction(o, GetOrCreateTransactionId(o), message.TransactionId, token);
+
 		foreach (var f in fills)
 			await ProcessOkexTransaction(f, 0, message.TransactionId, token);
 
@@ -225,6 +227,7 @@ public partial class OkexMessageAdapter
 
 		foreach (var t in sorted)
 			await ProcessOkexTransaction(t.trans, t.transId, t.origTransId, cancellationToken);
+
 		_transactionsBuffer.Clear();
 	}
 

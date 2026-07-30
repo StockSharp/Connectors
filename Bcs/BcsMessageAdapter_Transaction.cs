@@ -128,6 +128,7 @@ public partial class BcsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == message.OriginalTransactionId)
@@ -147,6 +148,7 @@ public partial class BcsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId,
 			cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == message.OriginalTransactionId)
@@ -281,11 +283,13 @@ public partial class BcsMessageAdapter
 		const int pageSize = 100;
 		var skip = Math.Max(0, filter.Skip ?? 0);
 		var left = filter.Count ?? long.MaxValue;
+
 		for (var page = 0; left > 0; page++)
 		{
 			var response = await _rest.SearchOrders(
 				request, page, pageSize, cancellationToken);
 			var records = response?.Records ?? [];
+
 			foreach (var order in records)
 			{
 				if (skip > 0)
@@ -298,6 +302,7 @@ public partial class BcsMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (records.Length < pageSize ||
 				page + 1 >= response?.TotalPages)
 				break;
@@ -311,14 +316,17 @@ public partial class BcsMessageAdapter
 			Tickers = request.Tickers,
 			ClassCodes = request.ClassCodes,
 		};
+
 		for (var page = 0; ; page++)
 		{
 			var response = await _rest.SearchTrades(
 				tradeRequest, page, pageSize, cancellationToken);
 			var records = response?.Records ?? [];
+
 			foreach (var trade in records)
 				await ProcessOwnTrade(trade, originalTransactionId,
 					cancellationToken);
+
 			if (records.Length < pageSize ||
 				page + 1 >= response?.TotalPages)
 				break;
@@ -476,6 +484,7 @@ public partial class BcsMessageAdapter
 				_orderTransactions.TryGetValue(id, out var transactionId))
 				return transactionId;
 		}
+
 		return 0;
 	}
 
@@ -493,6 +502,7 @@ public partial class BcsMessageAdapter
 		if (states is null || states.Length == 0)
 			return null;
 		var result = new HashSet<int>();
+
 		foreach (var state in states)
 		{
 			switch (state)
@@ -510,6 +520,7 @@ public partial class BcsMessageAdapter
 					break;
 			}
 		}
+
 		return EmptyAsNull(result.ToArray());
 	}
 

@@ -86,6 +86,7 @@ public partial class CoinWMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		_ = timeMsg;
+
 		foreach (var client in GetClients())
 			await client.PingAsync(cancellationToken);
 	}

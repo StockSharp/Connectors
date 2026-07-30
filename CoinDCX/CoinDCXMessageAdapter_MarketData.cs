@@ -7,6 +7,7 @@ public partial class CoinDCXMessageAdapter
 		SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedMarket = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class CoinDCXMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Market,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -44,6 +46,7 @@ public partial class CoinDCXMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -52,6 +55,7 @@ public partial class CoinDCXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -115,6 +119,7 @@ public partial class CoinDCXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -179,6 +184,7 @@ public partial class CoinDCXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -198,6 +204,7 @@ public partial class CoinDCXMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var trades = await RestClient.GetTradesAsync(market.Pair, count,
 			cancellationToken);
+
 		foreach (var trade in (trades ?? []).Where(trade => trade is not null &&
 			(from is null || trade.Timestamp.FromMilliseconds(DateTime.MinValue) >= from) &&
 			trade.Timestamp.FromMilliseconds(DateTime.MaxValue) <= to)
@@ -242,6 +249,7 @@ public partial class CoinDCXMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -264,6 +272,7 @@ public partial class CoinDCXMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await RestClient.GetCandlesAsync(market.Pair, interval,
 			from, to, count, cancellationToken);
+
 		foreach (var candle in (candles ?? []).OrderBy(static value => value.Timestamp))
 			await SendCandleAsync(market.Market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
@@ -433,10 +442,12 @@ public partial class CoinDCXMessageAdapter
 			level1Subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Pair.EqualsIgnoreCase(market.Pair))];
 		}
+
 		foreach (var pair in tickSubscriptions)
 			await SendPublicTradeAsync(market.Market, market.Pair, trade.Timestamp,
 				trade.Price, trade.Quantity, trade.BuyerMaker != 0, pair.Key,
 				cancellationToken, false);
+
 		foreach (var pair in level1Subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -498,6 +509,7 @@ public partial class CoinDCXMessageAdapter
 		var serverTime = (update.EventTimestamp > 0
 			? update.EventTimestamp
 			: update.Timestamp).FromMilliseconds(CurrentTime);
+
 		foreach (var pair in depthSubscriptions)
 			await SendDepthAsync(market.Market, serverTime,
 				ToQuotes(bids, false, pair.Value.Depth),
@@ -506,6 +518,7 @@ public partial class CoinDCXMessageAdapter
 
 		var bestBid = bids.FirstOrDefault();
 		var bestAsk = asks.FirstOrDefault();
+
 		foreach (var pair in level1Subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -531,6 +544,7 @@ public partial class CoinDCXMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Where(pair =>
 				pair.Value.Pair.EqualsIgnoreCase(market.Pair) &&
 				pair.Value.TimeFrame == timeFrame)];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{

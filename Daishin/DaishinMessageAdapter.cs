@@ -199,8 +199,10 @@ public partial class DaishinMessageAdapter
 
 		var types = securityType is SecurityTypes requested ? new HashSet<SecurityTypes> { requested } : [];
 		var matches = await _client.GetSecuritiesAsync(code, types, cancellationToken);
+
 		foreach (var match in matches)
 			CacheSecurity(match);
+
 		return matches.FirstOrDefault(item => securityType == null || item.SecurityType == securityType)
 			?? throw new InvalidOperationException($"Daishin CYBOS Plus security '{code}' was not found.");
 	}

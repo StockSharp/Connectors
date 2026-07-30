@@ -179,10 +179,12 @@ public partial class CoinJarMessageAdapter
 				this.AddWarningLog(
 					"CoinJar cancel-all completed with {0} errors and {1} successes.",
 					summary.ErrorCount, summary.SuccessCount);
+
 			foreach (var order in selected.Where(order =>
 				!remaining.Contains(order.OrderId)))
 				await SendCanceledOrderAsync(order, cancelMsg.TransactionId,
 					cancellationToken);
+
 			return;
 		}
 
@@ -201,6 +203,7 @@ public partial class CoinJarMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -251,6 +254,7 @@ public partial class CoinJarMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -315,6 +319,7 @@ public partial class CoinJarMessageAdapter
 		bool force, CancellationToken cancellationToken)
 	{
 		var accounts = await RestClient.GetAccountsAsync(cancellationToken);
+
 		foreach (var account in accounts ?? [])
 			await SendBalanceAsync(account, transactionId, force,
 				cancellationToken);
@@ -337,6 +342,7 @@ public partial class CoinJarMessageAdapter
 				subscription.Side is not null ? 5000 : maximum;
 			var orders = await LoadOrdersAsync(from, to, scanMaximum,
 				cancellationToken);
+
 			foreach (var order in orders.Where(order =>
 				MatchesOrder(subscription, from, to, order)).TakeLast(maximum))
 				await SendOrderAsync(order, transactionId, force,
@@ -349,6 +355,7 @@ public partial class CoinJarMessageAdapter
 				: maximum;
 		var fills = await LoadFillsAsync(from, to, fillScanMaximum,
 			cancellationToken);
+
 		foreach (var fill in fills.Where(fill =>
 			MatchesFill(subscription, from, to, fill)).TakeLast(maximum))
 			await SendFillAsync(fill, transactionId, !force, cancellationToken);
@@ -362,6 +369,7 @@ public partial class CoinJarMessageAdapter
 			upperBound - TimeSpan.FromDays(7);
 		var result = new Dictionary<long, CoinJarOrder>();
 		string cursor = null;
+
 		while (result.Count < maximum)
 		{
 			var page = await RestClient.GetOrdersAsync(true, cursor,
@@ -369,10 +377,12 @@ public partial class CoinJarMessageAdapter
 			var items = page?.Items ?? [];
 			if (items.Length == 0)
 				break;
+
 			foreach (var order in items.Where(order => order is not null &&
 				GetOrderTime(order) >= lowerBound &&
 				GetOrderTime(order) <= upperBound))
 				result[order.OrderId] = order;
+
 			var earliest = items.Where(static order => order is not null)
 				.Select(GetOrderTime).DefaultIfEmpty(lowerBound).Min();
 			if (earliest <= lowerBound || page.Cursor.IsEmpty() ||
@@ -380,6 +390,7 @@ public partial class CoinJarMessageAdapter
 				break;
 			cursor = page.Cursor;
 		}
+
 		return [.. result.Values.OrderBy(GetOrderTime).TakeLast(maximum)];
 	}
 
@@ -388,18 +399,22 @@ public partial class CoinJarMessageAdapter
 	{
 		var result = new Dictionary<long, CoinJarOrder>();
 		string cursor = null;
+
 		while (true)
 		{
 			var page = await RestClient.GetOrdersAsync(false, cursor,
 				cancellationToken);
 			var items = page?.Items ?? [];
+
 			foreach (var order in items.Where(static order => order is not null))
 				result[order.OrderId] = order;
+
 			if (items.Length == 0 || page.Cursor.IsEmpty() ||
 				page.Cursor.EqualsIgnoreCase(cursor))
 				break;
 			cursor = page.Cursor;
 		}
+
 		return [.. result.Values];
 	}
 
@@ -411,16 +426,19 @@ public partial class CoinJarMessageAdapter
 			upperBound - TimeSpan.FromDays(7);
 		var result = new Dictionary<long, CoinJarFill>();
 		string cursor = null;
+
 		while (result.Count < maximum)
 		{
 			var page = await RestClient.GetFillsAsync(cursor, cancellationToken);
 			var items = page?.Items ?? [];
 			if (items.Length == 0)
 				break;
+
 			foreach (var fill in items.Where(fill => fill is not null &&
 				GetTime(fill.Timestamp) >= lowerBound &&
 				GetTime(fill.Timestamp) <= upperBound))
 				result[fill.TradeId] = fill;
+
 			var earliest = items.Where(static fill => fill is not null)
 				.Select(fill => GetTime(fill.Timestamp)).DefaultIfEmpty(lowerBound)
 				.Min();
@@ -429,6 +447,7 @@ public partial class CoinJarMessageAdapter
 				break;
 			cursor = page.Cursor;
 		}
+
 		return [.. result.Values.OrderBy(static fill => fill.Timestamp)
 			.TakeLast(maximum)];
 	}
@@ -560,6 +579,7 @@ public partial class CoinJarMessageAdapter
 			subscriptions = [.. _orderSubscriptions.Where(pair =>
 				MatchesOrder(pair.Value, null, null, order)).Select(static pair =>
 					(pair.Key, pair.Value))];
+
 		foreach (var item in subscriptions)
 			await SendOrderAsync(order, item.Id, false, cancellationToken);
 	}
@@ -574,6 +594,7 @@ public partial class CoinJarMessageAdapter
 			subscriptions = [.. _orderSubscriptions.Where(pair =>
 				MatchesFill(pair.Value, null, null, fill)).Select(static pair =>
 					(pair.Key, pair.Value))];
+
 		foreach (var item in subscriptions)
 			await SendFillAsync(fill, item.Id, true, cancellationToken);
 	}
@@ -584,6 +605,7 @@ public partial class CoinJarMessageAdapter
 		long[] transactionIds;
 		using (_sync.EnterScope())
 			transactionIds = [.. _portfolioSubscriptions];
+
 		foreach (var transactionId in transactionIds)
 			await SendBalanceAsync(account, transactionId, false,
 				cancellationToken);

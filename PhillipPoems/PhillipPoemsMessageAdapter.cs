@@ -253,6 +253,7 @@ public partial class PhillipPoemsMessageAdapter
 			.ToNativeExchange();
 		if (!counter.CounterId.IsEmpty())
 			_counters[counter.CounterId] = counter;
+
 		foreach (var code in new[] { counter.Symbol, counter.Code, identity?.Code }
 			.Where(code => !code.IsEmpty()).Distinct(StringComparer.OrdinalIgnoreCase))
 			_counters[$"{code}@{exchange}"] = counter;

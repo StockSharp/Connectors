@@ -135,6 +135,7 @@ public partial class TaseDataHubMessageAdapter
                 cancellationToken);
             var date = DateTime.UtcNow.Date;
             TaseSecurity[] securities = [];
+
             for (var day = 0;
                 day < SecurityLookupDays && securities.Length == 0;
                 day++)

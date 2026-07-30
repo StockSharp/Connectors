@@ -91,8 +91,10 @@ public partial class BitpandaFusionMessageAdapter
 	{
 		pair = pair.ThrowIfEmpty(nameof(pair)).Trim().ToUpperInvariant()
 			.Replace('_', '-').Replace('/', '-');
+
 		while (pair.Contains("--", StringComparison.Ordinal))
 			pair = pair.Replace("--", "-", StringComparison.Ordinal);
+
 		return pair;
 	}
 
@@ -105,10 +107,13 @@ public partial class BitpandaFusionMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_pairs.Clear();
+
 			foreach (var pair in pairs ?? [])
 				if (!pair.Pair.IsEmpty())
 					_pairs[NormalizePair(pair.Pair)] = pair;
+
 			_assets.Clear();
+
 			foreach (var asset in assets ?? [])
 				if (!asset.Symbol.IsEmpty())
 					_assets[asset.Symbol.ToUpperInvariant()] = asset;

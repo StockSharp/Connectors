@@ -83,6 +83,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 		var result = new List<LsHistoricalTick>();
 		var continuationTime = string.Empty;
 		var continuationKey = string.Empty;
+
 		for (var page = 0; page < 20; page++)
 		{
 			var responsePage = await Send<LsTickHistoryRequest, LsTickHistoryResponse>("stock/market-data",
@@ -139,6 +140,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 		var continuationDate = string.Empty;
 		var continuationTime = string.Empty;
 		var continuationKey = string.Empty;
+
 		for (var page = 0; page < 20; page++)
 		{
 			var responsePage = await Send<LsMinuteChartRequest, LsMinuteChartResponse>("stock/chart", "t8412",
@@ -169,6 +171,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 			continuationTime = nextTime;
 			continuationKey = nextKey;
 		}
+
 		return result;
 	}
 
@@ -178,6 +181,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 		var result = new List<LsCandle>();
 		var continuationDate = string.Empty;
 		var continuationKey = string.Empty;
+
 		for (var page = 0; page < 20; page++)
 		{
 			var responsePage = await Send<LsDayChartRequest, LsDayChartResponse>("stock/chart", "t8410",
@@ -203,6 +207,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 			continuationDate = nextDate;
 			continuationKey = nextKey;
 		}
+
 		return result;
 	}
 
@@ -236,6 +241,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 		LsPortfolioSummary summary = null;
 		var continuationCode = string.Empty;
 		var continuationKey = string.Empty;
+
 		for (var page = 0; page < 20; page++)
 		{
 			var responsePage = await Send<LsPositionsRequest, LsPositionsResponse>("stock/accno", "t0424",
@@ -252,6 +258,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 			continuationCode = nextCode;
 			continuationKey = nextKey;
 		}
+
 		return new() { Summary = summary, Positions = [.. positions] };
 	}
 
@@ -260,6 +267,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 		var orders = new List<LsOrder>();
 		var continuationOrderNumber = string.Empty;
 		var continuationKey = string.Empty;
+
 		for (var page = 0; page < 20; page++)
 		{
 			var responsePage = await Send<LsOrdersRequest, LsOrdersResponse>("stock/accno", "t0425",
@@ -276,6 +284,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 			continuationOrderNumber = nextOrderNumber;
 			continuationKey = nextKey;
 		}
+
 		return [.. orders];
 	}
 

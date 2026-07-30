@@ -9,6 +9,7 @@ public partial class TiingoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var board = lookupMsg.SecurityId.BoardCode;
 		var native = lookupMsg.SecurityId.Native as string;
@@ -67,6 +68,7 @@ public partial class TiingoMessageAdapter
 			else
 			{
 				var matches = await SafeRest().Search(value, cancellationToken) ?? [];
+
 				foreach (var item in matches.Where(item => item?.IsActive != false &&
 					item.Matches(value)))
 				{
@@ -74,6 +76,7 @@ public partial class TiingoMessageAdapter
 					if (left <= 0)
 						break;
 				}
+
 				if (matches.Length == 0 && left > 0)
 				{
 					try
@@ -137,6 +140,7 @@ public partial class TiingoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -175,6 +179,7 @@ public partial class TiingoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -210,6 +215,7 @@ public partial class TiingoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -236,6 +242,7 @@ public partial class TiingoMessageAdapter
 		var left = mdMsg.Count ?? long.MaxValue;
 		var emitted = new HashSet<long>();
 		var current = from;
+
 		while (current <= to && left > 0)
 		{
 			var window = timeFrame.GetHistoryWindow();
@@ -265,6 +272,7 @@ public partial class TiingoMessageAdapter
 				Extensions.TryParseUtc(value.Date, out _))
 				.Select(value => new SelectedCandle(value, Extensions.ParseUtc(value.Date)))
 				.OrderBy(item => item.OpenTime).ToArray();
+
 			foreach (var item in parsed)
 			{
 				if (item.OpenTime < from || item.OpenTime > to ||
@@ -317,6 +325,7 @@ public partial class TiingoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -342,16 +351,19 @@ public partial class TiingoMessageAdapter
 		var target = Math.Min(mdMsg.Count ?? 100, int.MaxValue);
 		var news = new List<TiingoNewsItem>();
 		var ids = new HashSet<long>();
+
 		for (var offset = 0; news.Count < target;)
 		{
 			var limit = checked((int)Math.Min(1000, target - news.Count));
 			var page = await SafeRest().GetNews(hasSecurity ? key.Ticker : null,
 				from, to, limit, offset, cancellationToken) ?? [];
+
 			foreach (var item in page)
 			{
 				if (item != null && (item.Id == null || ids.Add(item.Id.Value)))
 					news.Add(item);
 			}
+
 			if (page.Length < limit)
 				break;
 			offset = checked(offset + page.Length);
@@ -490,6 +502,7 @@ public partial class TiingoMessageAdapter
 		}
 
 		var emitted = new List<LiveSubscription>();
+
 		foreach (var subscription in subscriptions)
 		{
 			if (subscription.DataType == DataType.Level1)
@@ -536,6 +549,7 @@ public partial class TiingoMessageAdapter
 					finished.Add(current);
 				}
 			}
+
 			foreach (var key in finished.Select(item => item.Key))
 			{
 				if (!_liveSubscriptions.Values.Any(item => SameStreamIdentity(item.Key, key)) &&
@@ -548,6 +562,7 @@ public partial class TiingoMessageAdapter
 
 		foreach (var subscription in finished)
 			await SendSubscriptionFinishedAsync(subscription.TransactionId, cancellationToken);
+
 		foreach (var key in unsubscribe)
 		{
 			var stream = GetExistingStream(key.Market);

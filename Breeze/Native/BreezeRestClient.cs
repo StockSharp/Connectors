@@ -168,22 +168,26 @@ sealed class BreezeRestClient : BaseLogReceiver
 		var interval = timeFrame.ToHistoryInterval();
 		var result = new List<BreezeCandle>();
 		var pageSpan = TimeSpan.FromTicks(timeFrame.Ticks * 990);
+
 		while (start <= end)
 		{
 			var pageEnd = start.Add(pageSpan);
 			if (pageEnd > end)
 				pageEnd = end;
 			var items = await SendHistory(instrument, interval, start, pageEnd, cancellationToken);
+
 			foreach (var item in items)
 			{
 				if (item.DateTime.ParseBreezeTime() is not DateTime time)
 					continue;
 				result.Add(new BreezeCandle { Time = time, Open = item.Open, High = item.High, Low = item.Low, Close = item.Close, Volume = item.Volume, OpenInterest = item.OpenInterest });
 			}
+
 			if (pageEnd >= end)
 				break;
 			start = pageEnd.Add(timeFrame);
 		}
+
 		return [.. result.GroupBy(c => c.Time).Select(g => g.Last()).OrderBy(c => c.Time)];
 	}
 

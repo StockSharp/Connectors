@@ -7,6 +7,7 @@ public partial class KaikoMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		var supportedTypes = new[]
 		{
@@ -50,6 +51,7 @@ public partial class KaikoMessageAdapter
 			cancellationToken);
 		var skip = Math.Max(0L, message.Skip ?? 0);
 		var left = Math.Min(message.Count ?? MaximumItems, MaximumItems);
+
 		foreach (var instrument in instruments.Where(IsSupportedInstrument))
 		{
 			if (left <= 0)
@@ -70,6 +72,7 @@ public partial class KaikoMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -78,6 +81,7 @@ public partial class KaikoMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -101,6 +105,7 @@ public partial class KaikoMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, key,
 			KaikoSubscriptionKinds.Ticks, default, remaining, cancellationToken);
 		await SendSubscriptionResultAsync(message, cancellationToken);
@@ -111,6 +116,7 @@ public partial class KaikoMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -139,6 +145,7 @@ public partial class KaikoMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -164,6 +171,7 @@ public partial class KaikoMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, key,
 			KaikoSubscriptionKinds.Candles, timeFrame, remaining,
 			cancellationToken);
@@ -185,6 +193,7 @@ public partial class KaikoMessageAdapter
 		string continuationToken = null;
 		var tokens = new HashSet<string>(StringComparer.Ordinal);
 		var trades = new HashSet<string>(StringComparer.Ordinal);
+
 		do
 		{
 			var pageSize = Math.Min(100000, limit - sent);
@@ -192,6 +201,7 @@ public partial class KaikoMessageAdapter
 				break;
 			var response = await SafeRest().GetTradesAsync(key, from, to,
 				pageSize, continuationToken, cancellationToken);
+
 			foreach (var trade in (response.Data ?? [])
 				.OrderBy(static item => item?.Timestamp ?? long.MaxValue))
 			{
@@ -229,10 +239,12 @@ public partial class KaikoMessageAdapter
 				if (remaining is > 0)
 					remaining--;
 			}
+
 			continuationToken = response.ContinuationToken;
 		}
 		while (!continuationToken.IsEmpty() &&
 			tokens.Add(continuationToken) && remaining != 0);
+
 		return remaining;
 	}
 
@@ -252,6 +264,7 @@ public partial class KaikoMessageAdapter
 		string continuationToken = null;
 		var tokens = new HashSet<string>(StringComparer.Ordinal);
 		var candles = new HashSet<DateTime>();
+
 		do
 		{
 			var pageSize = Math.Min(100000, requested - sent);
@@ -259,6 +272,7 @@ public partial class KaikoMessageAdapter
 				break;
 			var response = await SafeRest().GetOhlcvAsync(key, timeFrame, from,
 				to, pageSize, continuationToken, cancellationToken);
+
 			foreach (var candle in (response.Data ?? [])
 				.OrderBy(static item => item?.Timestamp ?? long.MaxValue))
 			{
@@ -278,10 +292,12 @@ public partial class KaikoMessageAdapter
 				if (remaining is > 0)
 					remaining--;
 			}
+
 			continuationToken = response.ContinuationToken;
 		}
 		while (!continuationToken.IsEmpty() &&
 			tokens.Add(continuationToken) && remaining != 0);
+
 		return remaining;
 	}
 
@@ -341,6 +357,7 @@ public partial class KaikoMessageAdapter
 		try
 		{
 			var stream = GetOrCreateStream();
+
 			foreach (var streamKey in firstKeys)
 			{
 				await stream.SubscribeAsync(streamKey, cancellationToken);
@@ -411,6 +428,7 @@ public partial class KaikoMessageAdapter
 		var amount = update.Amount.ToKaikoDecimal("stream amount");
 		if (price <= 0 || amount < 0)
 			return;
+
 		foreach (var subscription in subscriptions)
 		{
 			if (subscription.Kind == KaikoSubscriptionKinds.Ticks)
@@ -461,6 +479,7 @@ public partial class KaikoMessageAdapter
 			? GetPreviousIntervalStart(
 				update.Timestamp.ToKaikoTime("OHLCV"), timeFrame)
 			: update.Uid.ParseKaikoTime();
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendCandleAsync(subscription.SecurityId, openTime, timeFrame,

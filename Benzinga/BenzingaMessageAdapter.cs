@@ -177,6 +177,7 @@ public partial class BenzingaMessageAdapter
 			finished = [.. _liveNews.Keys];
 			_liveNews.Clear();
 		}
+
 		foreach (var transactionId in finished)
 			await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
 	}
@@ -196,6 +197,7 @@ public partial class BenzingaMessageAdapter
 		{
 			subscriptions = _liveNews.Values.Where(subscription =>
 				item.Matches(subscription.Symbol, subscription.Channels)).ToArray();
+
 			foreach (var subscription in subscriptions)
 			{
 				if (subscription.Remaining is > 0 && --subscription.Remaining == 0)

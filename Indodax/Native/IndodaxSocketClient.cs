@@ -173,6 +173,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 	{
 		var failures = 0;
 		var wasConnected = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			ClientWebSocket socket = null;
@@ -250,6 +251,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 	{
 		var failures = 0;
 		var wasConnected = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			ClientWebSocket socket = null;
@@ -534,11 +536,13 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		var buffer = new byte[64 * 1024];
+
 		while (socket.State == WebSocketState.Open &&
 			!cancellationToken.IsCancellationRequested)
 		{
 			using var message = new MemoryStream();
 			WebSocketReceiveResult result;
+
 			do
 			{
 				result = await socket.ReceiveAsync(buffer, cancellationToken);
@@ -636,12 +640,14 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 		{
 			var recovery = Deserialize<IndodaxPublicRecoveryEnvelope<
 				IndodaxSocketBook>>(payload);
+
 			foreach (var publication in recovery.Result?.Publications ?? [])
 			{
 				if (publication?.Data is { } book && BookReceived is { } handler)
 					await handler(book, cancellationToken);
 				offset = Math.Max(offset, publication?.Offset ?? 0);
 			}
+
 			offset = Math.Max(offset, recovery.Result?.Offset ?? 0);
 		}
 		else if (channel.StartsWith("market:trade-activity-",
@@ -649,6 +655,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 		{
 			var recovery = Deserialize<IndodaxPublicRecoveryEnvelope<
 				IndodaxSocketTrade[]>>(payload);
+
 			foreach (var publication in recovery.Result?.Publications ?? [])
 			{
 				if (publication?.Data is { Length: > 0 } trades &&
@@ -656,6 +663,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 					await handler(trades, cancellationToken);
 				offset = Math.Max(offset, publication?.Offset ?? 0);
 			}
+
 			offset = Math.Max(offset, recovery.Result?.Offset ?? 0);
 		}
 		if (offset > 0)
@@ -731,6 +739,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 			_publicPending.Clear();
 			_publicRequestChannels.Clear();
 		}
+
 		foreach (var completion in pending)
 			completion.TrySetException(error);
 	}
@@ -743,6 +752,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 			pending = [.. _privatePending.Values];
 			_privatePending.Clear();
 		}
+
 		foreach (var completion in pending)
 			completion.TrySetException(error);
 	}

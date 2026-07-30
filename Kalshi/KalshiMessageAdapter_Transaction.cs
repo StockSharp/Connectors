@@ -129,6 +129,7 @@ public partial class KalshiMessageAdapter
 			: null;
 		var orders = await RestClient.GetOrdersAsync(Subaccount, HistoryLimit,
 			cancellationToken);
+
 		foreach (var order in orders
 			.Where(static order => order?.OrderId.IsEmpty() == false &&
 				order.Status == KalshiOrderStatuses.Resting)
@@ -138,6 +139,7 @@ public partial class KalshiMessageAdapter
 				order.BookSide.ToStockSharp() == cancelMsg.Side))
 			await RestClient.CancelOrderAsync(order.OrderId, Subaccount,
 				cancellationToken);
+
 		SchedulePrivatePoll();
 	}
 
@@ -147,6 +149,7 @@ public partial class KalshiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -170,6 +173,7 @@ public partial class KalshiMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SocketClient.EnsureAccountSubscriptionsAsync(cancellationToken);
@@ -182,6 +186,7 @@ public partial class KalshiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -212,6 +217,7 @@ public partial class KalshiMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId, filter);
 		await SocketClient.EnsureAccountSubscriptionsAsync(cancellationToken);
@@ -329,6 +335,7 @@ public partial class KalshiMessageAdapter
 		var levels = side == Sides.Buy ? state.Asks : state.Bids;
 		var remaining = volume;
 		var boundary = 0m;
+
 		foreach (var level in levels)
 		{
 			boundary = level.Key;
@@ -336,6 +343,7 @@ public partial class KalshiMessageAdapter
 			if (remaining <= 0)
 				break;
 		}
+
 		if (remaining > 0 || boundary <= 0)
 			throw new InvalidOperationException(
 				$"Kalshi has insufficient liquidity for {volume} contracts of " +
@@ -369,6 +377,7 @@ public partial class KalshiMessageAdapter
 			cancellationToken);
 
 		var current = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var position in await positionsTask ?? [])
 		{
 			if (position?.Ticker.IsEmpty() != false)
@@ -400,6 +409,7 @@ public partial class KalshiMessageAdapter
 				position.RealizedPnl.TryParseKalshiDecimal(), true),
 				cancellationToken);
 		}
+
 		string[] removed;
 		using (_sync.EnterScope())
 		{
@@ -408,6 +418,7 @@ public partial class KalshiMessageAdapter
 			_knownPositions.Clear();
 			_knownPositions.UnionWith(current);
 		}
+
 		foreach (var ticker in removed)
 		{
 			var market = GetCachedMarket(ticker);
@@ -434,8 +445,10 @@ public partial class KalshiMessageAdapter
 			portfolios = [.. _portfolioSubscriptions];
 			orders = [.. _orderSubscriptions];
 		}
+
 		foreach (var transactionId in portfolios)
 			await SendPortfolioSnapshotAsync(transactionId, cancellationToken);
+
 		if (orders.Length == 0)
 			return;
 		var ordersTask = RestClient.GetOrdersAsync(Subaccount, HistoryLimit,
@@ -443,6 +456,7 @@ public partial class KalshiMessageAdapter
 		var fillsTask = RestClient.GetFillsAsync(Subaccount, HistoryLimit,
 			cancellationToken).AsTask();
 		await Task.WhenAll(ordersTask, fillsTask);
+
 		foreach (var pair in orders)
 			await SendOrderSnapshotAsync(await ordersTask, await fillsTask,
 				pair.Value, pair.Key, true, cancellationToken);
@@ -453,6 +467,7 @@ public partial class KalshiMessageAdapter
 		bool isIncremental, CancellationToken cancellationToken)
 	{
 		var messages = new List<ExecutionMessage>();
+
 		foreach (var order in orders ?? [])
 		{
 			var message = await CreateOrderMessageAsync(order, transactionId,
@@ -460,6 +475,7 @@ public partial class KalshiMessageAdapter
 			if (message is not null && IsOrderMatch(message, filter))
 				messages.Add(message);
 		}
+
 		foreach (var fill in fills ?? [])
 		{
 			if (fill?.FillId.IsEmpty() != false)
@@ -478,6 +494,7 @@ public partial class KalshiMessageAdapter
 			if (message is not null && IsTradeMatch(message, filter))
 				messages.Add(message);
 		}
+
 		foreach (var message in messages
 			.OrderBy(static message => message.ServerTime)
 			.Skip(filter.Skip).Take(filter.Limit))
@@ -587,12 +604,14 @@ public partial class KalshiMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var subscription in subscriptions)
 			if (IsOrderMatch(message, subscription.Value))
 			{
 				message.OriginalTransactionId = subscription.Key;
 				await SendOutMessageAsync(message.Clone(), cancellationToken);
 			}
+
 		SchedulePrivatePoll();
 	}
 
@@ -629,12 +648,14 @@ public partial class KalshiMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var subscription in subscriptions)
 			if (IsTradeMatch(message, subscription.Value))
 			{
 				message.OriginalTransactionId = subscription.Key;
 				await SendOutMessageAsync(message.Clone(), cancellationToken);
 			}
+
 		SchedulePrivatePoll();
 	}
 
@@ -657,6 +678,7 @@ public partial class KalshiMessageAdapter
 			BoardCode = BoardCodes.Kalshi,
 		}, cancellationToken);
 		var time = native.Timestamp?.FromKalshiMilliseconds() ?? DateTime.UtcNow;
+
 		foreach (var transactionId in subscriptions)
 			await SendOutMessageAsync(new PositionChangeMessage
 			{

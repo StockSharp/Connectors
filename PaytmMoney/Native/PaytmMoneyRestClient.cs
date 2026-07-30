@@ -436,6 +436,7 @@ sealed class PaytmMoneyRestClient : BaseLogReceiver
         bool acceptCsv = false)
     {
         path = path.ThrowIfEmpty(nameof(path)).TrimStart('/');
+
         for (var attempt = 1; ; attempt++)
         {
             using var request = new HttpRequestMessage(method, path);

@@ -231,6 +231,7 @@ public partial class PaytmMoneyMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId, cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             _orderStatusSubscriptionId = 0;
@@ -427,6 +428,7 @@ public partial class PaytmMoneyMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             _portfolioSubscriptionId = 0;
@@ -610,6 +612,7 @@ public partial class PaytmMoneyMessageAdapter
                 continue;
             _orderCache[item.OrderNumber] = item;
         }
+
         return _orderCache.TryGetValue(orderId, out order)
             ? order
             : throw new InvalidOperationException(

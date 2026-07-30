@@ -151,6 +151,7 @@ public partial class NadoMessageAdapter
 			.Where(static item => item is not null)
 			.ToDictionary(static item => item.ProductId);
 		var markets = new List<NadoMarket>();
+
 		foreach (var pair in pairs)
 		{
 			if (pair?.ProductId is not > 0 || pair.TickerId.IsEmpty() ||
@@ -189,6 +190,7 @@ public partial class NadoMessageAdapter
 				continue;
 			markets.Add(market);
 		}
+
 		if (markets.Count == 0)
 			throw new InvalidDataException(
 				"Nado returned no usable spot or perpetual markets.");
@@ -202,6 +204,7 @@ public partial class NadoMessageAdapter
 			_markets.Clear();
 			_marketsByProduct.Clear();
 			_prices.Clear();
+
 			foreach (var market in markets.OrderBy(static item => item.Symbol,
 				StringComparer.Ordinal))
 			{
@@ -238,11 +241,13 @@ public partial class NadoMessageAdapter
 		{
 			var prices = await RestClient.GetMarketPricesAsync(productIds,
 				cancellationToken);
+
 			foreach (var price in prices?.Prices ?? [])
 			{
 				if (price is not null)
 					target[price.ProductId] = price;
 			}
+
 			return;
 		}
 		catch (Exception error) when (!cancellationToken.IsCancellationRequested)
@@ -326,9 +331,11 @@ public partial class NadoMessageAdapter
 		DepthSubscription[] depthSubscriptions;
 		using (_sync.EnterScope())
 			depthSubscriptions = [.. _depthSubscriptions.Values];
+
 		foreach (var subscription in depthSubscriptions)
 			await SendDepthSnapshotAsync(subscription.ProductId,
 				subscription.TransactionId, subscription.Depth, cancellationToken);
+
 		if (!_subaccount.IsEmpty())
 		{
 			if (_portfolioSubscriptionId != 0)
@@ -355,6 +362,7 @@ public partial class NadoMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Values.Where(
 				subscription => subscription.ProductId == productId)];
+
 		foreach (var subscription in subscriptions)
 			await SendDepthSnapshotAsync(productId, subscription.TransactionId,
 				subscription.Depth, cancellationToken);

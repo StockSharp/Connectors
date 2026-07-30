@@ -67,6 +67,7 @@ public partial class UniswapMessageAdapter
 					"Configured Uniswap market definitions are invalid.",
 					error);
 			}
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -83,6 +84,7 @@ public partial class UniswapMessageAdapter
 						definition.PoolId, error.Message);
 				}
 			}
+
 			if (_graphClient is not null)
 			{
 				try
@@ -251,6 +253,7 @@ public partial class UniswapMessageAdapter
 					pool.TotalValueLockedUsd.ToDecimalInvariant() ?? 0m,
 			});
 		}
+
 		return ValueTask.CompletedTask;
 	}
 
@@ -302,6 +305,7 @@ public partial class UniswapMessageAdapter
 			Markets.EqualsIgnoreCase(_defaultMarkets)))
 			return [];
 		var result = new List<UniswapMarketDefinition>();
+
 		foreach (var item in Markets.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -320,6 +324,7 @@ public partial class UniswapMessageAdapter
 				QuoteToken = fields[2].NormalizeAddress(),
 			});
 		}
+
 		return [.. result];
 	}
 

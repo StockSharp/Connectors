@@ -439,6 +439,7 @@ sealed class CoinTRWsClient : BaseLogReceiver
 
 				case "books15":
 					var book = DeserializePush<CoinTROrderBook>(payload);
+
 					foreach (var item in book.Data ?? [])
 					{
 						item.Symbol = book.Argument.InstrumentId;
@@ -449,6 +450,7 @@ sealed class CoinTRWsClient : BaseLogReceiver
 
 				case "trade":
 					var trades = DeserializePush<CoinTRTrade>(payload);
+
 					foreach (var item in trades.Data ?? [])
 					{
 						item.Symbol = item.Symbol.IsEmpty(

@@ -53,6 +53,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 		ValidateLimit(limit, 50000, "security lookup");
 		var markets = new List<KalshiMarket>();
 		string cursor = null;
+
 		while (markets.Count < limit)
 		{
 			var take = Math.Min(1000, limit - markets.Count);
@@ -68,6 +69,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 				break;
 			cursor = next;
 		}
+
 		return [.. markets.Take(limit)];
 	}
 
@@ -104,6 +106,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 		ValidateLimit(limit, 10000, "trade history");
 		var trades = new List<KalshiTrade>();
 		string cursor = null;
+
 		while (trades.Count < limit)
 		{
 			var take = Math.Min(1000, limit - trades.Count);
@@ -127,6 +130,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 				break;
 			cursor = next;
 		}
+
 		return [.. trades.Take(limit)];
 	}
 
@@ -162,6 +166,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 		ValidateLimit(limit, 10000, "position history");
 		var positions = new List<KalshiPosition>();
 		string cursor = null;
+
 		while (positions.Count < limit)
 		{
 			var take = Math.Min(1000, limit - positions.Count);
@@ -179,6 +184,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 				break;
 			cursor = next;
 		}
+
 		return [.. positions.Take(limit)];
 	}
 
@@ -188,6 +194,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 		ValidateLimit(limit, 10000, "order history");
 		var orders = new List<KalshiOrder>();
 		string cursor = null;
+
 		while (orders.Count < limit)
 		{
 			var take = Math.Min(1000, limit - orders.Count);
@@ -204,6 +211,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 				break;
 			cursor = next;
 		}
+
 		return [.. orders.Take(limit)];
 	}
 
@@ -213,6 +221,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 		ValidateLimit(limit, 10000, "fill history");
 		var fills = new List<KalshiFill>();
 		string cursor = null;
+
 		while (fills.Count < limit)
 		{
 			var take = Math.Min(1000, limit - fills.Count);
@@ -229,6 +238,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 				break;
 			cursor = next;
 		}
+
 		return [.. fills.Take(limit)];
 	}
 
@@ -285,6 +295,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
 		path = path.ThrowIfEmpty(nameof(path)).TrimStart('/');
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitAsync(cancellationToken);

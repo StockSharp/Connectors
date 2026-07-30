@@ -7,6 +7,7 @@ public partial class DerivMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		DerivActiveSymbol[] symbols;
 		using (_sync.EnterScope())
 			symbols = [.. _symbols.Values.OrderBy(static symbol => symbol.Symbol)];
@@ -14,6 +15,7 @@ public partial class DerivMessageAdapter
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var native in symbols)
 		{
 			var security = new SecurityMessage
@@ -54,6 +56,7 @@ public partial class DerivMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveMarketSubscriptionsAsync(mdMsg.OriginalTransactionId,
@@ -118,6 +121,7 @@ public partial class DerivMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveMarketSubscriptionsAsync(mdMsg.OriginalTransactionId,
@@ -183,6 +187,7 @@ public partial class DerivMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveMarketSubscriptionsAsync(mdMsg.OriginalTransactionId,
@@ -260,6 +265,7 @@ public partial class DerivMessageAdapter
 			var count = Math.Min(history.Prices?.Length ?? 0, history.Times?.Length ?? 0);
 			var skip = subscription.Skip.Min(count).To<int>();
 			var take = subscription.Count.Min(count - skip).To<int>();
+
 			for (var i = skip; i < skip + take; i++)
 				await SendTickAsync(subscription.TransactionId, subscription.SecurityId,
 					subscription.Symbol, history.Times[i], history.Prices[i],
@@ -284,6 +290,7 @@ public partial class DerivMessageAdapter
 			.Skip(subscription.Skip.Min(int.MaxValue).To<int>())
 			.Take(subscription.Count.Min(int.MaxValue).To<int>())
 			.ToArray();
+
 		for (var i = 0; i < candles.Length; i++)
 		{
 			var candle = candles[i];
@@ -294,6 +301,7 @@ public partial class DerivMessageAdapter
 					DateTime.UtcNow ? CandleStates.Active : CandleStates.Finished,
 				cancellationToken);
 		}
+
 		if (candles.Length > 0)
 			subscription.LastCandle = candles[^1];
 
@@ -318,6 +326,7 @@ public partial class DerivMessageAdapter
 		var count = Math.Min(history.Prices?.Length ?? 0, history.Times?.Length ?? 0);
 		var skip = Math.Max(0, message.Skip ?? 0).Min(count).To<int>();
 		var take = Math.Max(1, message.Count ?? count).Min(count - skip).To<int>();
+
 		for (var i = skip; i < skip + take; i++)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -381,6 +390,7 @@ public partial class DerivMessageAdapter
 				await WebSocketClient.UnsubscribeAsync(subscription.NativeKey,
 					cancellationToken);
 		}
+
 		this.AddDebugLog("Deriv unsubscribed {0} transaction {1}.", kind, transactionId);
 	}
 

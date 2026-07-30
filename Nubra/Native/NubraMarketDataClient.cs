@@ -125,6 +125,7 @@ sealed class NubraMarketDataClient : BaseLogReceiver
 
 		if (MarketDataReceived is not { } handler)
 			return;
+
 		foreach (var update in Decode(data))
 			await handler(update, cancellationToken);
 	}

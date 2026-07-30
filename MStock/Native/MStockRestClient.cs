@@ -119,6 +119,7 @@ sealed class MStockRestClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		var exchangeTokens = new JObject();
+
 		foreach (var group in instruments.GroupBy(
 			static value => value.Exchange))
 			exchangeTokens[group.Key] = new JArray(

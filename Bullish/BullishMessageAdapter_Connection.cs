@@ -66,6 +66,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		_ = timeMsg;
+
 		foreach (var client in GetClients())
 			await client.PingAsync(cancellationToken);
 	}
@@ -171,6 +172,7 @@ public partial class BullishMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_accounts.Clear();
+
 			foreach (var account in accounts.Where(static account =>
 				account?.TradingAccountId.IsEmpty() == false))
 				_accounts[account.TradingAccountId] = account;

@@ -113,6 +113,7 @@ public partial class VariationalOmniMessageAdapter
 			try
 			{
 				await RefreshStatisticsAsync(cancellationToken);
+
 				foreach (var subscription in subscriptions)
 					if (TryGetListing(subscription.Value, out var listing))
 						await SendLevel1Async(listing, subscription.Key,
@@ -145,8 +146,10 @@ public partial class VariationalOmniMessageAdapter
 		{
 			_statistics = statistics;
 			_listings.Clear();
+
 			foreach (var listing in listings)
 				_listings[listing.Ticker.Trim()] = listing;
+
 			_nextRefreshTime = DateTime.UtcNow + PollingInterval;
 		}
 	}

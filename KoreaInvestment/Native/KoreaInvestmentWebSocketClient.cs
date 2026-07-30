@@ -111,6 +111,7 @@ sealed class KoreaInvestmentWebSocketClient : BaseLogReceiver
 	{
 		var failures = 0;
 		var wasConnected = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
@@ -153,6 +154,7 @@ sealed class KoreaInvestmentWebSocketClient : BaseLogReceiver
 					_encryption.Clear();
 			}
 		}
+
 		if (!_initialConnection.Task.IsCompleted)
 			_initialConnection.TrySetCanceled(cancellationToken);
 		await Invoke(StateChanged, ConnectionStates.Disconnected, CancellationToken.None);
@@ -163,6 +165,7 @@ sealed class KoreaInvestmentWebSocketClient : BaseLogReceiver
 		KisStreamSubscription[] subscriptions;
 		lock (_sync)
 			subscriptions = [.. _subscriptions.Keys];
+
 		foreach (var subscription in subscriptions)
 		{
 			await SendSubscription(socket, subscription, true, cancellationToken);
@@ -301,6 +304,7 @@ sealed class KoreaInvestmentWebSocketClient : BaseLogReceiver
 	{
 		var buffer = new byte[16 * 1024];
 		using var stream = new MemoryStream();
+
 		while (true)
 		{
 			var result = await socket.ReceiveAsync(buffer, cancellationToken);

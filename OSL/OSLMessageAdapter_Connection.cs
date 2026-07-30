@@ -154,6 +154,7 @@ public partial class OSLMessageAdapter
 		_privateSocket = null;
 		_candleSocket = null;
 		_publicSocket = null;
+
 		foreach (var client in clients.Where(static value => value is not null))
 		{
 			try
@@ -166,6 +167,7 @@ public partial class OSLMessageAdapter
 			}
 			client.Dispose();
 		}
+
 		_restClient?.Dispose();
 		_restClient = null;
 		ClearState();

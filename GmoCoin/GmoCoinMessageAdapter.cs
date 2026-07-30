@@ -142,6 +142,7 @@ public partial class GmoCoinMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var value in symbols ?? [])
 			{
 				if (value?.Symbol.IsEmpty() != false)
@@ -224,6 +225,7 @@ public partial class GmoCoinMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (order.ExchangeOrderId > 0)
 				_trackedOrders[order.ExchangeOrderId.ToString(
 					CultureInfo.InvariantCulture)] = order;

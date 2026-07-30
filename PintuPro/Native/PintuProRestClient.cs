@@ -176,6 +176,7 @@ sealed class PintuProRestClient : BaseLogReceiver
 		string query, int cost, CancellationToken cancellationToken)
 	{
 		Exception lastError = null;
+
 		for (var attempt = 1; attempt <= _maximumReadAttempts; attempt++)
 		{
 			try
@@ -192,6 +193,7 @@ sealed class PintuProRestClient : BaseLogReceiver
 				await Task.Delay(GetRetryDelay(attempt), cancellationToken);
 			}
 		}
+
 		throw lastError ?? new InvalidOperationException(
 			"Pintu Pro public request failed.");
 	}
@@ -205,6 +207,7 @@ sealed class PintuProRestClient : BaseLogReceiver
 		EnsureCredentials();
 		var attempts = _maximumReadAttempts;
 		Exception lastError = null;
+
 		for (var attempt = 1; attempt <= attempts; attempt++)
 		{
 			try
@@ -237,6 +240,7 @@ sealed class PintuProRestClient : BaseLogReceiver
 				await Task.Delay(GetRetryDelay(attempt), cancellationToken);
 			}
 		}
+
 		throw lastError ?? new InvalidOperationException(
 			"Pintu Pro private request failed.");
 	}
@@ -287,6 +291,7 @@ sealed class PintuProRestClient : BaseLogReceiver
 	{
 		if (cost <= 0 || cost > _tokensPerSecond)
 			throw new ArgumentOutOfRangeException(nameof(cost), cost, null);
+
 		while (true)
 		{
 			TimeSpan delay;

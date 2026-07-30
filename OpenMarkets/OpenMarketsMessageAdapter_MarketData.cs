@@ -7,6 +7,7 @@ partial class OpenMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var types = message.GetSecurityTypes();
 		var exchange = message.SecurityId.BoardCode.IsEmpty(DefaultExchange);
 		var today = CurrentTime.ToExchangeTime().Date;
@@ -23,12 +24,14 @@ partial class OpenMarketsMessageAdapter
 			.ToArray();
 
 		var information = new List<OpenMarketsSecurityInformation>();
+
 		foreach (var batch in selected.Chunk(1000))
 		{
 			information.AddRange(await _client.GetSecurityInformation(batch.Select(security =>
 				security.SecurityCode.ToSecurityId(security.Exchange)
 					.ToNativeSecurity(DataSource, DefaultExchange)).ToArray(), cancellationToken) ?? []);
 		}
+
 		var informationBySecurity = information
 			.Where(item => item != null && !item.SecurityCode.IsEmpty())
 			.GroupBy(item => GetSecurityKey(item.SecurityCode, item.Exchange),
@@ -37,6 +40,7 @@ partial class OpenMarketsMessageAdapter
 				StringComparer.OrdinalIgnoreCase);
 
 		var results = new List<SecurityMessage>(selected.Length);
+
 		foreach (var security in selected)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -88,6 +92,7 @@ partial class OpenMarketsMessageAdapter
 
 		foreach (var result in filtered)
 			await SendOutMessageAsync(result, cancellationToken);
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -96,6 +101,7 @@ partial class OpenMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_level1Subscriptions.Remove(message.OriginalTransactionId);
@@ -105,6 +111,7 @@ partial class OpenMarketsMessageAdapter
 		await EnsureMultiplier(message.SecurityId, cancellationToken);
 		var native = message.SecurityId.ToNativeSecurity(DataSource, DefaultExchange);
 		var response = await _client.GetQuotes([native], cancellationToken);
+
 		foreach (var quote in response?.Quotes ?? [])
 			await ProcessQuote(message.TransactionId, message.SecurityId, quote, cancellationToken);
 
@@ -121,6 +128,7 @@ partial class OpenMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_tickSubscriptions.Remove(message.OriginalTransactionId);
@@ -144,6 +152,7 @@ partial class OpenMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			_depthSubscriptions.Remove(message.OriginalTransactionId);
@@ -167,6 +176,7 @@ partial class OpenMarketsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -195,6 +205,7 @@ partial class OpenMarketsMessageAdapter
 		if (timeFrame >= TimeSpan.FromDays(1))
 		{
 			var frequency = timeFrame == TimeSpan.FromDays(7) ? "Weekly" : "Daily";
+
 			foreach (var candle in (await _client.GetTimeSeries(native, frequency, from, to,
 				cancellationToken) ?? []).OrderBy(item => item.TimeSeriesDate))
 			{
@@ -211,11 +222,13 @@ partial class OpenMarketsMessageAdapter
 		{
 			var interval = checked((int)timeFrame.TotalMinutes);
 			var maxDays = interval < 10 ? 7 : interval <= 30 ? 30 : 60;
+
 			for (var cursor = from; cursor <= to && left > 0;)
 			{
 				var rangeEnd = cursor.AddDays(maxDays).AddTicks(-1);
 				if (rangeEnd > to)
 					rangeEnd = to;
+
 				foreach (var candle in (await _client.GetIntradayTimeSeries(native, interval,
 					cursor, rangeEnd, cancellationToken) ?? [])
 					.OrderBy(item => item.TimeSeriesDateTime))
@@ -228,6 +241,7 @@ partial class OpenMarketsMessageAdapter
 					if (--left <= 0)
 						break;
 				}
+
 				if (rangeEnd >= to)
 					break;
 				cursor = rangeEnd.AddTicks(1);
@@ -256,10 +270,12 @@ partial class OpenMarketsMessageAdapter
 		var from = message.From.Value.ToExchangeTime();
 		var to = (message.To ?? CurrentTime).ToExchangeTime();
 		var left = message.Count ?? long.MaxValue;
+
 		for (var cursor = from; cursor <= to && left > 0; cursor = cursor.Date.AddDays(1))
 		{
 			var dayEnd = cursor.Date.AddDays(1).AddTicks(-1);
 			var rangeEnd = dayEnd < to ? dayEnd : to;
+
 			foreach (var trade in (await _client.GetMarketTrades(native, cursor, rangeEnd,
 				cancellationToken) ?? []).OrderBy(item => item.TradeGmtDateTime ?? item.TradeDateTime))
 			{
@@ -326,6 +342,7 @@ partial class OpenMarketsMessageAdapter
 				PriceMultiplier = quote.PriceMultiplier,
 				MarketVwap = quote.MarketVwap,
 			};
+
 			foreach (var subscription in subscriptions)
 				await ProcessQuote(subscription.Key, subscription.Value, dto, cancellationToken);
 		}
@@ -341,6 +358,7 @@ partial class OpenMarketsMessageAdapter
 				continue;
 			var subscriptions = _tickSubscriptions.Where(pair =>
 				Matches(pair.Value, trade.SecurityCode, trade.Exchange)).ToArray();
+
 			foreach (var subscription in subscriptions)
 			{
 				await SendOutMessageAsync(new ExecutionMessage

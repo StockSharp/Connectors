@@ -526,6 +526,7 @@ public partial class JupiterMessageAdapter
 					cancelMsg.SecurityId.SecurityCode.EqualsIgnoreCase(
 						order.Market.SecurityCode)) &&
 				(cancelMsg.Side is null || cancelMsg.Side == order.Side))];
+
 		foreach (var order in orders)
 			await CancelTrackedOrderAsync(order, cancelMsg.TransactionId,
 				cancellationToken);
@@ -679,6 +680,7 @@ public partial class JupiterMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -710,6 +712,7 @@ public partial class JupiterMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -721,6 +724,7 @@ public partial class JupiterMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -771,6 +775,7 @@ public partial class JupiterMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -792,12 +797,14 @@ public partial class JupiterMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var snapshot = await LoadPrivateSnapshotAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, snapshot,
 					cancellationToken);
 		}
 		if (orderTargets.Length > 0 || hasActiveOrders)
 			await RefreshRemoteOrdersAsync(cancellationToken);
+
 		foreach (var target in orderTargets)
 		{
 			await LoadPrivateTradeHistoryAsync(target.Value,
@@ -855,6 +862,7 @@ public partial class JupiterMessageAdapter
 			.TryAdd(PositionChangeTypes.BlockedValue, balance.Blocked, true),
 				cancellationToken);
 		}
+
 		foreach (var position in snapshot.Positions ?? [])
 			await SendPerpetualPositionAsync(position, target, isForced,
 				cancellationToken);
@@ -884,6 +892,7 @@ public partial class JupiterMessageAdapter
 
 		var available = new List<(JupiterHoldingToken Holding,
 			JupiterToken Token)>();
+
 		foreach (var holding in holdingTokens)
 		{
 			JupiterToken token;
@@ -892,14 +901,17 @@ public partial class JupiterMessageAdapter
 			if (token is not null)
 				available.Add((holding, token));
 		}
+
 		var duplicateSymbols = available.GroupBy(static item =>
 			GetBalanceSymbol(item.Token), StringComparer.OrdinalIgnoreCase).Where(
 			static group => group.Count() > 1).Select(static group => group.Key)
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var item in available)
 		{
 			BigInteger currentRaw = 0;
 			BigInteger blockedRaw = 0;
+
 			foreach (var account in item.Holding.Accounts ?? [])
 			{
 				if (account.Decimals != item.Token.Decimals ||
@@ -912,6 +924,7 @@ public partial class JupiterMessageAdapter
 				if (account.IsFrozen)
 					blockedRaw += amount;
 			}
+
 			var current = currentRaw.ToString(CultureInfo.InvariantCulture)
 				.FromRawAmount(item.Token, DateTime.UtcNow);
 			var blocked = blockedRaw.ToString(CultureInfo.InvariantCulture)
@@ -923,6 +936,7 @@ public partial class JupiterMessageAdapter
 				: symbol;
 			result.Add(new(code, item.Token.Mint, current, blocked));
 		}
+
 		return result.ToArray();
 	}
 
@@ -938,6 +952,7 @@ public partial class JupiterMessageAdapter
 		{
 			var requested = mints.Skip(offset).Take(100).Select(static mint =>
 				mint.NormalizePublicKey()).ToArray();
+
 			foreach (var token in await ApiClient.GetTokensAsync(requested,
 				cancellationToken))
 			{
@@ -1029,6 +1044,7 @@ public partial class JupiterMessageAdapter
 		var limits = (await ApiClient.GetLimitOrdersAsync(
 			Signer.WalletAddress, cancellationToken)).Orders ?? [];
 		var activeIds = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var limit in limits)
 		{
 			if (limit?.RequestId.IsEmpty() != false)
@@ -1037,10 +1053,12 @@ public partial class JupiterMessageAdapter
 			activeIds.Add(order.OrderId);
 			MergeRemoteOrder(order);
 		}
+
 		foreach (var position in positions)
 		{
 			if (position?.PositionId.IsEmpty() != false)
 				continue;
+
 			foreach (var request in position.TakeProfitStopLossRequests ?? [])
 			{
 				if (request?.RequestId.IsEmpty() != false)
@@ -1050,6 +1068,7 @@ public partial class JupiterMessageAdapter
 				MergeRemoteOrder(order);
 			}
 		}
+
 		using (_sync.EnterScope())
 			foreach (var order in _trackedOrders.Values.Where(static order =>
 				order.State == OrderStates.Active &&
@@ -1153,6 +1172,7 @@ public partial class JupiterMessageAdapter
 			var page = await ApiClient.GetPerpetualTradesAsync(
 				Signer.WalletAddress, 0, limit, subscription.From,
 				subscription.To, cancellationToken);
+
 			foreach (var trade in page.Trades ?? [])
 				IngestPerpetualTrade(trade);
 		}
@@ -1203,6 +1223,7 @@ public partial class JupiterMessageAdapter
 		var left = subscription.Maximum.Min(HistoryLimit).Max(1);
 		var offset = default(string);
 		var trades = new List<JupiterSpotTrade>();
+
 		for (var pageIndex = 0; pageIndex < 10 && left > 0; pageIndex++)
 		{
 			var page = await ApiClient.GetSpotTradesAsync(
@@ -1214,6 +1235,7 @@ public partial class JupiterMessageAdapter
 			offset = page.Next;
 			left -= (page.Trades?.Length ?? 0) / 2;
 		}
+
 		foreach (var group in trades.Where(static trade =>
 			!trade.TransactionHash.IsEmpty()).GroupBy(static trade =>
 				trade.TransactionHash, StringComparer.Ordinal))
@@ -1289,6 +1311,7 @@ public partial class JupiterMessageAdapter
 					order.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var order in orders)
 		{
 			if (subscription.States is { Length: > 0 } states &&

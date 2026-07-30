@@ -10,11 +10,13 @@ public partial class CoinSpotMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in GetMarkets().OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -48,6 +50,7 @@ public partial class CoinSpotMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -59,6 +62,7 @@ public partial class CoinSpotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -90,6 +94,7 @@ public partial class CoinSpotMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -106,6 +111,7 @@ public partial class CoinSpotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -142,6 +148,7 @@ public partial class CoinSpotMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -159,6 +166,7 @@ public partial class CoinSpotMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -181,6 +189,7 @@ public partial class CoinSpotMessageAdapter
 			.Min(500).Max(1).To<int>();
 		var trades = await RestClient.GetPublicTradesAsync(
 			market.NativeSymbol, cancellationToken);
+
 		foreach (var trade in (trades ?? [])
 			.Where(trade =>
 				(from is null || trade.Time >= from.Value) &&
@@ -197,12 +206,14 @@ public partial class CoinSpotMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{

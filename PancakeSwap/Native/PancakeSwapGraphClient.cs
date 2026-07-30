@@ -149,6 +149,7 @@ sealed class PancakeSwapGraphClient : BaseLogReceiver
 		where TData : class
 	{
 		var body = JsonConvert.SerializeObject(payload, _jsonSettings);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForSendAsync(cancellationToken);

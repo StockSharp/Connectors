@@ -64,6 +64,7 @@ public partial class CoinMetricsMessageAdapter
 				_streams.Clear();
 				_liveSubscriptions.Clear();
 			}
+
 			foreach (var stream in streams)
 			{
 				stream.MessageReceived -= OnStreamMessageAsync;

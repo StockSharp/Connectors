@@ -8,6 +8,7 @@ public partial class Bit2MeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class Bit2MeMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class Bit2MeMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -54,6 +57,7 @@ public partial class Bit2MeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -114,6 +118,7 @@ public partial class Bit2MeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -174,6 +179,7 @@ public partial class Bit2MeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -193,6 +199,7 @@ public partial class Bit2MeMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var trades = await RestClient.GetPublicTradesAsync(symbol, count,
 			cancellationToken);
+
 		foreach (var trade in (trades ?? []).Where(trade =>
 		{
 			var time = trade.Timestamp > 0
@@ -239,6 +246,7 @@ public partial class Bit2MeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -267,11 +275,13 @@ public partial class Bit2MeMessageAdapter
 			EndTime = to.ToMilliseconds(),
 			Limit = requested,
 		}, cancellationToken);
+
 		foreach (var candle in (candles ?? [])
 			.OrderBy(static candle => candle.Timestamp)
 			.TakeLast(requested))
 			await SendCandleAsync(symbol, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 	}
 
@@ -410,6 +420,7 @@ public partial class Bit2MeMessageAdapter
 			level1Subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(symbol))];
 		}
+
 		foreach (var pair in depthSubscriptions)
 			await SendDepthAsync(symbol, book, pair.Key, pair.Value.Depth,
 				cancellationToken);
@@ -419,6 +430,7 @@ public partial class Bit2MeMessageAdapter
 		var serverTime = book.Timestamp > 0
 			? book.Timestamp.FromMilliseconds()
 			: CurrentTime;
+
 		foreach (var pair in level1Subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -457,6 +469,7 @@ public partial class Bit2MeMessageAdapter
 			? trade.Timestamp.FromMilliseconds()
 			: CurrentTime;
 		var tradeId = CreatePublicTradeId(trade);
+
 		foreach (var pair in tickSubscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -469,6 +482,7 @@ public partial class Bit2MeMessageAdapter
 				TradeVolume = trade.Amount,
 				OriginSide = trade.Side.ToStockSharp(),
 			}, cancellationToken);
+
 		foreach (var pair in level1Subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{

@@ -16,6 +16,7 @@ public partial class EodhdMessageAdapter
 
 		var time = Extensions.FromUnixMilliseconds(data.Timestamp.Value);
 		var emitted = new List<LiveSubscription>();
+
 		foreach (var subscription in subscriptions)
 		{
 			if (subscription.DataType == DataType.Level1)
@@ -66,6 +67,7 @@ public partial class EodhdMessageAdapter
 
 		foreach (var subscription in finished)
 			await SendSubscriptionFinishedAsync(subscription.TransactionId, cancellationToken);
+
 		foreach (var subscription in finished)
 		{
 			foreach (var requiredKind in GetRequiredStreams(subscription))
@@ -162,8 +164,10 @@ public partial class EodhdMessageAdapter
 		{
 			lock (_liveSync)
 				_liveSubscriptions.Remove(mdMsg.TransactionId);
+
 			foreach (var kind in kinds)
 				await UnsubscribeOrphan(kind, symbol, cancellationToken, false);
+
 			throw;
 		}
 	}
@@ -178,6 +182,7 @@ public partial class EodhdMessageAdapter
 				return;
 		}
 		var symbol = removed.Key.ToStreamSymbol();
+
 		foreach (var kind in GetRequiredStreams(removed))
 			await UnsubscribeOrphan(kind, symbol, cancellationToken, false);
 	}

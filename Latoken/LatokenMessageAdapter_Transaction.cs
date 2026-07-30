@@ -75,6 +75,7 @@ partial class LatokenMessageAdapter
 			{
 				await ProcessBalance(balance, cancellationToken);
 			}
+
 			return;
 		}
 

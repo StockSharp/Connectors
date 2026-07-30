@@ -213,6 +213,7 @@ public partial class PhillipPoemsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -237,6 +238,7 @@ public partial class PhillipPoemsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -268,6 +270,7 @@ public partial class PhillipPoemsMessageAdapter
 		var response = await _client.GetTodayOrders(cancellationToken);
 		var skip = Math.Max(0, filter?.Skip ?? 0);
 		var left = Math.Max(0, filter?.Count ?? long.MaxValue);
+
 		foreach (var order in (response.Orders ?? [])
 			.Where(item => IsOrderMatch(item, filter))
 			.OrderByDescending(GetOrderTime))
@@ -406,6 +409,7 @@ public partial class PhillipPoemsMessageAdapter
 			Currency = currency,
 		}, cancellationToken);
 		var detailsTime = detailsResponse.LastUpdated.ToUtc(DefaultExchange, CurrentTime);
+
 		foreach (var detail in details)
 		{
 			if (detail == null)
@@ -428,14 +432,17 @@ public partial class PhillipPoemsMessageAdapter
 		var previousPositions = _positionIds.ToArray();
 		_positionIds.Clear();
 		var holdingsTime = holdingsResponse.LastUpdated.ToUtc(DefaultExchange, CurrentTime);
+
 		foreach (var exchangeHoldings in holdings)
 		{
 			if (exchangeHoldings == null)
 				continue;
+
 			foreach (var currencyHoldings in exchangeHoldings.Currencies ?? [])
 			{
 				if (currencyHoldings == null)
 					continue;
+
 				foreach (var holding in currencyHoldings.Items ?? [])
 				{
 					if (holding == null)
@@ -493,12 +500,14 @@ public partial class PhillipPoemsMessageAdapter
 		if (_orders.TryGetValue(orderId, out var cached))
 			return cached;
 		var response = await _client.GetTodayOrders(cancellationToken);
+
 		foreach (var item in response.Orders ?? [])
 		{
 			if (item?.OrderNo.IsEmpty() != false)
 				continue;
 			_orders[item.OrderNo] = item;
 		}
+
 		return _orders.TryGetValue(orderId, out cached) ? cached : null;
 	}
 

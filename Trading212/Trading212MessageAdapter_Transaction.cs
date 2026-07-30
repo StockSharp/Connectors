@@ -130,6 +130,7 @@ public partial class Trading212MessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -153,6 +154,7 @@ public partial class Trading212MessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -183,6 +185,7 @@ public partial class Trading212MessageAdapter
 		var skip = Math.Max(0, filter?.Skip ?? 0);
 		var sentOrders = new HashSet<long>();
 		var skippedOrders = new HashSet<long>();
+
 		foreach (var order in await _client.GetOrders(cancellationToken) ?? [])
 		{
 			if (!IsOrderMatch(order, filter) || !sentOrders.Add(order.Id))
@@ -202,11 +205,13 @@ public partial class Trading212MessageAdapter
 		var ticker = GetTickerFilter(filter);
 		var page = await _client.GetHistoricalOrders(ticker, 50, cancellationToken);
 		var visitedPages = new HashSet<string>(StringComparer.Ordinal);
+
 		while (page != null)
 		{
 			var groups = (page.Items ?? [])
 				.Where(item => item?.Order?.Id > 0)
 				.GroupBy(item => item.Order.Id);
+
 			foreach (var group in groups)
 			{
 				var order = group
@@ -252,6 +257,7 @@ public partial class Trading212MessageAdapter
 				break;
 			page = await _client.GetHistoricalOrders(page.NextPagePath, cancellationToken);
 		}
+
 		_lastOrderRefresh = CurrentTime;
 	}
 
@@ -389,8 +395,10 @@ public partial class Trading212MessageAdapter
 			.Select(position => position.Instrument.Ticker)
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
 		var previousTickers = _positionTickers.CopyAndClear();
+
 		foreach (var ticker in currentTickers)
 			_positionTickers.Add(ticker);
+
 		if (!isLookup)
 		{
 			foreach (var ticker in previousTickers.Where(ticker => !currentTickers.Contains(ticker)))
@@ -428,6 +436,7 @@ public partial class Trading212MessageAdapter
 			.TryAdd(PositionChangeTypes.Currency, position.Instrument.Currency.ToCurrency()),
 				cancellationToken);
 		}
+
 		_lastPortfolioRefresh = CurrentTime;
 		_lastConnectionCheck = CurrentTime;
 	}

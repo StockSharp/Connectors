@@ -146,6 +146,7 @@ public partial class CoinhakoMessageAdapter
 		};
 		var orders = await LoadOrdersAsync(subscription, false,
 			cancellationToken);
+
 		foreach (var order in orders.Where(static order =>
 			order.Status.ToStockSharp() == OrderStates.Active))
 		{
@@ -163,6 +164,7 @@ public partial class CoinhakoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -187,6 +189,7 @@ public partial class CoinhakoMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -198,6 +201,7 @@ public partial class CoinhakoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -238,6 +242,7 @@ public partial class CoinhakoMessageAdapter
 		};
 		var orders = await LoadOrdersAsync(subscription, false,
 			cancellationToken);
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, statusMsg.TransactionId, true,
 				cancellationToken);
@@ -247,6 +252,7 @@ public partial class CoinhakoMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -276,6 +282,7 @@ public partial class CoinhakoMessageAdapter
 				"Coinhako order placement failed.");
 
 		var started = DateTime.UtcNow - TimeSpan.FromMinutes(2);
+
 		for (var attempt = 1; attempt <= 3; attempt++)
 		{
 			await Task.Delay(TimeSpan.FromMilliseconds(250 * attempt),
@@ -294,6 +301,7 @@ public partial class CoinhakoMessageAdapter
 			if (match is not null)
 				return match;
 		}
+
 		throw placementError;
 	}
 
@@ -335,6 +343,7 @@ public partial class CoinhakoMessageAdapter
 			{
 			}
 		}
+
 		throw cancellationError;
 	}
 
@@ -378,6 +387,7 @@ public partial class CoinhakoMessageAdapter
 		}
 
 		var values = new List<CoinhakoOrder>();
+
 		for (var page = 1; values.Count < maximum; page++)
 		{
 			var pageSize = (maximum - values.Count).Min(100);
@@ -398,6 +408,7 @@ public partial class CoinhakoMessageAdapter
 			if (response.Length < pageSize)
 				break;
 		}
+
 		return [.. values.OrderBy(static order => order.CreatedAt)
 			.Take(maximum)];
 	}
@@ -419,6 +430,7 @@ public partial class CoinhakoMessageAdapter
 	{
 		var balances = await RestClient.GetBalancesAsync(null,
 			cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(balance, originalTransactionId,
 				cancellationToken);
@@ -591,10 +603,12 @@ public partial class CoinhakoMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var pair in subscriptions)
 		{
 			var orders = await LoadOrdersAsync(pair.Value, true,
 				cancellationToken);
+
 			foreach (var order in orders)
 				await SendOrderAsync(order, pair.Key, false,
 					cancellationToken);
@@ -611,6 +625,7 @@ public partial class CoinhakoMessageAdapter
 			return;
 		var balances = await RestClient.GetBalancesAsync(null,
 			cancellationToken) ?? [];
+
 		foreach (var subscription in subscriptions)
 			foreach (var balance in balances)
 				await SendBalanceAsync(balance, subscription,
@@ -622,9 +637,11 @@ public partial class CoinhakoMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_orderSubscriptions.Remove(transactionId);
+
 			foreach (var key in _orderSignatures.Keys.Where(key =>
 				key.TargetId == transactionId).ToArray())
 				_orderSignatures.Remove(key);
+
 			_reportedFills.RemoveWhere(key => key.TargetId == transactionId);
 		}
 	}

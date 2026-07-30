@@ -156,6 +156,7 @@ sealed class CoinMetricsRestClient : BaseLogReceiver
 		var result = new List<TItem>(maximumItems.Min(4096));
 		var visited = new HashSet<string>(StringComparer.Ordinal);
 		var next = CreateUri(path);
+
 		while (next is not null && result.Count < maximumItems)
 		{
 			ValidatePageUri(next);
@@ -165,6 +166,7 @@ sealed class CoinMetricsRestClient : BaseLogReceiver
 			var page = await GetAsync<CoinMetricsPage<TItem>>(next,
 				cancellationToken) ?? throw new InvalidDataException(
 					"Coin Metrics returned an empty JSON response.");
+
 			foreach (var item in page.Data ?? [])
 			{
 				if (item is not null)
@@ -172,8 +174,10 @@ sealed class CoinMetricsRestClient : BaseLogReceiver
 				if (result.Count == maximumItems)
 					break;
 			}
+
 			next = ParseNextPage(page.NextPageUrl);
 		}
+
 		return [.. result];
 	}
 

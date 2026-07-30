@@ -155,6 +155,7 @@ public partial class BitvavoMessageAdapter
 
 		var orders = await RestClient.GetOpenOrdersAsync(new() { Market = market },
 			cancellationToken);
+
 		foreach (var order in (orders ?? []).Where(order =>
 			order?.OrderId.IsEmpty() == false && order.Side is not null &&
 			order.Side.Value.ToStockSharp() == cancelMsg.Side))
@@ -171,6 +172,7 @@ public partial class BitvavoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -212,6 +214,7 @@ public partial class BitvavoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -260,6 +263,7 @@ public partial class BitvavoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var balances = await RestClient.GetBalancesAsync(new(), cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(balance, originalTransactionId, cancellationToken);
 	}
@@ -279,6 +283,7 @@ public partial class BitvavoMessageAdapter
 			.Select(group => group.OrderByDescending(GetOrderTime).First())
 			.OrderBy(GetOrderTime)
 			.TakeLast(limit);
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, originalTransactionId, null, null,
 				cancellationToken);
@@ -287,6 +292,7 @@ public partial class BitvavoMessageAdapter
 		{
 			var fills = await LoadPrivateTradesAsync(market, from, to, limit,
 				cancellationToken);
+
 			foreach (var fill in fills.OrderBy(GetFillTime))
 				await SendFillAsync(fill, originalTransactionId, false, cancellationToken);
 		}
@@ -299,6 +305,7 @@ public partial class BitvavoMessageAdapter
 		var lowerBound = from?.ToUniversalTime() ?? upperBound - TimeSpan.FromDays(1);
 		var cursorEnd = upperBound;
 		var result = new List<BitvavoOrder>();
+
 		while (result.Count < maximum && cursorEnd >= lowerBound)
 		{
 			var windowStart = cursorEnd - TimeSpan.FromDays(1);
@@ -327,6 +334,7 @@ public partial class BitvavoMessageAdapter
 				? earliest.AddMilliseconds(-1)
 				: windowStart.AddMilliseconds(-1);
 		}
+
 		return [.. result.Where(static order => !order.OrderId.IsEmpty())
 			.GroupBy(static order => order.OrderId, StringComparer.OrdinalIgnoreCase)
 			.Select(static group => group.First())
@@ -341,6 +349,7 @@ public partial class BitvavoMessageAdapter
 		var lowerBound = from?.ToUniversalTime() ?? upperBound - TimeSpan.FromDays(1);
 		var cursorEnd = upperBound;
 		var result = new List<BitvavoFill>();
+
 		while (result.Count < maximum && cursorEnd >= lowerBound)
 		{
 			var windowStart = cursorEnd - TimeSpan.FromDays(1);
@@ -369,6 +378,7 @@ public partial class BitvavoMessageAdapter
 				? earliest.AddMilliseconds(-1)
 				: windowStart.AddMilliseconds(-1);
 		}
+
 		return [.. result.Where(fill => !fill.EffectiveId.IsEmpty())
 			.GroupBy(fill => fill.EffectiveId, StringComparer.OrdinalIgnoreCase)
 			.Select(static group => group.First())

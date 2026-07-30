@@ -130,6 +130,7 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 	{
 		var attempts = 0;
 		var connectedOnce = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			var ready = _ready;
@@ -195,6 +196,7 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 				_socket = null;
 			}
 		}
+
 		if (!_initialConnection.Task.IsCompleted)
 			_initialConnection.TrySetCanceled(cancellationToken);
 		FailPending(new OperationCanceledException("Longbridge socket stopped."));
@@ -215,10 +217,12 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 	private async Task Receive(ClientWebSocket socket, CancellationToken cancellationToken)
 	{
 		var buffer = new byte[64 * 1024];
+
 		while (socket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
 		{
 			using var stream = new MemoryStream();
 			WebSocketReceiveResult result;
+
 			do
 			{
 				result = await socket.ReceiveAsync(buffer, cancellationToken);
@@ -231,6 +235,7 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 					throw new InvalidDataException($"Longbridge frame exceeds {_maxFrameSize} bytes.");
 			}
 			while (!result.EndOfMessage);
+
 			await ProcessFrame(stream.ToArray(), cancellationToken);
 		}
 	}

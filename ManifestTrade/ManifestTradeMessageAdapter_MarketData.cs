@@ -8,6 +8,7 @@ public partial class ManifestTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class ManifestTradeMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -42,6 +44,7 @@ public partial class ManifestTradeMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -51,6 +54,7 @@ public partial class ManifestTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -75,6 +79,7 @@ public partial class ManifestTradeMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -89,6 +94,7 @@ public partial class ManifestTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -119,6 +125,7 @@ public partial class ManifestTradeMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -134,6 +141,7 @@ public partial class ManifestTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -154,16 +162,19 @@ public partial class ManifestTradeMessageAdapter
 		var trades = await LoadTradesAsync(market, from, to,
 			maximum.Min(MaximumHistoryTransactions), cancellationToken);
 		var delivered = 0;
+
 		foreach (var trade in trades)
 			if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken))
 				delivered++;
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -182,6 +193,7 @@ public partial class ManifestTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -207,15 +219,18 @@ public partial class ManifestTradeMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * historyMaximum);
 		var candles = await LoadCandlesAsync(market, timeFrame, from, to,
 			historyMaximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || candles.Length >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -310,6 +325,7 @@ public partial class ManifestTradeMessageAdapter
 		var inspected = 0;
 		string before = null;
 		var isOldRangeReached = false;
+
 		while (inspected < MaximumHistoryTransactions &&
 			trades.Count < maximum && !isOldRangeReached)
 		{
@@ -319,6 +335,7 @@ public partial class ManifestTradeMessageAdapter
 				market.MarketAddress, before, pageSize, cancellationToken) ?? [];
 			if (signatures.Length == 0)
 				break;
+
 			foreach (var signature in signatures)
 			{
 				inspected++;
@@ -341,6 +358,7 @@ public partial class ManifestTradeMessageAdapter
 					continue;
 				var time = (transaction?.BlockTime ?? signature.BlockTime)?.FromUnix()
 					?? DateTime.UtcNow;
+
 				foreach (var fill in ManifestTradeExtensions.DecodeFillEvents(
 					signature.Signature, transaction?.Meta?.LogMessages ?? [], time))
 				{
@@ -352,10 +370,12 @@ public partial class ManifestTradeMessageAdapter
 						trades.Add(trade);
 				}
 			}
+
 			before = signatures[^1].Signature;
 			if (signatures.Length < pageSize)
 				break;
 		}
+
 		return [.. trades.GroupBy(static trade => trade.Id,
 			StringComparer.Ordinal).Select(static group => group.First())
 			.OrderBy(static trade => trade.Time).TakeLast(maximum)];
@@ -402,6 +422,7 @@ public partial class ManifestTradeMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_tradeDeliveryOrder.Enqueue(key);
+
 			while (_tradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenTrades.Remove(_tradeDeliveryOrder.Dequeue());
 		}
@@ -480,6 +501,7 @@ public partial class ManifestTradeMessageAdapter
 		try
 		{
 			var now = DateTime.UtcNow;
+
 			foreach (var fill in ManifestTradeExtensions.DecodeFillEvents(
 				signature, logs, now))
 			{
@@ -497,6 +519,7 @@ public partial class ManifestTradeMessageAdapter
 				var trade = ToTrade(market, fill);
 				if (trade is null)
 					continue;
+
 				foreach (var target in targets)
 				{
 					if (target.Subscription.To is DateTime to && trade.Time > to)
@@ -521,6 +544,7 @@ public partial class ManifestTradeMessageAdapter
 					}
 				}
 			}
+
 			await ProcessPrivateEventsAsync(signature, logs, null,
 				CancellationToken.None);
 		}
@@ -544,11 +568,14 @@ public partial class ManifestTradeMessageAdapter
 				ReferenceEquals(pair.Value.Market, market)).Select(static pair =>
 					(pair.Key, pair.Value))];
 		}
+
 		foreach (var item in level1)
 			await SendLevel1Async(market, item.Id, cancellationToken);
+
 		foreach (var item in depth)
 			await SendDepthAsync(market, item.Id,
 				item.Subscription.MaximumDepth, false, cancellationToken);
+
 		await ReconcileOrdersAsync(market, cancellationToken);
 	}
 
@@ -562,6 +589,7 @@ public partial class ManifestTradeMessageAdapter
 				.Concat(_depthSubscriptions.Values.Select(static value =>
 					value.Market))
 				.DistinctBy(static market => market.MarketAddress)];
+
 		foreach (var market in markets)
 		{
 			try
@@ -575,6 +603,7 @@ public partial class ManifestTradeMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
+
 		await PollTicksAsync(cancellationToken);
 		await PollCandlesAsync(cancellationToken);
 	}
@@ -587,6 +616,7 @@ public partial class ManifestTradeMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var from = item.Subscription.LastTime - TimeSpan.FromSeconds(1);
@@ -594,6 +624,7 @@ public partial class ManifestTradeMessageAdapter
 			var to = (item.Subscription.To ?? now).ToUniversalTime().Min(now);
 			var trades = await LoadTradesAsync(item.Subscription.Market, from,
 				to, MaximumHistoryTransactions, cancellationToken);
+
 			foreach (var trade in trades)
 			{
 				if (item.Subscription.To is DateTime requestedTo &&
@@ -607,10 +638,12 @@ public partial class ManifestTradeMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeTicks(target);
@@ -626,6 +659,7 @@ public partial class ManifestTradeMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -637,6 +671,7 @@ public partial class ManifestTradeMessageAdapter
 			var candles = await LoadCandlesAsync(item.Subscription.Market,
 				item.Subscription.TimeFrame, from, to, maximum,
 				cancellationToken);
+
 			foreach (var candle in candles)
 			{
 				var key = $"{item.Id}:{candle.OpenTime.Ticks}";
@@ -662,10 +697,12 @@ public partial class ManifestTradeMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeCandles(target);
@@ -696,6 +733,7 @@ public partial class ManifestTradeMessageAdapter
 			var retained = _tradeDeliveryOrder.Where(_seenTrades.Contains)
 				.ToArray();
 			_tradeDeliveryOrder.Clear();
+
 			foreach (var key in retained)
 				_tradeDeliveryOrder.Enqueue(key);
 		}
@@ -718,8 +756,10 @@ public partial class ManifestTradeMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -742,6 +782,7 @@ public partial class ManifestTradeMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

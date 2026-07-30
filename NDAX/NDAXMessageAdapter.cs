@@ -186,10 +186,12 @@ public partial class NDAXMessageAdapter
 			_instrumentsById.Clear();
 			_instrumentsBySymbol.Clear();
 			_products.Clear();
+
 			foreach (var product in products ?? [])
 				if (product is not null && product.ProductId > 0 &&
 					!product.Symbol.IsEmpty())
 					_products[product.ProductId] = product;
+
 			foreach (var instrument in instruments ?? [])
 				if (instrument is not null && instrument.InstrumentId > 0 &&
 					!instrument.Symbol.IsEmpty())

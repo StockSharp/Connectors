@@ -229,6 +229,7 @@ sealed class OSLRestClient : BaseLogReceiver
 		var queryString = query.IsEmpty() ? string.Empty : $"?{query}";
 		var requestPath = path + queryString;
 		var isRead = method == HttpMethod.Get;
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await _rateGate.WaitAsync(cancellationToken);

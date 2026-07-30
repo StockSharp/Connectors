@@ -10,6 +10,7 @@ public partial class ExtendedMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
@@ -51,6 +52,7 @@ public partial class ExtendedMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -72,6 +74,7 @@ public partial class ExtendedMessageAdapter
 		await SendLevel1SnapshotAsync(market, mdMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -110,6 +113,7 @@ public partial class ExtendedMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -135,6 +139,7 @@ public partial class ExtendedMessageAdapter
 			await SendBookAsync(market.Name, snapshot, mdMsg.TransactionId, depth,
 				true, DateTime.UtcNow, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -175,6 +180,7 @@ public partial class ExtendedMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -201,10 +207,13 @@ public partial class ExtendedMessageAdapter
 			.OrderBy(static trade => trade.Timestamp)
 			.TakeLast(count)
 			.ToArray();
+
 		foreach (var trade in trades)
 			await SendPublicTradeAsync(trade, mdMsg.TransactionId,
 				cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -244,6 +253,7 @@ public partial class ExtendedMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -270,6 +280,7 @@ public partial class ExtendedMessageAdapter
 
 		var candles = await RestClient.GetCandlesAsync(market.Name, interval,
 			count, to, cancellationToken);
+
 		foreach (var candle in (candles ?? [])
 			.Where(static candle => candle is not null && candle.Timestamp > 0)
 			.Where(candle => from is null ||
@@ -278,7 +289,9 @@ public partial class ExtendedMessageAdapter
 			.TakeLast(count))
 			await SendCandleAsync(market.Name, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -393,6 +406,7 @@ public partial class ExtendedMessageAdapter
 				{
 					await SendOutErrorAsync(error, cancellationToken);
 				}
+
 			throw;
 		}
 	}
@@ -409,6 +423,7 @@ public partial class ExtendedMessageAdapter
 		IEnumerable<ExtendedSubscriptionKey> keys)
 	{
 		var added = new List<ExtendedSubscriptionKey>();
+
 		foreach (var key in keys)
 		{
 			if (_streamReferences.TryGetValue(key, out var count))
@@ -419,6 +434,7 @@ public partial class ExtendedMessageAdapter
 				added.Add(key);
 			}
 		}
+
 		return [.. added];
 	}
 
@@ -426,6 +442,7 @@ public partial class ExtendedMessageAdapter
 		IEnumerable<ExtendedSubscriptionKey> keys)
 	{
 		var removed = new List<ExtendedSubscriptionKey>();
+
 		foreach (var key in keys)
 		{
 			if (!_streamReferences.TryGetValue(key, out var count))
@@ -438,6 +455,7 @@ public partial class ExtendedMessageAdapter
 				removed.Add(key);
 			}
 		}
+
 		return [.. removed];
 	}
 
@@ -479,6 +497,7 @@ public partial class ExtendedMessageAdapter
 					.Where(pair => pair.Value.Symbol.Equals(book.Market,
 						StringComparison.Ordinal))
 					.Select(static pair => pair.Key)];
+
 			foreach (var id in ids)
 				await SendOutMessageAsync(new Level1ChangeMessage
 				{
@@ -494,6 +513,7 @@ public partial class ExtendedMessageAdapter
 				.TryAdd(Level1Fields.BestAskVolume, ask?.Volume)
 				.TryAdd(Level1Fields.BestAskTime, ask is null ? null : time),
 					cancellationToken);
+
 			return;
 		}
 
@@ -503,6 +523,7 @@ public partial class ExtendedMessageAdapter
 				.Where(pair => pair.Value.Symbol.Equals(book.Market,
 					StringComparison.Ordinal))
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
+
 		foreach (var subscription in subscriptions)
 			await SendBookAsync(book.Market, book, subscription.Id,
 				subscription.Depth, isSnapshot, time, cancellationToken, sequence);
@@ -512,6 +533,7 @@ public partial class ExtendedMessageAdapter
 		long timestamp, long sequence, CancellationToken cancellationToken)
 	{
 		_ = timestamp;
+
 		foreach (var trade in trades ?? [])
 		{
 			if (trade?.Market.IsEmpty() != false ||
@@ -535,8 +557,10 @@ public partial class ExtendedMessageAdapter
 					_prices[trade.Market] = state = new();
 				state.LastPrice = trade.Price.TryParseExtendedDecimal();
 			}
+
 			foreach (var id in tickIds)
 				await SendPublicTradeAsync(trade, id, cancellationToken, sequence);
+
 			foreach (var id in level1Ids)
 				await SendOutMessageAsync(new Level1ChangeMessage
 				{
@@ -592,6 +616,7 @@ public partial class ExtendedMessageAdapter
 				.Where(pair => pair.Value.Symbol.Equals(update.Market,
 					StringComparison.Ordinal))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 		{
 			var message = new Level1ChangeMessage
@@ -620,6 +645,7 @@ public partial class ExtendedMessageAdapter
 				.Where(pair => pair.Value.Symbol.Equals(market,
 					StringComparison.Ordinal) && pair.Value.Interval == interval)
 				.Select(static pair => (pair.Key, pair.Value.TimeFrame))];
+
 		foreach (var candle in candles ?? [])
 			foreach (var subscription in subscriptions)
 				await SendCandleAsync(market, candle, subscription.TimeFrame,
@@ -762,6 +788,7 @@ public partial class ExtendedMessageAdapter
 		int depth, bool isBids, bool isSnapshot)
 	{
 		var quotes = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is null)
@@ -776,6 +803,7 @@ public partial class ExtendedMessageAdapter
 			if (!isSnapshot || volume > 0)
 				quotes.Add(new(price, volume));
 		}
+
 		var ordered = isBids
 			? quotes.OrderByDescending(static quote => quote.Price)
 			: quotes.OrderBy(static quote => quote.Price);
@@ -786,9 +814,11 @@ public partial class ExtendedMessageAdapter
 		bool isBids, bool isSnapshot)
 	{
 		var quotes = ToQuotes(levels, int.MaxValue, isBids, isSnapshot);
+
 		foreach (var quote in quotes)
 			if (quote.Volume > 0)
 				return quote;
+
 		return null;
 	}
 

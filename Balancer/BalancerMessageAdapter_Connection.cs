@@ -58,16 +58,19 @@ public partial class BalancerMessageAdapter
 			}
 
 			var selected = new List<BalancerPool>();
+
 			foreach (var poolId in definitions.Select(static item => item.PoolId)
 				.Distinct(StringComparer.OrdinalIgnoreCase))
 				selected.Add(await ApiClient.GetPoolAsync(_deployment, poolId,
 					cancellationToken));
+
 			var discovered = await ApiClient.GetPoolsAsync(_deployment,
 				MaximumDiscoveredPools, MinimumPoolTvl, cancellationToken);
 			selected.AddRange(discovered.Where(pool => !selected.Any(existing =>
 				existing.Id.EqualsIgnoreCase(pool.Id))));
 
 			var errors = new List<Exception>();
+
 			foreach (var pool in selected)
 			{
 				try
@@ -194,9 +197,11 @@ public partial class BalancerMessageAdapter
 		await RpcClient.VerifyContractAsync(source.Address, "Balancer pool",
 			cancellationToken);
 		var tokens = new BalancerToken[source.Tokens.Length];
+
 		for (var index = 0; index < source.Tokens.Length; index++)
 			tokens[index] = await RpcClient.VerifyTokenAsync(source.Tokens[index],
 				cancellationToken);
+
 		if (tokens.Select(static token => token.Address).Distinct(
 			StringComparer.OrdinalIgnoreCase).Count() != tokens.Length)
 			throw new InvalidDataException(
@@ -205,6 +210,7 @@ public partial class BalancerMessageAdapter
 		var oriented = definitions is { Length: > 0 }
 			? definitions
 			: [new BalancerMarketDefinition { PoolId = pool.Id }];
+
 		foreach (var definition in oriented)
 		{
 			if (definition.BaseToken.IsEmpty())
@@ -216,6 +222,7 @@ public partial class BalancerMessageAdapter
 						RegisterMarket(BalancerExtensions.CreateMarket(pool,
 							pair.BaseToken, pair.QuoteToken, null));
 					}
+
 				continue;
 			}
 			var baseToken = tokens.FirstOrDefault(token =>
@@ -294,6 +301,7 @@ public partial class BalancerMessageAdapter
 		if (Pools.IsEmpty())
 			return [];
 		var result = new List<BalancerMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -321,6 +329,7 @@ public partial class BalancerMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result];
 	}
 

@@ -251,6 +251,7 @@ sealed class RupeezyRestClient : BaseLogReceiver
             null,
             cancellationToken);
         var result = new List<RupeezyFund>();
+
         foreach (var segment in new[] { "nse", "mcx" })
         {
             var value = data.GetValueIgnoreCase(segment);
@@ -269,6 +270,7 @@ sealed class RupeezyRestClient : BaseLogReceiver
                 UnrealizedPnL = value.GetDecimal("mtm_and_booked_loss") ?? 0,
             });
         }
+
         return [.. result];
     }
 

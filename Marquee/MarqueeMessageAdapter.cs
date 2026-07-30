@@ -108,6 +108,7 @@ public partial class MarqueeMessageAdapter
 			return cached;
 
 		var matches = new List<MarqueeAsset>();
+
 		await foreach (var asset in SafeClient().LookupAssets(code, null, cancellationToken)
 			.WithEnforcedCancellation(cancellationToken))
 		{

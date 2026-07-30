@@ -14,8 +14,10 @@ public partial class FubonNeoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in await _client.GetSecuritiesAsync(cancellationToken))
 		{
 			CacheSecurity(instrument);
@@ -36,6 +38,7 @@ public partial class FubonNeoMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -64,6 +67,7 @@ public partial class FubonNeoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var security = mdMsg.SecurityId.ParseFubonSecurity(mdMsg.SecurityType);
 		CacheSecurity(security);
 		var channel = security.ToSubscriptionChannel(dataType);
@@ -81,6 +85,7 @@ public partial class FubonNeoMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		await _client.SubscribeAsync(subscription, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 	}
@@ -90,6 +95,7 @@ public partial class FubonNeoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var security = mdMsg.SecurityId.ParseFubonSecurity(mdMsg.SecurityType);
 		CacheSecurity(security);
 		var timeFrame = mdMsg.GetTimeFrame();
@@ -105,6 +111,7 @@ public partial class FubonNeoMessageAdapter
 		if (!mdMsg.IsHistoryOnly() && timeFrame != TimeSpan.FromMinutes(1))
 			throw new NotSupportedException(
 				"Fubon streams one-minute candles only. Use StockSharp aggregation for larger realtime intervals.");
+
 		if (!mdMsg.IsHistoryOnly() && RealtimeMode == FubonNeoRealtimeModes.Speed)
 			throw new NotSupportedException("Fubon realtime candles require Normal mode.");
 
@@ -115,6 +122,7 @@ public partial class FubonNeoMessageAdapter
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		await _client.SubscribeAsync(subscription, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 	}
@@ -131,6 +139,7 @@ public partial class FubonNeoMessageAdapter
 			candles = candles.Where(item => item.Date.ParseFubonMarketTime() <= NormalizeUtc(to)).OrderBy(item => item.Date);
 
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		foreach (var candle in candles)
 		{
 			if (candle.Date.ParseFubonMarketTime() is not DateTime openTime)

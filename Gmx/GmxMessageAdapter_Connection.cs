@@ -157,6 +157,7 @@ public partial class GmxMessageAdapter
 			StringComparer.OrdinalIgnoreCase);
 		var tokenSymbols = new Dictionary<string, GmxToken>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var token in tokens)
 		{
 			if (token?.Address.IsEmpty() != false || token.Symbol.IsEmpty() ||
@@ -167,6 +168,7 @@ public partial class GmxMessageAdapter
 				current.IsNative && !token.IsNative)
 				tokenSymbols[token.Symbol] = token;
 		}
+
 		if (tokenAddresses.Count == 0)
 			throw new InvalidDataException("GMX returned no valid tokens.");
 
@@ -177,6 +179,7 @@ public partial class GmxMessageAdapter
 			.ToDictionary(static group => group.Key, static group => group.First(),
 				StringComparer.OrdinalIgnoreCase);
 		var markets = new List<GmxMarket>();
+
 		foreach (var source in await marketsTask)
 		{
 			if (source?.Symbol.IsEmpty() != false ||
@@ -225,6 +228,7 @@ public partial class GmxMessageAdapter
 				Ticker = ticker,
 			});
 		}
+
 		if (markets.Count == 0)
 			throw new InvalidDataException("GMX returned no listed markets.");
 		var duplicate = markets.GroupBy(static market => market.Symbol,
@@ -238,12 +242,16 @@ public partial class GmxMessageAdapter
 		{
 			_tokensByAddress.Clear();
 			_tokensBySymbol.Clear();
+
 			foreach (var pair in tokenAddresses)
 				_tokensByAddress.Add(pair.Key, pair.Value);
+
 			foreach (var pair in tokenSymbols)
 				_tokensBySymbol.Add(pair.Key, pair.Value);
+
 			_markets.Clear();
 			_marketsByAddress.Clear();
+
 			foreach (var market in markets)
 			{
 				_markets.Add(market.Symbol, market);

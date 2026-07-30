@@ -34,6 +34,7 @@ public partial class TaseDataHubMessageAdapter
 
         var skip = lookupMsg.Skip ?? 0;
         var left = lookupMsg.Count ?? long.MaxValue;
+
         foreach (var security in securities)
         {
             if (left <= 0)

@@ -219,6 +219,7 @@ sealed class MercadoBitcoinRestClient : BaseLogReceiver
 			var token = isPrivate
 				? await GetAccessTokenAsync(cancellationToken)
 				: null;
+
 			for (var attempt = 0; ; attempt++)
 			{
 				await gate.WaitAsync(cancellationToken);
@@ -252,6 +253,7 @@ sealed class MercadoBitcoinRestClient : BaseLogReceiver
 				return Deserialize<TResponse>(responseBody);
 			}
 		}
+
 		throw new InvalidOperationException(
 			"Mercado Bitcoin authentication could not be renewed.");
 	}

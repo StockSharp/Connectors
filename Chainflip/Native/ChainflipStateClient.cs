@@ -210,6 +210,7 @@ sealed class ChainflipStateClient : BaseLogReceiver
 					$"{blockNumber}.");
 		var accumulators = ParseFills(block.Fills ?? [], markets);
 		var trades = new List<ChainflipTrade>();
+
 		foreach (var accumulator in accumulators)
 		{
 			var prices = await GetPricesAsync(accumulator.Market, hash,
@@ -235,6 +236,7 @@ sealed class ChainflipStateClient : BaseLogReceiver
 				Volume = volume,
 			});
 		}
+
 		return new()
 		{
 			BlockNumber = block.BlockNumber,
@@ -248,6 +250,7 @@ sealed class ChainflipStateClient : BaseLogReceiver
 		IEnumerable<ChainflipRpcLevel> levels, ChainflipMarket market)
 	{
 		var result = new List<ChainflipLevel>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level?.Amount.IsEmpty() != false ||
@@ -271,6 +274,7 @@ sealed class ChainflipStateClient : BaseLogReceiver
 			{
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -279,6 +283,7 @@ sealed class ChainflipStateClient : BaseLogReceiver
 	{
 		var result = new Dictionary<string, TradeAccumulator>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var wrapper in fills)
 		{
 			if (wrapper?["limit_order"] is JObject limit)

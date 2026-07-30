@@ -196,8 +196,10 @@ sealed class MeteoraRpcClient : BaseLogReceiver
 		var builder = new TransactionBuilder()
 			.SetFeePayer(_account.PublicKey)
 			.SetRecentBlockHash(latest.Value.Blockhash);
+
 		foreach (var instruction in list)
 			builder.AddInstruction(instruction);
+
 		byte[] transaction;
 		if (additionalSigner is null)
 			transaction = builder.Build(_account);
@@ -259,6 +261,7 @@ sealed class MeteoraRpcClient : BaseLogReceiver
 		MeteoraRpcParameters parameters, CancellationToken cancellationToken)
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRateLimitAsync(cancellationToken);

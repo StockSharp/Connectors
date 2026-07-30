@@ -126,6 +126,7 @@ public partial class MatchTraderMessageAdapter
 					return true;
 			}
 		}
+
 		return false;
 	}
 

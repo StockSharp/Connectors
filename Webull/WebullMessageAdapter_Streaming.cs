@@ -5,6 +5,7 @@ partial class WebullMessageAdapter
 	private async ValueTask ProcessStreamingSubscription(MarketDataMessage message, WebullMarketDataSubTypes[] subTypes, ConcurrentDictionary<long, SecurityId> subscriptions, int? depth, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var symbol = message.SecurityId.SecurityCode;
 		if (message.IsSubscribe)
 		{

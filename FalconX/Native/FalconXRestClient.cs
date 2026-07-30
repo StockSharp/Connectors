@@ -105,6 +105,7 @@ sealed class FalconXRestClient : BaseLogReceiver
 		if (limit is < 1 or > 100)
 			throw new ArgumentOutOfRangeException(nameof(limit));
 		var orders = new List<FalconXRestOrder>();
+
 		foreach (var status in new[]
 		{
 			FalconXOrderQueryStatuses.Open,
@@ -119,6 +120,7 @@ sealed class FalconXRestClient : BaseLogReceiver
 			orders.AddRange(await SendAsync<FalconXRestOrder[]>(HttpMethod.Get,
 				path, null, true, cancellationToken) ?? []);
 		}
+
 		return [.. orders
 			.Where(static order => order is not null &&
 				!order.NativeId.IsEmpty())
@@ -145,6 +147,7 @@ sealed class FalconXRestClient : BaseLogReceiver
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
 		path = path.ThrowIfEmpty(nameof(path)).TrimStart('/');
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitAsync(cancellationToken);
@@ -217,6 +220,7 @@ sealed class FalconXRestClient : BaseLogReceiver
 			cancellationToken);
 		using var output = new MemoryStream();
 		var buffer = new byte[81920];
+
 		for (;;)
 		{
 			var read = await input.ReadAsync(buffer, cancellationToken);
@@ -227,6 +231,7 @@ sealed class FalconXRestClient : BaseLogReceiver
 					"FalconX response exceeds the maximum supported size.");
 			await output.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
 		}
+
 		return Encoding.UTF8.GetString(output.GetBuffer(), 0,
 			checked((int)output.Length));
 	}

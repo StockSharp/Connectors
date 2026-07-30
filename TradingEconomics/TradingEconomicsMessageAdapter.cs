@@ -14,6 +14,7 @@ public partial class TradingEconomicsMessageAdapter
         this.AddSupportedMarketDataType(DataType.News);
         this.AddSupportedCandleTimeFrames(
             TradingEconomicsExtensions.TimeFrames);
+
         foreach (var dataType in TradingEconomicsDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }

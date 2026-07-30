@@ -41,6 +41,7 @@ public partial class CetusMessageAdapter
 
 			var definitions = ParseMarketDefinitions();
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -55,6 +56,7 @@ public partial class CetusMessageAdapter
 						definition.PoolId, error.Message);
 				}
 			}
+
 			using (_sync.EnterScope())
 				if (_markets.Count == 0)
 					throw errors.Count == 1
@@ -114,8 +116,10 @@ public partial class CetusMessageAdapter
 			expiredTicks = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.To is DateTime end && now >= end)
 				.Select(static pair => pair.Key)];
+
 			foreach (var target in expiredTicks)
 				UnsubscribeTicksNoLock(target);
+
 			if (_apiClient is not null && _level1Subscriptions.Count > 0 &&
 				now >= _nextMarketPoll)
 			{
@@ -143,8 +147,10 @@ public partial class CetusMessageAdapter
 			await RunSafelyAsync(PollLevel1Async, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
+
 		foreach (var target in expiredTicks)
 			await SendSubscriptionFinishedAsync(target, cancellationToken);
+
 		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
@@ -169,6 +175,7 @@ public partial class CetusMessageAdapter
 				"At least one Cetus pool must be configured.");
 		var result = new List<CetusMarketDefinition>();
 		var pools = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var entry in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
 		{
@@ -196,6 +203,7 @@ public partial class CetusMessageAdapter
 					: null,
 			});
 		}
+
 		if (result.Count == 0)
 			throw new InvalidOperationException(
 				"At least one Cetus pool must be configured.");
@@ -292,12 +300,14 @@ public partial class CetusMessageAdapter
 	private string BuildUniqueCode(string code, string poolId)
 	{
 		var suffix = poolId[2..].ToUpperInvariant();
+
 		for (var length = 6; length <= 20; length += 2)
 		{
 			var candidate = $"{code}-{suffix[..length]}";
 			if (!_markets.ContainsKey(candidate))
 				return candidate;
 		}
+
 		throw new InvalidDataException(
 			$"Cannot create a unique Cetus code for pool '{poolId}'.");
 	}
@@ -350,6 +360,7 @@ public partial class CetusMessageAdapter
 			return;
 		var execution = ReadSwapExecution(market, swap);
 		var identity = $"{swap.TransactionDigest}:{swap.EventIndex}";
+
 		foreach (var target in targets)
 		{
 			if (target.Subscription.To is DateTime end && swap.Time > end)

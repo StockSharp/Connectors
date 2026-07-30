@@ -427,6 +427,7 @@ sealed class PoloniexSocketClient : BaseLogReceiver
 			return;
 
 		var response = Deserialize<PoloniexWsEnvelope<T>>(payload);
+
 		foreach (var item in response.Data ?? [])
 			await handler(item, cancellationToken);
 	}

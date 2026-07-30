@@ -9,11 +9,13 @@ public partial class LcxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in GetMarkets().OrderBy(
 			static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
@@ -48,6 +50,7 @@ public partial class LcxMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -59,6 +62,7 @@ public partial class LcxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -138,6 +142,7 @@ public partial class LcxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -223,6 +228,7 @@ public partial class LcxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -255,6 +261,7 @@ public partial class LcxMessageAdapter
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 100)
 			.Max(1).Min(100).To<int>();
+
 		foreach (var trade in
 			(await RestClient.GetTradesAsync(
 				market.Symbol, 1, cancellationToken) ?? [])
@@ -274,6 +281,7 @@ public partial class LcxMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
@@ -315,6 +323,7 @@ public partial class LcxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -335,6 +344,7 @@ public partial class LcxMessageAdapter
 			.Max(1).Min(10000).To<int>();
 		var from = (mdMsg.From ??
 			to - timeFrame * maximum).ToUniversalTime();
+
 		foreach (var candle in
 			(await RestClient.GetCandlesAsync(
 				market.Symbol,
@@ -352,6 +362,7 @@ public partial class LcxMessageAdapter
 				candle,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(
 			mdMsg, cancellationToken);
 	}
@@ -369,6 +380,7 @@ public partial class LcxMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendLevel1Async(
 				market,
@@ -391,6 +403,7 @@ public partial class LcxMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendTradeAsync(
 				market,
@@ -416,6 +429,7 @@ public partial class LcxMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(
 					market.Symbol))];
+
 		foreach (var pair in subscriptions)
 			await SendBookAsync(
 				market,
@@ -586,16 +600,19 @@ public partial class LcxMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var state = new BookState();
+
 			foreach (var quote in book.Bids)
 			{
 				if (quote.Volume > 0)
 					state.Bids[quote.Price] = quote.Volume;
 			}
+
 			foreach (var quote in book.Asks)
 			{
 				if (quote.Volume > 0)
 					state.Asks[quote.Price] = quote.Volume;
 			}
+
 			_books[book.Symbol] = state;
 		}
 	}
@@ -610,6 +627,7 @@ public partial class LcxMessageAdapter
 				state = new();
 				_books[book.Symbol] = state;
 			}
+
 			foreach (var quote in book.Bids.Concat(book.Asks))
 			{
 				var side = quote.Side == Sides.Buy

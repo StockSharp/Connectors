@@ -125,8 +125,10 @@ public partial class ProBitMessageAdapter
 			portfolioSubscriptions = [.. _portfolioSubscriptions];
 			orderSubscriptions = [.. _orderSubscriptions];
 		}
+
 		foreach (var subscriptionId in portfolioSubscriptions)
 			await SendPortfolioSnapshotAsync(subscriptionId, cancellationToken);
+
 		foreach (var pair in orderSubscriptions)
 			await SendOrderSnapshotAsync(pair.Key, pair.Value, null, null, 1000,
 				cancellationToken);

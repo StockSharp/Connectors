@@ -7,6 +7,7 @@ public partial class GeminiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -75,6 +76,7 @@ public partial class GeminiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -119,6 +121,7 @@ public partial class GeminiMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -183,6 +186,7 @@ public partial class GeminiMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -227,6 +231,7 @@ public partial class GeminiMessageAdapter
 			.Where(trade => !trade.IsBroken && GetTradeTime(trade) <= to &&
 				(from is null || GetTradeTime(trade) >= from.Value))
 			.OrderBy(GetTradeTime).TakeLast(count).ToArray();
+
 			foreach (var trade in selected)
 				await SendTradeAsync(symbol, trade, mdMsg.TransactionId,
 					cancellationToken);
@@ -240,6 +245,7 @@ public partial class GeminiMessageAdapter
 			}
 
 			var seen = selected.Select(static trade => trade.TradeId).ToHashSet();
+
 			while (true)
 			{
 				using (_sync.EnterScope())
@@ -255,12 +261,14 @@ public partial class GeminiMessageAdapter
 					pending = [.. subscription.Pending];
 					subscription.Pending.Clear();
 				}
+
 				foreach (var trade in pending.OrderBy(static trade =>
 					trade.EventTimeNanoseconds))
 					if (seen.Add(trade.TradeId))
 						await SendWsTradeAsync(trade, mdMsg.TransactionId,
 							cancellationToken);
 			}
+
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		catch
@@ -276,6 +284,7 @@ public partial class GeminiMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -337,6 +346,7 @@ public partial class GeminiMessageAdapter
 			})
 			.OrderBy(static candle => candle.TimestampMilliseconds).TakeLast(count)
 			.ToArray();
+
 			foreach (var candle in selected)
 				await SendCandleAsync(symbol, candle, timeFrame, mdMsg.TransactionId,
 					cancellationToken);
@@ -387,6 +397,7 @@ public partial class GeminiMessageAdapter
 						break;
 					}
 					var output = new List<TimeFrameCandleMessage>();
+
 					foreach (var trade in subscription.Pending
 						.OrderBy(static trade => trade.EventTimeNanoseconds))
 					{
@@ -395,12 +406,15 @@ public partial class GeminiMessageAdapter
 							UpdateSyntheticCandle(mdMsg.TransactionId, subscription,
 								trade, serverTime, output);
 					}
+
 					subscription.Pending.Clear();
 					messages = [.. output];
 				}
+
 				foreach (var message in messages)
 					await SendOutMessageAsync(message, cancellationToken);
 			}
+
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		catch
@@ -518,6 +532,7 @@ public partial class GeminiMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(ticker.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -542,14 +557,17 @@ public partial class GeminiMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var readyTickIds = new List<long>();
+
 			foreach (var pair in _tickSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol)))
 				if (pair.Value.IsStreamReady)
 					readyTickIds.Add(pair.Key);
 				else
 					pair.Value.Pending.Add(trade);
+
 			tickIds = [.. readyTickIds];
 			var messages = new List<TimeFrameCandleMessage>();
+
 			foreach (var pair in _candleSubscriptions.Where(pair =>
 				pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol)))
 				if (pair.Value.IsStreamReady)
@@ -557,11 +575,13 @@ public partial class GeminiMessageAdapter
 						messages);
 				else
 					pair.Value.Pending.Add(trade);
+
 			candleMessages = [.. messages];
 		}
 
 		foreach (var id in tickIds)
 			await SendWsTradeAsync(trade, id, cancellationToken);
+
 		foreach (var candle in candleMessages)
 			await SendOutMessageAsync(candle, cancellationToken);
 	}

@@ -8,6 +8,7 @@ public partial class RaydiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class RaydiumMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item =>
 			item.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -42,6 +44,7 @@ public partial class RaydiumMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -51,6 +54,7 @@ public partial class RaydiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -73,6 +77,7 @@ public partial class RaydiumMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -87,6 +92,7 @@ public partial class RaydiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -112,6 +118,7 @@ public partial class RaydiumMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -127,6 +134,7 @@ public partial class RaydiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -147,16 +155,19 @@ public partial class RaydiumMessageAdapter
 		var trades = await LoadTradesAsync(market, from, to,
 			maximum.Min(MaximumHistoryTransactions), cancellationToken);
 		var delivered = 0;
+
 		foreach (var trade in trades)
 			if (await SendTradeAsync(market, trade, mdMsg.TransactionId,
 				cancellationToken))
 				delivered++;
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -176,6 +187,7 @@ public partial class RaydiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -201,15 +213,18 @@ public partial class RaydiumMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * historyMaximum);
 		var candles = await LoadCandlesAsync(market, timeFrame, from, to,
 			historyMaximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly() || mdMsg.To is DateTime requestedTo &&
 			requestedTo.ToUniversalTime() <= now || candles.Length >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -304,6 +319,7 @@ public partial class RaydiumMessageAdapter
 		var previousBidOutput = BigInteger.Zero;
 		var previousAskInput = BigInteger.Zero;
 		var slippage = GetSlippageBasisPoints();
+
 		for (var level = 1; level <= depth; level++)
 		{
 			var cumulative = increment * level;
@@ -328,6 +344,7 @@ public partial class RaydiumMessageAdapter
 			previousBidOutput = bidOutput;
 			previousAskInput = askInput;
 		}
+
 		return ([.. bids.OrderByDescending(static quote => quote.Price)],
 			[.. asks.OrderBy(static quote => quote.Price)]);
 	}
@@ -341,11 +358,13 @@ public partial class RaydiumMessageAdapter
 		maximum = maximum.Min(MaximumHistoryTransactions).Max(1);
 		var candidates = new Dictionary<string, RaydiumRpcSignatureInfo>(
 			StringComparer.Ordinal);
+
 		foreach (var pool in market.Pools)
 		{
 			var signatures = await RpcClient.GetSignaturesAsync(
 				pool.PoolAddress, null, MaximumHistoryTransactions,
 				cancellationToken) ?? [];
+
 			foreach (var signature in signatures)
 			{
 				if (signature?.Signature.IsEmpty() != false ||
@@ -360,7 +379,9 @@ public partial class RaydiumMessageAdapter
 				candidates[signature.Signature] = signature;
 			}
 		}
+
 		var trades = new List<RaydiumTrade>();
+
 		foreach (var candidate in candidates.Values.OrderByDescending(
 			static item => item.BlockTime ?? long.MinValue)
 			.Take(MaximumHistoryTransactions))
@@ -371,11 +392,13 @@ public partial class RaydiumMessageAdapter
 				continue;
 			var time = (transaction?.BlockTime ?? candidate.BlockTime)?.FromUnix()
 				?? DateTime.UtcNow;
+
 			foreach (var trade in RaydiumExtensions.DecodeTrades(
 				candidate.Signature, transaction, market, time))
 				if (trade.Time >= from && trade.Time <= to)
 					trades.Add(trade);
 		}
+
 		return [.. trades.GroupBy(static trade => trade.Id,
 			StringComparer.Ordinal).Select(static group => group.First())
 			.OrderBy(static trade => trade.Time).TakeLast(maximum)];
@@ -390,6 +413,7 @@ public partial class RaydiumMessageAdapter
 			if (!_seenTrades.Add(key))
 				return false;
 			_tradeDeliveryOrder.Enqueue(key);
+
 			while (_tradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenTrades.Remove(_tradeDeliveryOrder.Dequeue());
 		}
@@ -471,11 +495,13 @@ public partial class RaydiumMessageAdapter
 				if (!_seenRealtimeSignatures.Add(signature))
 					return;
 				_realtimeSignatureOrder.Enqueue(signature);
+
 				while (_realtimeSignatureOrder.Count > _maximumDeliveryKeys)
 					_seenRealtimeSignatures.Remove(
 						_realtimeSignatureOrder.Dequeue());
 			}
 			RaydiumRpcTransaction transaction = null;
+
 			for (var attempt = 0; attempt < 3 && transaction is null; attempt++)
 			{
 				transaction = await RpcClient.GetTransactionAsync(signature,
@@ -484,6 +510,7 @@ public partial class RaydiumMessageAdapter
 					await Task.Delay(TimeSpan.FromMilliseconds(150),
 						CancellationToken.None);
 			}
+
 			if (transaction?.Meta?.Error is not null)
 				return;
 			if (transaction is null)
@@ -501,6 +528,7 @@ public partial class RaydiumMessageAdapter
 					accountKeys.Contains(pair.Key, StringComparer.Ordinal))
 					.Select(static pair => pair.Value).Distinct()];
 			var time = transaction.BlockTime?.FromUnix() ?? DateTime.UtcNow;
+
 			foreach (var market in markets)
 				foreach (var trade in RaydiumExtensions.DecodeTrades(signature,
 					transaction, market, time))
@@ -520,6 +548,7 @@ public partial class RaydiumMessageAdapter
 			targets = [.. _tickSubscriptions.Where(pair =>
 				ReferenceEquals(pair.Value.Market, market)).Select(
 					static pair => (pair.Key, pair.Value))];
+
 		foreach (var target in targets)
 		{
 			if (target.Subscription.From is DateTime from && trade.Time < from ||
@@ -564,12 +593,14 @@ public partial class RaydiumMessageAdapter
 					pair.Value.Market.MintPairKey, StringComparer.Ordinal)
 				.Select(group => (group.First().Value.Market,
 					group.Select(static pair => pair.Key).ToArray()))];
+
 		foreach (var group in groups)
 		{
 			try
 			{
 				var snapshot = await LoadLevel1Async(group.Market,
 					cancellationToken);
+
 				foreach (var target in group.Targets)
 				{
 					var message = new Level1ChangeMessage
@@ -600,6 +631,7 @@ public partial class RaydiumMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
+
 		foreach (var item in subscriptions)
 		{
 			try
@@ -623,6 +655,7 @@ public partial class RaydiumMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var from = item.Subscription.LastTime - TimeSpan.FromSeconds(1);
@@ -630,6 +663,7 @@ public partial class RaydiumMessageAdapter
 			var to = (item.Subscription.To ?? now).ToUniversalTime().Min(now);
 			var trades = await LoadTradesAsync(item.Subscription.Market, from,
 				to, MaximumHistoryTransactions, cancellationToken);
+
 			foreach (var trade in trades)
 			{
 				if (item.Subscription.From is DateTime requestedFrom &&
@@ -645,10 +679,12 @@ public partial class RaydiumMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeTicks(target);
@@ -664,6 +700,7 @@ public partial class RaydiumMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			var now = DateTime.UtcNow;
@@ -675,6 +712,7 @@ public partial class RaydiumMessageAdapter
 			var candles = await LoadCandlesAsync(item.Subscription.Market,
 				item.Subscription.TimeFrame, from, to, maximum,
 				cancellationToken);
+
 			foreach (var candle in candles)
 			{
 				var key = $"{item.Id}:{candle.OpenTime.Ticks}";
@@ -700,10 +738,12 @@ public partial class RaydiumMessageAdapter
 				if (item.Subscription.Delivered >= item.Subscription.Maximum)
 					break;
 			}
+
 			if (item.Subscription.Delivered >= item.Subscription.Maximum ||
 				item.Subscription.To is DateTime end && CurrentTime >= end)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeCandles(target);
@@ -754,6 +794,7 @@ public partial class RaydiumMessageAdapter
 			var retained = _tradeDeliveryOrder.Where(_seenTrades.Contains)
 				.ToArray();
 			_tradeDeliveryOrder.Clear();
+
 			foreach (var key in retained)
 				_tradeDeliveryOrder.Enqueue(key);
 		}
@@ -776,8 +817,10 @@ public partial class RaydiumMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 
@@ -799,6 +842,7 @@ public partial class RaydiumMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

@@ -7,6 +7,7 @@ public partial class JpmDataQueryMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var keywords = lookupMsg.SecurityId.SecurityCode;
@@ -34,6 +35,7 @@ public partial class JpmDataQueryMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -49,6 +51,7 @@ public partial class JpmDataQueryMessageAdapter
 				nameof(mdMsg.From), from, "The start date is after the end date.");
 
 		var values = new SortedDictionary<DateTime, decimal>();
+
 		await foreach (var seriesInstrument in SafeClient().GetTimeSeries(
 			instrument.InstrumentId, Attribute, from, to, cancellationToken)
 			.WithEnforcedCancellation(cancellationToken))
@@ -86,6 +89,7 @@ public partial class JpmDataQueryMessageAdapter
 		if (securityId.BoardCode.IsEmpty())
 			securityId.BoardCode = _boardCode;
 		var field = ValueField.ToStockSharp();
+
 		foreach (var pair in selected)
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage

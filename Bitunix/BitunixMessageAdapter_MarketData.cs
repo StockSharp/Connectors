@@ -7,6 +7,7 @@ public partial class BitunixMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -80,6 +81,7 @@ public partial class BitunixMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -101,6 +103,7 @@ public partial class BitunixMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -125,6 +128,7 @@ public partial class BitunixMessageAdapter
 				}
 			}
 		}
+
 		foreach (var key in subscribe)
 			await ChangeStreamAsync(key, true, cancellationToken);
 	}
@@ -134,6 +138,7 @@ public partial class BitunixMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -159,6 +164,7 @@ public partial class BitunixMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -187,6 +193,7 @@ public partial class BitunixMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -221,6 +228,7 @@ public partial class BitunixMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -242,6 +250,7 @@ public partial class BitunixMessageAdapter
 			var candles = await SpotRestClient.GetSpotCandlesAsync(symbol,
 				timeFrame.ToSpotInterval(), new DateTimeOffset(to).ToUnixTimeSeconds(), count,
 				cancellationToken) ?? [];
+
 			foreach (var candle in candles
 				.Where(candle => IsInRange(candle.Time.UtcDateTime, from, to))
 				.OrderBy(static candle => candle.Time))
@@ -254,6 +263,7 @@ public partial class BitunixMessageAdapter
 				timeFrame.ToFuturesInterval(),
 				new DateTimeOffset(from).ToUnixTimeMilliseconds(),
 				new DateTimeOffset(to).ToUnixTimeMilliseconds(), count, cancellationToken) ?? [];
+
 			foreach (var candle in candles
 				.Where(candle => IsInRange(candle.Time.FromMilliseconds(), from, to))
 				.OrderBy(static candle => candle.Time))
@@ -262,6 +272,7 @@ public partial class BitunixMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -340,6 +351,7 @@ public partial class BitunixMessageAdapter
 				}
 			}
 		}
+
 		foreach (var key in unsubscribe)
 			await ChangeStreamAsync(key, false, cancellationToken);
 	}
@@ -429,6 +441,7 @@ public partial class BitunixMessageAdapter
 				var last = await SpotRestClient.GetSpotLastPriceAsync(symbol, cancellationToken);
 				var book = await SpotRestClient.GetSpotDepthAsync(symbol, GetSpotPrecision(symbol),
 					cancellationToken);
+
 				foreach (var item in group)
 					await SendSpotLevel1Async(symbol, last.ToDecimal(), book, item.Id,
 						cancellationToken);
@@ -442,6 +455,7 @@ public partial class BitunixMessageAdapter
 			{
 				var book = await SpotRestClient.GetSpotDepthAsync(group.Key.Symbol,
 					GetSpotPrecision(group.Key.Symbol), cancellationToken);
+
 				foreach (var item in group)
 					await SendSpotBookAsync(group.Key.Symbol, book, item.Id,
 						item.Subscription.Depth, cancellationToken);
@@ -457,6 +471,7 @@ public partial class BitunixMessageAdapter
 					group.Key.TimeFrame.ToSpotInterval(), cancellationToken);
 				if (candle is null)
 					return;
+
 				foreach (var item in group)
 					await SendSpotCandleAsync(group.Key.Symbol, candle, group.Key.TimeFrame,
 						item.Id, cancellationToken);
@@ -506,6 +521,7 @@ public partial class BitunixMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Section == BitunixSections.Futures &&
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var (id, _) in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -528,6 +544,7 @@ public partial class BitunixMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Section == BitunixSections.Futures &&
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var (id, _) in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -554,6 +571,7 @@ public partial class BitunixMessageAdapter
 				pair.Value.Section == BitunixSections.Futures &&
 				pair.Value.Symbol.EqualsIgnoreCase(symbol) && pair.Value.Depth == channelDepth)
 				.Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var (id, subscription) in subscriptions)
 			await SendFuturesBookAsync(symbol, depth.Bids, depth.Asks, time, id,
 				subscription.Depth, cancellationToken);
@@ -572,8 +590,10 @@ public partial class BitunixMessageAdapter
 				pair.Value.Section == BitunixSections.Futures &&
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(static pair => (pair.Key, pair.Value))];
 		}
+
 		foreach (var (id, _) in ticks)
 			await SendFuturesTradeAsync(symbol, trade, time, id, cancellationToken);
+
 		foreach (var (id, _) in level1)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -597,6 +617,7 @@ public partial class BitunixMessageAdapter
 				.Select(static pair => (pair.Key, pair.Value))];
 		var eventTime = time > 0 ? time.FromMilliseconds() : CurrentTime;
 		var openTime = eventTime.Floor(timeFrame);
+
 		foreach (var (id, _) in subscriptions)
 			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{

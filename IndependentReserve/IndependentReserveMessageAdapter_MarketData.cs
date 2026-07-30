@@ -8,6 +8,7 @@ public partial class IndependentReserveMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		string requestedSymbol = null;
@@ -23,6 +24,7 @@ public partial class IndependentReserveMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -49,6 +51,7 @@ public partial class IndependentReserveMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -57,6 +60,7 @@ public partial class IndependentReserveMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -117,6 +121,7 @@ public partial class IndependentReserveMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -175,6 +180,7 @@ public partial class IndependentReserveMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -198,6 +204,7 @@ public partial class IndependentReserveMessageAdapter
 			SecondaryCurrencyCode = market.SecondaryCurrency,
 			Count = maximum,
 		}, cancellationToken);
+
 		foreach (var trade in (response?.Trades ?? []).Where(trade =>
 			trade is not null &&
 			(from is null || trade.TradeTimestampUtc?.EnsureUtc() >= from) &&
@@ -235,6 +242,7 @@ public partial class IndependentReserveMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -266,6 +274,7 @@ public partial class IndependentReserveMessageAdapter
 			SecondaryCurrencyCode = market.SecondaryCurrency,
 			Hours = hours,
 		}, cancellationToken);
+
 		foreach (var candle in (response?.Items ?? []).Where(item =>
 			item is not null && item.StartTimestampUtc.EnsureUtc() >= from &&
 			item.StartTimestampUtc.EnsureUtc() <= to)
@@ -413,15 +422,20 @@ public partial class IndependentReserveMessageAdapter
 			var state = GetOrCreateBookState(market);
 			state.Bids.Clear();
 			state.Asks.Clear();
+
 			foreach (var item in snapshot.BuyOrders ?? [])
 				AddSnapshotOrder(state.Bids, item);
+
 			foreach (var item in snapshot.SellOrders ?? [])
 				AddSnapshotOrder(state.Asks, item);
+
 			state.Timestamp = snapshot.CreatedTimestampUtc.EnsureUtc();
+
 			foreach (var update in state.Buffer.Where(value =>
 				value.Time > state.Timestamp).OrderBy(static value => value.Nonce))
 				ApplyBookEvent(state, market, update.Event, update.Payload,
 					update.Time, update.Nonce);
+
 			state.Buffer.Clear();
 			state.IsInitialized = true;
 		}
@@ -450,6 +464,7 @@ public partial class IndependentReserveMessageAdapter
 			return;
 		var primary = GetChannelPrimary(envelope.Channel);
 		var timestamp = envelope.Time.ToIndependentReserveTime(CurrentTime);
+
 		foreach (var market in GetMarketsByPrimary(primary))
 		{
 			KeyValuePair<long, DepthSubscription>[] depthSubscriptions;
@@ -480,6 +495,7 @@ public partial class IndependentReserveMessageAdapter
 			foreach (var subscription in depthSubscriptions)
 				await SendCurrentBookAsync(market.Symbol,
 					subscription.Value.Depth, subscription.Key, cancellationToken);
+
 			foreach (var subscription in level1Subscriptions)
 				await SendBookLevel1Async(market.Symbol, subscription.Key,
 					cancellationToken);
@@ -546,6 +562,7 @@ public partial class IndependentReserveMessageAdapter
 		var primary = GetChannelPrimary(envelope.Channel);
 		var timestamp = (trade.TradeDate ??
 			envelope.Time.ToIndependentReserveTime(CurrentTime)).EnsureUtc();
+
 		foreach (var market in GetMarketsByPrimary(primary))
 		{
 			var price = trade.Price.GetPrice(market.SecondaryCurrency);
@@ -563,13 +580,16 @@ public partial class IndependentReserveMessageAdapter
 				candleSubscriptions = [.. _candleSubscriptions.Where(pair =>
 					pair.Value.Symbol.EqualsIgnoreCase(market.Symbol))];
 			}
+
 			foreach (var subscription in tickSubscriptions)
 				await SendSocketTradeAsync(market, tradeId, timestamp, price.Value,
 					trade.Volume.Value, trade.Side, subscription.Key,
 					cancellationToken);
+
 			foreach (var subscription in level1Subscriptions)
 				await SendTradeLevel1Async(market, timestamp, price.Value,
 					trade.Volume.Value, subscription.Key, cancellationToken);
+
 			foreach (var subscription in candleSubscriptions)
 				await UpdateLiveCandleAsync(market, timestamp, price.Value,
 					trade.Volume.Value, subscription.Key, subscription.Value,
@@ -866,6 +886,7 @@ public partial class IndependentReserveMessageAdapter
 					value.Symbol)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 			markets = [.. symbols.Select(symbol => _markets[symbol])];
 		}
+
 		foreach (var market in markets)
 		{
 			var snapshot = await RestClient.GetOrderBookAsync(CreateMarketRequest(

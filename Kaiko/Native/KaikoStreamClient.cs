@@ -108,8 +108,10 @@ sealed class KaikoStreamClient : BaseLogReceiver
 			sessions = [.. _sessions.Values];
 			_sessions.Clear();
 		}
+
 		foreach (var session in sessions)
 			session.Lifetime.Cancel();
+
 		foreach (var session in sessions)
 		{
 			try
@@ -192,6 +194,7 @@ sealed class KaikoStreamClient : BaseLogReceiver
 		});
 		using var call = _marketClient.Subscribe(request, _headers,
 			cancellationToken: cancellationToken);
+
 		while (await call.ResponseStream.MoveNext(cancellationToken))
 		{
 			var response = call.ResponseStream.Current ?? throw new
@@ -210,6 +213,7 @@ sealed class KaikoStreamClient : BaseLogReceiver
 		};
 		using var call = _ohlcvClient.Subscribe(request, _headers,
 			cancellationToken: cancellationToken);
+
 		while (await call.ResponseStream.MoveNext(cancellationToken))
 		{
 			var response = call.ResponseStream.Current ?? throw new
@@ -249,10 +253,12 @@ sealed class KaikoStreamClient : BaseLogReceiver
 			sessions = [.. _sessions.Values];
 			_sessions.Clear();
 		}
+
 		foreach (var session in sessions)
 		{
 			session.Lifetime.Cancel();
 		}
+
 		_channel.Dispose();
 		base.DisposeManaged();
 	}

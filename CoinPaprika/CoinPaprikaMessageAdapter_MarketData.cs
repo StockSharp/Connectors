@@ -9,6 +9,7 @@ public partial class CoinPaprikaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		if (securityTypes.Count > 0 &&
 			!securityTypes.Contains(SecurityTypes.CryptoCurrency))
@@ -33,6 +34,7 @@ public partial class CoinPaprikaMessageAdapter
 		var left = Math.Min(
 			lookupMsg.Count ?? MaximumItems,
 			MaximumItems);
+
 		foreach (var instrument in instruments
 			.Where(instrument =>
 				Matches(instrument, requested))
@@ -66,6 +68,7 @@ public partial class CoinPaprikaMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -77,6 +80,7 @@ public partial class CoinPaprikaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			using (_sync.EnterScope())
@@ -116,6 +120,7 @@ public partial class CoinPaprikaMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -133,6 +138,7 @@ public partial class CoinPaprikaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -153,6 +159,7 @@ public partial class CoinPaprikaMessageAdapter
 		var from = (mdMsg.From ??
 			to - timeFrame * maximum)
 			.ToUniversalTime();
+
 		foreach (var candle in
 			(await RestClient.GetCandlesAsync(
 				instrument.CoinId,
@@ -173,6 +180,7 @@ public partial class CoinPaprikaMessageAdapter
 				timeFrame,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(
 			mdMsg, cancellationToken);
 	}

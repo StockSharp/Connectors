@@ -107,6 +107,7 @@ public partial class YuantaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -128,6 +129,7 @@ public partial class YuantaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -159,6 +161,7 @@ public partial class YuantaMessageAdapter
 	{
 		var snapshot = await _client.GetOrderSnapshotAsync(cancellationToken);
 		var left = filter?.Count ?? long.MaxValue;
+
 		foreach (var update in snapshot.Orders.OrderBy(item => item.ServerTime))
 		{
 			if (!IsOrderMatch(update, filter))
@@ -167,6 +170,7 @@ public partial class YuantaMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		if (left > 0)
 		{
 			foreach (var trade in snapshot.Trades.OrderBy(item => item.ServerTime))
@@ -224,6 +228,7 @@ public partial class YuantaMessageAdapter
 			.TryAdd(PositionChangeTypes.CurrentPrice, position.CurrentPrice, true)
 			.TryAdd(PositionChangeTypes.BlockedValue, position.BlockedValue, true), cancellationToken);
 		}
+
 		_lastPortfolioRefresh = CurrentTime;
 	}
 

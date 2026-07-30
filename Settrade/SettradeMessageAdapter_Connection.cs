@@ -138,9 +138,11 @@ public partial class SettradeMessageAdapter
 				string[] topics;
 				using (_sync.EnterScope())
 					topics = _streamTopics.Keys.ToArray();
+
 				foreach (var topic in topics)
 					await client.SubscribeAsync(topic,
 						cancellationToken);
+
 				_mqttClient = client;
 			}
 			catch

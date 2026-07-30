@@ -100,6 +100,7 @@ public partial class DukasCopyJForexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -125,6 +126,7 @@ public partial class DukasCopyJForexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -142,8 +144,10 @@ public partial class DukasCopyJForexMessageAdapter
 		var openOrders = (await GetClient().GetOrders(cancellationToken))
 			.Where(order => order.State.EqualsIgnoreCase("FILLED") && !order.Symbol.IsEmpty()).ToArray();
 		_positionOrders.Clear();
+
 		foreach (var order in openOrders)
 			_positionOrders[order.Id] = order;
+
 		foreach (var group in openOrders.GroupBy(order => order.Symbol, StringComparer.OrdinalIgnoreCase))
 			await SendPosition(group.Key, group, lookupMsg.TransactionId, cancellationToken);
 

@@ -125,6 +125,7 @@ public partial class QuestradeMessageAdapter
 	private async Task RunNotifications(CancellationToken cancellationToken)
 	{
 		var failures = 0;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			var started = DateTime.UtcNow;
@@ -177,8 +178,10 @@ public partial class QuestradeMessageAdapter
 		if (notification == null)
 			return;
 		var account = notification.AccountNumber.IsEmpty(_selectedAccount?.Number);
+
 		foreach (var order in notification.Orders ?? [])
 			await ProcessOrder(order, account, 0, cancellationToken);
+
 		foreach (var execution in notification.Executions ?? [])
 			await ProcessExecution(execution, account, 0, cancellationToken);
 	}

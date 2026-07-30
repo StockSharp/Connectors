@@ -192,8 +192,10 @@ public partial class BalancerMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_realtimeLogs.Enqueue(log);
+
 			while (_realtimeLogs.Count > _maximumDeliveryKeys)
 				_realtimeLogs.Dequeue();
+
 			_nextMarketPoll = default;
 		}
 	}

@@ -11,6 +11,7 @@ public partial class OratsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -98,6 +99,7 @@ public partial class OratsMessageAdapter
 				{
 					var response = await SafeRest().GetCurrentOptions(
 						exactKey.ToApiSymbol(), DataMode, cancellationToken);
+
 					foreach (var item in response?.Data ?? [])
 					{
 						if (!item.TryGetKey(out var key) || key != exactKey)
@@ -111,6 +113,7 @@ public partial class OratsMessageAdapter
 				{
 					var response = await SafeRest().GetCurrentChain(underlying,
 						DataMode, cancellationToken);
+
 					foreach (var row in response?.Data ?? [])
 					{
 						foreach (var optionType in new[] { OptionTypes.Call, OptionTypes.Put })
@@ -125,6 +128,7 @@ public partial class OratsMessageAdapter
 							if (left <= 0)
 								break;
 						}
+
 						if (left <= 0)
 							break;
 					}
@@ -138,6 +142,7 @@ public partial class OratsMessageAdapter
 					var strike = exactOption ? exactKey.Strike : lookupMsg.Strike.Value;
 					var response = await SafeRest().GetHistoricalOption(underlying,
 						expiration, strike, null, cancellationToken);
+
 					foreach (var optionType in new[] { OptionTypes.Call, OptionTypes.Put })
 					{
 						if (exactOption && exactKey.OptionType != optionType ||
@@ -163,6 +168,7 @@ public partial class OratsMessageAdapter
 			(!hasExactKey || exactKey.Market == OratsMarkets.Stocks))
 		{
 			var response = await SafeRest().GetTickers(value, cancellationToken);
+
 			foreach (var ticker in response?.Data ?? [])
 			{
 				if (ticker.Matches(value))
@@ -180,6 +186,7 @@ public partial class OratsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -203,6 +210,7 @@ public partial class OratsMessageAdapter
 			var response = await SafeRest().GetCurrentOptions(
 				key.Market == OratsMarkets.Options ? key.ToApiSymbol() : key.Root,
 				DataMode, cancellationToken);
+
 			foreach (var value in response?.Data ?? [])
 			{
 				if (!Matches(value, key))
@@ -219,6 +227,7 @@ public partial class OratsMessageAdapter
 		{
 			var values = await LoadOptionHistory(key, from, to, mdMsg.Count,
 				cancellationToken);
+
 			foreach (var item in values)
 			{
 				var message = CreateOptionLevel1(mdMsg.TransactionId, securityId,
@@ -231,6 +240,7 @@ public partial class OratsMessageAdapter
 		{
 			var values = await LoadDailies(key.Root, from, to, mdMsg.Count,
 				cancellationToken);
+
 			foreach (var item in values)
 			{
 				var message = CreateDailyLevel1(mdMsg.TransactionId, securityId, item);
@@ -248,6 +258,7 @@ public partial class OratsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -271,6 +282,7 @@ public partial class OratsMessageAdapter
 			var response = await SafeRest().GetCurrentOptions(
 				key.Market == OratsMarkets.Options ? key.ToApiSymbol() : key.Root,
 				DataMode, cancellationToken);
+
 			foreach (var value in response?.Data ?? [])
 			{
 				if (!Matches(value, key))
@@ -294,6 +306,7 @@ public partial class OratsMessageAdapter
 				throw new NotSupportedException(
 					"ORATS historical stock dailies do not contain bid/ask quotes.");
 			}
+
 			foreach (var item in await LoadOptionHistory(key, from, to, mdMsg.Count,
 				cancellationToken))
 			{
@@ -317,6 +330,7 @@ public partial class OratsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -378,6 +392,7 @@ public partial class OratsMessageAdapter
 		var response = await SafeRest().GetHistoricalOption(key.Root, key.Expiration,
 			key.Strike, singleDate, cancellationToken);
 		var values = new List<ParsedStrike>();
+
 		foreach (var row in response?.Data ?? [])
 		{
 			var rowKey = row.GetOptionKey(key.OptionType.Value);
@@ -389,6 +404,7 @@ public partial class OratsMessageAdapter
 				continue;
 			values.Add(new(row, time));
 		}
+
 		return SelectHistory(values.OrderBy(item => item.Time).ToArray(), count,
 			from == null);
 	}
@@ -399,6 +415,7 @@ public partial class OratsMessageAdapter
 		var response = await SafeRest().GetDailies(ticker,
 			GetSingleMarketDate(from, to), cancellationToken);
 		var values = new List<ParsedDaily>();
+
 		foreach (var row in response?.Data ?? [])
 		{
 			if (row?.Ticker.EqualsIgnoreCase(ticker) != true ||
@@ -413,6 +430,7 @@ public partial class OratsMessageAdapter
 				continue;
 			values.Add(new(row, openTime, closeTime));
 		}
+
 		return SelectHistory(values.OrderBy(item => item.OpenTime).ToArray(), count,
 			from == null);
 	}

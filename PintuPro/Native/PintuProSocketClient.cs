@@ -356,11 +356,13 @@ sealed class PintuProSocketClient(string endpoint,
 		CancellationToken cancellationToken)
 	{
 		var buffer = new byte[64 * 1024];
+
 		while (socket.State == WebSocketState.Open &&
 			!cancellationToken.IsCancellationRequested)
 		{
 			using var message = new MemoryStream();
 			WebSocketReceiveResult result;
+
 			do
 			{
 				result = await socket.ReceiveAsync(buffer, cancellationToken);

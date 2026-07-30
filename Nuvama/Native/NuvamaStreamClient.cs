@@ -415,6 +415,7 @@ sealed class NuvamaStreamClient : BaseLogReceiver
         CancellationToken cancellationToken)
     {
         Exception lastError = null;
+
         for (var attempt = 0;
             !cancellationToken.IsCancellationRequested &&
             attempt <= _reconnectAttempts;

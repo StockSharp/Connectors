@@ -6,9 +6,11 @@ public partial class KiwoomMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var definitions = await _rest.GetSecurities(cancellationToken);
 		var sent = 0L;
+
 		foreach (var definition in definitions)
 		{
 			var securityId = definition.Security.ToSecurityId();
@@ -29,6 +31,7 @@ public partial class KiwoomMessageAdapter
 			if (lookupMsg.Count is > 0 && sent >= lookupMsg.Count.Value)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -48,6 +51,7 @@ public partial class KiwoomMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var previous))
@@ -92,6 +96,7 @@ public partial class KiwoomMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var previous))
@@ -103,6 +108,7 @@ public partial class KiwoomMessageAdapter
 		if (!KiwoomExtensions.TimeFrames.Contains(timeFrame))
 			throw new ArgumentOutOfRangeException(nameof(mdMsg), timeFrame, "Unsupported Kiwoom candle time frame.");
 		var security = ResolveSecurity(mdMsg.SecurityId);
+
 		foreach (var candle in await _rest.GetCandles(security, timeFrame, mdMsg.From, mdMsg.To, mdMsg.Count, cancellationToken))
 		{
 			await SendOutMessageAsync(new TimeFrameCandleMessage
@@ -174,6 +180,7 @@ public partial class KiwoomMessageAdapter
 		var serverTime = values.TradeDate.ToKiwoomUtc(values.TradeTime, security);
 		var price = values.LastPrice.ToPrice() ?? 0;
 		var volume = Math.Abs(values.TradeVolume.ToDecimal() ?? 0);
+
 		foreach (var subscription in _marketSubscriptions.CachedValues.Where(subscription =>
 			IsSame(subscription.Security, security) && subscription.DataType != DataType.MarketDepth))
 		{
@@ -220,6 +227,7 @@ public partial class KiwoomMessageAdapter
 		var security = ResolveRealtimeSecurity(message);
 		var values = message.Data.Values;
 		var serverTime = string.Empty.ToKiwoomUtc(values.DepthTime, security);
+
 		foreach (var subscription in _marketSubscriptions.CachedValues.Where(subscription =>
 			IsSame(subscription.Security, security) && subscription.DataType == DataType.MarketDepth))
 		{

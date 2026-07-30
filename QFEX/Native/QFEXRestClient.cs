@@ -120,6 +120,7 @@ sealed class QFEXRestClient : BaseLogReceiver
 		if (isPrivate && !_authenticator.IsAvailable)
 			throw new InvalidOperationException(
 				"QFEX API credentials are required for private REST data.");
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitRateLimitAsync(cancellationToken);

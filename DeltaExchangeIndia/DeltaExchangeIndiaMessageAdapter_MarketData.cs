@@ -9,10 +9,12 @@ public partial class DeltaExchangeIndiaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var product in GetProducts()
 			.OrderBy(static product => product.Symbol,
 				StringComparer.OrdinalIgnoreCase))
@@ -48,6 +50,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -59,6 +62,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -101,6 +105,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -133,6 +138,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -178,6 +184,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -211,6 +218,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -238,6 +246,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 		var product = GetProduct(mdMsg.SecurityId);
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUniversalTime();
 		var maximum = (mdMsg.Count ?? 50).Max(1).Min(50).To<int>();
+
 		foreach (var trade in
 			(await RestClient.GetTradesAsync(
 				product.Symbol, cancellationToken) ?? [])
@@ -256,12 +265,14 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				mdMsg.TransactionId,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -294,6 +305,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var timeFrame = mdMsg.GetTimeFrame();
 		var channel = "candlestick_" +
@@ -328,6 +340,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 		var product = GetProduct(mdMsg.SecurityId);
 		var maximum = (mdMsg.Count ?? 1999)
 			.Max(1).Min(1999).To<int>();
+
 		foreach (var candle in
 			(await RestClient.GetCandlesAsync(
 				product.Symbol,
@@ -342,12 +355,14 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				candle,
 				mdMsg.TransactionId,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -389,6 +404,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 				.Where(subscription =>
 					subscription.Symbol.EqualsIgnoreCase(
 						ticker.Symbol))];
+
 		foreach (var subscription in subscriptions)
 			await SendLevel1Async(
 				product,
@@ -412,6 +428,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Where(
 				pair => pair.Value.Symbol.EqualsIgnoreCase(
 					book.Symbol))];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendBookAsync(
 				product,
@@ -436,6 +453,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Where(
 				pair => pair.Value.Symbol.EqualsIgnoreCase(
 					trade.Symbol))];
+
 		foreach (var (transactionId, _) in subscriptions)
 			await SendTradeAsync(
 				product,
@@ -460,6 +478,7 @@ public partial class DeltaExchangeIndiaMessageAdapter
 					pair.Value.Symbol.EqualsIgnoreCase(
 						candle.Symbol) &&
 					pair.Value.TimeFrame == candle.TimeFrame)];
+
 		foreach (var (transactionId, _) in subscriptions)
 			await SendCandleAsync(
 				product,

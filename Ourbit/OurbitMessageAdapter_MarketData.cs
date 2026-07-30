@@ -7,6 +7,7 @@ public partial class OurbitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -79,6 +80,7 @@ public partial class OurbitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -101,6 +103,7 @@ public partial class OurbitMessageAdapter
 			await SendFuturesTickerAsync(ticker, mdMsg.TransactionId, cancellationToken);
 		}
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -114,12 +117,14 @@ public partial class OurbitMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_level1Subscriptions.Add(mdMsg.TransactionId, new() { Symbol = symbol, Section = section });
+
 			foreach (var key in keys)
 			{
 				if (AddReference(_streamReferences, key))
 					subscribe.Add(key);
 			}
 		}
+
 		foreach (var key in subscribe)
 			await ChangeStreamAsync(key, true, cancellationToken);
 	}
@@ -129,6 +134,7 @@ public partial class OurbitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -155,11 +161,13 @@ public partial class OurbitMessageAdapter
 				_futuresBooks[symbol] = new() { Version = book.Version };
 		}
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		var key = new StreamKey(section, "depth", symbol,
 			section == OurbitSections.Spot ? depth.ToString(CultureInfo.InvariantCulture) : null);
 		bool subscribe;
@@ -182,6 +190,7 @@ public partial class OurbitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -199,6 +208,7 @@ public partial class OurbitMessageAdapter
 			var trades = (await SpotRestClient.GetTradesAsync(symbol, count, cancellationToken) ?? [])
 				.Where(trade => IsInRange(trade.Time.FromMilliseconds(), from, to))
 				.OrderBy(static trade => trade.Time);
+
 			foreach (var trade in trades)
 				await SendSpotTradeAsync(symbol, trade, mdMsg.TransactionId, cancellationToken);
 		}
@@ -208,15 +218,18 @@ public partial class OurbitMessageAdapter
 				.Where(trade => IsInRange(trade.Time.FromMilliseconds(), from, to))
 				.OrderBy(static trade => trade.Time)
 				.TakeLast(count);
+
 			foreach (var trade in trades)
 				await SendFuturesTradeAsync(symbol, trade, mdMsg.TransactionId, cancellationToken);
 		}
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		var key = new StreamKey(section, "trades", symbol);
 		bool subscribe;
 		using (_sync.EnterScope())
@@ -233,6 +246,7 @@ public partial class OurbitMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -251,6 +265,7 @@ public partial class OurbitMessageAdapter
 			var candles = await SpotRestClient.GetCandlesAsync(symbol, timeFrame.ToSpotInterval(),
 				new DateTimeOffset(from).ToUnixTimeMilliseconds(),
 				new DateTimeOffset(to).ToUnixTimeMilliseconds(), count, cancellationToken) ?? [];
+
 			foreach (var candle in candles.OrderBy(static candle => candle.OpenTime))
 				await SendSpotCandleAsync(symbol, candle, timeFrame, mdMsg.TransactionId,
 					cancellationToken);
@@ -263,16 +278,19 @@ public partial class OurbitMessageAdapter
 				.Where(candle => IsInRange(ToWireTime(candle.Time), from, to))
 				.OrderBy(static candle => candle.Time)
 				.TakeLast(count);
+
 			foreach (var candle in candles)
 				await SendFuturesCandleAsync(symbol, candle, timeFrame, mdMsg.TransactionId,
 					cancellationToken);
 		}
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		var key = new StreamKey(section, "candles", symbol, wsInterval);
 		bool subscribe;
 		using (_sync.EnterScope())
@@ -346,12 +364,14 @@ public partial class OurbitMessageAdapter
 				? new[] { new StreamKey(subscription.Section, "ticker", subscription.Symbol),
 					new StreamKey(subscription.Section, "trades", subscription.Symbol) }
 				: [new StreamKey(subscription.Section, "ticker", subscription.Symbol)];
+
 			foreach (var key in keys)
 			{
 				if (ReleaseReference(_streamReferences, key))
 					unsubscribe.Add(key);
 			}
 		}
+
 		foreach (var key in unsubscribe)
 			await ChangeStreamAsync(key, false, cancellationToken);
 	}
@@ -419,6 +439,7 @@ public partial class OurbitMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Section == OurbitSections.Spot && pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var (id, _) in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 		{
@@ -439,6 +460,7 @@ public partial class OurbitMessageAdapter
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Section == OurbitSections.Spot && pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var (id, subscription) in subscriptions)
 			await SendSpotBookAsync(symbol, depth.Bids, depth.Asks, time, id,
 				subscription.Depth, cancellationToken);
@@ -456,8 +478,10 @@ public partial class OurbitMessageAdapter
 			level1 = [.. _level1Subscriptions.Where(pair => pair.Value.Section == OurbitSections.Spot &&
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(static pair => (pair.Key, pair.Value))];
 		}
+
 		foreach (var (id, _) in ticks)
 			await SendSpotTradeAsync(symbol, trade, id, cancellationToken);
+
 		foreach (var (id, _) in level1)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -478,6 +502,7 @@ public partial class OurbitMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Where(pair =>
 				pair.Value.Section == OurbitSections.Spot && pair.Value.Symbol.EqualsIgnoreCase(symbol) &&
 				pair.Value.TimeFrame == timeFrame).Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var (id, _) in subscriptions)
 			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{
@@ -503,6 +528,7 @@ public partial class OurbitMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.Section == OurbitSections.Futures &&
 				pair.Value.Symbol.EqualsIgnoreCase(ticker.Symbol)).Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var (id, _) in subscriptions)
 			await SendFuturesTickerAsync(ticker, id, cancellationToken);
 	}
@@ -540,6 +566,7 @@ public partial class OurbitMessageAdapter
 			await RestoreFuturesBookAsync(symbol, cancellationToken);
 			return;
 		}
+
 		foreach (var (id, subscription) in subscriptions)
 			await SendFuturesBookAsync(symbol, depth.Bids, depth.Asks, depth.Timestamp, id,
 				subscription.Depth, QuoteChangeStates.Increment, cancellationToken);
@@ -563,6 +590,7 @@ public partial class OurbitMessageAdapter
 					pair.Value.Section == OurbitSections.Futures &&
 					pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(static pair => (pair.Key, pair.Value))];
 			}
+
 			foreach (var (id, subscription) in subscriptions)
 				await SendFuturesBookAsync(symbol, book.Bids, book.Asks, book.Timestamp, id,
 					subscription.Depth, QuoteChangeStates.SnapshotComplete, cancellationToken);
@@ -586,6 +614,7 @@ public partial class OurbitMessageAdapter
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.Section == OurbitSections.Futures &&
 				pair.Value.Symbol.EqualsIgnoreCase(symbol)).Select(static pair => (pair.Key, pair.Value))];
+
 		foreach (var (id, _) in subscriptions)
 			await SendFuturesTradeAsync(symbol, trade, id, cancellationToken);
 	}
@@ -601,6 +630,7 @@ public partial class OurbitMessageAdapter
 				pair.Value.Symbol.EqualsIgnoreCase(symbol) && pair.Value.TimeFrame == timeFrame)
 				.Select(static pair => (pair.Key, pair.Value))];
 		var openTime = ToWireTime(candle.Time);
+
 		foreach (var (id, _) in subscriptions)
 			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{

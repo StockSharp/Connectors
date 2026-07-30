@@ -162,6 +162,7 @@ public partial class BTCMarketsMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets ?? [])
 				if (market?.MarketId.IsEmpty() == false &&
 					!market.BaseAsset.IsEmpty() && !market.QuoteAsset.IsEmpty())
@@ -283,6 +284,7 @@ public partial class BTCMarketsMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (!order.ExchangeOrderId.IsEmpty())
 				_trackedOrders[order.ExchangeOrderId] = order;
 			if (!order.ClientOrderId.IsEmpty())

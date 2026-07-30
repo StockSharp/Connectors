@@ -178,6 +178,7 @@ public partial class BigOneMessageAdapter
 		{
 			_marketsBySecurity.Clear();
 			_marketsByNative.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Pair.IsEmpty() != false ||
@@ -256,8 +257,10 @@ public partial class BigOneMessageAdapter
 			if (!ids.Add(key))
 				return false;
 			queue.Enqueue(key);
+
 			while (queue.Count > _maximumRememberedTradeIds)
 				ids.Remove(queue.Dequeue());
+
 			return true;
 		}
 	}

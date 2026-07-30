@@ -110,6 +110,7 @@ sealed class DeepBookSuiClient : BaseLogReceiver
 			.NormalizeCoinType();
 		var result = new List<SuiObject>();
 		var pageToken = ByteString.Empty;
+
 		for (var page = 0; page < _maximumPages; page++)
 		{
 			var request = new ListOwnedObjectsRequest
@@ -128,6 +129,7 @@ sealed class DeepBookSuiClient : BaseLogReceiver
 			if (response is null)
 				throw new InvalidDataException(
 					"Sui gRPC returned no owned-object page.");
+
 			foreach (var item in response.Objects)
 			{
 				if (item.ObjectId.IsEmpty() || item.Version == 0 ||
@@ -140,10 +142,12 @@ sealed class DeepBookSuiClient : BaseLogReceiver
 						"Sui gRPC returned a coin object of another type.");
 				result.Add(item);
 			}
+
 			pageToken = response.NextPageToken;
 			if (pageToken.Length == 0)
 				return [.. result];
 		}
+
 		throw new InvalidDataException(
 			"Sui owned-object pagination exceeded the safety limit.");
 	}
@@ -154,6 +158,7 @@ sealed class DeepBookSuiClient : BaseLogReceiver
 		EnsureWallet();
 		var result = new List<Balance>();
 		var pageToken = ByteString.Empty;
+
 		for (var page = 0; page < _maximumPages; page++)
 		{
 			var request = new ListBalancesRequest
@@ -169,6 +174,7 @@ sealed class DeepBookSuiClient : BaseLogReceiver
 			if (response is null)
 				throw new InvalidDataException(
 					"Sui gRPC returned no balance page.");
+
 			foreach (var balance in response.Balances)
 			{
 				if (balance.CoinType.IsEmpty() || !balance.HasBalance_)
@@ -177,10 +183,12 @@ sealed class DeepBookSuiClient : BaseLogReceiver
 				_ = balance.CoinType.NormalizeCoinType();
 				result.Add(balance);
 			}
+
 			pageToken = response.NextPageToken;
 			if (pageToken.Length == 0)
 				return [.. result];
 		}
+
 		throw new InvalidDataException(
 			"Sui balance pagination exceeded the safety limit.");
 	}
@@ -350,6 +358,7 @@ sealed class DeepBookSuiClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			try

@@ -157,8 +157,10 @@ public partial class WazirXMessageAdapter
 					order,
 					cancelMsg.TransactionId,
 					cancellationToken);
+
 			return;
 		}
+
 		foreach (var order in
 			await RestClient.GetOpenOrdersAsync(
 				market?.Symbol,
@@ -188,6 +190,7 @@ public partial class WazirXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		const string stream = "outboundAccountPosition";
 		if (!lookupMsg.IsSubscribe)
@@ -225,6 +228,7 @@ public partial class WazirXMessageAdapter
 				lookupMsg, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"WazirX portfolio subscription already exists.");
@@ -250,6 +254,7 @@ public partial class WazirXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -279,6 +284,7 @@ public partial class WazirXMessageAdapter
 				statusMsg, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"WazirX order-status subscription already " +
@@ -409,6 +415,7 @@ public partial class WazirXMessageAdapter
 		else
 		{
 			var orders = new Dictionary<long, WazirXOrder>();
+
 			foreach (var order in
 				await RestClient.GetOpenOrdersAsync(
 					null,
@@ -416,6 +423,7 @@ public partial class WazirXMessageAdapter
 					statusMsg.To?.ToUniversalTime(),
 					cancellationToken) ?? [])
 				orders[order.Id] = order;
+
 			foreach (var market in GetStatusMarkets(statusMsg))
 			{
 				foreach (var order in
@@ -427,6 +435,7 @@ public partial class WazirXMessageAdapter
 						cancellationToken) ?? [])
 					orders[order.Id] = order;
 			}
+
 			foreach (var order in orders.Values
 				.Where(order => MatchesOrder(order, statusMsg))
 				.OrderBy(static order => order.CreatedAt)
@@ -464,6 +473,7 @@ public partial class WazirXMessageAdapter
 		DateTime? since = from == default
 			? null
 			: from.ToUniversalTime();
+
 		foreach (var order in
 			await RestClient.GetOpenOrdersAsync(
 				null, since, null, cancellationToken) ?? [])
@@ -471,6 +481,7 @@ public partial class WazirXMessageAdapter
 				order,
 				originalTransactionId,
 				cancellationToken);
+
 		foreach (var trade in
 			await RestClient.GetUserTradesAsync(
 				null,

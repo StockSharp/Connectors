@@ -321,6 +321,7 @@ sealed class CoinSpotRestClient : BaseLogReceiver
 		if (root["balances"] is not JArray balances)
 			return [];
 		var result = new List<CoinSpotBalance>();
+
 		foreach (var item in balances.OfType<JObject>())
 		{
 			foreach (var property in item.Properties())
@@ -338,6 +339,7 @@ sealed class CoinSpotRestClient : BaseLogReceiver
 				});
 			}
 		}
+
 		return [.. result.OrderBy(
 			static balance => balance.Currency,
 			StringComparer.OrdinalIgnoreCase)];

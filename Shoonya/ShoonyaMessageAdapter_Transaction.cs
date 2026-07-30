@@ -129,6 +129,7 @@ public partial class ShoonyaMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -138,6 +139,7 @@ public partial class ShoonyaMessageAdapter
 
 		EnsurePortfolio(statusMsg.PortfolioName);
 		var left = statusMsg.Count ?? long.MaxValue;
+
 		foreach (var order in (await _restClient.GetOrders(cancellationToken))
 			.Where(order => order != null)
 			.OrderBy(GetOrderTime))
@@ -168,6 +170,7 @@ public partial class ShoonyaMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -344,6 +347,7 @@ public partial class ShoonyaMessageAdapter
 				transactionId != 0 && transactionId == originalTransactionId)
 				return order;
 		}
+
 		throw new InvalidOperationException($"Shoonya order '{orderId}' was not found in the current order book.");
 	}
 

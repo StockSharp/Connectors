@@ -8,6 +8,7 @@ public partial class BTCMarketsMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedMarket = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class BTCMarketsMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.MarketId,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -45,6 +47,7 @@ public partial class BTCMarketsMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +56,7 @@ public partial class BTCMarketsMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -102,6 +106,7 @@ public partial class BTCMarketsMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -158,6 +163,7 @@ public partial class BTCMarketsMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -177,6 +183,7 @@ public partial class BTCMarketsMessageAdapter
 		var from = mdMsg.From?.ToUniversalTime() ?? to - TimeSpan.FromDays(1);
 		var trades = await LoadPublicTradesAsync(market.MarketId, from, to,
 			maximum, cancellationToken);
+
 		foreach (var trade in trades)
 			await SendPublicTradeAsync(market.MarketId, trade,
 				mdMsg.TransactionId, cancellationToken);
@@ -210,6 +217,7 @@ public partial class BTCMarketsMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -233,6 +241,7 @@ public partial class BTCMarketsMessageAdapter
 			to.SubtractPeriods(timeFrame, maximum);
 		var candles = await LoadCandlesAsync(market.MarketId, timeFrame, from,
 			to, maximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market.MarketId, candle, timeFrame,
 				mdMsg.TransactionId, null, cancellationToken);
@@ -340,6 +349,7 @@ public partial class BTCMarketsMessageAdapter
 			transactionIds = [.. _level1Subscriptions
 				.Where(pair => pair.Value.MarketId.EqualsIgnoreCase(ticker.MarketId))
 				.Select(static pair => pair.Key)];
+
 		foreach (var transactionId in transactionIds)
 			await SendSocketTickerAsync(ticker, transactionId,
 				cancellationToken);
@@ -361,8 +371,10 @@ public partial class BTCMarketsMessageAdapter
 				.Where(pair => pair.Value.MarketId.EqualsIgnoreCase(trade.MarketId))
 				.Select(static pair => (pair.Key, pair.Value))];
 		}
+
 		foreach (var transactionId in tickIds)
 			await SendSocketTradeAsync(trade, transactionId, cancellationToken);
+
 		foreach (var item in candleSubscriptions)
 			await UpdateLiveCandleAsync(item.Id, item.Subscription, trade,
 				cancellationToken);
@@ -447,6 +459,7 @@ public partial class BTCMarketsMessageAdapter
 		}
 		if (bids is null || asks is null)
 			return;
+
 		foreach (var transactionId in transactionIds)
 			await SendOutMessageAsync(new QuoteChangeMessage
 			{
@@ -656,6 +669,7 @@ public partial class BTCMarketsMessageAdapter
 	{
 		var result = new List<BTCMarketsPublicTrade>();
 		string before = null;
+
 		while (result.Count < maximum)
 		{
 			var page = await RestClient.GetMarketTradesAsync(marketId, new()
@@ -674,6 +688,7 @@ public partial class BTCMarketsMessageAdapter
 				break;
 			before = page.Before;
 		}
+
 		return [.. result.Where(static item => !item.Id.IsEmpty())
 			.GroupBy(static item => item.Id, StringComparer.OrdinalIgnoreCase)
 			.Select(static group => group.First())
@@ -688,6 +703,7 @@ public partial class BTCMarketsMessageAdapter
 		var result = new List<BTCMarketsCandle>();
 		var cursorEnd = to.ToUtcTime();
 		var lowerBound = from.ToUtcTime();
+
 		while (result.Count < maximum && cursorEnd >= lowerBound)
 		{
 			var pageSize = (maximum - result.Count).Min(1000).Max(1);
@@ -710,6 +726,7 @@ public partial class BTCMarketsMessageAdapter
 				break;
 			cursorEnd = earliest.SubtractPeriods(timeFrame, 1);
 		}
+
 		return [.. result.GroupBy(static candle => candle.OpenTime)
 			.Select(static group => group.First())
 			.OrderBy(static candle => candle.OpenTime)

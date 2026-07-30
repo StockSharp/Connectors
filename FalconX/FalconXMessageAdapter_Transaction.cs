@@ -137,6 +137,7 @@ public partial class FalconXMessageAdapter
 		var to = DateTime.UtcNow;
 		var orders = await RestClient.GetOrdersAsync(to.AddDays(-31), to,
 			HistoryLimit, cancellationToken);
+
 		foreach (var order in orders
 			.Where(static order => order.Status.ToStockSharp() ==
 				OrderStates.Active))
@@ -158,6 +159,7 @@ public partial class FalconXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -181,6 +183,7 @@ public partial class FalconXMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -192,6 +195,7 @@ public partial class FalconXMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -217,6 +221,7 @@ public partial class FalconXMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		await OrderSocket.EnsureConnectedAsync(cancellationToken);
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId, filter);
@@ -449,6 +454,7 @@ public partial class FalconXMessageAdapter
 			.Skip(filter.Skip)
 			.Take(filter.Limit)
 			.ToArray();
+
 		foreach (var message in messages)
 		{
 			var native = orders.FirstOrDefault(order => order.NativeId.Equals(
@@ -480,10 +486,12 @@ public partial class FalconXMessageAdapter
 			var balances = await RestClient.GetPortfolioBalancesAsync(
 				cancellationToken) ?? [];
 			var time = DateTime.UtcNow;
+
 			foreach (var transactionId in portfolioSubscriptions)
 				await SendBalancesAsync(balances, transactionId, time,
 					cancellationToken);
 		}
+
 		foreach (var (transactionId, filter) in orderSubscriptions)
 			await SendOrderSnapshotAsync(filter, transactionId,
 				cancellationToken);
@@ -633,6 +641,7 @@ public partial class FalconXMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
 		var sent = false;
+
 		foreach (var (transactionId, filter) in subscriptions)
 		{
 			if (!IsOrderMatch(message, filter))
@@ -642,6 +651,7 @@ public partial class FalconXMessageAdapter
 			await SendOutMessageAsync(clone, cancellationToken);
 			sent = true;
 		}
+
 		if (!sent && message.OriginalTransactionId == 0)
 			await SendOutMessageAsync(message, cancellationToken);
 	}
@@ -658,11 +668,13 @@ public partial class FalconXMessageAdapter
 				"FalconX returned a fill without an order side.");
 		var targets = GetFillTargets(securityId, body.OrderId, side,
 			pending?.TransactionId ?? 0);
+
 		foreach (var fill in body.Fills.Where(static fill => fill is not null &&
 			!fill.QuoteId.IsEmpty()))
 		{
 			var time = fill.ExecuteTime.TryParseFalconXTime() ?? DateTime.UtcNow;
 			UpdateServerTime(time);
+
 			foreach (var target in targets)
 			{
 				if (!MarkFill(target, fill.QuoteId))
@@ -705,6 +717,7 @@ public partial class FalconXMessageAdapter
 					(fill.FillTime ?? fill.ExecuteTime).TryParseFalconXTime(),
 					originalTransactionId, cancellationToken);
 			}
+
 			return;
 		}
 		if (!order.OrderId.IsEmpty() || order.QuoteId.IsEmpty() ||

@@ -160,6 +160,7 @@ sealed class FoxbitSocketClient : BaseLogReceiver
 			subscriptions = [.. _subscriptions.OrderBy(static value =>
 				value.MarketSymbol, StringComparer.OrdinalIgnoreCase)
 				.ThenBy(static value => value.Channel)];
+
 		foreach (var subscription in subscriptions)
 			await SendAsync(client, FoxbitSocketMessageTypes.Subscribe,
 				subscription.Channel, subscription.MarketSymbol,

@@ -7,6 +7,7 @@ public partial class ActivFinancialMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -24,6 +25,7 @@ public partial class ActivFinancialMessageAdapter
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var emitted = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var record in records)
 		{
 			if (left <= 0)
@@ -50,6 +52,7 @@ public partial class ActivFinancialMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -58,6 +61,7 @@ public partial class ActivFinancialMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (RemoveLiveSubscription(mdMsg.OriginalTransactionId))
@@ -126,6 +130,7 @@ public partial class ActivFinancialMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (RemoveLiveSubscription(mdMsg.OriginalTransactionId))
@@ -147,6 +152,7 @@ public partial class ActivFinancialMessageAdapter
 			var limit = GetHistoryLimit(remaining);
 			var records = await SafeClient().GetTicks(key.DataSourceId, key.SymbologyId,
 				key.Symbol, mdMsg.From, mdMsg.To, limit, key.TimeZoneId, cancellationToken);
+
 			foreach (var record in records)
 			{
 				var output = CreateTick(mdMsg.TransactionId, securityId, record);
@@ -191,6 +197,7 @@ public partial class ActivFinancialMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -212,6 +219,7 @@ public partial class ActivFinancialMessageAdapter
 		var records = await SafeClient().GetBars(key.DataSourceId, key.SymbologyId,
 			key.Symbol, mdMsg.From, mdMsg.To, GetHistoryLimit(remaining), minutes,
 			key.TimeZoneId, cancellationToken);
+
 		foreach (var record in records)
 		{
 			if (record?.OpenPrice == null || record.HighPrice == null ||
@@ -239,6 +247,7 @@ public partial class ActivFinancialMessageAdapter
 			if (remaining is > 0 && --remaining == 0)
 				break;
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 

@@ -8,6 +8,7 @@ public partial class ZoomexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class ZoomexMessageAdapter
 			products = [.. _products.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var product in products.OrderBy(
 			static value => value.Category).ThenBy(
 			static value => value.Symbol,
@@ -47,6 +49,7 @@ public partial class ZoomexMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -56,6 +59,7 @@ public partial class ZoomexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -110,6 +114,7 @@ public partial class ZoomexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -171,6 +176,7 @@ public partial class ZoomexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -188,11 +194,13 @@ public partial class ZoomexMessageAdapter
 		var maximum = (mdMsg.Count ?? 100).Min(1000).Max(1).To<int>();
 		var result = await RestClient.GetPublicTradesAsync(product.Category,
 			product.Symbol, maximum, cancellationToken);
+
 		foreach (var trade in (result?.Items ?? [])
 			.Where(trade => IsTradeInRange(trade, mdMsg.From, mdMsg.To))
 			.OrderBy(static trade => trade.Time.ToLong()))
 			await SendPublicTradeAsync(product.Category, trade,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
@@ -225,6 +233,7 @@ public partial class ZoomexMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -249,9 +258,11 @@ public partial class ZoomexMessageAdapter
 		var candles = await LoadCandlesAsync(product.Category,
 			product.Symbol, timeFrame, from, to, maximum,
 			cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(product.Category, product.Symbol, candle,
 				timeFrame, mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
@@ -387,6 +398,7 @@ public partial class ZoomexMessageAdapter
 				pair.Value.Category == category &&
 				pair.Value.Symbol.EqualsIgnoreCase(ticker.Symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var target in targets)
 			await SendTickerAsync(category, ticker, target,
 				GetTime(timestamp), cancellationToken);
@@ -422,6 +434,7 @@ public partial class ZoomexMessageAdapter
 				pair.Value.Topic.EqualsIgnoreCase(topic)).Select(
 				static pair => (pair.Key, pair.Value.Depth))];
 		}
+
 		foreach (var target in targets)
 			await SendBookStateAsync(category, topic, target.Depth,
 				target.Id, timestamp, cancellationToken);
@@ -432,6 +445,7 @@ public partial class ZoomexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		_ = timestamp;
+
 		foreach (var trade in trades.OrderBy(static value => value.Time))
 		{
 			if (trade?.Symbol.IsEmpty() != false)
@@ -442,6 +456,7 @@ public partial class ZoomexMessageAdapter
 					pair.Value.Category == category &&
 					pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol)).Select(
 					static pair => pair.Key)];
+
 			foreach (var target in targets)
 				await SendPublicTradeAsync(category, trade, target,
 					cancellationToken);
@@ -453,6 +468,7 @@ public partial class ZoomexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		_ = timestamp;
+
 		foreach (var candle in candles)
 		{
 			if (candle?.Interval.IsEmpty() != false)
@@ -468,6 +484,7 @@ public partial class ZoomexMessageAdapter
 					pair.Value.Symbol.EqualsIgnoreCase(symbol) &&
 					pair.Value.TimeFrame == timeFrame).Select(
 					static pair => pair.Key)];
+
 			foreach (var target in targets)
 				await SendOutMessageAsync(new TimeFrameCandleMessage
 				{
@@ -649,6 +666,7 @@ public partial class ZoomexMessageAdapter
 		var result = new List<ZoomexCandle>();
 		var lowerBound = from.ToUniversalTime();
 		var cursor = to.ToUniversalTime();
+
 		while (result.Count < maximum && cursor >= lowerBound)
 		{
 			var pageSize = (maximum - result.Count).Min(1000).Max(1);
@@ -665,6 +683,7 @@ public partial class ZoomexMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.Where(item => item.OpenTime.ToUtcTime() >=
 				lowerBound && item.OpenTime.ToUtcTime() <= to)
 			.GroupBy(static item => item.OpenTime)

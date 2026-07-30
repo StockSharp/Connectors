@@ -7,6 +7,7 @@ public partial class CoinApiMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		if (!message.SecurityId.BoardCode.IsEmpty() &&
 			!message.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.CoinApi))
@@ -49,6 +50,7 @@ public partial class CoinApiMessageAdapter
 			if (--left == 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -57,6 +59,7 @@ public partial class CoinApiMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -80,6 +83,7 @@ public partial class CoinApiMessageAdapter
 			var trades = await SafeRest().GetTradesAsync(symbol.SymbolId, from,
 				to, GetHistoryLimit(remaining), cancellationToken) ?? [];
 			var sent = 0;
+
 			foreach (var trade in trades)
 			{
 				if (!trade.SymbolId.IsEmpty() &&
@@ -90,6 +94,7 @@ public partial class CoinApiMessageAdapter
 					cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -97,6 +102,7 @@ public partial class CoinApiMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(CoinApiSocketDataTypes.Trade, symbol.SymbolId,
 				CoinApiPeriodIds.Unknown), 0, remaining, cancellationToken);
@@ -108,6 +114,7 @@ public partial class CoinApiMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -131,6 +138,7 @@ public partial class CoinApiMessageAdapter
 			var quotes = await SafeRest().GetQuotesAsync(symbol.SymbolId, from,
 				to, GetHistoryLimit(remaining), cancellationToken) ?? [];
 			var sent = 0;
+
 			foreach (var quote in quotes)
 			{
 				if (!quote.SymbolId.IsEmpty() &&
@@ -141,6 +149,7 @@ public partial class CoinApiMessageAdapter
 					cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -148,6 +157,7 @@ public partial class CoinApiMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(CoinApiSocketDataTypes.Quote, symbol.SymbolId,
 				CoinApiPeriodIds.Unknown), 0, remaining, cancellationToken);
@@ -159,6 +169,7 @@ public partial class CoinApiMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -185,6 +196,7 @@ public partial class CoinApiMessageAdapter
 				from, to, GetHistoryLimit(remaining), depth,
 				cancellationToken) ?? [];
 			var sent = 0;
+
 			foreach (var book in books)
 			{
 				if (!book.SymbolId.IsEmpty() &&
@@ -197,6 +209,7 @@ public partial class CoinApiMessageAdapter
 					null, cancellationToken);
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -204,6 +217,7 @@ public partial class CoinApiMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		var dataType = CoinApiExtensions.ToBookDataType(depth);
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(dataType, symbol.SymbolId, CoinApiPeriodIds.Unknown), depth,
@@ -216,6 +230,7 @@ public partial class CoinApiMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -246,6 +261,7 @@ public partial class CoinApiMessageAdapter
 				periodId, from, to, GetHistoryLimit(remaining),
 				cancellationToken) ?? [];
 			var sent = 0;
+
 			foreach (var candle in candles)
 			{
 				await SendCandleAsync(candle, securityId, message.TransactionId,
@@ -256,6 +272,7 @@ public partial class CoinApiMessageAdapter
 					lastCandleOpenTime = openTime;
 				sent++;
 			}
+
 			remaining = SubtractCount(remaining, sent);
 		}
 		if (message.IsHistoryOnly() || remaining == 0)
@@ -263,6 +280,7 @@ public partial class CoinApiMessageAdapter
 			await FinishSubscriptionAsync(message, cancellationToken);
 			return;
 		}
+
 		await AddLiveSubscriptionAsync(message, securityId,
 			new(CoinApiSocketDataTypes.Ohlcv, symbol.SymbolId, periodId), 0,
 			remaining, lastCandleOpenTime, cancellationToken);
@@ -476,6 +494,7 @@ public partial class CoinApiMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _liveSubscriptions.Values.Where(item =>
 				item.Key == key)];
+
 		foreach (var subscription in subscriptions)
 		{
 			DateTime? candleOpenTime = null;
@@ -682,6 +701,7 @@ public partial class CoinApiMessageAdapter
 		bool isBid, int depth)
 	{
 		var result = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level?.Price is not > 0 || level.Size is null or < 0)
@@ -690,6 +710,7 @@ public partial class CoinApiMessageAdapter
 			if (level.Size > 0)
 				result.Add(new(level.Price.Value, level.Size.Value));
 		}
+
 		return [.. (isBid
 			? result.OrderByDescending(static quote => quote.Price)
 			: result.OrderBy(static quote => quote.Price)).Take(depth)];

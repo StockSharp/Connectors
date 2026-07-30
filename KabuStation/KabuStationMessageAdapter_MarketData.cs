@@ -6,6 +6,7 @@ public partial class KabuStationMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var code = lookupMsg.SecurityId.SecurityCode;
 		if (code.IsEmpty())
 		{
@@ -89,6 +90,7 @@ public partial class KabuStationMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var previous))
@@ -161,6 +163,7 @@ public partial class KabuStationMessageAdapter
 			.Where(subscription => subscription.Security.Symbol.Equals(board.Symbol, StringComparison.OrdinalIgnoreCase) &&
 				subscription.Security.Exchange == board.Exchange)
 			.ToArray();
+
 		foreach (var subscription in subscriptions)
 			await SendBoard(subscription, board, cancellationToken);
 	}

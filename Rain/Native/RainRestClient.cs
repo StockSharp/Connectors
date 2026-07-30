@@ -171,6 +171,7 @@ sealed class RainRestClient : BaseLogReceiver
 	{
 		var requestPath = query.IsEmpty() ? path : $"{path}?{query}";
 		var isRead = method == HttpMethod.Get;
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await (isRead ? _readGate : _writeGate).WaitAsync(

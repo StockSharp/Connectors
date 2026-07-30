@@ -44,6 +44,7 @@ public partial class KyberSwapMessageAdapter
 					error);
 			}
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -61,6 +62,7 @@ public partial class KyberSwapMessageAdapter
 						error.Message);
 				}
 			}
+
 			KyberSwapMarket[] markets;
 			using (_sync.EnterScope())
 				markets = [.. _markets.Values];
@@ -222,6 +224,7 @@ public partial class KyberSwapMessageAdapter
 			? Chain.GetDefaultMarkets()
 			: Markets;
 		var result = new List<KyberSwapMarketDefinition>();
+
 		foreach (var item in configured.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -241,6 +244,7 @@ public partial class KyberSwapMessageAdapter
 					: null,
 			});
 		}
+
 		if (result.Count == 0)
 			throw new InvalidOperationException(
 				"At least one KyberSwap market must be configured.");

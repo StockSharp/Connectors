@@ -29,6 +29,7 @@ public partial class LigtherMessageAdapter
 		EnsureConnected();
 
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		await NativeAdapters.Values.Select(a => a.PortfolioLookupAsync(lookupMsg, cancellationToken)).WhenAll();
 
 		if (!lookupMsg.IsSubscribe)
@@ -43,6 +44,7 @@ public partial class LigtherMessageAdapter
 		EnsureConnected();
 
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		await NativeAdapters.Values.Select(a => a.OrderStatusAsync(statusMsg, cancellationToken)).WhenAll();
 
 		if (!statusMsg.IsSubscribe)

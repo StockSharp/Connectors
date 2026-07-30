@@ -176,6 +176,7 @@ public partial class LunoMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.MarketId.IsEmpty() != false ||
@@ -205,8 +206,10 @@ public partial class LunoMessageAdapter
 		if (scale is < 0 or > 28)
 			return 0m;
 		var value = 1m;
+
 		for (var i = 0; i < scale; i++)
 			value /= 10m;
+
 		return value;
 	}
 

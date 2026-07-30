@@ -10,6 +10,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -22,6 +23,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 		var skip = Math.Max(0L, message.Skip ?? 0);
 		var left = Math.Max(0L,
 			Math.Min(message.Count ?? MaximumFeeds, MaximumFeeds));
+
 		foreach (var feed in GetFeeds()
 			.Where(feed => Matches(feed, value))
 			.OrderBy(static feed => feed.FeedId, StringComparer.OrdinalIgnoreCase))
@@ -39,6 +41,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -47,6 +50,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await DisposeSubscriptionAsync(message.OriginalTransactionId);
@@ -74,6 +78,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 			selected = message.From is null
 				? selected.TakeLast(range.Limit)
 				: selected.Take(range.Limit);
+
 			foreach (var report in selected)
 			{
 				await SendOutMessageAsync(ToLevel1(report, message.TransactionId,
@@ -152,6 +157,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 		var timestamps = new HashSet<DateTime>();
 		var nextTimestamp = checked((long)range.From.ToUnix());
 		var endTimestamp = checked((long)range.To.ToUnix());
+
 		while (nextTimestamp <= endTimestamp && result.Count < range.Limit)
 		{
 			var pageLimit = Math.Min(ReportsPerPage, range.Limit - result.Count);
@@ -161,6 +167,7 @@ public partial class ChainlinkDataStreamsMessageAdapter
 				break;
 
 			var followingTimestamp = nextTimestamp;
+
 			foreach (var envelope in envelopes)
 			{
 				if (envelope is null)
@@ -180,11 +187,13 @@ public partial class ChainlinkDataStreamsMessageAdapter
 				if (result.Count >= range.Limit)
 					break;
 			}
+
 			if (followingTimestamp <= nextTimestamp)
 				throw new InvalidDataException(
 					"Chainlink history pagination did not advance.");
 			nextTimestamp = followingTimestamp;
 		}
+
 		result.Sort(static (left, right) =>
 			left.ObservationTime.CompareTo(right.ObservationTime));
 		return result;

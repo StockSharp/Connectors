@@ -7,6 +7,7 @@ public partial class BackpackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -54,6 +55,7 @@ public partial class BackpackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -83,6 +85,7 @@ public partial class BackpackMessageAdapter
 				Symbol = symbol,
 				IsPerpetual = IsPerpetual(market),
 			});
+
 			foreach (var stream in streams)
 				if (AddReference(_streamReferences, stream))
 					subscribe.Add(stream);
@@ -92,6 +95,7 @@ public partial class BackpackMessageAdapter
 		{
 			foreach (var stream in subscribe)
 				await ChangePublicStreamAsync(stream, true, cancellationToken);
+
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		catch
@@ -106,6 +110,7 @@ public partial class BackpackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -174,6 +179,7 @@ public partial class BackpackMessageAdapter
 
 				await SendDepthSnapshotAsync(symbol, snapshot, mdMsg.TransactionId, depth,
 					cancellationToken);
+
 				foreach (var update in pending)
 					await ProcessDepthUpdateAsync(mdMsg.TransactionId, subscription, update,
 						cancellationToken);
@@ -197,6 +203,7 @@ public partial class BackpackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -210,6 +217,7 @@ public partial class BackpackMessageAdapter
 		var from = mdMsg.From?.ToUniversalTime();
 		var count = (mdMsg.Count ?? 1000).Min(10000).Max(1).To<int>();
 		var trades = await LoadTradesAsync(symbol, from, to, count, cancellationToken);
+
 		foreach (var trade in trades)
 			await SendTradeAsync(symbol, trade, mdMsg.TransactionId, cancellationToken);
 
@@ -251,6 +259,7 @@ public partial class BackpackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -267,6 +276,7 @@ public partial class BackpackMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await LoadCandlesAsync(symbol, timeFrame, from, to, count,
 			cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(symbol, candle, timeFrame, mdMsg.TransactionId,
 				cancellationToken);
@@ -364,6 +374,7 @@ public partial class BackpackMessageAdapter
 		}
 
 		var result = new List<BackpackTrade>();
+
 		for (var offset = 0; result.Count < count; offset += 1000)
 		{
 			var page = await RestClient.GetHistoricalTradesAsync(new()
@@ -474,6 +485,7 @@ public partial class BackpackMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(ticker.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -498,6 +510,7 @@ public partial class BackpackMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(ticker.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -523,6 +536,7 @@ public partial class BackpackMessageAdapter
 			ids = [.. _level1Subscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(markPrice.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 		{
 			var message = new Level1ChangeMessage
@@ -546,6 +560,7 @@ public partial class BackpackMessageAdapter
 			ids = [.. _tickSubscriptions
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(trade.Symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -576,6 +591,7 @@ public partial class BackpackMessageAdapter
 				.Where(pair => pair.Value.Symbol.EqualsIgnoreCase(candle.Symbol) &&
 					pair.Value.TimeFrame == timeFrame)
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendOutMessageAsync(new TimeFrameCandleMessage
 			{
@@ -680,6 +696,7 @@ public partial class BackpackMessageAdapter
 			using (_sync.EnterScope())
 				subscriptions = [.. _depthSubscriptions
 					.Select(static pair => (pair.Key, pair.Value))];
+
 			foreach (var item in subscriptions)
 				await ResynchronizeDepthAsync(item.Id, item.Subscription, cancellationToken);
 		}

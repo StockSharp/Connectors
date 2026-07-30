@@ -101,6 +101,7 @@ sealed class LongbridgeRestClient : BaseLogReceiver
 		if (trading)
 			await ThrottleTrade(cancellationToken);
 		var rateRetried = false;
+
 		while (true)
 		{
 			var bodyBytes = body == null ? [] : Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(body));

@@ -182,6 +182,7 @@ sealed class LunoMarketSocketClient : BaseLogReceiver
 
 			var timestamp = envelope.Timestamp.ToLunoTime(DateTime.UtcNow);
 			var trades = new List<LunoStreamTrade>();
+
 			foreach (var trade in envelope.TradeUpdates ?? [])
 				trades.Add(ApplyTrade(trade, timestamp));
 

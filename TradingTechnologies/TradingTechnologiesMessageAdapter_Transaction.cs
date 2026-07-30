@@ -93,6 +93,7 @@ partial class TradingTechnologiesMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == message.OriginalTransactionId)
@@ -102,6 +103,7 @@ partial class TradingTechnologiesMessageAdapter
 
 		_portfolioSubscriptionId = message.TransactionId;
 		var accounts = await EnsureClient().GetAccountsAsync(cancellationToken);
+
 		foreach (var account in accounts)
 		{
 			if (!message.PortfolioName.IsEmpty() && !account.Name.EqualsIgnoreCase(message.PortfolioName))
@@ -123,6 +125,7 @@ partial class TradingTechnologiesMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == message.OriginalTransactionId)
@@ -131,6 +134,7 @@ partial class TradingTechnologiesMessageAdapter
 		}
 
 		_orderStatusSubscriptionId = message.TransactionId;
+
 		foreach (var order in await EnsureClient().GetOrdersAsync(cancellationToken))
 		{
 			if (!message.PortfolioName.IsEmpty() && !order.Account.EqualsIgnoreCase(message.PortfolioName))

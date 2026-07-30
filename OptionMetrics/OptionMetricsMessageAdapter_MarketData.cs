@@ -7,6 +7,7 @@ public partial class OptionMetricsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -112,6 +113,7 @@ public partial class OptionMetricsMessageAdapter
 					criteria = (SecurityLookupMessage)lookupMsg.Clone();
 					criteria.SecurityId = default;
 				}
+
 				await foreach (var row in catalog.ReadOptionPrices(file, cancellationToken))
 				{
 					if (exactOption && (row.SecurityId != exactKey.SecurityId ||
@@ -150,6 +152,7 @@ public partial class OptionMetricsMessageAdapter
 					criteria.Name = null;
 				}
 			}
+
 			foreach (var row in securities)
 			{
 				await Emit(row.ToSecurityMessage(master, lookupMsg.TransactionId), criteria);
@@ -166,6 +169,7 @@ public partial class OptionMetricsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -199,6 +203,7 @@ public partial class OptionMetricsMessageAdapter
 					if (--left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -209,6 +214,7 @@ public partial class OptionMetricsMessageAdapter
 			var latest = PriceAdjustment == IvyDbPriceAdjustments.Raw
 				? new IvyDbAdjustmentFactors(1m, 1m)
 				: await SafeCatalog().FindLatestFactorsAsync(key.SecurityId, cancellationToken);
+
 			foreach (var file in GetRequestFiles(IvyDbFileKinds.SecurityPrice, mdMsg, null, 1))
 			{
 				await foreach (var row in SafeCatalog().ReadSecurityPrices(file, cancellationToken))
@@ -226,6 +232,7 @@ public partial class OptionMetricsMessageAdapter
 					if (--left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -239,6 +246,7 @@ public partial class OptionMetricsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -272,6 +280,7 @@ public partial class OptionMetricsMessageAdapter
 					if (--left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -282,6 +291,7 @@ public partial class OptionMetricsMessageAdapter
 			var latest = PriceAdjustment == IvyDbPriceAdjustments.Raw
 				? new IvyDbAdjustmentFactors(1m, 1m)
 				: await SafeCatalog().FindLatestFactorsAsync(key.SecurityId, cancellationToken);
+
 			foreach (var file in GetRequestFiles(IvyDbFileKinds.SecurityPrice, mdMsg, null, 1))
 			{
 				await foreach (var row in SafeCatalog().ReadSecurityPrices(file, cancellationToken))
@@ -307,6 +317,7 @@ public partial class OptionMetricsMessageAdapter
 					if (--left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -320,6 +331,7 @@ public partial class OptionMetricsMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -372,6 +384,7 @@ public partial class OptionMetricsMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}

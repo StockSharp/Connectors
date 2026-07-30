@@ -36,6 +36,7 @@ public partial class VelodromeMessageAdapter
 					error);
 			}
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -52,6 +53,7 @@ public partial class VelodromeMessageAdapter
 						definition.PoolId, error.Message);
 				}
 			}
+
 			VelodromeMarket[] markets;
 			using (_sync.EnterScope())
 				markets = [.. _markets.Values];
@@ -257,6 +259,7 @@ public partial class VelodromeMessageAdapter
 			throw new InvalidOperationException(
 				"At least one Velodrome pool address must be configured.");
 		var result = new List<VelodromeMarketDefinition>();
+
 		foreach (var item in Pools.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -285,6 +288,7 @@ public partial class VelodromeMessageAdapter
 					: null,
 			});
 		}
+
 		return [.. result];
 	}
 

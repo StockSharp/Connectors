@@ -53,6 +53,7 @@ partial class RobinhoodMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == message.OriginalTransactionId)
@@ -66,6 +67,7 @@ partial class RobinhoodMessageAdapter
 		foreach (var account in _accounts)
 		{
 			await ProcessPortfolio(account, message.TransactionId, cancellationToken);
+
 			foreach (var position in await _client.GetPositions(account.AccountNumber, cancellationToken) ?? [])
 				await ProcessPosition(account.AccountNumber, position, message.TransactionId, cancellationToken);
 		}
@@ -79,6 +81,7 @@ partial class RobinhoodMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_orderSubscriptionId == message.OriginalTransactionId)
@@ -89,6 +92,7 @@ partial class RobinhoodMessageAdapter
 		var accounts = message.PortfolioName.IsEmpty()
 			? _accounts
 			: [ResolveAccount(message.PortfolioName)];
+
 		foreach (var account in accounts)
 		{
 			foreach (var order in await _client.GetOrders(account.AccountNumber, cancellationToken) ?? [])

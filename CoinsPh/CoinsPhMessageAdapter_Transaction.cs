@@ -123,11 +123,13 @@ public partial class CoinsPhMessageAdapter
 				{
 					Symbol = group.Key,
 				}, cancellationToken);
+
 				foreach (var order in canceled ?? [])
 					await SendOrderAsync(order, cancelMsg.TransactionId,
 						GetTrackedOrder(order.OrderId.ToString(
 							CultureInfo.InvariantCulture)), cancellationToken);
 			}
+
 			return;
 		}
 
@@ -148,6 +150,7 @@ public partial class CoinsPhMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -170,12 +173,14 @@ public partial class CoinsPhMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -185,6 +190,7 @@ public partial class CoinsPhMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -232,6 +238,7 @@ public partial class CoinsPhMessageAdapter
 			{
 				Symbol = symbol,
 			}, cancellationToken);
+
 			foreach (var order in (openOrders ?? []).Where(order => order is not null &&
 				(statusMsg.Side is null ||
 					order.Side.ToStockSharp() == statusMsg.Side)).TakeLast(maximum))
@@ -251,6 +258,7 @@ public partial class CoinsPhMessageAdapter
 					EndTime = statusMsg.To?.ToUniversalTime().ToMilliseconds(),
 					Limit = maximum,
 				}, cancellationToken);
+
 				foreach (var order in (history ?? []).Where(order => order is not null &&
 					!sentOrders.Contains(order.OrderId) &&
 					(statusMsg.Side is null ||
@@ -266,6 +274,7 @@ public partial class CoinsPhMessageAdapter
 					EndTime = statusMsg.To?.ToUniversalTime().ToMilliseconds(),
 					Limit = maximum,
 				}, cancellationToken);
+
 				foreach (var trade in trades ?? [])
 					if (statusMsg.Side is null ||
 						trade.IsBuyer == (statusMsg.Side == Sides.Buy))
@@ -275,12 +284,14 @@ public partial class CoinsPhMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -480,6 +491,7 @@ public partial class CoinsPhMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var account = await RestClient.GetAccountAsync(cancellationToken);
+
 		foreach (var balance in account?.Balances ?? [])
 			await SendBalanceAsync(balance.Asset, balance.Available, balance.Locked,
 				originalTransactionId,
@@ -653,6 +665,7 @@ public partial class CoinsPhMessageAdapter
 		var serverTime = (message.AccountUpdateTime > 0
 			? message.AccountUpdateTime
 			: message.EventTime).FromMilliseconds(CurrentTime);
+
 		foreach (var subscriptionId in subscriptions)
 			foreach (var balance in message.Balances ?? [])
 				await SendBalanceAsync(balance.Asset, balance.Available,
@@ -693,6 +706,7 @@ public partial class CoinsPhMessageAdapter
 		var serverTime = (update.TransactionTime > 0
 			? update.TransactionTime
 			: update.EventTime).FromMilliseconds(CurrentTime);
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -728,6 +742,7 @@ public partial class CoinsPhMessageAdapter
 			update.LastExecutedQuantity <= 0 || !AddAccountTrade(
 				update.TradeId.ToString(CultureInfo.InvariantCulture)))
 			return;
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{

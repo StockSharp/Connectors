@@ -217,9 +217,11 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 			requests = [.. _requests.Values];
 			_requests.Clear();
 		}
+
 		foreach (var request in requests)
 			request.TrySetException(new IOException(
 				"MetaApi streaming connection was restarted."));
+
 		this.AddInfoLog(isReconnect
 			? "MetaApi stream transport restored; terminal state will be resynchronized."
 			: "MetaApi stream transport connected; waiting for Engine.IO handshake.");
@@ -432,6 +434,7 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 				Subscriptions = pair.Value,
 			}, cancellationToken);
 		}
+
 		if (subscriptions.Length > 0)
 		{
 			using (_sync.EnterScope())

@@ -20,6 +20,7 @@ public partial class NubraMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -141,6 +142,7 @@ public partial class NubraMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (!mdMsg.IsHistoryOnly())
@@ -201,6 +203,7 @@ public partial class NubraMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveRealtimeSubscription(

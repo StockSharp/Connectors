@@ -50,6 +50,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 		var result = new List<DeepBookMarket>(data.Length);
 		var pools = new HashSet<string>(StringComparer.Ordinal);
 		var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var item in data)
 		{
 			if (item is null)
@@ -99,6 +100,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 					item.QuoteAssetDecimals),
 			});
 		}
+
 		if (result.Count == 0)
 			throw new InvalidDataException(
 				"DeepBook indexer returned no pools.");
@@ -155,6 +157,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 		var data = await GetAsync<DeepBookTradeData[]>(request,
 			cancellationToken) ?? [];
 		var result = new List<DeepBookTrade>(data.Length);
+
 		foreach (var item in data)
 		{
 			if (item is null || item.Timestamp <= 0 ||
@@ -181,6 +184,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 					item.TakerIsBid ? Sides.Buy : Sides.Sell,
 			});
 		}
+
 		return [.. result.OrderBy(static item => item.Time)
 			.ThenBy(static item => item.Id, StringComparer.Ordinal)];
 	}
@@ -206,6 +210,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 		var data = await GetAsync<DeepBookCandleData>(request,
 			cancellationToken);
 		var result = new List<DeepBookCandle>();
+
 		foreach (var token in data?.Candles ?? [])
 		{
 			if (token is not JArray { Count: >= 6 } row)
@@ -232,6 +237,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 				Volume = volume,
 			});
 		}
+
 		return [.. result.OrderBy(static item => item.OpenTime)];
 	}
 
@@ -245,6 +251,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 		var levels = side == Sides.Sell ? book.Bids : book.Asks;
 		var remaining = volume;
 		var quoteAmount = 0m;
+
 		foreach (var level in levels)
 		{
 			var filled = remaining.Min(level.Volume);
@@ -253,6 +260,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 			if (remaining <= 0)
 				break;
 		}
+
 		if (remaining > 0)
 			throw new InvalidOperationException(
 				$"DeepBook order book has insufficient liquidity for {volume} " +
@@ -284,6 +292,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRateLimitAsync(cancellationToken);
@@ -335,6 +344,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 		bool descending)
 	{
 		var result = new List<DeepBookBookLevel>();
+
 		foreach (var item in source ?? [])
 		{
 			if (item is not { Length: >= 2 } ||
@@ -347,6 +357,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 					"DeepBook indexer returned a malformed order-book level.");
 			result.Add(new() { Price = price, Volume = volume });
 		}
+
 		return descending
 			? [.. result.OrderByDescending(static item => item.Price)]
 			: [.. result.OrderBy(static item => item.Price)];
@@ -408,6 +419,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 			cancellationToken);
 		using var target = new MemoryStream();
 		var buffer = new byte[81920];
+
 		while (true)
 		{
 			var read = await source.ReadAsync(buffer, cancellationToken);
@@ -418,6 +430,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 					"DeepBook indexer response exceeds the safety limit.");
 			target.Write(buffer, 0, read);
 		}
+
 		return Encoding.UTF8.GetString(target.GetBuffer(), 0,
 			checked((int)target.Length));
 	}

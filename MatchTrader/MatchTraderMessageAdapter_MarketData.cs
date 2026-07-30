@@ -7,8 +7,10 @@ public partial class MatchTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var types = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in _instruments.CachedValues.DistinctBy(i => i.Symbol).OrderBy(i => i.Symbol))
 		{
 			var security = new SecurityMessage
@@ -32,6 +34,7 @@ public partial class MatchTraderMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -40,6 +43,7 @@ public partial class MatchTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsSubscribe)
 		{
 			var instrument = ResolveInstrument(mdMsg.SecurityId);
@@ -59,6 +63,7 @@ public partial class MatchTraderMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			_candleSubscriptions.Remove(mdMsg.OriginalTransactionId);
@@ -100,6 +105,7 @@ public partial class MatchTraderMessageAdapter
 			return;
 
 		var quotes = await _client.GetQuotes(subscriptions.Select(p => p.Value), cancellationToken);
+
 		foreach (var quote in quotes ?? [])
 		{
 			foreach (var pair in subscriptions.Where(p => p.Value.EqualsIgnoreCase(quote.Symbol) ||
@@ -128,6 +134,7 @@ public partial class MatchTraderMessageAdapter
 	private async Task RefreshCandles(CancellationToken cancellationToken)
 	{
 		var now = DateTimeOffset.UtcNow;
+
 		foreach (var pair in _candleSubscriptions.ToArray())
 		{
 			var from = pair.Value.LastTime;
@@ -144,6 +151,7 @@ public partial class MatchTraderMessageAdapter
 	{
 		var response = await _client.GetCandles(symbol, interval, from, to, cancellationToken);
 		DateTimeOffset? last = null;
+
 		foreach (var candle in (response?.Candles ?? []).OrderBy(c => c.Time).Take((int)Math.Min(limit, int.MaxValue)))
 		{
 			var openTime = DateTimeOffset.FromUnixTimeMilliseconds(candle.Time);
@@ -163,6 +171,7 @@ public partial class MatchTraderMessageAdapter
 				OriginalTransactionId = subscriptionId,
 			}, cancellationToken);
 		}
+
 		return last;
 	}
 

@@ -150,6 +150,7 @@ public partial class BitsoMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var book in books ?? [])
 			{
 				if (book?.Name.IsEmpty() != false)

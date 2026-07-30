@@ -198,6 +198,7 @@ public partial class BYDFiMessageAdapter
 		{
 			using (_sync.EnterScope())
 				symbols.AddRange(_transactionSymbols);
+
 			foreach (var order in await RestClient.GetHistoryOrdersAsync(
 				Wallet, null, DateTime.UtcNow - TimeSpan.FromDays(7),
 				DateTime.UtcNow, 1000, cancellationToken) ?? [])
@@ -206,6 +207,7 @@ public partial class BYDFiMessageAdapter
 						OrderStates.Active)
 					symbols.Add(order.Symbol.NormalizeSymbol());
 		}
+
 		foreach (var item in symbols)
 		{
 			if (cancelMsg.Side is null && cancelMsg.IsStop is null)
@@ -215,6 +217,7 @@ public partial class BYDFiMessageAdapter
 					cancellationToken) ?? [])
 					await SendOrderAsync(order, cancelMsg.TransactionId,
 						true, cancellationToken);
+
 				continue;
 			}
 
@@ -246,6 +249,7 @@ public partial class BYDFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -276,6 +280,7 @@ public partial class BYDFiMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -287,6 +292,7 @@ public partial class BYDFiMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -328,6 +334,7 @@ public partial class BYDFiMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -352,13 +359,16 @@ public partial class BYDFiMessageAdapter
 				cancellationToken) ?? [];
 			var positions = await RestClient.GetPositionsAsync(Wallet, null,
 				cancellationToken) ?? [];
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					positions, cancellationToken);
 		}
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
+
 		foreach (var group in tracked.GroupBy(static order => order.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -373,12 +383,14 @@ public partial class BYDFiMessageAdapter
 				cancellationToken);
 			var trades = await LoadTradesAsync(subscription,
 				cancellationToken);
+
 			foreach (var item in group)
 			{
 				foreach (var order in orders.Where(order =>
 					MatchesTracked(item, order)))
 					await SendOrderAsync(order, item.TransactionId, false,
 						cancellationToken);
+
 				foreach (var trade in trades.Where(trade =>
 					MatchesTracked(item, trade)))
 					await SendAccountTradeAsync(trade, item.TransactionId,
@@ -401,6 +413,7 @@ public partial class BYDFiMessageAdapter
 		foreach (var balance in balances)
 			await SendBalanceAsync(balance, target, isForced,
 				cancellationToken);
+
 		foreach (var position in positions)
 			await SendPositionAsync(position, target, isForced,
 				cancellationToken);
@@ -414,6 +427,7 @@ public partial class BYDFiMessageAdapter
 			cancellationToken))
 			await SendOrderAsync(order, target, isForced,
 				cancellationToken);
+
 		foreach (var trade in await LoadTradesAsync(subscription,
 			cancellationToken))
 			await SendAccountTradeAsync(trade, target, cancellationToken);
@@ -474,6 +488,7 @@ public partial class BYDFiMessageAdapter
 		if (from > to)
 			return;
 		var cursor = from;
+
 		while (cursor <= to)
 		{
 			var end = (cursor + TimeSpan.FromDays(7) -
@@ -822,6 +837,7 @@ public partial class BYDFiMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

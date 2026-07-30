@@ -8,10 +8,12 @@ public partial class DydxChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static item => item.Ticker,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -40,6 +42,7 @@ public partial class DydxChainMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -49,6 +52,7 @@ public partial class DydxChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -75,6 +79,7 @@ public partial class DydxChainMessageAdapter
 		await SendLevel1SnapshotAsync(market, book,
 			trades.FirstOrDefault(), mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -116,6 +121,7 @@ public partial class DydxChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -141,6 +147,7 @@ public partial class DydxChainMessageAdapter
 		await SendBookSnapshotAsync(market.Ticker, snapshot,
 			mdMsg.TransactionId, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -181,6 +188,7 @@ public partial class DydxChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -211,10 +219,13 @@ public partial class DydxChainMessageAdapter
 			.OrderBy(static trade => trade.CreatedAt,
 				StringComparer.Ordinal)
 			.ToArray();
+
 		foreach (var trade in trades)
 			await SendPublicTradeAsync(market.Ticker, trade,
 				mdMsg.TransactionId, cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -251,6 +262,7 @@ public partial class DydxChainMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -273,12 +285,15 @@ public partial class DydxChainMessageAdapter
 		var limit = GetCandleCount(mdMsg, timeFrame, to);
 		var candles = await ApiClient.GetCandlesAsync(market.Ticker,
 			resolution, from, to, limit, cancellationToken);
+
 		foreach (var candle in candles.Where(static candle => candle is not null)
 			.OrderBy(static candle => candle.StartedAt,
 				StringComparer.Ordinal))
 			await SendCandleAsync(candle, mdMsg.TransactionId,
 				cancellationToken);
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
@@ -333,6 +348,7 @@ public partial class DydxChainMessageAdapter
 					_oraclePrices[market.Ticker] = oracle;
 				ids = GetLevel1IdsUnsafe(market.Ticker);
 			}
+
 			foreach (var id in ids)
 				await SendMarketLevel1Async(market.Ticker, id,
 					cancellationToken);
@@ -357,6 +373,7 @@ public partial class DydxChainMessageAdapter
 					market.OraclePrice = price.OraclePrice;
 				changed.Add(ticker);
 			}
+
 			foreach (var item in update?.Trading ?? [])
 			{
 				var ticker = (item?.Ticker.IsEmpty() == false
@@ -369,11 +386,13 @@ public partial class DydxChainMessageAdapter
 				changed.Add(ticker);
 			}
 		}
+
 		foreach (var ticker in changed)
 		{
 			long[] ids;
 			using (_sync.EnterScope())
 				ids = GetLevel1IdsUnsafe(ticker);
+
 			foreach (var id in ids)
 				await SendMarketLevel1Async(ticker, id, cancellationToken);
 		}
@@ -396,9 +415,11 @@ public partial class DydxChainMessageAdapter
 				.Select(static pair => (pair.Key, pair.Value.Depth))];
 			level1Ids = GetLevel1IdsUnsafe(ticker);
 		}
+
 		foreach (var subscription in depthIds)
 			await SendBookSnapshotAsync(ticker, snapshot, subscription.Id,
 				subscription.Depth, cancellationToken);
+
 		foreach (var id in level1Ids)
 			await SendBestQuotesAsync(ticker, id, cancellationToken);
 	}
@@ -424,9 +445,11 @@ public partial class DydxChainMessageAdapter
 				.Select(static pair => pair.Key)];
 			level1Ids = GetLevel1IdsUnsafe(ticker);
 		}
+
 		foreach (var id in depthIds)
 			await SendBookIncrementAsync(ticker, update, id,
 				cancellationToken);
+
 		foreach (var id in level1Ids)
 			await SendBestQuotesAsync(ticker, id, cancellationToken);
 	}
@@ -435,6 +458,7 @@ public partial class DydxChainMessageAdapter
 		DydxChainTrade[] trades, CancellationToken cancellationToken)
 	{
 		ticker = ticker.NormalizeTicker();
+
 		foreach (var trade in trades ?? [])
 		{
 			if (trade is null)
@@ -449,9 +473,11 @@ public partial class DydxChainMessageAdapter
 					.Select(static pair => pair.Key)];
 				level1Ids = GetLevel1IdsUnsafe(ticker);
 			}
+
 			foreach (var id in tickIds)
 				await SendPublicTradeAsync(ticker, trade, id,
 					cancellationToken);
+
 			foreach (var id in level1Ids)
 				await SendLastTradeAsync(ticker, trade, id,
 					cancellationToken);
@@ -465,6 +491,7 @@ public partial class DydxChainMessageAdapter
 		if (separator <= 0)
 			return;
 		var ticker = streamId[..separator].NormalizeTicker();
+
 		foreach (var candle in candles ?? [])
 		{
 			if (candle is null)
@@ -476,6 +503,7 @@ public partial class DydxChainMessageAdapter
 						StringComparison.OrdinalIgnoreCase) &&
 						pair.Value.Resolution == candle.Resolution)
 					.Select(static pair => pair.Key)];
+
 			foreach (var id in ids)
 				await SendCandleAsync(candle, id, cancellationToken);
 		}
@@ -663,6 +691,7 @@ public partial class DydxChainMessageAdapter
 		IEnumerable<DydxChainSocketSubscriptionKey> keys)
 	{
 		var added = new List<DydxChainSocketSubscriptionKey>();
+
 		foreach (var key in keys)
 		{
 			if (_streamReferences.TryGetValue(key, out var count))
@@ -673,6 +702,7 @@ public partial class DydxChainMessageAdapter
 				added.Add(key);
 			}
 		}
+
 		return [.. added];
 	}
 
@@ -680,6 +710,7 @@ public partial class DydxChainMessageAdapter
 		IEnumerable<DydxChainSocketSubscriptionKey> keys)
 	{
 		var removed = new List<DydxChainSocketSubscriptionKey>();
+
 		foreach (var key in keys)
 		{
 			if (!_streamReferences.TryGetValue(key, out var count))
@@ -692,6 +723,7 @@ public partial class DydxChainMessageAdapter
 				removed.Add(key);
 			}
 		}
+
 		return [.. removed];
 	}
 
@@ -811,6 +843,7 @@ public partial class DydxChainMessageAdapter
 		int depth, bool isBids, bool isIncrement)
 	{
 		var quotes = new List<QuoteChange>();
+
 		foreach (var level in levels ?? [])
 		{
 			if (level is null)
@@ -821,6 +854,7 @@ public partial class DydxChainMessageAdapter
 				continue;
 			quotes.Add(new(price, size));
 		}
+
 		var ordered = isBids
 			? quotes.OrderByDescending(static quote => quote.Price)
 			: quotes.OrderBy(static quote => quote.Price);

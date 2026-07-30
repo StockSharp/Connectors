@@ -8,6 +8,7 @@ public partial class BitGoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.SecurityId.BoardCode.IsEmpty() &&
 			!lookupMsg.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.BitGo))
@@ -23,12 +24,15 @@ public partial class BitGoMessageAdapter
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 			return;
 		}
+
 		foreach (var product in await RestClient.GetProductsAsync(AccountId,
 			cancellationToken))
 			AddProduct(product);
+
 		var requestedCode = lookupMsg.SecurityId.SecurityCode;
 		var skip = Math.Max(0L, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0L, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var product in GetProducts())
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -51,6 +55,7 @@ public partial class BitGoMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -71,6 +76,7 @@ public partial class BitGoMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -179,6 +185,7 @@ public partial class BitGoMessageAdapter
 				pair.Value.Product.GetKey().Equals(product.GetKey(),
 					StringComparison.OrdinalIgnoreCase))];
 		}
+
 		foreach (var (transactionId, subscription) in subscriptions)
 		{
 			if (subscription.DataType == DataType.Level1)
@@ -241,8 +248,10 @@ public partial class BitGoMessageAdapter
 			? product.QuoteDisplayPrecision
 			: 8;
 		var priceStep = 1m;
+
 		for (var i = 0; i < precision; i++)
 			priceStep /= 10m;
+
 		var volumeStep = product.BaseIncrement.ToBitGoDecimal();
 		return new()
 		{

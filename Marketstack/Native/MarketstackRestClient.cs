@@ -92,6 +92,7 @@ sealed class MarketstackRestClient : BaseLogReceiver
 	private async Task<T> Get<T>(string path, CancellationToken cancellationToken)
 	{
 		var uri = new Uri(_address, path);
+
 		for (var attempt = 1; ; attempt++)
 		{
 			using var request = new HttpRequestMessage(HttpMethod.Get, uri);

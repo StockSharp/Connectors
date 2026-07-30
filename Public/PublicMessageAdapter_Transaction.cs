@@ -118,6 +118,7 @@ partial class PublicMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == message.OriginalTransactionId)
@@ -137,6 +138,7 @@ partial class PublicMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			if (_orderSubscriptionId == message.OriginalTransactionId)
@@ -145,9 +147,11 @@ partial class PublicMessageAdapter
 		}
 
 		var accounts = message.PortfolioName.IsEmpty() ? _accounts : [ResolveAccount(message.PortfolioName)];
+
 		foreach (var account in accounts)
 		{
 			var portfolio = await _client.GetPortfolio(account.AccountId, cancellationToken);
+
 			foreach (var order in portfolio?.Orders ?? [])
 				await ProcessOrder(account.AccountId, order, message.TransactionId, cancellationToken);
 		}

@@ -135,12 +135,14 @@ public partial class ExtendedMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets)
 			{
 				var symbol = market.Name.Trim();
 				_markets.Add(symbol, market);
 				_prices[symbol] = CreatePriceState(market.Statistics);
 			}
+
 			foreach (var stale in _prices.Keys.Except(_markets.Keys,
 				StringComparer.Ordinal).ToArray())
 				_prices.Remove(stale);
@@ -175,6 +177,7 @@ public partial class ExtendedMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_takerFees.Clear();
+
 			foreach (var fee in fees)
 				if (fee?.Market.IsEmpty() == false &&
 					fee.TakerFeeRate.TryParseExtendedDecimal() is decimal rate &&
@@ -254,6 +257,7 @@ public partial class ExtendedMessageAdapter
 		DepthSubscription[] depthSubscriptions;
 		using (_sync.EnterScope())
 			depthSubscriptions = [.. _depthSubscriptions.Values];
+
 		foreach (var subscription in depthSubscriptions)
 		{
 			var snapshot = await RestClient.GetOrderBookAsync(subscription.Symbol,

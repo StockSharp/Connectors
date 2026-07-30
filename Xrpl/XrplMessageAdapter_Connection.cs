@@ -25,6 +25,7 @@ public partial class XrplMessageAdapter
 			await RpcClient.VerifyAsync(cancellationToken);
 			var ledger = await RpcClient.GetLedgerAsync(null,
 				cancellationToken);
+
 			foreach (var market in markets)
 			{
 				_ = await RpcClient.GetBookAsync(market, 1,
@@ -32,6 +33,7 @@ public partial class XrplMessageAdapter
 				using (_sync.EnterScope())
 					_markets.Add(market.SecurityCode, market);
 			}
+
 			using (_sync.EnterScope())
 			{
 				_latestLedger = ledger.Index;
@@ -103,10 +105,13 @@ public partial class XrplMessageAdapter
 						CurrentTime >= end)
 					.Select(static pair => pair.Key)
 			];
+
 			foreach (var target in expiredTicks)
 				RemoveTickSubscriptionNoLock(target);
+
 			foreach (var target in expiredCandles)
 				RemoveCandleSubscriptionNoLock(target);
+
 			if (_rpcClient is not null &&
 				(_bookSubscriptions.Count > 0 ||
 					_level1Subscriptions.Count > 0) &&
@@ -140,9 +145,11 @@ public partial class XrplMessageAdapter
 			await RunSafelyAsync(PollMarketAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
+
 		foreach (var target in expiredTicks.Concat(expiredCandles))
 			await SendSubscriptionFinishedAsync(target,
 				cancellationToken);
+
 		_ = timeMsg;
 	}
 

@@ -9,6 +9,7 @@ public partial class CoinalyzeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var instruments = await RestClient.GetMarketsAsync(
 			MarketType, cancellationToken);
@@ -21,6 +22,7 @@ public partial class CoinalyzeMessageAdapter
 		var left = Math.Min(
 			lookupMsg.Count ?? MaximumItems,
 			MaximumItems);
+
 		foreach (var instrument in instruments
 			.Where(instrument =>
 				Exchange.IsEmpty() ||
@@ -45,6 +47,7 @@ public partial class CoinalyzeMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -56,6 +59,7 @@ public partial class CoinalyzeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -77,6 +81,7 @@ public partial class CoinalyzeMessageAdapter
 		var from = (mdMsg.From ??
 			to - timeFrame * maximum)
 			.ToUniversalTime();
+
 		foreach (var candle in
 			(await RestClient.GetHistoryAsync(
 				instrument,
@@ -115,6 +120,7 @@ public partial class CoinalyzeMessageAdapter
 						mdMsg.TransactionId,
 				},
 				cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(
 			mdMsg, cancellationToken);
 	}

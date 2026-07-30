@@ -279,6 +279,7 @@ sealed class IIFLMqttClient : IAsyncDisposable
 	{
 		var multiplier = 1;
 		var result = 0;
+
 		for (var index = 0; index < 4; index++)
 		{
 			var value = await ReadByteAsync(cancellationToken);
@@ -287,6 +288,7 @@ sealed class IIFLMqttClient : IAsyncDisposable
 				return result;
 			multiplier *= 128;
 		}
+
 		throw new InvalidDataException(
 			"IIFL MQTT remaining length is invalid.");
 	}
@@ -306,6 +308,7 @@ sealed class IIFLMqttClient : IAsyncDisposable
 	{
 		var result = new byte[length];
 		var offset = 0;
+
 		while (offset < length)
 		{
 			var read = await _stream.ReadAsync(
@@ -315,6 +318,7 @@ sealed class IIFLMqttClient : IAsyncDisposable
 				throw new EndOfStreamException();
 			offset += read;
 		}
+
 		return result;
 	}
 

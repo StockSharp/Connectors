@@ -10,6 +10,7 @@ partial class SchwabMessageAdapter
 		foreach (var pair in _level1Subscriptions.ToArray().Where(p => p.Value.SecurityCode.EqualsIgnoreCase(symbol)))
 		{
 			var milliseconds = data.QuoteTime ?? data.TradeTime;
+
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
 				OriginalTransactionId = pair.Key,

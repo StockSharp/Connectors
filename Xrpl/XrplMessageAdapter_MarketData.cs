@@ -9,6 +9,7 @@ public partial class XrplMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -17,6 +18,7 @@ public partial class XrplMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(
 			static item => item.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -45,6 +47,7 @@ public partial class XrplMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -54,6 +57,7 @@ public partial class XrplMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -86,6 +90,7 @@ public partial class XrplMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -100,6 +105,7 @@ public partial class XrplMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -134,6 +140,7 @@ public partial class XrplMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_bookSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -149,6 +156,7 @@ public partial class XrplMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -177,6 +185,7 @@ public partial class XrplMessageAdapter
 		{
 			var bars = await LoadBarsAsync(market, subscription.From,
 				subscription.To, subscription.Maximum, cancellationToken);
+
 			foreach (var bar in bars)
 			{
 				if (!await SendTradeAsync(market, bar,
@@ -208,6 +217,7 @@ public partial class XrplMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -242,6 +252,7 @@ public partial class XrplMessageAdapter
 			var bars = await LoadBarsAsync(market, subscription.From,
 				subscription.To, int.MaxValue, cancellationToken);
 			var candles = XrplExtensions.AggregateBars(bars, timeFrame);
+
 			foreach (var candle in candles.Take(subscription.Maximum))
 			{
 				await SendCandleAsync(market, candle, timeFrame,
@@ -301,6 +312,7 @@ public partial class XrplMessageAdapter
 			cancellationToken);
 		var result = new List<XrplMarketBar>();
 		var index = latest.Index;
+
 		for (var scanned = 0;
 			scanned < HistoryLedgerLimit && index > 0;
 			scanned++, index--)
@@ -329,6 +341,7 @@ public partial class XrplMessageAdapter
 				break;
 			if (time > until)
 				continue;
+
 			foreach (var change in response["changes"]?
 				.OfType<JObject>() ?? [])
 			{
@@ -337,9 +350,11 @@ public partial class XrplMessageAdapter
 				if (bar is not null)
 					result.Add(bar);
 			}
+
 			if (result.Count >= maximum)
 				break;
 		}
+
 		return
 		[
 			.. result.OrderBy(static bar => bar.Time)
@@ -361,6 +376,7 @@ public partial class XrplMessageAdapter
 						static item => item.Market))
 					.Distinct()
 			];
+
 		foreach (var market in markets)
 		{
 			var depth = 1;
@@ -380,10 +396,12 @@ public partial class XrplMessageAdapter
 				level1 = [.. _level1Subscriptions.Where(item =>
 					ReferenceEquals(item.Value.Market, market))];
 			}
+
 			foreach (var target in books)
 				await SendDepthAsync(market, book,
 					target.Value.Depth, target.Key, false,
 					cancellationToken);
+
 			foreach (var target in level1)
 				await SendLevel1Async(market, book, target.Key,
 					false, cancellationToken);
@@ -399,6 +417,7 @@ public partial class XrplMessageAdapter
 		XrplMarket[] markets;
 		using (_sync.EnterScope())
 			markets = [.. _markets.Values];
+
 		foreach (var market in markets)
 		{
 			foreach (var change in changes.OfType<JObject>())
@@ -424,6 +443,7 @@ public partial class XrplMessageAdapter
 			candles = [.. _candleSubscriptions.Where(item =>
 				ReferenceEquals(item.Value.Market, market))];
 		}
+
 		foreach (var item in ticks)
 		{
 			var subscription = item.Value;
@@ -449,6 +469,7 @@ public partial class XrplMessageAdapter
 				await SendSubscriptionFinishedAsync(item.Key,
 					cancellationToken);
 		}
+
 		foreach (var item in candles)
 			await DispatchCandleBarAsync(item.Key, item.Value, bar,
 				cancellationToken);
@@ -644,8 +665,10 @@ public partial class XrplMessageAdapter
 			if (!_seenMarketData.Add(key))
 				return false;
 			_deliveryOrder.Enqueue(key);
+
 			while (_deliveryOrder.Count > _maximumDeliveryKeys)
 				_seenMarketData.Remove(_deliveryOrder.Dequeue());
+
 			return true;
 		}
 	}

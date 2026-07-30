@@ -8,6 +8,7 @@ public partial class BullishMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
+
 			foreach (var market in markets.Where(static market =>
 				market?.Symbol.IsEmpty() == false && market.MarketType.IsEmpty() == false))
 				_markets[market.Symbol] = market;
@@ -19,6 +20,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -69,6 +71,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -97,6 +100,7 @@ public partial class BullishMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -138,6 +142,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -153,6 +158,7 @@ public partial class BullishMessageAdapter
 		await SendBookAsync(book?.Bids, book?.Asks, symbol, section, mdMsg.TransactionId,
 			book?.Timestamp.ToUtcTime(book.DateTime) ?? CurrentTime, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -180,6 +186,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -195,6 +202,7 @@ public partial class BullishMessageAdapter
 			cancellationToken);
 		string lastTradeId = null;
 		var lastTime = mdMsg.From?.ToUniversalTime() ?? default;
+
 		foreach (var trade in trades.OrderBy(static trade => trade.CreatedAtTimestamp.ToUtcTime(
 			trade.CreatedAtDateTime)))
 		{
@@ -203,7 +211,9 @@ public partial class BullishMessageAdapter
 			lastTradeId = trade.TradeId;
 			lastTime = time;
 		}
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -232,6 +242,7 @@ public partial class BullishMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -250,6 +261,7 @@ public partial class BullishMessageAdapter
 		var candles = await LoadCandlesAsync(symbol, timeFrame, from, to, count,
 			cancellationToken);
 		BullishCandle last = null;
+
 		foreach (var candle in candles.OrderBy(static candle =>
 			candle.CreatedAtTimestamp.ToUtcTime(candle.CreatedAtDateTime)))
 		{
@@ -259,7 +271,9 @@ public partial class BullishMessageAdapter
 				cancellationToken);
 			last = candle;
 		}
+
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
@@ -301,6 +315,7 @@ public partial class BullishMessageAdapter
 		var result = new List<BullishTrade>();
 		var earliest = to - TimeSpan.FromDays(90);
 		var cursor = from.Value > earliest ? from.Value : earliest;
+
 		while (cursor <= to && result.Count < count)
 		{
 			var candidate = cursor + TimeSpan.FromDays(7);
@@ -311,6 +326,7 @@ public partial class BullishMessageAdapter
 				break;
 			cursor = windowTo.AddMilliseconds(1);
 		}
+
 		return [.. result
 			.Where(static trade => trade?.TradeId.IsEmpty() == false)
 			.GroupBy(static trade => trade.TradeId)
@@ -324,6 +340,7 @@ public partial class BullishMessageAdapter
 	{
 		var result = new List<BullishCandle>();
 		var cursor = from;
+
 		while (cursor <= to && result.Count < count)
 		{
 			var candidate = cursor + TimeSpan.FromTicks(timeFrame.Ticks * 24);
@@ -334,6 +351,7 @@ public partial class BullishMessageAdapter
 				break;
 			cursor = windowTo + timeFrame;
 		}
+
 		return [.. result
 			.Where(static candle => candle is not null)
 			.GroupBy(candle => candle.CreatedAtTimestamp.ToUtcTime(candle.CreatedAtDateTime))
@@ -436,6 +454,7 @@ public partial class BullishMessageAdapter
 				.Where(pair => pair.Value.IsTickStream && pair.Value.Section == section &&
 					pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => pair.Key)];
+
 		foreach (var id in ids)
 			await SendLevel1Async(tick, symbol, section, id, cancellationToken);
 	}
@@ -461,6 +480,7 @@ public partial class BullishMessageAdapter
 						pair.Value.Symbol.EqualsIgnoreCase(symbol))
 					.Select(static pair => pair.Key)];
 				var acceptedTicks = new List<long>();
+
 				foreach (var pair in _tickSubscriptions)
 				{
 					var state = pair.Value;
@@ -473,6 +493,7 @@ public partial class BullishMessageAdapter
 					state.LastTime = time;
 					acceptedTicks.Add(pair.Key);
 				}
+
 				tickIds = [.. acceptedTicks];
 				candleEmissions = UpdateCandles(symbol, section, time,
 					trade.Price.ToDecimal() ?? 0m, trade.Quantity.ToDecimal() ?? 0m);
@@ -492,6 +513,7 @@ public partial class BullishMessageAdapter
 
 			foreach (var id in tickIds)
 				await SendTradeAsync(trade, symbol, section, id, cancellationToken);
+
 			foreach (var emission in candleEmissions)
 				await SendCandleAsync(emission.OpenTime, emission.OpenPrice, emission.HighPrice,
 					emission.LowPrice, emission.ClosePrice, emission.TotalVolume, emission.Symbol,
@@ -504,6 +526,7 @@ public partial class BullishMessageAdapter
 		decimal price, decimal volume)
 	{
 		var emissions = new List<CandleEmission>();
+
 		foreach (var pair in _candleSubscriptions)
 		{
 			var state = pair.Value;
@@ -536,6 +559,7 @@ public partial class BullishMessageAdapter
 			}
 			emissions.Add(ToEmission(pair.Key, state, CandleStates.Active));
 		}
+
 		return [.. emissions];
 	}
 
@@ -598,15 +622,18 @@ public partial class BullishMessageAdapter
 					pair.Value.Symbol.EqualsIgnoreCase(symbol))
 				.Select(static pair => pair.Key)];
 		}
+
 		foreach (var subscription in subscriptions)
 		{
 			var snapshot = GetBookSnapshot(symbol, subscription.Depth);
 			await SendBookAsync(snapshot.Bids, snapshot.Asks, symbol, section,
 				subscription.Id, snapshot.ServerTime, subscription.Depth, cancellationToken);
 		}
+
 		if (level1Subscriptions.Length > 0)
 		{
 			var snapshot = GetBookSnapshot(symbol, 1);
+
 			foreach (var transactionId in level1Subscriptions)
 				await SendBookLevel1Async(snapshot.Bids, snapshot.Asks, symbol, section,
 					transactionId, snapshot.ServerTime, cancellationToken);

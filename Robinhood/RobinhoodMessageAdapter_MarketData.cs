@@ -6,6 +6,7 @@ partial class RobinhoodMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var query = message.SecurityId.SecurityCode;
 		if (query.IsEmpty())
 		{
@@ -15,6 +16,7 @@ partial class RobinhoodMessageAdapter
 
 		var types = message.GetSecurityTypes();
 		var left = message.Count ?? long.MaxValue;
+
 		foreach (var result in await _client.Search(query, cancellationToken) ?? [])
 		{
 			var security = new SecurityMessage
@@ -40,6 +42,7 @@ partial class RobinhoodMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.IsSubscribe)
 		{
 			_level1Subscriptions[message.TransactionId] = message.SecurityId;
@@ -56,6 +59,7 @@ partial class RobinhoodMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 

@@ -184,6 +184,7 @@ public partial class CapitalComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -236,6 +237,7 @@ public partial class CapitalComMessageAdapter
 		}
 
 		var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var activity in activities.OrderBy(a =>
 			a.DateUtc.ParseCapitalComTime() ?? a.Date.ParseCapitalComTime() ?? DateTimeOffset.MinValue))
 		{
@@ -328,6 +330,7 @@ public partial class CapitalComMessageAdapter
 	{
 		foreach (var position in (await _rest.GetPositions(cancellationToken)).Positions ?? [])
 			await ProcessPositionOrder(position, originalTransactionId, cancellationToken);
+
 		foreach (var order in (await _rest.GetWorkingOrders(cancellationToken)).WorkingOrders ?? [])
 			await ProcessWorkingOrder(order, originalTransactionId, cancellationToken);
 	}
@@ -401,6 +404,7 @@ public partial class CapitalComMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -536,6 +540,7 @@ public partial class CapitalComMessageAdapter
 				await Task.Delay(TimeSpan.FromMilliseconds(150 * (attempt + 1)), cancellationToken);
 			}
 		}
+
 		return null;
 	}
 

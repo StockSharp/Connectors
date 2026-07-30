@@ -108,6 +108,7 @@ internal sealed class MiraeSharekhanWebSocketClient : BaseLogReceiver
 	{
 		var failures = 0;
 		var wasConnected = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
@@ -237,6 +238,7 @@ internal sealed class MiraeSharekhanWebSocketClient : BaseLogReceiver
 				foreach (var item in JsonConvert.DeserializeObject<MiraeSharekhanStreamEnvelope[]>(payload,
 					_jsonSettings) ?? [])
 					await ProcessEnvelope(item, cancellationToken);
+
 				return;
 			}
 
@@ -299,6 +301,7 @@ internal sealed class MiraeSharekhanWebSocketClient : BaseLogReceiver
 		var buffer = new byte[16 * 1024];
 		using var stream = new MemoryStream();
 		WebSocketMessageType? type = null;
+
 		while (true)
 		{
 			var result = await socket.ReceiveAsync(buffer, cancellationToken);

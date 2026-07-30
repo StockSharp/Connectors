@@ -54,6 +54,7 @@ public partial class SwissquoteMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -79,6 +80,7 @@ public partial class SwissquoteMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -228,6 +230,7 @@ public partial class SwissquoteMessageAdapter
 		DateTime? to, long? count, bool isTransactionRefresh)
 	{
 		var left = count ?? long.MaxValue;
+
 		foreach (var order in await GetRest().GetOrders(cancellationToken))
 		{
 			if (!portfolioName.IsEmpty() &&
@@ -237,6 +240,7 @@ public partial class SwissquoteMessageAdapter
 			if (--left <= 0)
 				return;
 		}
+
 		if (!isTransactionRefresh)
 			return;
 
@@ -296,6 +300,7 @@ public partial class SwissquoteMessageAdapter
 				var date = GetSwissDate();
 				var account = await GetRest().GetPositions(portfolio, date,
 					GetSwissOffset(date), cancellationToken);
+
 				foreach (var position in account.PositionList ?? [])
 					await ProcessPosition(position, portfolio, originalTransactionId, cancellationToken);
 			}

@@ -91,10 +91,12 @@ public partial class CoinoneMessageAdapter
 					QuoteCurrency = groupMarket.QuoteCurrency,
 					TargetCurrency = groupMarket.TargetCurrency,
 				}, cancellationToken);
+
 				foreach (var order in group)
 					await SendOrderAsync(order, OrderStates.Done, 0m,
 						cancelMsg.TransactionId, cancellationToken);
 			}
+
 			return;
 		}
 
@@ -118,6 +120,7 @@ public partial class CoinoneMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -140,12 +143,14 @@ public partial class CoinoneMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -155,6 +160,7 @@ public partial class CoinoneMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -205,6 +211,7 @@ public partial class CoinoneMessageAdapter
 				TargetCurrency = market?.TargetCurrency,
 			}, cancellationToken);
 			var activeOrderIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 			foreach (var order in (activeResponse.ActiveOrders ?? [])
 				.Where(order => order is not null &&
 					(statusMsg.Side is null ||
@@ -219,6 +226,7 @@ public partial class CoinoneMessageAdapter
 
 			var trades = await DownloadCompletedTradesAsync(market, statusMsg,
 				maximum, cancellationToken);
+
 			foreach (var group in trades.Where(trade => trade is not null &&
 				!activeOrderIds.Contains(trade.OrderId) &&
 				(statusMsg.Side is null ||
@@ -227,6 +235,7 @@ public partial class CoinoneMessageAdapter
 					StringComparer.OrdinalIgnoreCase))
 				await SendCompletedOrderAsync(group, statusMsg.TransactionId,
 					cancellationToken);
+
 			foreach (var trade in trades)
 				if (statusMsg.Side is null ||
 					(trade.IsAsk ? Sides.Sell : Sides.Buy) == statusMsg.Side)
@@ -235,12 +244,14 @@ public partial class CoinoneMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -421,14 +432,17 @@ public partial class CoinoneMessageAdapter
 		};
 		var trades = new List<CoinoneCompletedTrade>();
 		var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		while (trades.Count < maximum)
 		{
 			var response = await RestClient.GetCompletedOrdersAsync(request,
 				market is null, cancellationToken);
 			var page = response.CompletedOrders ?? [];
+
 			foreach (var trade in page)
 				if (trade?.TradeId.IsEmpty() == false && seen.Add(trade.TradeId))
 					trades.Add(trade);
+
 			if (page.Length < request.Size || trades.Count >= maximum)
 				break;
 			var cursor = page.LastOrDefault()?.TradeId;
@@ -436,6 +450,7 @@ public partial class CoinoneMessageAdapter
 				break;
 			request.ToTradeId = cursor;
 		}
+
 		return [.. trades.Take(maximum)];
 	}
 
@@ -443,6 +458,7 @@ public partial class CoinoneMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var response = await RestClient.GetBalancesAsync(cancellationToken);
+
 		foreach (var balance in response.Balances ?? [])
 			await SendBalanceAsync(balance.Currency, balance.Available,
 				balance.Locked, balance.AveragePrice, originalTransactionId,
@@ -689,6 +705,7 @@ public partial class CoinoneMessageAdapter
 		var state = update.Status.ToStockSharp();
 		var serverTime = (update.ExecutedTimestamp ?? update.OrderTimestamp ??
 			update.Timestamp).FromCoinoneTimestamp(CurrentTime);
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -721,6 +738,7 @@ public partial class CoinoneMessageAdapter
 			update.ExecutedQuantity is not > 0 ||
 			!AddAccountTrade(update.TradeId))
 			return;
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -750,6 +768,7 @@ public partial class CoinoneMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
 		var serverTime = update.Timestamp.FromCoinoneTimestamp(CurrentTime);
+
 		foreach (var subscriptionId in subscriptions)
 			foreach (var asset in update.Assets ?? [])
 				await SendBalanceAsync(asset.Currency, asset.Available,

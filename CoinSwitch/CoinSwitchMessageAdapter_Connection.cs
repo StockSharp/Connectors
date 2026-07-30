@@ -164,6 +164,7 @@ public partial class CoinSwitchMessageAdapter
 		var rules = await RestClient.GetSpotTradeInfoAsync(
 			null, cancellationToken);
 		var result = new List<CoinSwitchMarket>(symbols.Length);
+
 		foreach (var symbol in symbols)
 		{
 			var parts = symbol?.Split('/');
@@ -183,6 +184,7 @@ public partial class CoinSwitchMessageAdapter
 				VolumeStep = rule?.VolumeStep,
 			});
 		}
+
 		return [.. result];
 	}
 

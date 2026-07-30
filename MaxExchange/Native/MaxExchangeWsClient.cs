@@ -252,6 +252,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 				subscriptions = [.. _desiredSubscriptions];
 				_serverSubscriptions.AddRange(subscriptions);
 			}
+
 			foreach (var subscription in subscriptions)
 			{
 				try
@@ -487,6 +488,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 				subscriptions = [.. _desiredSubscriptions.Where(
 					item => item.Channel == "book" &&
 						item.Market.EqualsIgnoreCase(update.Market))];
+
 			foreach (var subscription in subscriptions)
 			{
 				await SendSubscriptionAsync(
@@ -494,6 +496,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 				await SendSubscriptionAsync(
 					subscription, true, cancellationToken);
 			}
+
 			return;
 		}
 		if (snapshot is not null &&

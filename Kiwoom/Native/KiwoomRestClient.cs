@@ -47,24 +47,29 @@ sealed class KiwoomRestClient : BaseLogReceiver
 	public async Task<KiwoomSecurityDefinition[]> GetSecurities(CancellationToken cancellationToken)
 	{
 		var result = new List<KiwoomSecurityDefinition>();
+
 		foreach (var marketType in new[] { "0", "10", "50", "6", "8", "60", "3" })
 		{
 			var continuation = default(string);
 			var nextKey = default(string);
+
 			for (var pageIndex = 0; pageIndex < 100; pageIndex++)
 			{
 				var page = await Send<KiwoomDomesticStockListRequest, KiwoomDomesticStockListResponse>(
 					KiwoomRoutes.DomesticStockInfo, KiwoomRoutes.DomesticStockList,
 					new() { MarketType = marketType }, continuation, nextKey, cancellationToken);
+
 				foreach (var item in page.Body.Securities ?? [])
 				{
 					if (item.Code.IsEmpty())
 						continue;
 					var name = item.Name.IsEmpty(item.Code);
 					var type = InferDomesticType(marketType, item);
+
 					foreach (var market in GetDomesticMarkets(item))
 						result.Add(new(KiwoomSecurityInfo.Create(item.Code, market), name, name, type));
 				}
+
 				if (!IsContinuation(page))
 					break;
 				continuation = page.Continuation;
@@ -74,10 +79,12 @@ sealed class KiwoomRestClient : BaseLogReceiver
 
 		var usContinuation = default(string);
 		var usNextKey = default(string);
+
 		for (var pageIndex = 0; pageIndex < 100; pageIndex++)
 		{
 			var page = await Send<KiwoomUsStockListRequest, KiwoomUsStockListResponse>(
 				KiwoomRoutes.UsStockInfo, KiwoomRoutes.UsStockList, new(), usContinuation, usNextKey, cancellationToken);
+
 			foreach (var item in page.Body.Securities ?? [])
 			{
 				if (item.Code.IsEmpty() || !TryGetUsMarket(item.ExchangeType, out var market))
@@ -86,6 +93,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 				var name = item.EnglishName.IsEmpty(item.Name).IsEmpty(item.Code);
 				result.Add(new(info, name, item.Name.IsEmpty(name), item.IsEtf.EqualsIgnoreCase("Y") ? SecurityTypes.Etf : SecurityTypes.Stock));
 			}
+
 			if (!IsContinuation(page))
 				break;
 			usContinuation = page.Continuation;
@@ -276,6 +284,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 		var result = new List<KiwoomCandleBar>();
 		var continuation = default(string);
 		var nextKey = default(string);
+
 		for (var pageIndex = 0; pageIndex < 100; pageIndex++)
 		{
 			KiwoomRestPage<KiwoomResponse> page;
@@ -303,6 +312,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 			continuation = page.Continuation;
 			nextKey = page.NextKey;
 		}
+
 		return [.. result];
 	}
 
@@ -312,6 +322,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 		var result = new List<KiwoomCandleBar>();
 		var continuation = default(string);
 		var nextKey = default(string);
+
 		for (var pageIndex = 0; pageIndex < 100; pageIndex++)
 		{
 			KiwoomRestPage<KiwoomUsCandleResponse> page;
@@ -331,6 +342,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 			continuation = page.Continuation;
 			nextKey = page.NextKey;
 		}
+
 		return [.. result];
 	}
 
@@ -341,6 +353,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 		var result = new List<TItem>();
 		var continuation = default(string);
 		var nextKey = default(string);
+
 		for (var pageIndex = 0; pageIndex < 100; pageIndex++)
 		{
 			var page = await Send<TRequest, TResponse>(path, apiId, request, continuation, nextKey, cancellationToken);
@@ -350,6 +363,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 			continuation = page.Continuation;
 			nextKey = page.NextKey;
 		}
+
 		return [.. result];
 	}
 
@@ -358,6 +372,7 @@ sealed class KiwoomRestClient : BaseLogReceiver
 		where TResponse : KiwoomResponse
 	{
 		await EnsureAuthenticated(cancellationToken);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitRateLimit(apiId, cancellationToken);

@@ -178,6 +178,7 @@ public partial class XtMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -200,6 +201,7 @@ public partial class XtMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -236,9 +238,11 @@ public partial class XtMessageAdapter
 		if (IsSectionEnabled(XtSections.Futures))
 		{
 			var balances = await RestClient.GetFuturesBalancesAsync(cancellationToken);
+
 			foreach (var balance in balances)
 				await SendBalanceAsync(balance, XtSections.Futures, null, originalTransactionId,
 					CurrentTime, cancellationToken);
+
 			foreach (var position in await RestClient.GetFuturesPositionsAsync(null, cancellationToken))
 				await SendPositionAsync(position, originalTransactionId, cancellationToken);
 		}
@@ -274,6 +278,7 @@ public partial class XtMessageAdapter
 				.Select(static group => group.First())
 				.OrderBy(static order => order.UpdateTime)
 				.TakeLast(limit);
+
 			foreach (var order in orders)
 				await SendOrderAsync(order, item.Section, originalTransactionId, cancellationToken);
 
@@ -316,6 +321,7 @@ public partial class XtMessageAdapter
 		var depoName = data.Type.EqualsIgnoreCase("CROSS") || data.Type.IsEmpty()
 			? null
 			: $"{data.Symbol}:{data.Type}";
+
 		foreach (var balance in data.Balances ?? [])
 			await SendBalanceAsync(balance, section, depoName, _portfolioSubscriptionId, time,
 				cancellationToken);

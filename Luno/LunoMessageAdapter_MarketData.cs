@@ -8,6 +8,7 @@ public partial class LunoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class LunoMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static value => value.Symbol,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -44,6 +46,7 @@ public partial class LunoMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -52,6 +55,7 @@ public partial class LunoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -107,6 +111,7 @@ public partial class LunoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -164,6 +169,7 @@ public partial class LunoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -192,6 +198,7 @@ public partial class LunoMessageAdapter
 				? null
 				: new DateTimeOffset(from.Value).ToUnixTimeMilliseconds(),
 		}, cancellationToken);
+
 		foreach (var trade in trades.Where(trade => trade is not null &&
 			trade.Timestamp.ToLunoTime(DateTime.MinValue) <= to)
 			.OrderBy(static trade => trade.Timestamp).TakeLast(maximum))
@@ -232,6 +239,7 @@ public partial class LunoMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -257,6 +265,7 @@ public partial class LunoMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * count);
 		var candles = await DownloadCandlesAsync(market, duration, timeFrame,
 			from, to, count, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
@@ -318,6 +327,7 @@ public partial class LunoMessageAdapter
 	{
 		var values = new SortedDictionary<DateTime, LunoCandle>();
 		var cursor = from;
+
 		while (values.Count < count && cursor <= to)
 		{
 			var page = await RestClient.GetCandlesAsync(new()
@@ -326,6 +336,7 @@ public partial class LunoMessageAdapter
 				Since = new DateTimeOffset(cursor).ToUnixTimeMilliseconds(),
 				Duration = duration,
 			}, cancellationToken);
+
 			foreach (var candle in page)
 			{
 				if (candle is null)
@@ -334,6 +345,7 @@ public partial class LunoMessageAdapter
 				if (openTime >= from && openTime <= to)
 					values[openTime] = candle;
 			}
+
 			if (page.Length == 0)
 				break;
 			var last = page.Max(static candle => candle.Timestamp)
@@ -343,6 +355,7 @@ public partial class LunoMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. values.Values.TakeLast(count)];
 	}
 
@@ -423,14 +436,17 @@ public partial class LunoMessageAdapter
 		foreach (var subscription in level1Subscriptions)
 			await SendStreamLevel1Async(market, state, subscription.Key,
 				cancellationToken);
+
 		foreach (var subscription in depthSubscriptions)
 			await SendStreamBookAsync(market, state, subscription.Value.Depth,
 				subscription.Key, cancellationToken);
+
 		foreach (var trade in state.Trades ?? [])
 		{
 			foreach (var subscription in tickSubscriptions)
 				await SendStreamTradeAsync(market, trade, subscription.Key,
 					cancellationToken);
+
 			foreach (var subscription in candleSubscriptions)
 				await UpdateLiveCandleAsync(market, trade, subscription.Key,
 					subscription.Value, cancellationToken);

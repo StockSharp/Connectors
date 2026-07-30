@@ -11,6 +11,7 @@ public partial class TradeZeroMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var symbol = lookupMsg.SecurityId.SecurityCode.ThrowIfEmpty(nameof(lookupMsg.SecurityId.SecurityCode));
 		var result = await _httpClient.Search(symbol, cancellationToken);
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -41,6 +42,7 @@ public partial class TradeZeroMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 
@@ -76,6 +78,7 @@ public partial class TradeZeroMessageAdapter
 	protected override async ValueTask OnMarketDepthSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 
@@ -113,6 +116,7 @@ public partial class TradeZeroMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 

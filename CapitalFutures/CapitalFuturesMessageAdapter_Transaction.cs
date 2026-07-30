@@ -173,6 +173,7 @@ public partial class CapitalFuturesMessageAdapter
 	{
 		EnsureTradingEnabled();
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -181,6 +182,7 @@ public partial class CapitalFuturesMessageAdapter
 		}
 
 		var left = statusMsg.Count ?? long.MaxValue;
+
 		foreach (var tracker in _orders.Values.Distinct().OrderBy(item => item.ServerTime))
 		{
 			if (!IsOrderMatch(tracker, statusMsg))
@@ -205,6 +207,7 @@ public partial class CapitalFuturesMessageAdapter
 	{
 		EnsureTradingEnabled();
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -454,6 +457,7 @@ public partial class CapitalFuturesMessageAdapter
 			.TryAdd(PositionChangeTypes.CurrentValue, currentValue, true)
 			.TryAdd(PositionChangeTypes.AveragePrice, position.AveragePrice, true), cancellationToken);
 		}
+
 		_lastPortfolioRefresh = CurrentTime;
 	}
 

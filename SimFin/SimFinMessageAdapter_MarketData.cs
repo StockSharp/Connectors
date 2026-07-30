@@ -23,6 +23,7 @@ public partial class SimFinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		if (lookupMsg.Skip is < 0)
 			throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
 		if (lookupMsg.Count is <= 0)
@@ -45,6 +46,7 @@ public partial class SimFinMessageAdapter
 			.IsEmpty(lookupMsg.ShortName)?.Trim();
 		var skip = lookupMsg.Skip ?? 0;
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var company in (await GetCompaniesAsync(
 			cancellationToken))
 			.Where(company => query.IsEmpty() ||
@@ -72,6 +74,7 @@ public partial class SimFinMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg,
 			cancellationToken);
 	}
@@ -83,6 +86,7 @@ public partial class SimFinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -124,6 +128,7 @@ public partial class SimFinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -148,6 +153,7 @@ public partial class SimFinMessageAdapter
 		var prices = await RestClient.GetPricesAsync(company.Ticker,
 			from, to, IncludeRatios, AsReported,
 			cancellationToken);
+
 		foreach (var price in prices
 			.Where(price => price.Date >= from &&
 				price.Date <= to)
@@ -167,6 +173,7 @@ public partial class SimFinMessageAdapter
 				TotalVolume = price.Volume ?? 0,
 				State = CandleStates.Finished,
 			}, cancellationToken);
+
 		await CompleteSubscriptionAsync(mdMsg, cancellationToken);
 	}
 
@@ -176,6 +183,7 @@ public partial class SimFinMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -196,6 +204,7 @@ public partial class SimFinMessageAdapter
 			StatementTypes.ThrowIfEmpty(nameof(StatementTypes)),
 			Period, mdMsg.From, mdMsg.To, AsReported,
 			cancellationToken);
+
 		foreach (var value in values
 			.Where(value => mdMsg.From is null ||
 				(value.ReportDate ?? value.PublishDate) >=
@@ -226,6 +235,7 @@ public partial class SimFinMessageAdapter
 					Restated = value.Restated,
 				}, cancellationToken);
 		}
+
 		await CompleteSubscriptionAsync(mdMsg, cancellationToken);
 	}
 

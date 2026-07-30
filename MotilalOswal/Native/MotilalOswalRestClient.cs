@@ -93,6 +93,7 @@ sealed class MotilalOswalRestClient : BaseLogReceiver
 				: _supportedExchanges;
 
 			var instruments = new List<MotilalOswalInstrument>();
+
 			foreach (var exchange in exchanges)
 			{
 				var rows = await Send<MotilalOswalInstrument[], MotilalOswalExchangeRequest>(
@@ -121,6 +122,7 @@ sealed class MotilalOswalRestClient : BaseLogReceiver
 				var indexes = await Send<MotilalOswalIndex[], MotilalOswalExchangeRequest>(
 					"rest/report/v3/getindexdatabyexchangename",
 					new() { ClientCode = _clientCode, ExchangeName = exchange }, cancellationToken, true);
+
 				foreach (var index in indexes ?? [])
 				{
 					if (index == null || index.IndexCode <= 0)

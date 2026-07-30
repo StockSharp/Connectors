@@ -181,14 +181,17 @@ public partial class WeexMessageAdapter
 		{
 			if (!sections.Contains(WeexSections.Futures))
 				throw new NotSupportedException("WEEX position closing is available only for futures.");
+
 			foreach (var position in await RestClient.GetPositionsAsync(symbol, cancellationToken) ?? [])
 			{
 				if (cancelMsg.Side is Sides side && position.Side.ToStockSharpNullable() != side)
 					continue;
 				var results = await RestClient.ClosePositionsAsync(position.Symbol, position.Id,
 					cancellationToken) ?? [];
+
 				foreach (var result in results.Where(static item => !item.IsSuccess))
 					throw new InvalidOperationException($"WEEX close position failed: {result.ErrorMessage}");
+
 				await SendPositionAsync(position, cancelMsg.TransactionId, cancellationToken, 0m);
 			}
 		}
@@ -207,6 +210,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -230,6 +234,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -255,8 +260,10 @@ public partial class WeexMessageAdapter
 		{
 			var results = await RestClient.CancelAllOrdersAsync(section, symbol, isConditional,
 				cancellationToken) ?? [];
+
 			foreach (var result in results)
 				ValidateAction(result, "cancel all orders");
+
 			return;
 		}
 
@@ -273,6 +280,7 @@ public partial class WeexMessageAdapter
 				ValidateAction(await RestClient.CancelOrderAsync(section, order.Symbol, order.OrderId,
 					true, cancellationToken), "cancel conditional order");
 			}
+
 			return;
 		}
 
@@ -291,6 +299,7 @@ public partial class WeexMessageAdapter
 		if (IsSectionEnabled(WeexSections.Spot))
 		{
 			var account = await RestClient.GetSpotAccountAsync(cancellationToken);
+
 			foreach (var balance in account?.Balances ?? [])
 				await SendSpotBalanceAsync(balance, originalTransactionId, cancellationToken);
 		}
@@ -299,6 +308,7 @@ public partial class WeexMessageAdapter
 		{
 			foreach (var balance in await RestClient.GetFuturesBalancesAsync(cancellationToken) ?? [])
 				await SendFuturesBalanceAsync(balance, originalTransactionId, cancellationToken);
+
 			foreach (var position in await RestClient.GetPositionsAsync(null, cancellationToken) ?? [])
 				await SendPositionAsync(position, originalTransactionId, cancellationToken);
 		}
@@ -309,6 +319,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var sections = section is null ? Sections.ToArray() : [section.Value];
+
 		foreach (var current in sections)
 		{
 			var orders = new List<WeexOrder>();
@@ -335,6 +346,7 @@ public partial class WeexMessageAdapter
 				algoOrders.AddRange(await RestClient.GetOpenAlgoOrdersAsync(symbol, cancellationToken) ?? []);
 				algoOrders.AddRange(await RestClient.GetAlgoOrderHistoryAsync(symbol,
 					range?.From, range?.To, limit, cancellationToken) ?? []);
+
 				foreach (var order in algoOrders
 					.Where(static item => item?.OrderId.IsEmpty() == false)
 					.GroupBy(static item => item.OrderId, StringComparer.OrdinalIgnoreCase)
@@ -363,6 +375,7 @@ public partial class WeexMessageAdapter
 	{
 		if (_portfolioSubscriptionId == 0)
 			return;
+
 		foreach (var balance in balances ?? [])
 		{
 			if (balance?.Asset.IsEmpty() != false)
@@ -385,6 +398,7 @@ public partial class WeexMessageAdapter
 	{
 		if (_orderStatusSubscriptionId == 0)
 			return;
+
 		foreach (var order in orders ?? [])
 			await SendWsOrderAsync(order, section, _orderStatusSubscriptionId, cancellationToken);
 	}
@@ -394,6 +408,7 @@ public partial class WeexMessageAdapter
 	{
 		if (_orderStatusSubscriptionId == 0)
 			return;
+
 		foreach (var fill in fills ?? [])
 		{
 			if (fill?.Symbol.IsEmpty() != false)
@@ -424,6 +439,7 @@ public partial class WeexMessageAdapter
 	{
 		if (_portfolioSubscriptionId == 0)
 			return;
+
 		foreach (var position in positions ?? [])
 		{
 			if (position?.Symbol.IsEmpty() != false)

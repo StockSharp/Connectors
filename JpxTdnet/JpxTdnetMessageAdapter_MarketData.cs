@@ -236,6 +236,7 @@ public partial class JpxTdnetMessageAdapter
         CancellationToken cancellationToken)
     {
         var result = new List<JpxTdnetDisclosure>();
+
         for (var start = from.Date; start <= to.Date;)
         {
             var end = start.AddMonths(1).AddDays(-1);

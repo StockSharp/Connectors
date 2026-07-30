@@ -162,6 +162,7 @@ sealed class OurbitSpotRestClient : BaseLogReceiver
 		}
 		var payload = BuildQuery(parameters);
 		var canRetry = method == HttpMethod.Get;
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitRateLimitAsync(cancellationToken);

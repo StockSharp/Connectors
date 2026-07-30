@@ -205,25 +205,35 @@ public partial class CqgMessageAdapter
 	{
 		foreach (var userMessage in message.UserMessages)
 			await SendOutErrorAsync(new InvalidOperationException($"CQG: {userMessage.Subject}: {userMessage.Text}"), cancellationToken);
+
 		foreach (var report in message.InformationReports)
 			await ProcessInformationReport(report, cancellationToken);
+
 		foreach (var status in message.MarketDataSubscriptionStatuses)
 			await ProcessMarketStatus(status, cancellationToken);
+
 		foreach (var data in message.RealTimeMarketData)
 			await ProcessMarketData(data, cancellationToken);
+
 		foreach (var report in message.TimeAndSalesReports)
 			await ProcessTimeAndSales(report, cancellationToken);
+
 		foreach (var report in message.TimeBarReports)
 			await ProcessTimeBars(report, cancellationToken);
+
 		foreach (var order in message.OrderStatuses)
 			foreach (var metadata in order.ContractMetadata)
 				CacheContract(metadata);
+
 		foreach (var position in message.PositionStatuses.Where(p => p.ContractMetadata != null))
 			CacheContract(position.ContractMetadata);
+
 		foreach (var reject in message.OrderRequestRejects)
 			await ProcessOrderReject(reject, cancellationToken);
+
 		foreach (var ack in message.OrderRequestAcks)
 			_requestTransactions.Remove(ack.RequestId);
+
 		foreach (var status in message.TradeSubscriptionStatuses)
 		{
 			if (status.Id == _tradeSubscriptionId)
@@ -238,12 +248,16 @@ public partial class CqgMessageAdapter
 				await SendOutErrorAsync(new InvalidOperationException(
 					$"CQG trade subscription {status.Id} failed ({status.StatusCode}): {status.TextMessage}"), cancellationToken);
 		}
+
 		foreach (var order in message.OrderStatuses)
 			await ProcessOrderStatus(order, cancellationToken);
+
 		foreach (var position in message.PositionStatuses)
 			await ProcessPosition(position, cancellationToken);
+
 		foreach (var summary in message.AccountSummaryStatuses)
 			await ProcessAccountSummary(summary, cancellationToken);
+
 		foreach (var completion in message.TradeSnapshotCompletions)
 			await ProcessTradeSnapshotCompletion(completion, cancellationToken);
 	}

@@ -88,6 +88,7 @@ public partial class WeexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		_ = timeMsg;
+
 		foreach (var client in GetClients())
 			await client.PingAsync(cancellationToken);
 	}

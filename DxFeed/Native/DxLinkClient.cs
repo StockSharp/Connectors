@@ -222,6 +222,7 @@ internal sealed class DxLinkClient : BaseLogReceiver
 			lock (_sync)
 			{
 				_isSessionReady = false;
+
 				foreach (var dom in _domSubscriptions.Values)
 					dom.IsOpened = false;
 			}
@@ -237,6 +238,7 @@ internal sealed class DxLinkClient : BaseLogReceiver
 		{
 			_isSessionReady = false;
 			_authorizationAttempts = 0;
+
 			foreach (var dom in _domSubscriptions.Values)
 				dom.IsOpened = false;
 		}

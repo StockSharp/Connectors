@@ -7,6 +7,7 @@ public partial class QuoddMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var value = (lookupMsg.SecurityId.Native as string)
 			.IsEmpty(lookupMsg.SecurityId.SecurityCode).IsEmpty(lookupMsg.Name)?.Trim();
@@ -108,6 +109,7 @@ public partial class QuoddMessageAdapter
 			{
 				var response = await SafeClient().GetTickerInfo([value], cancellationToken);
 				info = response.Data.FirstOrDefault(item => item.Ticker.EqualsIgnoreCase(value));
+
 				foreach (var error in response.Errors)
 				{
 					if (!error.Error.IsEmpty() || !error.Message.IsEmpty())
@@ -129,6 +131,7 @@ public partial class QuoddMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveLiveSubscription(mdMsg.OriginalTransactionId);

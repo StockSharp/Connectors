@@ -187,6 +187,7 @@ public partial class ExtendedMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -204,12 +205,14 @@ public partial class ExtendedMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -219,6 +222,7 @@ public partial class ExtendedMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -229,12 +233,14 @@ public partial class ExtendedMessageAdapter
 
 		await SendOrderSnapshotAsync(statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -334,6 +340,7 @@ public partial class ExtendedMessageAdapter
 			.Skip(skip)
 			.Take(limit)
 			.ToArray();
+
 		foreach (var message in messages)
 		{
 			UpdateServerTime(message.ServerTime);
@@ -342,6 +349,7 @@ public partial class ExtendedMessageAdapter
 
 		var trades = await LoadTradeHistoryAsync(querySymbol, maximum,
 			cancellationToken);
+
 		foreach (var trade in trades
 			.Where(trade => IsTradeMatch(trade, statusMsg, symbols))
 			.OrderBy(static trade => trade.CreatedTime)
@@ -356,6 +364,7 @@ public partial class ExtendedMessageAdapter
 	{
 		var result = new List<ExtendedOrder>();
 		long? cursor = null;
+
 		while (result.Count < maximum)
 		{
 			var pageLimit = (maximum - result.Count).Min(HistoryLimit).Max(1);
@@ -369,6 +378,7 @@ public partial class ExtendedMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 
@@ -377,6 +387,7 @@ public partial class ExtendedMessageAdapter
 	{
 		var result = new List<ExtendedAccountTrade>();
 		long? cursor = null;
+
 		while (result.Count < maximum)
 		{
 			var pageLimit = (maximum - result.Count).Min(HistoryLimit).Max(1);
@@ -390,6 +401,7 @@ public partial class ExtendedMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result
 			.GroupBy(static trade => trade.Id)
 			.Select(static group => group.First())
@@ -404,6 +416,7 @@ public partial class ExtendedMessageAdapter
 		if (_portfolioSubscriptionId == 0)
 			return;
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var position in positions ?? [])
 		{
 			if (position?.Market.IsEmpty() != false)
@@ -412,6 +425,7 @@ public partial class ExtendedMessageAdapter
 			await SendPositionAsync(position, _portfolioSubscriptionId,
 				cancellationToken);
 		}
+
 		if (isSnapshot)
 			await SendMissingPositionsAsync(current, _knownPositionSymbols,
 				_portfolioSubscriptionId, timestamp.ToExtendedTimeOrNow(),
@@ -425,6 +439,7 @@ public partial class ExtendedMessageAdapter
 		_ = isSnapshot;
 		_ = timestamp;
 		_ = sequence;
+
 		foreach (var order in orders ?? [])
 		{
 			if (order is null)
@@ -448,6 +463,7 @@ public partial class ExtendedMessageAdapter
 		_ = isSnapshot;
 		_ = timestamp;
 		_ = sequence;
+
 		foreach (var trade in trades ?? [])
 		{
 			var transactionId = GetTransactionId(trade?.OrderId ?? 0);
@@ -479,6 +495,7 @@ public partial class ExtendedMessageAdapter
 		if (_portfolioSubscriptionId == 0)
 			return;
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var balance in balances ?? [])
 		{
 			if (balance?.Asset.IsEmpty() != false)
@@ -487,6 +504,7 @@ public partial class ExtendedMessageAdapter
 			await SendSpotBalanceAsync(balance, _portfolioSubscriptionId,
 				cancellationToken);
 		}
+
 		if (isSnapshot)
 			await SendMissingPositionsAsync(current, _knownSpotBalanceSymbols,
 				_portfolioSubscriptionId, timestamp.ToExtendedTimeOrNow(),
@@ -528,6 +546,7 @@ public partial class ExtendedMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var position in positions ?? [])
 		{
 			if (position?.Market.IsEmpty() != false)
@@ -535,6 +554,7 @@ public partial class ExtendedMessageAdapter
 			current.Add(position.Market);
 			await SendPositionAsync(position, transactionId, cancellationToken);
 		}
+
 		await SendMissingPositionsAsync(current, _knownPositionSymbols,
 			transactionId, ServerTime, cancellationToken);
 	}
@@ -578,6 +598,7 @@ public partial class ExtendedMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var balance in balances ?? [])
 		{
 			if (balance?.Asset.IsEmpty() != false)
@@ -585,6 +606,7 @@ public partial class ExtendedMessageAdapter
 			current.Add(balance.Asset);
 			await SendSpotBalanceAsync(balance, transactionId, cancellationToken);
 		}
+
 		await SendMissingPositionsAsync(current, _knownSpotBalanceSymbols,
 			transactionId, ServerTime, cancellationToken);
 	}
@@ -627,6 +649,7 @@ public partial class ExtendedMessageAdapter
 			known.Clear();
 			known.UnionWith(current);
 		}
+
 		foreach (var symbol in missing)
 			await SendOutMessageAsync(new PositionChangeMessage
 			{
@@ -891,9 +914,11 @@ public partial class ExtendedMessageAdapter
 		var symbols = new HashSet<string>(StringComparer.Ordinal);
 		if (!statusMsg.SecurityId.SecurityCode.IsEmpty())
 			symbols.Add(GetMarket(statusMsg.SecurityId).Name);
+
 		foreach (var securityId in statusMsg.SecurityIds)
 			if (!securityId.SecurityCode.IsEmpty())
 				symbols.Add(GetMarket(securityId).Name);
+
 		return symbols;
 	}
 

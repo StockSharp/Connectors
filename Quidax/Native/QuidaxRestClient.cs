@@ -385,6 +385,7 @@ sealed class QuidaxRestClient : BaseLogReceiver
 		var bodyText = body is null ? null : SerializeBody(body);
 		var attempts = isRetryable ? _maximumReadAttempts : 1;
 		Exception lastError = null;
+
 		for (var attempt = 1; attempt <= attempts; attempt++)
 		{
 			try
@@ -438,6 +439,7 @@ sealed class QuidaxRestClient : BaseLogReceiver
 					GetRetryDelay(attempt), cancellationToken);
 			}
 		}
+
 		throw lastError ?? new InvalidOperationException(
 			"Quidax API request failed.");
 	}

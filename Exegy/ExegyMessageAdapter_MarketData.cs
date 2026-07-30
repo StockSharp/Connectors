@@ -7,6 +7,7 @@ public partial class ExegyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -47,6 +48,7 @@ public partial class ExegyMessageAdapter
 			await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 			if (file.Header?.Kind != ExegyFileKinds.Reference)
 				continue;
+
 			await foreach (var record in file.Reader.ReadRowsAsync(cancellationToken))
 			{
 				var row = ExegyRowParser.ParseReference(file.Header, record,
@@ -66,6 +68,7 @@ public partial class ExegyMessageAdapter
 				await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 				if (file.Header?.Kind != ExegyFileKinds.MarketData)
 					continue;
+
 				await foreach (var record in file.Reader.ReadRowsAsync(cancellationToken))
 				{
 					var row = ExegyRowParser.ParseMarket(file.Header, record,
@@ -84,6 +87,7 @@ public partial class ExegyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -97,6 +101,7 @@ public partial class ExegyMessageAdapter
 
 		var requestKey = mdMsg.SecurityId.GetExegyKey();
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		await foreach (var row in ReadMarketRows(mdMsg, cancellationToken))
 		{
 			var key = row.ToKey();
@@ -123,6 +128,7 @@ public partial class ExegyMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 
@@ -131,6 +137,7 @@ public partial class ExegyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -144,6 +151,7 @@ public partial class ExegyMessageAdapter
 
 		var requestKey = mdMsg.SecurityId.GetExegyKey();
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		await foreach (var row in ReadMarketRows(mdMsg, cancellationToken))
 		{
 			var key = row.ToKey();
@@ -157,6 +165,7 @@ public partial class ExegyMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 
@@ -165,6 +174,7 @@ public partial class ExegyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -179,6 +189,7 @@ public partial class ExegyMessageAdapter
 		var requestKey = mdMsg.SecurityId.GetExegyKey();
 		var book = new ExegyOrderBook();
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		await foreach (var row in ReadMarketRows(mdMsg, cancellationToken))
 		{
 			var key = row.ToKey();
@@ -200,6 +211,7 @@ public partial class ExegyMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 
@@ -208,6 +220,7 @@ public partial class ExegyMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -221,6 +234,7 @@ public partial class ExegyMessageAdapter
 
 		var requestKey = mdMsg.SecurityId.GetExegyKey();
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		await foreach (var row in ReadMarketRows(mdMsg, cancellationToken))
 		{
 			var key = row.ToKey();
@@ -253,6 +267,7 @@ public partial class ExegyMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await Complete(mdMsg, cancellationToken);
 	}
 
@@ -264,6 +279,7 @@ public partial class ExegyMessageAdapter
 			await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 			if (file.Header?.Kind != ExegyFileKinds.MarketData)
 				continue;
+
 			await foreach (var record in file.Reader.ReadRowsAsync(cancellationToken))
 			{
 				yield return ExegyRowParser.ParseMarket(file.Header, record,
@@ -432,12 +448,14 @@ sealed class ExegyOrderBook
 	{
 		_bids.Clear();
 		_asks.Clear();
+
 		foreach (var group in _orders.GroupBy(order => (order.Side, order.Price)))
 		{
 			var level = new ExegyDepthLevel(group.Key.Price, group.Sum(order => order.Volume),
 				group.Count());
 			(group.Key.Side == Sides.Buy ? _bids : _asks).Add(level);
 		}
+
 		Sort(_bids, Sides.Buy);
 		Sort(_asks, Sides.Sell);
 	}

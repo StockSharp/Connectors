@@ -25,6 +25,7 @@ public partial class NuvamaMessageAdapter
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId,
             cancellationToken);
+
         var securityTypes = lookupMsg.GetSecurityTypes();
         var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -122,6 +123,7 @@ public partial class NuvamaMessageAdapter
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId,
             cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await RemoveRealtimeSubscription(
@@ -175,6 +177,7 @@ public partial class NuvamaMessageAdapter
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId,
             cancellationToken);
+
         if (!mdMsg.IsSubscribe)
             return;
         if (!mdMsg.IsHistoryOnly())
@@ -239,6 +242,7 @@ public partial class NuvamaMessageAdapter
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId,
             cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await RemoveRealtimeSubscription(

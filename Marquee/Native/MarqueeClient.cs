@@ -43,6 +43,7 @@ sealed class MarqueeClient : BaseLogReceiver, IDisposable
 		string[] assetClasses, [EnumeratorCancellation] CancellationToken cancellationToken)
 	{
 		string scrollId = null;
+
 		do
 		{
 			var response = await Post<MarqueeAssetResponse, MarqueeAssetQuery>("assets/query", new()
@@ -60,6 +61,7 @@ sealed class MarqueeClient : BaseLogReceiver, IDisposable
 			}, cancellationToken);
 
 			var results = response?.Results ?? [];
+
 			foreach (var asset in results)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
@@ -109,6 +111,7 @@ sealed class MarqueeClient : BaseLogReceiver, IDisposable
 	{
 		var page = 0;
 		var totalPages = 1;
+
 		while (page < totalPages)
 		{
 			var response = await Post<MarqueeDataResponse, MarqueeDataQuery>(
@@ -124,6 +127,7 @@ sealed class MarqueeClient : BaseLogReceiver, IDisposable
 
 			if (response?.ErrorMessages?.Length > 0)
 				throw CreateApiError(response.RequestId, response.ErrorMessages);
+
 			foreach (var row in response?.Data ?? [])
 			{
 				cancellationToken.ThrowIfCancellationRequested();

@@ -111,6 +111,7 @@ public partial class InvertirOnlineMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId, cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -196,6 +197,7 @@ public partial class InvertirOnlineMessageAdapter
             null,
             cancellationToken);
         var left = count ?? long.MaxValue;
+
         foreach (var operation in (operations ?? [])
             .Where(item => item?.Number > 0)
             .OrderBy(item => item.OrderDate))
@@ -217,6 +219,7 @@ public partial class InvertirOnlineMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -258,6 +261,7 @@ public partial class InvertirOnlineMessageAdapter
         CancellationToken cancellationToken)
     {
         var accountState = await _rest.GetAccountState(cancellationToken);
+
         foreach (var account in accountState?.Accounts ?? [])
         {
             if (account is null)

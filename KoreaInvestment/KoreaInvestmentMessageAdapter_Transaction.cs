@@ -161,6 +161,7 @@ public partial class KoreaInvestmentMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -185,6 +186,7 @@ public partial class KoreaInvestmentMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -218,6 +220,7 @@ public partial class KoreaInvestmentMessageAdapter
 		}
 
 		await SendPositions(await _rest.GetDomesticPositions(cancellationToken), originalTransactionId, cancellationToken);
+
 		foreach (var market in new[]
 		{
 			KoreaInvestmentMarkets.Nasdaq,
@@ -286,6 +289,7 @@ public partial class KoreaInvestmentMessageAdapter
 
 		if (count is > 0)
 			executions = executions.OrderByDescending(e => e.Time).Take((int)Math.Min(count.Value, int.MaxValue));
+
 		foreach (var execution in executions.OrderBy(e => e.Time))
 			await ProcessExecution(execution, originalTransactionId, cancellationToken);
 	}

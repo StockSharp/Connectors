@@ -39,6 +39,7 @@ sealed class IvyDbCatalog
 			ReturnSpecialDirectories = false,
 			AttributesToSkip = FileAttributes.ReparsePoint,
 		};
+
 		foreach (var path in Directory.EnumerateFiles(root, "*", options))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -79,6 +80,7 @@ sealed class IvyDbCatalog
 		{
 			using var stream = OpenContainer(path);
 			using var archive = new ZipArchive(stream, ZipArchiveMode.Read, false);
+
 			foreach (var entry in archive.Entries)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
@@ -152,8 +154,10 @@ sealed class IvyDbCatalog
 		var securityFile = GetLatest(IvyDbFileKinds.Security) ??
 			throw new InvalidDataException("The IvyDB Security table is missing.");
 		var securities = new List<IvyDbSecurityRow>();
+
 		await foreach (var row in ReadSecurities(securityFile, cancellationToken))
 			securities.Add(row);
+
 		if (securities.Count == 0)
 			throw new InvalidDataException($"IvyDB Security table '{securityFile}' is empty.");
 
@@ -317,6 +321,7 @@ sealed class IvyDbSecurityMaster
 			_byId[security.SecurityId] = security;
 
 		var codes = new Dictionary<string, HashSet<long>>(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var security in _byId.Values)
 		{
 			var code = GetSymbol(security);

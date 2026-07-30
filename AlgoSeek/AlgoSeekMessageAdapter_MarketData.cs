@@ -7,6 +7,7 @@ public partial class AlgoSeekMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (lookupMsg.Count is <= 0)
 		{
 			await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -88,6 +89,7 @@ public partial class AlgoSeekMessageAdapter
 				{
 					var first = true;
 					var isOpenInterestFile = false;
+
 					await foreach (var row in file.Reader.ReadRowsAsync(cancellationToken))
 					{
 						var value = AlgoSeekRowParser.ParseOptionTick(file.Header, row,
@@ -101,6 +103,7 @@ public partial class AlgoSeekMessageAdapter
 						if (left <= 0 || !isOpenInterestFile)
 							break;
 					}
+
 					break;
 				}
 
@@ -133,6 +136,7 @@ public partial class AlgoSeekMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -147,6 +151,7 @@ public partial class AlgoSeekMessageAdapter
 		var key = mdMsg.SecurityId.GetAlgoSeekKey();
 		var securityId = mdMsg.SecurityId.NormalizeAlgoSeek(key);
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		foreach (var source in GetRequestSources(mdMsg, key))
 		{
 			await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
@@ -256,6 +261,7 @@ public partial class AlgoSeekMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -270,11 +276,13 @@ public partial class AlgoSeekMessageAdapter
 		var key = mdMsg.SecurityId.GetAlgoSeekKey();
 		var securityId = mdMsg.SecurityId.NormalizeAlgoSeek(key);
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		foreach (var source in GetRequestSources(mdMsg, key))
 		{
 			await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 			if (file.Header == null)
 				continue;
+
 			await foreach (var message in ReadLevel1(file, source, key, securityId,
 				mdMsg.TransactionId, cancellationToken))
 			{
@@ -284,6 +292,7 @@ public partial class AlgoSeekMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}
@@ -296,6 +305,7 @@ public partial class AlgoSeekMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -320,6 +330,7 @@ public partial class AlgoSeekMessageAdapter
 			await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 			if (file.Header == null)
 				continue;
+
 			await foreach (var update in ReadDepthUpdates(file, source, key,
 				cancellationToken))
 			{
@@ -358,6 +369,7 @@ public partial class AlgoSeekMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}
@@ -370,6 +382,7 @@ public partial class AlgoSeekMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -393,11 +406,13 @@ public partial class AlgoSeekMessageAdapter
 		}
 		var securityId = mdMsg.SecurityId.NormalizeAlgoSeek(key);
 		var left = mdMsg.Count ?? long.MaxValue;
+
 		foreach (var source in GetRequestSources(mdMsg, key))
 		{
 			await using var file = await SafeCatalog().OpenAsync(source, cancellationToken);
 			if (file.Header == null)
 				continue;
+
 			await foreach (var candle in ReadCandles(file, source, key, securityId,
 				mdMsg, timeFrame, cancellationToken))
 			{
@@ -407,6 +422,7 @@ public partial class AlgoSeekMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}
@@ -460,6 +476,7 @@ public partial class AlgoSeekMessageAdapter
 		{
 			var venueBook = new AlgoSeekVenueQuoteBook();
 			DateTime? tradeDate = null;
+
 			await foreach (var record in file.Reader.ReadRowsAsync(cancellationToken))
 			{
 				var row = AlgoSeekRowParser.ParseEquityTick(file.Header, record,

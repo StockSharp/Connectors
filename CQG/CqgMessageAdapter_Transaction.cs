@@ -131,6 +131,7 @@ public partial class CqgMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage statusMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -187,6 +188,7 @@ public partial class CqgMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -201,6 +203,7 @@ public partial class CqgMessageAdapter
 		if (report.StatusCode >= 100 || report.AccountsReport == null)
 			throw new InvalidOperationException($"CQG accounts request failed ({report.StatusCode}): {report.TextMessage}");
 		CacheAccounts(report.AccountsReport);
+
 		foreach (var account in _accountNames.Where(p => MatchesPortfolio(p.Key, p.Value, lookupMsg.PortfolioName)))
 			await SendOutMessageAsync(new PortfolioMessage
 			{
@@ -208,6 +211,7 @@ public partial class CqgMessageAdapter
 				PortfolioName = account.Value,
 				BoardCode = "CQG",
 			}, cancellationToken);
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		var id = NextRequestId();
 		_tradeSubscriptionTransactions[id] = lookupMsg.TransactionId;
@@ -257,6 +261,7 @@ public partial class CqgMessageAdapter
 			foreach (var pair in _accountNames)
 				if (pair.Value.EqualsIgnoreCase(portfolio) || pair.Key.ToString(CultureInfo.InvariantCulture).EqualsIgnoreCase(portfolio))
 					return pair.Key;
+
 			throw new InvalidOperationException($"CQG account '{portfolio}' is not authorized for this session.");
 		}
 		if (_accountNames.Count == 1)
@@ -294,6 +299,7 @@ public partial class CqgMessageAdapter
 	{
 		foreach (var metadata in status.ContractMetadata)
 			CacheContract(metadata);
+
 		var details = status.Order;
 		var record = _orders.SafeAdd(status.ChainOrderId, _ => new OrderRecord
 		{
@@ -412,6 +418,7 @@ public partial class CqgMessageAdapter
 		foreach (var id in subscriptionIds)
 			if (_tradeSubscriptionTransactions.TryGetValue(id, out var transactionId))
 				return transactionId;
+
 		return _orderStatusSubscriptionId;
 	}
 
@@ -428,6 +435,7 @@ public partial class CqgMessageAdapter
 		}
 		else if (!status.IsSnapshot)
 			_positionSnapshots.Remove(prefix);
+
 		foreach (var position in status.OpenPositions)
 		{
 			var key = $"{prefix}{position.Id}";
@@ -436,6 +444,7 @@ public partial class CqgMessageAdapter
 			else
 				_positions[key] = position;
 		}
+
 		var openPositions = _positions.Where(p => p.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
 			.Select(p => p.Value).ToArray();
 		var quantity = openPositions.Sum(p => (p.IsShort ? -1 : 1) * p.Qty.ToDecimal());
@@ -479,6 +488,7 @@ public partial class CqgMessageAdapter
 		foreach (var id in subscriptionIds)
 			if (_tradeSubscriptionTransactions.TryGetValue(id, out var transactionId))
 				return transactionId;
+
 		return _portfolioSubscriptionId;
 	}
 
@@ -488,8 +498,10 @@ public partial class CqgMessageAdapter
 		if (!_historyOnlyTradeSubscriptions.Contains(completion.SubscriptionId) ||
 			!_tradeCompletionScopes.TryGetValue(completion.SubscriptionId, out var pendingScopes))
 			return;
+
 		foreach (var scope in completion.SubscriptionScopes)
 			pendingScopes.Remove(scope);
+
 		if (pendingScopes.Count != 0 ||
 			!_tradeSubscriptionTransactions.TryGetAndRemove(completion.SubscriptionId, out var transactionId))
 			return;
@@ -507,9 +519,11 @@ public partial class CqgMessageAdapter
 				if (record.OrderId.EqualsIgnoreCase(id))
 					return record;
 		}
+
 		foreach (var record in _orders.Values)
 			if (record.TransactionId == originalTransactionId)
 				return record;
+
 		throw new InvalidOperationException(LocalizedStrings.OrderNoExchangeId.Put(originalTransactionId));
 	}
 

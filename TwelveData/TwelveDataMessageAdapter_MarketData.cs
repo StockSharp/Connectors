@@ -9,6 +9,7 @@ public partial class TwelveDataMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var board = lookupMsg.SecurityId.BoardCode;
 		var value = (lookupMsg.SecurityId.Native as string)
@@ -64,6 +65,7 @@ public partial class TwelveDataMessageAdapter
 			var outputSize = checked((int)Math.Clamp(Math.Min(skip, 120) +
 				Math.Min(left, 120), 1, 120));
 			var response = await SafeRest().Search(value, outputSize, cancellationToken);
+
 			foreach (var item in response?.Data ?? [])
 			{
 				var market = item.GetMarket();
@@ -125,6 +127,7 @@ public partial class TwelveDataMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveLiveSubscription(mdMsg.OriginalTransactionId, cancellationToken);
@@ -165,6 +168,7 @@ public partial class TwelveDataMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -191,6 +195,7 @@ public partial class TwelveDataMessageAdapter
 		var left = mdMsg.Count ?? long.MaxValue;
 		var emitted = new HashSet<long>();
 		var current = from;
+
 		while (current <= to && left > 0)
 		{
 			var outputSize = checked((int)Math.Min(5000, left));
@@ -206,6 +211,7 @@ public partial class TwelveDataMessageAdapter
 					Extensions.ParseCandleTime(value.DateTime, timeFrame, timeZone)))
 				.OrderBy(item => item.OpenTime).ToArray();
 			DateTime? next = null;
+
 			foreach (var item in parsed)
 			{
 				var closeTime = Extensions.GetCandleCloseTime(item.Value.DateTime,

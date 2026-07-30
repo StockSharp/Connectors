@@ -99,9 +99,11 @@ public partial class ApexOmniMessageAdapter
 			_instruments.Clear();
 			_publicInstruments.Clear();
 			_assets.Clear();
+
 			foreach (var asset in assets)
 				if (asset?.Token.IsEmpty() == false && asset.Decimals is >= 0 and <= 28)
 					_assets[asset.Token] = asset;
+
 			foreach (var instrument in contracts)
 			{
 				if (instrument?.Symbol.IsEmpty() != false ||
@@ -115,6 +117,7 @@ public partial class ApexOmniMessageAdapter
 				_instruments[instrument.Symbol] = instrument;
 				_publicInstruments[instrument.CrossSymbolName] = instrument;
 			}
+
 			if (_instruments.Count == 0)
 				throw new InvalidDataException(
 					"ApeX Omni returned no active contract instruments.");
@@ -192,6 +195,7 @@ public partial class ApexOmniMessageAdapter
 		var privateSocket = _privateSocket;
 		_publicSocket = null;
 		_privateSocket = null;
+
 		foreach (var client in new[] { publicSocket, privateSocket })
 		{
 			if (client is null)
@@ -206,6 +210,7 @@ public partial class ApexOmniMessageAdapter
 			}
 			client.Dispose();
 		}
+
 		_restClient?.Dispose();
 		_restClient = null;
 		_signer?.Dispose();

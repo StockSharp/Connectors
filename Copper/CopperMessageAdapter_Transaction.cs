@@ -121,6 +121,7 @@ public partial class CopperMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -129,6 +130,7 @@ public partial class CopperMessageAdapter
 		}
 		var portfolios = await RefreshPortfoliosAsync(cancellationToken);
 		var selected = SelectPortfolios(portfolios, lookupMsg.PortfolioName);
+
 		foreach (var portfolio in selected)
 		{
 			await SendOutMessageAsync(new PortfolioMessage
@@ -139,6 +141,7 @@ public partial class CopperMessageAdapter
 				OriginalTransactionId = lookupMsg.TransactionId,
 			}, cancellationToken);
 		}
+
 		var balances = await GetBalanceSnapshotAsync(cancellationToken);
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, true, selected,
 			balances, cancellationToken);
@@ -149,6 +152,7 @@ public partial class CopperMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions[lookupMsg.TransactionId] = new()
 			{
@@ -163,6 +167,7 @@ public partial class CopperMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -206,6 +211,7 @@ public partial class CopperMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -325,6 +331,7 @@ public partial class CopperMessageAdapter
 		{
 			var portfolios = await RefreshPortfoliosAsync(cancellationToken);
 			var balances = await GetBalanceSnapshotAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target.Key, false,
 					SelectPortfolios(portfolios, target.Value.PortfolioName), balances,
@@ -474,6 +481,7 @@ public partial class CopperMessageAdapter
 
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var order in orders
 			.Where(order => Matches(subscription, order))
 			.OrderBy(order => order.CreatedAt.ToCopperTime(DateTime.UnixEpoch)))
@@ -676,6 +684,7 @@ public partial class CopperMessageAdapter
 		Dictionary<string, T> fingerprints, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in fingerprints.Keys.Where(key => key.StartsWith(
 			prefix, StringComparison.Ordinal)).ToArray())
 			fingerprints.Remove(key);

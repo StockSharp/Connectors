@@ -52,8 +52,10 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 				return cached;
 			var content = await Get($"master/{Uri.EscapeDataString(exchange)}", cancellationToken);
 			var instruments = DeserializeItems<MiraeSharekhanInstrument>(content);
+
 			foreach (var instrument in instruments)
 				instrument.Exchange = instrument.Exchange.IsEmpty(exchange).ToUpperInvariant();
+
 			_instrumentCache[exchange] = instruments;
 			return instruments;
 		}

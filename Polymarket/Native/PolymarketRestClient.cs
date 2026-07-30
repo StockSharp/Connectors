@@ -221,6 +221,7 @@ sealed class PolymarketRestClient : BaseLogReceiver
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
 		path = path.ThrowIfEmpty(nameof(path)).TrimStart('/');
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitAsync(cancellationToken);

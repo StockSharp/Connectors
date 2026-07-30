@@ -33,6 +33,7 @@ public partial class SecApiMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -50,6 +51,7 @@ public partial class SecApiMessageAdapter
         var remaining = lookupMsg.Count ?? long.MaxValue;
         var seen = new HashSet<string>(
             StringComparer.OrdinalIgnoreCase);
+
         foreach (var mapping in mappings ?? [])
         {
             if (mapping is null ||
@@ -89,6 +91,7 @@ public partial class SecApiMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -114,6 +117,7 @@ public partial class SecApiMessageAdapter
             false);
         var response = await SafeClient().SearchFilings(
             query, 0, limit, cancellationToken);
+
         foreach (var item in (response.Filings ?? [])
             .Where(item =>
                 item is not null &&
@@ -160,6 +164,7 @@ public partial class SecApiMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(

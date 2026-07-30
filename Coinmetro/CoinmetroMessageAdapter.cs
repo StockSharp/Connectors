@@ -204,6 +204,7 @@ public partial class CoinmetroMessageAdapter
 			_marketsBySecurity.Clear();
 			_marketsByPair.Clear();
 			_tickers.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Pair.IsEmpty() != false ||
@@ -213,6 +214,7 @@ public partial class CoinmetroMessageAdapter
 				_marketsBySecurity[market.SecurityCode] = market;
 				_marketsByPair[market.Pair] = market;
 			}
+
 			foreach (var ticker in tickers ?? [])
 			{
 				if (ticker?.Pair.IsEmpty() == false)
@@ -255,10 +257,12 @@ public partial class CoinmetroMessageAdapter
 			if (!_seenTradeIds.Add(key))
 				return false;
 			_seenTradeOrder.Enqueue(key);
+
 			while (_seenTradeOrder.Count >
 				_maximumRememberedTradeIds)
 				_seenTradeIds.Remove(
 					_seenTradeOrder.Dequeue());
+
 			return true;
 		}
 	}

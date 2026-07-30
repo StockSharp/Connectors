@@ -90,6 +90,7 @@ sealed class MorningstarClient : BaseLogReceiver, IDisposable
 				?? throw new InvalidOperationException(
 					$"Morningstar returned an empty response for '{address}'.");
 		}
+
 		throw new InvalidOperationException(
 			$"Morningstar request '{address}' exhausted its retry limit.");
 	}

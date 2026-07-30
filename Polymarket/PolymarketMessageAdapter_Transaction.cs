@@ -97,6 +97,7 @@ public partial class PolymarketMessageAdapter
 		var marketFilter = hasSecurity ? GetMarket(cancelMsg.SecurityId) : null;
 		var orders = await RestClient.GetOpenOrdersAsync(HistoryLimit,
 			cancellationToken);
+
 		foreach (var order in (orders ?? [])
 			.Where(static order => order?.Id.IsEmpty() == false)
 			.Where(order => marketFilter is null || order.AssetId.Equals(
@@ -104,6 +105,7 @@ public partial class PolymarketMessageAdapter
 			.Where(order => cancelMsg.Side is null ||
 				order.Side.ToStockSharp() == cancelMsg.Side))
 			await RestClient.CancelOrderAsync(order.Id, cancellationToken);
+
 		SchedulePrivatePoll();
 	}
 
@@ -113,6 +115,7 @@ public partial class PolymarketMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (_portfolioAddress.IsEmpty())
 			throw new InvalidOperationException(
@@ -139,6 +142,7 @@ public partial class PolymarketMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		if (_authenticator.IsAvailable)
@@ -152,6 +156,7 @@ public partial class PolymarketMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -182,6 +187,7 @@ public partial class PolymarketMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId, subscription);
 		await SocketClient.EnsureUserSubscriptionAsync(cancellationToken);
@@ -302,6 +308,7 @@ public partial class PolymarketMessageAdapter
 				"bid price"));
 		var remaining = volume;
 		var boundary = 0m;
+
 		foreach (var level in ordered)
 		{
 			var available = level.Size.ParsePolymarketDecimal("book size");
@@ -312,6 +319,7 @@ public partial class PolymarketMessageAdapter
 			if (remaining <= 0)
 				break;
 		}
+
 		if (remaining > 0 || boundary <= 0)
 			throw new InvalidOperationException(
 				$"Polymarket has insufficient liquidity for {volume} shares of " +
@@ -376,6 +384,7 @@ public partial class PolymarketMessageAdapter
 		}
 
 		var current = new HashSet<string>(StringComparer.Ordinal);
+
 		foreach (var position in await positionsTask ?? [])
 		{
 			if (position?.AssetId.IsEmpty() != false)
@@ -396,6 +405,7 @@ public partial class PolymarketMessageAdapter
 			.TryAdd(PositionChangeTypes.RealizedPnL, position.RealizedPnl, true),
 				cancellationToken);
 		}
+
 		string[] removed;
 		using (_sync.EnterScope())
 		{
@@ -403,6 +413,7 @@ public partial class PolymarketMessageAdapter
 			_knownPositions.Clear();
 			_knownPositions.UnionWith(current);
 		}
+
 		foreach (var token in removed)
 		{
 			var market = GetMarketByToken(token);
@@ -442,9 +453,11 @@ public partial class PolymarketMessageAdapter
 		{
 			if (_marketsByToken.TryGetValue(position.AssetId, out var existing))
 				return existing;
+
 			while (_markets.ContainsKey(market.SecurityCode))
 				market.SecurityCode += ":" + position.AssetId[^Math.Min(8,
 					position.AssetId.Length)..];
+
 			_markets.Add(market.SecurityCode, market);
 			_marketsByToken.Add(market.TokenId, market);
 		}
@@ -473,6 +486,7 @@ public partial class PolymarketMessageAdapter
 		var tradesTask = RestClient.GetTradesAsync(HistoryLimit,
 			cancellationToken).AsTask();
 		await Task.WhenAll(openTask, tradesTask);
+
 		foreach (var pair in orders)
 			await SendOrderSnapshotAsync(await openTask, await tradesTask,
 				pair.Value, pair.Key, true, cancellationToken);
@@ -484,12 +498,14 @@ public partial class PolymarketMessageAdapter
 		bool isIncremental, CancellationToken cancellationToken)
 	{
 		var messages = new List<ExecutionMessage>();
+
 		foreach (var order in orders ?? [])
 		{
 			var message = CreateOrderMessage(order, transactionId);
 			if (message is not null && IsOrderMatch(message, filter))
 				messages.Add(message);
 		}
+
 		foreach (var trade in trades ?? [])
 		{
 			if (trade?.Id.IsEmpty() != false)
@@ -507,6 +523,7 @@ public partial class PolymarketMessageAdapter
 			if (message is not null && IsTradeMatch(message, filter))
 				messages.Add(message);
 		}
+
 		foreach (var message in messages
 			.OrderBy(static message => message.ServerTime)
 			.Skip(filter.Skip).Take(filter.Limit))
@@ -614,12 +631,14 @@ public partial class PolymarketMessageAdapter
 		KeyValuePair<long, PolymarketOrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var subscription in subscriptions)
 			if (IsOrderMatch(message, subscription.Value))
 			{
 				message.OriginalTransactionId = subscription.Key;
 				await SendOutMessageAsync(message.Clone(), cancellationToken);
 			}
+
 		SchedulePrivatePoll();
 	}
 
@@ -659,12 +678,14 @@ public partial class PolymarketMessageAdapter
 		KeyValuePair<long, PolymarketOrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var subscription in subscriptions)
 			if (IsTradeMatch(message, subscription.Value))
 			{
 				message.OriginalTransactionId = subscription.Key;
 				await SendOutMessageAsync(message.Clone(), cancellationToken);
 			}
+
 		SchedulePrivatePoll();
 	}
 

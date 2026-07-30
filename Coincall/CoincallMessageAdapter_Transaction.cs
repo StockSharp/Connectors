@@ -190,6 +190,7 @@ public partial class CoincallMessageAdapter
 				instrument.Symbol, cancellationToken);
 			return;
 		}
+
 		foreach (var order in await RestClient.GetOpenOrdersAsync(
 			instrument?.Symbol, cancellationToken) ?? [])
 		{
@@ -213,6 +214,7 @@ public partial class CoincallMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -244,6 +246,7 @@ public partial class CoincallMessageAdapter
 				lookupMsg, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"Coincall portfolio subscription already exists.");
@@ -268,6 +271,7 @@ public partial class CoincallMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -305,6 +309,7 @@ public partial class CoincallMessageAdapter
 				statusMsg, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"Coincall order-status subscription already " +
@@ -369,11 +374,13 @@ public partial class CoincallMessageAdapter
 		var positionsTask = RestClient.GetPositionsAsync(
 			cancellationToken).AsTask();
 		await Task.WhenAll(accountsTask, positionsTask);
+
 		foreach (var account in await accountsTask ?? [])
 			await SendAccountAsync(
 				account,
 				originalTransactionId,
 				cancellationToken);
+
 		foreach (var position in await positionsTask ?? [])
 			await SendPositionAsync(
 				position,
@@ -503,6 +510,7 @@ public partial class CoincallMessageAdapter
 				limit,
 				cancellationToken).AsTask();
 			await Task.WhenAll(openTask, historyTask);
+
 			foreach (var order in
 				(await openTask ?? [])
 				.Concat(await historyTask ?? [])
@@ -518,6 +526,7 @@ public partial class CoincallMessageAdapter
 					originalTransactionId,
 					cancellationToken);
 		}
+
 		foreach (var fill in await RestClient.GetFillsAsync(
 			from,
 			filter?.To?.ToUniversalTime(),

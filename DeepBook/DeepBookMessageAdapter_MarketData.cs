@@ -8,6 +8,7 @@ public partial class DeepBookMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class DeepBookMessageAdapter
 			markets = [.. _markets.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(static item => item.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
 		{
@@ -44,6 +46,7 @@ public partial class DeepBookMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +56,7 @@ public partial class DeepBookMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -78,6 +82,7 @@ public partial class DeepBookMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -92,6 +97,7 @@ public partial class DeepBookMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -121,6 +127,7 @@ public partial class DeepBookMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_depthSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -136,6 +143,7 @@ public partial class DeepBookMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -162,6 +170,7 @@ public partial class DeepBookMessageAdapter
 			var history = await ApiClient.GetTradesAsync(market, from,
 				to ?? DateTime.UtcNow, maximum.Min(HistoryLimit),
 				cancellationToken);
+
 			foreach (var trade in history)
 			{
 				if (to is DateTime finish && trade.Time > finish)
@@ -181,6 +190,7 @@ public partial class DeepBookMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_tickSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -199,6 +209,7 @@ public partial class DeepBookMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -225,6 +236,7 @@ public partial class DeepBookMessageAdapter
 			to ?? DateTime.UtcNow);
 		var candles = await ApiClient.GetCandlesAsync(market, timeFrame, from,
 			to, count, cancellationToken);
+
 		foreach (var candle in candles)
 		{
 			if (from is DateTime begin && candle.OpenTime < begin ||
@@ -239,11 +251,13 @@ public partial class DeepBookMessageAdapter
 			if (delivered >= maximum)
 				break;
 		}
+
 		if (mdMsg.IsHistoryOnly() || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -399,6 +413,7 @@ public partial class DeepBookMessageAdapter
 			ticks = [.. _tickSubscriptions];
 			candles = [.. _candleSubscriptions];
 		}
+
 		foreach (var item in level1)
 			await PollOneAsync(async token =>
 			{
@@ -407,6 +422,7 @@ public partial class DeepBookMessageAdapter
 				await SendLevel1Async(item.Value.Market, book, item.Key, false,
 					token);
 			}, cancellationToken);
+
 		foreach (var item in depths)
 			await PollOneAsync(async token =>
 			{
@@ -415,9 +431,11 @@ public partial class DeepBookMessageAdapter
 				await SendDepthAsync(item.Value.Market, book, item.Key,
 					item.Value.Depth, false, token);
 			}, cancellationToken);
+
 		foreach (var item in ticks)
 			await PollOneAsync(token => PollTicksAsync(item.Key, item.Value,
 				token), cancellationToken);
+
 		foreach (var item in candles)
 			await PollOneAsync(token => PollCandlesAsync(item.Key, item.Value,
 				token), cancellationToken);
@@ -433,6 +451,7 @@ public partial class DeepBookMessageAdapter
 		var trades = await ApiClient.GetTradesAsync(subscription.Market, from,
 			to, HistoryLimit, cancellationToken);
 		var finished = false;
+
 		foreach (var trade in trades)
 		{
 			var sent = await SendTradeAsync(subscription.Market, target, trade,
@@ -452,6 +471,7 @@ public partial class DeepBookMessageAdapter
 			if (finished)
 				break;
 		}
+
 		if (finished)
 			await SendSubscriptionFinishedAsync(target, cancellationToken);
 	}
@@ -464,6 +484,7 @@ public partial class DeepBookMessageAdapter
 			subscription.TimeFrame, null, subscription.To, 2,
 			cancellationToken);
 		var finished = false;
+
 		foreach (var candle in candles)
 		{
 			var state = candle.OpenTime + subscription.TimeFrame <=
@@ -485,6 +506,7 @@ public partial class DeepBookMessageAdapter
 			if (finished)
 				break;
 		}
+
 		if (finished)
 			await SendSubscriptionFinishedAsync(target, cancellationToken);
 	}
@@ -511,8 +533,10 @@ public partial class DeepBookMessageAdapter
 			if (!_seenMarketData.Add(key))
 				return false;
 			_marketDataDeliveryOrder.Enqueue(key);
+
 			while (_marketDataDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenMarketData.Remove(_marketDataDeliveryOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -529,6 +553,7 @@ public partial class DeepBookMessageAdapter
 		var retained = _marketDataDeliveryOrder.Where(
 			_seenMarketData.Contains).ToArray();
 		_marketDataDeliveryOrder.Clear();
+
 		foreach (var key in retained)
 			_marketDataDeliveryOrder.Enqueue(key);
 	}
@@ -553,6 +578,7 @@ public partial class DeepBookMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

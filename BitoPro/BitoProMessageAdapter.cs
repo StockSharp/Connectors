@@ -170,6 +170,7 @@ public partial class BitoProMessageAdapter
 		{
 			_marketsBySecurity.Clear();
 			_marketsByNative.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.Pair.IsEmpty() != false ||
@@ -249,8 +250,10 @@ public partial class BitoProMessageAdapter
 			if (!ids.Add(key))
 				return false;
 			queue.Enqueue(key);
+
 			while (queue.Count > _maximumRememberedTradeIds)
 				ids.Remove(queue.Dequeue());
+
 			return true;
 		}
 	}

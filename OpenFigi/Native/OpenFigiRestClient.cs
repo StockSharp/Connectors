@@ -76,6 +76,7 @@ sealed class OpenFigiRestClient : BaseLogReceiver
 			Math.Min(maximumResults, 100));
 		var cursors = new HashSet<string>(
 			StringComparer.Ordinal);
+
 		for (var page = 0;
 			page < maximumPages && result.Count < maximumResults;
 			page++)
@@ -97,6 +98,7 @@ sealed class OpenFigiRestClient : BaseLogReceiver
 					"OpenFIGI returned a repeated page cursor.");
 			request["start"] = next;
 		}
+
 		return [.. result];
 	}
 

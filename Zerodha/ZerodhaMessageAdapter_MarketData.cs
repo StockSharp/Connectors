@@ -7,6 +7,7 @@ public partial class ZerodhaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -60,6 +61,7 @@ public partial class ZerodhaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var old))
@@ -109,6 +111,7 @@ public partial class ZerodhaMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 
@@ -216,6 +219,7 @@ public partial class ZerodhaMessageAdapter
 		if (_lastTicks.TryGetValue(tick.InstrumentToken, out var previous) && previous == tradeKey)
 			return;
 		_lastTicks[tick.InstrumentToken] = tradeKey;
+
 		foreach (var subscription in tickSubscriptions)
 		{
 			await SendOutMessageAsync(new ExecutionMessage

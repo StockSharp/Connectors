@@ -7,6 +7,7 @@ public partial class CoinMarketCapMessageAdapter
 		SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		if (securityTypes.Count > 0 &&
 			!securityTypes.Contains(SecurityTypes.CryptoCurrency))
@@ -59,6 +60,7 @@ public partial class CoinMarketCapMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await RemoveLiveSubscriptionAsync(message.OriginalTransactionId,
@@ -101,6 +103,7 @@ public partial class CoinMarketCapMessageAdapter
 		MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(message, cancellationToken);
@@ -140,6 +143,7 @@ public partial class CoinMarketCapMessageAdapter
 				$"CoinMarketCap returned cryptocurrency {response.Id} for requested ID {key.Id}.");
 
 		var candles = new SortedDictionary<DateTime, CoinMarketCapCandle>();
+
 		foreach (var row in response?.Quotes ?? [])
 		{
 			var candle = ToCandle(row, key.QuoteCurrency);
@@ -147,9 +151,11 @@ public partial class CoinMarketCapMessageAdapter
 				candle.OpenTime < to)
 				candles[candle.OpenTime] = candle;
 		}
+
 		foreach (var candle in candles.Values.TakeLast(count))
 			await SendCandleAsync(key.ToSecurityId(), candle, timeFrame,
 				message.TransactionId, cancellationToken);
+
 		await FinishSubscriptionAsync(message, cancellationToken);
 	}
 
@@ -163,17 +169,21 @@ public partial class CoinMarketCapMessageAdapter
 		}
 
 		var downloaded = new Dictionary<int, CoinMarketCapMapEntry>();
+
 		for (var start = 1; downloaded.Count < MaximumItems;)
 		{
 			var limit = Math.Min(5000, MaximumItems - downloaded.Count);
 			var page = await SafeRest().GetMapPageAsync(start, limit,
 				cancellationToken);
+
 			foreach (var coin in page.Where(IsValidCoin))
 				downloaded[coin.Id] = coin;
+
 			if (page.Length < limit)
 				break;
 			start = checked(start + page.Length);
 		}
+
 		using (_sync.EnterScope())
 		{
 			if (_coins.Count == 0)
@@ -338,6 +348,7 @@ public partial class CoinMarketCapMessageAdapter
 			subscriptions = [.. _liveSubscriptions.Values.Where(item =>
 				item.Key.Id == update.CryptoId)];
 		var time = timestamp.ToCoinMarketCapTime();
+
 		foreach (var subscription in subscriptions)
 		{
 			var price = Positive(update.Price);

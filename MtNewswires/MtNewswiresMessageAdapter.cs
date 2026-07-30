@@ -24,8 +24,10 @@ public partial class MtNewswiresMessageAdapter
 			if (!_seen.Add(id))
 				return false;
 			_seenOrder.Enqueue(id);
+
 			while (_seenOrder.Count > _maximumRememberedIds)
 				_seen.Remove(_seenOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -211,6 +213,7 @@ public partial class MtNewswiresMessageAdapter
 				return;
 			}
 		}
+
 		subscription.CursorUtc = to;
 	}
 

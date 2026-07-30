@@ -9,6 +9,7 @@ public partial class MarketstackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var board = lookupMsg.SecurityId.BoardCode;
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		if ((!board.IsEmpty() && !board.EqualsIgnoreCase(Extensions.BoardCode)) ||
@@ -36,6 +37,7 @@ public partial class MarketstackMessageAdapter
 			var page = await SafeRest().GetTickers(value, exchange, offset, limit,
 				cancellationToken);
 			var values = page?.Data ?? [];
+
 			foreach (var ticker in values)
 			{
 				if (ticker == null || !ticker.Matches(value) ||
@@ -76,6 +78,7 @@ public partial class MarketstackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -139,6 +142,7 @@ public partial class MarketstackMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -166,6 +170,7 @@ public partial class MarketstackMessageAdapter
 		const int limit = 1000;
 		var offset = 0L;
 		var bars = new List<MarketstackBar>();
+
 		while (true)
 		{
 			var page = timeFrame == TimeSpan.FromDays(1)
@@ -189,6 +194,7 @@ public partial class MarketstackMessageAdapter
 		}
 
 		var parsed = new List<ParsedBar>(bars.Count);
+
 		foreach (var bar in bars)
 		{
 			if (bar.Matches(key) && Extensions.TryParseUtc(bar.Date, out var openTime) &&
@@ -197,6 +203,7 @@ public partial class MarketstackMessageAdapter
 				parsed.Add(new(bar, openTime));
 			}
 		}
+
 		if (key.Mic.IsEmpty() && parsed.Select(value => value.Value.Exchange)
 			.Where(value => !value.IsEmpty()).Distinct(StringComparer.OrdinalIgnoreCase)
 			.Skip(1).Any())

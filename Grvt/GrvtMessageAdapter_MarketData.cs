@@ -8,6 +8,7 @@ public partial class GrvtMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
@@ -47,6 +48,7 @@ public partial class GrvtMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -55,6 +57,7 @@ public partial class GrvtMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -108,6 +111,7 @@ public partial class GrvtMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -163,6 +167,7 @@ public partial class GrvtMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -180,6 +185,7 @@ public partial class GrvtMessageAdapter
 		{
 			Instrument = instrument.Instrument,
 		};
+
 		foreach (var trade in trades.OrderBy(static item =>
 			item.EventTime.ToGrvtTime()))
 		{
@@ -187,6 +193,7 @@ public partial class GrvtMessageAdapter
 			subscription.TryAccept(trade.TradeId, time);
 			await SendTradeAsync(trade, mdMsg.TransactionId, cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -225,6 +232,7 @@ public partial class GrvtMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -247,6 +255,7 @@ public partial class GrvtMessageAdapter
 			Instrument = instrument.Instrument,
 			TimeFrame = timeFrame,
 		};
+
 		foreach (var candle in candles.OrderBy(static item =>
 			item.OpenTime.ToGrvtTime()))
 		{
@@ -258,6 +267,7 @@ public partial class GrvtMessageAdapter
 					: CandleStates.Active,
 				cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -300,6 +310,7 @@ public partial class GrvtMessageAdapter
 				cancellationToken) ?? [];
 		var result = new List<GrvtTrade>();
 		string cursor = null;
+
 		do
 		{
 			var page = await RestClient.GetTradeHistoryAsync(new()
@@ -314,6 +325,7 @@ public partial class GrvtMessageAdapter
 			cursor = page?.Next;
 		}
 		while (!cursor.IsEmpty() && result.Count < limit);
+
 		return [.. result
 			.Where(static item => item?.TradeId.IsEmpty() == false)
 			.GroupBy(static item => item.TradeId,
@@ -329,6 +341,7 @@ public partial class GrvtMessageAdapter
 	{
 		var result = new List<GrvtCandlestick>();
 		string cursor = null;
+
 		do
 		{
 			var page = await RestClient.GetCandlesticksAsync(new()
@@ -345,6 +358,7 @@ public partial class GrvtMessageAdapter
 			cursor = page?.Next;
 		}
 		while (!cursor.IsEmpty() && result.Count < limit);
+
 		return [.. result
 			.Where(static item => item is not null)
 			.GroupBy(static item => item.OpenTime)
@@ -442,6 +456,7 @@ public partial class GrvtMessageAdapter
 				.Where(pair => pair.Value.Instrument.EqualsIgnoreCase(
 					ticker.Instrument))
 				.Select(static pair => pair.Key)];
+
 		foreach (var transactionId in subscriptions)
 			await SendTickerAsync(ticker, transactionId, cancellationToken);
 	}
@@ -456,6 +471,7 @@ public partial class GrvtMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.Instrument.EqualsIgnoreCase(book.Instrument))];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendBookAsync(book, transactionId, subscription.Depth,
 				cancellationToken);
@@ -472,14 +488,17 @@ public partial class GrvtMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var accepted = new List<long>();
+
 			foreach (var (transactionId, subscription) in _tickSubscriptions)
 			{
 				if (subscription.Instrument.EqualsIgnoreCase(trade.Instrument) &&
 					subscription.TryAccept(trade.TradeId, time))
 					accepted.Add(transactionId);
 			}
+
 			subscriptions = [.. accepted];
 		}
+
 		foreach (var transactionId in subscriptions)
 			await SendTradeAsync(trade, transactionId, cancellationToken);
 	}
@@ -494,6 +513,7 @@ public partial class GrvtMessageAdapter
 		using (_sync.EnterScope())
 		{
 			var accepted = new List<KeyValuePair<long, CandleSubscription>>();
+
 			foreach (var pair in _candleSubscriptions)
 			{
 				var stream = GetCandleStream(pair.Value.Instrument,
@@ -504,8 +524,10 @@ public partial class GrvtMessageAdapter
 				pair.Value.LastOpenTime = openTime;
 				accepted.Add(pair);
 			}
+
 			subscriptions = [.. accepted];
 		}
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			await SendCandleAsync(candle, transactionId,
 				subscription.TimeFrame,

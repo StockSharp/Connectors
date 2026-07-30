@@ -23,8 +23,10 @@ public partial class DowJonesMessageAdapter
 			if (!_seen.Add(id))
 				return false;
 			_seenOrder.Enqueue(id);
+
 			while (_seenOrder.Count > _maximumRememberedIds)
 				_seen.Remove(_seenOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -221,6 +223,7 @@ public partial class DowJonesMessageAdapter
 				return;
 			}
 		}
+
 		subscription.CursorUtc = to;
 	}
 

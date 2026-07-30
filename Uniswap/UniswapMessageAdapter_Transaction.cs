@@ -129,6 +129,7 @@ public partial class UniswapMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -157,6 +158,7 @@ public partial class UniswapMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -168,6 +170,7 @@ public partial class UniswapMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -212,6 +215,7 @@ public partial class UniswapMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -272,12 +276,15 @@ public partial class UniswapMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -330,9 +337,11 @@ public partial class UniswapMessageAdapter
 					StringComparer.OrdinalIgnoreCase)
 				.Select(static group => group.First())];
 		var result = new List<(UniswapToken, BigInteger)>();
+
 		foreach (var token in tokens)
 			result.Add((token, await RpcClient.GetBalanceAsync(token,
 				cancellationToken)));
+
 		return [.. result];
 	}
 
@@ -348,17 +357,19 @@ public partial class UniswapMessageAdapter
 	{
 		foreach (var item in balances)
 		{
-			var current = item.Amount.FromBaseUnits(item.Token.Decimals);
-			var fingerprint = new BalanceFingerprint(current, 0m);
-			var key = $"{target}:{item.Token.Address}";
-			using (_sync.EnterScope())
-			{
+				var current = item.Amount.FromBaseUnits(item.Token.Decimals);
+				var fingerprint = new BalanceFingerprint(current, 0m);
+				var key = $"{target}:{item.Token.Address}";
+
+				using (_sync.EnterScope())
+				{
 				if (!isForced && _balanceFingerprints.TryGetValue(key,
 					out var previous) && previous == fingerprint)
 					continue;
-				_balanceFingerprints[key] = fingerprint;
-			}
-			await SendOutMessageAsync(new PositionChangeMessage
+					_balanceFingerprints[key] = fingerprint;
+				}
+
+				await SendOutMessageAsync(new PositionChangeMessage
 			{
 				PortfolioName = GetPortfolioName(),
 				SecurityId = new()
@@ -386,6 +397,7 @@ public partial class UniswapMessageAdapter
 				.OrderBy(static swap => swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			var receipt = swap.State == OrderStates.Active

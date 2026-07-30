@@ -96,10 +96,12 @@ sealed class RaydiumRpcClient : BaseLogReceiver
 			throw new ArgumentException(
 				"At least one Raydium program is required.",
 				nameof(programAddresses));
+
 		for (var offset = 0; offset < programs.Length; offset += 100)
 		{
 			var chunk = programs.Skip(offset).Take(100).ToArray();
 			var accounts = await GetAccountsAsync(chunk, cancellationToken);
+
 			for (var index = 0; index < chunk.Length; index++)
 				if (index >= accounts.Length || accounts[index] is null ||
 					!accounts[index].IsExecutable)
@@ -270,6 +272,7 @@ sealed class RaydiumRpcClient : BaseLogReceiver
 		RaydiumRpcParameters parameters, CancellationToken cancellationToken)
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRateLimitAsync(cancellationToken);

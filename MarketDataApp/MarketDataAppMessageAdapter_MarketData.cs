@@ -9,6 +9,7 @@ public partial class MarketDataAppMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		if (lookupMsg.Skip is < 0)
 			throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
 		if (lookupMsg.Count is <= 0)
@@ -55,6 +56,7 @@ public partial class MarketDataAppMessageAdapter
 
 		var skip = lookupMsg.Skip ?? 0;
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var instrument in instruments
 			.GroupBy(static instrument => instrument.NativeId,
 				StringComparer.OrdinalIgnoreCase)
@@ -77,6 +79,7 @@ public partial class MarketDataAppMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg,
 			cancellationToken);
 	}
@@ -102,6 +105,7 @@ public partial class MarketDataAppMessageAdapter
 				SecurityTypes.Fund));
 
 		var result = new List<MarketDataAppInstrument>();
+
 		foreach (var request in requests)
 		{
 			if (request.Kind == MarketDataAppAssetKinds.Fund)
@@ -125,6 +129,7 @@ public partial class MarketDataAppMessageAdapter
 			result.AddRange(quotes.Select(quote =>
 				quote.ToInstrument(request.Kind, request.Type)));
 		}
+
 		return [.. result];
 	}
 
@@ -166,6 +171,7 @@ public partial class MarketDataAppMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -212,6 +218,7 @@ public partial class MarketDataAppMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 		if (mdMsg.Count is <= 0)
@@ -235,6 +242,7 @@ public partial class MarketDataAppMessageAdapter
 			.ToUniversalTime();
 		var candles = await LoadCandlesAsync(instrument, resolution,
 			timeFrame, from, to, cancellationToken);
+
 		foreach (var candle in candles
 			.Where(candle => candle.OpenTime >= from &&
 				candle.OpenTime <= to)
@@ -254,6 +262,7 @@ public partial class MarketDataAppMessageAdapter
 				TotalVolume = candle.Volume ?? 0,
 				State = CandleStates.Finished,
 			}, cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(mdMsg,
 			cancellationToken);
 	}
@@ -266,6 +275,7 @@ public partial class MarketDataAppMessageAdapter
 	{
 		var result = new List<MarketDataAppCandle>();
 		var cursor = from;
+
 		do
 		{
 			var end = timeFrame < TimeSpan.FromDays(1)
@@ -280,6 +290,7 @@ public partial class MarketDataAppMessageAdapter
 			cursor = end.AddSeconds(1);
 		}
 		while (cursor <= to);
+
 		return result
 			.GroupBy(static candle => candle.OpenTime)
 			.Select(static group => group.First())

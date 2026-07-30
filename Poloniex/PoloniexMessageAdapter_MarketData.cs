@@ -78,6 +78,7 @@ partial class PoloniexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.ToCurrency();
 
 		if (mdMsg.IsSubscribe)
@@ -102,6 +103,7 @@ partial class PoloniexMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var symbol = mdMsg.SecurityId.ToCurrency();
 
 		if (mdMsg.IsSubscribe)
@@ -258,8 +260,10 @@ partial class PoloniexMessageAdapter
 			return null;
 
 		var result = 1m;
+
 		for (var i = 0; i < scale; i++)
 			result /= 10m;
+
 		return result;
 	}
 

@@ -184,16 +184,20 @@ public partial class GmoCoinMessageAdapter
 					Side = cancelMsg.Side?.ToGmoCoin(),
 					IsDescending = false,
 				}, cancellationToken) ?? [];
+
 				foreach (var orderId in canceled)
 					await SendCanceledOrderAsync(orderId,
 						cancelMsg.TransactionId, cancellationToken);
+
 				if (canceled.Length < 10)
 					break;
 			}
+
 			return;
 		}
 
 		var selected = new List<GmoCoinOrder>();
+
 		foreach (var market in markets)
 			selected.AddRange((await DownloadActiveOrdersAsync(market, 1000,
 				cancellationToken)).Where(order =>
@@ -201,6 +205,7 @@ public partial class GmoCoinMessageAdapter
 					cancelMsg.IsStop.Value &&
 					(cancelMsg.Side is null ||
 						order.Side.ToStockSharp() == cancelMsg.Side)));
+
 		foreach (var chunk in selected.Chunk(10))
 		{
 			var result = await RestClient.CancelOrdersAsync(new()
@@ -213,6 +218,7 @@ public partial class GmoCoinMessageAdapter
 				throw new InvalidOperationException(
 					$"GMO Coin failed to cancel order {first.OrderId}: {first.Code} {first.Message}".Trim());
 			}
+
 			foreach (var orderId in result?.SuccessfulOrderIds ?? [])
 				await SendCanceledOrderAsync(orderId, cancelMsg.TransactionId,
 					cancellationToken);
@@ -224,6 +230,7 @@ public partial class GmoCoinMessageAdapter
 		PortfolioLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -246,12 +253,14 @@ public partial class GmoCoinMessageAdapter
 				cancellationToken);
 		}
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 	}
@@ -261,6 +270,7 @@ public partial class GmoCoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -302,6 +312,7 @@ public partial class GmoCoinMessageAdapter
 			{
 				OrderIds = requestedOrderId.ToString(CultureInfo.InvariantCulture),
 			}, cancellationToken);
+
 			foreach (var execution in executions?.Items ?? [])
 				await SendAccountTradeAsync(execution, statusMsg.TransactionId,
 					cancellationToken);
@@ -310,6 +321,7 @@ public partial class GmoCoinMessageAdapter
 		{
 			var markets = market is null ? GetSelectedMarkets(default) : [market];
 			var sent = 0;
+
 			foreach (var selectedMarket in markets)
 			{
 				foreach (var order in await DownloadActiveOrdersAsync(selectedMarket,
@@ -323,11 +335,13 @@ public partial class GmoCoinMessageAdapter
 					if (++sent >= maximum)
 						break;
 				}
+
 				if (sent >= maximum)
 					break;
 			}
 
 			var executions = new List<GmoCoinExecution>();
+
 			foreach (var selectedMarket in markets)
 			{
 				if (executions.Count >= maximum)
@@ -335,12 +349,14 @@ public partial class GmoCoinMessageAdapter
 				executions.AddRange(await DownloadExecutionsAsync(selectedMarket,
 					statusMsg, maximum - executions.Count, cancellationToken));
 			}
+
 			foreach (var group in executions.Where(execution =>
 				statusMsg.Side is null ||
 				execution.Side.ToStockSharp() == statusMsg.Side)
 				.GroupBy(static execution => execution.OrderId))
 				await SendCompletedOrderAsync(group, statusMsg.TransactionId,
 					cancellationToken);
+
 			foreach (var execution in executions)
 				if (statusMsg.Side is null ||
 					execution.Side.ToStockSharp() == statusMsg.Side)
@@ -349,12 +365,14 @@ public partial class GmoCoinMessageAdapter
 		}
 
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = new()
 			{
@@ -483,6 +501,7 @@ public partial class GmoCoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var values = new List<GmoCoinOrder>();
+
 		for (var page = 1; values.Count < maximum; page++)
 		{
 			var pageSize = (maximum - values.Count).Min(100).Max(1);
@@ -497,6 +516,7 @@ public partial class GmoCoinMessageAdapter
 			if (items.Length < pageSize)
 				break;
 		}
+
 		return [.. values.Take(maximum)];
 	}
 
@@ -507,6 +527,7 @@ public partial class GmoCoinMessageAdapter
 		var from = message.From?.ToUniversalTime();
 		var to = (message.To ?? DateTime.UtcNow).ToUniversalTime();
 		var values = new List<GmoCoinExecution>();
+
 		for (var page = 1; values.Count < maximum && page <= 100; page++)
 		{
 			var pageSize = (maximum - values.Count).Min(100).Max(1);
@@ -517,6 +538,7 @@ public partial class GmoCoinMessageAdapter
 				Count = pageSize,
 			}, cancellationToken);
 			var items = response?.Items ?? [];
+
 			foreach (var execution in items)
 			{
 				if (execution is null)
@@ -525,11 +547,13 @@ public partial class GmoCoinMessageAdapter
 				if ((from is null || time >= from) && time <= to)
 					values.Add(execution);
 			}
+
 			if (items.Length < pageSize || (from is DateTime lower &&
 				items.Any(item => item?.Timestamp.FromGmoCoinTime(
 					DateTime.MaxValue) < lower)))
 				break;
 		}
+
 		return [.. values.OrderBy(static value => value.Timestamp)
 			.TakeLast(maximum)];
 	}
@@ -540,6 +564,7 @@ public partial class GmoCoinMessageAdapter
 		if (!market.IsMargin)
 			return [];
 		var values = new List<GmoCoinPosition>();
+
 		for (var page = 1; page <= 100; page++)
 		{
 			var response = await RestClient.GetOpenPositionsAsync(new()
@@ -553,6 +578,7 @@ public partial class GmoCoinMessageAdapter
 			if (items.Length < 100)
 				break;
 		}
+
 		return [.. values];
 	}
 
@@ -564,6 +590,7 @@ public partial class GmoCoinMessageAdapter
 		using (_sync.EnterScope())
 			marginMarkets = [.. _markets.Values.Where(static market =>
 				market.IsMargin)];
+
 		foreach (var market in marginMarkets)
 			foreach (var position in await DownloadOpenPositionsAsync(market,
 				cancellationToken))
@@ -575,6 +602,7 @@ public partial class GmoCoinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var assets = await RestClient.GetAssetsAsync(cancellationToken);
+
 		foreach (var asset in assets ?? [])
 			await SendAssetAsync(asset, originalTransactionId, cancellationToken);
 	}
@@ -859,6 +887,7 @@ public partial class GmoCoinMessageAdapter
 			subscriptions = [.. _orderSubscriptions.Where(pair =>
 				MatchesOrderSubscription(pair.Value, update.Symbol,
 					update.OrderId, side))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -917,6 +946,7 @@ public partial class GmoCoinMessageAdapter
 				MatchesOrderSubscription(pair.Value, update.Symbol,
 					update.OrderId, side))];
 		var serverTime = update.ExecutionTimestamp.FromGmoCoinTime(CurrentTime);
+
 		foreach (var pair in subscriptions)
 		{
 			await SendOutMessageAsync(new ExecutionMessage
@@ -972,6 +1002,7 @@ public partial class GmoCoinMessageAdapter
 		if (portfolioSubscriptions.Length > 0)
 		{
 			var assets = await RestClient.GetAssetsAsync(cancellationToken);
+
 			foreach (var subscriptionId in portfolioSubscriptions)
 				foreach (var asset in assets ?? [])
 					await SendAssetAsync(asset, subscriptionId,
@@ -1000,6 +1031,7 @@ public partial class GmoCoinMessageAdapter
 			LossCutPrice = update.LossCutPrice,
 			Timestamp = update.Timestamp,
 		};
+
 		foreach (var subscriptionId in subscriptions)
 			await SendPositionAsync(position, subscriptionId,
 				cancellationToken,
@@ -1017,6 +1049,7 @@ public partial class GmoCoinMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var subscriptionId in subscriptions)
 			await SendPositionSummaryAsync(update, subscriptionId,
 				cancellationToken);

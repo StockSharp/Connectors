@@ -6,6 +6,7 @@ public partial class KoreaInvestmentMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var code = lookupMsg.SecurityId.SecurityCode.ThrowIfEmpty(nameof(lookupMsg.SecurityId.SecurityCode));
 		var requestedType = lookupMsg.SecurityType ?? lookupMsg.GetSecurityTypes().FirstOrDefault();
 		var info = lookupMsg.SecurityId.ToKis(requestedType);
@@ -45,6 +46,7 @@ public partial class KoreaInvestmentMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var previous))
@@ -84,6 +86,7 @@ public partial class KoreaInvestmentMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			if (_marketSubscriptions.TryGetAndRemove(mdMsg.OriginalTransactionId, out var previous))
@@ -95,6 +98,7 @@ public partial class KoreaInvestmentMessageAdapter
 		if (!KoreaInvestmentExtensions.TimeFrames.Contains(timeFrame))
 			throw new ArgumentOutOfRangeException(nameof(mdMsg), timeFrame, "Unsupported KIS candle time frame.");
 		var info = ResolveSecurity(mdMsg.SecurityId);
+
 		foreach (var candle in await _rest.GetCandles(info, timeFrame, mdMsg.From, mdMsg.To, mdMsg.Count, cancellationToken))
 		{
 			await SendOutMessageAsync(new TimeFrameCandleMessage

@@ -105,6 +105,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 			var nativeAccounts = bridge.ReadList(loginResponse, "login");
 			if (nativeAccounts.Length == 0)
 				throw new InvalidOperationException("Fubon login succeeded but returned no trading accounts.");
+
 			foreach (var native in nativeAccounts)
 			{
 				var account = ReadAccount(native);
@@ -143,10 +144,12 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 			if (_securities != null)
 				return _securities;
 			var result = new List<FubonNeoSecurityInfo>();
+
 			foreach (var type in new[] { "Equity", "Index", "Warrant" })
 			{
 				var page = Deserialize<FubonNeoTickerListResponse>(
 					await EnsureBridge().GetTickerListAsync(FubonNeoAssetKinds.Stock, type));
+
 				foreach (var ticker in page.Data ?? [])
 				{
 					if (ticker?.Symbol.IsEmpty() != false)
@@ -170,6 +173,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 				{
 					var page = Deserialize<FubonNeoTickerListResponse>(
 						await EnsureBridge().GetTickerListAsync(FubonNeoAssetKinds.FuturesOptions, type, session));
+
 					foreach (var ticker in page.Data ?? [])
 					{
 						if (ticker?.Symbol.IsEmpty() != false)
@@ -386,11 +390,13 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 	{
 		var bridge = EnsureBridge();
 		var result = new List<FubonNeoOrderUpdate>();
+
 		foreach (var account in _accounts.Values.DistinctBy(item => item.Info.PortfolioName))
 		{
 			var response = account.Info.IsFutures
 				? bridge.Call(bridge.FutOpt, "GetOrderResultsDetail", account.Value, null)
 				: bridge.Call(bridge.Stock, "GetOrderResultsDetail", account.Value);
+
 			foreach (var data in bridge.ReadList(response, "order query"))
 			{
 				var native = new NativeOrder { Value = data, Account = account, IsFutures = account.Info.IsFutures };
@@ -398,6 +404,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 				result.Add(ReadOrder(data, native.IsFutures));
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -406,6 +413,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 		var bridge = EnsureBridge();
 		var result = new List<FubonNeoFillUpdate>();
 		var date = DateTime.UtcNow.AddHours(8).ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+
 		foreach (var account in _accounts.Values.DistinctBy(item => item.Info.PortfolioName))
 		{
 			if (!account.Info.IsFutures)
@@ -430,6 +438,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 				}
 			}
 		}
+
 		return [.. result.GroupBy(item => $"{item.OrderId}|{item.FillId}", StringComparer.OrdinalIgnoreCase)
 			.Select(group => group.First())];
 	}
@@ -438,11 +447,13 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 	{
 		var bridge = EnsureBridge();
 		var result = new List<FubonNeoPositionInfo>();
+
 		foreach (var account in FilterAccounts(portfolioName))
 		{
 			if (account.Info.IsFutures)
 			{
 				var response = bridge.Call(bridge.FutOptAccounting, "QuerySinglePosition", account.Value);
+
 				foreach (var data in bridge.ReadList(response, "futures/options position query"))
 				{
 					var side = Text(data, "buySell");
@@ -466,6 +477,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 			else
 			{
 				var response = bridge.Call(bridge.Accounting, "UnrealizedGainsAndLoses", account.Value);
+
 				foreach (var data in bridge.ReadList(response, "stock position query"))
 				{
 					var side = Text(data, "buySell");
@@ -483,6 +495,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 				}
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -490,11 +503,13 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 	{
 		var bridge = EnsureBridge();
 		var result = new List<FubonNeoCashInfo>();
+
 		foreach (var account in FilterAccounts(portfolioName))
 		{
 			if (account.Info.IsFutures)
 			{
 				var response = bridge.Call(bridge.FutOptAccounting, "QueryMarginEquity", account.Value);
+
 				foreach (var data in bridge.ReadList(response, "futures/options equity query"))
 				{
 					result.Add(new()
@@ -524,6 +539,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 				}
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -761,14 +777,17 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 		{
 			var cancellationToken = _lifetime?.Token ?? CancellationToken.None;
 			Exception lastError = null;
+
 			for (var attempt = 1; attempt <= _reconnectAttempts && !cancellationToken.IsCancellationRequested; attempt++)
 			{
 				try
 				{
 					await Task.Delay(TimeSpan.FromSeconds(Math.Min(attempt, 10)), cancellationToken);
 					await EnsureSocketConnectedAsync(kind, cancellationToken);
+
 					foreach (var subscription in _subscriptions.Values.Where(item => item.Kind == kind))
 						await SendSubscriptionAsync(subscription);
+
 					this.AddInfoLog("Fubon {0} WebSocket reconnected on attempt {1}.", kind, attempt);
 					return;
 				}
@@ -783,6 +802,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 						kind, attempt, error.Message);
 				}
 			}
+
 			await RaiseConnectionLostAsync(lastError ?? new InvalidOperationException(
 				$"Fubon {kind} WebSocket disconnected: {message.IsEmpty("unknown reason")}."));
 		}
@@ -802,8 +822,10 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 			if (item.Value.Kind == kind)
 				_serverSubscriptions.Remove(item.Key);
 		}
+
 		foreach (var subscription in _subscriptions.Values.Where(item => item.Kind == kind))
 			subscription.ServerId = null;
+
 		lock (GetPendingSync(kind))
 			GetPendingQueue(kind).Clear();
 	}

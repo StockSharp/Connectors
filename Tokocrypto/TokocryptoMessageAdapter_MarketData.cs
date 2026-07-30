@@ -9,6 +9,7 @@ public partial class TokocryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -20,6 +21,7 @@ public partial class TokocryptoMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -51,6 +53,7 @@ public partial class TokocryptoMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -60,6 +63,7 @@ public partial class TokocryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -119,6 +123,7 @@ public partial class TokocryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -185,6 +190,7 @@ public partial class TokocryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -209,6 +215,7 @@ public partial class TokocryptoMessageAdapter
 			var to = (mdMsg.To ?? DateTime.UtcNow).ToUtc();
 			var trades = await RestClient.GetPublicTradesAsync(
 				market.Pair, cancellationToken);
+
 			foreach (var trade in (trades ?? [])
 				.Where(trade =>
 				{
@@ -271,6 +278,7 @@ public partial class TokocryptoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -306,6 +314,7 @@ public partial class TokocryptoMessageAdapter
 				var candles = await RestClient.GetCandlesAsync(
 					market.Pair, resolution, from, to,
 					cancellationToken);
+
 				foreach (var candle in (candles ?? [])
 					.Where(candle =>
 					{
@@ -326,6 +335,7 @@ public partial class TokocryptoMessageAdapter
 						"unavailable; continuing with live WebSocket.");
 			}
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(
@@ -509,6 +519,7 @@ public partial class TokocryptoMessageAdapter
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(
 					market.Pair))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(
 				CreateLevel1Message(market, ticker, pair.Key),
@@ -529,6 +540,7 @@ public partial class TokocryptoMessageAdapter
 				pair.Value.NativeSymbol.EqualsIgnoreCase(market.Pair) &&
 				(book.Limit <= 0 ||
 					pair.Value.StreamDepth == book.Limit))];
+
 		foreach (var pair in subscriptions)
 			await SendDepthAsync(
 				pair.Value.SecurityCode, book, pair.Key,
@@ -547,6 +559,7 @@ public partial class TokocryptoMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(market.Pair))];
+
 		for (var index = 0; index < (push.Data?.Length ?? 0); index++)
 		{
 			var trade = push.Data[index];
@@ -555,6 +568,7 @@ public partial class TokocryptoMessageAdapter
 				: $"{push.EventId}-{index}";
 			if (!AddTrade(market.Pair, tradeId, false))
 				continue;
+
 			foreach (var pair in subscriptions)
 				await SendPublicTradeAsync(
 					pair.Value.SecurityCode, trade, tradeId,
@@ -577,6 +591,7 @@ public partial class TokocryptoMessageAdapter
 				pair.Value.NativeSymbol.EqualsIgnoreCase(market.Pair) &&
 				pair.Value.Resolution.EqualsIgnoreCase(
 					push.Kline.Resolution))];
+
 		foreach (var pair in subscriptions)
 			await SendCandleAsync(
 				pair.Value.SecurityCode,

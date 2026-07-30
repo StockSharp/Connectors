@@ -169,6 +169,7 @@ public partial class ZeroHashMessageAdapter
 				: [GetInstrument(cancelMsg.SecurityId).Symbol],
 		}, cancellationToken) ?? throw new InvalidDataException(
 			"Zero Hash returned an empty open-orders response.");
+
 		foreach (var order in response.Orders ?? [])
 		{
 			if (order?.Id.IsEmpty() != false || order.Symbol.IsEmpty())
@@ -199,6 +200,7 @@ public partial class ZeroHashMessageAdapter
 				throw;
 			}
 		}
+
 		SchedulePoll();
 	}
 
@@ -208,6 +210,7 @@ public partial class ZeroHashMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -231,6 +234,7 @@ public partial class ZeroHashMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -242,6 +246,7 @@ public partial class ZeroHashMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -267,6 +272,7 @@ public partial class ZeroHashMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions.Add(statusMsg.TransactionId, filter);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -317,10 +323,11 @@ public partial class ZeroHashMessageAdapter
 	{
 		foreach (var balance in balances.Where(static item =>
 			item is not null && !item.Asset.IsEmpty()))
-		{
-			var time = balance.UpdateTime.TryParseZeroHashTime() ?? DateTime.UtcNow;
-			UpdateServerTime(time);
-			await SendOutMessageAsync(new PositionChangeMessage
+			{
+				var time = balance.UpdateTime.TryParseZeroHashTime() ?? DateTime.UtcNow;
+				UpdateServerTime(time);
+
+				await SendOutMessageAsync(new PositionChangeMessage
 			{
 				PortfolioName = _portfolioName,
 				SecurityId = new()
@@ -346,13 +353,16 @@ public partial class ZeroHashMessageAdapter
 			.Skip(filter.Skip)
 			.Take(filter.Limit)
 			.ToArray();
+
 		foreach (var order in selectedOrders)
 			await ProcessOrderAsync(order, transactionId, null,
 				cancellationToken);
+
 		var selectedIds = selectedOrders
 			.Select(static order => order.Id)
 			.Where(static id => !id.IsEmpty())
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		foreach (var execution in await LoadExecutionsAsync(filter,
 			cancellationToken))
 			if (execution.Order?.Id is { } orderId &&
@@ -368,6 +378,7 @@ public partial class ZeroHashMessageAdapter
 		var orders = new List<ZeroHashOrder>();
 		var token = string.Empty;
 		var tokens = new HashSet<string>(StringComparer.Ordinal);
+
 		for (var page = 0; page < 1000; page++)
 		{
 			var response = await RestClient.SearchOrdersAsync(new()
@@ -392,6 +403,7 @@ public partial class ZeroHashMessageAdapter
 					"Zero Hash repeated an order-search page token.");
 			token = response.NextPageToken;
 		}
+
 		return [.. orders
 			.GroupBy(static order => order.Id ?? order.ClientOrderId,
 				StringComparer.OrdinalIgnoreCase)
@@ -406,6 +418,7 @@ public partial class ZeroHashMessageAdapter
 		var executions = new List<ZeroHashExecution>();
 		var token = string.Empty;
 		var tokens = new HashSet<string>(StringComparer.Ordinal);
+
 		for (var page = 0; page < 1000; page++)
 		{
 			var response = await RestClient.SearchExecutionsAsync(new()
@@ -432,6 +445,7 @@ public partial class ZeroHashMessageAdapter
 					"Zero Hash repeated an execution-search page token.");
 			token = response.NextPageToken;
 		}
+
 		return [.. executions
 			.GroupBy(static execution => execution.Id ?? execution.TradeId,
 				StringComparer.OrdinalIgnoreCase)
@@ -473,10 +487,12 @@ public partial class ZeroHashMessageAdapter
 				User = User.Trim(),
 			}, cancellationToken) ?? throw new InvalidDataException(
 				"Zero Hash returned an empty account-balance response.");
+
 			foreach (var transactionId in portfolioSubscriptions)
 				await SendBalancesAsync(response.Balances ?? [], transactionId,
 					cancellationToken);
 		}
+
 		foreach (var (transactionId, filter) in orderSubscriptions)
 			await SendOrderSnapshotAsync(filter, transactionId,
 				cancellationToken);
@@ -495,6 +511,7 @@ public partial class ZeroHashMessageAdapter
 		var targets = directTarget != 0
 			? [directTarget]
 			: GetOrderTargets(message);
+
 		foreach (var target in targets)
 		{
 			var fingerprint = target.ToString(CultureInfo.InvariantCulture) + "|" +
@@ -507,6 +524,7 @@ public partial class ZeroHashMessageAdapter
 			clone.OriginalTransactionId = target;
 			await SendOutMessageAsync(clone, cancellationToken);
 		}
+
 		if (order.State == ZeroHashOrderStates.Canceled)
 			using (_sync.EnterScope())
 				_pendingCancels.Remove(order.Id);
@@ -550,6 +568,7 @@ public partial class ZeroHashMessageAdapter
 		var time = execution.TransactionTime.TryParseZeroHashTime() ??
 			GetOrderTime(order);
 		UpdateServerTime(time);
+
 		foreach (var target in targets)
 		{
 			var key = target.ToString(CultureInfo.InvariantCulture) + "|" + tradeId;

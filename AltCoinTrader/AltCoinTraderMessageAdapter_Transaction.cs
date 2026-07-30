@@ -186,6 +186,7 @@ public partial class AltCoinTraderMessageAdapter
 		var orders = await RestClient.GetOpenOrdersAsync(
 			market?.Symbol,
 			cancellationToken) ?? [];
+
 		foreach (var order in orders.Where(order =>
 			order?.OrderId.IsEmpty() == false &&
 			(cancelMsg.Side is null ||
@@ -209,6 +210,7 @@ public partial class AltCoinTraderMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 
 		if (!lookupMsg.IsSubscribe)
@@ -241,6 +243,7 @@ public partial class AltCoinTraderMessageAdapter
 		await SendSubscriptionResultAsync(
 			lookupMsg,
 			cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
@@ -248,6 +251,7 @@ public partial class AltCoinTraderMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 	}
 
@@ -259,6 +263,7 @@ public partial class AltCoinTraderMessageAdapter
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 
 		if (!statusMsg.IsSubscribe)
@@ -285,6 +290,7 @@ public partial class AltCoinTraderMessageAdapter
 		await SendSubscriptionResultAsync(
 			statusMsg,
 			cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(
@@ -292,6 +298,7 @@ public partial class AltCoinTraderMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 	}
 
@@ -301,6 +308,7 @@ public partial class AltCoinTraderMessageAdapter
 	{
 		var balances = await RestClient.GetBalancesAsync(
 			cancellationToken);
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(
 				balance,
@@ -377,6 +385,7 @@ public partial class AltCoinTraderMessageAdapter
 				maximum,
 				1,
 				cancellationToken);
+
 			foreach (var trade in (trades ?? [])
 				.Where(trade =>
 					MatchesTrade(trade, markets))
@@ -396,6 +405,7 @@ public partial class AltCoinTraderMessageAdapter
 		var orders = await RestClient.GetOpenOrdersAsync(
 			null,
 			cancellationToken);
+
 		foreach (var order in orders ?? [])
 			await SendOrderAsync(
 				order,
@@ -409,6 +419,7 @@ public partial class AltCoinTraderMessageAdapter
 			200,
 			1,
 			cancellationToken);
+
 		foreach (var trade in trades ?? [])
 			await SendPrivateTradeAsync(
 				trade,
@@ -599,6 +610,7 @@ public partial class AltCoinTraderMessageAdapter
 	{
 		if (_portfolioSubscriptionId == 0)
 			return;
+
 		foreach (var balance in balances ?? [])
 			await SendBalanceAsync(
 				balance,

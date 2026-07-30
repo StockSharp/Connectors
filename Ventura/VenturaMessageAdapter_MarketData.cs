@@ -23,6 +23,7 @@ public partial class VenturaMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -138,6 +139,7 @@ public partial class VenturaMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			await RemoveRealtimeSubscription(

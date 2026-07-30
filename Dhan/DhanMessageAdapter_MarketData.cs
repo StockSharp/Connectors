@@ -12,6 +12,7 @@ public partial class DhanMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
@@ -84,6 +85,7 @@ public partial class DhanMessageAdapter
 	private async ValueTask ProcessNormalSubscription(MarketDataMessage mdMsg, DataType dataType, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (_marketClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
@@ -123,6 +125,7 @@ public partial class DhanMessageAdapter
 	private async ValueTask ProcessExtendedDepthSubscription(MarketDataMessage mdMsg, int depth, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		var instrumentKey = mdMsg.SecurityId.ToInstrumentKey();
 
 		if (mdMsg.IsSubscribe)
@@ -155,6 +158,7 @@ public partial class DhanMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 			return;
 

@@ -24,6 +24,7 @@ public partial class MarketauxMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -58,6 +59,7 @@ public partial class MarketauxMessageAdapter
         var remaining = lookupMsg.Count ?? long.MaxValue;
         var seen = new HashSet<string>(
             StringComparer.OrdinalIgnoreCase);
+
         for (var page = 1;
             page <= MaxPages && remaining > 0;
             page++)
@@ -69,6 +71,7 @@ public partial class MarketauxMessageAdapter
                 SafeEntityTypes(),
                 SafeCountries(),
                 cancellationToken);
+
             foreach (var entity in response.Data ?? [])
             {
                 if (entity is null || entity.Symbol.IsEmpty())
@@ -93,6 +96,7 @@ public partial class MarketauxMessageAdapter
                 if (remaining <= 0)
                     break;
             }
+
             if ((response.Data?.Length ?? 0) < 50 ||
                 (response.Meta?.Found is long found &&
                     page * 50 >= found))
@@ -112,6 +116,7 @@ public partial class MarketauxMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -145,6 +150,7 @@ public partial class MarketauxMessageAdapter
             DateTime Time)>();
         var seen = new HashSet<string>(
             StringComparer.OrdinalIgnoreCase);
+
         for (var page = 1;
             page <= MaxPages && collected.Count < target;
             page++)
@@ -161,6 +167,7 @@ public partial class MarketauxMessageAdapter
                 MustHaveEntities,
                 GroupSimilar,
                 cancellationToken);
+
             foreach (var article in response.Data ?? [])
             {
                 if (article is null ||
@@ -181,6 +188,7 @@ public partial class MarketauxMessageAdapter
                 if (seen.Add(key))
                     collected.Add((article, time));
             }
+
             if ((response.Data?.Length ?? 0) < perPage ||
                 (response.Meta?.Found is long found &&
                     page * perPage >= found))
@@ -232,6 +240,7 @@ public partial class MarketauxMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(

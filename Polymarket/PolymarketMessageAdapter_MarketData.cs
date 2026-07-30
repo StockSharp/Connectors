@@ -8,10 +8,12 @@ public partial class PolymarketMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static market =>
 			market.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -40,6 +42,7 @@ public partial class PolymarketMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -48,6 +51,7 @@ public partial class PolymarketMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -74,6 +78,7 @@ public partial class PolymarketMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var subscribe = false;
 		using (_sync.EnterScope())
 		{
@@ -107,6 +112,7 @@ public partial class PolymarketMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -134,6 +140,7 @@ public partial class PolymarketMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var subscribe = false;
 		using (_sync.EnterScope())
 		{
@@ -168,6 +175,7 @@ public partial class PolymarketMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -190,6 +198,7 @@ public partial class PolymarketMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var subscribe = false;
 		using (_sync.EnterScope())
 		{
@@ -223,6 +232,7 @@ public partial class PolymarketMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -253,9 +263,11 @@ public partial class PolymarketMessageAdapter
 			from, to, fidelity, cancellationToken);
 		var candles = AggregateCandles(response?.History, timeFrame, from, to)
 			.TakeLast(maximum).ToArray();
+
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 	}
 
@@ -441,6 +453,7 @@ public partial class PolymarketMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var time = message.Timestamp.ParsePolymarketMilliseconds();
+
 		foreach (var change in message.PriceChanges ?? [])
 		{
 			var market = GetMarketByToken(change?.AssetId);
@@ -469,9 +482,11 @@ public partial class PolymarketMessageAdapter
 			depths = [.. _depthSubscriptions.Values.Where(subscription =>
 				subscription.TokenId == market.TokenId)];
 		}
+
 		foreach (var subscription in level1)
 			await SendLevel1Async(market, state, subscription.TransactionId,
 				cancellationToken);
+
 		foreach (var subscription in depths)
 			await SendDepthAsync(market, state, subscription.TransactionId,
 				subscription.Depth, cancellationToken);
@@ -500,6 +515,7 @@ public partial class PolymarketMessageAdapter
 			? message.TransactionHash + ":" + market.TokenId
 			: "ws:" + market.TokenId + ":" + message.Timestamp + ":" +
 				message.Price + ":" + message.Size + ":" + message.Side;
+
 		foreach (var subscription in ticks)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -512,6 +528,7 @@ public partial class PolymarketMessageAdapter
 				OriginSide = message.Side.ToStockSharp(),
 				OriginalTransactionId = subscription.TransactionId,
 			}, cancellationToken);
+
 		foreach (var subscription in level1)
 			await SendLevel1Async(market, time, subscription.TransactionId,
 				null, null, null, null, price, volume, cancellationToken);
@@ -528,6 +545,7 @@ public partial class PolymarketMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Values.Where(subscription =>
 				subscription.TokenId == market.TokenId)];
+
 		foreach (var subscription in subscriptions)
 			await SendLevel1Async(market, time, subscription.TransactionId,
 				message.BestBid.TryParsePolymarketDecimal(), null,
@@ -550,6 +568,7 @@ public partial class PolymarketMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Values.Where(subscription =>
 				subscription.TokenId == market.TokenId)];
+
 		foreach (var subscription in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{

@@ -153,6 +153,7 @@ public partial class LcxMessageAdapter
 		var pair = markets.Length == 1
 			? markets[0].Symbol
 			: null;
+
 		foreach (var order in
 			await RestClient.GetOpenOrdersAsync(
 				pair, null, null, cancellationToken) ?? [])
@@ -176,6 +177,7 @@ public partial class LcxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -212,6 +214,7 @@ public partial class LcxMessageAdapter
 				lookupMsg, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"LCX portfolio subscription already exists.");
@@ -237,6 +240,7 @@ public partial class LcxMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId, cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -266,6 +270,7 @@ public partial class LcxMessageAdapter
 				statusMsg, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"LCX order-status subscription already exists.");
@@ -389,6 +394,7 @@ public partial class LcxMessageAdapter
 		{
 			var orders = new Dictionary<string, LcxOrder>(
 				StringComparer.OrdinalIgnoreCase);
+
 			foreach (var symbol in GetStatusSymbols(statusMsg))
 			{
 				foreach (var order in
@@ -398,6 +404,7 @@ public partial class LcxMessageAdapter
 						statusMsg.To?.ToUniversalTime(),
 						cancellationToken) ?? [])
 					orders[order.Id] = order;
+
 				foreach (var order in
 					await RestClient.GetOrderHistoryAsync(
 						symbol,
@@ -406,8 +413,10 @@ public partial class LcxMessageAdapter
 						cancellationToken) ?? [])
 					orders[order.Id] = order;
 			}
+
 			var maximum = (statusMsg.Count ?? 1000)
 				.Max(1).Min(10000).To<int>();
+
 			foreach (var order in orders.Values
 				.Where(order => MatchesOrder(order, statusMsg))
 				.OrderBy(static order => order.CreatedAt)
@@ -444,6 +453,7 @@ public partial class LcxMessageAdapter
 		DateTime? since = from == default
 			? null
 			: from.ToUniversalTime();
+
 		foreach (var order in
 			await RestClient.GetOpenOrdersAsync(
 				null, since, null, cancellationToken) ?? [])
@@ -451,6 +461,7 @@ public partial class LcxMessageAdapter
 				order,
 				originalTransactionId,
 				cancellationToken);
+
 		foreach (var order in
 			await RestClient.GetOrderHistoryAsync(
 				null, since, null, cancellationToken) ?? [])
@@ -458,6 +469,7 @@ public partial class LcxMessageAdapter
 				order,
 				originalTransactionId,
 				cancellationToken);
+
 		foreach (var trade in
 			await RestClient.GetUserTradesAsync(
 				null, since, null, cancellationToken) ?? [])

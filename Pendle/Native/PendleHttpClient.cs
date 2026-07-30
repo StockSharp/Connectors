@@ -71,6 +71,7 @@ sealed class PendleHttpClient : BaseLogReceiver
 				$"{(int)_chain}-{address.NormalizeAddress()}"))
 			: null;
 		var result = new List<PendleApiMarket>();
+
 		for (var skip = 0; result.Count < maximum;)
 		{
 			var limit = Math.Min(100, maximum - result.Count);
@@ -84,6 +85,7 @@ sealed class PendleHttpClient : BaseLogReceiver
 			var page = await SendAsync<PendleMarketsResponse>(HttpMethod.Get,
 				path, null, cancellationToken);
 			var markets = page.Results ?? [];
+
 			foreach (var market in markets)
 			{
 				if (market is null || market.ChainId != (int)_chain)
@@ -92,11 +94,13 @@ sealed class PendleHttpClient : BaseLogReceiver
 				if (result.Count >= maximum)
 					break;
 			}
+
 			skip += markets.Length;
 			if (markets.Length == 0 || skip >= page.Total ||
 				!ids.IsEmpty())
 				break;
 		}
+
 		return [.. result];
 	}
 
@@ -109,6 +113,7 @@ sealed class PendleHttpClient : BaseLogReceiver
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToArray();
 		var result = new List<PendleApiAsset>();
+
 		foreach (var chunk in normalized.Chunk(30))
 		{
 			var ids = string.Join(',', chunk.Select(address =>
@@ -122,6 +127,7 @@ sealed class PendleHttpClient : BaseLogReceiver
 			result.AddRange((response.Assets ?? []).Where(
 				asset => asset?.ChainId == (int)_chain));
 		}
+
 		return [.. result];
 	}
 
@@ -201,6 +207,7 @@ sealed class PendleHttpClient : BaseLogReceiver
 	{
 		ArgumentNullException.ThrowIfNull(method);
 		path = path.ThrowIfEmpty(nameof(path)).TrimStart('/');
+
 		for (var attempt = 0; ; attempt++)
 		{
 			await WaitForRequestAsync(cancellationToken);

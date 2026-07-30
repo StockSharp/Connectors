@@ -160,6 +160,7 @@ public partial class SnapTradeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -184,6 +185,7 @@ public partial class SnapTradeMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -221,6 +223,7 @@ public partial class SnapTradeMessageAdapter
 			orders = await _client.GetOrders(accountId, "open", 90, cancellationToken) ?? [];
 		var skip = Math.Max(0, filter?.Skip ?? 0);
 		var left = Math.Max(0, filter?.Count ?? long.MaxValue);
+
 		foreach (var order in orders.Where(order => IsOrderMatch(order, filter))
 			.OrderByDescending(GetOrderTime))
 		{
@@ -343,6 +346,7 @@ public partial class SnapTradeMessageAdapter
 			BoardCode = SnapTradeExtensions.BoardCode,
 			Currency = currency,
 		}, cancellationToken);
+
 		foreach (var balance in balances)
 		{
 			if (balance == null)
@@ -362,6 +366,7 @@ public partial class SnapTradeMessageAdapter
 
 		var previousPositions = _positionIds.ToArray();
 		_positionIds.Clear();
+
 		foreach (var position in positions)
 		{
 			if (position?.Instrument?.Symbol.IsEmpty() != false)
@@ -386,6 +391,7 @@ public partial class SnapTradeMessageAdapter
 			.TryAdd(PositionChangeTypes.Currency, position.Currency.ToCurrency()),
 				cancellationToken);
 		}
+
 		if (!isLookup)
 		{
 			foreach (var previous in previousPositions.Where(previous =>

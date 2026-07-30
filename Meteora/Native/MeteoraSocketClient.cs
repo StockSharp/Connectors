@@ -66,6 +66,7 @@ sealed class MeteoraSocketClient : BaseLogReceiver
 		_receiveTask = ReceiveLoopAsync(_lifetime.Token);
 
 		var confirmations = new List<Task<long>>(pools.Length);
+
 		foreach (var pool in pools)
 		{
 			var id = Interlocked.Increment(ref _requestId);
@@ -92,6 +93,7 @@ sealed class MeteoraSocketClient : BaseLogReceiver
 				},
 			}, cancellationToken);
 		}
+
 		await Task.WhenAll(confirmations).WaitAsync(cancellationToken);
 	}
 
@@ -123,6 +125,7 @@ sealed class MeteoraSocketClient : BaseLogReceiver
 			{
 				using var stream = new MemoryStream();
 				WebSocketReceiveResult result;
+
 				do
 				{
 					result = await _socket.ReceiveAsync(
@@ -136,6 +139,7 @@ sealed class MeteoraSocketClient : BaseLogReceiver
 					stream.Write(buffer, 0, result.Count);
 				}
 				while (!result.EndOfMessage);
+
 				if (result.MessageType != WebSocketMessageType.Text)
 					continue;
 				var message = JsonConvert.DeserializeObject<MeteoraSocketMessage>(

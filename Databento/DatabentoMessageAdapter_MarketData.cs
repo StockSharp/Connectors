@@ -15,8 +15,10 @@ public partial class DatabentoMessageAdapter
 		var skip = lookupMsg.Skip ?? 0;
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var start = DateTime.UtcNow.Date.AddDays(-1);
+
 		while (start.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
 			start = start.AddDays(-1);
+
 		var end = start.AddDays(1);
 		var canApplyServerLimit = requestedTypes.Count == 0 &&
 			lookupMsg.SecurityId.BoardCode.IsEmpty() && lookupMsg.Name.IsEmpty() &&
@@ -37,6 +39,7 @@ public partial class DatabentoMessageAdapter
 		};
 
 		var sent = new HashSet<SecurityId>();
+
 		await foreach (var record in GetHistoricalClient().GetRange(request, cancellationToken))
 		{
 			if (record is not DbnInstrumentDefinitionRecord definition ||
@@ -95,6 +98,7 @@ public partial class DatabentoMessageAdapter
 		string schema, TimeSpan? timeFrame, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveLiveSubscription(mdMsg.OriginalTransactionId);
@@ -304,6 +308,7 @@ public partial class DatabentoMessageAdapter
 			instruments = _symbolMappings.TryGetValue(subscription.RequestedSecurityId.SecurityCode,
 				out var mapped) ? mapped.ToArray() : [];
 		}
+
 		foreach (var instrumentId in instruments)
 			subscription.Bind(instrumentId);
 	}

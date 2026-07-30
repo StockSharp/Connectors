@@ -203,6 +203,7 @@ sealed class RaydiumApiClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, this);
+
 		for (var attempt = 0; ; attempt++)
 		{
 			using var request = new HttpRequestMessage(method, path);

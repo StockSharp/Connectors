@@ -98,6 +98,7 @@ public partial class PpiMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             statusMsg.TransactionId, cancellationToken);
+
         if (!statusMsg.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -180,12 +181,14 @@ public partial class PpiMessageAdapter
         var orders = new Dictionary<long, PpiOrder>();
         if (count is <= 0)
             return;
+
         foreach (var order in await _rest.GetOrders(
             _accountNumber, dateFrom, dateTo, cancellationToken) ?? [])
         {
             if (order?.Id > 0)
                 orders[order.Id] = order;
         }
+
         foreach (var order in await _rest.GetActiveOrders(
             _accountNumber, cancellationToken) ?? [])
         {
@@ -194,6 +197,7 @@ public partial class PpiMessageAdapter
         }
 
         var left = count ?? long.MaxValue;
+
         foreach (var order in orders.Values.OrderBy(item => item.Date))
         {
             await ProcessOrder(
@@ -214,6 +218,7 @@ public partial class PpiMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (!lookupMsg.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -289,9 +294,11 @@ public partial class PpiMessageAdapter
         var groups = root.GetValue(
             "groupedInstruments",
             StringComparison.OrdinalIgnoreCase) as JArray;
+
         foreach (var group in groups ?? [])
         {
             var groupName = group.Value<string>("name");
+
             foreach (var item in group["instruments"] as JArray ?? [])
             {
                 var ticker = item.Value<string>("ticker");

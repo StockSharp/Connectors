@@ -78,6 +78,7 @@ internal sealed class FxcmSocketClient : BaseLogReceiver
 	{
 		var failures = 0;
 		var wasConnected = false;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
@@ -139,6 +140,7 @@ internal sealed class FxcmSocketClient : BaseLogReceiver
 			throw new InvalidDataException("FXCM Socket.IO handshake contains no session id.");
 
 		await SendText(socket, "40", cancellationToken);
+
 		while (true)
 		{
 			packet = await ReceiveText(socket, cancellationToken);
@@ -159,6 +161,7 @@ internal sealed class FxcmSocketClient : BaseLogReceiver
 		while (socket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
 		{
 			var frame = await ReceiveText(socket, cancellationToken);
+
 			foreach (var packet in frame.Split('\x1e', StringSplitOptions.RemoveEmptyEntries))
 			{
 				if (packet.StartsWith('2'))
@@ -245,6 +248,7 @@ internal sealed class FxcmSocketClient : BaseLogReceiver
 	{
 		var buffer = new byte[16 * 1024];
 		using var stream = new MemoryStream();
+
 		while (true)
 		{
 			var result = await socket.ReceiveAsync(buffer, cancellationToken);

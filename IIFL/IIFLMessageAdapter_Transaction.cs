@@ -144,6 +144,7 @@ public partial class IIFLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -197,6 +198,7 @@ public partial class IIFLMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -245,6 +247,7 @@ public partial class IIFLMessageAdapter
 				? (int)Math.Min(count.Value, int.MaxValue)
 				: int.MaxValue)
 			.ToArray();
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, target, true,
 				cancellationToken);
@@ -307,6 +310,7 @@ public partial class IIFLMessageAdapter
 				cancellationToken)).ToIIFLObjects())
 			await SendHoldingAsync(holding, target,
 				cancellationToken);
+
 		foreach (var position in (await RestClient.GetPositionsAsync(
 				cancellationToken)).ToIIFLObjects())
 			await SendPositionAsync(position, target,
@@ -411,11 +415,13 @@ public partial class IIFLMessageAdapter
 				cancellationToken)).ToIIFLObjects()
 			.Select(static value => value.ToIIFLTrade())
 			.ToArray();
+
 		foreach (var target in targets)
 		{
 			foreach (var order in orders)
 				await SendOrderAsync(order, target, false,
 					cancellationToken);
+
 			foreach (var trade in trades)
 				await SendTradeAsync(trade, target, false,
 					cancellationToken);
@@ -428,6 +434,7 @@ public partial class IIFLMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _portfolioSubscriptions];
+
 		foreach (var target in targets)
 			await SendPortfolioSnapshotAsync(target,
 				cancellationToken);
@@ -443,6 +450,7 @@ public partial class IIFLMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _orderSubscriptions];
+
 		foreach (var order in orders)
 			foreach (var target in targets)
 				await SendOrderAsync(order, target, false,
@@ -459,6 +467,7 @@ public partial class IIFLMessageAdapter
 		long[] targets;
 		using (_sync.EnterScope())
 			targets = [.. _orderSubscriptions];
+
 		foreach (var trade in trades)
 			foreach (var target in targets)
 				await SendTradeAsync(trade, target, false,

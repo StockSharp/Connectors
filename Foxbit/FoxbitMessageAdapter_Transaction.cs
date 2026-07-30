@@ -135,6 +135,7 @@ public partial class FoxbitMessageAdapter
 		if (canceled.Length == 0)
 			throw new InvalidDataException(
 				"Foxbit accepted a cancellation without returning an order ID.");
+
 		foreach (var order in canceled)
 			await SendCanceledOrderAsync(order.Id, cancelMsg.TransactionId,
 				cancellationToken);
@@ -168,9 +169,11 @@ public partial class FoxbitMessageAdapter
 			};
 			var canceled = await RestClient.CancelOrdersAsync(request,
 				cancellationToken);
+
 			foreach (var order in canceled)
 				await SendCanceledOrderAsync(order.Id,
 					cancelMsg.TransactionId, cancellationToken);
+
 			return;
 		}
 
@@ -184,6 +187,7 @@ public partial class FoxbitMessageAdapter
 		};
 		var orders = await LoadOrdersAsync(subscription, false,
 			cancellationToken);
+
 		foreach (var order in orders.Where(order => order.State is
 			FoxbitOrderStates.Active or FoxbitOrderStates.PartiallyFilled or
 			FoxbitOrderStates.PendingCancel))
@@ -197,6 +201,7 @@ public partial class FoxbitMessageAdapter
 				Type = FoxbitCancelTypes.Id,
 				Id = ParseOrderId(order.Id),
 			}, cancellationToken);
+
 			foreach (var item in canceled)
 				await SendCanceledOrderAsync(item.Id,
 					cancelMsg.TransactionId, cancellationToken);
@@ -210,6 +215,7 @@ public partial class FoxbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -217,6 +223,7 @@ public partial class FoxbitMessageAdapter
 			{
 				_portfolioSubscriptions.Remove(
 					lookupMsg.OriginalTransactionId);
+
 				foreach (var key in _balanceFingerprints.Keys.Where(key =>
 					key.StartsWith(lookupMsg.OriginalTransactionId.ToString(
 						CultureInfo.InvariantCulture) + ":",
@@ -241,6 +248,7 @@ public partial class FoxbitMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -252,6 +260,7 @@ public partial class FoxbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -306,6 +315,7 @@ public partial class FoxbitMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -354,6 +364,7 @@ public partial class FoxbitMessageAdapter
 			{
 			}
 		}
+
 		throw placementError;
 	}
 
@@ -419,6 +430,7 @@ public partial class FoxbitMessageAdapter
 		if (orderId.IsEmpty())
 			return;
 		FoxbitOrder order = null;
+
 		for (var attempt = 1; attempt <= 4; attempt++)
 		{
 			order = await GetOrderWithRetryAsync(orderId, null,
@@ -429,6 +441,7 @@ public partial class FoxbitMessageAdapter
 			await Task.Delay(TimeSpan.FromMilliseconds(150 * attempt),
 				cancellationToken);
 		}
+
 		await SendOrderAsync(order, originalTransactionId, true,
 			cancellationToken);
 	}
@@ -437,6 +450,7 @@ public partial class FoxbitMessageAdapter
 		bool isForced, CancellationToken cancellationToken)
 	{
 		var accounts = await RestClient.GetAccountsAsync(cancellationToken);
+
 		foreach (var account in accounts)
 			await SendBalanceAsync(account, targetId, isForced,
 				cancellationToken);
@@ -448,6 +462,7 @@ public partial class FoxbitMessageAdapter
 	{
 		var orders = await LoadOrdersAsync(subscription, isRefresh,
 			cancellationToken);
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, targetId, isForced,
 				cancellationToken);
@@ -457,12 +472,14 @@ public partial class FoxbitMessageAdapter
 				.Where(static value => !value.IsEmpty())
 				.Distinct(StringComparer.OrdinalIgnoreCase).ToArray()
 			: [subscription.MarketSymbol];
+
 		foreach (var marketSymbol in markets)
 		{
 			var trades = await LoadTradesAsync(marketSymbol,
 				subscription.OrderId, subscription.From, subscription.To,
 				isRefresh ? subscription.Maximum.Min(200) :
 					subscription.Maximum, cancellationToken);
+
 			foreach (var trade in trades.Where(trade =>
 				MatchesTrade(subscription, trade)))
 				await SendTradeAsync(trade, targetId, !isForced,
@@ -497,9 +514,11 @@ public partial class FoxbitMessageAdapter
 			: subscription.Maximum;
 		var result = new List<FoxbitOrder>();
 		var windowEnd = upperBound;
+
 		while (result.Count < maximum && windowEnd >= lowerBound)
 		{
 			var windowStart = lowerBound.Max(windowEnd - TimeSpan.FromDays(89));
+
 			for (var page = 1; result.Count < maximum; page++)
 			{
 				var pageSize = (maximum - result.Count).Min(100).Max(1);
@@ -517,10 +536,12 @@ public partial class FoxbitMessageAdapter
 				if (items.Length < pageSize)
 					break;
 			}
+
 			if (windowStart <= lowerBound)
 				break;
 			windowEnd = windowStart.AddMilliseconds(-1);
 		}
+
 		return [.. result.Where(static order => !order.Id.IsEmpty())
 			.GroupBy(static order => order.Id,
 				StringComparer.OrdinalIgnoreCase)
@@ -541,9 +562,11 @@ public partial class FoxbitMessageAdapter
 			lowerBound = availableFrom;
 		var result = new List<FoxbitTrade>();
 		var windowEnd = upperBound;
+
 		while (result.Count < maximum && windowEnd >= lowerBound)
 		{
 			var windowStart = lowerBound.Max(windowEnd - TimeSpan.FromDays(89));
+
 			for (var page = 1; result.Count < maximum; page++)
 			{
 				var pageSize = (maximum - result.Count).Min(100).Max(1);
@@ -560,10 +583,12 @@ public partial class FoxbitMessageAdapter
 				if (items.Length < pageSize)
 					break;
 			}
+
 			if (windowStart <= lowerBound)
 				break;
 			windowEnd = windowStart.AddMilliseconds(-1);
 		}
+
 		return [.. result.Where(static trade => !trade.Id.IsEmpty())
 			.GroupBy(static trade => trade.Id,
 				StringComparer.OrdinalIgnoreCase)
@@ -737,6 +762,7 @@ public partial class FoxbitMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var pair in subscriptions)
 			await SendOrderSnapshotAsync(pair.Key, pair.Value, true, false,
 				cancellationToken);
@@ -751,6 +777,7 @@ public partial class FoxbitMessageAdapter
 		if (subscriptions.Length == 0)
 			return;
 		var accounts = await RestClient.GetAccountsAsync(cancellationToken);
+
 		foreach (var targetId in subscriptions)
 			foreach (var account in accounts)
 				await SendBalanceAsync(account, targetId, false,
@@ -762,10 +789,12 @@ public partial class FoxbitMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_orderSubscriptions.Remove(targetId);
+
 			foreach (var key in _orderFingerprints.Keys.Where(key =>
 				key.StartsWith(targetId.ToString(CultureInfo.InvariantCulture) +
 					":", StringComparison.Ordinal)).ToArray())
 				_orderFingerprints.Remove(key);
+
 			_seenAccountTrades.RemoveWhere(key => key.TargetId == targetId);
 		}
 	}

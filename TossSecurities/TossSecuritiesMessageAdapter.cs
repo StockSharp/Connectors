@@ -251,6 +251,7 @@ public partial class TossSecuritiesMessageAdapter
 
         _resolvedAccountSequence =
             selected?.AccountSequence ?? AccountSequence;
+
         foreach (var account in _accounts)
         {
             var name =

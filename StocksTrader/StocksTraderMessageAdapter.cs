@@ -213,11 +213,13 @@ public partial class StocksTraderMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_instruments.Clear();
+
 			foreach (var instrument in instruments)
 			{
 				if (instrument?.Ticker.IsEmpty() == false)
 					_instruments[instrument.Ticker] = instrument;
 			}
+
 			_lastInstrumentRefresh = DateTime.UtcNow;
 		}
 		this.AddInfoLog("StocksTrader cached {0} account-specific instruments.",

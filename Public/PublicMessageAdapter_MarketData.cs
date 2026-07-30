@@ -8,6 +8,7 @@ partial class PublicMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var securityTypes = message.GetSecurityTypes();
 		var left = message.Count ?? long.MaxValue;
 		var query = message.SecurityId.SecurityCode;
@@ -24,6 +25,7 @@ partial class PublicMessageAdapter
 			foreach (var expiration in expirations)
 			{
 				var chain = await _client.GetOptionChain(account.AccountId, underlying, expiration, cancellationToken);
+
 				foreach (var item in (chain?.Calls ?? []).Select(q => (quote: q, type: OptionTypes.Call))
 					.Concat((chain?.Puts ?? []).Select(q => (quote: q, type: OptionTypes.Put))))
 				{
@@ -49,6 +51,7 @@ partial class PublicMessageAdapter
 					if (--left <= 0)
 						break;
 				}
+
 				if (left <= 0)
 					break;
 			}
@@ -57,6 +60,7 @@ partial class PublicMessageAdapter
 		if (left > 0 && securityTypes.Any(t => t != SecurityTypes.Option))
 		{
 			var nativeTypes = securityTypes.Where(t => t != SecurityTypes.Option).Select(t => t.ToNative(query)).Distinct().ToArray();
+
 			foreach (var instrument in await _client.GetInstruments(nativeTypes, cancellationToken))
 			{
 				if (instrument?.Instrument?.Symbol.IsEmpty() != false || (!query.IsEmpty() && !instrument.Instrument.Symbol.Contains(query, StringComparison.OrdinalIgnoreCase)))
@@ -78,6 +82,7 @@ partial class PublicMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.IsSubscribe)
 		{
 			var subscription = new Level1Subscription(message.SecurityId, message.SecurityType.ToNative(message.SecurityId.SecurityCode));
@@ -96,6 +101,7 @@ partial class PublicMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -172,6 +178,7 @@ partial class PublicMessageAdapter
 
 		var serverTime = new[] { quote.LastTimestamp, quote.BidTimestamp, quote.AskTimestamp }
 			.Where(t => t is not null).Select(t => t.Value.ToUniversalTime()).DefaultIfEmpty(DateTime.UtcNow).Max();
+
 		foreach (var subscription in subscriptions.Where(p => p.Value.SecurityId.SecurityCode.EqualsIgnoreCase(quote.Instrument.Symbol) && p.Value.InstrumentType == quote.Instrument.Type))
 		{
 			await SendOutMessageAsync(new Level1ChangeMessage
@@ -237,8 +244,10 @@ partial class PublicMessageAdapter
 	private static decimal GetStep(int precision)
 	{
 		var step = 1m;
+
 		for (var i = 0; i < precision; i++)
 			step /= 10m;
+
 		return step;
 	}
 }

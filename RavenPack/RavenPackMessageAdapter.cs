@@ -185,6 +185,7 @@ public partial class RavenPackMessageAdapter
 			finished = [.. _liveNews.Keys];
 			_liveNews.Clear();
 		}
+
 		foreach (var transactionId in finished)
 			await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
 	}
@@ -201,6 +202,7 @@ public partial class RavenPackMessageAdapter
 		{
 			subscriptions = _liveNews.Values
 				.Where(subscription => record.MatchesEntity(subscription.EntityId)).ToArray();
+
 			foreach (var subscription in subscriptions)
 			{
 				if (subscription.Remaining is > 0 && --subscription.Remaining == 0)

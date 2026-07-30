@@ -137,6 +137,7 @@ public partial class ExanteMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_portfolioSubscriptionId ==
@@ -172,6 +173,7 @@ public partial class ExanteMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             message.TransactionId, cancellationToken);
+
         if (!message.IsSubscribe)
         {
             if (_orderStatusSubscriptionId ==
@@ -306,6 +308,7 @@ public partial class ExanteMessageAdapter
             1, 1000);
         var orders = new Dictionary<string, ExanteOrder>(
             StringComparer.OrdinalIgnoreCase);
+
         foreach (var account in ResolveAccounts(
             filter.PortfolioName))
         {
@@ -316,6 +319,7 @@ public partial class ExanteMessageAdapter
                 limit, cancellationToken);
             var active = await Rest.GetActiveOrders(
                 account.AccountId, limit, cancellationToken);
+
             foreach (var order in history.Concat(active))
             {
                 var id = order.GetId();
@@ -326,6 +330,7 @@ public partial class ExanteMessageAdapter
 
         var skip = Math.Max(0, filter.Skip ?? 0);
         var left = filter.Count ?? long.MaxValue;
+
         foreach (var order in orders.Values
             .OrderBy(GetOrderTime))
         {

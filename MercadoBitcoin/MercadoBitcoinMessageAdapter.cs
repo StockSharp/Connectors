@@ -167,6 +167,7 @@ public partial class MercadoBitcoinMessageAdapter
 		{
 			_markets.Clear();
 			_streamMarkets.Clear();
+
 			for (var i = 0; i < symbols.Length; i++)
 			{
 				var symbolValue = symbols[i];
@@ -218,6 +219,7 @@ public partial class MercadoBitcoinMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_accounts.Clear();
+
 			foreach (var account in accounts ?? [])
 			{
 				if (account?.Id.IsEmpty() != false)
@@ -323,6 +325,7 @@ public partial class MercadoBitcoinMessageAdapter
 			foreach (var identifier in identifiers.Where(static value =>
 				!value.IsEmpty()))
 				_trackedOrders[identifier] = order;
+
 			if (!order.ExchangeOrderId.IsEmpty())
 				_trackedOrders[order.ExchangeOrderId] = order;
 		}

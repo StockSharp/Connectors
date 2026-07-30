@@ -8,6 +8,7 @@ public partial class PendleMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedCode = lookupMsg.SecurityId.SecurityCode?.Trim();
@@ -16,6 +17,7 @@ public partial class PendleMessageAdapter
 			securities = [.. _securities.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var item in securities.OrderBy(static security =>
 			security.SecurityCode, StringComparer.OrdinalIgnoreCase))
 		{
@@ -44,6 +46,7 @@ public partial class PendleMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -53,6 +56,7 @@ public partial class PendleMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -76,6 +80,7 @@ public partial class PendleMessageAdapter
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_level1Subscriptions[mdMsg.TransactionId] = new()
 			{
@@ -90,6 +95,7 @@ public partial class PendleMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -122,6 +128,7 @@ public partial class PendleMessageAdapter
 			security.Market.Address, timeFrame, requestFrom, to,
 			cancellationToken);
 		var delivered = 0;
+
 		foreach (var candle in ConvertHistory(security, points))
 		{
 			if (from is DateTime start && candle.OpenTime < start ||
@@ -136,11 +143,13 @@ public partial class PendleMessageAdapter
 			if (delivered >= maximum)
 				break;
 		}
+
 		if (mdMsg.IsHistoryOnly() || delivered >= maximum)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_candleSubscriptions[mdMsg.TransactionId] = new()
 			{
@@ -214,6 +223,7 @@ public partial class PendleMessageAdapter
 		ArgumentNullException.ThrowIfNull(security);
 		ArgumentNullException.ThrowIfNull(source);
 		var result = new List<PendleCandle>();
+
 		foreach (var point in source)
 		{
 			if (point is null || !DateTime.TryParse(point.Timestamp,
@@ -242,6 +252,7 @@ public partial class PendleMessageAdapter
 				ImpliedApy = point.ImpliedApy ?? 0m,
 			});
 		}
+
 		return [.. result.OrderBy(static candle => candle.OpenTime)];
 	}
 
@@ -284,6 +295,7 @@ public partial class PendleMessageAdapter
 			level1 = [.. _level1Subscriptions];
 			candles = [.. _candleSubscriptions];
 		}
+
 		foreach (var group in level1.GroupBy(item =>
 			item.Value.Security.Market.Address,
 			StringComparer.OrdinalIgnoreCase))
@@ -292,12 +304,14 @@ public partial class PendleMessageAdapter
 			{
 				var response = await HttpClient.GetPricesAsync(
 					group.First().Value.Security.Market.Address, token);
+
 				foreach (var item in group)
 					await SendLevel1Async(item.Value.Security,
 						ValidatePrices(item.Value.Security, response),
 						item.Key, false, token);
 			}, cancellationToken);
 		}
+
 		foreach (var item in candles)
 			await PollOneAsync(token => PollCandlesAsync(item.Key, item.Value,
 				token), cancellationToken);
@@ -313,6 +327,7 @@ public partial class PendleMessageAdapter
 			subscription.Security.Market.Address, subscription.TimeFrame,
 			from, to, cancellationToken);
 		var finished = false;
+
 		foreach (var candle in ConvertHistory(subscription.Security, points))
 		{
 			var state = candle.OpenTime + subscription.TimeFrame <=
@@ -334,6 +349,7 @@ public partial class PendleMessageAdapter
 			if (finished)
 				break;
 		}
+
 		if (finished)
 			await SendSubscriptionFinishedAsync(target, cancellationToken);
 	}
@@ -360,8 +376,10 @@ public partial class PendleMessageAdapter
 			if (!_seenMarketData.Add(key))
 				return false;
 			_marketDataDeliveryOrder.Enqueue(key);
+
 			while (_marketDataDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenMarketData.Remove(_marketDataDeliveryOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -375,6 +393,7 @@ public partial class PendleMessageAdapter
 		var retained = _marketDataDeliveryOrder.Where(
 			_seenMarketData.Contains).ToArray();
 		_marketDataDeliveryOrder.Clear();
+
 		foreach (var key in retained)
 			_marketDataDeliveryOrder.Enqueue(key);
 	}
@@ -398,8 +417,10 @@ public partial class PendleMessageAdapter
 		if (decimals is < 0 or > 28)
 			return null;
 		var result = 1m;
+
 		for (var index = 0; index < decimals; index++)
 			result /= 10m;
+
 		return result;
 	}
 

@@ -10,6 +10,7 @@ public partial class GMTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureWallet();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -34,12 +35,14 @@ public partial class GMTradeMessageAdapter
 		await SendPortfolioSnapshotAsync(lookupMsg.TransactionId, true,
 			cancellationToken);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
+
 		if (lookupMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(lookupMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_portfolioSubscriptionId = lookupMsg.TransactionId;
 		_positionStreamId = await MarketSocket.SubscribePositionsAsync(
 			WalletAddress, cancellationToken);
@@ -52,6 +55,7 @@ public partial class GMTradeMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureWallet();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -75,12 +79,14 @@ public partial class GMTradeMessageAdapter
 				"Only one live GMTrade order-status subscription is supported.");
 		await SendOrderSnapshotAsync(statusMsg, cancellationToken);
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
+
 		if (statusMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionFinishedAsync(statusMsg.TransactionId,
 				cancellationToken);
 			return;
 		}
+
 		_orderStatusSubscriptionId = statusMsg.TransactionId;
 		_orderStreamId = await MarketSocket.SubscribeOrdersAsync(WalletAddress,
 			cancellationToken);
@@ -103,6 +109,7 @@ public partial class GMTradeMessageAdapter
 			cancellationToken);
 		await SendWalletBalancesAsync(transactionId, isForced,
 			cancellationToken);
+
 		foreach (var position in (user.Positions ?? [])
 			.Where(static position => position is not null)
 			.OrderBy(static position => position.MarketToken,
@@ -129,6 +136,7 @@ public partial class GMTradeMessageAdapter
 		var user = await RestClient.GetUserAsync(WalletAddress,
 			cancellationToken);
 		var limit = (statusMsg.Count ?? 500).Min(HistoryLimit).Max(1).To<int>();
+
 		foreach (var order in (user.Orders ?? [])
 			.Where(static order => order is not null)
 			.Where(order => Matches(statusMsg, order))
@@ -143,6 +151,7 @@ public partial class GMTradeMessageAdapter
 			From = statusMsg.From?.EnsureUtc(),
 			To = statusMsg.To?.EnsureUtc() ?? ServerTime,
 		}, limit, cancellationToken);
+
 		foreach (var trade in trades.Where(static trade => trade is not null)
 			.Where(trade => Matches(statusMsg, trade))
 			.OrderBy(static trade => trade.Timestamp.EnsureUtc())
@@ -392,6 +401,7 @@ public partial class GMTradeMessageAdapter
 		GMTradeMarketInfo market)
 	{
 		var parameters = order.Parameters;
+
 		foreach (var value in new[]
 		{
 			parameters.TriggerPrice,
@@ -403,6 +413,7 @@ public partial class GMTradeMessageAdapter
 				continue;
 			return value.FromOraclePrice(market.IndexDecimals, "order price");
 		}
+
 		return parameters.Kind.ToStockSharp() == OrderTypes.Market
 			? 0m
 			: GetMidpoint(market) ?? 0m;

@@ -8,6 +8,7 @@ public partial class TapbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -18,6 +19,7 @@ public partial class TapbitMessageAdapter
 			products = [.. _products.Values];
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var product in products.OrderBy(
 			static value => value.ProductType).ThenBy(
 			static value => value.Symbol,
@@ -47,6 +49,7 @@ public partial class TapbitMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -56,6 +59,7 @@ public partial class TapbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -108,6 +112,7 @@ public partial class TapbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -172,6 +177,7 @@ public partial class TapbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -188,10 +194,12 @@ public partial class TapbitMessageAdapter
 		var maximum = (mdMsg.Count ?? 100).Min(1000).Max(1).To<int>();
 		var trades = PrepareTrades(await RestClient.GetPublicTradesAsync(
 			product, cancellationToken));
+
 		foreach (var item in trades.Where(item => IsTradeInRange(item.Trade,
 			mdMsg.From, mdMsg.To)).TakeLast(maximum))
 			_ = await SendPublicTradeAsync(item.Trade, item.Identity,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
@@ -216,6 +224,7 @@ public partial class TapbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -238,9 +247,11 @@ public partial class TapbitMessageAdapter
 			to - TimeSpan.FromTicks(timeFrame.Ticks * maximum);
 		var candles = await LoadCandlesAsync(product, timeFrame, from, to,
 			maximum, cancellationToken);
+
 		foreach (var candle in candles)
 			await SendCandleAsync(product, candle, timeFrame,
 				mdMsg.TransactionId, cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
@@ -307,9 +318,11 @@ public partial class TapbitMessageAdapter
 		{
 			var result = new HashSet<string>(
 				StringComparer.OrdinalIgnoreCase);
+
 			foreach (var subscription in _level1Subscriptions.Values)
 				result.Add($"{subscription.ProductType.ToTopicPrefix()}/" +
 					$"ticker.{subscription.StreamSymbol}");
+
 			foreach (var group in _depthSubscriptions.Values.GroupBy(
 				static value => new ProductKey(value.ProductType,
 					value.StreamSymbol)))
@@ -318,6 +331,7 @@ public partial class TapbitMessageAdapter
 				result.Add($"{first.Topic}.{group.Max(
                     static value => value.Depth)}");
 			}
+
 			topics = [.. result];
 		}
 		await SocketClient.SetTopicsAsync(topics, cancellationToken);
@@ -377,6 +391,7 @@ public partial class TapbitMessageAdapter
 				pair.Value.ProductType == productType &&
 				pair.Value.Symbol.EqualsIgnoreCase(product.Symbol)).Select(
 				static pair => pair.Key)];
+
 		foreach (var target in targets)
 			await SendWsTickerAsync(product, ticker, target,
 				cancellationToken);
@@ -450,6 +465,7 @@ public partial class TapbitMessageAdapter
 		}
 		if (!shouldSend)
 			return;
+
 		foreach (var target in targets)
 			await SendOutMessageAsync(new QuoteChangeMessage
 			{
@@ -555,6 +571,7 @@ public partial class TapbitMessageAdapter
 			if (!_seenPublicTrades.Add(key))
 				return false;
 			_publicTradeDeliveryOrder.Enqueue(key);
+
 			while (_publicTradeDeliveryOrder.Count > _maximumDeliveryKeys)
 				_seenPublicTrades.Remove(
 					_publicTradeDeliveryOrder.Dequeue());
@@ -619,10 +636,12 @@ public partial class TapbitMessageAdapter
 				.Select(group => (_products[group.Key], group.Select(
 					static pair => pair.Key).ToArray()))];
 		var finished = new List<long>();
+
 		foreach (var group in groups)
 		{
 			var trades = PrepareTrades(await RestClient.GetPublicTradesAsync(
 				group.Product, cancellationToken));
+
 			foreach (var target in group.Targets)
 			{
 				TickSubscription subscription;
@@ -630,16 +649,19 @@ public partial class TapbitMessageAdapter
 					if (!_tickSubscriptions.TryGetValue(target,
 						out subscription))
 						continue;
+
 				foreach (var item in trades.Where(item => IsTradeInRange(
 					item.Trade, subscription.From, subscription.To)))
 				{
 					_ = await SendPublicTradeAsync(item.Trade, item.Identity,
 						target, cancellationToken);
 				}
+
 				if (subscription.To is DateTime to && CurrentTime >= to)
 					finished.Add(target);
 			}
 		}
+
 		foreach (var target in finished.Distinct())
 		{
 			using (_sync.EnterScope())
@@ -659,6 +681,7 @@ public partial class TapbitMessageAdapter
 			subscriptions = [.. _candleSubscriptions.Select(static pair =>
 				(pair.Key, pair.Value))];
 		var finished = new List<long>();
+
 		foreach (var item in subscriptions)
 		{
 			TapbitInstrument product;
@@ -675,6 +698,7 @@ public partial class TapbitMessageAdapter
 			var candles = await RestClient.GetCandlesAsync(product,
 				item.Subscription.TimeFrame, from, upperBound,
 				cancellationToken);
+
 			foreach (var candle in (candles ?? []).Where(static candle =>
 				candle is not null && candle.OpenTime > 0).OrderBy(
 				static candle => candle.OpenTime))
@@ -698,9 +722,11 @@ public partial class TapbitMessageAdapter
 					item.Subscription.TimeFrame, item.Id,
 					cancellationToken);
 			}
+
 			if (item.Subscription.To is DateTime to && CurrentTime >= to)
 				finished.Add(item.Id);
 		}
+
 		foreach (var target in finished)
 		{
 			UnsubscribeCandles(target);
@@ -715,6 +741,7 @@ public partial class TapbitMessageAdapter
 		var result = new List<TapbitCandle>();
 		var cursor = from.ToUniversalTime();
 		var upperBound = to.ToUniversalTime();
+
 		while (result.Count < maximum && cursor <= upperBound)
 		{
 			var pageSize = (maximum - result.Count).Min(200).Max(1);
@@ -734,6 +761,7 @@ public partial class TapbitMessageAdapter
 				break;
 			cursor = next;
 		}
+
 		return [.. result.Where(item =>
 				item.OpenTime.ToUtcTime() >= from.ToUniversalTime() &&
 				item.OpenTime.ToUtcTime() <= to.ToUniversalTime())
@@ -749,6 +777,7 @@ public partial class TapbitMessageAdapter
 		var occurrences = new Dictionary<string, int>(
 			StringComparer.Ordinal);
 		var result = new List<(TapbitPublicTrade, string)>();
+
 		foreach (var trade in (trades ?? []).Where(static trade =>
 			trade is not null && trade.Timestamp > 0).Reverse())
 		{
@@ -761,6 +790,7 @@ public partial class TapbitMessageAdapter
 			occurrences[baseIdentity] = ++occurrence;
 			result.Add((trade, GetTradeIdentity(trade, occurrence)));
 		}
+
 		return [.. result.OrderBy(static item => item.Item1.Timestamp)];
 	}
 
@@ -827,6 +857,7 @@ public partial class TapbitMessageAdapter
 		var retained = _publicTradeDeliveryOrder.Where(
 			_seenPublicTrades.Contains).ToArray();
 		_publicTradeDeliveryOrder.Clear();
+
 		foreach (var key in retained)
 			_publicTradeDeliveryOrder.Enqueue(key);
 	}
@@ -835,6 +866,7 @@ public partial class TapbitMessageAdapter
 		IDictionary<string, TValue> values, long target)
 	{
 		var prefix = target.ToString(CultureInfo.InvariantCulture) + ":";
+
 		foreach (var key in values.Keys.Where(key =>
 			key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
 			values.Remove(key);

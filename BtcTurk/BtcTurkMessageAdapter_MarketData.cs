@@ -8,6 +8,7 @@ public partial class BtcTurkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
@@ -19,6 +20,7 @@ public partial class BtcTurkMessageAdapter
 
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = lookupMsg.Count ?? long.MaxValue;
+
 		foreach (var market in markets.OrderBy(
 			static value => value.SecurityCode,
 			StringComparer.OrdinalIgnoreCase))
@@ -46,6 +48,7 @@ public partial class BtcTurkMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -55,6 +58,7 @@ public partial class BtcTurkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -112,6 +116,7 @@ public partial class BtcTurkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -173,6 +178,7 @@ public partial class BtcTurkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -194,6 +200,7 @@ public partial class BtcTurkMessageAdapter
 			market.NativeSymbol, count, cancellationToken);
 		var snapshotIds = new HashSet<string>(
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var trade in (trades ?? []).Where(trade =>
 		{
 			var time = trade.Timestamp > 0
@@ -248,6 +255,7 @@ public partial class BtcTurkMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 			return;
@@ -392,6 +400,7 @@ public partial class BtcTurkMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(book.PairSymbol))];
+
 		foreach (var pair in subscriptions)
 			await SendDepthAsync(pair.Value.SecurityCode, book, pair.Key,
 				pair.Value.Depth, cancellationToken);
@@ -407,6 +416,7 @@ public partial class BtcTurkMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _tickSubscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(trade.PairSymbol))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new ExecutionMessage
 			{
@@ -432,6 +442,7 @@ public partial class BtcTurkMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
 				pair.Value.NativeSymbol.EqualsIgnoreCase(ticker.PairSymbol))];
+
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(new Level1ChangeMessage
 			{
@@ -518,6 +529,7 @@ public partial class BtcTurkMessageAdapter
 		}.Min();
 		var count = available.Min(maximum);
 		var start = available - count;
+
 		for (var index = start; index < start + count; index++)
 		{
 			var openTime = candles.Timestamps[index].FromUnixSeconds();

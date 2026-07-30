@@ -217,6 +217,7 @@ public partial class CoinSwitchMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		var portfolioName = GetPortfolioName();
 		if (!lookupMsg.PortfolioName.IsEmpty() &&
@@ -253,6 +254,7 @@ public partial class CoinSwitchMessageAdapter
 				lookupMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_portfolioSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"CoinSwitch portfolio subscription already exists.");
@@ -269,6 +271,7 @@ public partial class CoinSwitchMessageAdapter
 		await SendSubscriptionReplyAsync(
 			statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -298,6 +301,7 @@ public partial class CoinSwitchMessageAdapter
 				statusMsg.TransactionId, cancellationToken);
 			return;
 		}
+
 		if (_orderStatusSubscriptionId != 0)
 			throw new InvalidOperationException(
 				"CoinSwitch order-status subscription already exists.");

@@ -24,6 +24,7 @@ public partial class GuruFocusMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             lookupMsg.TransactionId, cancellationToken);
+
         if (lookupMsg.Skip is < 0)
             throw new ArgumentOutOfRangeException(nameof(lookupMsg.Skip));
         if (lookupMsg.Count is <= 0)
@@ -80,6 +81,7 @@ public partial class GuruFocusMessageAdapter
                     pageNumber,
                     PageSize,
                     cancellationToken);
+
                 foreach (var item in page.Data ?? [])
                 {
                     if (item is null || item.Symbol.IsEmpty())
@@ -104,6 +106,7 @@ public partial class GuruFocusMessageAdapter
                         security, cancellationToken);
                     remaining--;
                 }
+
                 if (page.IsPageComplete(
                     pageNumber, PageSize))
                 {
@@ -123,6 +126,7 @@ public partial class GuruFocusMessageAdapter
                     pageNumber,
                     PageSize,
                     cancellationToken);
+
                 foreach (var item in page.Data ?? [])
                 {
                     if (item is null || item.Symbol.IsEmpty())
@@ -147,6 +151,7 @@ public partial class GuruFocusMessageAdapter
                         security, cancellationToken);
                     remaining--;
                 }
+
                 if (page.IsPageComplete(
                     pageNumber, PageSize))
                 {
@@ -166,6 +171,7 @@ public partial class GuruFocusMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -237,6 +243,7 @@ public partial class GuruFocusMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -273,6 +280,7 @@ public partial class GuruFocusMessageAdapter
             ticker, from, to, cancellationToken);
         var remaining = mdMsg.Count ?? long.MaxValue;
         var seen = new HashSet<DateTime>();
+
         foreach (var item in (prices ?? [])
             .Where(item => item is not null)
             .Select(item => new
@@ -327,6 +335,7 @@ public partial class GuruFocusMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(
@@ -471,6 +480,7 @@ public partial class GuruFocusMessageAdapter
     {
         await SendSubscriptionReplyAsync(
             mdMsg.TransactionId, cancellationToken);
+
         if (!mdMsg.IsSubscribe)
         {
             await SendSubscriptionResultAsync(

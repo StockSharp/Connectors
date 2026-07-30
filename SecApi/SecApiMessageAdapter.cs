@@ -12,6 +12,7 @@ public partial class SecApiMessageAdapter
     {
         this.AddMarketDataSupport();
         this.AddSupportedMarketDataType(DataType.News);
+
         foreach (var dataType in SecApiDataTypes.All)
             this.AddSupportedMarketDataType(dataType);
     }

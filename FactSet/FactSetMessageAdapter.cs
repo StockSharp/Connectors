@@ -113,8 +113,10 @@ public partial class FactSetMessageAdapter
 			return cached;
 
 		var references = await SafeClient().GetReferences(code, cancellationToken);
+
 		foreach (var reference in references)
 			CacheReference(reference);
+
 		return references.FirstOrDefault(reference => reference.Matches(code))
 			?? throw new InvalidOperationException(
 				$"FactSet security '{code}' was not found or is not entitled.");

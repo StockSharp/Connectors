@@ -113,6 +113,7 @@ sealed class FugleSocketClient : BaseLogReceiver
 		_serverSubscriptions.Clear();
 		lock (_pendingSync)
 			_pendingSubscriptions.Clear();
+
 		foreach (var subscription in _subscriptions.Values)
 			subscription.ServerId = null;
 

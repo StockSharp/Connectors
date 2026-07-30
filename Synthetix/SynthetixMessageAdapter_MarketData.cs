@@ -8,10 +8,12 @@ public partial class SynthetixMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var skip = Math.Max(0, lookupMsg.Skip ?? 0);
 		var left = Math.Max(0, lookupMsg.Count ?? long.MaxValue);
+
 		foreach (var market in GetMarkets().OrderBy(static market => market.Symbol,
 			StringComparer.Ordinal))
 		{
@@ -40,6 +42,7 @@ public partial class SynthetixMessageAdapter
 			await SendOutMessageAsync(security, cancellationToken);
 			left--;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -48,6 +51,7 @@ public partial class SynthetixMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -77,6 +81,7 @@ public partial class SynthetixMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var key = StreamKey(market.Symbol, "prices");
 		var subscribe = false;
 		using (_sync.EnterScope())
@@ -111,6 +116,7 @@ public partial class SynthetixMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -140,6 +146,7 @@ public partial class SynthetixMessageAdapter
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var key = StreamKey(market.Symbol, "book");
 		var subscribe = false;
 		using (_sync.EnterScope())
@@ -175,6 +182,7 @@ public partial class SynthetixMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -197,6 +205,7 @@ public partial class SynthetixMessageAdapter
 		var count = (mdMsg.Count ?? 100).Min(100).Max(1).To<int>();
 		var trades = (await ApiClient.GetLastTradesAsync(market.Symbol, count,
 			cancellationToken))?.Trades ?? [];
+
 		foreach (var trade in trades
 			.Where(static trade => trade is not null && trade.Timestamp > 0)
 			.Where(trade => from is null ||
@@ -207,11 +216,13 @@ public partial class SynthetixMessageAdapter
 			MarkPublicTrade(trade.Symbol, trade.TradeId);
 			await SendTradeAsync(trade, mdMsg.TransactionId, cancellationToken);
 		}
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var key = StreamKey(market.Symbol, "trades");
 		var subscribe = false;
 		using (_sync.EnterScope())
@@ -246,6 +257,7 @@ public partial class SynthetixMessageAdapter
 		MarketDataMessage mdMsg, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(mdMsg.TransactionId, cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -270,6 +282,7 @@ public partial class SynthetixMessageAdapter
 		var count = GetCandleCount(mdMsg, timeFrame, to);
 		var response = await ApiClient.GetCandlesAsync(market.Symbol, interval,
 			count, from, to, cancellationToken);
+
 		foreach (var candle in (response?.Candles ?? [])
 			.Where(static candle => candle is not null && candle.OpenTime > 0)
 			.OrderBy(static candle => candle.OpenTime))
@@ -279,11 +292,13 @@ public partial class SynthetixMessageAdapter
 						? CandleStates.Finished
 						: CandleStates.Active,
 				cancellationToken);
+
 		if (mdMsg.IsHistoryOnly())
 		{
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 			return;
 		}
+
 		var key = StreamKey(market.Symbol, "candles:" + interval);
 		var subscribe = false;
 		using (_sync.EnterScope())
@@ -512,6 +527,7 @@ public partial class SynthetixMessageAdapter
 				.Where(subscription => subscription.Symbol.Equals(update.Symbol,
 					StringComparison.Ordinal))
 				.Select(static subscription => subscription.TransactionId)];
+
 		foreach (var transactionId in transactions)
 		{
 			var output = new Level1ChangeMessage
@@ -557,6 +573,7 @@ public partial class SynthetixMessageAdapter
 				.Where(subscription => subscription.Symbol.Equals(trade.Symbol,
 					StringComparison.Ordinal))
 				.Select(static subscription => subscription.TransactionId)];
+
 		foreach (var transactionId in transactions)
 			await SendTradeAsync(trade, transactionId, cancellationToken);
 	}
@@ -577,6 +594,7 @@ public partial class SynthetixMessageAdapter
 		using (_sync.EnterScope())
 			subscriptions = [.. _depthSubscriptions.Values.Where(subscription =>
 				subscription.Symbol.Equals(book.Symbol, StringComparison.Ordinal))];
+
 		foreach (var subscription in subscriptions)
 			await SendDepthAsync(book.Symbol, book.Bids, book.Asks,
 				subscription.TransactionId, subscription.Depth, time,
@@ -609,6 +627,7 @@ public partial class SynthetixMessageAdapter
 				outputs.Add((subscription.TransactionId, subscription.TimeFrame,
 					candle, CandleStates.Active));
 			}
+
 		foreach (var output in outputs)
 			await SendCandleAsync(output.Candle, output.TimeFrame,
 				output.TransactionId, output.State, cancellationToken);

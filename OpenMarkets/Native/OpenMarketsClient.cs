@@ -246,6 +246,7 @@ sealed class OpenMarketsClient : Disposable
 		where TResponse : class
 	{
 		var body = requestBody == null ? null : JsonConvert.SerializeObject(requestBody, _jsonSettings);
+
 		for (var attempt = 1; ; attempt++)
 		{
 			using var message = new HttpRequestMessage(method, BuildPath(path, query));

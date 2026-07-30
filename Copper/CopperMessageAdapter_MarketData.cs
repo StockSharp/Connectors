@@ -8,6 +8,7 @@ public partial class CopperMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.SecurityId.BoardCode.IsEmpty() &&
 			!lookupMsg.SecurityId.BoardCode.EqualsIgnoreCase(BoardCodes.Copper))
@@ -27,6 +28,7 @@ public partial class CopperMessageAdapter
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 		var toSkip = Math.Max(0, lookupMsg.Skip ?? 0);
+
 		foreach (var currency in currencies
 			.Where(currency => currency is not null && !currency.Currency.IsEmpty() &&
 				(requestedCode.IsEmpty() ||
@@ -46,6 +48,7 @@ public partial class CopperMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
 
@@ -77,8 +80,10 @@ public partial class CopperMessageAdapter
 			CultureInfo.InvariantCulture, out var count) || count is < 0 or > 28)
 			return null;
 		var step = 1m;
+
 		for (var index = 0; index < count; index++)
 			step /= 10m;
+
 		return step;
 	}
 }

@@ -79,6 +79,7 @@ partial class TastyTradeMessageAdapter
 	protected override async ValueTask PortfolioLookupAsync(PortfolioLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
@@ -91,9 +92,11 @@ partial class TastyTradeMessageAdapter
 				BoardCode = "TASTYTRADE",
 			}, cancellationToken);
 			await ProcessBalance(await _client.GetBalance(account.AccountNumber, cancellationToken), cancellationToken, message.TransactionId);
+
 			foreach (var position in await _client.GetPositions(account.AccountNumber, cancellationToken))
 				await ProcessPosition(position, cancellationToken, message.TransactionId);
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -101,13 +104,16 @@ partial class TastyTradeMessageAdapter
 	protected override async ValueTask OrderStatusAsync(OrderStatusMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (!message.IsSubscribe)
 			return;
 
 		var accounts = message.PortfolioName.IsEmpty() ? _accounts : [ResolveAccount(message.PortfolioName)];
+
 		foreach (var account in accounts)
 			foreach (var order in await _client.GetOrders(account.AccountNumber, cancellationToken))
 				await ProcessOrder(order, cancellationToken, message.TransactionId);
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 

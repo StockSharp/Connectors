@@ -151,8 +151,10 @@ sealed class RupeezySocketClient : BaseLogReceiver
         {
             if (TickReceived is not { } tickHandler)
                 return;
+
             foreach (var tick in Decode(data.Span))
                 await tickHandler(tick, cancellationToken);
+
             return;
         }
 

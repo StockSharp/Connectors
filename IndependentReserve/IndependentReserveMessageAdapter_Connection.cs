@@ -54,6 +54,7 @@ public partial class IndependentReserveMessageAdapter
 						_accountChannels.Add(GetTickerChannel(primary));
 						_accountChannels.Add(GetOrderBookChannel(primary));
 					}
+
 					accountChannels = [.. _accountChannels];
 				}
 				await SocketClient.SubscribeAsync(accountChannels,

@@ -142,6 +142,7 @@ public partial class DydxChainMessageAdapter
 	{
 		var response = await ApiClient.GetMarketsAsync(cancellationToken);
 		var markets = new List<DydxChainMarket>();
+
 		foreach (var market in response ?? [])
 		{
 			if (market is null || market.Ticker.IsEmpty() ||
@@ -154,6 +155,7 @@ public partial class DydxChainMessageAdapter
 			_ = market.ClobPairId.ParseUInt32("CLOB pair ID");
 			markets.Add(market);
 		}
+
 		if (markets.Count == 0)
 			throw new InvalidDataException(
 				"dYdX Indexer returned no usable perpetual markets.");
@@ -174,6 +176,7 @@ public partial class DydxChainMessageAdapter
 		{
 			_markets.Clear();
 			_marketsByPairId.Clear();
+
 			foreach (var market in markets)
 			{
 				_markets.Add(market.Ticker, market);

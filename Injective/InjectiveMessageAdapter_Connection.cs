@@ -128,15 +128,18 @@ public partial class InjectiveMessageAdapter
 				CurrentTime >= _nextBlockRefresh;
 			candles = [.. _candleSubscriptions.Values.Where(candle =>
 				CurrentTime >= candle.NextPollTime)];
+
 			foreach (var candle in candles)
 				candle.NextPollTime = CurrentTime + GetCandlePollInterval(
 					candle.TimeFrame);
 		}
 		if (refreshBlock)
 			await RunSafelyAsync(RefreshBlockAsync, cancellationToken);
+
 		foreach (var candle in candles)
 			await RunSafelyAsync(ct => PollCandleAsync(candle, ct),
 				cancellationToken);
+
 		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
@@ -151,23 +154,29 @@ public partial class InjectiveMessageAdapter
 		var derivatives = await derivativeTask;
 		var markets = new List<InjectiveMarket>(spots.Length +
 			derivatives.Length);
+
 		foreach (var source in spots.Where(static item => item is not null))
 			markets.Add(source.ToMarket());
+
 		foreach (var source in derivatives.Where(static item => item is not null))
 			markets.Add(source.ToMarket());
+
 		if (markets.Count == 0)
 			throw new InvalidDataException(
 				"Injective returned no usable markets.");
+
 		foreach (var group in markets.GroupBy(static market => market.Code,
 			StringComparer.OrdinalIgnoreCase).Where(static group =>
 				group.Count() > 1))
 			foreach (var market in group)
 				market.Code += "-" + market.MarketId[2..10].ToUpperInvariant();
+
 		using (_sync.EnterScope())
 		{
 			_marketsByCode.Clear();
 			_marketsById.Clear();
 			_tokensByDenom.Clear();
+
 			foreach (var market in markets)
 			{
 				if (!_marketsByCode.TryAdd(market.Code, market) ||
@@ -175,6 +184,7 @@ public partial class InjectiveMessageAdapter
 					throw new InvalidDataException(
 						$"Injective returned duplicate market '{market.Code}'.");
 			}
+
 			foreach (var source in spots)
 			{
 				if (source?.BaseTokenMeta is not null)
@@ -182,6 +192,7 @@ public partial class InjectiveMessageAdapter
 				if (source?.QuoteTokenMeta is not null)
 					_tokensByDenom[source.QuoteDenom] = source.QuoteTokenMeta;
 			}
+
 			foreach (var source in derivatives)
 				if (source?.QuoteTokenMeta is not null)
 					_tokensByDenom[source.QuoteDenom] = source.QuoteTokenMeta;

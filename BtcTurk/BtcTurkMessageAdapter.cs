@@ -155,6 +155,7 @@ public partial class BtcTurkMessageAdapter
 		{
 			_marketsBySecurity.Clear();
 			_marketsByNative.Clear();
+
 			foreach (var market in markets ?? [])
 			{
 				if (market?.NativeSymbol.IsEmpty() != false ||
@@ -227,8 +228,10 @@ public partial class BtcTurkMessageAdapter
 			if (!_seenTradeIds.Add(tradeId))
 				return false;
 			_seenTradeOrder.Enqueue(tradeId);
+
 			while (_seenTradeOrder.Count > _maximumRememberedTradeIds)
 				_seenTradeIds.Remove(_seenTradeOrder.Dequeue());
+
 			return true;
 		}
 	}
@@ -243,10 +246,12 @@ public partial class BtcTurkMessageAdapter
 			if (!_seenPublicTradeIds.Add(key))
 				return false;
 			_seenPublicTradeOrder.Enqueue(key);
+
 			while (_seenPublicTradeOrder.Count >
 				_maximumRememberedTradeIds)
 				_seenPublicTradeIds.Remove(
 					_seenPublicTradeOrder.Dequeue());
+
 			return true;
 		}
 	}

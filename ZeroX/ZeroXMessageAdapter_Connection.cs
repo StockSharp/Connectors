@@ -43,6 +43,7 @@ public partial class ZeroXMessageAdapter
 					"Configured 0x market definitions are invalid.", error);
 			}
 			var errors = new List<Exception>();
+
 			foreach (var definition in definitions)
 			{
 				try
@@ -60,6 +61,7 @@ public partial class ZeroXMessageAdapter
 						error.Message);
 				}
 			}
+
 			ZeroXMarket[] markets;
 			using (_sync.EnterScope())
 				markets = [.. _markets.Values];
@@ -221,6 +223,7 @@ public partial class ZeroXMessageAdapter
 			? Chain.GetDefaultMarkets()
 			: Markets;
 		var result = new List<ZeroXMarketDefinition>();
+
 		foreach (var item in configured.Split(';',
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries))
@@ -240,6 +243,7 @@ public partial class ZeroXMessageAdapter
 					: null,
 			});
 		}
+
 		if (result.Count == 0)
 			throw new InvalidOperationException(
 				"At least one 0x market must be configured.");

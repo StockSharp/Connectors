@@ -79,6 +79,7 @@ public partial class AevoMessageAdapter
 			? GetMarket(cancelMsg.SecurityId).InstrumentName
 			: null;
 		var orders = await RestClient.GetOpenOrdersAsync(cancellationToken);
+
 		foreach (var order in (orders ?? [])
 			.Where(static order => order?.OrderId.IsEmpty() == false)
 			.Where(order => symbol.IsEmpty() || order.InstrumentName.Equals(
@@ -88,6 +89,7 @@ public partial class AevoMessageAdapter
 			.Where(order => cancelMsg.IsStop is null ||
 				!order.Stop.IsEmpty() == cancelMsg.IsStop.Value))
 			await RestClient.CancelOrderAsync(order.OrderId, cancellationToken);
+
 		SchedulePrivatePoll();
 	}
 
@@ -97,6 +99,7 @@ public partial class AevoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(lookupMsg.PortfolioName);
 		if (!lookupMsg.IsSubscribe)
@@ -163,6 +166,7 @@ public partial class AevoMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureAccountReady();
 		ValidatePortfolio(statusMsg.PortfolioName);
 		if (!statusMsg.IsSubscribe)
@@ -379,9 +383,11 @@ public partial class AevoMessageAdapter
 			tasks.Add(tradesTask);
 		}
 		await Task.WhenAll(tasks);
+
 		foreach (var transactionId in portfolios)
 			await SendPortfolioSnapshotAsync(await accountTask,
 				await portfolioTask, transactionId, false, cancellationToken);
+
 		foreach (var (transactionId, subscription) in orders)
 			await SendOrderSnapshotAsync(await openTask,
 				(await historyTask)?.Orders, (await tradesTask)?.Trades,
@@ -433,6 +439,7 @@ public partial class AevoMessageAdapter
 		foreach (var collateral in account.Collaterals ?? [])
 			await SendCollateralAsync(collateral, transactionId, isForce,
 				cancellationToken);
+
 		foreach (var position in account.Positions ?? [])
 			await SendPositionAsync(position, transactionId, ServerTime, isForce,
 				cancellationToken);
@@ -537,6 +544,7 @@ public partial class AevoMessageAdapter
 		long[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _portfolioSubscriptions];
+
 		foreach (var transactionId in subscriptions)
 			foreach (var position in data.Positions ?? [])
 				await SendPositionAsync(position, transactionId, time, false,
@@ -557,6 +565,7 @@ public partial class AevoMessageAdapter
 			.Skip(subscription.Skip)
 			.Take(subscription.Limit)
 			.ToArray();
+
 		foreach (var order in orders)
 			await SendOrderAsync(order, transactionId, isForce,
 				cancellationToken);
@@ -580,6 +589,7 @@ public partial class AevoMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var order in data.Orders ?? [])
 			foreach (var (transactionId, subscription) in subscriptions)
 				if (IsOrderMatch(order, subscription))
@@ -597,6 +607,7 @@ public partial class AevoMessageAdapter
 		KeyValuePair<long, OrderSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _orderSubscriptions];
+
 		foreach (var (transactionId, subscription) in subscriptions)
 			if (IsTradeMatch(fill, subscription))
 				await SendAccountTradeAsync(fill, subscription, transactionId,

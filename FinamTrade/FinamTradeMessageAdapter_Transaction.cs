@@ -305,6 +305,7 @@ public partial class FinamTradeMessageAdapter
 			filter.Count is long tradeCount
 				? (int)Math.Min(tradeCount, 1000) : 1000,
 			cancellationToken);
+
 		foreach (var trade in trades?.Trades ?? [])
 			await SendAccountTrade(trade, originalTransactionId,
 				cancellationToken);
@@ -439,6 +440,7 @@ public partial class FinamTradeMessageAdapter
 				_orderTransactions.TryGetValue(id, out var transactionId))
 				return transactionId;
 		}
+
 		return 0;
 	}
 }

@@ -150,6 +150,7 @@ public partial class DaishinMessageAdapter
 	{
 		EnsureTradingEnabled();
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId, cancellationToken);
+
 		if (!statusMsg.IsSubscribe)
 		{
 			if (_orderStatusSubscriptionId == statusMsg.OriginalTransactionId)
@@ -173,6 +174,7 @@ public partial class DaishinMessageAdapter
 	{
 		EnsureTradingEnabled();
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId, cancellationToken);
+
 		if (!lookupMsg.IsSubscribe)
 		{
 			if (_portfolioSubscriptionId == lookupMsg.OriginalTransactionId)
@@ -292,6 +294,7 @@ public partial class DaishinMessageAdapter
 		CancellationToken cancellationToken)
 	{
 		var left = filter?.Count ?? long.MaxValue;
+
 		foreach (var account in ResolveAccounts(filter?.PortfolioName))
 		{
 			foreach (var update in await _client.GetOpenOrdersAsync(account.Account, cancellationToken))
@@ -305,9 +308,11 @@ public partial class DaishinMessageAdapter
 				if (--left <= 0)
 					break;
 			}
+
 			if (left <= 0)
 				break;
 		}
+
 		_lastOrderRefresh = CurrentTime;
 	}
 
@@ -391,6 +396,7 @@ public partial class DaishinMessageAdapter
 				.TryAdd(PositionChangeTypes.AveragePrice, position.AveragePrice, true), cancellationToken);
 			}
 		}
+
 		_lastPortfolioRefresh = CurrentTime;
 	}
 

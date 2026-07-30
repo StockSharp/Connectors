@@ -191,6 +191,7 @@ public partial class cTraderMessageAdapter
 	private async Task OnSubscribeDepthQuotesResponse(long transId, ProtoOASubscribeDepthQuotesRes msg)
 	{
 		await SendSubscriptionReplyAsync(transId, CancellationToken.None);
+
 		await SendSubscriptionOnlineAsync(transId, CancellationToken.None);
 	}
 
@@ -206,6 +207,7 @@ public partial class cTraderMessageAdapter
 			return;
 
 		await SendSubscriptionReplyAsync(transId, CancellationToken.None);
+
 		await SendSubscriptionOnlineAsync(transId, CancellationToken.None);
 	}
 
@@ -376,6 +378,7 @@ public partial class cTraderMessageAdapter
 			return;
 
 		await SendSubscriptionReplyAsync(transId, CancellationToken.None);
+
 		await SendSubscriptionOnlineAsync(transId, CancellationToken.None);
 	}
 

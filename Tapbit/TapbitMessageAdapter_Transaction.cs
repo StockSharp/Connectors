@@ -156,11 +156,13 @@ public partial class TapbitMessageAdapter
 				.Select(static order => order.OrderId)
 				.Where(static id => !id.IsEmpty()).Distinct(
 					StringComparer.OrdinalIgnoreCase).ToArray();
+
 			for (var index = 0; index < ids.Length; index += 20)
 			{
 				var batch = ids.Skip(index).Take(20).ToArray();
 				var results = await RestClient.CancelOrdersAsync(batch,
 					cancellationToken) ?? [];
+
 				foreach (var result in results)
 				{
 					if (result.Code is not (null or "" or "200"))
@@ -191,6 +193,7 @@ public partial class TapbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -219,6 +222,7 @@ public partial class TapbitMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -230,6 +234,7 @@ public partial class TapbitMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -288,6 +293,7 @@ public partial class TapbitMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -310,10 +316,12 @@ public partial class TapbitMessageAdapter
 		{
 			var balances = await RestClient.GetBalancesAsync(
 				cancellationToken) ?? [];
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -322,6 +330,7 @@ public partial class TapbitMessageAdapter
 			.Select(static pair => pair.Value.OrderId)
 			.Where(static value => !value.IsEmpty()),
 			StringComparer.OrdinalIgnoreCase);
+
 		foreach (var order in tracked.Where(order =>
 			!subscribedOrderIds.Contains(order.OrderId)))
 		{
@@ -361,6 +370,7 @@ public partial class TapbitMessageAdapter
 					cancellationToken);
 			return;
 		}
+
 		foreach (var order in await LoadOrdersAsync(subscription,
 			cancellationToken))
 			await SendOrderAsync(order, target, isForced,
@@ -393,6 +403,7 @@ public partial class TapbitMessageAdapter
 		maximum = maximum.Min(5000).Max(1);
 		var result = new List<TapbitOrder>();
 		string nextOrderId = null;
+
 		for (var page = 0; result.Count < maximum && page < 250; page++)
 		{
 			var items = isOpen
@@ -415,6 +426,7 @@ public partial class TapbitMessageAdapter
 				break;
 			nextOrderId = next;
 		}
+
 		return [.. result.Take(maximum)];
 	}
 

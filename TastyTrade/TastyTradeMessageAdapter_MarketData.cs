@@ -6,6 +6,7 @@ partial class TastyTradeMessageAdapter
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		var text = message.SecurityId.SecurityCode;
 		if (text.IsEmpty())
 		{
@@ -15,6 +16,7 @@ partial class TastyTradeMessageAdapter
 
 		var types = message.GetSecurityTypes();
 		var left = message.Count ?? long.MaxValue;
+
 		foreach (var item in await _client.SearchSymbols(text, cancellationToken))
 		{
 			var security = new SecurityMessage
@@ -52,6 +54,7 @@ partial class TastyTradeMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
@@ -59,6 +62,7 @@ partial class TastyTradeMessageAdapter
 	protected override async ValueTask OnLevel1SubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.IsSubscribe)
 		{
 			var symbol = await ResolveStreamerSymbol(message.SecurityId, message.SecurityType, cancellationToken);
@@ -84,6 +88,7 @@ partial class TastyTradeMessageAdapter
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage message, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.IsSubscribe)
 		{
 			var streamerSymbol = await ResolveStreamerSymbol(message.SecurityId, message.SecurityType, cancellationToken);
@@ -99,6 +104,7 @@ partial class TastyTradeMessageAdapter
 	private async ValueTask ProcessSubscription(MarketDataMessage message, DxEventTypes type, CancellationToken cancellationToken)
 	{
 		await SendSubscriptionReplyAsync(message.TransactionId, cancellationToken);
+
 		if (message.IsSubscribe)
 		{
 			var symbol = await ResolveStreamerSymbol(message.SecurityId, message.SecurityType, cancellationToken);

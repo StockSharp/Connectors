@@ -61,6 +61,7 @@ public partial class VeloDataMessageAdapter
 		using (_sync.EnterScope())
 		{
 			_instruments.Clear();
+
 			foreach (var instrument in instruments ?? [])
 			{
 				if (!IsValidInstrument(instrument))
@@ -175,6 +176,7 @@ public partial class VeloDataMessageAdapter
 			finished = [.. _liveNews.Keys];
 			_liveNews.Clear();
 		}
+
 		foreach (var transactionId in finished)
 			await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
 	}
@@ -193,6 +195,7 @@ public partial class VeloDataMessageAdapter
 		{
 			subscriptions = _liveNews.Values.Where(subscription =>
 				MatchesNews(story, subscription.Coin)).ToArray();
+
 			foreach (var subscription in subscriptions)
 			{
 				if (subscription.Remaining is > 0 && --subscription.Remaining == 0)

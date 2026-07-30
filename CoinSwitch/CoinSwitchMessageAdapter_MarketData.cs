@@ -10,6 +10,7 @@ public partial class CoinSwitchMessageAdapter
 		await SendSubscriptionReplyAsync(
 			lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requested = lookupMsg.SecurityId.SecurityCode;
@@ -47,6 +48,7 @@ public partial class CoinSwitchMessageAdapter
 			if (--left <= 0)
 				break;
 		}
+
 		await SendSubscriptionResultAsync(
 			lookupMsg, cancellationToken);
 	}
@@ -59,6 +61,7 @@ public partial class CoinSwitchMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -126,6 +129,7 @@ public partial class CoinSwitchMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -196,6 +200,7 @@ public partial class CoinSwitchMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -267,6 +272,7 @@ public partial class CoinSwitchMessageAdapter
 		await SendSubscriptionReplyAsync(
 			mdMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!mdMsg.IsSubscribe)
 		{
@@ -470,6 +476,7 @@ public partial class CoinSwitchMessageAdapter
 		{
 			var trades = await RestClient.GetHftTradesAsync(
 				market.NativeSymbol, count, cancellationToken);
+
 			foreach (var trade in trades
 				.Where(value =>
 					(from is null ||
@@ -484,6 +491,7 @@ public partial class CoinSwitchMessageAdapter
 					trade,
 					transactionId,
 					cancellationToken);
+
 			return;
 		}
 
@@ -492,6 +500,7 @@ public partial class CoinSwitchMessageAdapter
 				market.NativeSymbol, count, cancellationToken)
 			: await RestClient.GetFuturesTradesAsync(
 				market.NativeSymbol, count, cancellationToken);
+
 		foreach (var trade in (values ?? [])
 			.Where(value =>
 				(from is null ||
@@ -526,6 +535,7 @@ public partial class CoinSwitchMessageAdapter
 				to,
 				count,
 				cancellationToken);
+
 			foreach (var candle in candles
 				.Where(value =>
 					value.OpenTime
@@ -540,6 +550,7 @@ public partial class CoinSwitchMessageAdapter
 					candle,
 					transactionId,
 					cancellationToken);
+
 			return;
 		}
 
@@ -556,6 +567,7 @@ public partial class CoinSwitchMessageAdapter
 				from,
 				to,
 				cancellationToken);
+
 		foreach (var candle in (values ?? [])
 			.Where(value =>
 				value.StartTime
@@ -942,6 +954,7 @@ public partial class CoinSwitchMessageAdapter
 					subscriptions = [.. _level1Subscriptions.Where(
 						pair => pair.Value.NativeSymbol
 							.EqualsIgnoreCase(market.NativeSymbol))];
+
 				foreach (var subscription in subscriptions)
 					await SendSpotTickerAsync(
 						market,
@@ -949,6 +962,7 @@ public partial class CoinSwitchMessageAdapter
 						subscription.Key,
 						cancellationToken);
 			}
+
 			return;
 		}
 
@@ -964,6 +978,7 @@ public partial class CoinSwitchMessageAdapter
 				subscriptions = [.. _level1Subscriptions.Where(
 					pair => pair.Value.NativeSymbol
 						.EqualsIgnoreCase(market.NativeSymbol))];
+
 			foreach (var subscription in subscriptions)
 				await SendFuturesTickerAsync(
 					market,
@@ -988,6 +1003,7 @@ public partial class CoinSwitchMessageAdapter
 				subscriptions = [.. _depthSubscriptions.Where(
 					pair => pair.Value.NativeSymbol
 						.EqualsIgnoreCase(market.NativeSymbol))];
+
 			foreach (var subscription in subscriptions)
 				await SendDepthAsync(
 					market,
@@ -1015,6 +1031,7 @@ public partial class CoinSwitchMessageAdapter
 				subscriptions = [.. _tickSubscriptions.Where(
 					pair => pair.Value.NativeSymbol
 						.EqualsIgnoreCase(market.NativeSymbol))];
+
 			foreach (var subscription in subscriptions)
 				await SendTradeAsync(
 					market,
@@ -1045,6 +1062,7 @@ public partial class CoinSwitchMessageAdapter
 							MatchesInterval(
 								candle.Interval,
 								pair.Value.TimeFrame)))];
+
 			foreach (var subscription in subscriptions)
 				await SendCandleAsync(
 					market,
@@ -1082,12 +1100,14 @@ public partial class CoinSwitchMessageAdapter
 				GetMarket(subscription.Value.NativeSymbol),
 				subscription.Key,
 				cancellationToken);
+
 		foreach (var subscription in depths)
 			await SendDepthSnapshotAsync(
 				GetMarket(subscription.Value.NativeSymbol),
 				subscription.Value.Depth,
 				subscription.Key,
 				cancellationToken);
+
 		foreach (var subscription in ticks)
 			await SendTradeSnapshotAsync(
 				GetMarket(subscription.Value.NativeSymbol),
@@ -1096,6 +1116,7 @@ public partial class CoinSwitchMessageAdapter
 				null,
 				subscription.Key,
 				cancellationToken);
+
 		foreach (var subscription in candles)
 		{
 			var to = DateTime.UtcNow;
@@ -1141,6 +1162,7 @@ public partial class CoinSwitchMessageAdapter
 				break;
 			payload = next;
 		}
+
 		return payload;
 	}
 

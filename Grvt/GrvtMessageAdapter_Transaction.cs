@@ -173,6 +173,7 @@ public partial class GrvtMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady(false);
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -197,6 +198,7 @@ public partial class GrvtMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsurePrivateReady(false);
 		if (!statusMsg.IsSubscribe)
 		{
@@ -241,6 +243,7 @@ public partial class GrvtMessageAdapter
 		{
 			SubAccountId = RestClient.SubAccountId,
 		}, cancellationToken) ?? [];
+
 		foreach (var position in positions)
 			await SendPositionAsync(position, transactionId, cancellationToken);
 	}
@@ -262,6 +265,7 @@ public partial class GrvtMessageAdapter
 		var maximum = GetHistoryLimit(requestedCount, 1000);
 		var history = new List<GrvtOrder>();
 		string cursor = null;
+
 		do
 		{
 			var page = await RestClient.GetOrderHistoryAsync(new()
@@ -294,6 +298,7 @@ public partial class GrvtMessageAdapter
 
 		var fills = new List<GrvtFill>();
 		cursor = null;
+
 		do
 		{
 			var page = await RestClient.GetFillHistoryAsync(new()
@@ -313,6 +318,7 @@ public partial class GrvtMessageAdapter
 			cursor = page?.Next;
 		}
 		while (!cursor.IsEmpty() && fills.Count < maximum);
+
 		foreach (var fill in fills
 			.Where(static item => item?.TradeId.IsEmpty() == false)
 			.GroupBy(static item => item.TradeId,

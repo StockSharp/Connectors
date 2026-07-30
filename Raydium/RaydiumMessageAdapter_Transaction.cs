@@ -49,6 +49,7 @@ public partial class RaydiumMessageAdapter
 			cancellationToken);
 		string signature = null;
 		ulong setupFee = 0;
+
 		for (var index = 0; index < transactions.Length; index++)
 		{
 			signature = await RpcClient.SendSerializedTransactionAsync(
@@ -62,6 +63,7 @@ public partial class RaydiumMessageAdapter
 					$"Raydium setup transaction '{signature}' failed.");
 			setupFee = checked(setupFee + receipt.Fee);
 		}
+
 		var tracked = new TrackedSwap
 		{
 			TransactionId = regMsg.TransactionId,
@@ -98,6 +100,7 @@ public partial class RaydiumMessageAdapter
 						result[id] = pool;
 				}
 		var missing = routeIds.Where(id => !result.ContainsKey(id)).ToArray();
+
 		for (var offset = 0; offset < missing.Length; offset += 100)
 			foreach (var keys in await _apiClient.GetPoolKeysAsync(
 				missing.Skip(offset).Take(100), cancellationToken))
@@ -113,9 +116,11 @@ public partial class RaydiumMessageAdapter
 				};
 				result[pool.PoolAddress] = pool;
 			}
+
 		if (routeIds.Any(id => !result.ContainsKey(id)))
 			throw new InvalidDataException(
 				"Raydium API returned incomplete route-pool metadata.");
+
 		foreach (var route in quote.Data.RoutePlan)
 		{
 			var pool = result[route.PoolId.NormalizePublicKey()];
@@ -126,6 +131,7 @@ public partial class RaydiumMessageAdapter
 					$"Raydium route metadata for pool '{pool.PoolAddress}' is " +
 					"inconsistent.");
 		}
+
 		return [.. routeIds.Select(id => result[id])];
 	}
 
@@ -190,6 +196,7 @@ public partial class RaydiumMessageAdapter
 				return receipt;
 			await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);
 		}
+
 		throw new TimeoutException(
 			$"Raydium transaction '{signature}' was not confirmed in time.");
 	}
@@ -232,6 +239,7 @@ public partial class RaydiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(lookupMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!lookupMsg.IsSubscribe)
 		{
@@ -259,6 +267,7 @@ public partial class RaydiumMessageAdapter
 				cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_portfolioSubscriptions.Add(lookupMsg.TransactionId);
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
@@ -270,6 +279,7 @@ public partial class RaydiumMessageAdapter
 	{
 		await SendSubscriptionReplyAsync(statusMsg.TransactionId,
 			cancellationToken);
+
 		EnsureConnected();
 		if (!statusMsg.IsSubscribe)
 		{
@@ -314,6 +324,7 @@ public partial class RaydiumMessageAdapter
 			await CompleteOrderStatusAsync(statusMsg, cancellationToken);
 			return;
 		}
+
 		using (_sync.EnterScope())
 			_orderSubscriptions[statusMsg.TransactionId] = subscription;
 		await SendSubscriptionResultAsync(statusMsg, cancellationToken);
@@ -335,12 +346,15 @@ public partial class RaydiumMessageAdapter
 		if (portfolioTargets.Length > 0)
 		{
 			var balances = await LoadBalancesAsync(cancellationToken);
+
 			foreach (var target in portfolioTargets)
 				await SendPortfolioSnapshotAsync(target, false, balances,
 					cancellationToken);
 		}
+
 		foreach (var swap in active)
 			await RefreshSwapAsync(swap, cancellationToken);
+
 		foreach (var target in orderTargets)
 			await SendOrderSnapshotAsync(target.Value, target.Key, false,
 				cancellationToken);
@@ -417,6 +431,7 @@ public partial class RaydiumMessageAdapter
 			StringComparer.OrdinalIgnoreCase).Where(static group =>
 				group.Count() > 1).Select(static group => group.Key).ToHashSet(
 					StringComparer.OrdinalIgnoreCase);
+
 		for (var offset = 0; offset < tokens.Length; offset += 100)
 		{
 			var chunk = tokens.Skip(offset).Take(100).ToArray();
@@ -425,6 +440,7 @@ public partial class RaydiumMessageAdapter
 					token.Mint, token.TokenProgram)).ToArray();
 			var accounts = await RpcClient.GetAccountsAsync(addresses,
 				cancellationToken);
+
 			for (var index = 0; index < chunk.Length; index++)
 			{
 				var token = chunk[index];
@@ -437,6 +453,7 @@ public partial class RaydiumMessageAdapter
 				result.Add((code, token.Mint, token.Decimals, amount));
 			}
 		}
+
 		return [.. result];
 	}
 
@@ -490,6 +507,7 @@ public partial class RaydiumMessageAdapter
 					swap.SubmittedTime)];
 		var skipped = 0;
 		var delivered = 0;
+
 		foreach (var swap in swaps)
 		{
 			var receipt = swap.State == OrderStates.Active
@@ -593,6 +611,7 @@ public partial class RaydiumMessageAdapter
 		var expectedQuoteSign = -expectedBaseSign;
 		BigInteger baseAmount = 0;
 		BigInteger quoteAmount = 0;
+
 		foreach (var pool in swap.RoutePools)
 		{
 			ReadRouteTokenDelta(pool.VaultA, pool.TokenA, keys, meta,
@@ -604,6 +623,7 @@ public partial class RaydiumMessageAdapter
 			ReadRouteTokenDelta(pool.VaultB, pool.TokenB, keys, meta,
 				swap.Market.TokenB.Mint, expectedQuoteSign, ref quoteAmount);
 		}
+
 		if (baseAmount <= 0 || quoteAmount <= 0)
 			throw new InvalidDataException(
 				$"Successful Raydium transaction '{swap.Signature}' contains " +
