@@ -27,7 +27,7 @@ public class ConnectorDocumentationTests : BaseTestClass
 		RegexOptions.Compiled | RegexOptions.Multiline);
 
 	private static readonly Regex _baseAdapterRegex = new(
-		@"\b(?:MessageAdapter|HistoricalMessageAdapter|FixMessageAdapter)\b",
+		@"^\s*:\s*(?:global::)?(?:\w+\.)*\w*MessageAdapter\b",
 		RegexOptions.Compiled);
 
 	private static readonly Regex _docRegex = new(
