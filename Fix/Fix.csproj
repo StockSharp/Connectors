@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common_connectors.props" />
+  <PropertyGroup>
+    <ProjectGuid>{DE2DC640-FA5B-46F2-92E7-E5A53232185F}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(RepoGitHubPath)Fix.Dialects\Fix.Dialects.csproj" />
+
+    <PackageReference Include="Ecng.IO.Compression" Version="$(EcngVer)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Dialects\OneZeroSymbols.zip" />
+    <Resource Include="Dialects\XOpenHub_CFD.zip" />
+    <Resource Include="Dialects\XOpenHub_FX.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
