@@ -1,6 +1,3 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\common_connectors.props" />
-  <ItemGroup>
-    <PackageReference Include="Ecng.Net.SocketIO" Version="$(EcngVer)" />
-  </ItemGroup>
+  <Import Project="..\common_connectors_websocket.props" />
 </Project>
