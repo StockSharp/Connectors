@@ -11,7 +11,7 @@ using StockSharp.Messages;
 /// edgeX publishes market data without credentials.
 /// </summary>
 [TestClass]
-public class edgeXMarketDataTests : LiveMarketDataTestBase
+public class EdgeXMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new EdgeXMessageAdapter(new IncrementalIdGenerator())
