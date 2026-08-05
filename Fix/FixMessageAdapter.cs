@@ -236,7 +236,20 @@ public partial class FixMessageAdapter : MessageAdapter
 			{
 				_isDisconnecting = true;
 
-				await FixDialect.SendInMessageAsync(message, cancellationToken).NoWait();
+				// Logout is a courtesy to a live connection. When the peer hung up first - or our own
+				// reader gave up on the socket and closed it - the write lands on a disposed stream,
+				// and that exception must not reach the caller: it asked for the connection to end,
+				// and it already has. Reported out, as the reset path above does, so it stays visible
+				// without failing the disconnect, and the local teardown below always runs.
+				try
+				{
+					await FixDialect.SendInMessageAsync(message, cancellationToken).NoWait();
+				}
+				catch (Exception ex)
+				{
+					await SendOutErrorAsync(ex, cancellationToken);
+				}
+
 				await WaitReaderTaskAsync();
 
 				await SendOutMessageAsync(new DisconnectMessage(), cancellationToken);
