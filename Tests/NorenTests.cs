@@ -33,6 +33,36 @@ using StockSharp.Zebu;
 public class NorenTests : BaseTestClass
 {
     [TestMethod]
+    public void ConcreteNorenTypesDoNotHidePublicProperties()
+    {
+        AssertNoHiddenPublicProperties(typeof(ShoonyaMessageAdapter));
+        AssertNoHiddenPublicProperties(typeof(ZebuMessageAdapter));
+        AssertNoHiddenPublicProperties(typeof(ShoonyaOrderCondition));
+        AssertNoHiddenPublicProperties(typeof(ZebuOrderCondition));
+
+        AreEqual(
+            typeof(ShoonyaProducts),
+            typeof(ShoonyaMessageAdapter)
+                .GetProperty(nameof(ShoonyaMessageAdapter.DefaultProduct))
+                .PropertyType);
+        AreEqual(
+            typeof(NorenProducts),
+            typeof(ZebuMessageAdapter)
+                .GetProperty(nameof(ZebuMessageAdapter.DefaultProduct))
+                .PropertyType);
+        AreEqual(
+            typeof(ShoonyaProducts?),
+            typeof(ShoonyaOrderCondition)
+                .GetProperty(nameof(ShoonyaOrderCondition.Product))
+                .PropertyType);
+        AreEqual(
+            typeof(NorenProducts?),
+            typeof(ZebuOrderCondition)
+                .GetProperty(nameof(ZebuOrderCondition.Product))
+                .PropertyType);
+    }
+
+    [TestMethod]
     public void ConcreteAdaptersUseNeutralNorenBase()
     {
         IsTrue(typeof(NorenMessageAdapter).IsAssignableFrom(
@@ -60,6 +90,8 @@ public class NorenTests : BaseTestClass
         IsTrue(shoonyaReferences.Contains("StockSharp.Noren"));
         IsTrue(zebuReferences.Contains("StockSharp.Noren"));
         IsFalse(zebuReferences.Contains("StockSharp.Shoonya"));
+        IsTrue(ShoonyaMessageAdapter.AllTimeFrames.Any());
+        IsTrue(ZebuMessageAdapter.AllTimeFrames.Any());
 
         var conditionFactory = typeof(NorenMessageAdapter).GetMethod(
             "CreateOrderCondition",
@@ -80,6 +112,36 @@ public class NorenTests : BaseTestClass
                 .GetType());
     }
 
+    private static void AssertNoHiddenPublicProperties(Type type)
+    {
+        const BindingFlags declaredPublic = BindingFlags.Public |
+            BindingFlags.Instance | BindingFlags.Static |
+            BindingFlags.DeclaredOnly;
+
+        foreach (var property in type.GetProperties(declaredPublic))
+        {
+            for (var baseType = type.BaseType;
+                baseType != null;
+                baseType = baseType.BaseType)
+            {
+                var baseProperty = baseType.GetProperty(
+                    property.Name,
+                    declaredPublic);
+                if (baseProperty is null)
+                    continue;
+
+                var overridesBaseSlot = property
+                    .GetAccessors()
+                    .Any(accessor =>
+                        accessor.GetBaseDefinition() != accessor);
+                IsTrue(
+                    overridesBaseSlot,
+                    $"{type.Name}.{property.Name} hides " +
+                    $"{baseType.Name}.{baseProperty.Name}.");
+            }
+        }
+    }
+
     [TestMethod]
     public void ShoonyaFacadeLoadsLegacyProductSetting()
     {
@@ -93,9 +155,12 @@ public class NorenTests : BaseTestClass
         adapter.Load(storage);
 
         AreEqual(ShoonyaProducts.Normal, adapter.DefaultProduct);
+        var saved = new SettingsStorage();
+        adapter.Save(saved);
         AreEqual(
             NorenProducts.Normal,
-            ((NorenMessageAdapter)adapter).DefaultProduct);
+            saved.GetValue<object>(
+                nameof(ShoonyaMessageAdapter.DefaultProduct)));
         AreEqual(
             "https://api.shoonya.com/NorenWClientTP/",
             adapter.RestEndpoint);
@@ -118,9 +183,10 @@ public class NorenTests : BaseTestClass
             ShoonyaProducts.Normal;
 
         AreEqual(ShoonyaProducts.Normal, condition.Product);
+        condition.Product = ShoonyaProducts.Normal;
         AreEqual(
             NorenProducts.Normal,
-            ((NorenOrderCondition)condition).Product);
+            condition.Parameters[nameof(condition.Product)]);
 
         var zebuCondition = new ZebuOrderCondition();
         zebuCondition.Parameters[nameof(zebuCondition.Product)] =

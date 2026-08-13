@@ -5,4 +5,11 @@ namespace StockSharp.Zebu;
 [Serializable]
 public class ZebuOrderCondition : NorenOrderCondition
 {
+	/// <summary>Order product.</summary>
+	[DataMember]
+	public NorenProducts? Product
+	{
+		get => NorenProduct;
+		set => NorenProduct = value;
+	}
 }

@@ -6,9 +6,10 @@ namespace StockSharp.Shoonya;
 public class ShoonyaOrderCondition : NorenOrderCondition
 {
 	/// <summary>Order product.</summary>
-	public new ShoonyaProducts? Product
+	[DataMember]
+	public ShoonyaProducts? Product
 	{
-		get => base.Product is { } product ? (ShoonyaProducts)product : null;
-		set => base.Product = value is { } product ? (NorenProducts)product : null;
+		get => NorenProduct is { } product ? (ShoonyaProducts)product : null;
+		set => NorenProduct = value is { } product ? (NorenProducts)product : null;
 	}
 }

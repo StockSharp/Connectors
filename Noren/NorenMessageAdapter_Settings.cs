@@ -5,29 +5,31 @@ namespace StockSharp.Noren;
 /// </summary>
 public abstract partial class NorenMessageAdapter : MessageAdapter, ITokenAdapter
 {
+	private const string _defaultProductKey = "DefaultProduct";
+
 	/// <summary>User identifier.</summary>
-	public string UserId { get; set; }
+	public abstract string UserId { get; set; }
 
 	/// <summary>Trading account identifier.</summary>
-	public string AccountId { get; set; }
+	public abstract string AccountId { get; set; }
 
 	/// <inheritdoc />
-	public SecureString Token { get; set; }
+	public abstract SecureString Token { get; set; }
 
-	/// <summary>Default order product.</summary>
-	public NorenProducts DefaultProduct { get; set; } = NorenProducts.Delivery;
+	/// <summary>Default product represented by the shared Noren protocol.</summary>
+	protected NorenProducts DefaultNorenProduct { get; set; } = NorenProducts.Delivery;
 
 	/// <summary>Maximum number of streaming reconnect attempts.</summary>
-	public int ReconnectAttempts { get; set; } = 10;
+	public abstract int ReconnectAttempts { get; set; }
 
 	/// <summary>REST API endpoint.</summary>
-	public string RestEndpoint { get; set; }
+	public abstract string RestEndpoint { get; set; }
 
 	/// <summary>Instrument file endpoint template.</summary>
-	public string InstrumentEndpointTemplate { get; set; }
+	public abstract string InstrumentEndpointTemplate { get; set; }
 
 	/// <summary>WebSocket endpoint.</summary>
-	public string WebSocketEndpoint { get; set; }
+	public abstract string WebSocketEndpoint { get; set; }
 
 	/// <inheritdoc />
 	public override void Save(SettingsStorage storage)
@@ -37,7 +39,7 @@ public abstract partial class NorenMessageAdapter : MessageAdapter, ITokenAdapte
 			.Set(nameof(UserId), UserId)
 			.Set(nameof(AccountId), AccountId)
 			.Set(nameof(Token), Token)
-			.Set(nameof(DefaultProduct), DefaultProduct)
+			.Set(_defaultProductKey, DefaultNorenProduct)
 			.Set(nameof(ReconnectAttempts), ReconnectAttempts)
 			.Set(nameof(RestEndpoint), RestEndpoint)
 			.Set(nameof(InstrumentEndpointTemplate), InstrumentEndpointTemplate)
@@ -51,12 +53,12 @@ public abstract partial class NorenMessageAdapter : MessageAdapter, ITokenAdapte
 		UserId = storage.GetValue<string>(nameof(UserId));
 		AccountId = storage.GetValue<string>(nameof(AccountId));
 		Token = storage.GetValue<SecureString>(nameof(Token));
-		var product = storage.GetValue<object>(nameof(DefaultProduct));
+		var product = storage.GetValue<object>(_defaultProductKey);
 		if (product is NorenProducts norenProduct)
-			DefaultProduct = norenProduct;
+			DefaultNorenProduct = norenProduct;
 		else if (product != null)
 		{
-			DefaultProduct = Enum.TryParse<NorenProducts>(
+			DefaultNorenProduct = Enum.TryParse<NorenProducts>(
 				product.ToString(), true, out norenProduct)
 					? norenProduct
 					: product.To<NorenProducts>();

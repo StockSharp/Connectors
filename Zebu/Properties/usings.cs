@@ -1,4 +1,5 @@
 global using global::System;
+global using global::System.Collections.Generic;
 global using global::System.ComponentModel.DataAnnotations;
 global using global::System.Globalization;
 global using global::System.IO;

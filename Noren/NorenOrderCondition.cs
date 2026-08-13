@@ -3,7 +3,7 @@ namespace StockSharp.Noren;
 /// <summary>Noren-specific order condition.</summary>
 [DataContract]
 [Serializable]
-public class NorenOrderCondition : OrderCondition
+public abstract class NorenOrderCondition : OrderCondition
 {
 	private const string _product = "Product";
 	private const string _triggerPrice = "TriggerPrice";
@@ -14,9 +14,13 @@ public class NorenOrderCondition : OrderCondition
 	private const string _trailingPrice = "TrailingPrice";
 	private const string _remarks = "Remarks";
 
-	/// <summary>Order product.</summary>
-	[DataMember]
-	public NorenProducts? Product
+	/// <summary>Initializes a new instance of the <see cref="NorenOrderCondition"/>.</summary>
+	protected NorenOrderCondition()
+	{
+	}
+
+	/// <summary>Order product represented by the shared Noren protocol.</summary>
+	protected internal NorenProducts? NorenProduct
 	{
 		get
 		{

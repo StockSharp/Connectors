@@ -109,7 +109,7 @@ public class ZebuTests : BaseTestClass
         AreEqual(
             "https://go.mynt.in/OAuthlogin/authorize/oauth?client_id=ZP00%201%2FU",
             adapter.CreateAuthorizationUri().AbsoluteUri);
-        IsTrue(NorenMessageAdapter.AllTimeFrames.Any());
+        IsTrue(ZebuMessageAdapter.AllTimeFrames.Any());
     }
 
     [TestMethod]

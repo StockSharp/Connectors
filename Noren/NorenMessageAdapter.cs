@@ -22,8 +22,8 @@ public partial class NorenMessageAdapter
 	private DateTime _lastHeartbeat;
 	private DateTime _lastPortfolioRefresh;
 
-	/// <summary>Supported candle time frames.</summary>
-	public static IEnumerable<TimeSpan> AllTimeFrames => _timeFrames;
+	/// <summary>Supported Noren candle time frames.</summary>
+	protected static IEnumerable<TimeSpan> NorenTimeFrames => _timeFrames;
 
 	/// <summary>Initializes a new instance of the <see cref="NorenMessageAdapter"/>.</summary>
 	protected NorenMessageAdapter(IdGenerator transactionIdGenerator)
@@ -39,7 +39,7 @@ public partial class NorenMessageAdapter
 		this.AddSupportedMarketDataType(DataType.Ticks);
 		this.AddSupportedMarketDataType(DataType.Level1);
 		this.AddSupportedMarketDataType(DataType.MarketDepth);
-		this.AddSupportedCandleTimeFrames(AllTimeFrames);
+		this.AddSupportedCandleTimeFrames(NorenTimeFrames);
 	}
 
 	/// <inheritdoc />
@@ -73,8 +73,7 @@ public partial class NorenMessageAdapter
 	/// <summary>
 	/// Create an order condition exposed by the concrete connector.
 	/// </summary>
-	protected virtual NorenOrderCondition CreateOrderCondition()
-		=> new();
+	protected abstract NorenOrderCondition CreateOrderCondition();
 
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg, CancellationToken cancellationToken)

@@ -31,7 +31,7 @@ public partial class NorenMessageAdapter
 				"Disclosed quantity cannot exceed order quantity.");
 
 		var instrument = await GetInstrument(regMsg.SecurityId.ToInstrumentKey(), cancellationToken);
-		var product = condition?.Product ?? DefaultProduct;
+		var product = condition?.NorenProduct ?? DefaultNorenProduct;
 		var orderId = await _restClient.PlaceOrder(new NorenPlaceOrderRequest
 		{
 			UserId = UserId,
@@ -413,7 +413,7 @@ public partial class NorenMessageAdapter
 		decimal? trailingPrice, string remarks)
 	{
 		var condition = CreateOrderCondition();
-		condition.Product = product;
+		condition.NorenProduct = product;
 		condition.TriggerPrice = triggerPrice;
 		condition.DisclosedVolume = disclosedVolume;
 		condition.IsAfterMarket = isAfterMarket;

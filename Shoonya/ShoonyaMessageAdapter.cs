@@ -32,7 +32,7 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 	}
 
 	/// <summary>Supported candle time frames.</summary>
-	public static new IEnumerable<TimeSpan> AllTimeFrames => NorenMessageAdapter.AllTimeFrames;
+	public static IEnumerable<TimeSpan> AllTimeFrames => NorenTimeFrames;
 
 	/// <summary>Shoonya user identifier.</summary>
 	[Display(
@@ -42,11 +42,7 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 0)]
 	[BasicSetting]
-	public new string UserId
-	{
-		get => base.UserId;
-		set => base.UserId = value;
-	}
+	public override string UserId { get; set; }
 
 	/// <summary>Trading account identifier.</summary>
 	[Display(
@@ -56,11 +52,7 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 1)]
 	[BasicSetting]
-	public new string AccountId
-	{
-		get => base.AccountId;
-		set => base.AccountId = value;
-	}
+	public override string AccountId { get; set; }
 
 	/// <inheritdoc />
 	[Display(
@@ -70,11 +62,7 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
-	public new SecureString Token
-	{
-		get => base.Token;
-		set => base.Token = value;
-	}
+	public override SecureString Token { get; set; }
 
 	/// <summary>Default order product.</summary>
 	[Display(
@@ -83,10 +71,10 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 		Description = LocalizedStrings.ShoonyaDefaultProductDescKey,
 		GroupName = LocalizedStrings.GeneralKey,
 		Order = 3)]
-	public new ShoonyaProducts DefaultProduct
+	public ShoonyaProducts DefaultProduct
 	{
-		get => (ShoonyaProducts)base.DefaultProduct;
-		set => base.DefaultProduct = (NorenProducts)value;
+		get => (ShoonyaProducts)DefaultNorenProduct;
+		set => DefaultNorenProduct = (NorenProducts)value;
 	}
 
 	/// <summary>Maximum number of streaming reconnect attempts.</summary>
@@ -96,11 +84,7 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 		Description = LocalizedStrings.ShoonyaReconnectAttemptsDescKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
-	public new int ReconnectAttempts
-	{
-		get => base.ReconnectAttempts;
-		set => base.ReconnectAttempts = value;
-	}
+	public override int ReconnectAttempts { get; set; } = 10;
 
 	/// <summary>REST API endpoint.</summary>
 	[Display(
@@ -109,11 +93,7 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 		Description = LocalizedStrings.RestApiEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 5)]
-	public new string RestEndpoint
-	{
-		get => base.RestEndpoint;
-		set => base.RestEndpoint = value;
-	}
+	public override string RestEndpoint { get; set; }
 
 	/// <summary>Instrument file endpoint template.</summary>
 	[Display(
@@ -122,11 +102,7 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 		Description = LocalizedStrings.InstrumentFileEndpointTemplateDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 6)]
-	public new string InstrumentEndpointTemplate
-	{
-		get => base.InstrumentEndpointTemplate;
-		set => base.InstrumentEndpointTemplate = value;
-	}
+	public override string InstrumentEndpointTemplate { get; set; }
 
 	/// <summary>WebSocket endpoint.</summary>
 	[Display(
@@ -135,11 +111,7 @@ public class ShoonyaMessageAdapter : NorenMessageAdapter
 		Description = LocalizedStrings.WebSocketEndpointDescKey,
 		GroupName = LocalizedStrings.AddressesKey,
 		Order = 7)]
-	public new string WebSocketEndpoint
-	{
-		get => base.WebSocketEndpoint;
-		set => base.WebSocketEndpoint = value;
-	}
+	public override string WebSocketEndpoint { get; set; }
 
 	/// <inheritdoc />
 	protected override NorenOrderCondition CreateOrderCondition()

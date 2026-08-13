@@ -40,6 +40,9 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         WebSocketEndpoint = _defaultWebSocketEndpoint;
     }
 
+    /// <summary>Supported candle time frames.</summary>
+    public static IEnumerable<TimeSpan> AllTimeFrames => NorenTimeFrames;
+
     /// <inheritdoc />
     [Display(
         ResourceType = typeof(LocalizedStrings),
@@ -86,11 +89,7 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         Description = LocalizedStrings.OAuthBearerAccessTokenItIsPopulatedAfterCodeExchangeOrRefreshDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 4)]
-    public new SecureString Token
-    {
-        get => base.Token;
-        set => base.Token = value;
-    }
+    public override SecureString Token { get; set; }
 
     /// <summary>Zebu user identifier.</summary>
     [Display(
@@ -100,11 +99,7 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 5)]
     [BasicSetting]
-    public new string UserId
-    {
-        get => base.UserId;
-        set => base.UserId = value;
-    }
+    public override string UserId { get; set; }
 
     /// <summary>Zebu trading account identifier.</summary>
     [Display(
@@ -113,11 +108,7 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         Description = LocalizedStrings.TradingAccountIdWhenEmptyUserIdIsUsedDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 6)]
-    public new string AccountId
-    {
-        get => base.AccountId;
-        set => base.AccountId = value;
-    }
+    public override string AccountId { get; set; }
 
     /// <summary>Expiration time of the current OAuth access token.</summary>
     [Display(
@@ -135,10 +126,10 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         Description = LocalizedStrings.DefaultMyntProductUsedForNewZebuOrdersDescKey,
         GroupName = LocalizedStrings.OrderKey,
         Order = 8)]
-    public new NorenProducts DefaultProduct
+    public NorenProducts DefaultProduct
     {
-        get => base.DefaultProduct;
-        set => base.DefaultProduct = value;
+        get => DefaultNorenProduct;
+        set => DefaultNorenProduct = value;
     }
 
     /// <summary>Maximum number of WebSocket reconnect attempts.</summary>
@@ -148,11 +139,7 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         Description = LocalizedStrings.MaximumNumberOfAttemptsToReconnectTheZebuWebSocketDescKey,
         GroupName = LocalizedStrings.ConnectionKey,
         Order = 9)]
-    public new int ReconnectAttempts
-    {
-        get => base.ReconnectAttempts;
-        set => base.ReconnectAttempts = value;
-    }
+    public override int ReconnectAttempts { get; set; } = 10;
 
     /// <summary>OAuth authorization page.</summary>
     [Display(
@@ -171,11 +158,7 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         Description = LocalizedStrings.ZebuMyntOAuthRestEndpointDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 11)]
-    public new string RestEndpoint
-    {
-        get => base.RestEndpoint;
-        set => base.RestEndpoint = value;
-    }
+    public override string RestEndpoint { get; set; }
 
     /// <summary>Instrument archive endpoint template.</summary>
     [Display(
@@ -184,11 +167,7 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         Description = LocalizedStrings.ZebuExchangeMasterZipEndpointTemplateDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 12)]
-    public new string InstrumentEndpointTemplate
-    {
-        get => base.InstrumentEndpointTemplate;
-        set => base.InstrumentEndpointTemplate = value;
-    }
+    public override string InstrumentEndpointTemplate { get; set; }
 
     /// <summary>WebSocket endpoint.</summary>
     [Display(
@@ -197,11 +176,7 @@ public class ZebuMessageAdapter : NorenMessageAdapter, IKeySecretAdapter
         Description = LocalizedStrings.ZebuMyntOAuthWebSocketEndpointDescKey,
         GroupName = LocalizedStrings.AddressesKey,
         Order = 13)]
-    public new string WebSocketEndpoint
-    {
-        get => base.WebSocketEndpoint;
-        set => base.WebSocketEndpoint = value;
-    }
+    public override string WebSocketEndpoint { get; set; }
 
     /// <summary>Create the OAuth page URL for the configured client ID.</summary>
     public Uri CreateAuthorizationUri()
