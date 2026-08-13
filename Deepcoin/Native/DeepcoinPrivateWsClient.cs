@@ -128,7 +128,7 @@ sealed class DeepcoinPrivateWsClient : BaseLogReceiver
 			await SendTablesAsync(client, cancellationToken);
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeTableAsync(DeepcoinPrivateTables table, bool isSubscribe,
@@ -244,7 +244,7 @@ sealed class DeepcoinPrivateWsClient : BaseLogReceiver
 		foreach (var item in result ?? [])
 		{
 			if (item is not null && item.Data is not null)
-				await handler(item.Data, cancellationToken);
+				await handler.InvokeAsync(item.Data, cancellationToken);
 		}
 	}
 
@@ -264,5 +264,5 @@ sealed class DeepcoinPrivateWsClient : BaseLogReceiver
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

@@ -235,7 +235,7 @@ sealed class IntrinioRealtimeClient : BaseLogReceiver, IDisposable
 
 			try
 			{
-				await handler(subscription, update, cancellationToken);
+				await handler.InvokeAsync(subscription, update, cancellationToken);
 			}
 			finally
 			{
@@ -246,7 +246,7 @@ sealed class IntrinioRealtimeClient : BaseLogReceiver, IDisposable
 
 	private ValueTask OnConnectionError(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private IntrinioStreamSubscription[] MatchSubscriptions(IntrinioDecodedEvent update)
 		=> _subscriptions.Match(update.IsOption, update.Symbol);

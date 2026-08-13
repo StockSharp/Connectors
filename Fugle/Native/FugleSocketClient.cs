@@ -25,7 +25,7 @@ sealed class FugleSocketClient : BaseLogReceiver
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(_, _) => default,
-			(error, cancellationToken) => Error is { } handler ? handler(error, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -149,7 +149,7 @@ sealed class FugleSocketClient : BaseLogReceiver
 				var stream = JsonConvert.DeserializeObject<FugleStreamMessage>(text, _jsonSettings)
 					?? throw new InvalidDataException("Fugle returned invalid streaming data.");
 				if (stream.Data != null && _serverSubscriptions.TryGetValue(stream.Id, out var subscription) && DataReceived is { } handler)
-					await handler(subscription, stream.Data, cancellationToken);
+					await handler.InvokeAsync(subscription, stream.Data, cancellationToken);
 				break;
 			}
 
@@ -159,7 +159,7 @@ sealed class FugleSocketClient : BaseLogReceiver
 				var error = new InvalidOperationException($"Fugle WebSocket error: {status?.Data?.Message.IsEmpty("Unknown error")}");
 				_authenticationCompletion?.TrySetException(error);
 				if (Error is { } handler)
-					await handler(error, cancellationToken);
+					await handler.InvokeAsync(error, cancellationToken);
 				break;
 			}
 

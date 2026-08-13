@@ -12,7 +12,7 @@ abstract class BaseNativeAdapter(LigtherMessageAdapter owner, string boardCode) 
 	public event Func<Message, CancellationToken, ValueTask> NewOutMessage;
 
 	protected ValueTask SendOutMessageAsync(Message message, CancellationToken cancellationToken)
-		=> NewOutMessage?.Invoke(message, cancellationToken) ?? default;
+		=> NewOutMessage.InvokeAsync(message, cancellationToken);
 
 	protected ValueTask SendOutErrorAsync(Exception error, CancellationToken cancellationToken)
 		=> SendOutMessageAsync(error.ToErrorMessage(), cancellationToken);

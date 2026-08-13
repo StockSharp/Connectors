@@ -31,7 +31,7 @@ class PusherClient : BaseLogReceiver
 				{
 					this.AddErrorLog(error);
 					if (_parent.Error is { } handler)
-						return handler(error, token);
+						return handler.InvokeAsync(error, token);
 					return default;
 				},
 				OnProcess,
@@ -74,7 +74,7 @@ class PusherClient : BaseLogReceiver
 			if (lastPrice != null)
 			{
 				if (_parent.TickerChanged is { } tickerHandler)
-					await tickerHandler(symbol, lastPrice, cancellationToken);
+					await tickerHandler.InvokeAsync(symbol, lastPrice, cancellationToken);
 			}
 
 			if (trades != null)
@@ -82,14 +82,14 @@ class PusherClient : BaseLogReceiver
 				foreach (var trade in trades)
 				{
 					if (_parent.NewTrade is { } tradeHandler)
-						await tradeHandler(symbol, trade, cancellationToken);
+						await tradeHandler.InvokeAsync(symbol, trade, cancellationToken);
 				}
 			}
 
 			if (book.Asks != null || book.Bids != null)
 			{
 				if (_parent.OrderBookChanged is { } bookHandler)
-					await bookHandler(symbol, book, cancellationToken);
+					await bookHandler.InvokeAsync(symbol, book, cancellationToken);
 			}
 		}
 	}

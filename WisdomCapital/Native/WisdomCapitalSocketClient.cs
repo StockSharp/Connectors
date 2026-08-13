@@ -27,11 +27,11 @@ sealed class WisdomCapitalSocketClient : BaseLogReceiver
             address.AbsoluteUri,
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (s, a) => AddSafeLog(LogLevels.Info, s, a),
@@ -178,7 +178,7 @@ sealed class WisdomCapitalSocketClient : BaseLogReceiver
         if (packet.StartsWith("40", StringComparison.Ordinal))
         {
             if (Ready is { } readyHandler)
-                await readyHandler(cancellationToken);
+                await readyHandler.InvokeAsync(cancellationToken);
             return;
         }
         if (packet.StartsWith("41", StringComparison.Ordinal))
@@ -234,7 +234,7 @@ sealed class WisdomCapitalSocketClient : BaseLogReceiver
                 payload,
                 DateTime.UtcNow);
             if (MarketDataReceived is { } marketHandler)
-                await marketHandler(update, cancellationToken);
+                await marketHandler.InvokeAsync(update, cancellationToken);
             return;
         }
 
@@ -245,7 +245,7 @@ sealed class WisdomCapitalSocketClient : BaseLogReceiver
         }
         if (InteractiveEventReceived is { } interactiveHandler)
         {
-            await interactiveHandler(
+            await interactiveHandler.InvokeAsync(
                 eventName,
                 payload ?? JValue.CreateNull(),
                 cancellationToken);

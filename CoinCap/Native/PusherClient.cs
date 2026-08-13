@@ -20,14 +20,14 @@ abstract class BasePusherClient<TData> : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -65,7 +65,7 @@ abstract class BasePusherClient<TData> : BaseLogReceiver
 		if (recv.StartsWithIgnoreCase("invalid exchange"))
 		{
 			if (Error is { } handler)
-				await handler(new InvalidOperationException(recv), cancellationToken);
+				await handler.InvokeAsync(new InvalidOperationException(recv), cancellationToken);
 			return;
 		}
 
@@ -85,7 +85,7 @@ class TradesPusherClient(string endpoint, string exchange, int attemptsCount, Wo
 	protected override ValueTask OnProcess(Trade trade, CancellationToken cancellationToken)
 	{
 		if (NewTrade is { } handler)
-			return handler(trade, cancellationToken);
+			return handler.InvokeAsync(trade, cancellationToken);
 		return default;
 	}
 }
@@ -100,7 +100,7 @@ class PricesPusherClient(string endpoint, IEnumerable<string> assets, int attemp
 	protected override ValueTask OnProcess(IDictionary<string, double> recv, CancellationToken cancellationToken)
 	{
 		if (PricesChanged is { } handler)
-			return handler(recv, cancellationToken);
+			return handler.InvokeAsync(recv, cancellationToken);
 		return default;
 	}
 }

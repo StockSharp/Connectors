@@ -167,7 +167,7 @@ sealed class DirectaHistoryClient : BaseLogReceiver
     {
         _request?.Completion.TrySetException(error);
         return Error is { } handler
-            ? handler(error, cancellationToken) : default;
+            ? handler.InvokeAsync(error, cancellationToken) : default;
     }
 
     protected override void DisposeManaged()

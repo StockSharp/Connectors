@@ -256,7 +256,7 @@ sealed class BullishWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSessionAsync(WebSocketClient client,
@@ -341,7 +341,7 @@ sealed class BullishWsClient : BaseLogReceiver
 					{
 						var data = Deserialize<BullishWsDataMessage<BullishWsLevel2Data>>(payload);
 						if (data?.Data is not null)
-							await depthHandler(data.Type, data.Data, cancellationToken);
+							await depthHandler.InvokeAsync(data.Type, data.Data, cancellationToken);
 					}
 					break;
 
@@ -350,7 +350,7 @@ sealed class BullishWsClient : BaseLogReceiver
 					{
 						var data = Deserialize<BullishWsDataMessage<BullishWsTradesData>>(payload);
 						if (data?.Data is not null)
-							await tradeHandler(data.Data, cancellationToken);
+							await tradeHandler.InvokeAsync(data.Data, cancellationToken);
 					}
 					break;
 
@@ -359,7 +359,7 @@ sealed class BullishWsClient : BaseLogReceiver
 					{
 						var data = Deserialize<BullishWsDataMessage<BullishTick>>(payload);
 						if (data?.Data is not null)
-							await tickHandler(data.Data, cancellationToken);
+							await tickHandler.InvokeAsync(data.Data, cancellationToken);
 					}
 					break;
 
@@ -385,7 +385,7 @@ sealed class BullishWsClient : BaseLogReceiver
 				if (OrderReceived is { } orderHandler)
 				{
 					foreach (var item in ReadPrivateItems<BullishOrder>(payload, isSnapshot))
-						await orderHandler(item, cancellationToken);
+						await orderHandler.InvokeAsync(item, cancellationToken);
 				}
 				break;
 
@@ -393,7 +393,7 @@ sealed class BullishWsClient : BaseLogReceiver
 				if (FillReceived is { } fillHandler)
 				{
 					foreach (var item in ReadPrivateItems<BullishTrade>(payload, isSnapshot))
-						await fillHandler(item, cancellationToken);
+						await fillHandler.InvokeAsync(item, cancellationToken);
 				}
 				break;
 
@@ -401,7 +401,7 @@ sealed class BullishWsClient : BaseLogReceiver
 				if (AssetAccountReceived is { } assetHandler)
 				{
 					foreach (var item in ReadPrivateItems<BullishAssetAccount>(payload, isSnapshot))
-						await assetHandler(item, cancellationToken);
+						await assetHandler.InvokeAsync(item, cancellationToken);
 				}
 				break;
 
@@ -409,7 +409,7 @@ sealed class BullishWsClient : BaseLogReceiver
 				if (TradingAccountReceived is { } accountHandler)
 				{
 					foreach (var item in ReadPrivateItems<BullishTradingAccount>(payload, isSnapshot))
-						await accountHandler(item, cancellationToken);
+						await accountHandler.InvokeAsync(item, cancellationToken);
 				}
 				break;
 
@@ -417,7 +417,7 @@ sealed class BullishWsClient : BaseLogReceiver
 				if (PositionReceived is { } positionHandler)
 				{
 					foreach (var item in ReadPrivateItems<BullishDerivativePosition>(payload, isSnapshot))
-						await positionHandler(item, cancellationToken);
+						await positionHandler.InvokeAsync(item, cancellationToken);
 				}
 				break;
 		}
@@ -441,5 +441,5 @@ sealed class BullishWsClient : BaseLogReceiver
 		});
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

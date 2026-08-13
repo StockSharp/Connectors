@@ -150,7 +150,7 @@ sealed class Bit2MeWsClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -240,7 +240,7 @@ sealed class Bit2MeWsClient : BaseLogReceiver
 				var envelope =
 					Deserialize<Bit2MeWsEnvelope<Bit2MeOrderBook>>(payload);
 				if (envelope.Data is not null && OrderBookReceived is { } handler)
-					await handler(envelope.Symbol.IsEmpty(envelope.Data.Symbol),
+					await handler.InvokeAsync(envelope.Symbol.IsEmpty(envelope.Data.Symbol),
 						envelope.Data, cancellationToken);
 				return;
 			}
@@ -249,7 +249,7 @@ sealed class Bit2MeWsClient : BaseLogReceiver
 				var envelope = Deserialize<Bit2MeWsEnvelope<Bit2MeWsTrade>>(
 					payload);
 				if (envelope.Data is not null && TradeReceived is { } handler)
-					await handler(envelope.Symbol, envelope.Data,
+					await handler.InvokeAsync(envelope.Symbol, envelope.Data,
 						cancellationToken);
 				return;
 			}
@@ -285,5 +285,5 @@ sealed class Bit2MeWsClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

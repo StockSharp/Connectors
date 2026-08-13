@@ -175,7 +175,7 @@ sealed class BitkubPublicWebSocketClient : BaseLogReceiver
 					var envelope = Deserialize<BitkubPublicWebSocketEnvelope<
 						BitkubWebSocketChangedData>>(payload);
 					if (envelope.Data is not null && TradesChanged is { } handler)
-						await handler(stream.Symbol, envelope.Data, cancellationToken);
+						await handler.InvokeAsync(stream.Symbol, envelope.Data, cancellationToken);
 					return;
 				}
 				case BitkubPublicWebSocketEvents.DepthChanged:
@@ -183,7 +183,7 @@ sealed class BitkubPublicWebSocketClient : BaseLogReceiver
 					var envelope = Deserialize<BitkubPublicWebSocketEnvelope<
 						BitkubWebSocketDepth>>(payload);
 					if (envelope.Data is not null && DepthChanged is { } handler)
-						await handler(stream.Symbol, envelope.Data, cancellationToken);
+						await handler.InvokeAsync(stream.Symbol, envelope.Data, cancellationToken);
 					return;
 				}
 				case BitkubPublicWebSocketEvents.Ticker:
@@ -196,7 +196,7 @@ sealed class BitkubPublicWebSocketClient : BaseLogReceiver
 						pairingId != stream.PairingId)
 						return;
 					if (TickerChanged is { } handler)
-						await handler(stream.Symbol, envelope.Data, cancellationToken);
+						await handler.InvokeAsync(stream.Symbol, envelope.Data, cancellationToken);
 					return;
 				}
 				case BitkubPublicWebSocketEvents.BidsChanged:
@@ -246,5 +246,5 @@ sealed class BitkubPublicWebSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

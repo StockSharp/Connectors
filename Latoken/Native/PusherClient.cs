@@ -43,14 +43,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -262,7 +262,7 @@ class PusherClient : BaseLogReceiver
 
 			case "ERROR":
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException(headers.TryGetValue("message", out var reason) ? reason : body), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException(headers.TryGetValue("message", out var reason) ? reason : body), cancellationToken);
 				return;
 
 			case "MESSAGE":
@@ -290,7 +290,7 @@ class PusherClient : BaseLogReceiver
 				if (envelope?.Payload is not { } ticker || !await ValidateNonceAsync(destination, envelope.Nonce, cancellationToken))
 					break;
 
-				await (TickerChanged?.Invoke(ticker, cancellationToken) ?? default);
+				await (TickerChanged.InvokeAsync(ticker, cancellationToken));
 				break;
 			}
 
@@ -304,7 +304,7 @@ class PusherClient : BaseLogReceiver
 				// the very first message of a destination carries the whole book, the ones after
 				// it carry the changed price levels only
 				var isSnapshot = (envelope.Nonce ?? 0) == 0;
-				await (OrderBookChanged?.Invoke(baseCurrencyId, quoteCurrencyId, book, isSnapshot, cancellationToken) ?? default);
+				await OrderBookChanged.InvokeAsync(baseCurrencyId, quoteCurrencyId, book, isSnapshot, cancellationToken);
 				break;
 			}
 
@@ -319,7 +319,7 @@ class PusherClient : BaseLogReceiver
 					break;
 
 				foreach (var trade in trades)
-					await tradeHandler(trade, cancellationToken);
+					await tradeHandler.InvokeAsync(trade, cancellationToken);
 
 				break;
 			}
@@ -335,7 +335,7 @@ class PusherClient : BaseLogReceiver
 					break;
 
 				foreach (var order in orders)
-					await orderHandler(order, cancellationToken);
+					await orderHandler.InvokeAsync(order, cancellationToken);
 
 				break;
 			}
@@ -351,7 +351,7 @@ class PusherClient : BaseLogReceiver
 					break;
 
 				foreach (var balance in balances)
-					await balanceHandler(balance, cancellationToken);
+					await balanceHandler.InvokeAsync(balance, cancellationToken);
 
 				break;
 			}

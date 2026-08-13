@@ -34,11 +34,11 @@ sealed class JainamSocketClient : BaseLogReceiver
             endpoint.ThrowIfEmpty(nameof(endpoint)),
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (s, a) => this.AddInfoLog(s, a),
@@ -195,7 +195,7 @@ sealed class JainamSocketClient : BaseLogReceiver
                     if (!update.Exchange.IsEmpty() &&
                         !update.Token.IsEmpty() &&
                         MarketDataReceived is { } handler)
-                        await handler(update, cancellationToken);
+                        await handler.InvokeAsync(update, cancellationToken);
                     break;
                 }
 

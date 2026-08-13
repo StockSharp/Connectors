@@ -51,7 +51,7 @@ class SocketClient : BaseLogReceiver
 				}
 
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 
 				return default;
 			},
@@ -59,7 +59,7 @@ class SocketClient : BaseLogReceiver
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -118,7 +118,7 @@ class SocketClient : BaseLogReceiver
 			_loginInProgress = false;
 
 			if (Error is { } errorHandler)
-				await errorHandler(error, cancellationToken);
+				await errorHandler.InvokeAsync(error, cancellationToken);
 
 			return;
 		}
@@ -149,7 +149,7 @@ class SocketClient : BaseLogReceiver
 			if (data is null || TickerReceived is not { } handler)
 				return;
 
-			await handler(new Ticker
+			await handler.InvokeAsync(new Ticker
 			{
 				Symbol = WsHelpers.ResolveSymbol(obj, data),
 				LastPrice = WsHelpers.ToDouble(data["lastPrice"]),
@@ -167,7 +167,7 @@ class SocketClient : BaseLogReceiver
 			if (data is null || TradeReceived is not { } handler)
 				return;
 
-			await handler(new Trade
+			await handler.InvokeAsync(new Trade
 			{
 				Symbol = WsHelpers.ResolveSymbol(obj, data),
 				Id = Interlocked.Increment(ref _tradeIdSeed),
@@ -187,7 +187,7 @@ class SocketClient : BaseLogReceiver
 
 			var version = data["version"]?.To<long?>() ?? 0;
 
-			await handler(new OrderBookUpdate
+			await handler.InvokeAsync(new OrderBookUpdate
 			{
 				Symbol = WsHelpers.ResolveSymbol(obj, data),
 				FirstUpdateId = version,
@@ -208,7 +208,7 @@ class SocketClient : BaseLogReceiver
 			var nativeInterval = WsHelpers.FromWsKlineInterval((string)data["interval"]);
 			var openTime = WsHelpers.ToDateTime(data["t"]);
 
-			await handler(new CandleStream
+			await handler.InvokeAsync(new CandleStream
 			{
 				Symbol = symbol,
 				Kline = new CandleData
@@ -238,11 +238,11 @@ class SocketClient : BaseLogReceiver
 			var order = WsHelpers.ToOrder(data);
 
 			if (OrderReceived is { } orderHandler)
-				await orderHandler(order, cancellationToken);
+				await orderHandler.InvokeAsync(order, cancellationToken);
 
 			var trade = WsHelpers.ToUserTrade(data, ref _tradeIdSeed);
 			if (trade is not null && UserTradeReceived is { } tradeHandler)
-				await tradeHandler(trade, cancellationToken);
+				await tradeHandler.InvokeAsync(trade, cancellationToken);
 
 			return;
 		}
@@ -256,7 +256,7 @@ class SocketClient : BaseLogReceiver
 			var available = WsHelpers.ToDouble(data["availableBalance"]);
 			var frozen = WsHelpers.ToDouble(data["frozenBalance"]);
 
-			await handler(
+			await handler.InvokeAsync(
 			[
 				new Balance
 				{
@@ -277,7 +277,7 @@ class SocketClient : BaseLogReceiver
 			if (data is null || PositionsReceived is not { } handler)
 				return;
 
-			await handler(
+			await handler.InvokeAsync(
 			[
 				new Position
 				{

@@ -302,7 +302,7 @@ sealed class BigOneContractWsClient : BaseLogReceiver
 					foreach (var instrument in Deserialize<
 						BigOneContractInstrument[]>(payload) ?? [])
 						if (InstrumentReceived is { } instrumentHandler)
-							await instrumentHandler(
+							await instrumentHandler.InvokeAsync(
 								instrument, cancellationToken);
 					break;
 
@@ -315,7 +315,7 @@ sealed class BigOneContractWsClient : BaseLogReceiver
 
 				case StreamTypes.Trades:
 					if (TradesReceived is { } tradesHandler)
-						await tradesHandler(
+						await tradesHandler.InvokeAsync(
 							Deserialize<BigOneContractTrade[]>(
 								payload) ?? [],
 							cancellationToken);
@@ -323,14 +323,14 @@ sealed class BigOneContractWsClient : BaseLogReceiver
 
 				case StreamTypes.Candles:
 					if (CandlesReceived is { } candlesHandler)
-						await candlesHandler(
+						await candlesHandler.InvokeAsync(
 							DeserializeCandles(payload) ?? [],
 							cancellationToken);
 					break;
 
 				case StreamTypes.Private:
 					if (PrivateReceived is { } privateHandler)
-						await privateHandler(
+						await privateHandler.InvokeAsync(
 							Deserialize<BigOneContractStream>(
 								payload),
 							cancellationToken);
@@ -392,7 +392,7 @@ sealed class BigOneContractWsClient : BaseLogReceiver
 				StringComparer.Ordinal);
 		}
 		if (OrderBookReceived is { } handler)
-			await handler(new()
+			await handler.InvokeAsync(new()
 			{
 				Symbol = symbol,
 				Bids = bids,
@@ -409,14 +409,14 @@ sealed class BigOneContractWsClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private ValueTask RaiseErrorAsync(
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static async ValueTask DisconnectClientAsync(

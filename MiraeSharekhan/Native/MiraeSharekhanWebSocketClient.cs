@@ -321,7 +321,7 @@ internal sealed class MiraeSharekhanWebSocketClient : BaseLogReceiver
 
 	private static ValueTask Invoke<T>(Func<T, CancellationToken, ValueTask> handler, T value,
 		CancellationToken cancellationToken)
-		=> handler == null ? default : handler(value, cancellationToken);
+		=> handler.InvokeAsync(value, cancellationToken);
 
 	protected override void DisposeManaged()
 	{

@@ -65,14 +65,14 @@ abstract class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -179,7 +179,7 @@ abstract class PusherClient : BaseLogReceiver
 		{
 			var error = new InvalidOperationException($"{evt}: no data");
 			if (Error is { } errorHandler)
-				await errorHandler(error, cancellationToken);
+				await errorHandler.InvokeAsync(error, cancellationToken);
 			return;
 		}
 
@@ -195,31 +195,31 @@ abstract class PusherClient : BaseLogReceiver
 		{
 			case Topics.Ticker:
 				if (TickerReceived is { } tickerHandler)
-					await tickerHandler(data.DeserializeObject<Ticker>(), cancellationToken);
+					await tickerHandler.InvokeAsync(data.DeserializeObject<Ticker>(), cancellationToken);
 				break;
 			case Topics.Ticks:
 				if (TicksReceived is { } ticksHandler)
-					await ticksHandler(data.DeserializeObject<IEnumerable<Tick>>(), cancellationToken);
+					await ticksHandler.InvokeAsync(data.DeserializeObject<IEnumerable<Tick>>(), cancellationToken);
 				break;
 			case Topics.Depth:
 				if (OrderBookReceived is { } bookHandler)
-					await bookHandler(data.DeserializeObject<OrderBook>(), cancellationToken);
+					await bookHandler.InvokeAsync(data.DeserializeObject<OrderBook>(), cancellationToken);
 				break;
 			case Topics.Candles:
 				if (CandlesReceived is { } candlesHandler)
-					await candlesHandler(arg.Remove("Bin", true).ToTimeframe(), (string)((dynamic)data).symbol, ((JToken)((dynamic)data).items).DeserializeObject<IEnumerable<Ohlc>>(), cancellationToken);
+					await candlesHandler.InvokeAsync(arg.Remove("Bin", true).ToTimeframe(), (string)((dynamic)data).symbol, ((JToken)((dynamic)data).items).DeserializeObject<IEnumerable<Ohlc>>(), cancellationToken);
 				break;
 			case Topics.Order:
 				if (OrdersReceived is { } ordersHandler)
-					await ordersHandler(data.DeserializeObject<IEnumerable<SocketOrderData>>(), cancellationToken);
+					await ordersHandler.InvokeAsync(data.DeserializeObject<IEnumerable<SocketOrderData>>(), cancellationToken);
 				break;
 			case Topics.Asset:
 				if (AssetReceived is { } assetHandler)
-					await assetHandler(data.DeserializeObject<Asset>(), cancellationToken);
+					await assetHandler.InvokeAsync(data.DeserializeObject<Asset>(), cancellationToken);
 				break;
 			case Topics.Position:
 				if (PositionsReceived is { } positionsHandler)
-					await positionsHandler(data.DeserializeObject<IEnumerable<SocketPosition>>(), cancellationToken);
+					await positionsHandler.InvokeAsync(data.DeserializeObject<IEnumerable<SocketPosition>>(), cancellationToken);
 				break;
 			case Topics.System:
 				this.AddDebugLog(data.To<string>());
@@ -252,7 +252,7 @@ abstract class PusherClient : BaseLogReceiver
 		{
 			var error = new InvalidOperationException($"{evt}: '{errorMessage}'");
 			if (Error is { } errorHandler)
-				await errorHandler(error, cancellationToken);
+				await errorHandler.InvokeAsync(error, cancellationToken);
 			return;
 		}
 

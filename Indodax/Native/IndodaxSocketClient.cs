@@ -613,7 +613,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 					IndodaxPublicPushEnvelope<IndodaxSocketBook>>(payload);
 				if (message.Result?.Publication?.Data is { } book &&
 					BookReceived is { } handler)
-					await handler(book, cancellationToken);
+					await handler.InvokeAsync(book, cancellationToken);
 			}
 			else if (channel.StartsWith("market:trade-activity-",
 				StringComparison.OrdinalIgnoreCase))
@@ -622,7 +622,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 					IndodaxSocketTrade[]>>(payload);
 				if (message.Result?.Publication?.Data is { Length: > 0 } trades &&
 					TradesReceived is { } handler)
-					await handler(trades, cancellationToken);
+					await handler.InvokeAsync(trades, cancellationToken);
 			}
 		}
 		catch (Exception error)
@@ -644,7 +644,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 			foreach (var publication in recovery.Result?.Publications ?? [])
 			{
 				if (publication?.Data is { } book && BookReceived is { } handler)
-					await handler(book, cancellationToken);
+					await handler.InvokeAsync(book, cancellationToken);
 				offset = Math.Max(offset, publication?.Offset ?? 0);
 			}
 
@@ -660,7 +660,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 			{
 				if (publication?.Data is { Length: > 0 } trades &&
 					TradesReceived is { } handler)
-					await handler(trades, cancellationToken);
+					await handler.InvokeAsync(trades, cancellationToken);
 				offset = Math.Max(offset, publication?.Offset ?? 0);
 			}
 
@@ -694,7 +694,7 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 			var message = Deserialize<IndodaxPrivatePushEnvelope>(payload);
 			if (message.Push?.Publication?.Events is { Length: > 0 } events &&
 				PrivateEventsReceived is { } handler)
-				await handler(events, cancellationToken);
+				await handler.InvokeAsync(events, cancellationToken);
 		}
 		catch (Exception error)
 		{
@@ -769,12 +769,12 @@ sealed class IndodaxSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private ValueTask RaiseStateAsync(ConnectionStates state,
 		CancellationToken cancellationToken)
 		=> StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 
 	private static ClientWebSocket CreateSocket()

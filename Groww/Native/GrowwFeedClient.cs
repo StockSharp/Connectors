@@ -149,7 +149,7 @@ internal sealed class GrowwFeedClient : BaseLogReceiver
 			{
 				if (message.Data is not { Length: > 0 } data || DataReceived is not { } handler)
 					continue;
-				await handler(subject, data, cancellationToken);
+				await handler.InvokeAsync(subject, data, cancellationToken);
 			}
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -158,7 +158,7 @@ internal sealed class GrowwFeedClient : BaseLogReceiver
 		catch (Exception ex)
 		{
 			if (Error is { } handler)
-				await handler(ex, CancellationToken.None);
+				await handler.InvokeAsync(ex, CancellationToken.None);
 		}
 	}
 
@@ -167,27 +167,27 @@ internal sealed class GrowwFeedClient : BaseLogReceiver
 		var state = _wasConnected ? ConnectionStates.Restored : ConnectionStates.Connected;
 		_wasConnected = true;
 		if (StateChanged is { } handler)
-			await handler(state, _lifetime?.Token ?? CancellationToken.None);
+			await handler.InvokeAsync(state, _lifetime?.Token ?? CancellationToken.None);
 	}
 
 	private async ValueTask OnConnectionDisconnected(object sender, NatsEventArgs args)
 	{
 		if (StateChanged is { } handler)
-			await handler(ConnectionStates.Disconnected, _lifetime?.Token ?? CancellationToken.None);
+			await handler.InvokeAsync(ConnectionStates.Disconnected, _lifetime?.Token ?? CancellationToken.None);
 	}
 
 	private async ValueTask OnReconnectFailed(object sender, NatsEventArgs args)
 	{
 		if (StateChanged is { } stateHandler)
-			await stateHandler(ConnectionStates.Failed, _lifetime?.Token ?? CancellationToken.None);
+			await stateHandler.InvokeAsync(ConnectionStates.Failed, _lifetime?.Token ?? CancellationToken.None);
 		if (Error is { } errorHandler)
-			await errorHandler(new InvalidOperationException($"Groww NATS reconnect failed: {args.Message}"), CancellationToken.None);
+			await errorHandler.InvokeAsync(new InvalidOperationException($"Groww NATS reconnect failed: {args.Message}"), CancellationToken.None);
 	}
 
 	private async ValueTask OnMessageDropped(object sender, NatsMessageDroppedEventArgs args)
 	{
 		if (Error is { } handler)
-			await handler(new InvalidOperationException($"Groww NATS dropped a message for '{args.Subject}' with {args.Pending} pending messages."), CancellationToken.None);
+			await handler.InvokeAsync(new InvalidOperationException($"Groww NATS dropped a message for '{args.Subject}' with {args.Pending} pending messages."), CancellationToken.None);
 	}
 
 	private static async ValueTask AwaitSubscription(Task task)

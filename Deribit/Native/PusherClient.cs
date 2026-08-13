@@ -57,14 +57,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(null, null, error, token);
+					return handler.InvokeAsync(null, null, error, token);
 				return default;
 			},
 			OnProcess,
@@ -159,7 +159,7 @@ class PusherClient : BaseLogReceiver
 			var error = new InvalidOperationException((string)obj.error.ToString());
 
 			if (Error is { } errorHandler)
-				await errorHandler(id, tuple?.type, error, cancellationToken);
+				await errorHandler.InvokeAsync(id, tuple?.type, error, cancellationToken);
 		}
 		else
 		{
@@ -174,56 +174,56 @@ class PusherClient : BaseLogReceiver
 					if (channel.StartsWithIgnoreCase("book."))
 					{
 						if (OrderBookChanged is { } handler)
-							await handler(data.DeserializeObject<OrderBook>(), cancellationToken);
+							await handler.InvokeAsync(data.DeserializeObject<OrderBook>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("ticker."))
 					{
 						if (TickerChanged is { } handler)
-							await handler(data.DeserializeObject<Ticker>(), cancellationToken);
+							await handler.InvokeAsync(data.DeserializeObject<Ticker>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("trades."))
 					{
 						if (NewTrades is { } handler)
-							await handler(data.DeserializeObject<IEnumerable<Trade>>(), cancellationToken);
+							await handler.InvokeAsync(data.DeserializeObject<IEnumerable<Trade>>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("announcements"))
 					{
 						if (NewAnnouncement is { } handler)
-							await handler(data.DeserializeObject<Announcement>(), cancellationToken);
+							await handler.InvokeAsync(data.DeserializeObject<Announcement>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("user.orders."))
 					{
 						if (OrderChanged is { } handler)
-							await handler(0, data.DeserializeObject<Order>(), cancellationToken);
+							await handler.InvokeAsync(0, data.DeserializeObject<Order>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("user.trades."))
 					{
 						if (NewUserTrades is { } handler)
-							await handler(data.DeserializeObject<IEnumerable<UserTrade>>(), cancellationToken);
+							await handler.InvokeAsync(data.DeserializeObject<IEnumerable<UserTrade>>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("user.portfolio."))
 					{
 						if (AccountChanged is { } handler)
-							await handler(0, data.DeserializeObject<Account>(), cancellationToken);
+							await handler.InvokeAsync(0, data.DeserializeObject<Account>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("chart.trades."))
 					{
 						if (NewCandles is { } handler)
-							await handler(0, [data.DeserializeObject<Ohlc>()], cancellationToken);
+							await handler.InvokeAsync(0, [data.DeserializeObject<Ohlc>()], cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("user.changes."))
 					{
 						if (OrderChanged is { } orderHandler)
 						{
 							foreach (var order in ((JToken)p.data.orders).DeserializeObject<IEnumerable<Order>>())
-								await orderHandler(0, order, cancellationToken);
+								await orderHandler.InvokeAsync(0, order, cancellationToken);
 						}
 
 						if (NewUserTrades is { } tradesHandler)
-							await tradesHandler(((JToken)p.data.trades).DeserializeObject<IEnumerable<UserTrade>>(), cancellationToken);
+							await tradesHandler.InvokeAsync(((JToken)p.data.trades).DeserializeObject<IEnumerable<UserTrade>>(), cancellationToken);
 
 						if (PositionChanged is { } posHandler)
-							await posHandler(0, ((JToken)p.data.positions).DeserializeObject<IEnumerable<Position>>(), cancellationToken);
+							await posHandler.InvokeAsync(0, ((JToken)p.data.positions).DeserializeObject<IEnumerable<Position>>(), cancellationToken);
 					}
 					else
 						this.AddErrorLog(LocalizedStrings.UnknownEvent, channel);
@@ -241,7 +241,7 @@ class PusherClient : BaseLogReceiver
 					{
 						case MessageTypes.SecurityLookup:
 							if (NewSymbols is { } newSymbolsHandler)
-								await newSymbolsHandler(id.Value, res.DeserializeObject<IEnumerable<Symbol>>(), cancellationToken);
+								await newSymbolsHandler.InvokeAsync(id.Value, res.DeserializeObject<IEnumerable<Symbol>>(), cancellationToken);
 							break;
 
 						case MessageTypes.Level1Change:
@@ -302,17 +302,17 @@ class PusherClient : BaseLogReceiver
 								if (res.Type == JTokenType.Array)
 								{
 									foreach (var account in res.DeserializeObject<IEnumerable<Account>>())
-										await accountHandler(id.Value, account, cancellationToken);
+										await accountHandler.InvokeAsync(id.Value, account, cancellationToken);
 								}
 								else
-									await accountHandler(id.Value, res.DeserializeObject<Account>(), cancellationToken);
+									await accountHandler.InvokeAsync(id.Value, res.DeserializeObject<Account>(), cancellationToken);
 							}
 
 							break;
 
 						case MessageTypes.PositionChange:
 							if (PositionChanged is { } posChangedHandler)
-								await posChangedHandler(id.Value, res.DeserializeObject<IEnumerable<Position>>(), cancellationToken);
+								await posChangedHandler.InvokeAsync(id.Value, res.DeserializeObject<IEnumerable<Position>>(), cancellationToken);
 							break;
 
 						case MessageTypes.OrderStatus:
@@ -320,7 +320,7 @@ class PusherClient : BaseLogReceiver
 							if (OrderChanged is { } orderStatusHandler)
 							{
 								foreach (var order in res.DeserializeObject<IEnumerable<Order>>())
-									await orderStatusHandler(id.Value, order, cancellationToken);
+									await orderStatusHandler.InvokeAsync(id.Value, order, cancellationToken);
 							}
 
 							break;
@@ -328,7 +328,7 @@ class PusherClient : BaseLogReceiver
 
 						case DeribitMessageTypes.OrderState:
 							if (OrderChanged is { } orderStateHandler)
-								await orderStateHandler(id.Value, res.DeserializeObject<Order>(), cancellationToken);
+								await orderStateHandler.InvokeAsync(id.Value, res.DeserializeObject<Order>(), cancellationToken);
 							break;
 
 						case MessageTypes.Execution:
@@ -342,12 +342,12 @@ class PusherClient : BaseLogReceiver
 							var order = ((JToken)obj.result.order).DeserializeObject<Order>();
 
 							if (OrderChanged is { } orderRegHandler)
-								await orderRegHandler(0, order, cancellationToken);
+								await orderRegHandler.InvokeAsync(0, order, cancellationToken);
 
 							if (obj.result.trades != null)
 							{
 								if (NewUserTrades is { } userTradesHandler)
-									await userTradesHandler(((JToken)obj.result.trades).DeserializeObject<IEnumerable<UserTrade>>(), cancellationToken);
+									await userTradesHandler.InvokeAsync(((JToken)obj.result.trades).DeserializeObject<IEnumerable<UserTrade>>(), cancellationToken);
 							}
 
 							break;
@@ -357,7 +357,7 @@ class PusherClient : BaseLogReceiver
 							if (res.Type != JTokenType.Integer)
 							{
 								if (OrderChanged is { } orderCancelHandler)
-									await orderCancelHandler(0, res.DeserializeObject<Order>(), cancellationToken);
+									await orderCancelHandler.InvokeAsync(0, res.DeserializeObject<Order>(), cancellationToken);
 							}
 
 							break;
@@ -367,7 +367,7 @@ class PusherClient : BaseLogReceiver
 
 						case DeribitMessageTypes.Withdraw:
 							if (WithdrawUpdated is { } withdrawHandler)
-								await withdrawHandler(id.Value, res.DeserializeObject<DeribitWithdraw>(), cancellationToken);
+								await withdrawHandler.InvokeAsync(id.Value, res.DeserializeObject<DeribitWithdraw>(), cancellationToken);
 							break;
 
 						case MessageTypes.Connect:

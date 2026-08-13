@@ -168,7 +168,7 @@ sealed class ProBitWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSessionAsync(WebSocketClient client,
@@ -276,23 +276,23 @@ sealed class ProBitWsClient : BaseLogReceiver
 			{
 				case "marketdata":
 					if (MarketDataReceived is { } marketHandler)
-						await marketHandler(Deserialize<ProBitWsMarketDataMessage>(payload), cancellationToken);
+						await marketHandler.InvokeAsync(Deserialize<ProBitWsMarketDataMessage>(payload), cancellationToken);
 					break;
 				case "balance":
 					if (BalanceReceived is { } balanceHandler)
-						await balanceHandler(Deserialize<ProBitWsBalanceMessage>(payload), cancellationToken);
+						await balanceHandler.InvokeAsync(Deserialize<ProBitWsBalanceMessage>(payload), cancellationToken);
 					break;
 				case "open_order":
 					if (OpenOrdersReceived is { } openOrdersHandler)
-						await openOrdersHandler(Deserialize<ProBitWsOrderMessage>(payload), cancellationToken);
+						await openOrdersHandler.InvokeAsync(Deserialize<ProBitWsOrderMessage>(payload), cancellationToken);
 					break;
 				case "order_history":
 					if (OrderHistoryReceived is { } orderHistoryHandler)
-						await orderHistoryHandler(Deserialize<ProBitWsOrderMessage>(payload), cancellationToken);
+						await orderHistoryHandler.InvokeAsync(Deserialize<ProBitWsOrderMessage>(payload), cancellationToken);
 					break;
 				case "trade_history":
 					if (TradeHistoryReceived is { } tradeHistoryHandler)
-						await tradeHistoryHandler(Deserialize<ProBitWsTradeMessage>(payload), cancellationToken);
+						await tradeHistoryHandler.InvokeAsync(Deserialize<ProBitWsTradeMessage>(payload), cancellationToken);
 					break;
 			}
 		}
@@ -316,7 +316,7 @@ sealed class ProBitWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string NormalizeEndpoint(string endpoint)

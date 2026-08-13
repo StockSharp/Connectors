@@ -21,11 +21,11 @@ sealed class VenturaOrderStatusClient : BaseLogReceiver
 			endpoint.AbsoluteUri,
 			(state, cancellationToken) =>
 				StateChanged is { } stateHandler
-					? stateHandler(state, cancellationToken)
+					? stateHandler.InvokeAsync(state, cancellationToken)
 					: default,
 			(error, cancellationToken) =>
 				Error is { } errorHandler
-					? errorHandler(error, cancellationToken)
+					? errorHandler.InvokeAsync(error, cancellationToken)
 					: default,
 			Process,
 			(message, args) => this.AddInfoLog(message, args),
@@ -86,13 +86,13 @@ sealed class VenturaOrderStatusClient : BaseLogReceiver
 		catch (InvalidDataException error)
 		{
 			if (Error is { } errorHandler)
-				await errorHandler(error, cancellationToken);
+				await errorHandler.InvokeAsync(error, cancellationToken);
 			return;
 		}
 		if (OrderStatusReceived is not { } handler)
 			return;
 		foreach (var update in updates)
-			await handler(update, cancellationToken);
+			await handler.InvokeAsync(update, cancellationToken);
 	}
 
 	internal static VenturaOrderStatusUpdate[] Decode(

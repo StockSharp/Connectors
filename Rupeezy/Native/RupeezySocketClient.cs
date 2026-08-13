@@ -40,11 +40,11 @@ sealed class RupeezySocketClient : BaseLogReceiver
             address,
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (message, args) => this.AddInfoLog(message, args),
@@ -153,7 +153,7 @@ sealed class RupeezySocketClient : BaseLogReceiver
                 return;
 
             foreach (var tick in Decode(data.Span))
-                await tickHandler(tick, cancellationToken);
+                await tickHandler.InvokeAsync(tick, cancellationToken);
 
             return;
         }
@@ -166,7 +166,7 @@ sealed class RupeezySocketClient : BaseLogReceiver
 
         var update = ParseText(text);
         if (update != null && OrderReceived is { } orderHandler)
-            await orderHandler(update, cancellationToken);
+            await orderHandler.InvokeAsync(update, cancellationToken);
     }
 
     internal static RupeezySocketUpdate ParseText(string text)

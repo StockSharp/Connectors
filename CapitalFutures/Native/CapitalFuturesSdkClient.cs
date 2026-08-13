@@ -276,7 +276,7 @@ sealed class CapitalFuturesSdkClient : BaseLogReceiver
 				return;
 			foreach (var subscription in MatchSubscriptions(CapitalMarketDataKinds.Level1,
 				instrument.SecurityType, instrument.Symbol))
-				await handler(subscription, instrument, cancellationToken);
+				await handler.InvokeAsync(subscription, instrument, cancellationToken);
 		});
 
 	private void OnTrade(CapitalTradeUpdate update)
@@ -287,7 +287,7 @@ sealed class CapitalFuturesSdkClient : BaseLogReceiver
 			var securityType = update.MarketNo.ToSecurityType();
 			foreach (var subscription in MatchSubscriptions(CapitalMarketDataKinds.Trades,
 				securityType, update.Symbol))
-				await handler(subscription, update, cancellationToken);
+				await handler.InvokeAsync(subscription, update, cancellationToken);
 		});
 
 	private void OnBook(CapitalBookUpdate update)
@@ -298,7 +298,7 @@ sealed class CapitalFuturesSdkClient : BaseLogReceiver
 			var securityType = update.MarketNo.ToSecurityType();
 			foreach (var subscription in MatchSubscriptions(CapitalMarketDataKinds.MarketDepth,
 				securityType, update.Symbol))
-				await handler(subscription, update, cancellationToken);
+				await handler.InvokeAsync(subscription, update, cancellationToken);
 		});
 
 	private void OnOrder(CapitalOrderReport report)
@@ -311,17 +311,17 @@ sealed class CapitalFuturesSdkClient : BaseLogReceiver
 			if (account == null || !report.Account.EqualsIgnoreCase(account.FullAccount) ||
 				OrderReceived is not { } handler)
 				return;
-			await handler(report, cancellationToken);
+			await handler.InvokeAsync(report, cancellationToken);
 		});
 
 	private void OnError(Exception error)
 		=> QueueCallback(cancellationToken => Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default, false);
 
 	private void OnConnectionLost(Exception error)
 		=> QueueCallback(cancellationToken => ConnectionLost is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default);
 
 	private void QueueCallback(Func<CancellationToken, ValueTask> callback, bool reportErrors = true)
@@ -359,7 +359,7 @@ sealed class CapitalFuturesSdkClient : BaseLogReceiver
 					{
 						try
 						{
-							await handler(error, CancellationToken.None);
+							await handler.InvokeAsync(error, CancellationToken.None);
 						}
 						catch (Exception handlerError)
 						{

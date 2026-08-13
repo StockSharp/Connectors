@@ -22,14 +22,14 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			async (c, msg, t) =>
@@ -156,12 +156,12 @@ class PublicSocketClient(string url, int reconnectAttempts, WorkingTime workingT
 				if (response.Type == "snapshot")
 				{
 					if (OrderBookSnapshot is { } handler)
-						await handler(_section, parts[2], parts[1].To<int>(), getData<WebSocketOrderBookSnapshot>(), cancellationToken);
+						await handler.InvokeAsync(_section, parts[2], parts[1].To<int>(), getData<WebSocketOrderBookSnapshot>(), cancellationToken);
 				}
 				else if (response.Type == "delta")
 				{
 					if (OrderBookDelta is { } handler)
-						await handler(_section, parts[2], parts[1].To<int>(), getData<WebSocketOrderBookDelta>(), cancellationToken);
+						await handler.InvokeAsync(_section, parts[2], parts[1].To<int>(), getData<WebSocketOrderBookDelta>(), cancellationToken);
 				}
 				else
 					this.AddWarningLog(LocalizedStrings.UnknownEvent, response.Type);
@@ -170,15 +170,15 @@ class PublicSocketClient(string url, int reconnectAttempts, WorkingTime workingT
 			}
 			case Channels.Trade:
 				if (TradesReceived is { } tradesHandler)
-					await tradesHandler(_section, parts[1], getData<IEnumerable<WebSocketTrade>>(), cancellationToken);
+					await tradesHandler.InvokeAsync(_section, parts[1], getData<IEnumerable<WebSocketTrade>>(), cancellationToken);
 				break;
 			case Channels.Tickers:
 				if (TickerReceived is { } tickerHandler)
-					await tickerHandler(_section, getData<WebSocketTicker>(), cancellationToken);
+					await tickerHandler.InvokeAsync(_section, getData<WebSocketTicker>(), cancellationToken);
 				break;
 			case Channels.Kline:
 				if (KlinesReceived is { } klinesHandler)
-					await klinesHandler(_section, parts[2], parts[1], getData<IEnumerable<WebSocketKline>>(), cancellationToken);
+					await klinesHandler.InvokeAsync(_section, parts[2], parts[1], getData<IEnumerable<WebSocketKline>>(), cancellationToken);
 				break;
 			default:
 				this.AddWarningLog(LocalizedStrings.UnknownEvent, topic);
@@ -266,19 +266,19 @@ class PrivateSocketClient(string url, int reconnectAttempts, WorkingTime working
 		{
 			case Channels.Wallet:
 				if (WalletsReceived is { } walletsHandler)
-					await walletsHandler(getData<IEnumerable<Wallet>>(), cancellationToken);
+					await walletsHandler.InvokeAsync(getData<IEnumerable<Wallet>>(), cancellationToken);
 				break;
 			case Channels.Position:
 				if (PositionsReceived is { } positionsHandler)
-					await positionsHandler(getData<IEnumerable<Position>>(), cancellationToken);
+					await positionsHandler.InvokeAsync(getData<IEnumerable<Position>>(), cancellationToken);
 				break;
 			case Channels.Order:
 				if (OrdersReceived is { } ordersHandler)
-					await ordersHandler(getData<IEnumerable<Order>>(), cancellationToken);
+					await ordersHandler.InvokeAsync(getData<IEnumerable<Order>>(), cancellationToken);
 				break;
 			case Channels.Execution:
 				if (ExecutionsReceived is { } executionsHandler)
-					await executionsHandler(getData<IEnumerable<WebSocketExecution>>(), cancellationToken);
+					await executionsHandler.InvokeAsync(getData<IEnumerable<WebSocketExecution>>(), cancellationToken);
 				break;
 			default:
 				this.AddWarningLog(LocalizedStrings.UnknownEvent, topic);

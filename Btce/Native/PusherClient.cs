@@ -21,14 +21,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -74,12 +74,12 @@ class PusherClient : BaseLogReceiver
 
 			case Channels.OrderBook:
 				if (OrderBookChanged is { } obHandler)
-					await obHandler(((string)obj.channel).Remove("." + Channels.OrderBook), ((string)obj.data).DeserializeObject<OrderBook>(), cancellationToken);
+					await obHandler.InvokeAsync(((string)obj.channel).Remove("." + Channels.OrderBook), ((string)obj.data).DeserializeObject<OrderBook>(), cancellationToken);
 				break;
 
 			case Channels.Trades:
 				if (NewTrades is { } ntHandler)
-					await ntHandler(((string)obj.channel).Remove("." + Channels.Trades), ((string)obj.data).DeserializeObject<PusherTransaction[]>(), cancellationToken);
+					await ntHandler.InvokeAsync(((string)obj.channel).Remove("." + Channels.Trades), ((string)obj.data).DeserializeObject<PusherTransaction[]>(), cancellationToken);
 				break;
 
 			default:

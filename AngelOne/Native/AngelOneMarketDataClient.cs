@@ -24,8 +24,8 @@ sealed class AngelOneMarketDataClient : BaseLogReceiver
 
 		_client = new(
 			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -86,7 +86,7 @@ sealed class AngelOneMarketDataClient : BaseLogReceiver
 		{
 			var tick = Decode(data.Span);
 			if (TickReceived is { } handler)
-				await handler(tick, cancellationToken);
+				await handler.InvokeAsync(tick, cancellationToken);
 			return;
 		}
 

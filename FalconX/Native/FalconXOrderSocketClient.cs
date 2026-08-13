@@ -43,6 +43,6 @@ sealed class FalconXOrderSocketClient : FalconXSocketClient
 		var response =
 			Deserialize<FalconXSocketResponse<FalconXSocketOrderBody>>(payload);
 		if (OrderReceived is { } handler)
-			await handler(response, cancellationToken);
+			await handler.InvokeAsync(response, cancellationToken);
 	}
 }

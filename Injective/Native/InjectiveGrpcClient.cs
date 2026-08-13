@@ -270,7 +270,7 @@ sealed class InjectiveGrpcClient : BaseLogReceiver
 			catch (Exception error)
 			{
 				if (Error is not null)
-					await Error(error, cancellationToken);
+					await Error.InvokeAsync(error, cancellationToken);
 			}
 			if (!cancellationToken.IsCancellationRequested)
 				await Task.Delay(TimeSpan.FromSeconds(Math.Min(30,

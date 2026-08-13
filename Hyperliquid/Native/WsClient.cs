@@ -20,7 +20,7 @@ class WsClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 
 				return default;
 			},
@@ -29,7 +29,7 @@ class WsClient : BaseLogReceiver
 				this.AddErrorLog(error);
 
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 
 				return default;
 			},
@@ -168,7 +168,7 @@ class WsClient : BaseLogReceiver
 				var ex = new InvalidOperationException(obj.ToString(Formatting.None));
 
 				if (Error is { } handler)
-					await handler(ex, cancellationToken);
+					await handler.InvokeAsync(ex, cancellationToken);
 
 				break;
 			}
@@ -180,7 +180,7 @@ class WsClient : BaseLogReceiver
 				var data = obj["data"]?.ToObject<DerivativesModel.WsActiveAssetContext>();
 
 				if (data?.Ctx is not null && ActiveAssetCtxReceived is { } handler)
-					await handler(data, cancellationToken);
+					await handler.InvokeAsync(data, cancellationToken);
 
 				break;
 			}
@@ -189,7 +189,7 @@ class WsClient : BaseLogReceiver
 				var data = obj["data"]?.ToObject<SpotModel.WsActiveAssetContext>();
 
 				if (data?.Ctx is not null && ActiveSpotAssetCtxReceived is { } handler)
-					await handler(data, cancellationToken);
+					await handler.InvokeAsync(data, cancellationToken);
 
 				break;
 			}
@@ -198,7 +198,7 @@ class WsClient : BaseLogReceiver
 				var data = obj["data"]?.ToObject<WsTrade[]>() ?? [];
 
 				if (data.Length > 0 && TradesReceived is { } handler)
-					await handler(data, cancellationToken);
+					await handler.InvokeAsync(data, cancellationToken);
 
 				break;
 			}
@@ -207,7 +207,7 @@ class WsClient : BaseLogReceiver
 				var data = obj["data"]?.ToObject<L2BookSnapshot>();
 
 				if (data is not null && L2BookReceived is { } handler)
-					await handler(data, cancellationToken);
+					await handler.InvokeAsync(data, cancellationToken);
 
 				break;
 			}
@@ -216,7 +216,7 @@ class WsClient : BaseLogReceiver
 				var data = obj["data"]?.ToObject<WsCandle>();
 
 				if (data is not null && CandleReceived is { } handler)
-					await handler(data, cancellationToken);
+					await handler.InvokeAsync(data, cancellationToken);
 
 				break;
 			}
@@ -225,7 +225,7 @@ class WsClient : BaseLogReceiver
 				var data = obj["data"]?.ToObject<OpenOrder[]>() ?? [];
 
 				if (data.Length > 0 && OrderUpdatesReceived is { } handler)
-					await handler(data, cancellationToken);
+					await handler.InvokeAsync(data, cancellationToken);
 
 				break;
 			}
@@ -234,7 +234,7 @@ class WsClient : BaseLogReceiver
 				var data = obj["data"]?.ToObject<WsUserFills>()?.Fills ?? [];
 
 				if (data.Length > 0 && UserFillsReceived is { } handler)
-					await handler(data, cancellationToken);
+					await handler.InvokeAsync(data, cancellationToken);
 
 				break;
 			}

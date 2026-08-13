@@ -196,21 +196,21 @@ sealed class BigOneWsClient : BaseLogReceiver
 		BigOneTicker ticker,
 		CancellationToken cancellationToken)
 		=> TickerReceived is { } handler
-			? handler(ticker, cancellationToken)
+			? handler.InvokeAsync(ticker, cancellationToken)
 			: default;
 
 	private ValueTask OnInstrumentAsync(
 		BigOneContractInstrument instrument,
 		CancellationToken cancellationToken)
 		=> TickerReceived is { } handler
-			? handler(instrument.ToTicker(), cancellationToken)
+			? handler.InvokeAsync(instrument.ToTicker(), cancellationToken)
 			: default;
 
 	private ValueTask OnOrderBookAsync(
 		BigOneOrderBook book,
 		CancellationToken cancellationToken)
 		=> OrderBookReceived is { } handler
-			? handler(book, cancellationToken)
+			? handler.InvokeAsync(book, cancellationToken)
 			: default;
 
 	private ValueTask OnContractOrderBookAsync(
@@ -224,7 +224,7 @@ sealed class BigOneWsClient : BaseLogReceiver
 		BigOneTradePush trades,
 		CancellationToken cancellationToken)
 		=> TradesReceived is { } handler
-			? handler(trades, cancellationToken)
+			? handler.InvokeAsync(trades, cancellationToken)
 			: default;
 
 	private ValueTask OnContractTradesAsync(
@@ -249,7 +249,7 @@ sealed class BigOneWsClient : BaseLogReceiver
 		BigOneKlineEvent candle,
 		CancellationToken cancellationToken)
 		=> KlineReceived is { } handler
-			? handler(candle, cancellationToken)
+			? handler.InvokeAsync(candle, cancellationToken)
 			: default;
 
 	private async ValueTask OnContractCandlesAsync(
@@ -261,7 +261,7 @@ sealed class BigOneWsClient : BaseLogReceiver
 		foreach (var candle in candles ?? [])
 		{
 			var converted = candle.ToCandle();
-			await handler(new()
+			await handler.InvokeAsync(new()
 			{
 				Market = candle.Symbol,
 				Kline = new()
@@ -284,14 +284,14 @@ sealed class BigOneWsClient : BaseLogReceiver
 		BigOneBalance balance,
 		CancellationToken cancellationToken)
 		=> BalanceReceived is { } handler
-			? handler(balance, cancellationToken)
+			? handler.InvokeAsync(balance, cancellationToken)
 			: default;
 
 	private ValueTask OnOrderAsync(
 		BigOneOrder order,
 		CancellationToken cancellationToken)
 		=> OrderReceived is { } handler
-			? handler(order, cancellationToken)
+			? handler.InvokeAsync(order, cancellationToken)
 			: default;
 
 	private async ValueTask OnContractPrivateAsync(
@@ -300,19 +300,19 @@ sealed class BigOneWsClient : BaseLogReceiver
 	{
 		if (update?.Cash is { } cash &&
 			BalanceReceived is { } balanceHandler)
-			await balanceHandler(
+			await balanceHandler.InvokeAsync(
 				cash.ToBalance(), cancellationToken);
 		if (PositionReceived is { } positionHandler)
 			foreach (var position in update?.Positions ?? [])
-				await positionHandler(
+				await positionHandler.InvokeAsync(
 					position, cancellationToken);
 		if (OrderReceived is { } orderHandler)
 			foreach (var order in update?.Orders ?? [])
-				await orderHandler(
+				await orderHandler.InvokeAsync(
 					order.ToOrder(), cancellationToken);
 		if (PrivateTradeReceived is { } tradeHandler)
 			foreach (var trade in update?.Trades ?? [])
-				await tradeHandler(
+				await tradeHandler.InvokeAsync(
 					trade.ToTrade(), cancellationToken);
 	}
 
@@ -320,14 +320,14 @@ sealed class BigOneWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private ValueTask OnStateChangedAsync(
 		ConnectionStates state,
 		CancellationToken cancellationToken)
 		=> StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 
 	private void UnsubscribeEvents()

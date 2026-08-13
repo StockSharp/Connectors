@@ -8,8 +8,8 @@ internal sealed class KabuStationWebSocketClient : BaseLogReceiver
 	{
 		_client = new(
 			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -48,7 +48,7 @@ internal sealed class KabuStationWebSocketClient : BaseLogReceiver
 	}
 
 	private ValueTask OnPostConnect(bool reconnect, CancellationToken cancellationToken)
-		=> Connected is { } handler ? handler(reconnect, cancellationToken) : default;
+		=> Connected is { } handler ? handler.InvokeAsync(reconnect, cancellationToken) : default;
 
 	private async ValueTask Process(WebSocketMessage message, CancellationToken cancellationToken)
 	{
@@ -58,6 +58,6 @@ internal sealed class KabuStationWebSocketClient : BaseLogReceiver
 		var board = JsonConvert.DeserializeObject<KabuStationBoard>(content)
 			?? throw new InvalidDataException("kabu Station returned an invalid PUSH message.");
 		if (BoardReceived is { } handler)
-			await handler(board, cancellationToken);
+			await handler.InvokeAsync(board, cancellationToken);
 	}
 }

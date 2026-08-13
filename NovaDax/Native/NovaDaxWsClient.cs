@@ -211,7 +211,7 @@ sealed class NovaDaxWsClient : BaseLogReceiver
 				"NovaDAX Socket.IO connection failed."));
 		}
 		return StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 	}
 
@@ -357,7 +357,7 @@ sealed class NovaDaxWsClient : BaseLogReceiver
 					"SUBSCRIBE", topics, cancellationToken);
 			ready.TrySetResult(true);
 			if (isRestoring && StateChanged is { } handler)
-				await handler(
+				await handler.InvokeAsync(
 					ConnectionStates.Restored,
 					cancellationToken);
 		}
@@ -391,7 +391,7 @@ sealed class NovaDaxWsClient : BaseLogReceiver
 			{
 				ticker.Pair = ticker.Pair.IsEmpty(symbol);
 				if (TickerReceived is { } handler)
-					await handler(ticker, cancellationToken);
+					await handler.InvokeAsync(ticker, cancellationToken);
 			}
 			return;
 		}
@@ -404,7 +404,7 @@ sealed class NovaDaxWsClient : BaseLogReceiver
 				book.Pair = symbol;
 				book.Limit = 50;
 				if (OrderBookReceived is { } handler)
-					await handler(book, cancellationToken);
+					await handler.InvokeAsync(book, cancellationToken);
 			}
 			return;
 		}
@@ -417,7 +417,7 @@ sealed class NovaDaxWsClient : BaseLogReceiver
 				trade.Pair = symbol;
 
 			if (trades.Length > 0 && TradesReceived is { } handler)
-				await handler(new NovaDaxTradePush
+				await handler.InvokeAsync(new NovaDaxTradePush
 				{
 					Pair = symbol,
 					EventId = trades[0].Timestamp.ToString(
@@ -459,7 +459,7 @@ sealed class NovaDaxWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string ExtractSymbol(string eventName)

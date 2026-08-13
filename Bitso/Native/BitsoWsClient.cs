@@ -144,7 +144,7 @@ sealed class BitsoWsClient : BaseLogReceiver
 				await SendSubscriptionAsync(client, subscription, cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(Subscription subscription,
@@ -224,14 +224,14 @@ sealed class BitsoWsClient : BaseLogReceiver
 					var envelope = Deserialize<BitsoWsEnvelope<BitsoWsTrade[]>>(payload);
 					if (TradeReceived is { } handler)
 						foreach (var trade in envelope.Payload ?? [])
-							await handler(envelope.Book, trade, cancellationToken);
+							await handler.InvokeAsync(envelope.Book, trade, cancellationToken);
 					return;
 				}
 				case BitsoWsChannels.Orders:
 				{
 					var envelope = Deserialize<BitsoWsEnvelope<BitsoWsOrders>>(payload);
 					if (envelope.Payload is not null && OrdersReceived is { } handler)
-						await handler(envelope.Book, envelope.Payload, envelope.Sent,
+						await handler.InvokeAsync(envelope.Book, envelope.Payload, envelope.Sent,
 							cancellationToken);
 					return;
 				}
@@ -264,5 +264,5 @@ sealed class BitsoWsClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

@@ -24,8 +24,8 @@ sealed class KotakNeoMarketDataClient : BaseLogReceiver
 
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -131,7 +131,7 @@ sealed class KotakNeoMarketDataClient : BaseLogReceiver
 		if (UpdateReceived is not { } handler)
 			return;
 		foreach (var update in result.Updates)
-			await handler(update, cancellationToken);
+			await handler.InvokeAsync(update, cancellationToken);
 	}
 
 	private KotakNeoFeedDecodeResult Decode(ReadOnlySpan<byte> data)

@@ -44,11 +44,11 @@ sealed class MastertrustSocketClient : BaseLogReceiver
             address,
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (message, args) => this.AddInfoLog(message, args),
@@ -199,7 +199,7 @@ sealed class MastertrustSocketClient : BaseLogReceiver
         {
             if (MarketDataReceived is { } marketHandler)
             {
-                await marketHandler(
+                await marketHandler.InvokeAsync(
                     DecodeMarketData(data.Span),
                     cancellationToken);
             }
@@ -214,7 +214,7 @@ sealed class MastertrustSocketClient : BaseLogReceiver
         {
             var update = DecodeUpdate(data.Span);
             if (update != null && UpdateReceived is { } updateHandler)
-                await updateHandler(update, cancellationToken);
+                await updateHandler.InvokeAsync(update, cancellationToken);
         }
     }
 

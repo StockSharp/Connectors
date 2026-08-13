@@ -12,14 +12,14 @@ class PusherClient : BaseLogReceiver
 				(state, token) =>
 				{
 					if (parent.StateChanged is { } handler)
-						return handler(state, token);
+						return handler.InvokeAsync(state, token);
 					return default;
 				},
 				(error, token) =>
 				{
 					parent.AddErrorLog(error);
 					if (parent.Error is { } handler)
-						return handler(error, token);
+						return handler.InvokeAsync(error, token);
 					return default;
 				},
 				parent.OnProcess,
@@ -87,14 +87,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -164,7 +164,7 @@ class PusherClient : BaseLogReceiver
 						{
 							needReconnect = true;
 							if (Error is { } handler)
-								await handler(new InvalidOperationException((string)d.message), cancellationToken);
+								await handler.InvokeAsync(new InvalidOperationException((string)d.message), cancellationToken);
 						}
 						else if (client is not MarketDataWebSocketClient)
 						{
@@ -317,7 +317,7 @@ class PusherClient : BaseLogReceiver
 							foreach (var posItem in value)
 							{
 								if (NewPosition is { } handler)
-									await handler((string)posItem[0], (string)posItem[1], (decimal)(double)posItem[2], (decimal)(double)posItem[3], (decimal)(double)posItem[4], (int?)posItem[5], (decimal?)(double?)posItem[6], (decimal?)(double?)posItem[7], (decimal?)(double?)posItem[8], (decimal?)(double?)posItem[9], cancellationToken);
+									await handler.InvokeAsync((string)posItem[0], (string)posItem[1], (decimal)(double)posItem[2], (decimal)(double)posItem[3], (decimal)(double)posItem[4], (int?)posItem[5], (decimal?)(double?)posItem[6], (decimal?)(double?)posItem[7], (decimal?)(double?)posItem[8], (decimal?)(double?)posItem[9], cancellationToken);
 							}
 
 							break;
@@ -327,7 +327,7 @@ class PusherClient : BaseLogReceiver
 						case "pc": //position close
 						{
 							if (NewPosition is { } handler)
-								await handler((string)value[0], (string)value[1], (decimal)(double)value[2], (decimal)(double)value[3], (decimal)(double)value[4], (int?)value[5], (decimal?)(double?)value[6], (decimal?)(double?)value[7], (decimal?)(double?)value[8], (decimal?)(double?)value[9], cancellationToken);
+								await handler.InvokeAsync((string)value[0], (string)value[1], (decimal)(double)value[2], (decimal)(double)value[3], (decimal)(double)value[4], (int?)value[5], (decimal?)(double?)value[6], (decimal?)(double?)value[7], (decimal?)(double?)value[8], (decimal?)(double?)value[9], cancellationToken);
 							break;
 						}
 						case "ws": //wallet snapshot
@@ -335,7 +335,7 @@ class PusherClient : BaseLogReceiver
 							foreach (var walItem in value)
 							{
 								if (NewWallet is { } handler)
-									await handler((string)walItem[0], (string)walItem[1], (decimal)(double)walItem[2], (decimal)(double)walItem[3], cancellationToken);
+									await handler.InvokeAsync((string)walItem[0], (string)walItem[1], (decimal)(double)walItem[2], (decimal)(double)walItem[3], cancellationToken);
 							}
 
 							break;
@@ -343,7 +343,7 @@ class PusherClient : BaseLogReceiver
 						case "wu": //wallet update
 						{
 							if (NewWallet is { } handler)
-								await handler((string)value[0], (string)value[1], (decimal)(double)value[2], (decimal)(double)value[3], cancellationToken);
+								await handler.InvokeAsync((string)value[0], (string)value[1], (decimal)(double)value[2], (decimal)(double)value[3], cancellationToken);
 							break;
 						}
 						case "os": //order snapshot
@@ -351,7 +351,7 @@ class PusherClient : BaseLogReceiver
 							foreach (var ordItem in value)
 							{
 								if (OrderChanged is { } handler)
-									await handler(type, (long)ordItem[0], (long?)ordItem[1], (long?)ordItem[2], (string)ordItem[3], (long)ordItem[4], (long)ordItem[5], (decimal)(double)ordItem[6],
+									await handler.InvokeAsync(type, (long)ordItem[0], (long?)ordItem[1], (long?)ordItem[2], (string)ordItem[3], (long)ordItem[4], (long)ordItem[5], (decimal)(double)ordItem[6],
 										(decimal)(double)ordItem[7], (string)ordItem[8], (string)ordItem[9], (string)ordItem[13], Tuple.Create((decimal?)(double?)ordItem[16], (decimal?)(double?)ordItem[17], (decimal?)(double?)ordItem[18], (decimal?)(double?)ordItem[19]), (long?)ordItem[25], (int)ordItem[12], cancellationToken);
 							}
 
@@ -362,7 +362,7 @@ class PusherClient : BaseLogReceiver
 						case "oc": //order cancel
 						{
 							if (OrderChanged is { } handler)
-								await handler(type, (long)value[0], (long?)value[1], (long?)value[2], (string)value[3], (long)value[4], (long)value[5], (decimal)(double)value[6],
+								await handler.InvokeAsync(type, (long)value[0], (long?)value[1], (long?)value[2], (string)value[3], (long)value[4], (long)value[5], (decimal)(double)value[6],
 									(decimal)(double)value[7], (string)value[8], (string)value[9], (string)value[13], Tuple.Create((decimal?)(double?)value[16], (decimal?)(double?)value[17], (decimal?)(double?)value[18], (decimal?)(double?)value[19]), (long?)value[25], (int)value[12], cancellationToken);
 
 							break;
@@ -372,7 +372,7 @@ class PusherClient : BaseLogReceiver
 							foreach (var trdItem in value)
 							{
 								if (NewOwnTrade is { } handler)
-									await handler((long)trdItem[0], (string)trdItem[1], (long)trdItem[2], (long)trdItem[3], (decimal)(double)trdItem[4], (decimal)(double)trdItem[5], (string)trdItem[6], (decimal?)(double?)trdItem[7], (int)trdItem[8], (decimal?)(double?)trdItem[9], (string)trdItem[10], cancellationToken);
+									await handler.InvokeAsync((long)trdItem[0], (string)trdItem[1], (long)trdItem[2], (long)trdItem[3], (decimal)(double)trdItem[4], (decimal)(double)trdItem[5], (string)trdItem[6], (decimal?)(double?)trdItem[7], (int)trdItem[8], (decimal?)(double?)trdItem[9], (string)trdItem[10], cancellationToken);
 							}
 
 							break;
@@ -380,13 +380,13 @@ class PusherClient : BaseLogReceiver
 						case "te": //trade executed
 						{
 							if (NewOwnTrade is { } handler)
-								await handler((long)value[0], (string)value[1], (long)value[2], (long)value[3], (decimal)(double)value[4], (decimal)(double)value[5], (string)value[6], (decimal?)(double?)value[7], (int)value[8], null, null, cancellationToken);
+								await handler.InvokeAsync((long)value[0], (string)value[1], (long)value[2], (long)value[3], (decimal)(double)value[4], (decimal)(double)value[5], (string)value[6], (decimal?)(double?)value[7], (int)value[8], null, null, cancellationToken);
 							break;
 						}
 						case "tu": //trade execution update
 						{
 							if (NewOwnTrade is { } handler)
-								await handler((long)value[0], (string)value[1], (long)value[2], (long)value[3], (decimal)(double)value[4], (decimal)(double)value[5], (string)value[6], (decimal?)(double?)value[7], (int)value[8], (decimal?)(double?)value[9], (string)value[10], cancellationToken);
+								await handler.InvokeAsync((long)value[0], (string)value[1], (long)value[2], (long)value[3], (decimal)(double)value[4], (decimal)(double)value[5], (string)value[6], (decimal?)(double?)value[7], (int)value[8], (decimal?)(double?)value[9], (string)value[10], cancellationToken);
 							break;
 						}
 						case "n":
@@ -397,7 +397,7 @@ class PusherClient : BaseLogReceiver
 									if ((string)value[6] == "ERROR")
 									{
 										if (OrderError is { } handler)
-											await handler(true, (long)value[0], (long?)value[4][0], (long?)value[4][2], (string)value[7], cancellationToken);
+											await handler.InvokeAsync(true, (long)value[0], (long?)value[4][0], (long?)value[4][2], (string)value[7], cancellationToken);
 									}
 
 									break;
@@ -406,7 +406,7 @@ class PusherClient : BaseLogReceiver
 									if ((string)value[6] == "ERROR")
 									{
 										if (OrderError is { } handler)
-											await handler(false, (long)value[0], (long?)value[4][0], (long?)value[4][2], (string)value[7], cancellationToken);
+											await handler.InvokeAsync(false, (long)value[0], (long?)value[4][0], (long?)value[4][2], (string)value[7], cancellationToken);
 									}
 
 									break;
@@ -415,7 +415,7 @@ class PusherClient : BaseLogReceiver
 									if ((string)value[6] == "ERROR")
 									{
 										if (OrderError is { } handler)
-											await handler(false, (long)value[0], (long?)value[4][0], (long?)value[4][2], (string)value[7], cancellationToken);
+											await handler.InvokeAsync(false, (long)value[0], (long?)value[4][0], (long?)value[4][2], (string)value[7], cancellationToken);
 									}
 
 									break;
@@ -461,7 +461,7 @@ class PusherClient : BaseLogReceiver
 								foreach (var item in arr)
 								{
 									if (NewTrade is { } handler)
-										await handler(chanInfo.Item2, item.DeserializeObject<Trade>(), cancellationToken);
+										await handler.InvokeAsync(chanInfo.Item2, item.DeserializeObject<Trade>(), cancellationToken);
 								}
 							}
 							else
@@ -472,12 +472,12 @@ class PusherClient : BaseLogReceiver
 								{
 									case "te": //trade executed
 										if (NewTrade is { } handler)
-											await handler(chanInfo.Item2, a[2].DeserializeObject<Trade>(), cancellationToken);
+											await handler.InvokeAsync(chanInfo.Item2, a[2].DeserializeObject<Trade>(), cancellationToken);
 										break;
 
 									case "tu": //trade execution update
 										if (NewTrade is { } tuHandler)
-											await tuHandler(chanInfo.Item2, a[2].DeserializeObject<Trade>(), cancellationToken);
+											await tuHandler.InvokeAsync(chanInfo.Item2, a[2].DeserializeObject<Trade>(), cancellationToken);
 										break;
 
 									default:
@@ -504,12 +504,12 @@ class PusherClient : BaseLogReceiver
 								}
 
 								if (OrderBookSnaphot is { } handler)
-									await handler(chanInfo.Item2, changes, cancellationToken);
+									await handler.InvokeAsync(chanInfo.Item2, changes, cancellationToken);
 							}
 							else
 							{
 								if (OrderBookIncrement is { } handler)
-									await handler(chanInfo.Item2, (decimal)(double)value[0], (int)value[1], (decimal)(double)value[2], cancellationToken);
+									await handler.InvokeAsync(chanInfo.Item2, (decimal)(double)value[0], (int)value[1], (decimal)(double)value[2], cancellationToken);
 							}
 
 							break;
@@ -525,20 +525,20 @@ class PusherClient : BaseLogReceiver
 								foreach (var item in arr)
 								{
 									if (NewOrderLog is { } handler)
-										await handler(chanInfo.Item2, item.DeserializeObject<OrderLog>(), cancellationToken);
+										await handler.InvokeAsync(chanInfo.Item2, item.DeserializeObject<OrderLog>(), cancellationToken);
 								}
 							}
 							else
 							{
 								if (NewOrderLog is { } handler)
-									await handler(chanInfo.Item2, value.DeserializeObject<OrderLog>(), cancellationToken);
+									await handler.InvokeAsync(chanInfo.Item2, value.DeserializeObject<OrderLog>(), cancellationToken);
 							}
 
 							break;
 						}
 						case Channels.Ticker:
 							if (TickerChanged is { } tickerHandler)
-								await tickerHandler(chanInfo.Item2, a[1].DeserializeObject<Ticker>(), cancellationToken);
+								await tickerHandler.InvokeAsync(chanInfo.Item2, a[1].DeserializeObject<Ticker>(), cancellationToken);
 							break;
 						case Channels.Candles:
 						{
@@ -551,13 +551,13 @@ class PusherClient : BaseLogReceiver
 								foreach (var item in arr)
 								{
 									if (NewCandle is { } handler)
-										await handler(chanInfo.Item2, chanInfo.Item3, item.DeserializeObject<Ohlc>(), cancellationToken);
+										await handler.InvokeAsync(chanInfo.Item2, chanInfo.Item3, item.DeserializeObject<Ohlc>(), cancellationToken);
 								}
 							}
 							else
 							{
 								if (NewCandle is { } handler)
-									await handler(chanInfo.Item2, chanInfo.Item3, value.DeserializeObject<Ohlc>(), cancellationToken);
+									await handler.InvokeAsync(chanInfo.Item2, chanInfo.Item3, value.DeserializeObject<Ohlc>(), cancellationToken);
 							}
 
 							break;
@@ -579,7 +579,7 @@ class PusherClient : BaseLogReceiver
 				this.AddInfoLog(LocalizedStrings.Disconnecting);
 
 			if (StateChanged is { } stateHandler)
-				await stateHandler(ConnectionStates.Failed, cancellationToken);
+				await stateHandler.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 		}
 	}
 

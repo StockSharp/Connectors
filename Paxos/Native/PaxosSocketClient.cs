@@ -124,7 +124,7 @@ sealed class PaxosSocketClient : BaseLogReceiver
 					throw new InvalidDataException(
 						"Paxos execution WebSocket returned an incomplete message.");
 				if (ExecutionReceived is { } executionHandler)
-					await executionHandler(execution, cancellationToken);
+					await executionHandler.InvokeAsync(execution, cancellationToken);
 				return;
 			}
 
@@ -139,7 +139,7 @@ sealed class PaxosSocketClient : BaseLogReceiver
 						json, _settings) ?? throw new InvalidDataException(
 							"Paxos returned an empty order-book snapshot.");
 					if (BookSnapshotReceived is { } snapshotHandler)
-						await snapshotHandler(snapshot, cancellationToken);
+						await snapshotHandler.InvokeAsync(snapshot, cancellationToken);
 					break;
 				}
 				case PaxosSocketMessageTypes.Update:
@@ -148,7 +148,7 @@ sealed class PaxosSocketClient : BaseLogReceiver
 						_settings) ?? throw new InvalidDataException(
 							"Paxos returned an empty order-book update.");
 					if (BookUpdateReceived is { } updateHandler)
-						await updateHandler(update, cancellationToken);
+						await updateHandler.InvokeAsync(update, cancellationToken);
 					break;
 				}
 				default:
@@ -165,7 +165,7 @@ sealed class PaxosSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{

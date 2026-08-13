@@ -158,7 +158,7 @@ sealed class RainSocketClient : BaseLogReceiver
 		if (state == ConnectionStates.Restored)
 			await RestoreAsync(client, cancellationToken);
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreAsync(WebSocketClient client,
@@ -296,7 +296,7 @@ sealed class RainSocketClient : BaseLogReceiver
 		where TPayload : class
 	{
 		if (handler is not null && payload is not null)
-			await handler(payload, cancellationToken);
+			await handler.InvokeAsync(payload, cancellationToken);
 	}
 
 	private TPayload Deserialize<TPayload>(string payload)
@@ -306,7 +306,7 @@ sealed class RainSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string NormalizeSelector(RainSocketChannels channel,
 		string selector)

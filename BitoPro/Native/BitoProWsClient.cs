@@ -215,21 +215,21 @@ sealed class BitoProWsClient : BaseLogReceiver
 			{
 				case StreamTypes.Ticker:
 					if (TickerReceived is { } tickerHandler)
-						await tickerHandler(
+						await tickerHandler.InvokeAsync(
 							DeserializeMessage<BitoProTicker>(payload),
 							cancellationToken);
 					break;
 
 				case StreamTypes.OrderBook:
 					if (OrderBookReceived is { } bookHandler)
-						await bookHandler(
+						await bookHandler.InvokeAsync(
 							DeserializeMessage<BitoProOrderBook>(payload),
 							cancellationToken);
 					break;
 
 				case StreamTypes.Trades:
 					if (TradesReceived is { } tradeHandler)
-						await tradeHandler(
+						await tradeHandler.InvokeAsync(
 							DeserializeMessage<BitoProTradePush>(payload),
 							cancellationToken);
 					break;
@@ -271,13 +271,13 @@ sealed class BitoProWsClient : BaseLogReceiver
 	private ValueTask OnStateChangedAsync(ConnectionStates state,
 		CancellationToken cancellationToken)
 		=> StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static async ValueTask DisconnectClientAsync(

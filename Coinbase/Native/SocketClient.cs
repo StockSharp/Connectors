@@ -28,14 +28,14 @@ class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -77,7 +77,7 @@ class SocketClient : BaseLogReceiver
 			case "error":
 			{
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException((string)obj.message + " " + (string)obj.reason), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException((string)obj.message + " " + (string)obj.reason), cancellationToken);
 				break;
 			}
 
@@ -86,7 +86,7 @@ class SocketClient : BaseLogReceiver
 				if (HeartbeatReceived is { } handler)
 				{
 					foreach (var item in arr)
-						await handler(item.DeserializeObject<Heartbeat>(), cancellationToken);
+						await handler.InvokeAsync(item.DeserializeObject<Heartbeat>(), cancellationToken);
 				}
 
 				break;
@@ -99,7 +99,7 @@ class SocketClient : BaseLogReceiver
 					foreach (var item in arr)
 					{
 						foreach (var candle in item["candles"].DeserializeObject<IEnumerable<Ohlc>>())
-							await handler(candle, cancellationToken);
+							await handler.InvokeAsync(candle, cancellationToken);
 					}
 				}
 
@@ -113,7 +113,7 @@ class SocketClient : BaseLogReceiver
 					foreach (var item in arr)
 					{
 						foreach (var ticker in item["tickers"].DeserializeObject<IEnumerable<Ticker>>())
-							await handler(ticker, cancellationToken);
+							await handler.InvokeAsync(ticker, cancellationToken);
 					}
 				}
 
@@ -130,7 +130,7 @@ class SocketClient : BaseLogReceiver
 						var type = (string)item["type"];
 						var symbol = (string)item["product_id"];
 
-						await handler(type, symbol, item["updates"].DeserializeObject<IEnumerable<OrderBookChange>>(), cancellationToken);
+						await handler.InvokeAsync(type, symbol, item["updates"].DeserializeObject<IEnumerable<OrderBookChange>>(), cancellationToken);
 					}
 				}
 
@@ -144,7 +144,7 @@ class SocketClient : BaseLogReceiver
 					foreach (var item in arr)
 					{
 						foreach (var trade in item["trades"].DeserializeObject<IEnumerable<Trade>>())
-							await handler(trade, cancellationToken);
+							await handler.InvokeAsync(trade, cancellationToken);
 					}
 				}
 
@@ -162,7 +162,7 @@ class SocketClient : BaseLogReceiver
 					foreach (var item in arr)
 					{
 						foreach (var order in item["orders"].DeserializeObject<IEnumerable<Order>>())
-							await handler(order, cancellationToken);
+							await handler.InvokeAsync(order, cancellationToken);
 					}
 				}
 

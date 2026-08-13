@@ -150,7 +150,7 @@ class OandaStreamingClient(string endpoint, SecureString token, bool useCompress
 							{
 								var evt = _parent.NewError;
 								if (evt is not null)
-									await evt(ex, token);
+									await evt.InvokeAsync(ex, token);
 
 								if (++lineErrorCount >= maxLineErrorCount)
 								{
@@ -170,7 +170,7 @@ class OandaStreamingClient(string endpoint, SecureString token, bool useCompress
 
 						var evt = _parent.NewError;
 						if (evt is not null)
-							await evt(ex, token);
+							await evt.InvokeAsync(ex, token);
 
 						if (++errorCount >= maxErrorCount)
 						{
@@ -244,7 +244,7 @@ class OandaStreamingClient(string endpoint, SecureString token, bool useCompress
 		_pricesWorkers[accountId] = new(this,
 			OandaStreamingNames.Pricing, accountId,
 			qs => qs.Append("instruments", instruments),
-			(response, ct) => NewPricing?.Invoke(response, ct) ?? default);
+			(response, ct) => NewPricing.InvokeAsync(response, ct));
 
 		_pricesWorkers[accountId].Start();
 	}
@@ -272,7 +272,7 @@ class OandaStreamingClient(string endpoint, SecureString token, bool useCompress
 	{
 		_transactionsWorkers.SafeAdd(accountId, key => new(this,
 			OandaStreamingNames.Transactions, key, null,
-			(response, ct) => NewTransaction?.Invoke(response, ct) ?? default), out var isNew);
+			(response, ct) => NewTransaction.InvokeAsync(response, ct)), out var isNew);
 
 		if (isNew)
 			_transactionsWorkers[accountId].Start();

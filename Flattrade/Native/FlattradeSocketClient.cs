@@ -25,8 +25,8 @@ sealed class FlattradeSocketClient : BaseLogReceiver
 
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -142,7 +142,7 @@ sealed class FlattradeSocketClient : BaseLogReceiver
 				var update = JsonConvert.DeserializeObject<FlattradeMarketUpdate>(text, _jsonSettings)
 					?? throw new InvalidDataException("Flattrade returned an invalid market-data update.");
 				if (!update.Exchange.IsEmpty() && !update.Token.IsEmpty() && MarketDataReceived is { } handler)
-					await handler(update, cancellationToken);
+					await handler.InvokeAsync(update, cancellationToken);
 				break;
 			}
 
@@ -151,7 +151,7 @@ sealed class FlattradeSocketClient : BaseLogReceiver
 				var order = JsonConvert.DeserializeObject<FlattradeOrder>(text, _jsonSettings)
 					?? throw new InvalidDataException("Flattrade returned an invalid order update.");
 				if (!order.OrderId.IsEmpty() && OrderReceived is { } handler)
-					await handler(order, cancellationToken);
+					await handler.InvokeAsync(order, cancellationToken);
 				break;
 			}
 
@@ -160,7 +160,7 @@ sealed class FlattradeSocketClient : BaseLogReceiver
 				var position = JsonConvert.DeserializeObject<FlattradePosition>(text, _jsonSettings)
 					?? throw new InvalidDataException("Flattrade returned an invalid position update.");
 				if (!position.Exchange.IsEmpty() && !position.Token.IsEmpty() && PositionReceived is { } handler)
-					await handler(position, cancellationToken);
+					await handler.InvokeAsync(position, cancellationToken);
 				break;
 			}
 

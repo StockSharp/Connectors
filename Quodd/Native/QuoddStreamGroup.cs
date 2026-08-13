@@ -109,7 +109,7 @@ sealed class QuoddStreamGroup : IAsyncDisposable
 					_client.InvalidateToken();
 				failures++;
 				if (Error != null)
-					await Error(ex, cancellationToken);
+					await Error.InvokeAsync(ex, cancellationToken);
 
 				var isCoolingOff = failures >= _maxAttempts;
 				var delay = isCoolingOff
@@ -135,7 +135,7 @@ sealed class QuoddStreamGroup : IAsyncDisposable
 	}
 
 	private ValueTask OnSnap(SnapMessage message, CancellationToken cancellationToken)
-		=> SnapReceived == null ? default : SnapReceived(message, _assetType, cancellationToken);
+		=> SnapReceived == null ? default : SnapReceived.InvokeAsync(message, _assetType, cancellationToken);
 
 	public async ValueTask DisposeAsync()
 	{

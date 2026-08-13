@@ -236,24 +236,24 @@ sealed class CoinGeckoSocketClient : BaseLogReceiver
 			{
 				var update = Deserialize<CoinGeckoOnchainOhlcvUpdate>(json);
 				if (OhlcvReceived is { } handler)
-					await handler(update, cancellationToken);
+					await handler.InvokeAsync(update, cancellationToken);
 				return;
 			}
 			switch (route.Channel)
 			{
 				case CoinGeckoSocketChannelCodes.CoinPrice:
 					if (CoinPriceReceived is { } coinHandler)
-						await coinHandler(Deserialize<CoinGeckoCoinPriceUpdate>(json),
+						await coinHandler.InvokeAsync(Deserialize<CoinGeckoCoinPriceUpdate>(json),
 							cancellationToken);
 					break;
 				case CoinGeckoSocketChannelCodes.OnchainTokenPrice:
 					if (OnchainPriceReceived is { } priceHandler)
-						await priceHandler(Deserialize<CoinGeckoOnchainPriceUpdate>(json),
+						await priceHandler.InvokeAsync(Deserialize<CoinGeckoOnchainPriceUpdate>(json),
 							cancellationToken);
 					break;
 				case CoinGeckoSocketChannelCodes.OnchainTrade:
 					if (TradeReceived is { } tradeHandler)
-						await tradeHandler(Deserialize<CoinGeckoOnchainTradeUpdate>(json),
+						await tradeHandler.InvokeAsync(Deserialize<CoinGeckoOnchainTradeUpdate>(json),
 							cancellationToken);
 					break;
 				default:
@@ -389,7 +389,7 @@ sealed class CoinGeckoSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{

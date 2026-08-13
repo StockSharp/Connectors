@@ -123,9 +123,9 @@ sealed class InjectiveChainSocketClient : BaseLogReceiver
 			catch (Exception error)
 			{
 				if (Error is not null)
-					await Error(error, cancellationToken);
+					await Error.InvokeAsync(error, cancellationToken);
 				if (StateChanged is not null)
-					await StateChanged(ConnectionStates.Failed, cancellationToken);
+					await StateChanged.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 			}
 			if (cancellationToken.IsCancellationRequested)
 				break;
@@ -136,13 +136,13 @@ sealed class InjectiveChainSocketClient : BaseLogReceiver
 				await OpenAsync(cancellationToken);
 				attempt = 0;
 				if (StateChanged is not null)
-					await StateChanged(ConnectionStates.Restored,
+					await StateChanged.InvokeAsync(ConnectionStates.Restored,
 						cancellationToken);
 			}
 			catch (Exception error)
 			{
 				if (Error is not null)
-					await Error(error, cancellationToken);
+					await Error.InvokeAsync(error, cancellationToken);
 			}
 		}
 	}
@@ -226,7 +226,7 @@ sealed class InjectiveChainSocketClient : BaseLogReceiver
 					envelope.Error.Message);
 			var header = envelope.Result?.Data?.Value?.Block?.Header;
 			if (header is not null && BlockReceived is not null)
-				await BlockReceived(header, cancellationToken);
+				await BlockReceived.InvokeAsync(header, cancellationToken);
 		}
 	}
 

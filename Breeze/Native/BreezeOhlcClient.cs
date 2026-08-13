@@ -18,6 +18,6 @@ sealed class BreezeOhlcClient : BreezeSocketClient
 		var eventName = BreezeSocketCodec.GetEvent(message);
 		if (!_events.Contains(eventName) || CandleReceived is not { } handler)
 			return default;
-		return handler(BreezeSocketCodec.ReadCandle(message, eventName), cancellationToken);
+		return handler.InvokeAsync(BreezeSocketCodec.ReadCandle(message, eventName), cancellationToken);
 	}
 }

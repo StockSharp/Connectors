@@ -170,12 +170,12 @@ sealed class RavenPackFeedClient : BaseLogReceiver
 	private static ValueTask Invoke(
 		Func<RavenPackAnalyticsRecord, CancellationToken, ValueTask> handler,
 		RavenPackAnalyticsRecord record, CancellationToken cancellationToken)
-		=> handler == null ? default : handler(record, cancellationToken);
+		=> handler.InvokeAsync(record, cancellationToken);
 
 	private static ValueTask Invoke(
 		Func<Exception, bool, CancellationToken, ValueTask> handler,
 		Exception error, bool isTerminal, CancellationToken cancellationToken)
-		=> handler == null ? default : handler(error, isTerminal, cancellationToken);
+		=> handler.InvokeAsync(error, isTerminal, cancellationToken);
 
 	private static Uri EnsureTrailingSlash(Uri address)
 		=> address.AbsoluteUri.EndsWith('/') ? address : new(address.AbsoluteUri + "/");

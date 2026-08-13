@@ -35,13 +35,13 @@ class PusherClient : BaseLogReceiver
 					await SendSubscriptionsAsync(0, token);
 
 				if (StateChanged is { } handler)
-					await handler(state, token);
+					await handler.InvokeAsync(state, token);
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -176,7 +176,7 @@ class PusherClient : BaseLogReceiver
 				$"Bithumb WebSocket error {envelope.Error.Name}: {envelope.Error.Message}.");
 
 			if (Error is { } errorHandler)
-				await errorHandler(error, cancellationToken);
+				await errorHandler.InvokeAsync(error, cancellationToken);
 			else
 				this.AddErrorLog(error);
 
@@ -187,7 +187,7 @@ class PusherClient : BaseLogReceiver
 		{
 			case _ticker:
 				if (TickerChanged is { } tickerHandler)
-					await tickerHandler(
+					await tickerHandler.InvokeAsync(
 						JsonConvert.DeserializeObject<Ticker>(json)
 						?? throw new InvalidOperationException("Bithumb returned an empty ticker."),
 						cancellationToken);
@@ -195,7 +195,7 @@ class PusherClient : BaseLogReceiver
 
 			case _trade:
 				if (NewTrade is { } tradeHandler)
-					await tradeHandler(
+					await tradeHandler.InvokeAsync(
 						JsonConvert.DeserializeObject<Transaction>(json)
 						?? throw new InvalidOperationException("Bithumb returned an empty trade."),
 						cancellationToken);
@@ -203,7 +203,7 @@ class PusherClient : BaseLogReceiver
 
 			case _orderBook:
 				if (OrderBookChanged is { } orderBookHandler)
-					await orderBookHandler(
+					await orderBookHandler.InvokeAsync(
 						JsonConvert.DeserializeObject<OrderBook>(json)
 						?? throw new InvalidOperationException("Bithumb returned an empty order book."),
 						cancellationToken);

@@ -21,14 +21,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -67,14 +67,14 @@ class PusherClient : BaseLogReceiver
 		if (arr.Count == 2 && arr[0].Type == JTokenType.String && arr[1].Type == JTokenType.Object)
 		{
 			if (OrderBookChanged is { } handler)
-				await handler((string)arr[0], arr[1].DeserializeObject<OrderBook>(), cancellationToken);
+				await handler.InvokeAsync((string)arr[0], arr[1].DeserializeObject<OrderBook>(), cancellationToken);
 		}
 		else
 		{
 			if (NewTrade is { } handler)
 			{
 				foreach (var trade in arr.DeserializeObject<Trade[]>())
-					await handler(trade, cancellationToken);
+					await handler.InvokeAsync(trade, cancellationToken);
 			}
 		}
 	}

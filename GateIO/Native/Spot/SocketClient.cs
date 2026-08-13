@@ -69,14 +69,14 @@ class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -161,42 +161,42 @@ class SocketClient : BaseLogReceiver
 		{
 			case Channels.Ticker:
 				if (TickerReceived is { } tickerHandler)
-					await tickerHandler(get<Ticker>(), cancellationToken);
+					await tickerHandler.InvokeAsync(get<Ticker>(), cancellationToken);
 				break;
 			case Channels.OrderBook:
 				if (OrderBookReceived is { } obHandler)
-					await obHandler(get<OrderBook>(), (long)obj.result.U, (long)obj.result.u, cancellationToken);
+					await obHandler.InvokeAsync(get<OrderBook>(), (long)obj.result.U, (long)obj.result.u, cancellationToken);
 				break;
 			case Channels.Trades:
 				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(get<Trade>(), cancellationToken);
+					await tradeHandler.InvokeAsync(get<Trade>(), cancellationToken);
 				break;
 			case Channels.Candles:
 				if (CandleReceived is { } candleHandler)
-					await candleHandler(get<Candle>(), cancellationToken);
+					await candleHandler.InvokeAsync(get<Candle>(), cancellationToken);
 				break;
 			case Channels.BookTicker:
 				if (BookTickerReceived is { } btHandler)
-					await btHandler(result, cancellationToken);
+					await btHandler.InvokeAsync(result, cancellationToken);
 				break;
 			case Channels.Balances:
 				if (BalancesReceived is { } balHandler)
-					await balHandler(get<IEnumerable<Balance>>(), cancellationToken);
+					await balHandler.InvokeAsync(get<IEnumerable<Balance>>(), cancellationToken);
 				break;
 			case Channels.Orders:
 				if (OrdersReceived is { } ordHandler)
-					await ordHandler(get<IEnumerable<Order>>(), cancellationToken);
+					await ordHandler.InvokeAsync(get<IEnumerable<Order>>(), cancellationToken);
 				break;
 			case Channels.UserTrades:
 				if (UserTradesReceived is { } utHandler)
-					await utHandler(get<IEnumerable<UserTrade>>(), cancellationToken);
+					await utHandler.InvokeAsync(get<IEnumerable<UserTrade>>(), cancellationToken);
 				break;
 			case Channels.OrderPlace:
 			case Channels.CancelOrder:
 			case Channels.CancelAllOrders:
 			case Channels.OrderAmend:
 				if (OrderResponseReceived is { } orHandler)
-					await orHandler(((JToken)obj.data.result)?.DeserializeObject<OrderResponse>(), (JToken)obj.data.errs, requestId, cancellationToken);
+					await orHandler.InvokeAsync(((JToken)obj.data.result)?.DeserializeObject<OrderResponse>(), (JToken)obj.data.errs, requestId, cancellationToken);
 				break;
 			case Channels.Pong:
 				break;

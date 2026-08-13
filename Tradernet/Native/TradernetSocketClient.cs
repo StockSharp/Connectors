@@ -31,9 +31,9 @@ sealed class TradernetSocketClient : BaseLogReceiver
         _client = new(
             BuildAddress(address, sid),
             (state, token) => StateChanged is { } handler
-                ? handler(state, token) : default,
+                ? handler.InvokeAsync(state, token) : default,
             (error, token) => Error is { } handler
-                ? handler(error, token) : default,
+                ? handler.InvokeAsync(error, token) : default,
             Process,
             (format, args) => this.AddInfoLog(format, args),
             (format, args) => this.AddErrorLog(format, args),
@@ -186,7 +186,7 @@ sealed class TradernetSocketClient : BaseLogReceiver
                                     serializer);
                             if (quote is not null)
                             {
-                                await quoteHandler(
+                                await quoteHandler.InvokeAsync(
                                     quote,
                                     cancellationToken);
                             }
@@ -203,7 +203,7 @@ sealed class TradernetSocketClient : BaseLogReceiver
                                     serializer);
                             if (book is not null)
                             {
-                                await bookHandler(
+                                await bookHandler.InvokeAsync(
                                     book,
                                     cancellationToken);
                             }
@@ -218,7 +218,7 @@ sealed class TradernetSocketClient : BaseLogReceiver
                                 serializer);
                         if (portfolio is not null)
                         {
-                            await portfolioHandler(
+                            await portfolioHandler.InvokeAsync(
                                 portfolio,
                                 cancellationToken);
                         }
@@ -237,7 +237,7 @@ sealed class TradernetSocketClient : BaseLogReceiver
                                     serializer))
                             .Where(order => order is not null)
                             .ToArray();
-                        await ordersHandler(
+                        await ordersHandler.InvokeAsync(
                             orders, cancellationToken);
                     }
                     break;
@@ -289,7 +289,7 @@ sealed class TradernetSocketClient : BaseLogReceiver
     private ValueTask RaiseError(Exception error,
         CancellationToken cancellationToken)
         => Error is { } handler
-            ? handler(error, cancellationToken) : default;
+            ? handler.InvokeAsync(error, cancellationToken) : default;
 
     private static IEnumerable<JToken> AsMany(JToken token)
     {

@@ -369,7 +369,7 @@ sealed class LcxWsClient : BaseLogReceiver
 			if (parsed.Type.IsEmpty())
 				return;
 			if (MessageReceived is { } handler)
-				await handler(parsed, cancellationToken);
+				await handler.InvokeAsync(parsed, cancellationToken);
 		}
 		catch (Exception error) when (
 			error is JsonException or InvalidDataException or
@@ -457,14 +457,14 @@ sealed class LcxWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private ValueTask RaiseStateAsync(
 		ConnectionStates state,
 		CancellationToken cancellationToken)
 		=> StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 
 	private static async ValueTask DisconnectClientAsync(

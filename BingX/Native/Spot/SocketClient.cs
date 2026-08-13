@@ -100,14 +100,14 @@ class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -313,7 +313,7 @@ class SocketClient : BaseLogReceiver
 		{
 			var ex = new InvalidOperationException($"BingX WS error: code={c}, msg={(string)obj["msg"] ?? (string)obj["message"]}");
 			if (Error is { } errHandler)
-				await errHandler(ex, cancellationToken);
+				await errHandler.InvokeAsync(ex, cancellationToken);
 			return;
 		}
 
@@ -353,7 +353,7 @@ class SocketClient : BaseLogReceiver
 					if (ticker.EventTime == default)
 						ticker.EventTime = ToDateTime(dataObj["E"] ?? dataObj["C"] ?? root["timestamp"]);
 
-					await tickerHandler(ticker, cancellationToken);
+					await tickerHandler.InvokeAsync(ticker, cancellationToken);
 				}
 
 				return;
@@ -374,7 +374,7 @@ class SocketClient : BaseLogReceiver
 						Asks = ParseDepthLevels(dataObj["asks"] ?? dataObj["a"]),
 					};
 
-					await obHandler(orderBook, cancellationToken);
+					await obHandler.InvokeAsync(orderBook, cancellationToken);
 				}
 
 				return;
@@ -389,11 +389,11 @@ class SocketClient : BaseLogReceiver
 					if (data is JArray arr)
 					{
 						foreach (var item in arr.OfType<JObject>())
-							await tradeHandler(ParseTrade(item, symbol), cancellationToken);
+							await tradeHandler.InvokeAsync(ParseTrade(item, symbol), cancellationToken);
 					}
 					else if (data is JObject item)
 					{
-						await tradeHandler(ParseTrade(item, symbol), cancellationToken);
+						await tradeHandler.InvokeAsync(ParseTrade(item, symbol), cancellationToken);
 					}
 				}
 
@@ -411,18 +411,18 @@ class SocketClient : BaseLogReceiver
 				if (data is JArray arr)
 				{
 					foreach (var item in arr.OfType<JObject>())
-						await candleHandler(ParseCandle(item, symbol, interval), cancellationToken);
+						await candleHandler.InvokeAsync(ParseCandle(item, symbol, interval), cancellationToken);
 				}
 				else if (data is JObject item)
 				{
 					if (item["data"] is JArray nested)
 					{
 						foreach (var nestedItem in nested.OfType<JObject>())
-							await candleHandler(ParseCandle(nestedItem, symbol, interval), cancellationToken);
+							await candleHandler.InvokeAsync(ParseCandle(nestedItem, symbol, interval), cancellationToken);
 					}
 					else
 					{
-						await candleHandler(ParseCandle(item, symbol, interval), cancellationToken);
+						await candleHandler.InvokeAsync(ParseCandle(item, symbol, interval), cancellationToken);
 					}
 				}
 
@@ -458,7 +458,7 @@ class SocketClient : BaseLogReceiver
 		};
 
 		if (OrdersReceived is { } orderHandler)
-			await orderHandler([order], cancellationToken);
+			await orderHandler.InvokeAsync([order], cancellationToken);
 
 		var executionType = (string)dataObj["x"];
 		var isTradeExecution = executionType.EqualsIgnoreCase("TRADE");
@@ -482,7 +482,7 @@ class SocketClient : BaseLogReceiver
 			IsMaker = dataObj["m"]?.To<bool?>() ?? false,
 		};
 
-		await tradeHandler([trade], cancellationToken);
+		await tradeHandler.InvokeAsync([trade], cancellationToken);
 	}
 
 	private async ValueTask ProcessLegacyEvent(string eventType, JObject obj, CancellationToken cancellationToken)
@@ -491,26 +491,26 @@ class SocketClient : BaseLogReceiver
 		{
 			case "24hrTicker":
 				if (TickerReceived is { } tickerHandler)
-					await tickerHandler(obj.DeserializeObject<Ticker>(), cancellationToken);
+					await tickerHandler.InvokeAsync(obj.DeserializeObject<Ticker>(), cancellationToken);
 				break;
 			case "depthUpdate":
 				if (OrderBookReceived is { } obHandler)
-					await obHandler(obj.DeserializeObject<OrderBook>(), cancellationToken);
+					await obHandler.InvokeAsync(obj.DeserializeObject<OrderBook>(), cancellationToken);
 				break;
 			case "trade":
 				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(obj.DeserializeObject<Trade>(), cancellationToken);
+					await tradeHandler.InvokeAsync(obj.DeserializeObject<Trade>(), cancellationToken);
 				break;
 			case "kline":
 				var klineData = obj["k"] as JObject;
 				if (klineData is not null && CandleReceived is { } candleHandler)
-					await candleHandler(klineData.DeserializeObject<Candle>(), cancellationToken);
+					await candleHandler.InvokeAsync(klineData.DeserializeObject<Candle>(), cancellationToken);
 				break;
 			case "outboundAccountPosition":
 				if (obj["B"] is JArray balancesArr && BalancesReceived is { } balanceHandler)
 				{
 					var balances = balancesArr.Select(b => b.DeserializeObject<Balance>());
-					await balanceHandler(balances, cancellationToken);
+					await balanceHandler.InvokeAsync(balances, cancellationToken);
 				}
 				break;
 			case "executionReport":

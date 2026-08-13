@@ -305,7 +305,7 @@ sealed class BirdeyeWebSocketClient : BaseLogReceiver
 				}
 				if (candle is not null &&
 					CandleReceived is not null)
-					await CandleReceived(
+					await CandleReceived.InvokeAsync(
 						candle, cancellationToken);
 			}
 		}

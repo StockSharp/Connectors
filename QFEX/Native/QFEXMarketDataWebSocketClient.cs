@@ -158,7 +158,7 @@ sealed class QFEXMarketDataWebSocketClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private ValueTask SendSubscriptionAsync(WebSocketClient client,
@@ -238,7 +238,7 @@ sealed class QFEXMarketDataWebSocketClient : BaseLogReceiver
 			QFEXMarketMessageTypes.Unsubscribed
 			? default
 			: DataReceived is { } handler
-				? handler(type, message, cancellationToken)
+				? handler.InvokeAsync(type, message, cancellationToken)
 				: default;
 
 	private T Deserialize<T>(string payload)
@@ -255,7 +255,7 @@ sealed class QFEXMarketDataWebSocketClient : BaseLogReceiver
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	protected override void DisposeManaged()

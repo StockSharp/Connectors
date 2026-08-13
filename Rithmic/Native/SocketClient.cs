@@ -15,7 +15,7 @@ internal class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
@@ -23,7 +23,7 @@ internal class SocketClient : BaseLogReceiver
 				this.AddErrorLog(error);
 
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcessAsync,
@@ -63,7 +63,7 @@ internal class SocketClient : BaseLogReceiver
 	}
 
 	private ValueTask OnPostConnectAsync(bool isReconnect, CancellationToken cancellationToken)
-		=> PostConnect is { } handler ? handler(isReconnect, cancellationToken) : default;
+		=> PostConnect is { } handler ? handler.InvokeAsync(isReconnect, cancellationToken) : default;
 
 	protected override void DisposeManaged()
 	{

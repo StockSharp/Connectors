@@ -40,14 +40,14 @@ class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -94,15 +94,15 @@ class SocketClient : BaseLogReceiver
 				case EventTypes.Bar1Min:
 				case EventTypes.Bar1Sec:
 					if (BarReceived is { } barHandler)
-						await barHandler(item.DeserializeObject<SocketBar>(), cancellationToken);
+						await barHandler.InvokeAsync(item.DeserializeObject<SocketBar>(), cancellationToken);
 					break;
 				case EventTypes.Trade:
 					if (TradeReceived is { } tradeHandler)
-						await tradeHandler(item.DeserializeObject<SocketTrade>(), cancellationToken);
+						await tradeHandler.InvokeAsync(item.DeserializeObject<SocketTrade>(), cancellationToken);
 					break;
 				case EventTypes.Quote:
 					if (QuoteReceived is { } quoteHandler)
-						await quoteHandler(item.DeserializeObject<SocketQuote>(), cancellationToken);
+						await quoteHandler.InvokeAsync(item.DeserializeObject<SocketQuote>(), cancellationToken);
 					break;
 				default:
 					this.AddErrorLog(LocalizedStrings.UnknownEvent, ev);

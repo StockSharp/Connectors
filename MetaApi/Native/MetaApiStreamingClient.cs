@@ -38,7 +38,7 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 		_client = new(
 			address.ToString(),
 			(state, cancellationToken) => StateChanged is { } stateHandler
-				? stateHandler(state, cancellationToken) : default,
+				? stateHandler.InvokeAsync(state, cancellationToken) : default,
 			(error, cancellationToken) => OnError(error, cancellationToken),
 			ProcessAsync,
 			SocketInfo,
@@ -357,7 +357,7 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 		}
 
 		if (PacketReceived is { } packetHandler)
-			await packetHandler(packet, cancellationToken);
+			await packetHandler.InvokeAsync(packet, cancellationToken);
 
 		if (_synchronization.IsReady)
 			await CompleteSynchronizationAsync(cancellationToken);
@@ -377,7 +377,7 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 		}
 		_synchronization.Begin(synchronizationId);
 		if (SynchronizationStarted is { } startedHandler)
-			await startedHandler(cancellationToken);
+			await startedHandler.InvokeAsync(cancellationToken);
 
 		var start = DateTime.UtcNow;
 		var request = new MetaApiSynchronizeRequest
@@ -411,7 +411,7 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 		this.AddInfoLog("MetaApi terminal state synchronized for account {0}.",
 			_accountId);
 		if (Synchronized is { } synchronizedHandler)
-			await synchronizedHandler(cancellationToken);
+			await synchronizedHandler.InvokeAsync(cancellationToken);
 	}
 
 	private async ValueTask RestoreSubscriptionsAsync(
@@ -572,7 +572,7 @@ sealed class MetaApiStreamingClient : BaseLogReceiver
 		error = Sanitize(error);
 		this.AddErrorLog(error);
 		return Error is { } errorHandler
-			? errorHandler(error, cancellationToken) : default;
+			? errorHandler.InvokeAsync(error, cancellationToken) : default;
 	}
 
 	private Exception Sanitize(Exception error)

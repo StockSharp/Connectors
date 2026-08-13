@@ -245,7 +245,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(BloFinWsSubscriptionKey subscription,
@@ -402,7 +402,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 						if (TickerReceived is { } handler)
 						{
 							foreach (var item in envelope.Data ?? [])
-								await handler(item, cancellationToken);
+								await handler.InvokeAsync(item, cancellationToken);
 						}
 						break;
 					}
@@ -416,7 +416,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 						if (TradeReceived is { } handler)
 						{
 							foreach (var item in envelope.Data ?? [])
-								await handler(item, cancellationToken);
+								await handler.InvokeAsync(item, cancellationToken);
 						}
 						break;
 					}
@@ -426,7 +426,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 						if (FundingRateReceived is { } handler)
 						{
 							foreach (var item in envelope.Data ?? [])
-								await handler(item, cancellationToken);
+								await handler.InvokeAsync(item, cancellationToken);
 						}
 						break;
 					}
@@ -436,7 +436,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 						if (OrderReceived is { } handler)
 						{
 							foreach (var item in envelope.Data ?? [])
-								await handler(item, cancellationToken);
+								await handler.InvokeAsync(item, cancellationToken);
 						}
 						break;
 					}
@@ -446,7 +446,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 						if (PositionReceived is { } handler)
 						{
 							foreach (var item in envelope.Data ?? [])
-								await handler(item, cancellationToken);
+								await handler.InvokeAsync(item, cancellationToken);
 						}
 						break;
 					}
@@ -454,7 +454,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 					{
 						var envelope = Deserialize<BloFinWsObjectEnvelope<BloFinAccount>>(payload);
 						if (envelope.Data is not null && AccountReceived is { } handler)
-							await handler(envelope.Data, cancellationToken);
+							await handler.InvokeAsync(envelope.Data, cancellationToken);
 						break;
 					}
 				default:
@@ -465,7 +465,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 						if (!instrumentId.IsEmpty() && CandleReceived is { } handler)
 						{
 							foreach (var item in envelope.Data ?? [])
-								await handler(channel, instrumentId, item, cancellationToken);
+								await handler.InvokeAsync(channel, instrumentId, item, cancellationToken);
 						}
 					}
 					break;
@@ -542,7 +542,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 				continue;
 			}
 			if (BookReceived is { } handler)
-				await handler(channel, instrumentId, book, state, cancellationToken);
+				await handler.InvokeAsync(channel, instrumentId, book, state, cancellationToken);
 		}
 	}
 
@@ -576,7 +576,7 @@ sealed class BloFinWsClient : BaseLogReceiver
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static TaskCompletionSource<bool> CreateLoginCompletion()
 		=> new(TaskCreationOptions.RunContinuationsAsynchronously);

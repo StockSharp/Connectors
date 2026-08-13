@@ -206,7 +206,7 @@ sealed class VALRSocketClient : BaseLogReceiver
 		if (state == ConnectionStates.Restored)
 			await RestoreAsync(client, cancellationToken);
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreAsync(WebSocketClient client,
@@ -385,11 +385,11 @@ sealed class VALRSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 		=> payload is null || handler is null
 			? default
-			: handler(payload, cancellationToken);
+			: handler.InvokeAsync(payload, cancellationToken);
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private void StartHeartbeat()
 	{

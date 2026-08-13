@@ -200,7 +200,7 @@ sealed class CoinstoreWsClient : BaseLogReceiver
 					subscription, true, cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -287,7 +287,7 @@ sealed class CoinstoreWsClient : BaseLogReceiver
 			{
 				case "ticker":
 					if (TickerReceived is { } tickerHandler)
-						await tickerHandler(new()
+						await tickerHandler.InvokeAsync(new()
 						{
 							Symbol = envelope.Symbol,
 							InstrumentId = envelope.InstrumentId,
@@ -306,7 +306,7 @@ sealed class CoinstoreWsClient : BaseLogReceiver
 
 				case "depth":
 					if (OrderBookReceived is { } bookHandler)
-						await bookHandler(new()
+						await bookHandler.InvokeAsync(new()
 						{
 							Channel = envelope.Channel,
 							Symbol = envelope.Symbol,
@@ -325,7 +325,7 @@ sealed class CoinstoreWsClient : BaseLogReceiver
 
 				case "kline":
 					if (KlineReceived is { } klineHandler)
-						await klineHandler(new()
+						await klineHandler.InvokeAsync(new()
 						{
 							Market = envelope.Symbol,
 							Kline = new()
@@ -369,7 +369,7 @@ sealed class CoinstoreWsClient : BaseLogReceiver
 		}
 		var pair = trades.FirstOrDefault(
 			static trade => !trade.Pair.IsEmpty())?.Pair;
-		await handler(new()
+		await handler.InvokeAsync(new()
 		{
 			Pair = pair,
 			EventId = envelope.Sequence.ToString(
@@ -404,7 +404,7 @@ sealed class CoinstoreWsClient : BaseLogReceiver
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string NormalizeSymbol(string symbol)

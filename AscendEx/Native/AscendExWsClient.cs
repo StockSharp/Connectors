@@ -262,7 +262,7 @@ sealed class AscendExWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -409,7 +409,7 @@ sealed class AscendExWsClient : BaseLogReceiver
 			return;
 
 		if (TickerReceived is { } handler)
-			await handler(new AscendExTicker
+			await handler.InvokeAsync(new AscendExTicker
 			{
 				Pair = envelope.Symbol,
 				Bid = bbo.Bid,
@@ -471,7 +471,7 @@ sealed class AscendExWsClient : BaseLogReceiver
 		}
 
 		if (OrderBookReceived is { } handler)
-			await handler(book, cancellationToken);
+			await handler.InvokeAsync(book, cancellationToken);
 	}
 
 	private async ValueTask ProcessTradesAsync(
@@ -486,7 +486,7 @@ sealed class AscendExWsClient : BaseLogReceiver
 			trade.Pair = envelope.Symbol;
 
 		if (TradesReceived is { } handler)
-			await handler(new AscendExTradePush
+			await handler.InvokeAsync(new AscendExTradePush
 			{
 				Pair = envelope.Symbol,
 				EventId = trades[0].Sequence > 0
@@ -510,7 +510,7 @@ sealed class AscendExWsClient : BaseLogReceiver
 				bar.Interval.ToAscendExTimeFrame() <= DateTime.UtcNow;
 
 		if (KlineReceived is { } handler)
-			await handler(new AscendExKlineEvent
+			await handler.InvokeAsync(new AscendExKlineEvent
 			{
 				Market = envelope.Symbol,
 				Kline = bar,
@@ -543,7 +543,7 @@ sealed class AscendExWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static void ApplyLevels(

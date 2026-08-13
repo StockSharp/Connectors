@@ -14,8 +14,8 @@ sealed class UpstoxMarketDataClient : BaseLogReceiver
 	{
 		_client = new(
 			url.ThrowIfEmpty(nameof(url)),
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -58,13 +58,13 @@ sealed class UpstoxMarketDataClient : BaseLogReceiver
 
 		var response = FeedResponse.Parser.ParseFrom(message.Memory.ToArray());
 		if (response.MarketInfo != null && MarketInfoReceived is { } marketHandler)
-			await marketHandler(response.MarketInfo, response.CurrentTs, cancellationToken);
+			await marketHandler.InvokeAsync(response.MarketInfo, response.CurrentTs, cancellationToken);
 
 		if (FeedReceived is not { } feedHandler)
 			return;
 
 		foreach (var pair in response.Feeds)
-			await feedHandler(pair.Key, pair.Value, response.CurrentTs, cancellationToken);
+			await feedHandler.InvokeAsync(pair.Key, pair.Value, response.CurrentTs, cancellationToken);
 	}
 
 	public async ValueTask Subscribe(string instrumentKey, UpstoxFeedModes mode, CancellationToken cancellationToken)

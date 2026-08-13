@@ -23,7 +23,7 @@ class PusherClient : BaseLogReceiver
 						return default;
 
 					if (Client.StateChanged is { } handler)
-						return handler(state, token);
+						return handler.InvokeAsync(state, token);
 
 					return default;
 				},
@@ -32,7 +32,7 @@ class PusherClient : BaseLogReceiver
 					this.AddErrorLog(error);
 
 					if (Client.Error is { } handler)
-						return handler(error, token);
+						return handler.InvokeAsync(error, token);
 
 					return default;
 				},
@@ -221,7 +221,7 @@ class PusherClient : BaseLogReceiver
 					while (reader.Read() && reader.TokenType != JsonToken.EndArray)
 					{
 						var ticker = DeserializeTicker(reader);
-						await handler(Section, ticker, cancellationToken);
+						await handler.InvokeAsync(Section, ticker, cancellationToken);
 					}
 				}
 			}
@@ -230,7 +230,7 @@ class PusherClient : BaseLogReceiver
 				var ticker = DeserializeTicker(reader);
 
 				if (Client.TickerChanged is { } handler)
-					await handler(Section, ticker, cancellationToken);
+					await handler.InvokeAsync(Section, ticker, cancellationToken);
 			}
 		}
 
@@ -305,7 +305,7 @@ class PusherClient : BaseLogReceiver
 			}
 
 			if (Client.NewTrade is { } handler)
-				await handler(Section, trade, cancellationToken);
+				await handler.InvokeAsync(Section, trade, cancellationToken);
 		}
 
 		private async ValueTask ProcessOrderBook(JsonTextReader reader, CancellationToken cancellationToken)
@@ -333,7 +333,7 @@ class PusherClient : BaseLogReceiver
 			}
 
 			if (Client.OrderBookChanged is { } handler)
-				await handler(Section, orderBook, cancellationToken);
+				await handler.InvokeAsync(Section, orderBook, cancellationToken);
 		}
 
 		private static OrderBookEntry[] ReadOrderBookEntries(JsonTextReader reader)
@@ -383,7 +383,7 @@ class PusherClient : BaseLogReceiver
 			}
 
 			if (Client.NewOrderLog is { } handler)
-				await handler(Section, orderLog, cancellationToken);
+				await handler.InvokeAsync(Section, orderLog, cancellationToken);
 		}
 
 		private static FutOrderLogItem DeserializeFutOrderLogItem(JsonTextReader reader)
@@ -448,7 +448,7 @@ class PusherClient : BaseLogReceiver
 			}
 
 			if (Client.NewCandle is { } handler)
-				await handler(Section, ohlc, cancellationToken);
+				await handler.InvokeAsync(Section, ohlc, cancellationToken);
 		}
 
 		private static KLine DeserializeKLine(JsonTextReader reader)
@@ -515,14 +515,14 @@ class PusherClient : BaseLogReceiver
 				case "executionreport":
 				{
 					if (Client.NewExecutionReport is { } handler)
-						await handler(Section, _isolatedSymbol, ((JToken)obj).DeserializeObject<ExecutionReport>(), cancellationToken);
+						await handler.InvokeAsync(Section, _isolatedSymbol, ((JToken)obj).DeserializeObject<ExecutionReport>(), cancellationToken);
 					break;
 				}
 
 				case "order_trade_update":
 				{
 					if (Client.NewExecutionReport is { } handler)
-						await handler(Section, _isolatedSymbol, ((JToken)obj.o).DeserializeObject<ExecutionReport>(), cancellationToken);
+						await handler.InvokeAsync(Section, _isolatedSymbol, ((JToken)obj.o).DeserializeObject<ExecutionReport>(), cancellationToken);
 					break;
 				}
 
@@ -530,7 +530,7 @@ class PusherClient : BaseLogReceiver
 				case "account_update":
 				{
 					if (Client.AccountUpdated is { } handler)
-						await handler(Section, _isolatedSymbol, ((JToken)obj).DeserializeObject<AccountUpdate>(), cancellationToken);
+						await handler.InvokeAsync(Section, _isolatedSymbol, ((JToken)obj).DeserializeObject<AccountUpdate>(), cancellationToken);
 					break;
 				}
 
@@ -539,7 +539,7 @@ class PusherClient : BaseLogReceiver
 					this.AddErrorLog("listen key expired. will reconnect...");
 
 					if (Client.StateChanged is { } handler)
-						await handler(ConnectionStates.Failed, cancellationToken);
+						await handler.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 					break;
 				}
 

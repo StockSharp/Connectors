@@ -33,9 +33,9 @@ sealed class FinamSocketClient : BaseLogReceiver
 		_client = new(
 			uri.ToString(),
 			(state, token) => StateChanged is { } stateHandler
-				? stateHandler(state, token) : default,
+				? stateHandler.InvokeAsync(state, token) : default,
 			(error, token) => Error is { } errorHandler
-				? errorHandler(error, token) : default,
+				? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -175,7 +175,7 @@ sealed class FinamSocketClient : BaseLogReceiver
 				{
 					foreach (var quote in envelope.Payload
 						.ToObject<FinamQuotePayload>(serializer)?.Quote ?? [])
-						await quoteHandler(quote, cancellationToken);
+						await quoteHandler.InvokeAsync(quote, cancellationToken);
 				}
 				break;
 
@@ -184,7 +184,7 @@ sealed class FinamSocketClient : BaseLogReceiver
 				{
 					foreach (var book in envelope.Payload
 						.ToObject<FinamOrderBookPayload>(serializer)?.OrderBook ?? [])
-						await bookHandler(book, cancellationToken);
+						await bookHandler.InvokeAsync(book, cancellationToken);
 				}
 				break;
 
@@ -194,7 +194,7 @@ sealed class FinamSocketClient : BaseLogReceiver
 					var trades = envelope.Payload
 						.ToObject<FinamMarketTradesResponse>(serializer);
 					if (trades is not null)
-						await marketTradesHandler(trades, cancellationToken);
+						await marketTradesHandler.InvokeAsync(trades, cancellationToken);
 				}
 				break;
 
@@ -204,7 +204,7 @@ sealed class FinamSocketClient : BaseLogReceiver
 					var bars = envelope.Payload.ToObject<FinamBarsResponse>(
 						serializer);
 					if (bars is not null)
-						await barsHandler(bars, cancellationToken);
+						await barsHandler.InvokeAsync(bars, cancellationToken);
 				}
 				break;
 
@@ -213,7 +213,7 @@ sealed class FinamSocketClient : BaseLogReceiver
 				{
 					foreach (var order in envelope.Payload
 						.ToObject<FinamOrdersResponse>(serializer)?.Orders ?? [])
-						await orderHandler(order, cancellationToken);
+						await orderHandler.InvokeAsync(order, cancellationToken);
 				}
 				break;
 
@@ -222,7 +222,7 @@ sealed class FinamSocketClient : BaseLogReceiver
 				{
 					foreach (var trade in envelope.Payload
 						.ToObject<FinamAccountTradesResponse>(serializer)?.Trades ?? [])
-						await accountTradeHandler(trade, cancellationToken);
+						await accountTradeHandler.InvokeAsync(trade, cancellationToken);
 				}
 				break;
 
@@ -232,7 +232,7 @@ sealed class FinamSocketClient : BaseLogReceiver
 					var account = envelope.Payload.ToObject<FinamAccount>(
 						serializer);
 					if (account is not null)
-						await accountHandler(account, cancellationToken);
+						await accountHandler.InvokeAsync(account, cancellationToken);
 				}
 				break;
 
@@ -324,7 +324,7 @@ sealed class FinamSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseError(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	protected override void DisposeManaged()
 	{

@@ -17,11 +17,11 @@ sealed class NubraMarketDataClient : BaseLogReceiver
 			(address ?? throw new ArgumentNullException(nameof(address))).ToString(),
 			(state, cancellationToken) =>
 				StateChanged is { } stateHandler
-					? stateHandler(state, cancellationToken)
+					? stateHandler.InvokeAsync(state, cancellationToken)
 					: default,
 			(error, cancellationToken) =>
 				Error is { } errorHandler
-					? errorHandler(error, cancellationToken)
+					? errorHandler.InvokeAsync(error, cancellationToken)
 					: default,
 			Process,
 			(message, args) => this.AddInfoLog(message, args),
@@ -117,7 +117,7 @@ sealed class NubraMarketDataClient : BaseLogReceiver
 				text.Contains("Failed", StringComparison.OrdinalIgnoreCase))
 			{
 				if (Error is { } errorHandler)
-				await errorHandler(new InvalidOperationException(
+				await errorHandler.InvokeAsync(new InvalidOperationException(
 					$"Nubra WebSocket: {text}"), cancellationToken);
 			}
 			return;
@@ -127,7 +127,7 @@ sealed class NubraMarketDataClient : BaseLogReceiver
 			return;
 
 		foreach (var update in Decode(data))
-			await handler(update, cancellationToken);
+			await handler.InvokeAsync(update, cancellationToken);
 	}
 
 	internal static string CreateSubscriptionCommand(

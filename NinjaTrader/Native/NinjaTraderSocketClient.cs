@@ -21,8 +21,8 @@ sealed class NinjaTraderSocketClient : BaseLogReceiver
 		_accessToken = accessToken.ThrowIfEmpty(nameof(accessToken));
 		_client = new(
 			url.ThrowIfEmpty(nameof(url)),
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -84,7 +84,7 @@ sealed class NinjaTraderSocketClient : BaseLogReceiver
 		if (raw[0] == 'c')
 		{
 			if (Error is { } closeHandler)
-				await closeHandler(new InvalidOperationException($"NinjaTrader closed the WebSocket connection: {raw}"), cancellationToken);
+				await closeHandler.InvokeAsync(new InvalidOperationException($"NinjaTrader closed the WebSocket connection: {raw}"), cancellationToken);
 			return;
 		}
 
@@ -124,19 +124,19 @@ sealed class NinjaTraderSocketClient : BaseLogReceiver
 				case "md":
 					foreach (var quote in envelope.Data?.Quotes ?? [])
 						if (QuoteReceived is { } quoteHandler)
-							await quoteHandler(quote, cancellationToken);
+							await quoteHandler.InvokeAsync(quote, cancellationToken);
 					foreach (var dom in envelope.Data?.Doms ?? [])
 						if (DomReceived is { } domHandler)
-							await domHandler(dom, cancellationToken);
+							await domHandler.InvokeAsync(dom, cancellationToken);
 					break;
 				case "chart":
 					foreach (var chart in envelope.Data?.Charts ?? [])
 						if (ChartReceived is { } chartHandler)
-							await chartHandler(chart, cancellationToken);
+							await chartHandler.InvokeAsync(chart, cancellationToken);
 					break;
 				case "props":
 					if (envelope.Data?.Entity is { } entity && EntityReceived is { } entityHandler)
-						await entityHandler(envelope.Data.EntityType, entity, cancellationToken);
+						await entityHandler.InvokeAsync(envelope.Data.EntityType, entity, cancellationToken);
 					break;
 			}
 		}

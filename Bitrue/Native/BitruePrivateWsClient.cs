@@ -148,7 +148,7 @@ sealed class BitruePrivateWsClient : BaseLogReceiver
 		if (state == ConnectionStates.Restored)
 			await SendChannelsAsync(client, true, cancellationToken);
 		if (StateChanged is { } handler)
-			await handler(_section, state, cancellationToken);
+			await handler.InvokeAsync(_section, state, cancellationToken);
 	}
 
 	private async ValueTask ChangeChannelAsync(string channel, bool isSubscribe,
@@ -226,23 +226,23 @@ sealed class BitruePrivateWsClient : BaseLogReceiver
 				if (header.EventType.EqualsIgnoreCase("executionReport"))
 				{
 					if (SpotOrderReceived is { } orderHandler)
-						await orderHandler(Deserialize<BitrueSpotPrivateOrder>(payload),
+						await orderHandler.InvokeAsync(Deserialize<BitrueSpotPrivateOrder>(payload),
 							cancellationToken);
 				}
 				else if (header.EventType.EqualsIgnoreCase("BALANCE") &&
 					SpotBalanceReceived is { } balanceHandler)
-					await balanceHandler(Deserialize<BitrueSpotPrivateBalanceEnvelope>(payload),
+					await balanceHandler.InvokeAsync(Deserialize<BitrueSpotPrivateBalanceEnvelope>(payload),
 						cancellationToken);
 			}
 			else if (header.EventType.EqualsIgnoreCase("ORDER_TRADE_UPDATE"))
 			{
 				if (FuturesOrderReceived is { } orderHandler)
-					await orderHandler(Deserialize<BitrueFuturesPrivateOrderEnvelope>(payload),
+					await orderHandler.InvokeAsync(Deserialize<BitrueFuturesPrivateOrderEnvelope>(payload),
 						cancellationToken);
 			}
 			else if (header.EventType.EqualsIgnoreCase("ACCOUNT_UPDATE") &&
 				FuturesAccountReceived is { } accountHandler)
-				await accountHandler(Deserialize<BitrueFuturesPrivateAccountEnvelope>(payload),
+				await accountHandler.InvokeAsync(Deserialize<BitrueFuturesPrivateAccountEnvelope>(payload),
 					cancellationToken);
 		}
 		catch (Exception error) when (error is JsonException or InvalidDataException or
@@ -283,5 +283,5 @@ sealed class BitruePrivateWsClient : BaseLogReceiver
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

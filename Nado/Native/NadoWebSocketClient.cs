@@ -97,7 +97,7 @@ sealed class NadoWebSocketClient : BaseLogReceiver
 				cancellationToken);
 			if (response.Result?.ServerTime is { } serverTime &&
 				ServerTimeReceived is { } handler)
-				await handler(serverTime.FromNadoMilliseconds(), cancellationToken);
+				await handler.InvokeAsync(serverTime.FromNadoMilliseconds(), cancellationToken);
 		}
 		finally
 		{
@@ -309,7 +309,7 @@ sealed class NadoWebSocketClient : BaseLogReceiver
 			_depthTimestamps[depth.ProductId] = depth.MaximumTimestamp;
 		}
 		if (isGap && DepthGap is { } gapHandler)
-			await gapHandler(depth.ProductId, cancellationToken);
+			await gapHandler.InvokeAsync(depth.ProductId, cancellationToken);
 		await RaiseAsync(BookDepthReceived, depth, cancellationToken);
 	}
 
@@ -347,7 +347,7 @@ sealed class NadoWebSocketClient : BaseLogReceiver
 			FailPending(new InvalidOperationException(
 				"Nado WebSocket connection failed."));
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask DisposeClientAsync(
@@ -440,13 +440,13 @@ sealed class NadoWebSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static ValueTask RaiseAsync<T>(
 		Func<T, CancellationToken, ValueTask> handler, T value,
 		CancellationToken cancellationToken)
-		=> handler is null ? default : handler(value, cancellationToken);
+		=> handler is null ? default : handler.InvokeAsync(value, cancellationToken);
 
 	protected override void DisposeManaged()
 	{

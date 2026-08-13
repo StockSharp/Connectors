@@ -189,7 +189,7 @@ sealed class CoinApiSocketClient : BaseLogReceiver
 						throw new InvalidDataException(
 							"CoinAPI market-data message has no symbol_id.");
 					if (MessageReceived is { } handler)
-						await handler(envelope, cancellationToken);
+						await handler.InvokeAsync(envelope, cancellationToken);
 					break;
 				case CoinApiSocketMessageTypes.Heartbeat:
 					break;
@@ -259,7 +259,7 @@ sealed class CoinApiSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{

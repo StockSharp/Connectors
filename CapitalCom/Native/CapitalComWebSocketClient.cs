@@ -16,8 +16,8 @@ internal sealed class CapitalComWebSocketClient : BaseLogReceiver
 		_session = session ?? throw new ArgumentNullException(nameof(session));
 		_client = new(
 			session.StreamingUrl.ThrowIfEmpty(nameof(session.StreamingUrl)),
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -151,7 +151,7 @@ internal sealed class CapitalComWebSocketClient : BaseLogReceiver
 		{
 			if (Error is { } errorHandler)
 			{
-				await errorHandler(new InvalidOperationException(
+				await errorHandler.InvokeAsync(new InvalidOperationException(
 					$"Capital.com WebSocket request '{header.Destination}' failed with status '{header.Status}'."),
 					cancellationToken);
 			}
@@ -164,14 +164,14 @@ internal sealed class CapitalComWebSocketClient : BaseLogReceiver
 			{
 				var quote = JsonConvert.DeserializeObject<CapitalComSocketMessage<CapitalComQuote>>(raw)?.Payload;
 				if (quote != null && QuoteReceived is { } quoteHandler)
-					await quoteHandler(quote, cancellationToken);
+					await quoteHandler.InvokeAsync(quote, cancellationToken);
 				break;
 			}
 			case "ohlc.event":
 			{
 				var ohlc = JsonConvert.DeserializeObject<CapitalComSocketMessage<CapitalComOhlc>>(raw)?.Payload;
 				if (ohlc != null && OhlcReceived is { } ohlcHandler)
-					await ohlcHandler(ohlc, cancellationToken);
+					await ohlcHandler.InvokeAsync(ohlc, cancellationToken);
 				break;
 			}
 		}

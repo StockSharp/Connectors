@@ -45,11 +45,11 @@ sealed class BigulSocketClient : BaseLogReceiver
                 ?? throw new ArgumentNullException(nameof(webSocketAddress)),
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (message, args) => this.AddInfoLog(message, args),
@@ -227,7 +227,7 @@ sealed class BigulSocketClient : BaseLogReceiver
         if (TickReceived is not { } handler)
             return;
         foreach (var tick in result.Ticks)
-            await handler(tick, cancellationToken);
+            await handler.InvokeAsync(tick, cancellationToken);
     }
 
     private async ValueTask ProcessText(
@@ -262,7 +262,7 @@ sealed class BigulSocketClient : BaseLogReceiver
                     var order = payload.ToObject<BigulOrder>(
                         JsonSerializer.Create(_jsonSettings));
                     if (order != null)
-                        await orderHandler(order, cancellationToken);
+                        await orderHandler.InvokeAsync(order, cancellationToken);
                 }
                 return;
 
@@ -272,7 +272,7 @@ sealed class BigulSocketClient : BaseLogReceiver
                     var trade = payload.ToObject<BigulTrade>(
                         JsonSerializer.Create(_jsonSettings));
                     if (trade != null)
-                        await tradeHandler(trade, cancellationToken);
+                        await tradeHandler.InvokeAsync(trade, cancellationToken);
                 }
                 return;
 
@@ -282,7 +282,7 @@ sealed class BigulSocketClient : BaseLogReceiver
                     var position = payload.ToObject<BigulPosition>(
                         JsonSerializer.Create(_jsonSettings));
                     if (position != null)
-                        await positionHandler(position, cancellationToken);
+                        await positionHandler.InvokeAsync(position, cancellationToken);
                 }
                 return;
 
@@ -304,7 +304,7 @@ sealed class BigulSocketClient : BaseLogReceiver
 
         var marketTick = ParseJsonMarketData(root);
         if (marketTick != null && TickReceived is { } tickHandler)
-            await tickHandler(marketTick, cancellationToken);
+            await tickHandler.InvokeAsync(marketTick, cancellationToken);
         else
             this.AddVerboseLog("Ignored Bigul WebSocket payload.");
     }

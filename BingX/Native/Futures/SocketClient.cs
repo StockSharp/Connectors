@@ -105,14 +105,14 @@ class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -318,7 +318,7 @@ class SocketClient : BaseLogReceiver
 		{
 			var ex = new InvalidOperationException($"BingX WS error: code={c}, msg={(string)obj["msg"] ?? (string)obj["message"]}");
 			if (Error is { } errHandler)
-				await errHandler(ex, cancellationToken);
+				await errHandler.InvokeAsync(ex, cancellationToken);
 			return;
 		}
 
@@ -374,7 +374,7 @@ class SocketClient : BaseLogReceiver
 				}
 
 				if (tickers.Count > 0)
-					await tickerHandler(tickers, cancellationToken);
+					await tickerHandler.InvokeAsync(tickers, cancellationToken);
 
 				return;
 			}
@@ -394,7 +394,7 @@ class SocketClient : BaseLogReceiver
 						Asks = ParseDepthEntries(dataObj["asks"] ?? dataObj["a"]),
 					};
 
-					await obHandler(orderBook, cancellationToken);
+					await obHandler.InvokeAsync(orderBook, cancellationToken);
 				}
 
 				return;
@@ -419,7 +419,7 @@ class SocketClient : BaseLogReceiver
 				}
 
 				if (trades.Count > 0)
-					await tradesHandler(trades, cancellationToken);
+					await tradesHandler.InvokeAsync(trades, cancellationToken);
 
 				return;
 			}
@@ -444,7 +444,7 @@ class SocketClient : BaseLogReceiver
 				}
 
 				if (candles.Count > 0)
-					await candleHandler(candles, cancellationToken);
+					await candleHandler.InvokeAsync(candles, cancellationToken);
 
 				return;
 			}
@@ -482,7 +482,7 @@ class SocketClient : BaseLogReceiver
 				.ToArray();
 
 			if (balances.Length > 0)
-				await balHandler(balances, cancellationToken);
+				await balHandler.InvokeAsync(balances, cancellationToken);
 		}
 
 		if (account["P"] is JArray positionsArr && PositionsReceived is { } posHandler)
@@ -504,7 +504,7 @@ class SocketClient : BaseLogReceiver
 				.ToArray();
 
 			if (positions.Length > 0)
-				await posHandler(positions, cancellationToken);
+				await posHandler.InvokeAsync(positions, cancellationToken);
 		}
 	}
 
@@ -535,7 +535,7 @@ class SocketClient : BaseLogReceiver
 		};
 
 		if (OrdersReceived is { } orderHandler)
-			await orderHandler([order], cancellationToken);
+			await orderHandler.InvokeAsync([order], cancellationToken);
 
 		var executionType = (string)data["x"];
 		var isTradeExecution = executionType.EqualsIgnoreCase("TRADE");
@@ -559,7 +559,7 @@ class SocketClient : BaseLogReceiver
 			IsMaker = data["m"]?.To<bool?>() ?? false,
 		};
 
-		await tradeHandler([userTrade], cancellationToken);
+		await tradeHandler.InvokeAsync([userTrade], cancellationToken);
 	}
 
 	private static Ticker ParseTicker(JObject data, string fallbackSymbol, JObject root)

@@ -187,7 +187,7 @@ sealed class CoinDCXSocketClient : BaseLogReceiver
 				"CoinDCX WebSocket connection failed."));
 		}
 		return StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 	}
 
@@ -314,7 +314,7 @@ sealed class CoinDCXSocketClient : BaseLogReceiver
 
 			ready.TrySetResult(true);
 			if (isRestoring && StateChanged is { } handler)
-				await handler(ConnectionStates.Restored, cancellationToken);
+				await handler.InvokeAsync(ConnectionStates.Restored, cancellationToken);
 		}
 		catch (Exception error)
 		{
@@ -338,35 +338,35 @@ sealed class CoinDCXSocketClient : BaseLogReceiver
 		{
 			case CoinDCXSocketEvents.NewTrade:
 				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(Deserialize<CoinDCXWebSocketTrade>(
+					await tradeHandler.InvokeAsync(Deserialize<CoinDCXWebSocketTrade>(
 						envelope.Payload.Data), cancellationToken);
 				break;
 			case CoinDCXSocketEvents.DepthSnapshot:
 			case CoinDCXSocketEvents.DepthUpdate:
 				if (DepthReceived is { } depthHandler)
-					await depthHandler(Deserialize<CoinDCXWebSocketDepth>(
+					await depthHandler.InvokeAsync(Deserialize<CoinDCXWebSocketDepth>(
 						envelope.Payload.Data),
 						envelope.Event == CoinDCXSocketEvents.DepthSnapshot,
 						cancellationToken);
 				break;
 			case CoinDCXSocketEvents.Candlestick:
 				if (CandleReceived is { } candleHandler)
-					await candleHandler(Deserialize<CoinDCXWebSocketCandle>(
+					await candleHandler.InvokeAsync(Deserialize<CoinDCXWebSocketCandle>(
 						envelope.Payload.Data), cancellationToken);
 				break;
 			case CoinDCXSocketEvents.BalanceUpdate:
 				if (BalancesReceived is { } balanceHandler)
-					await balanceHandler(Deserialize<CoinDCXPrivateBalance[]>(
+					await balanceHandler.InvokeAsync(Deserialize<CoinDCXPrivateBalance[]>(
 						envelope.Payload.Data), cancellationToken);
 				break;
 			case CoinDCXSocketEvents.OrderUpdate:
 				if (OrdersReceived is { } orderHandler)
-					await orderHandler(Deserialize<CoinDCXPrivateOrder[]>(
+					await orderHandler.InvokeAsync(Deserialize<CoinDCXPrivateOrder[]>(
 						envelope.Payload.Data), cancellationToken);
 				break;
 			case CoinDCXSocketEvents.TradeUpdate:
 				if (AccountTradesReceived is { } accountTradeHandler)
-					await accountTradeHandler(Deserialize<CoinDCXPrivateTrade[]>(
+					await accountTradeHandler.InvokeAsync(Deserialize<CoinDCXPrivateTrade[]>(
 						envelope.Payload.Data), cancellationToken);
 				break;
 		}
@@ -431,7 +431,7 @@ sealed class CoinDCXSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string CreateEndpoint(string endpoint)
 	{

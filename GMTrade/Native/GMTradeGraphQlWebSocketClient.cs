@@ -300,7 +300,7 @@ sealed class GMTradeGraphQlWebSocketClient : BaseLogReceiver
 				$"GMTrade GraphQL WebSocket entered '{state}' state."));
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask InitializeAsync(WebSocketClient client,
@@ -490,22 +490,22 @@ sealed class GMTradeGraphQlWebSocketClient : BaseLogReceiver
 			case GMTradeGraphQlSubscriptionKinds.Markets:
 				var market = GetData<GMTradeMarketUpdateData>(payload).Market;
 				if (market is not null && MarketReceived is { } marketHandler)
-					await marketHandler(market, cancellationToken);
+					await marketHandler.InvokeAsync(market, cancellationToken);
 				break;
 			case GMTradeGraphQlSubscriptionKinds.Candles:
 				var candle = GetData<GMTradeCandleUpdateData>(payload).Candle;
 				if (candle is not null && CandleReceived is { } candleHandler)
-					await candleHandler(candle, cancellationToken);
+					await candleHandler.InvokeAsync(candle, cancellationToken);
 				break;
 			case GMTradeGraphQlSubscriptionKinds.Positions:
 				var position = GetData<GMTradePositionUpdateData>(payload).Position;
 				if (position is not null && PositionReceived is { } positionHandler)
-					await positionHandler(position, cancellationToken);
+					await positionHandler.InvokeAsync(position, cancellationToken);
 				break;
 			case GMTradeGraphQlSubscriptionKinds.Orders:
 				var order = GetData<GMTradeOrderUpdateData>(payload).Order;
 				if (order is not null && OrderReceived is { } orderHandler)
-					await orderHandler(order, cancellationToken);
+					await orderHandler.InvokeAsync(order, cancellationToken);
 				break;
 			default:
 				throw new InvalidDataException(
@@ -551,7 +551,7 @@ sealed class GMTradeGraphQlWebSocketClient : BaseLogReceiver
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private string NextId(string prefix)

@@ -219,7 +219,7 @@ sealed class PolymarketSocketClient : BaseLogReceiver
 				_isMarketInitialized = false;
 		}
 		if (!isUser && StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private ValueTask SendMarketSubscriptionAsync(string[] assets,
@@ -324,7 +324,7 @@ sealed class PolymarketSocketClient : BaseLogReceiver
 					continue;
 				}
 				if (EventReceived is { } handler)
-					await handler(item, cancellationToken);
+					await handler.InvokeAsync(item, cancellationToken);
 			}
 		}
 		catch (Exception error) when (error is JsonException or
@@ -336,7 +336,7 @@ sealed class PolymarketSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static async ValueTask DisposeClientAsync(WebSocketClient client,
 		CancellationToken cancellationToken)

@@ -162,7 +162,7 @@ sealed class TapbitSocketClient : BaseLogReceiver
 			await SendTopicsAsync(client, topics, true, cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask SendTopicsAsync(WebSocketClient client,
@@ -251,7 +251,7 @@ sealed class TapbitSocketClient : BaseLogReceiver
 				if (BookReceived is { } bookHandler)
 					foreach (var book in envelope.Data ?? [])
 						if (book is not null)
-							await bookHandler(productType, envelope.Topic,
+							await bookHandler.InvokeAsync(productType, envelope.Topic,
 								envelope.Action, book, cancellationToken);
 				return;
 			}
@@ -263,7 +263,7 @@ sealed class TapbitSocketClient : BaseLogReceiver
 				if (TickerReceived is { } tickerHandler)
 					foreach (var ticker in envelope.Data ?? [])
 						if (ticker is not null)
-							await tickerHandler(productType, ticker,
+							await tickerHandler.InvokeAsync(productType, ticker,
 								cancellationToken);
 				return;
 			}
@@ -286,7 +286,7 @@ sealed class TapbitSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 		else
 			this.AddErrorLog(error);
 	}

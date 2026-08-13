@@ -193,7 +193,7 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(WooXWsSubscriptionKey subscription,
@@ -280,39 +280,39 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsTicker>>(payload);
 				if (envelope.Data is not null && TickerReceived is { } tickerHandler)
-					await tickerHandler(envelope.Data, envelope.Timestamp, cancellationToken);
+					await tickerHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
 			else if (header.Topic.EndsWith("@bbo", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsBestBidOffer>>(payload);
 				if (envelope.Data is not null && BestBidOfferReceived is { } bboHandler)
-					await bboHandler(envelope.Data, envelope.Timestamp, cancellationToken);
+					await bboHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
 			else if (header.Topic.EndsWith("@orderbook", StringComparison.OrdinalIgnoreCase) ||
 				header.Topic.EndsWith("@orderbook100", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsBook>>(payload);
 				if (envelope.Data is not null && BookReceived is { } bookHandler)
-					await bookHandler(envelope.Data, envelope.Timestamp, cancellationToken);
+					await bookHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
 			else if (header.Topic.EndsWith("@trade", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsTrade>>(payload);
 				if (envelope.Data is not null && TradeReceived is { } tradeHandler)
-					await tradeHandler(envelope.Data, envelope.Timestamp, cancellationToken);
+					await tradeHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
 			else if (header.Topic.Contains("@kline_", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsCandle>>(payload);
 				if (envelope.Data is not null && CandleReceived is { } candleHandler)
-					await candleHandler(envelope.Data, envelope.Timestamp, cancellationToken);
+					await candleHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
 			else if (header.Topic.EndsWith("@indexprice", StringComparison.OrdinalIgnoreCase) ||
 				header.Topic.EndsWith("@markprice", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsReferencePrice>>(payload);
 				if (envelope.Data is not null && ReferencePriceReceived is { } priceHandler)
-					await priceHandler(header.Topic.EndsWith("@indexprice",
+					await priceHandler.InvokeAsync(header.Topic.EndsWith("@indexprice",
 						StringComparison.OrdinalIgnoreCase)
 						? WooXWsTopics.IndexPrice
 						: WooXWsTopics.MarkPrice,
@@ -333,5 +333,5 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 			?? throw new InvalidDataException("WOO X WebSocket returned an empty message.");
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

@@ -204,7 +204,7 @@ sealed class BitFlyerSocketClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestorePrivateChannelsAsync(WebSocketClient client,
@@ -363,7 +363,7 @@ sealed class BitFlyerSocketClient : BaseLogReceiver
 					BitFlyerRpcChannelEnvelope<BitFlyerBoard>>(payload);
 				if (envelope.Parameters?.Message is not null &&
 					BoardReceived is { } handler)
-					await handler(channel[_boardSnapshotPrefix.Length..],
+					await handler.InvokeAsync(channel[_boardSnapshotPrefix.Length..],
 						envelope.Parameters.Message, true, cancellationToken);
 				return;
 			}
@@ -373,7 +373,7 @@ sealed class BitFlyerSocketClient : BaseLogReceiver
 					BitFlyerRpcChannelEnvelope<BitFlyerBoard>>(payload);
 				if (envelope.Parameters?.Message is not null &&
 					BoardReceived is { } handler)
-					await handler(channel[_boardPrefix.Length..],
+					await handler.InvokeAsync(channel[_boardPrefix.Length..],
 						envelope.Parameters.Message, false, cancellationToken);
 				return;
 			}
@@ -383,7 +383,7 @@ sealed class BitFlyerSocketClient : BaseLogReceiver
 					BitFlyerRpcChannelEnvelope<BitFlyerTicker>>(payload);
 				if (envelope.Parameters?.Message is not null &&
 					TickerReceived is { } handler)
-					await handler(envelope.Parameters.Message, cancellationToken);
+					await handler.InvokeAsync(envelope.Parameters.Message, cancellationToken);
 				return;
 			}
 			if (channel.StartsWith(_executionsPrefix, StringComparison.Ordinal))
@@ -392,7 +392,7 @@ sealed class BitFlyerSocketClient : BaseLogReceiver
 					BitFlyerRpcChannelEnvelope<BitFlyerPublicExecution[]>>(payload);
 				if (envelope.Parameters?.Message is not null &&
 					ExecutionsReceived is { } handler)
-					await handler(channel[_executionsPrefix.Length..],
+					await handler.InvokeAsync(channel[_executionsPrefix.Length..],
 						envelope.Parameters.Message, cancellationToken);
 				return;
 			}
@@ -402,7 +402,7 @@ sealed class BitFlyerSocketClient : BaseLogReceiver
 					BitFlyerChildOrderEvent[]>>(payload);
 				if (envelope.Parameters?.Message is not null &&
 					ChildEventsReceived is { } handler)
-					await handler(envelope.Parameters.Message, cancellationToken);
+					await handler.InvokeAsync(envelope.Parameters.Message, cancellationToken);
 				return;
 			}
 			if (channel.Equals(_parentEventsChannel, StringComparison.Ordinal))
@@ -411,7 +411,7 @@ sealed class BitFlyerSocketClient : BaseLogReceiver
 					BitFlyerParentOrderEvent[]>>(payload);
 				if (envelope.Parameters?.Message is not null &&
 					ParentEventsReceived is { } handler)
-					await handler(envelope.Parameters.Message, cancellationToken);
+					await handler.InvokeAsync(envelope.Parameters.Message, cancellationToken);
 			}
 		}
 		catch (Exception error)
@@ -431,7 +431,7 @@ sealed class BitFlyerSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private void CancelPendingCalls()
 	{

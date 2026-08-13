@@ -228,7 +228,7 @@ sealed class CoinCatchWsClient : BaseLogReceiver
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -351,7 +351,7 @@ sealed class CoinCatchWsClient : BaseLogReceiver
 							? ticker.Argument.InstrumentId
 							: item.Symbol;
 						if (TickerReceived is { } tickerHandler)
-							await tickerHandler(
+							await tickerHandler.InvokeAsync(
 								item, cancellationToken);
 					}
 					break;
@@ -364,7 +364,7 @@ sealed class CoinCatchWsClient : BaseLogReceiver
 					{
 						item.Symbol = book.Argument.InstrumentId;
 						if (OrderBookReceived is { } bookHandler)
-							await bookHandler(
+							await bookHandler.InvokeAsync(
 								item, cancellationToken);
 					}
 					break;
@@ -379,7 +379,7 @@ sealed class CoinCatchWsClient : BaseLogReceiver
 							? trades.Argument.InstrumentId
 							: item.Symbol;
 						if (TradeReceived is { } tradeHandler)
-							await tradeHandler(
+							await tradeHandler.InvokeAsync(
 								item, cancellationToken);
 					}
 					break;
@@ -393,7 +393,7 @@ sealed class CoinCatchWsClient : BaseLogReceiver
 						var candles =
 							DeserializePush<CoinCatchCandle>(payload);
 						foreach (var candle in candles.Data ?? [])
-							await candleHandler(
+							await candleHandler.InvokeAsync(
 								argument.InstrumentId,
 								argument.Channel,
 								candle,
@@ -442,7 +442,7 @@ sealed class CoinCatchWsClient : BaseLogReceiver
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string NormalizeSymbol(string symbol)

@@ -411,11 +411,11 @@ internal sealed class QmtGatewayClient : IDisposable
 
 	private static ValueTask InvokeAsync<T>(Func<T, CancellationToken, ValueTask> handler, T value,
 		CancellationToken cancellationToken)
-		=> handler == null ? default : handler(value, cancellationToken);
+		=> Ecng.Common.AsyncHelper.InvokeAsync(handler, value, cancellationToken);
 
 	private static ValueTask InvokeAsync<T1, T2>(Func<T1, T2, CancellationToken, ValueTask> handler,
 		T1 value1, T2 value2, CancellationToken cancellationToken)
-		=> handler == null ? default : handler(value1, value2, cancellationToken);
+		=> Ecng.Common.AsyncHelper.InvokeAsync(handler, value1, value2, cancellationToken);
 
 	public void Dispose()
 	{

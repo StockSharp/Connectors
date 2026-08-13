@@ -195,7 +195,7 @@ sealed class HashKeyWsClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(this, state, cancellationToken);
+			await handler.InvokeAsync(this, state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(Subscription subscription,
@@ -304,7 +304,7 @@ sealed class HashKeyWsClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<HashKeyWsEnvelope<HashKeyWsBookTicker>>(payload);
 				if (envelope.Data is not null && BookTickerReceived is { } handler)
-					await handler(envelope.Params?.Symbol.IsEmpty(envelope.Data.Symbol),
+					await handler.InvokeAsync(envelope.Params?.Symbol.IsEmpty(envelope.Data.Symbol),
 						envelope.Data, cancellationToken);
 				break;
 			}
@@ -312,7 +312,7 @@ sealed class HashKeyWsClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<HashKeyWsEnvelope<HashKeyWsRealtime>>(payload);
 				if (envelope.Data is not null && RealtimeReceived is { } handler)
-					await handler(envelope.Params?.Symbol.IsEmpty(envelope.Data.Symbol),
+					await handler.InvokeAsync(envelope.Params?.Symbol.IsEmpty(envelope.Data.Symbol),
 						envelope.Data, cancellationToken);
 				break;
 			}
@@ -320,7 +320,7 @@ sealed class HashKeyWsClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<HashKeyWsEnvelope<HashKeyWsDepth>>(payload);
 				if (envelope.Data is not null && DepthReceived is { } handler)
-					await handler(envelope.Params?.Symbol.IsEmpty(envelope.Data.Symbol),
+					await handler.InvokeAsync(envelope.Params?.Symbol.IsEmpty(envelope.Data.Symbol),
 						envelope.Data, cancellationToken);
 				break;
 			}
@@ -328,7 +328,7 @@ sealed class HashKeyWsClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<HashKeyWsEnvelope<HashKeyWsTrade>>(payload);
 				if (envelope.Data is not null && TradeReceived is { } handler)
-					await handler(envelope.Params?.Symbol, envelope.Data,
+					await handler.InvokeAsync(envelope.Params?.Symbol, envelope.Data,
 						cancellationToken);
 				break;
 			}
@@ -336,7 +336,7 @@ sealed class HashKeyWsClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<HashKeyWsEnvelope<HashKeyWsKline>>(payload);
 				if (envelope.Data is not null && KlineReceived is { } handler)
-					await handler(envelope.Params?.Symbol.IsEmpty(envelope.Data.Symbol),
+					await handler.InvokeAsync(envelope.Params?.Symbol.IsEmpty(envelope.Data.Symbol),
 						envelope.Params?.KlineType, envelope.Data, cancellationToken);
 				break;
 			}
@@ -376,23 +376,23 @@ sealed class HashKeyWsClient : BaseLogReceiver
 			case HashKeyPrivateEventTypes.OptionsAccount:
 				if (AccountReceived is { } accountHandler)
 					foreach (var update in Deserialize<HashKeyWsAccountUpdate[]>(payload))
-						await accountHandler(update, cancellationToken);
+						await accountHandler.InvokeAsync(update, cancellationToken);
 				break;
 			case HashKeyPrivateEventTypes.SpotOrder:
 			case HashKeyPrivateEventTypes.FuturesOrder:
 				if (OrderReceived is { } orderHandler)
 					foreach (var update in Deserialize<HashKeyWsOrderUpdate[]>(payload))
-						await orderHandler(update, cancellationToken);
+						await orderHandler.InvokeAsync(update, cancellationToken);
 				break;
 			case HashKeyPrivateEventTypes.Ticket:
 				if (TicketReceived is { } ticketHandler)
 					foreach (var update in Deserialize<HashKeyWsTicket[]>(payload))
-						await ticketHandler(update, cancellationToken);
+						await ticketHandler.InvokeAsync(update, cancellationToken);
 				break;
 			case HashKeyPrivateEventTypes.FuturesPosition:
 				if (PositionReceived is { } positionHandler)
 					foreach (var update in Deserialize<HashKeyWsPosition[]>(payload))
-						await positionHandler(update, cancellationToken);
+						await positionHandler.InvokeAsync(update, cancellationToken);
 				break;
 			default:
 				throw new ArgumentOutOfRangeException(nameof(eventType), eventType, null);
@@ -415,5 +415,5 @@ sealed class HashKeyWsClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

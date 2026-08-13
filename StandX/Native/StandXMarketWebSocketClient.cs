@@ -143,7 +143,7 @@ sealed class StandXMarketWebSocketClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask AuthenticateAsync(WebSocketClient client,
@@ -266,7 +266,7 @@ sealed class StandXMarketWebSocketClient : BaseLogReceiver
 					break;
 				case StandXChannels.Price:
 					if (PriceReceived is { } priceHandler)
-						await priceHandler(Deserialize<StandXSocketMessage<
+						await priceHandler.InvokeAsync(Deserialize<StandXSocketMessage<
 							StandXSymbolPrice>>(payload).Data, cancellationToken);
 					break;
 				case StandXChannels.DepthBook:
@@ -274,33 +274,33 @@ sealed class StandXMarketWebSocketClient : BaseLogReceiver
 					{
 						var feed = Deserialize<StandXSocketMessage<
 							StandXOrderBook>>(payload);
-						await bookHandler(feed.Data, feed.Sequence,
+						await bookHandler.InvokeAsync(feed.Data, feed.Sequence,
 							cancellationToken);
 					}
 					break;
 				case StandXChannels.PublicTrade:
 					if (PublicTradeReceived is { } publicTradeHandler)
-						await publicTradeHandler(Deserialize<StandXSocketMessage<
+						await publicTradeHandler.InvokeAsync(Deserialize<StandXSocketMessage<
 							StandXPublicTrade>>(payload).Data, cancellationToken);
 					break;
 				case StandXChannels.Order:
 					if (OrderReceived is { } orderHandler)
-						await orderHandler(Deserialize<StandXSocketMessage<
+						await orderHandler.InvokeAsync(Deserialize<StandXSocketMessage<
 							StandXOrder>>(payload).Data, cancellationToken);
 					break;
 				case StandXChannels.Position:
 					if (PositionReceived is { } positionHandler)
-						await positionHandler(Deserialize<StandXSocketMessage<
+						await positionHandler.InvokeAsync(Deserialize<StandXSocketMessage<
 							StandXPosition>>(payload).Data, cancellationToken);
 					break;
 				case StandXChannels.Balance:
 					if (BalanceReceived is { } balanceHandler)
-						await balanceHandler(Deserialize<StandXSocketMessage<
+						await balanceHandler.InvokeAsync(Deserialize<StandXSocketMessage<
 							StandXWalletBalance>>(payload).Data, cancellationToken);
 					break;
 				case StandXChannels.Trade:
 					if (UserTradeReceived is { } userTradeHandler)
-						await userTradeHandler(Deserialize<StandXSocketMessage<
+						await userTradeHandler.InvokeAsync(Deserialize<StandXSocketMessage<
 							StandXUserTrade>>(payload).Data, cancellationToken);
 					break;
 				default:
@@ -379,7 +379,7 @@ sealed class StandXMarketWebSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	protected override void DisposeManaged()
 	{

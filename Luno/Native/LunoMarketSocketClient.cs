@@ -122,7 +122,7 @@ sealed class LunoMarketSocketClient : BaseLogReceiver
 		if (state is ConnectionStates.Reconnecting or ConnectionStates.Failed)
 			ResetBook();
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(WebSocketClient client,
@@ -142,7 +142,7 @@ sealed class LunoMarketSocketClient : BaseLogReceiver
 			else
 				state = ApplyUpdate(envelope);
 			if (state is not null && StateReceived is { } handler)
-				await handler(state, cancellationToken);
+				await handler.InvokeAsync(state, cancellationToken);
 		}
 		catch (Exception error)
 		{
@@ -381,7 +381,7 @@ sealed class LunoMarketSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string CreateEndpoint(string value, string path)
 	{

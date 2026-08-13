@@ -151,7 +151,7 @@ sealed class ChainlinkStreamPool : BaseLogReceiver
 	private ValueTask OnMessageReceivedAsync(
 		ChainlinkReportEnvelope report, CancellationToken cancellationToken)
 		=> ReportReceived is { } handler
-			? handler(this, report, cancellationToken)
+			? handler.InvokeAsync(this, report, cancellationToken)
 			: default;
 
 	private ValueTask OnErrorAsync(ChainlinkSocketConnection connection,
@@ -176,7 +176,7 @@ sealed class ChainlinkStreamPool : BaseLogReceiver
 				isStarting = _isStarting;
 		}
 		return !isStarting && Error is { } handler
-			? handler(this, error, isPoolTerminal, cancellationToken)
+			? handler.InvokeAsync(this, error, isPoolTerminal, cancellationToken)
 			: default;
 	}
 
@@ -301,7 +301,7 @@ sealed class ChainlinkSocketConnection : BaseLogReceiver
 				var isTerminal = failures >= _maximumAttempts;
 				var redacted = Redact(error);
 				if (Error is { } handler)
-					await handler(this, redacted, isTerminal,
+					await handler.InvokeAsync(this, redacted, isTerminal,
 						CancellationToken.None);
 				if (isTerminal)
 				{
@@ -344,7 +344,7 @@ sealed class ChainlinkSocketConnection : BaseLogReceiver
 				throw new InvalidDataException(
 					"Chainlink WebSocket returned an incomplete report.");
 			if (MessageReceived is { } handler)
-				await handler(message.Report, cancellationToken);
+				await handler.InvokeAsync(message.Report, cancellationToken);
 		}
 	}
 

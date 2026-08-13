@@ -204,7 +204,7 @@ sealed class PoloniexSocketClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionsAsync(PoloniexSubscription[] subscriptions,
@@ -399,7 +399,7 @@ sealed class PoloniexSocketClient : BaseLogReceiver
 			}
 
 			if (BookChanged is { } handler)
-				await handler(book, state, cancellationToken);
+				await handler.InvokeAsync(book, state, cancellationToken);
 		}
 	}
 
@@ -429,7 +429,7 @@ sealed class PoloniexSocketClient : BaseLogReceiver
 		var response = Deserialize<PoloniexWsEnvelope<T>>(payload);
 
 		foreach (var item in response.Data ?? [])
-			await handler(item, cancellationToken);
+			await handler.InvokeAsync(item, cancellationToken);
 	}
 
 	private T Deserialize<T>(string payload)
@@ -446,7 +446,7 @@ sealed class PoloniexSocketClient : BaseLogReceiver
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static TaskCompletionSource<bool> CreateCompletion()
 		=> new(TaskCreationOptions.RunContinuationsAsynchronously);

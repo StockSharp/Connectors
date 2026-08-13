@@ -59,14 +59,14 @@ class PusherClient : BaseLogReceiver
 				await OnStateChangedAsync(state, token);
 
 				if (StateChanged is { } handler)
-					await handler(state, token);
+					await handler.InvokeAsync(state, token);
 			},
 			async (error, token) =>
 			{
 				this.AddErrorLog(error);
 
 				if (Error is { } handler)
-					await handler(error, token);
+					await handler.InvokeAsync(error, token);
 			},
 			OnProcess,
 			(s, a) => this.AddInfoLog(s, a),
@@ -284,7 +284,7 @@ class PusherClient : BaseLogReceiver
 		this.AddErrorLog(ex);
 
 		if (Error is { } handler)
-			await handler(ex, cancellationToken);
+			await handler.InvokeAsync(ex, cancellationToken);
 	}
 
 	private async ValueTask ProcessTickerAsync(JToken argsToken, CancellationToken cancellationToken)
@@ -307,7 +307,7 @@ class PusherClient : BaseLogReceiver
 		};
 
 		if (TickerChanged is { } handler)
-			await handler(currency, ticker, cancellationToken);
+			await handler.InvokeAsync(currency, ticker, cancellationToken);
 	}
 
 	private async ValueTask ProcessTradeAsync(JToken argsToken, CancellationToken cancellationToken)
@@ -338,7 +338,7 @@ class PusherClient : BaseLogReceiver
 		};
 
 		if (NewTrade is { } handler)
-			await handler(currency, trade, cancellationToken);
+			await handler.InvokeAsync(currency, trade, cancellationToken);
 	}
 
 	private async ValueTask ProcessOrderBookAsync(JToken argsToken, CancellationToken cancellationToken)
@@ -359,7 +359,7 @@ class PusherClient : BaseLogReceiver
 		var orderBook = UpdateOrderBook(currency, isAsk, price, volume, isAddOrUpdate);
 
 		if (OrderBookChanged is { } handler)
-			await handler(currency, orderBook, cancellationToken);
+			await handler.InvokeAsync(currency, orderBook, cancellationToken);
 	}
 
 	private OrderBook UpdateOrderBook(string currency, bool isAsk, decimal price, decimal volume, bool isAddOrUpdate)

@@ -211,7 +211,7 @@ sealed class OSLSocketClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSubscriptionsAsync(WebSocketClient client,
@@ -462,7 +462,7 @@ sealed class OSLSocketClient : BaseLogReceiver
 					foreach (var book in Deserialize<OSLWsEnvelope<
 						OSLOrderBook>>(payload).Data ?? [])
 						if (book is not null)
-							await bookHandler(header.Argument.InstrumentId,
+							await bookHandler.InvokeAsync(header.Argument.InstrumentId,
 								book, cancellationToken);
 				break;
 			case OSLWsChannels.Trade:
@@ -470,7 +470,7 @@ sealed class OSLSocketClient : BaseLogReceiver
 					foreach (var trade in Deserialize<OSLWsEnvelope<
 						OSLPublicTrade>>(payload).Data ?? [])
 						if (trade is not null)
-							await tradeHandler(header.Argument.InstrumentId,
+							await tradeHandler.InvokeAsync(header.Argument.InstrumentId,
 								trade, cancellationToken);
 				break;
 			case OSLWsChannels.Orders:
@@ -485,7 +485,7 @@ sealed class OSLSocketClient : BaseLogReceiver
 				break;
 			case OSLWsChannels.SpotAssets:
 				if (AssetsReceived is { } assetHandler)
-					await assetHandler(Deserialize<OSLWsEnvelope<OSLAsset>>(
+					await assetHandler.InvokeAsync(Deserialize<OSLWsEnvelope<OSLAsset>>(
 						payload).Data ?? [], cancellationToken);
 				break;
 			default:
@@ -536,7 +536,7 @@ sealed class OSLSocketClient : BaseLogReceiver
 			return;
 		foreach (var candle in envelope.Data ?? [])
 			if (candle is not null)
-				await handler(candle, cancellationToken);
+				await handler.InvokeAsync(candle, cancellationToken);
 	}
 
 	private TPayload Deserialize<TPayload>(string payload)
@@ -553,12 +553,12 @@ sealed class OSLSocketClient : BaseLogReceiver
 			return;
 		foreach (var item in items ?? [])
 			if (item is not null)
-				await handler(item, cancellationToken);
+				await handler.InvokeAsync(item, cancellationToken);
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string NormalizeSelector(OSLWsChannels channel,
 		string selector)

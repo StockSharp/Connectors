@@ -28,8 +28,8 @@ sealed class NorenSocketClient : BaseLogReceiver
 
 		_client = new(
 			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -155,7 +155,7 @@ sealed class NorenSocketClient : BaseLogReceiver
 				var update = JsonConvert.DeserializeObject<NorenMarketUpdate>(text, _jsonSettings)
 					?? throw new InvalidDataException("Noren returned an invalid market-data update.");
 				if (!update.Exchange.IsEmpty() && !update.Token.IsEmpty() && MarketDataReceived is { } handler)
-					await handler(update, cancellationToken);
+					await handler.InvokeAsync(update, cancellationToken);
 				break;
 			}
 
@@ -164,7 +164,7 @@ sealed class NorenSocketClient : BaseLogReceiver
 				var order = JsonConvert.DeserializeObject<NorenOrder>(text, _jsonSettings)
 					?? throw new InvalidDataException("Noren returned an invalid order update.");
 				if (!order.OrderId.IsEmpty() && OrderReceived is { } handler)
-					await handler(order, cancellationToken);
+					await handler.InvokeAsync(order, cancellationToken);
 				break;
 			}
 

@@ -131,7 +131,7 @@ class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (!isPrivate && StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 
 				return default;
 			},
@@ -139,7 +139,7 @@ class SocketClient : BaseLogReceiver
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			onProcess,
@@ -188,7 +188,7 @@ class SocketClient : BaseLogReceiver
 			{
 				var error = new InvalidOperationException($"WebSocket error: code={c}, msg={(string)obj["msg"]}");
 				if (Error is { } handler)
-					await handler(error, cancellationToken);
+					await handler.InvokeAsync(error, cancellationToken);
 				return;
 			}
 
@@ -206,7 +206,7 @@ class SocketClient : BaseLogReceiver
 
 			if (payload is not null && !symbol.IsEmpty() && TickerReceived is { } handler)
 			{
-				await handler(new Ticker
+				await handler.InvokeAsync(new Ticker
 				{
 					Symbol = symbol,
 					BidPrice = WsHelpers.ToDouble(payload["bidprice"]),
@@ -229,7 +229,7 @@ class SocketClient : BaseLogReceiver
 			{
 				foreach (var tradeObj in deals.OfType<JObject>())
 				{
-					await handler(new TradeStream
+					await handler.InvokeAsync(new TradeStream
 					{
 						Symbol = symbol,
 						Id = Interlocked.Increment(ref _tradeIdSeed),
@@ -255,7 +255,7 @@ class SocketClient : BaseLogReceiver
 				var openTime = WsHelpers.ToDateTime(payload["windowstart"]);
 				var closeTime = WsHelpers.ToDateTime(payload["windowend"]);
 
-				await handler(new CandleStream
+				await handler.InvokeAsync(new CandleStream
 				{
 					Symbol = symbol,
 					Kline = new CandleData
@@ -288,7 +288,7 @@ class SocketClient : BaseLogReceiver
 				var firstUpdateId = payload["fromVersion"]?.To<long?>() ?? 0;
 				var finalUpdateId = payload["toVersion"]?.To<long?>() ?? 0;
 
-				await handler(new OrderBookUpdate
+				await handler.InvokeAsync(new OrderBookUpdate
 				{
 					Symbol = symbol,
 					FirstUpdateId = firstUpdateId,
@@ -307,7 +307,7 @@ class SocketClient : BaseLogReceiver
 
 			if (payload is not null && AccountReceived is { } handler)
 			{
-				await handler(new PrivateAccountUpdate
+				await handler.InvokeAsync(new PrivateAccountUpdate
 				{
 					Asset = (string)payload["vcoinName"],
 					Balance = WsHelpers.ToDouble(payload["balanceAmount"]),
@@ -327,7 +327,7 @@ class SocketClient : BaseLogReceiver
 
 			if (payload is not null && !symbol.IsEmpty() && UserTradeReceived is { } handler)
 			{
-				await handler(new PrivateDealUpdate
+				await handler.InvokeAsync(new PrivateDealUpdate
 				{
 					Symbol = symbol,
 					Price = WsHelpers.ToDouble(payload["price"]),
@@ -351,7 +351,7 @@ class SocketClient : BaseLogReceiver
 
 			if (payload is not null && !symbol.IsEmpty() && OrderReceived is { } handler)
 			{
-				await handler(new PrivateOrderUpdate
+				await handler.InvokeAsync(new PrivateOrderUpdate
 				{
 					Symbol = symbol,
 					Id = (string)payload["id"],
@@ -383,7 +383,7 @@ class SocketClient : BaseLogReceiver
 		catch (InvalidProtocolBufferException error)
 		{
 			if (Error is { } errorHandler)
-				await errorHandler(new InvalidDataException(
+				await errorHandler.InvokeAsync(new InvalidDataException(
 					"MEXC returned malformed Protobuf market data.", error),
 					cancellationToken);
 			return;
@@ -394,7 +394,7 @@ class SocketClient : BaseLogReceiver
 		if (message.PublicAggreBookTicker is { } ticker)
 		{
 			if (!symbol.IsEmpty() && TickerReceived is { } handler)
-				await handler(new Ticker
+				await handler.InvokeAsync(new Ticker
 				{
 					Symbol = symbol,
 					BidPrice = WsHelpers.ToDouble(ticker.BidPrice),
@@ -409,7 +409,7 @@ class SocketClient : BaseLogReceiver
 		{
 			if (!symbol.IsEmpty() && TradeReceived is { } handler)
 				foreach (var trade in deals.Deals)
-					await handler(new TradeStream
+					await handler.InvokeAsync(new TradeStream
 					{
 						Symbol = symbol,
 						Id = ParseId(trade.TradeId),
@@ -424,7 +424,7 @@ class SocketClient : BaseLogReceiver
 		if (message.PublicAggreDepths is { } depth)
 		{
 			if (!symbol.IsEmpty() && OrderBookReceived is { } handler)
-				await handler(new OrderBookUpdate
+				await handler.InvokeAsync(new OrderBookUpdate
 				{
 					Symbol = symbol,
 					FirstUpdateId = ParseVersion(depth.FromVersion),
@@ -448,7 +448,7 @@ class SocketClient : BaseLogReceiver
 			if (!symbol.IsEmpty() && CandleReceived is { } handler)
 			{
 				var closeTime = WsHelpers.ToDateTime(kline.WindowEnd);
-				await handler(new CandleStream
+				await handler.InvokeAsync(new CandleStream
 				{
 					Symbol = symbol,
 					Kline = new CandleData
@@ -473,7 +473,7 @@ class SocketClient : BaseLogReceiver
 		if (message.PrivateAccount is { } account)
 		{
 			if (isPrivate && AccountReceived is { } handler)
-				await handler(new PrivateAccountUpdate
+				await handler.InvokeAsync(new PrivateAccountUpdate
 				{
 					Asset = account.VcoinName,
 					Balance = WsHelpers.ToDouble(account.BalanceAmount),
@@ -487,7 +487,7 @@ class SocketClient : BaseLogReceiver
 		if (message.PrivateDeals is { } deal)
 		{
 			if (isPrivate && !symbol.IsEmpty() && UserTradeReceived is { } handler)
-				await handler(new PrivateDealUpdate
+				await handler.InvokeAsync(new PrivateDealUpdate
 				{
 					Symbol = symbol,
 					TradeId = deal.TradeId,
@@ -505,7 +505,7 @@ class SocketClient : BaseLogReceiver
 		if (message.PrivateOrders is { } order)
 		{
 			if (isPrivate && !symbol.IsEmpty() && OrderReceived is { } handler)
-				await handler(new PrivateOrderUpdate
+				await handler.InvokeAsync(new PrivateOrderUpdate
 				{
 					Symbol = symbol,
 					Id = order.Id,

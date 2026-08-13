@@ -23,14 +23,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -111,7 +111,7 @@ class PusherClient : BaseLogReceiver
 		if (channel.StartsWithIgnoreCase(Channels.DepthWhole))
 		{
 			if (OrderBookChanged is { } handler)
-				await handler(channel.Remove(Channels.DepthWhole, true), ((JToken)data).DeserializeObject<OrderBook>(), cancellationToken);
+				await handler.InvokeAsync(channel.Remove(Channels.DepthWhole, true), ((JToken)data).DeserializeObject<OrderBook>(), cancellationToken);
 		}
 		else if (channel.StartsWithIgnoreCase(Channels.Deals))
 		{
@@ -122,14 +122,14 @@ class PusherClient : BaseLogReceiver
 
 				foreach (var trade in trades)
 				{
-					await handler(symbol, trade, cancellationToken);
+					await handler.InvokeAsync(symbol, trade, cancellationToken);
 				}
 			}
 		}
 		else if (channel.StartsWithIgnoreCase(Channels.Ticker))
 		{
 			if (TickerChanged is { } handler)
-				await handler(channel.Remove(Channels.Ticker, true), ((JToken)data).DeserializeObject<Ticker>(), cancellationToken);
+				await handler.InvokeAsync(channel.Remove(Channels.Ticker, true), ((JToken)data).DeserializeObject<Ticker>(), cancellationToken);
 		}
 		else
 			this.AddErrorLog(LocalizedStrings.UnknownEvent, channel);

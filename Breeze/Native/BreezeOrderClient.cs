@@ -12,6 +12,6 @@ sealed class BreezeOrderClient : BreezeSocketClient
 	{
 		if (!BreezeSocketCodec.GetEvent(message).EqualsIgnoreCase("order") || OrderReceived is not { } handler)
 			return default;
-		return handler(BreezeSocketCodec.ReadOrder(message), cancellationToken);
+		return handler.InvokeAsync(BreezeSocketCodec.ReadOrder(message), cancellationToken);
 	}
 }

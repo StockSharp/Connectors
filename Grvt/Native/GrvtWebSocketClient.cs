@@ -173,7 +173,7 @@ sealed class GrvtWebSocketClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(Subscription subscription,
@@ -432,7 +432,7 @@ sealed class GrvtWebSocketClient : BaseLogReceiver
 		var message = Deserialize<GrvtWebSocketFeed<TFeed>>(payload);
 		if (message.Feed is null)
 			throw new InvalidDataException("GRVT WebSocket returned an empty feed.");
-		await handler(message.Selector, message.Feed, cancellationToken);
+		await handler.InvokeAsync(message.Selector, message.Feed, cancellationToken);
 	}
 
 	private TMessage Deserialize<TMessage>(string payload)
@@ -464,5 +464,5 @@ sealed class GrvtWebSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

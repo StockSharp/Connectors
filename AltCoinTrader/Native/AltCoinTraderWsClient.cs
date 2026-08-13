@@ -268,7 +268,7 @@ sealed class AltCoinTraderWsClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -419,7 +419,7 @@ sealed class AltCoinTraderWsClient : BaseLogReceiver
 				"AltCoinTrader ticker frame has no data.");
 		ticker.Symbol = ticker.Symbol.IsEmpty(frame.Market);
 		if (TickerReceived is { } handler)
-			await handler(ticker, cancellationToken);
+			await handler.InvokeAsync(ticker, cancellationToken);
 	}
 
 	private async ValueTask ProcessOrderBookAsync(
@@ -433,7 +433,7 @@ sealed class AltCoinTraderWsClient : BaseLogReceiver
 				"AltCoinTrader order-book frame has no data.");
 		book.Symbol = book.Symbol.IsEmpty(frame.Market);
 		if (OrderBookReceived is { } handler)
-			await handler(book, cancellationToken);
+			await handler.InvokeAsync(book, cancellationToken);
 	}
 
 	private async ValueTask ProcessTradesAsync(
@@ -450,7 +450,7 @@ sealed class AltCoinTraderWsClient : BaseLogReceiver
 		foreach (var trade in trades)
 			trade.Market = trade.Market.IsEmpty(frame.Market);
 		if (trades.Length > 0 && TradesReceived is { } handler)
-			await handler(trades, cancellationToken);
+			await handler.InvokeAsync(trades, cancellationToken);
 	}
 
 	private async ValueTask ProcessOrderAsync(
@@ -462,7 +462,7 @@ sealed class AltCoinTraderWsClient : BaseLogReceiver
 			throw new InvalidDataException(
 				"AltCoinTrader order frame has no data.");
 		if (OrderReceived is { } handler)
-			await handler(order, cancellationToken);
+			await handler.InvokeAsync(order, cancellationToken);
 	}
 
 	private async ValueTask ProcessFillAsync(
@@ -475,7 +475,7 @@ sealed class AltCoinTraderWsClient : BaseLogReceiver
 			throw new InvalidDataException(
 				"AltCoinTrader fill frame has no data.");
 		if (FillReceived is { } handler)
-			await handler(fill, cancellationToken);
+			await handler.InvokeAsync(fill, cancellationToken);
 	}
 
 	private async ValueTask ProcessBalancesAsync(
@@ -488,14 +488,14 @@ sealed class AltCoinTraderWsClient : BaseLogReceiver
 			throw new InvalidDataException(
 				"AltCoinTrader balances frame has no data.");
 		if (BalancesReceived is { } handler)
-			await handler(balances, cancellationToken);
+			await handler.InvokeAsync(balances, cancellationToken);
 	}
 
 	private ValueTask RaiseErrorAsync(
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string NormalizeSymbol(string symbol)

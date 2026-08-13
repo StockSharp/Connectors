@@ -20,11 +20,11 @@ sealed class ChoiceFinXSocketClient : BaseLogReceiver
             socketAddress.AbsoluteUri,
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (message, args) =>
@@ -101,18 +101,18 @@ sealed class ChoiceFinXSocketClient : BaseLogReceiver
         {
             case "ORD_NRML":
                 if (OrderReceived is { } orderHandler)
-                    await orderHandler(root, cancellationToken);
+                    await orderHandler.InvokeAsync(root, cancellationToken);
                 break;
 
             case "TRD_MSG":
                 if (TradeReceived is { } tradeHandler)
-                    await tradeHandler(root, cancellationToken);
+                    await tradeHandler.InvokeAsync(root, cancellationToken);
                 break;
 
             case "MKT_STAT":
                 if (MarketStatusReceived is { } marketHandler)
                 {
-                    await marketHandler(
+                    await marketHandler.InvokeAsync(
                         root, cancellationToken);
                 }
                 break;

@@ -222,7 +222,7 @@ sealed class BTSEWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(this, state, cancellationToken);
+			await handler.InvokeAsync(this, state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(string topic, bool isSubscribe,
@@ -365,7 +365,7 @@ sealed class BTSEWsClient : BaseLogReceiver
 		var envelope = Deserialize<BTSEWsEnvelope<BTSEPublicTrade[]>>(payload);
 		foreach (var trade in envelope.Data ?? [])
 			if (trade is not null)
-				await handler(_section, trade, cancellationToken);
+				await handler.InvokeAsync(_section, trade, cancellationToken);
 	}
 
 	private async ValueTask ProcessBookAsync(string payload,
@@ -373,7 +373,7 @@ sealed class BTSEWsClient : BaseLogReceiver
 	{
 		var envelope = Deserialize<BTSEWsEnvelope<BTSEWsBook>>(payload);
 		if (envelope.Data is not null && BookReceived is { } handler)
-			await handler(_section, envelope.Data, cancellationToken);
+			await handler.InvokeAsync(_section, envelope.Data, cancellationToken);
 	}
 
 	private async ValueTask ProcessSpotOrderAsync(string payload,
@@ -381,7 +381,7 @@ sealed class BTSEWsClient : BaseLogReceiver
 	{
 		var envelope = Deserialize<BTSEWsEnvelope<BTSEWsOrder>>(payload);
 		if (envelope.Data is not null && OrderReceived is { } handler)
-			await handler(_section, envelope.Data, cancellationToken);
+			await handler.InvokeAsync(_section, envelope.Data, cancellationToken);
 	}
 
 	private async ValueTask ProcessFuturesOrdersAsync(string payload,
@@ -392,7 +392,7 @@ sealed class BTSEWsClient : BaseLogReceiver
 		var envelope = Deserialize<BTSEWsEnvelope<BTSEWsOrder[]>>(payload);
 		foreach (var order in envelope.Data ?? [])
 			if (order is not null)
-				await handler(_section, order, cancellationToken);
+				await handler.InvokeAsync(_section, order, cancellationToken);
 	}
 
 	private async ValueTask ProcessFillsAsync(string payload,
@@ -403,7 +403,7 @@ sealed class BTSEWsClient : BaseLogReceiver
 		var envelope = Deserialize<BTSEWsEnvelope<BTSEWsFill[]>>(payload);
 		foreach (var fill in envelope.Data ?? [])
 			if (fill is not null)
-				await handler(_section, fill, cancellationToken);
+				await handler.InvokeAsync(_section, fill, cancellationToken);
 	}
 
 	private async ValueTask ProcessPositionsAsync(string payload,
@@ -414,7 +414,7 @@ sealed class BTSEWsClient : BaseLogReceiver
 		var envelope = Deserialize<BTSEWsEnvelope<BTSEWsPosition[]>>(payload);
 		foreach (var position in envelope.Data ?? [])
 			if (position is not null)
-				await handler(_section, position, cancellationToken);
+				await handler.InvokeAsync(_section, position, cancellationToken);
 	}
 
 	private TMessage Deserialize<TMessage>(string payload)
@@ -432,5 +432,5 @@ sealed class BTSEWsClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(this, error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(this, error, cancellationToken) : default;
 }

@@ -143,7 +143,7 @@ sealed class StandXOrderWebSocketClient : BaseLogReceiver
 			await AuthenticateAsync(client, cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private ValueTask<StandXOperationResult> AuthenticateAsync(
@@ -259,7 +259,7 @@ sealed class StandXOrderWebSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	protected override void DisposeManaged()
 	{

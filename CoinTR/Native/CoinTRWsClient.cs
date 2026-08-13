@@ -271,7 +271,7 @@ sealed class CoinTRWsClient : BaseLogReceiver
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -433,7 +433,7 @@ sealed class CoinTRWsClient : BaseLogReceiver
 						item.Symbol = item.Symbol.IsEmpty(
 							ticker.Argument.InstrumentId);
 						if (TickerReceived is { } tickerHandler)
-							await tickerHandler(item, cancellationToken);
+							await tickerHandler.InvokeAsync(item, cancellationToken);
 					}
 					break;
 
@@ -444,7 +444,7 @@ sealed class CoinTRWsClient : BaseLogReceiver
 					{
 						item.Symbol = book.Argument.InstrumentId;
 						if (OrderBookReceived is { } bookHandler)
-							await bookHandler(item, cancellationToken);
+							await bookHandler.InvokeAsync(item, cancellationToken);
 					}
 					break;
 
@@ -456,27 +456,27 @@ sealed class CoinTRWsClient : BaseLogReceiver
 						item.Symbol = item.Symbol.IsEmpty(
 							trades.Argument.InstrumentId);
 						if (TradeReceived is { } tradeHandler)
-							await tradeHandler(item, cancellationToken);
+							await tradeHandler.InvokeAsync(item, cancellationToken);
 					}
 					break;
 
 				case "account":
 					if (BalancesReceived is { } balanceHandler)
-						await balanceHandler(DeserializePush<
+						await balanceHandler.InvokeAsync(DeserializePush<
 							CoinTRBalance>(payload).Data ?? [],
 							cancellationToken);
 					break;
 
 				case "orders":
 					if (OrdersReceived is { } orderHandler)
-						await orderHandler(DeserializePush<
+						await orderHandler.InvokeAsync(DeserializePush<
 							CoinTROrder>(payload).Data ?? [],
 							cancellationToken);
 					break;
 
 				case "fill":
 					if (FillsReceived is { } fillHandler)
-						await fillHandler(DeserializePush<
+						await fillHandler.InvokeAsync(DeserializePush<
 							CoinTRFill>(payload).Data ?? [],
 							cancellationToken);
 					break;
@@ -490,7 +490,7 @@ sealed class CoinTRWsClient : BaseLogReceiver
 							CoinTRCandle>(payload);
 						var interval = argument.Channel["candle".Length..];
 						foreach (var candle in candles.Data ?? [])
-							await candleHandler(
+							await candleHandler.InvokeAsync(
 								argument.InstrumentId, interval, candle,
 								cancellationToken);
 					}
@@ -534,7 +534,7 @@ sealed class CoinTRWsClient : BaseLogReceiver
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string NormalizeSymbol(string symbol)

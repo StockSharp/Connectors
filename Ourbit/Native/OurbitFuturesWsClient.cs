@@ -220,7 +220,7 @@ sealed class OurbitFuturesWsClient : BaseLogReceiver
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreAsync(WebSocketClient client,
@@ -358,56 +358,56 @@ sealed class OurbitFuturesWsClient : BaseLogReceiver
 				{
 					var data = Deserialize<OurbitFuturesWsEnvelope<OurbitFuturesTicker>>(payload);
 					if (data?.Data is not null && TickerReceived is { } handler)
-						await handler(data.Data, cancellationToken);
+						await handler.InvokeAsync(data.Data, cancellationToken);
 					break;
 				}
 				case "push.depth":
 				{
 					var data = Deserialize<OurbitFuturesWsEnvelope<OurbitFuturesDepth>>(payload);
 					if (data?.Data is not null && DepthReceived is { } handler)
-						await handler(data.Symbol, data.Data, cancellationToken);
+						await handler.InvokeAsync(data.Symbol, data.Data, cancellationToken);
 					break;
 				}
 				case "push.deal":
 				{
 					var data = Deserialize<OurbitFuturesWsEnvelope<OurbitFuturesTrade>>(payload);
 					if (data?.Data is not null && TradeReceived is { } handler)
-						await handler(data.Symbol, data.Data, cancellationToken);
+						await handler.InvokeAsync(data.Symbol, data.Data, cancellationToken);
 					break;
 				}
 				case "push.kline":
 				{
 					var data = Deserialize<OurbitFuturesWsEnvelope<OurbitFuturesWsCandle>>(payload);
 					if (data?.Data is not null && CandleReceived is { } handler)
-						await handler(data.Symbol, data.Data, cancellationToken);
+						await handler.InvokeAsync(data.Symbol, data.Data, cancellationToken);
 					break;
 				}
 				case "push.personal.order":
 				{
 					var data = Deserialize<OurbitFuturesWsEnvelope<OurbitFuturesOrder>>(payload);
 					if (data?.Data is not null && OrderReceived is { } handler)
-						await handler(data.Data, cancellationToken);
+						await handler.InvokeAsync(data.Data, cancellationToken);
 					break;
 				}
 				case "push.personal.order.deal":
 				{
 					var data = Deserialize<OurbitFuturesWsEnvelope<OurbitFuturesFill>>(payload);
 					if (data?.Data is not null && FillReceived is { } handler)
-						await handler(data.Data, cancellationToken);
+						await handler.InvokeAsync(data.Data, cancellationToken);
 					break;
 				}
 				case "push.personal.asset":
 				{
 					var data = Deserialize<OurbitFuturesWsEnvelope<OurbitFuturesBalance>>(payload);
 					if (data?.Data is not null && BalanceReceived is { } handler)
-						await handler(data.Data, data.Time, cancellationToken);
+						await handler.InvokeAsync(data.Data, data.Time, cancellationToken);
 					break;
 				}
 				case "push.personal.position":
 				{
 					var data = Deserialize<OurbitFuturesWsEnvelope<OurbitFuturesPosition>>(payload);
 					if (data?.Data is not null && PositionReceived is { } handler)
-						await handler(data.Data, data.Time, cancellationToken);
+						await handler.InvokeAsync(data.Data, data.Time, cancellationToken);
 					break;
 				}
 			}
@@ -440,5 +440,5 @@ sealed class OurbitFuturesWsClient : BaseLogReceiver
 		});
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

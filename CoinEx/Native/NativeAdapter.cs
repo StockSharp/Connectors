@@ -27,7 +27,7 @@ abstract class NativeAdapter : BaseLogReceiver, IConnection
 	protected ValueTask SendOutMessageAsync(Message message, CancellationToken cancellationToken)
 	{
 		if (NewOutMessage is { } handler)
-			return handler(this, message, cancellationToken);
+			return handler.InvokeAsync(this, message, cancellationToken);
 		return default;
 	}
 
@@ -48,7 +48,7 @@ abstract class NativeAdapter : BaseLogReceiver, IConnection
 
 	protected ValueTask SendOutConnectionStateAsync(ConnectionStates state, CancellationToken cancellationToken)
 	{
-		return StateChanged?.Invoke(state, cancellationToken) ?? default;
+		return StateChanged.InvokeAsync(state, cancellationToken);
 	}
 
 	public abstract ValueTask ConnectAsync(CancellationToken cancellationToken);

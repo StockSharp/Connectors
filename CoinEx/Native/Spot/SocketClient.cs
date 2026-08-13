@@ -36,14 +36,14 @@ class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -117,37 +117,37 @@ class SocketClient : BaseLogReceiver
 		if (method.ContainsIgnoreCase(Channel.Ticker))
 		{
 			if (TickersReceived is { } handler)
-				await handler(((JToken)data.state_list).DeserializeObject<IEnumerable<Ticker>>(), cancellationToken);
+				await handler.InvokeAsync(((JToken)data.state_list).DeserializeObject<IEnumerable<Ticker>>(), cancellationToken);
 		}
 		else if (method.ContainsIgnoreCase(Channel.Ticks))
 		{
 			if (TicksReceived is { } handler)
-				await handler((string)data.market, ((JToken)data.deal_list).DeserializeObject<IEnumerable<Tick>>(), cancellationToken);
+				await handler.InvokeAsync((string)data.market, ((JToken)data.deal_list).DeserializeObject<IEnumerable<Tick>>(), cancellationToken);
 		}
 		else if (method.ContainsIgnoreCase(Channel.Depth))
 		{
 			if (OrderBookReceived is { } handler)
-				await handler((string)data.market, (bool)data.is_full, ((JToken)data.depth).DeserializeObject<OrderBook>(), cancellationToken);
+				await handler.InvokeAsync((string)data.market, (bool)data.is_full, ((JToken)data.depth).DeserializeObject<OrderBook>(), cancellationToken);
 		}
 		else if (method.ContainsIgnoreCase(Channel.Best))
 		{
 			if (BestReceived is { } handler)
-				await handler(((JToken)data).DeserializeObject<Best>(), cancellationToken);
+				await handler.InvokeAsync(((JToken)data).DeserializeObject<Best>(), cancellationToken);
 		}
 		else if (method.ContainsIgnoreCase(Channel.Order))
 		{
 			if (OrderReceived is { } handler)
-				await handler(((JToken)data.order).DeserializeObject<Order>(), (string)data.@event, cancellationToken);
+				await handler.InvokeAsync(((JToken)data.order).DeserializeObject<Order>(), (string)data.@event, cancellationToken);
 		}
 		else if (method.ContainsIgnoreCase(Channel.Deals))
 		{
 			if (DealReceived is { } handler)
-				await handler(((JToken)data).DeserializeObject<Deal>(), cancellationToken);
+				await handler.InvokeAsync(((JToken)data).DeserializeObject<Deal>(), cancellationToken);
 		}
 		else if (method.ContainsIgnoreCase(Channel.Balance))
 		{
 			if (BalanceReceived is { } handler)
-				await handler(((JToken)data.balance_list).DeserializeObject<IEnumerable<Balance>>(), cancellationToken);
+				await handler.InvokeAsync(((JToken)data.balance_list).DeserializeObject<IEnumerable<Balance>>(), cancellationToken);
 		}
 		else
 		{

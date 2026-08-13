@@ -193,7 +193,7 @@ sealed class BackpackWsClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(string stream, bool isSubscribe,
@@ -272,51 +272,51 @@ sealed class BackpackWsClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<BackpackWsEnvelope<BackpackWsBookTicker>>(payload);
 				if (envelope.Data is not null && BookTickerReceived is { } handler)
-					await handler(envelope.Data, cancellationToken);
+					await handler.InvokeAsync(envelope.Data, cancellationToken);
 			}
 			else if (header.Stream.StartsWith("depth.", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<BackpackWsEnvelope<BackpackWsDepth>>(payload);
 				if (envelope.Data is not null && DepthReceived is { } handler)
-					await handler(envelope.Data, cancellationToken);
+					await handler.InvokeAsync(envelope.Data, cancellationToken);
 			}
 			else if (header.Stream.StartsWith("trade.", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<BackpackWsEnvelope<BackpackWsTrade>>(payload);
 				if (envelope.Data is not null && TradeReceived is { } handler)
-					await handler(envelope.Data, cancellationToken);
+					await handler.InvokeAsync(envelope.Data, cancellationToken);
 			}
 			else if (header.Stream.StartsWith("ticker.", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<BackpackWsEnvelope<BackpackWsTicker>>(payload);
 				if (envelope.Data is not null && TickerReceived is { } handler)
-					await handler(envelope.Data, cancellationToken);
+					await handler.InvokeAsync(envelope.Data, cancellationToken);
 			}
 			else if (header.Stream.StartsWith("kline.", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<BackpackWsEnvelope<BackpackWsKline>>(payload);
 				if (envelope.Data is not null && KlineReceived is { } handler)
-					await handler(header.Stream, envelope.Data, cancellationToken);
+					await handler.InvokeAsync(header.Stream, envelope.Data, cancellationToken);
 			}
 			else if (header.Stream.StartsWith("markPrice.", StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<BackpackWsEnvelope<BackpackWsMarkPrice>>(payload);
 				if (envelope.Data is not null && MarkPriceReceived is { } handler)
-					await handler(envelope.Data, cancellationToken);
+					await handler.InvokeAsync(envelope.Data, cancellationToken);
 			}
 			else if (header.Stream.StartsWith("account.orderUpdate",
 				StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<BackpackWsEnvelope<BackpackWsOrderUpdate>>(payload);
 				if (envelope.Data is not null && OrderReceived is { } handler)
-					await handler(envelope.Data, cancellationToken);
+					await handler.InvokeAsync(envelope.Data, cancellationToken);
 			}
 			else if (header.Stream.StartsWith("account.positionUpdate",
 				StringComparison.OrdinalIgnoreCase))
 			{
 				var envelope = Deserialize<BackpackWsEnvelope<BackpackWsPositionUpdate>>(payload);
 				if (envelope.Data is not null && PositionReceived is { } handler)
-					await handler(envelope.Data, cancellationToken);
+					await handler.InvokeAsync(envelope.Data, cancellationToken);
 			}
 			else
 				throw new InvalidDataException(
@@ -335,5 +335,5 @@ sealed class BackpackWsClient : BaseLogReceiver
 				"Backpack Exchange WebSocket returned an empty message.");
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

@@ -174,7 +174,7 @@ sealed class WhiteBitWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSessionAsync(CancellationToken cancellationToken)
@@ -340,39 +340,39 @@ sealed class WhiteBitWsClient : BaseLogReceiver
 			{
 				case "market_update":
 					if (MarketReceived is { } marketHandler)
-						await marketHandler(Deserialize<WhiteBitWsEnvelope<WhiteBitMarketUpdateParams>>(payload).Parameters, cancellationToken);
+						await marketHandler.InvokeAsync(Deserialize<WhiteBitWsEnvelope<WhiteBitMarketUpdateParams>>(payload).Parameters, cancellationToken);
 					break;
 
 				case "depth_update":
 					if (DepthReceived is { } depthHandler)
-						await depthHandler(Deserialize<WhiteBitWsEnvelope<WhiteBitDepthUpdateParams>>(payload).Parameters, cancellationToken);
+						await depthHandler.InvokeAsync(Deserialize<WhiteBitWsEnvelope<WhiteBitDepthUpdateParams>>(payload).Parameters, cancellationToken);
 					break;
 
 				case "trades_update":
 					if (TradesReceived is { } tradesHandler)
-						await tradesHandler(Deserialize<WhiteBitWsEnvelope<WhiteBitTradesUpdateParams>>(payload).Parameters, cancellationToken);
+						await tradesHandler.InvokeAsync(Deserialize<WhiteBitWsEnvelope<WhiteBitTradesUpdateParams>>(payload).Parameters, cancellationToken);
 					break;
 
 				case "candles_update":
 					if (CandleReceived is { } candleHandler)
-						await candleHandler(Deserialize<WhiteBitWsEnvelope<WhiteBitCandleUpdateParams>>(payload).Parameters, cancellationToken);
+						await candleHandler.InvokeAsync(Deserialize<WhiteBitWsEnvelope<WhiteBitCandleUpdateParams>>(payload).Parameters, cancellationToken);
 					break;
 
 				case "balancespot_update":
 					if (SpotBalanceReceived is { } spotBalanceHandler)
-						await spotBalanceHandler(Deserialize<WhiteBitWsEnvelope<WhiteBitSpotBalanceUpdateParams>>(payload).Parameters.Balances, cancellationToken);
+						await spotBalanceHandler.InvokeAsync(Deserialize<WhiteBitWsEnvelope<WhiteBitSpotBalanceUpdateParams>>(payload).Parameters.Balances, cancellationToken);
 					break;
 
 				case "balancemargin_update":
 					if (MarginBalanceReceived is { } marginBalanceHandler)
-						await marginBalanceHandler(Deserialize<WhiteBitWsEnvelope<WhiteBitMarginBalanceUpdate[]>>(payload).Parameters ?? [], cancellationToken);
+						await marginBalanceHandler.InvokeAsync(Deserialize<WhiteBitWsEnvelope<WhiteBitMarginBalanceUpdate[]>>(payload).Parameters ?? [], cancellationToken);
 					break;
 
 				case "orderspending_update":
 					if (PendingOrderReceived is { } pendingOrderHandler)
 					{
 						var update = Deserialize<WhiteBitWsEnvelope<WhiteBitPendingOrderUpdateParams>>(payload).Parameters;
-						await pendingOrderHandler(update.EventId, update.Order, cancellationToken);
+						await pendingOrderHandler.InvokeAsync(update.EventId, update.Order, cancellationToken);
 					}
 					break;
 
@@ -380,20 +380,20 @@ sealed class WhiteBitWsClient : BaseLogReceiver
 					if (ExecutedOrderReceived is { } executedOrderHandler)
 					{
 						foreach (var order in Deserialize<WhiteBitWsEnvelope<WhiteBitOrder[]>>(payload).Parameters ?? [])
-							await executedOrderHandler(order, cancellationToken);
+							await executedOrderHandler.InvokeAsync(order, cancellationToken);
 					}
 					break;
 
 				case "deals_update":
 					if (UserTradeReceived is { } userTradeHandler)
-						await userTradeHandler(Deserialize<WhiteBitWsEnvelope<WhiteBitDealUpdateParams>>(payload).Parameters.Trade, cancellationToken);
+						await userTradeHandler.InvokeAsync(Deserialize<WhiteBitWsEnvelope<WhiteBitDealUpdateParams>>(payload).Parameters.Trade, cancellationToken);
 					break;
 
 				case "positionsmargin_update":
 					if (PositionReceived is { } positionHandler)
 					{
 						var positions = Deserialize<WhiteBitWsEnvelope<WhiteBitPositionCollection>>(payload).Parameters;
-						await positionHandler(positions?.Records ?? [], cancellationToken);
+						await positionHandler.InvokeAsync(positions?.Records ?? [], cancellationToken);
 					}
 					break;
 			}
@@ -413,7 +413,7 @@ sealed class WhiteBitWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string NormalizeEndpoint(string endpoint)

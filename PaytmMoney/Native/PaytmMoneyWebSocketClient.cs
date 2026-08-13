@@ -25,11 +25,11 @@ sealed class PaytmMoneyWebSocketClient : BaseLogReceiver
             url,
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (message, args) => this.AddInfoLog(message, args),
@@ -164,7 +164,7 @@ sealed class PaytmMoneyWebSocketClient : BaseLogReceiver
         foreach (var tick in Decode(data.ToArray()))
         {
             if (TickReceived is { } handler)
-                await handler(tick, cancellationToken);
+                await handler.InvokeAsync(tick, cancellationToken);
         }
     }
 

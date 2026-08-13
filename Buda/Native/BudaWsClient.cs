@@ -161,7 +161,7 @@ sealed class BudaWsClient : BaseLogReceiver
 		{
 			var value = DeserializeMessage(payload);
 			if (MessageReceived is { } handler)
-				await handler(value, cancellationToken);
+				await handler.InvokeAsync(value, cancellationToken);
 		}
 		catch (Exception error) when (
 			error is JsonException or InvalidDataException or
@@ -255,14 +255,14 @@ sealed class BudaWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private ValueTask RaiseStateAsync(
 		ConnectionStates state,
 		CancellationToken cancellationToken)
 		=> StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 
 	private static async ValueTask DisconnectClientAsync(

@@ -161,7 +161,7 @@ sealed class DirectaLineClient : BaseLogReceiver
                 }
                 if (LineReceived is { } handler)
                 {
-                    await handler(line, cancellationToken);
+                    await handler.InvokeAsync(line, cancellationToken);
                 }
             }
         }
@@ -172,7 +172,7 @@ sealed class DirectaLineClient : BaseLogReceiver
         catch (Exception error)
         {
             if (!_stopping && Error is { } handler)
-                await handler(error, CancellationToken.None);
+                await handler.InvokeAsync(error, CancellationToken.None);
         }
     }
 

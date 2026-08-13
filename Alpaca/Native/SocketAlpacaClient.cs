@@ -31,14 +31,14 @@ abstract class SocketAlpacaClient : BaseLogReceiver, IConnection
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -134,7 +134,7 @@ class SocketTradingClient : SocketAlpacaClient
 			}
 			case "trade_updates":
 				if (OrderReceived is { } handler)
-					await handler(((JObject)obj.data).DeserializeObject<OrderData>(), cancellationToken);
+					await handler.InvokeAsync(((JObject)obj.data).DeserializeObject<OrderData>(), cancellationToken);
 				break;
 			default:
 				this.AddErrorLog(LocalizedStrings.UnknownEvent, stream);
@@ -192,25 +192,25 @@ abstract class SocketMarketDataClient : SocketAlpacaClient
 			{
 				case "t":
 					if (TickReceived is { } tickHandler)
-						await tickHandler(symbol, itemObj.DeserializeObject<Tick>(), cancellationToken);
+						await tickHandler.InvokeAsync(symbol, itemObj.DeserializeObject<Tick>(), cancellationToken);
 					break;
 				case "q":
 					if (QuoteReceived is { } quoteHandler)
-						await quoteHandler(symbol, itemObj.DeserializeObject<Quote>(), cancellationToken);
+						await quoteHandler.InvokeAsync(symbol, itemObj.DeserializeObject<Quote>(), cancellationToken);
 					break;
 				case "b":
 				case "d":
 				case "u":
 					if (OhlcReceived is { } ohlcHandler)
-						await ohlcHandler(symbol, itemObj.DeserializeObject<Ohlc>(), cancellationToken);
+						await ohlcHandler.InvokeAsync(symbol, itemObj.DeserializeObject<Ohlc>(), cancellationToken);
 					break;
 				case "o":
 					if (OrderBookReceived is { } bookHandler)
-						await bookHandler(symbol, itemObj.DeserializeObject<OrderBook>(), cancellationToken);
+						await bookHandler.InvokeAsync(symbol, itemObj.DeserializeObject<OrderBook>(), cancellationToken);
 					break;
 				case "n":
 					if (NewsReceived is { } newsHandler)
-						await newsHandler(itemObj.DeserializeObject<News>(), cancellationToken);
+						await newsHandler.InvokeAsync(itemObj.DeserializeObject<News>(), cancellationToken);
 					break;
 				case "c": // trade correction
 				case "x": // trade cancel / error

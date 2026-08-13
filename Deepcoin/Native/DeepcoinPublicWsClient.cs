@@ -171,7 +171,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(_productType, state, cancellationToken);
+			await handler.InvokeAsync(_productType, state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(DeepcoinWsSubscriptionKey subscription,
@@ -303,7 +303,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 		{
 			var instrumentId = ResolveInstrument(ticker.InstrumentId);
 			if (!instrumentId.IsEmpty())
-				await handler(_productType, instrumentId, ticker, cancellationToken);
+				await handler.InvokeAsync(_productType, instrumentId, ticker, cancellationToken);
 		}
 	}
 
@@ -316,7 +316,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 			return;
 
 		foreach (var trade in envelope.Data ?? [])
-			await handler(_productType, instrumentId, trade, cancellationToken);
+			await handler.InvokeAsync(_productType, instrumentId, trade, cancellationToken);
 	}
 
 	private async ValueTask ProcessBookAsync(string payload,
@@ -326,7 +326,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 		var instrumentId = ResolveInstrument(envelope.InstrumentId);
 		if (instrumentId.IsEmpty() || envelope.Data is null || BookReceived is not { } handler)
 			return;
-		await handler(_productType, instrumentId, envelope.Data,
+		await handler.InvokeAsync(_productType, instrumentId, envelope.Data,
 			envelope.UpdateType == DeepcoinBookUpdateTypes.Full
 				? QuoteChangeStates.SnapshotComplete
 				: QuoteChangeStates.Increment,
@@ -342,7 +342,7 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 			return;
 
 		foreach (var candle in envelope.Data ?? [])
-			await handler(_productType, instrumentId, envelope.Period, candle, cancellationToken);
+			await handler.InvokeAsync(_productType, instrumentId, envelope.Period, candle, cancellationToken);
 	}
 
 	private string ResolveInstrument(string wireSymbol)
@@ -371,5 +371,5 @@ sealed class DeepcoinPublicWsClient : BaseLogReceiver
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

@@ -18,8 +18,8 @@ sealed class DhanMarketDataClient : BaseLogReceiver
 
 		_client = new(
 			url,
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -115,7 +115,7 @@ sealed class DhanMarketDataClient : BaseLogReceiver
 
 			var tick = Decode(packet[..length]);
 			if (tick != null && TickReceived is { } handler)
-				await handler(tick, cancellationToken);
+				await handler.InvokeAsync(tick, cancellationToken);
 			offset += length;
 		}
 	}

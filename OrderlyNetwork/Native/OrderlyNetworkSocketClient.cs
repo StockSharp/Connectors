@@ -384,7 +384,7 @@ sealed class OrderlyNetworkSocketClient : BaseLogReceiver
 			FailPending(new InvalidOperationException(
 				"Orderly WebSocket connection failed."));
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask DisposeClientAsync(
@@ -438,13 +438,13 @@ sealed class OrderlyNetworkSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static ValueTask RaiseAsync<T>(
 		Func<T, CancellationToken, ValueTask> handler, T value,
 		CancellationToken cancellationToken)
-		=> handler is null ? default : handler(value, cancellationToken);
+		=> handler is null ? default : handler.InvokeAsync(value, cancellationToken);
 
 	protected override void DisposeManaged()
 	{

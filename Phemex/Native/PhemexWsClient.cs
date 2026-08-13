@@ -210,7 +210,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSessionAsync(WebSocketClient client,
@@ -416,7 +416,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 				Side = trade.Side,
 				Timestamp = trade.Timestamp,
 			}).ToArray();
-		await handler(new()
+		await handler.InvokeAsync(new()
 		{
 			Symbol = symbol.ToUpperInvariant(),
 			Timestamp = NanosecondsToMilliseconds(timestamp),
@@ -461,7 +461,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 				UpdateTime = delta.UpdateTime,
 			};
 		}
-		await handler(new()
+		await handler.InvokeAsync(new()
 		{
 			Symbol = symbol.ToUpperInvariant(),
 			Timestamp = snapshot.UpdateTime,
@@ -490,7 +490,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 		if (IndexReceived is not { } handler)
 			return;
 		var normalized = _restClient.NormalizeSpotTicker(ticker);
-		await handler(ToIndexMessage(normalized, timestamp), cancellationToken);
+		await handler.InvokeAsync(ToIndexMessage(normalized, timestamp), cancellationToken);
 	}
 
 	private async ValueTask RaiseFuturesTickersAsync(PhemexWsTickerPack[] tickers, long timestamp,
@@ -517,7 +517,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 				BidPrice = ticker.BidPrice,
 				AskPrice = ticker.AskPrice,
 			});
-			await handler(ToIndexMessage(normalized, timestamp), cancellationToken);
+			await handler.InvokeAsync(ToIndexMessage(normalized, timestamp), cancellationToken);
 		}
 	}
 
@@ -552,7 +552,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 	{
 		if (envelope.SpotWallets is { Length: > 0 } && BalanceReceived is { } balanceHandler)
 		{
-			await balanceHandler(PhemexSections.Spot, new()
+			await balanceHandler.InvokeAsync(PhemexSections.Spot, new()
 			{
 				Timestamp = NanosecondsToMilliseconds(envelope.Timestamp),
 				Data = new()
@@ -571,7 +571,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 				.Concat(envelope.SpotOrders.Closed ?? []))
 			{
 				var normalized = _restClient.NormalizeOrder(PhemexSections.Spot, order);
-				await orderHandler(PhemexSections.Spot, new()
+				await orderHandler.InvokeAsync(PhemexSections.Spot, new()
 				{
 					Symbol = normalized.Symbol,
 					Timestamp = normalized.UpdateTime,
@@ -584,7 +584,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 			foreach (var fill in envelope.SpotOrders.Fills ?? [])
 			{
 				var normalized = _restClient.NormalizeFill(PhemexSections.Spot, fill.Symbol, fill);
-				await fillHandler(PhemexSections.Spot, new()
+				await fillHandler.InvokeAsync(PhemexSections.Spot, new()
 				{
 					Symbol = normalized.Symbol,
 					Timestamp = normalized.Timestamp,
@@ -599,7 +599,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 	{
 		if (envelope.FuturesAccounts is { Length: > 0 } && BalanceReceived is { } balanceHandler)
 		{
-			await balanceHandler(PhemexSections.Futures, new()
+			await balanceHandler.InvokeAsync(PhemexSections.Futures, new()
 			{
 				Timestamp = NanosecondsToMilliseconds(envelope.Timestamp),
 				Data = new()
@@ -616,7 +616,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 		{
 			var order = _restClient.NormalizeOrder(PhemexSections.Futures, wireOrder);
 			if (OrderReceived is { } orderHandler)
-				await orderHandler(PhemexSections.Futures, new()
+				await orderHandler.InvokeAsync(PhemexSections.Futures, new()
 				{
 					Symbol = order.Symbol,
 					Timestamp = order.UpdateTime,
@@ -639,7 +639,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 						FuturesFee = wireOrder.FuturesFee,
 						Timestamp = wireOrder.UpdateTime,
 					});
-				await fillHandler(PhemexSections.Futures, new()
+				await fillHandler.InvokeAsync(PhemexSections.Futures, new()
 				{
 					Symbol = fill.Symbol,
 					Timestamp = fill.Timestamp,
@@ -653,7 +653,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 			foreach (var wirePosition in envelope.FuturesPositions ?? [])
 			{
 				var position = PhemexRestClient.NormalizePosition(wirePosition);
-				await positionHandler(new()
+				await positionHandler.InvokeAsync(new()
 				{
 					Symbol = position.Symbol,
 					Timestamp = position.UpdateTime,
@@ -683,7 +683,7 @@ sealed class PhemexWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static long NanosecondsToMilliseconds(long value)

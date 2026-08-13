@@ -124,7 +124,7 @@ sealed class PythSocketPool : BaseLogReceiver
 	private ValueTask OnMessageReceivedAsync(PythSocketMessage message,
 		CancellationToken cancellationToken)
 		=> MessageReceived is { } handler
-			? handler(message, cancellationToken)
+			? handler.InvokeAsync(message, cancellationToken)
 			: default;
 
 	private ValueTask OnErrorAsync(PythSocketConnection connection,
@@ -140,7 +140,7 @@ sealed class PythSocketPool : BaseLogReceiver
 			}
 		}
 		return Error is { } handler
-			? handler(error, isPoolTerminal, cancellationToken)
+			? handler.InvokeAsync(error, isPoolTerminal, cancellationToken)
 			: default;
 	}
 
@@ -276,7 +276,7 @@ sealed class PythSocketConnection : BaseLogReceiver
 				isEverConnected = true;
 				_initialConnection.TrySetResult();
 				if (Connected is { } connected)
-					await connected(this, cancellationToken);
+					await connected.InvokeAsync(this, cancellationToken);
 				await ReceiveAsync(socket, cancellationToken);
 				if (!cancellationToken.IsCancellationRequested)
 					throw new WebSocketException(
@@ -292,7 +292,7 @@ sealed class PythSocketConnection : BaseLogReceiver
 				failures++;
 				var isTerminal = failures >= _maximumAttempts;
 				if (Error is { } handler)
-					await handler(this, Redact(error), isTerminal,
+					await handler.InvokeAsync(this, Redact(error), isTerminal,
 						CancellationToken.None);
 				if (isTerminal)
 				{
@@ -334,7 +334,7 @@ sealed class PythSocketConnection : BaseLogReceiver
 				throw new InvalidDataException(
 					"Pyth WebSocket returned an unknown message.");
 			if (MessageReceived is { } handler)
-				await handler(message, cancellationToken);
+				await handler.InvokeAsync(message, cancellationToken);
 		}
 	}
 

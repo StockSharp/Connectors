@@ -18,7 +18,7 @@ sealed class AsterWsClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 
 				return default;
 			},
@@ -27,7 +27,7 @@ sealed class AsterWsClient : BaseLogReceiver
 				this.AddErrorLog(error);
 
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 
 				return default;
 			},
@@ -136,7 +136,7 @@ sealed class AsterWsClient : BaseLogReceiver
 			var ex = new InvalidOperationException(obj.ToString(Formatting.None));
 
 			if (Error is { } errorHandler)
-				await errorHandler(ex, cancellationToken);
+				await errorHandler.InvokeAsync(ex, cancellationToken);
 
 			return;
 		}
@@ -149,22 +149,22 @@ sealed class AsterWsClient : BaseLogReceiver
 			case "ticker":
 			case "bookticker":
 				if (TickerReceived is { } tickerHandler)
-					await tickerHandler(obj, cancellationToken);
+					await tickerHandler.InvokeAsync(obj, cancellationToken);
 				return;
 
 			case "depthupdate":
 				if (DepthReceived is { } depthHandler)
-					await depthHandler(obj, cancellationToken);
+					await depthHandler.InvokeAsync(obj, cancellationToken);
 				return;
 
 			case "aggtrade":
 				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(obj, cancellationToken);
+					await tradeHandler.InvokeAsync(obj, cancellationToken);
 				return;
 
 			case "kline":
 				if (CandleReceived is { } candleHandler)
-					await candleHandler(obj, cancellationToken);
+					await candleHandler.InvokeAsync(obj, cancellationToken);
 				return;
 
 			case "executionreport":
@@ -173,24 +173,24 @@ sealed class AsterWsClient : BaseLogReceiver
 			case "balanceupdate":
 			case "account_update":
 				if (PrivateEventReceived is { } privateHandler)
-					await privateHandler(obj, cancellationToken);
+					await privateHandler.InvokeAsync(obj, cancellationToken);
 				return;
 		}
 
 		if (obj["k"] is JObject && CandleReceived is { } fallbackCandleHandler)
 		{
-			await fallbackCandleHandler(obj, cancellationToken);
+			await fallbackCandleHandler.InvokeAsync(obj, cancellationToken);
 			return;
 		}
 
 		if (obj["b"] is not null && obj["a"] is not null && DepthReceived is { } fallbackDepthHandler)
 		{
-			await fallbackDepthHandler(obj, cancellationToken);
+			await fallbackDepthHandler.InvokeAsync(obj, cancellationToken);
 			return;
 		}
 
 		if ((obj["c"] is not null || obj["lastPrice"] is not null) && TickerReceived is { } fallbackTickerHandler)
-			await fallbackTickerHandler(obj, cancellationToken);
+			await fallbackTickerHandler.InvokeAsync(obj, cancellationToken);
 	}
 
 	private long GetOrCreateSubscriptionId(string stream)

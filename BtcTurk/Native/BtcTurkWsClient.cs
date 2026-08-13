@@ -183,7 +183,7 @@ sealed class BtcTurkWsClient : BaseLogReceiver
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -280,14 +280,14 @@ sealed class BtcTurkWsClient : BaseLogReceiver
 
 				case BtcTurkWsMessageTypes.Ticker:
 					if (TickerReceived is { } tickerHandler)
-						await tickerHandler(DeserializeEnvelope<
+						await tickerHandler.InvokeAsync(DeserializeEnvelope<
 							BtcTurkWsTicker>(payload).Data,
 							cancellationToken);
 					break;
 
 				case BtcTurkWsMessageTypes.OrderBook:
 					if (OrderBookReceived is { } bookHandler)
-						await bookHandler(DeserializeEnvelope<
+						await bookHandler.InvokeAsync(DeserializeEnvelope<
 							BtcTurkWsOrderBook>(payload).Data,
 							cancellationToken);
 					break;
@@ -301,14 +301,14 @@ sealed class BtcTurkWsClient : BaseLogReceiver
 						{
 							trade.PairSymbol =
 								trade.PairSymbol.IsEmpty(history.PairSymbol);
-							await historyHandler(trade, cancellationToken);
+							await historyHandler.InvokeAsync(trade, cancellationToken);
 						}
 					}
 					break;
 
 				case BtcTurkWsMessageTypes.Trade:
 					if (TradeReceived is { } tradeHandler)
-						await tradeHandler(DeserializeEnvelope<
+						await tradeHandler.InvokeAsync(DeserializeEnvelope<
 							BtcTurkWsTrade>(payload).Data,
 							cancellationToken);
 					break;
@@ -355,5 +355,5 @@ sealed class BtcTurkWsClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

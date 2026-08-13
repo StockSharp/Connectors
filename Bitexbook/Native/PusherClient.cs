@@ -31,7 +31,7 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 
 				return default;
 			},
@@ -40,7 +40,7 @@ class PusherClient : BaseLogReceiver
 				this.AddErrorLog(error);
 
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 
 				return default;
 			},
@@ -83,7 +83,7 @@ class PusherClient : BaseLogReceiver
 			case Methods.Welcome:
 			{
 				if (NewSymbols is { } handler)
-					await handler(((JToken)obj.data.symbols).DeserializeObject<Symbol[]>(), cancellationToken);
+					await handler.InvokeAsync(((JToken)obj.data.symbols).DeserializeObject<Symbol[]>(), cancellationToken);
 
 				break;
 			}
@@ -93,7 +93,7 @@ class PusherClient : BaseLogReceiver
 				if (TickerChanged is { } handler)
 				{
 					foreach (var ticker in data.DeserializeObject<Ticker[]>())
-						await handler(ticker, cancellationToken);
+						await handler.InvokeAsync(ticker, cancellationToken);
 				}
 
 				break;
@@ -104,7 +104,7 @@ class PusherClient : BaseLogReceiver
 				if (NewTickerChange is { } handler)
 				{
 					foreach (var ticker in data.DeserializeObject<IDictionary<string, TickerChange>>())
-						await handler(ticker.Value, cancellationToken);
+						await handler.InvokeAsync(ticker.Value, cancellationToken);
 				}
 
 				break;
@@ -113,7 +113,7 @@ class PusherClient : BaseLogReceiver
 			case Methods.OrdersLatest:
 			{
 				if (LatestOrders is { } handler)
-					await handler(data.DeserializeObject<Order[]>(), cancellationToken);
+					await handler.InvokeAsync(data.DeserializeObject<Order[]>(), cancellationToken);
 
 				break;
 			}
@@ -128,7 +128,7 @@ class PusherClient : BaseLogReceiver
 					var tickets = ((JToken)obj.data.tickets).DeserializeObject<IDictionary<string, Ticket[]>>();
 
 					foreach (var pair in tickets)
-						await handler(pair.Value, cancellationToken);
+						await handler.InvokeAsync(pair.Value, cancellationToken);
 				}
 
 				break;
@@ -137,7 +137,7 @@ class PusherClient : BaseLogReceiver
 			case Methods.TicketAdded:
 			{
 				if (TicketAdded is { } handler)
-					await handler(((JToken)obj).DeserializeObject<Ticket>(), cancellationToken);
+					await handler.InvokeAsync(((JToken)obj).DeserializeObject<Ticket>(), cancellationToken);
 
 				break;
 			}
@@ -145,7 +145,7 @@ class PusherClient : BaseLogReceiver
 			case Methods.TicketCanceled:
 			{
 				if (TicketCanceled is { } handler)
-					await handler(((JToken)obj).DeserializeObject<Ticket>(), cancellationToken);
+					await handler.InvokeAsync(((JToken)obj).DeserializeObject<Ticket>(), cancellationToken);
 
 				break;
 			}
@@ -153,7 +153,7 @@ class PusherClient : BaseLogReceiver
 			case Methods.TicketExecuted:
 			{
 				if (TicketExecuted is { } handler)
-					await handler(((JToken)obj).DeserializeObject<Ticket>(), cancellationToken);
+					await handler.InvokeAsync(((JToken)obj).DeserializeObject<Ticket>(), cancellationToken);
 
 				break;
 			}

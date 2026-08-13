@@ -197,7 +197,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 			FailPending(new InvalidOperationException(
 				"Extended WebSocket connection failed."));
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -346,7 +346,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 			}
 			if (previous is long last && sequence != last + 1 &&
 				SequenceGap is { } gapHandler)
-				await gapHandler(last, sequence, cancellationToken);
+				await gapHandler.InvokeAsync(last, sequence, cancellationToken);
 			if (subscription == default)
 				return;
 			await DispatchAsync(subscription, header, payload, cancellationToken);
@@ -406,7 +406,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 				if (envelope.Data is not null && envelope.Data.Market.IsEmpty())
 					envelope.Data.Market = subscription.Market;
 				if (OrderBookReceived is { } handler)
-					await handler(envelope.Data, subscription.Detail,
+					await handler.InvokeAsync(envelope.Data, subscription.Detail,
 						envelope.Timestamp,
 						envelope.Sequence,
 						envelope.Data?.UpdateType.Equals("SNAPSHOT",
@@ -421,7 +421,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 					ExtendedPublicTrade[]>>(payload);
 				ValidateEnvelope(envelope.Error);
 				if (TradesReceived is { } handler)
-					await handler(envelope.Data ?? [], envelope.Timestamp,
+					await handler.InvokeAsync(envelope.Data ?? [], envelope.Timestamp,
 						envelope.Sequence, cancellationToken);
 				break;
 			}
@@ -431,7 +431,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 					ExtendedFundingRate>>(payload);
 				ValidateEnvelope(envelope.Error);
 				if (FundingRateReceived is { } handler)
-					await handler(envelope.Data, envelope.Timestamp,
+					await handler.InvokeAsync(envelope.Data, envelope.Timestamp,
 						envelope.Sequence, cancellationToken);
 				break;
 			}
@@ -448,7 +448,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 						"Extended returned an unknown price stream."),
 				};
 				if (PriceReceived is { } handler)
-					await handler(envelope.Data, priceType, envelope.Timestamp,
+					await handler.InvokeAsync(envelope.Data, priceType, envelope.Timestamp,
 						envelope.Sequence, cancellationToken);
 				break;
 			}
@@ -458,7 +458,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 					payload);
 				ValidateEnvelope(envelope.Error);
 				if (CandlesReceived is { } handler)
-					await handler(subscription.Market, subscription.Interval,
+					await handler.InvokeAsync(subscription.Market, subscription.Interval,
 						envelope.Data ?? [], envelope.Timestamp, envelope.Sequence,
 						cancellationToken);
 				break;
@@ -483,7 +483,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 					ExtendedAccountPositionsUpdate>>(payload);
 				ValidateEnvelope(envelope.Error);
 				if (PositionsReceived is { } handler)
-					await handler(envelope.Data?.Positions ?? [],
+					await handler.InvokeAsync(envelope.Data?.Positions ?? [],
 						envelope.Data?.IsSnapshot == true, envelope.Timestamp,
 						envelope.Sequence, cancellationToken);
 				break;
@@ -494,7 +494,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 					ExtendedAccountOrdersUpdate>>(payload);
 				ValidateEnvelope(envelope.Error);
 				if (OrdersReceived is { } handler)
-					await handler(envelope.Data?.Orders ?? [],
+					await handler.InvokeAsync(envelope.Data?.Orders ?? [],
 						envelope.Data?.IsSnapshot == true, envelope.Timestamp,
 						envelope.Sequence, cancellationToken);
 				break;
@@ -505,7 +505,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 					ExtendedAccountTradesUpdate>>(payload);
 				ValidateEnvelope(envelope.Error);
 				if (AccountTradesReceived is { } handler)
-					await handler(envelope.Data?.Trades ?? [],
+					await handler.InvokeAsync(envelope.Data?.Trades ?? [],
 						envelope.Data?.IsSnapshot == true, envelope.Timestamp,
 						envelope.Sequence, cancellationToken);
 				break;
@@ -516,7 +516,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 					ExtendedAccountBalanceUpdate>>(payload);
 				ValidateEnvelope(envelope.Error);
 				if (BalanceReceived is { } handler)
-					await handler(envelope.Data?.Balance,
+					await handler.InvokeAsync(envelope.Data?.Balance,
 						envelope.Data?.IsSnapshot == true, envelope.Timestamp,
 						envelope.Sequence, cancellationToken);
 				break;
@@ -527,7 +527,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 					ExtendedAccountSpotBalancesUpdate>>(payload);
 				ValidateEnvelope(envelope.Error);
 				if (SpotBalancesReceived is { } handler)
-					await handler(envelope.Data?.SpotBalances ?? [],
+					await handler.InvokeAsync(envelope.Data?.SpotBalances ?? [],
 						envelope.Data?.IsSnapshot == true, envelope.Timestamp,
 						envelope.Sequence, cancellationToken);
 				break;
@@ -596,7 +596,7 @@ sealed class ExtendedWebSocketClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private void FailPending(Exception error)

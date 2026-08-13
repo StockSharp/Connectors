@@ -281,7 +281,7 @@ sealed class BigOneSpotWsClient : BaseLogReceiver
 					stream, true, cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -436,21 +436,21 @@ sealed class BigOneSpotWsClient : BaseLogReceiver
 			foreach (var account in
 				response.AccountsSnapshot?.Accounts ?? [])
 				if (BalanceReceived is { } balanceHandler)
-					await balanceHandler(
+					await balanceHandler.InvokeAsync(
 						account.ToBalance(), cancellationToken);
 			if (response.AccountUpdate?.Account is { } accountUpdate &&
 				BalanceReceived is { } accountUpdateHandler)
-				await accountUpdateHandler(
+				await accountUpdateHandler.InvokeAsync(
 					accountUpdate.ToBalance(), cancellationToken);
 
 			foreach (var order in
 				response.OrdersSnapshot?.Orders ?? [])
 				if (OrderReceived is { } orderHandler)
-					await orderHandler(
+					await orderHandler.InvokeAsync(
 						order.ToOrder(), cancellationToken);
 			if (response.OrderUpdate?.Order is { } orderUpdate &&
 				OrderReceived is { } orderUpdateHandler)
-				await orderUpdateHandler(
+				await orderUpdateHandler.InvokeAsync(
 					orderUpdate.ToOrder(), cancellationToken);
 		}
 		catch (Exception error) when (error is JsonException or
@@ -465,7 +465,7 @@ sealed class BigOneSpotWsClient : BaseLogReceiver
 		BigOneSpotTicker ticker,
 		CancellationToken cancellationToken)
 		=> TickerReceived is { } handler
-			? handler(ticker.ToTicker(), cancellationToken)
+			? handler.InvokeAsync(ticker.ToTicker(), cancellationToken)
 			: default;
 
 	private async ValueTask RaiseDepthAsync(
@@ -504,7 +504,7 @@ sealed class BigOneSpotWsClient : BaseLogReceiver
 				new[] { pair.Key, pair.Value })];
 		}
 		if (OrderBookReceived is { } handler)
-			await handler(new()
+			await handler.InvokeAsync(new()
 			{
 				Pair = depth.Market,
 				Timestamp = DateTime.UtcNow
@@ -525,7 +525,7 @@ sealed class BigOneSpotWsClient : BaseLogReceiver
 		var converted = trades.Select(
 			trade => trade.ToTrade(market)).ToArray();
 		return TradesReceived is { } handler
-			? handler(new()
+			? handler.InvokeAsync(new()
 			{
 				Pair = market,
 				EventId = DateTime.UtcNow
@@ -544,7 +544,7 @@ sealed class BigOneSpotWsClient : BaseLogReceiver
 		if (CandleReceived is not { } handler)
 			return default;
 		var converted = candle.ToCandle(isSnapshot);
-		return handler(new()
+		return handler.InvokeAsync(new()
 		{
 			Market = candle.Market,
 			Kline = new()
@@ -566,7 +566,7 @@ sealed class BigOneSpotWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static void ApplyLevels(

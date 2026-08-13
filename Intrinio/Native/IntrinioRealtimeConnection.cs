@@ -510,7 +510,7 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 				try
 				{
 					if (EventReceived is { } handler)
-						await handler(update, cancellationToken);
+						await handler.InvokeAsync(update, cancellationToken);
 				}
 				catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
 				{
@@ -537,7 +537,7 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 
 		try
 		{
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
 		{

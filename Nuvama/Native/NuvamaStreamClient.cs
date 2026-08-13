@@ -375,7 +375,7 @@ sealed class NuvamaStreamClient : BaseLogReceiver
                     {
                         var quote = item.ToObject<NuvamaQuote>();
                         if (quote != null && !quote.Symbol.IsEmpty())
-                            await quoteHandler(quote, cancellationToken);
+                            await quoteHandler.InvokeAsync(quote, cancellationToken);
                     }
                 }
                 break;
@@ -387,7 +387,7 @@ sealed class NuvamaStreamClient : BaseLogReceiver
                     {
                         var depth = item.ToObject<NuvamaDepth>();
                         if (depth != null)
-                            await depthHandler(depth, cancellationToken);
+                            await depthHandler.InvokeAsync(depth, cancellationToken);
                     }
                 }
                 break;
@@ -396,7 +396,7 @@ sealed class NuvamaStreamClient : BaseLogReceiver
                 if (OrderReceived is { } orderHandler)
                 {
                     foreach (var item in items)
-                        await orderHandler(item, cancellationToken);
+                        await orderHandler.InvokeAsync(item, cancellationToken);
                 }
                 break;
 
@@ -457,7 +457,7 @@ sealed class NuvamaStreamClient : BaseLogReceiver
                 _stream = null;
                 _tcpClient = null;
                 if (Error is { } errorHandler)
-                    await errorHandler(error, cancellationToken);
+                    await errorHandler.InvokeAsync(error, cancellationToken);
                 if (attempt >= _reconnectAttempts)
                     break;
                 await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
@@ -568,6 +568,6 @@ sealed class NuvamaStreamClient : BaseLogReceiver
         ConnectionStates state,
         CancellationToken cancellationToken)
         => StateChanged is { } handler
-            ? handler(state, cancellationToken)
+            ? handler.InvokeAsync(state, cancellationToken)
             : default;
 }

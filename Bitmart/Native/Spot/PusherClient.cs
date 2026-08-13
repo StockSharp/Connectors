@@ -64,14 +64,14 @@ abstract class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -193,7 +193,7 @@ abstract class PusherClient : BaseLogReceiver
 		{
 			var error = new InvalidOperationException($"{evt}: no data");
 			if (Error is { } errorHandler)
-				await errorHandler(error, cancellationToken);
+				await errorHandler.InvokeAsync(error, cancellationToken);
 			return;
 		}
 
@@ -209,27 +209,27 @@ abstract class PusherClient : BaseLogReceiver
 		{
 			case Topics.Ticker:
 				if (TickersReceived is { } tickersHandler)
-					await tickersHandler(data.DeserializeObject<IEnumerable<Ticker>>(), cancellationToken);
+					await tickersHandler.InvokeAsync(data.DeserializeObject<IEnumerable<Ticker>>(), cancellationToken);
 				break;
 			case Topics.Ticks:
 				if (TicksReceived is { } ticksHandler)
-					await ticksHandler(data.DeserializeObject<IEnumerable<Tick>>(), cancellationToken);
+					await ticksHandler.InvokeAsync(data.DeserializeObject<IEnumerable<Tick>>(), cancellationToken);
 				break;
 			case Topics.Depth:
 				if (OrderBooksReceived is { } booksHandler)
-					await booksHandler(data.DeserializeObject<IEnumerable<OrderBook>>(), cancellationToken);
+					await booksHandler.InvokeAsync(data.DeserializeObject<IEnumerable<OrderBook>>(), cancellationToken);
 				break;
 			case Topics.Candles:
 				if (CandlesReceived is { } candlesHandler)
-					await candlesHandler(arg.ToTimeframe(), data.DeserializeObject<IEnumerable<OhlcData>>(), cancellationToken);
+					await candlesHandler.InvokeAsync(arg.ToTimeframe(), data.DeserializeObject<IEnumerable<OhlcData>>(), cancellationToken);
 				break;
 			case Topics.Order:
 				if (OrdersReceived is { } ordersHandler)
-					await ordersHandler(data.DeserializeObject<IEnumerable<SocketOrder>>(), cancellationToken);
+					await ordersHandler.InvokeAsync(data.DeserializeObject<IEnumerable<SocketOrder>>(), cancellationToken);
 				break;
 			case Topics.Balance:
 				if (BalancesReceived is { } balancesHandler)
-					await balancesHandler(data.DeserializeObject<IEnumerable<SocketBalanceData>>(), cancellationToken);
+					await balancesHandler.InvokeAsync(data.DeserializeObject<IEnumerable<SocketBalanceData>>(), cancellationToken);
 				break;
 			default:
 				this.AddErrorLog($"invalid topic='{table}', src={source}");
@@ -260,7 +260,7 @@ abstract class PusherClient : BaseLogReceiver
 		{
 			var error = new InvalidOperationException($"{evt}: error code={errorCode}: '{errorMessage}'");
 			if (Error is { } errorHandler)
-				await errorHandler(error, cancellationToken);
+				await errorHandler.InvokeAsync(error, cancellationToken);
 			return;
 		}
 

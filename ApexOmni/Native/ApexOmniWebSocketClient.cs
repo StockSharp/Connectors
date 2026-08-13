@@ -253,7 +253,7 @@ sealed class ApexOmniWebSocketClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask AuthenticateAsync(WebSocketClient client,
@@ -404,7 +404,7 @@ sealed class ApexOmniWebSocketClient : BaseLogReceiver
 					throw new InvalidDataException(
 						"ApeX Omni WebSocket returned an unrecognized private message.");
 				if (PrivateReceived is { } privateHandler)
-					await privateHandler(privateFeed, cancellationToken);
+					await privateHandler.InvokeAsync(privateFeed, cancellationToken);
 				return;
 			}
 			throw new InvalidDataException(
@@ -446,7 +446,7 @@ sealed class ApexOmniWebSocketClient : BaseLogReceiver
 				return;
 			}
 			if (BookReceived is { } bookHandler)
-				await bookHandler(feed.Topic, book, feed.Timestamp,
+				await bookHandler.InvokeAsync(feed.Topic, book, feed.Timestamp,
 					cancellationToken);
 			return;
 		}
@@ -457,7 +457,7 @@ sealed class ApexOmniWebSocketClient : BaseLogReceiver
 				payload);
 			if (TradeReceived is { } tradeHandler)
 				foreach (var trade in feed.Data ?? [])
-					await tradeHandler(feed.Topic, trade, feed.Timestamp,
+					await tradeHandler.InvokeAsync(feed.Topic, trade, feed.Timestamp,
 						cancellationToken);
 			return;
 		}
@@ -467,7 +467,7 @@ sealed class ApexOmniWebSocketClient : BaseLogReceiver
 			var feed = Deserialize<ApexOmniWebSocketFeed<ApexOmniTicker>>(
 				payload);
 			if (TickerReceived is { } tickerHandler)
-				await tickerHandler(feed.Topic, feed.Data, feed.Timestamp,
+				await tickerHandler.InvokeAsync(feed.Topic, feed.Data, feed.Timestamp,
 					cancellationToken);
 			return;
 		}
@@ -478,7 +478,7 @@ sealed class ApexOmniWebSocketClient : BaseLogReceiver
 				ApexOmniWebSocketCandle[]>>(payload);
 			if (CandleReceived is { } candleHandler)
 				foreach (var candle in feed.Data ?? [])
-					await candleHandler(feed.Topic, candle, feed.Timestamp,
+					await candleHandler.InvokeAsync(feed.Topic, candle, feed.Timestamp,
 						cancellationToken);
 			return;
 		}
@@ -486,7 +486,7 @@ sealed class ApexOmniWebSocketClient : BaseLogReceiver
 			header.Topic.EqualsIgnoreCase("ws_zk_accounts_v3"))
 		{
 			if (PrivateReceived is { } privateHandler)
-				await privateHandler(Deserialize<ApexOmniPrivateFeed>(payload),
+				await privateHandler.InvokeAsync(Deserialize<ApexOmniPrivateFeed>(payload),
 					cancellationToken);
 			return;
 		}
@@ -578,5 +578,5 @@ sealed class ApexOmniWebSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

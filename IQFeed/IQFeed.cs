@@ -60,7 +60,7 @@ abstract class IQFeed : BaseLogReceiver
 		{
 			var evt = NewMessage;
 			if (evt is not null)
-				await evt(m, cancellationToken);
+				await evt.InvokeAsync(m, cancellationToken);
 		}
 		catch (Exception e)
 		{

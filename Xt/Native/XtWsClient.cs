@@ -198,7 +198,7 @@ sealed class XtWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSessionAsync(WebSocketClient client,
@@ -365,7 +365,7 @@ sealed class XtWsClient : BaseLogReceiver
 					else if (TradesReceived is { } tradeHandler)
 					{
 						var envelope = Deserialize<XtWsEnvelope<XtMarketTrade>>(payload);
-						await tradeHandler(_section, new()
+						await tradeHandler.InvokeAsync(_section, new()
 						{
 							Symbol = envelope.Data?.Symbol,
 							Data = envelope.Data is null ? [] : [envelope.Data],
@@ -377,7 +377,7 @@ sealed class XtWsClient : BaseLogReceiver
 					if (!_isPrivate && DepthReceived is { } depthHandler)
 					{
 						var envelope = Deserialize<XtWsEnvelope<XtDepthData>>(payload);
-						await depthHandler(_section, new()
+						await depthHandler.InvokeAsync(_section, new()
 						{
 							Symbol = envelope.Data?.Symbol,
 							Timestamp = envelope.Data?.UpdateTime ?? 0,
@@ -390,7 +390,7 @@ sealed class XtWsClient : BaseLogReceiver
 					if (!_isPrivate && IndexReceived is { } indexHandler)
 					{
 						var envelope = Deserialize<XtWsEnvelope<XtTicker>>(payload);
-						await indexHandler(_section, new()
+						await indexHandler.InvokeAsync(_section, new()
 						{
 							Symbol = envelope.Data?.Symbol,
 							Data = envelope.Data is null ? [] : [new XtWsIndex
@@ -419,7 +419,7 @@ sealed class XtWsClient : BaseLogReceiver
 						PositionReceived is { } positionHandler)
 					{
 						var envelope = Deserialize<XtWsEnvelope<XtPosition>>(payload);
-						await positionHandler(new()
+						await positionHandler.InvokeAsync(new()
 						{
 							Symbol = envelope.Data?.Symbol,
 							Data = envelope.Data,
@@ -494,7 +494,7 @@ sealed class XtWsClient : BaseLogReceiver
 				},
 			};
 		}
-		await handler(_section, message, cancellationToken);
+		await handler.InvokeAsync(_section, message, cancellationToken);
 	}
 
 	private async ValueTask ProcessPrivateFillAsync(string payload,
@@ -543,7 +543,7 @@ sealed class XtWsClient : BaseLogReceiver
 				},
 			};
 		}
-		await handler(_section, message, cancellationToken);
+		await handler.InvokeAsync(_section, message, cancellationToken);
 	}
 
 	private async ValueTask ProcessPrivateBalanceAsync(string payload,
@@ -593,7 +593,7 @@ sealed class XtWsClient : BaseLogReceiver
 				},
 			};
 		}
-		await handler(_section, message, cancellationToken);
+		await handler.InvokeAsync(_section, message, cancellationToken);
 	}
 
 	private static T Deserialize<T>(string payload)
@@ -606,7 +606,7 @@ sealed class XtWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static int NormalizeDepth(int? depth)

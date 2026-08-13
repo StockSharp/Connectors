@@ -143,7 +143,7 @@ sealed class FalconXMarketSocketClient : FalconXSocketClient
 			if (response.Status != FalconXSocketStatuses.Success)
 				throw CreateException(response.Error, "price stream");
 			if (PricesReceived is { } handler && response.Body?.Length > 0)
-				await handler(response.Body, cancellationToken);
+				await handler.InvokeAsync(response.Body, cancellationToken);
 			return;
 		}
 		if (header.Event is FalconXSocketEvents.SubscribeResponse or

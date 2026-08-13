@@ -479,16 +479,16 @@ sealed class PintuProSocketClient(string endpoint,
 		CancellationToken cancellationToken)
 		=> payload is null || handler is null
 			? default
-			: handler(payload, cancellationToken);
+			: handler.InvokeAsync(payload, cancellationToken);
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private ValueTask RaiseStateAsync(ConnectionStates state,
 		CancellationToken cancellationToken)
 		=> StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 
 	private static Uri ValidateEndpoint(string value)

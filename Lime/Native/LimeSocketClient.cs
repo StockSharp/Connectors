@@ -17,8 +17,8 @@ sealed class LimeSocketClient : BaseLogReceiver
 		_accessToken = accessToken.ThrowIfEmpty(nameof(accessToken));
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -88,26 +88,26 @@ sealed class LimeSocketClient : BaseLogReceiver
 			case LimeFeedTypes.Balance:
 				foreach (var account in JsonConvert.DeserializeObject<LimeBalanceFeed>(raw, _jsonSettings)?.Data ?? [])
 					if (BalanceReceived is { } balanceHandler)
-						await balanceHandler(account, cancellationToken);
+						await balanceHandler.InvokeAsync(account, cancellationToken);
 				break;
 			case LimeFeedTypes.Position:
 				foreach (var positions in JsonConvert.DeserializeObject<LimePositionFeed>(raw, _jsonSettings)?.Data ?? [])
 					if (PositionsReceived is { } positionsHandler)
-						await positionsHandler(positions, cancellationToken);
+						await positionsHandler.InvokeAsync(positions, cancellationToken);
 				break;
 			case LimeFeedTypes.Order:
 				foreach (var order in JsonConvert.DeserializeObject<LimeOrderFeed>(raw, _jsonSettings)?.Data ?? [])
 					if (OrderReceived is { } orderHandler)
-						await orderHandler(order, cancellationToken);
+						await orderHandler.InvokeAsync(order, cancellationToken);
 				break;
 			case LimeFeedTypes.Trade:
 				foreach (var trade in JsonConvert.DeserializeObject<LimeTradeFeed>(raw, _jsonSettings)?.Data ?? [])
 					if (TradeReceived is { } tradeHandler)
-						await tradeHandler(trade, cancellationToken);
+						await tradeHandler.InvokeAsync(trade, cancellationToken);
 				break;
 			case LimeFeedTypes.Error:
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException($"Lime account feed error {header.Code}: {header.Description}"), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException($"Lime account feed error {header.Code}: {header.Description}"), cancellationToken);
 				break;
 			default:
 				throw new ArgumentOutOfRangeException(nameof(header.Type), header.Type, "Unknown Lime account-feed message type.");

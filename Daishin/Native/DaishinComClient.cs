@@ -244,7 +244,7 @@ sealed class DaishinComClient : BaseLogReceiver
 
 			foreach (var subscription in MatchSubscriptions(
 				DaishinMarketDataKinds.Current, update.SecurityType, update.Code))
-				await handler(subscription, update, cancellationToken);
+				await handler.InvokeAsync(subscription, update, cancellationToken);
 		});
 
 	private void OnBook(DaishinBookUpdate update)
@@ -255,22 +255,22 @@ sealed class DaishinComClient : BaseLogReceiver
 
 			foreach (var subscription in MatchSubscriptions(
 				DaishinMarketDataKinds.MarketDepth, update.SecurityType, update.Code))
-				await handler(subscription, update, cancellationToken);
+				await handler.InvokeAsync(subscription, update, cancellationToken);
 		});
 
 	private void OnOrder(DaishinOrderUpdate update)
 		=> QueueCallback(cancellationToken => OrderReceived is { } handler
-			? handler(update, cancellationToken)
+			? handler.InvokeAsync(update, cancellationToken)
 			: default);
 
 	private void OnError(Exception error)
 		=> QueueCallback(cancellationToken => Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default, false);
 
 	private void OnConnectionLost(Exception error)
 		=> QueueCallback(cancellationToken => ConnectionLost is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default);
 
 	private DaishinSubscription[] MatchSubscriptions(DaishinMarketDataKinds kind,
@@ -301,7 +301,7 @@ sealed class DaishinComClient : BaseLogReceiver
 					{
 						try
 						{
-							await handler(error, CancellationToken.None);
+							await handler.InvokeAsync(error, CancellationToken.None);
 						}
 						catch (Exception handlerError)
 						{

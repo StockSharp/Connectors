@@ -27,14 +27,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -75,28 +75,28 @@ class PusherClient : BaseLogReceiver
 		switch (type)
 		{
 			case Channels.MarketPrice:
-				await (MarketPriceChanged?.Invoke(timestamp, data.DeserializeObject<MarketPrice>(), cancellationToken) ?? default);
+				await (MarketPriceChanged.InvokeAsync(timestamp, data.DeserializeObject<MarketPrice>(), cancellationToken));
 				break;
 			case Channels.Trade:
-				await (NewTrade?.Invoke(timestamp, data.DeserializeObject<SocketTrade>(), cancellationToken) ?? default);
+				await (NewTrade.InvokeAsync(timestamp, data.DeserializeObject<SocketTrade>(), cancellationToken));
 				break;
 			case Channels.UserTrade:
-				await (NewUserTrade?.Invoke(timestamp, data.DeserializeObject<SocketUserTrade>(), cancellationToken) ?? default);
+				await (NewUserTrade.InvokeAsync(timestamp, data.DeserializeObject<SocketUserTrade>(), cancellationToken));
 				break;
 			case Channels.OrderBook:
-				await (OrderBookChanged?.Invoke(timestamp, data.DeserializeObject<OrderBook>(), cancellationToken) ?? default);
+				await (OrderBookChanged.InvokeAsync(timestamp, data.DeserializeObject<OrderBook>(), cancellationToken));
 				break;
 			case Channels.CanceledOrder:
-				await (OrderCanceled?.Invoke(timestamp, data.DeserializeObject<CanceledOrder>(), cancellationToken) ?? default);
+				await (OrderCanceled.InvokeAsync(timestamp, data.DeserializeObject<CanceledOrder>(), cancellationToken));
 				break;
 			case Channels.UserCanceledOrder:
-				await (UserOrderCanceled?.Invoke(timestamp, data.DeserializeObject<UserCanceledOrder>(), cancellationToken) ?? default);
+				await (UserOrderCanceled.InvokeAsync(timestamp, data.DeserializeObject<UserCanceledOrder>(), cancellationToken));
 				break;
 			case Channels.ParaminingUpdate:
 				//MarketPriceChanged?.Invoke(timestamp, data.DeserializeObject<MarketPrice>());
 				break;
 			case Channels.TradingBalance:
-				await (BalanceChanged?.Invoke(timestamp, data.DeserializeObject<Balance>(), cancellationToken) ?? default);
+				await (BalanceChanged.InvokeAsync(timestamp, data.DeserializeObject<Balance>(), cancellationToken));
 				break;
 			default:
 				this.AddErrorLog(LocalizedStrings.UnknownEvent, type);

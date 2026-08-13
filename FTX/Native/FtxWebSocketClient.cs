@@ -45,14 +45,14 @@ class FtxWebSocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -256,7 +256,7 @@ class FtxWebSocketClient : BaseLogReceiver
 			if (level1 != null && level1.Data != null)
 			{
 				if (NewLevel1 is { } handler)
-					await handler(level1.Market, level1.Data, cancellationToken);
+					await handler.InvokeAsync(level1.Market, level1.Data, cancellationToken);
 			}
 		}
 		else if (channel == "trades")
@@ -268,7 +268,7 @@ class FtxWebSocketClient : BaseLogReceiver
 			if (trade != null && trade.Data != null)
 			{
 				if (NewTrade is { } handler)
-					await handler(trade.Market, trade.Data, cancellationToken);
+					await handler.InvokeAsync(trade.Market, trade.Data, cancellationToken);
 			}
 		}
 		else if (channel == "orderbook")
@@ -279,7 +279,7 @@ class FtxWebSocketClient : BaseLogReceiver
 			if (ob != null && ob.Data != null)
 			{
 				if (NewOrderBook is { } handler)
-					await handler(ob.Market, ob.Data, type == "partial" ? QuoteChangeStates.SnapshotComplete : QuoteChangeStates.Increment, cancellationToken);
+					await handler.InvokeAsync(ob.Market, ob.Data, type == "partial" ? QuoteChangeStates.SnapshotComplete : QuoteChangeStates.Increment, cancellationToken);
 			}
 		}
 		else if (channel == "orders")
@@ -290,7 +290,7 @@ class FtxWebSocketClient : BaseLogReceiver
 			if (order != null && order.Data != null)
 			{
 				if (NewOrder is { } handler)
-					await handler(order.Data, cancellationToken);
+					await handler.InvokeAsync(order.Data, cancellationToken);
 			}
 		}
 		else if (channel == "fills")
@@ -301,7 +301,7 @@ class FtxWebSocketClient : BaseLogReceiver
 			if (fill != null && fill.Data != null)
 			{
 				if (NewFill is { } handler)
-					await handler(fill.Data, cancellationToken);
+					await handler.InvokeAsync(fill.Data, cancellationToken);
 			}
 		}
 	}

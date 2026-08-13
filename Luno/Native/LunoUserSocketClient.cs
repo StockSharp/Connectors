@@ -117,7 +117,7 @@ sealed class LunoUserSocketClient : BaseLogReceiver
 				payload, _jsonSettings) ?? throw new InvalidDataException(
 					"Luno user stream returned an empty JSON value.");
 			if (update.Type is not null && UpdateReceived is { } handler)
-				await handler(update, cancellationToken);
+				await handler.InvokeAsync(update, cancellationToken);
 		}
 		catch (Exception error)
 		{
@@ -193,12 +193,12 @@ sealed class LunoUserSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private ValueTask RaiseStateChangedAsync(ConnectionStates state,
 		CancellationToken cancellationToken)
 		=> StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 
 	private static string CreateEndpoint(string value, string path)

@@ -146,7 +146,7 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 			await AuthenticateAsync(client, cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private ValueTask AuthenticateAsync(WebSocketClient client,
@@ -257,14 +257,14 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 					var envelope = Deserialize<WooXWsEnvelope<WooXWsBalanceData>>(payload);
 					if (BalanceReceived is { } balanceHandler)
 						foreach (var balance in envelope.Data?.Balances?.Entries ?? [])
-							await balanceHandler(balance, envelope.Timestamp, cancellationToken);
+							await balanceHandler.InvokeAsync(balance, envelope.Timestamp, cancellationToken);
 					break;
 				}
 				case "executionreport":
 				{
 					var envelope = Deserialize<WooXWsEnvelope<WooXWsExecutionReport>>(payload);
 					if (envelope.Data is not null && ExecutionReceived is { } executionHandler)
-						await executionHandler(envelope.Data, envelope.Timestamp, cancellationToken);
+						await executionHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 					break;
 				}
 				case "position":
@@ -272,7 +272,7 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 					var envelope = Deserialize<WooXWsEnvelope<WooXWsPositionData>>(payload);
 					if (PositionReceived is { } positionHandler)
 						foreach (var position in envelope.Data?.Positions?.Entries ?? [])
-							await positionHandler(position, envelope.Timestamp, cancellationToken);
+							await positionHandler.InvokeAsync(position, envelope.Timestamp, cancellationToken);
 					break;
 				}
 				default:
@@ -292,5 +292,5 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 			?? throw new InvalidDataException("WOO X private WebSocket returned an empty message.");
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

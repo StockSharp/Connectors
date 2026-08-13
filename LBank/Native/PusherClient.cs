@@ -26,7 +26,7 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 
 				return default;
 			},
@@ -35,7 +35,7 @@ class PusherClient : BaseLogReceiver
 				this.AddErrorLog(error);
 
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 
 				return default;
 			},
@@ -96,7 +96,7 @@ class PusherClient : BaseLogReceiver
 				var response = json.DeserializeObject<LBankSocketKlineMessage>();
 
 				if (response?.Kline is { } candle && NewCandle is { } handler)
-					await handler(response.Pair, response.Timestamp, candle, cancellationToken);
+					await handler.InvokeAsync(response.Pair, response.Timestamp, candle, cancellationToken);
 
 				break;
 			}
@@ -106,7 +106,7 @@ class PusherClient : BaseLogReceiver
 				var response = json.DeserializeObject<LBankSocketDepthMessage>();
 
 				if (response?.Depth is { } depth && OrderBookChanged is { } handler)
-					await handler(response.Pair, response.Timestamp, depth, cancellationToken);
+					await handler.InvokeAsync(response.Pair, response.Timestamp, depth, cancellationToken);
 
 				break;
 			}
@@ -116,7 +116,7 @@ class PusherClient : BaseLogReceiver
 				var response = json.DeserializeObject<LBankSocketTradeMessage>();
 
 				if (response?.Trade is { } trade && NewTrade is { } handler)
-					await handler(response.Pair, response.Timestamp, trade, cancellationToken);
+					await handler.InvokeAsync(response.Pair, response.Timestamp, trade, cancellationToken);
 
 				break;
 			}
@@ -126,7 +126,7 @@ class PusherClient : BaseLogReceiver
 				var response = json.DeserializeObject<LBankSocketTickerMessage>();
 
 				if (response?.Ticker is { } ticker && TickerChanged is { } handler)
-					await handler(response.Pair, response.Timestamp, ticker, cancellationToken);
+					await handler.InvokeAsync(response.Pair, response.Timestamp, ticker, cancellationToken);
 
 				break;
 			}
@@ -136,7 +136,7 @@ class PusherClient : BaseLogReceiver
 				var response = json.DeserializeObject<LBankSocketOrderMessage>();
 
 				if (response?.Order is { } order && OrderUpdated is { } handler)
-					await handler(response.Pair, response.Timestamp, order, cancellationToken);
+					await handler.InvokeAsync(response.Pair, response.Timestamp, order, cancellationToken);
 
 				break;
 			}
@@ -146,7 +146,7 @@ class PusherClient : BaseLogReceiver
 				var response = json.DeserializeObject<LBankSocketAssetMessage>();
 
 				if (response?.Balance is { } balance && BalanceUpdated is { } handler)
-					await handler(balance, cancellationToken);
+					await handler.InvokeAsync(balance, cancellationToken);
 
 				break;
 			}

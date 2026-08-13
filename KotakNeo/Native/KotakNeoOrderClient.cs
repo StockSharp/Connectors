@@ -17,8 +17,8 @@ sealed class KotakNeoOrderClient : BaseLogReceiver
 
 		_client = new(
 			GetUrl(session.DataCenter),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -78,7 +78,7 @@ sealed class KotakNeoOrderClient : BaseLogReceiver
 
 			var order = streamMessage.Data ?? streamMessage;
 			if (!order.OrderId.IsEmpty() && OrderReceived is { } handler)
-				await handler(order, cancellationToken);
+				await handler.InvokeAsync(order, cancellationToken);
 		}
 	}
 

@@ -54,14 +54,14 @@ class PusherClient : BaseLogReceiver
 				(state, token) =>
 				{
 					if (_parent.StateChanged is { } handler)
-						return handler(state, token);
+						return handler.InvokeAsync(state, token);
 					return default;
 				},
 				(error, token) =>
 				{
 					this.AddErrorLog(error);
 					if (_parent.Error is { } handler)
-						return handler(error, token);
+						return handler.InvokeAsync(error, token);
 					return default;
 				},
 				OnProcess,
@@ -126,7 +126,7 @@ class PusherClient : BaseLogReceiver
 		protected ValueTask RaisePingAsync(long id, CancellationToken cancellationToken)
 		{
 			if (_parent.Ping is { } handler)
-				return handler($"{Type}={id}", cancellationToken);
+				return handler.InvokeAsync($"{Type}={id}", cancellationToken);
 			return default;
 		}
 
@@ -231,22 +231,22 @@ class PusherClient : BaseLogReceiver
 					if (channel.StartsWithIgnoreCase("order"))
 					{
 						if (parent.OrderChanged is { } handler)
-							await handler(dt, ((JToken)obj).DeserializeObject<SocketOrder>(), cancellationToken);
+							await handler.InvokeAsync(dt, ((JToken)obj).DeserializeObject<SocketOrder>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("matchOrders"))
 					{
 						if (parent.OrderChanged is { } handler)
-							await handler(dt, ((JToken)obj).DeserializeObject<SocketOrder>(), cancellationToken);
+							await handler.InvokeAsync(dt, ((JToken)obj).DeserializeObject<SocketOrder>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("accounts"))
 					{
 						if (parent.BalancesChanged is { } handler)
-							await handler(dt, data.DeserializeObject<IEnumerable<Balance>>(), cancellationToken);
+							await handler.InvokeAsync(dt, data.DeserializeObject<IEnumerable<Balance>>(), cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("positions"))
 					{
 						if (parent.PositionsChanged is { } handler)
-							await handler(dt, data.DeserializeObject<IEnumerable<Position>>(), cancellationToken);
+							await handler.InvokeAsync(dt, data.DeserializeObject<IEnumerable<Position>>(), cancellationToken);
 					}
 					else
 						return false;
@@ -263,7 +263,7 @@ class PusherClient : BaseLogReceiver
 					if ((int)obj.Property("err-code").Value != 0)
 					{
 						if (parent.Error is { } handler)
-							await handler(new InvalidOperationException((string)obj.Property("err-msg").Value), cancellationToken);
+							await handler.InvokeAsync(new InvalidOperationException((string)obj.Property("err-msg").Value), cancellationToken);
 					}
 
 					return true;
@@ -343,7 +343,7 @@ class PusherClient : BaseLogReceiver
 		private ValueTask RaiseSubscriptionResponseAsync(CommandInfo info, CancellationToken cancellationToken)
 		{
 			if (((PusherClient)Parent).SubscriptionResponse is { } handler)
-				return handler(info.Id, cancellationToken);
+				return handler.InvokeAsync(info.Id, cancellationToken);
 			return default;
 		}
 
@@ -452,7 +452,7 @@ class PusherClient : BaseLogReceiver
 				if (obj.status == "error")
 				{
 					if (parent.Error is { } errorHandler)
-						await errorHandler(new InvalidOperationException((string)((JObject)obj).Property("err-msg").Value), cancellationToken);
+						await errorHandler.InvokeAsync(new InvalidOperationException((string)((JObject)obj).Property("err-msg").Value), cancellationToken);
 				}
 				else
 				{
@@ -463,7 +463,7 @@ class PusherClient : BaseLogReceiver
 					if (subscription.Type == MessageTypes.CandleTimeFrame && subscription.IsSubscribe == null)
 					{
 						if (parent.CandlesReceived is { } handler)
-							await handler(subscription.SecurityId, (TimeSpan)subscription.Arg, id, ((JToken)obj.data).DeserializeObject<Ohlc[]>(), cancellationToken);
+							await handler.InvokeAsync(subscription.SecurityId, (TimeSpan)subscription.Arg, id, ((JToken)obj.data).DeserializeObject<Ohlc[]>(), cancellationToken);
 					}
 				}
 
@@ -480,12 +480,12 @@ class PusherClient : BaseLogReceiver
 				{
 					case MessageTypes.QuoteChange:
 						if (parent.OrderBookChanged is { } obHandler)
-							await obHandler(((long)obj.ts).FromUnix(false), secId, ((JToken)obj.tick).DeserializeObject<OrderBook>(), cancellationToken);
+							await obHandler.InvokeAsync(((long)obj.ts).FromUnix(false), secId, ((JToken)obj.tick).DeserializeObject<OrderBook>(), cancellationToken);
 						return true;
 
 					case MessageTypes.Execution:
 						if (parent.NewTrades is { } tradesHandler)
-							await tradesHandler(((long)obj.ts).FromUnix(false), secId, ((JToken)obj.tick.data).DeserializeObject<SocketTrade[]>(), cancellationToken);
+							await tradesHandler.InvokeAsync(((long)obj.ts).FromUnix(false), secId, ((JToken)obj.tick.data).DeserializeObject<SocketTrade[]>(), cancellationToken);
 						return true;
 
 					case MessageTypes.Level1Change:
@@ -493,12 +493,12 @@ class PusherClient : BaseLogReceiver
 						if (subscription.Arg is null)
 						{
 							if (parent.TickerChanged is { } tickerHandler)
-								await tickerHandler(((long)obj.ts).FromUnix(false), secId, ((JToken)obj.tick).DeserializeObject<Ticker>(), cancellationToken);
+								await tickerHandler.InvokeAsync(((long)obj.ts).FromUnix(false), secId, ((JToken)obj.tick).DeserializeObject<Ticker>(), cancellationToken);
 						}
 						else
 						{
 							if (parent.BestChanged is { } bestHandler)
-								await bestHandler(((long)obj.ts).FromUnix(false), secId, ((JToken)obj.tick).DeserializeObject<Best>(), cancellationToken);
+								await bestHandler.InvokeAsync(((long)obj.ts).FromUnix(false), secId, ((JToken)obj.tick).DeserializeObject<Best>(), cancellationToken);
 						}
 
 						return true;
@@ -506,7 +506,7 @@ class PusherClient : BaseLogReceiver
 
 					case MessageTypes.CandleTimeFrame:
 						if (parent.NewCandle is { } candleHandler)
-							await candleHandler(((long)obj.ts).FromUnix(false), secId, (TimeSpan)subscription.Arg, subscription.Id, ((JToken)obj.tick).DeserializeObject<Ohlc>(), cancellationToken);
+							await candleHandler.InvokeAsync(((long)obj.ts).FromUnix(false), secId, (TimeSpan)subscription.Arg, subscription.Id, ((JToken)obj.tick).DeserializeObject<Ohlc>(), cancellationToken);
 						return true;
 
 					default:

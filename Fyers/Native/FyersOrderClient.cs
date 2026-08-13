@@ -15,8 +15,8 @@ sealed class FyersOrderClient : BaseLogReceiver
 		_authorization = $"{clientId.ThrowIfEmpty(nameof(clientId))}:{token.ThrowIfEmpty(nameof(token))}";
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -76,10 +76,10 @@ sealed class FyersOrderClient : BaseLogReceiver
 			throw new InvalidOperationException($"FYERS order stream error {update.Code}: {update.Message}");
 
 		if (update.Order != null && OrderReceived is { } orderHandler)
-			await orderHandler(update.Order, cancellationToken);
+			await orderHandler.InvokeAsync(update.Order, cancellationToken);
 		if (update.Trade != null && TradeReceived is { } tradeHandler)
-			await tradeHandler(update.Trade, cancellationToken);
+			await tradeHandler.InvokeAsync(update.Trade, cancellationToken);
 		if (update.Position != null && PositionReceived is { } positionHandler)
-			await positionHandler(update.Position, cancellationToken);
+			await positionHandler.InvokeAsync(update.Position, cancellationToken);
 	}
 }

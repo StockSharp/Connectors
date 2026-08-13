@@ -38,14 +38,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -84,7 +84,7 @@ class PusherClient : BaseLogReceiver
 			if (obj.ping != null)
 			{
 				if (PingReceived is { } pingHandler)
-					await pingHandler((string)obj.ping, cancellationToken);
+					await pingHandler.InvokeAsync((string)obj.ping, cancellationToken);
 				return;
 			}
 			else if (obj.pong != null)
@@ -115,7 +115,7 @@ class PusherClient : BaseLogReceiver
 				if (data.orderpending != null)
 				{
 					if (OrderChanged is { } handler)
-						await handler(((JToken)data.orderpending).DeserializeObject<Order>(), cancellationToken);
+						await handler.InvokeAsync(((JToken)data.orderpending).DeserializeObject<Order>(), cancellationToken);
 				}
 				else if (data.history != null || data.result != null)
 				{
@@ -129,14 +129,14 @@ class PusherClient : BaseLogReceiver
 					{
 						var balance = ((JToken)assets.normal).DeserializeObject<IDictionary<string, Balance>>();
 						if (BalancesChanged is { } handler)
-							await handler(balance, cancellationToken);
+							await handler.InvokeAsync(balance, cancellationToken);
 					}
 
 					if (assets.credit != null)
 					{
 						var balance = ((JToken)assets.credit).DeserializeObject<IDictionary<string, Balance>>();
 						if (BalancesChanged is { } handler)
-							await handler(balance, cancellationToken);
+							await handler.InvokeAsync(balance, cancellationToken);
 					}
 					else
 						this.AddErrorLog(LocalizedStrings.UnknownEvent, ((JToken)data).ToString());
@@ -148,18 +148,18 @@ class PusherClient : BaseLogReceiver
 			{
 				var ticker = ((JToken)data).DeserializeObject<Ticker>();
 				if (TickerChanged is { } handler)
-					await handler(ticker, cancellationToken);
+					await handler.InvokeAsync(ticker, cancellationToken);
 			}
 			else if (channel.ContainsIgnoreCase("_deals"))
 			{
 				if (NewTrades is { } handler)
-					await handler(channel.Remove("_deals", true), ((JToken)data).DeserializeObject<IEnumerable<Trade>>(), cancellationToken);
+					await handler.InvokeAsync(channel.Remove("_deals", true), ((JToken)data).DeserializeObject<IEnumerable<Trade>>(), cancellationToken);
 			}
 			else if (channel.ContainsIgnoreCase("_depth"))
 			{
 				var book = ((JToken)data).DeserializeObject<OrderBook>();
 				if (OrderBookChanged is { } handler)
-					await handler(channel.Remove("_depth", true), (int?)data.data_type == 0, book, cancellationToken);
+					await handler.InvokeAsync(channel.Remove("_depth", true), (int?)data.data_type == 0, book, cancellationToken);
 			}
 			else if (channel.ContainsIgnoreCase("_kline"))
 			{
@@ -169,7 +169,7 @@ class PusherClient : BaseLogReceiver
 				var tfName = parts[2];
 
 				if (NewCandles is { } handler)
-					await handler(ticker, tfName, ((JToken)data).DeserializeObject<IEnumerable<Ohlc>>(), cancellationToken);
+					await handler.InvokeAsync(ticker, tfName, ((JToken)data).DeserializeObject<IEnumerable<Ohlc>>(), cancellationToken);
 			}
 			else if (channel.EqualsIgnoreCase(_subscribe))
 			{

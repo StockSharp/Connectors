@@ -358,7 +358,7 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 			FailPending(error);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask<QFEXTradeMessage> SendRequestAsync<TParameters>(
@@ -476,14 +476,14 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 				QFEXPendingResponseKinds.Order, message,
 				order.ClientOrderId, order.OrderId);
 			if (!isRequestResponse && OrderReceived is { } handler)
-				await handler(order, cancellationToken);
+				await handler.InvokeAsync(order, cancellationToken);
 			return;
 		}
 
 		if (message.FillResponse is { } fill)
 		{
 			if (FillReceived is { } handler)
-				await handler(fill, cancellationToken);
+				await handler.InvokeAsync(fill, cancellationToken);
 			return;
 		}
 
@@ -508,14 +508,14 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 		if (message.BalanceResponse is { } balance)
 		{
 			if (BalanceReceived is { } handler)
-				await handler(balance, cancellationToken);
+				await handler.InvokeAsync(balance, cancellationToken);
 			return;
 		}
 
 		if (message.PositionResponse is { } position)
 		{
 			if (PositionReceived is { } handler)
-				await handler(position, cancellationToken);
+				await handler.InvokeAsync(position, cancellationToken);
 			return;
 		}
 
@@ -527,7 +527,7 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 		{
 			if (BalanceReceived is { } handler)
 				foreach (var item in message.Contents)
-					await handler(item.ToBalance(), cancellationToken);
+					await handler.InvokeAsync(item.ToBalance(), cancellationToken);
 		}
 		else if (message.Channel == QFEXTradeStreamChannels.Positions ||
 			message.Type == QFEXTradeEnvelopeTypes.PositionUpdate ||
@@ -535,7 +535,7 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 		{
 			if (PositionReceived is { } handler)
 				foreach (var item in message.Contents)
-					await handler(item.ToPosition(), cancellationToken);
+					await handler.InvokeAsync(item.ToPosition(), cancellationToken);
 		}
 	}
 
@@ -621,7 +621,7 @@ sealed class QFEXTradeWebSocketClient : BaseLogReceiver
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string AddApiKey(string endpoint, string publicKey)

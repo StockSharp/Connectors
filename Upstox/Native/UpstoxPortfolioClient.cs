@@ -8,8 +8,8 @@ sealed class UpstoxPortfolioClient : BaseLogReceiver
 	{
 		_client = new(
 			url.ThrowIfEmpty(nameof(url)),
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -45,6 +45,6 @@ sealed class UpstoxPortfolioClient : BaseLogReceiver
 			?? throw new InvalidOperationException("Upstox returned an empty portfolio update.");
 
 		if (UpdateReceived is { } handler)
-			await handler(update, cancellationToken);
+			await handler.InvokeAsync(update, cancellationToken);
 	}
 }

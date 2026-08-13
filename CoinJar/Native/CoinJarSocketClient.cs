@@ -317,7 +317,7 @@ sealed class CoinJarSocketClient : BaseLogReceiver
 		{
 			var value = Deserialize<CoinJarSocketEnvelope<CoinJarTicker>>(payload);
 			if (value.Payload is not null && TickerReceived is { } ticker)
-				await ticker(productId, value.Payload, header.Event,
+				await ticker.InvokeAsync(productId, value.Payload, header.Event,
 					cancellationToken);
 			return;
 		}
@@ -325,7 +325,7 @@ sealed class CoinJarSocketClient : BaseLogReceiver
 		{
 			var value = Deserialize<CoinJarSocketEnvelope<CoinJarOrderBook>>(payload);
 			if (value.Payload is not null && BookReceived is { } book)
-				await book(productId, value.Payload, header.Event,
+				await book.InvokeAsync(productId, value.Payload, header.Event,
 					cancellationToken);
 			return;
 		}
@@ -334,7 +334,7 @@ sealed class CoinJarSocketClient : BaseLogReceiver
 			var value = Deserialize<CoinJarSocketEnvelope<
 				CoinJarSocketTradesPayload>>(payload);
 			if (value.Payload is not null && TradesReceived is { } trades)
-				await trades(productId, value.Payload.Trades ?? [], header.Event,
+				await trades.InvokeAsync(productId, value.Payload.Trades ?? [], header.Event,
 					cancellationToken);
 		}
 	}
@@ -406,7 +406,7 @@ sealed class CoinJarSocketClient : BaseLogReceiver
 			FailPending(new InvalidOperationException(
 				"CoinJar WebSocket connection was interrupted."));
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask DisposeClientAsync(
@@ -489,11 +489,11 @@ sealed class CoinJarSocketClient : BaseLogReceiver
 		where TPayload : class
 		=> payload is null || handler is null
 			? default
-			: handler(payload, cancellationToken);
+			: handler.InvokeAsync(payload, cancellationToken);
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static bool TryGetProduct(string topic, string prefix,
 		out string productId)

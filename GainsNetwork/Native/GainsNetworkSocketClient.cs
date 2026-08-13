@@ -104,7 +104,7 @@ sealed class GainsNetworkSocketClient : BaseLogReceiver
 				_settings) ?? throw new InvalidDataException(
 					"Gains returned an empty price frame.");
 			if (PriceReceived is { } handler)
-				await handler(frame, cancellationToken);
+				await handler.InvokeAsync(frame, cancellationToken);
 		}
 		catch (Exception error) when (!cancellationToken.IsCancellationRequested)
 		{
@@ -117,13 +117,13 @@ sealed class GainsNetworkSocketClient : BaseLogReceiver
 	private ValueTask OnStateChangedAsync(ConnectionStates state,
 		CancellationToken cancellationToken)
 		=> StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	protected override void DisposeManaged()

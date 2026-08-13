@@ -16,7 +16,7 @@ sealed class LigtherWsClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 
 				return default;
 			},
@@ -25,7 +25,7 @@ sealed class LigtherWsClient : BaseLogReceiver
 				this.AddErrorLog(error);
 
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 
 				return default;
 			},
@@ -104,14 +104,14 @@ sealed class LigtherWsClient : BaseLogReceiver
 
 			case "error":
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException(obj.ToString(Formatting.None)), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException(obj.ToString(Formatting.None)), cancellationToken);
 				return;
 		}
 
 		if (obj["error"] is not null)
 		{
 			if (Error is { } errorHandler)
-				await errorHandler(new InvalidOperationException(obj.ToString(Formatting.None)), cancellationToken);
+				await errorHandler.InvokeAsync(new InvalidOperationException(obj.ToString(Formatting.None)), cancellationToken);
 
 			return;
 		}
@@ -120,30 +120,30 @@ sealed class LigtherWsClient : BaseLogReceiver
 
 		if ((channel.StartsWithIgnoreCase("order_book:") || channel.StartsWithIgnoreCase("order_book/")) && OrderBookReceived is { } depthHandler)
 		{
-			await depthHandler(obj, cancellationToken);
+			await depthHandler.InvokeAsync(obj, cancellationToken);
 			return;
 		}
 
 		if ((channel.StartsWithIgnoreCase("trade:") || channel.StartsWithIgnoreCase("trade/")) && TradeReceived is { } tradeHandler)
 		{
-			await tradeHandler(obj, cancellationToken);
+			await tradeHandler.InvokeAsync(obj, cancellationToken);
 			return;
 		}
 
 		if ((channel.StartsWithIgnoreCase("market_stats:") || channel.StartsWithIgnoreCase("market_stats/")) && MarketStatsReceived is { } marketStatsHandler)
 		{
-			await marketStatsHandler(obj, cancellationToken);
+			await marketStatsHandler.InvokeAsync(obj, cancellationToken);
 			return;
 		}
 
 		if ((channel.StartsWithIgnoreCase("spot_market_stats:") || channel.StartsWithIgnoreCase("spot_market_stats/")) && SpotMarketStatsReceived is { } spotMarketStatsHandler)
 		{
-			await spotMarketStatsHandler(obj, cancellationToken);
+			await spotMarketStatsHandler.InvokeAsync(obj, cancellationToken);
 			return;
 		}
 
 		if (IsPrivateMessage(type, channel) && PrivatePayloadReceived is { } privateHandler)
-			await privateHandler(obj, cancellationToken);
+			await privateHandler.InvokeAsync(obj, cancellationToken);
 	}
 
 	private static bool IsPrivateMessage(string type, string channel)

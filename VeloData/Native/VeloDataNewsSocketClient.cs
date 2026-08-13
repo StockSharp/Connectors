@@ -218,12 +218,12 @@ sealed class VeloDataNewsSocketClient : BaseLogReceiver
 	private static ValueTask InvokeAsync(
 		Func<VeloDataNewsStory, CancellationToken, ValueTask> handler,
 		VeloDataNewsStory value, CancellationToken cancellationToken)
-		=> handler is null ? default : handler(value, cancellationToken);
+		=> Ecng.Common.AsyncHelper.InvokeAsync(handler, value, cancellationToken);
 
 	private static ValueTask InvokeAsync(
 		Func<Exception, bool, CancellationToken, ValueTask> handler,
 		Exception error, bool isTerminal, CancellationToken cancellationToken)
-		=> handler is null ? default : handler(error, isTerminal,
+		=> Ecng.Common.AsyncHelper.InvokeAsync(handler, error, isTerminal,
 			cancellationToken);
 
 	protected override void DisposeManaged()

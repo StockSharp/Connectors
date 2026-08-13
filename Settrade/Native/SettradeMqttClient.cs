@@ -135,7 +135,7 @@ sealed class SettradeMqttClient : IAsyncDisposable
 					offset += 2;
 				}
 				if (MessageReceived is not null)
-					await MessageReceived(topic, payload[offset..],
+					await MessageReceived.InvokeAsync(topic, payload[offset..],
 						cancellationToken);
 				if (qos == 1)
 					await SendPacketAsync(0x40,
@@ -151,7 +151,7 @@ sealed class SettradeMqttClient : IAsyncDisposable
 		{
 			Volatile.Write(ref _faulted, 1);
 			if (Error is not null)
-				await Error(error, CancellationToken.None);
+				await Error.InvokeAsync(error, CancellationToken.None);
 		}
 	}
 
@@ -174,7 +174,7 @@ sealed class SettradeMqttClient : IAsyncDisposable
 		{
 			Volatile.Write(ref _faulted, 1);
 			if (Error is not null)
-				await Error(error, CancellationToken.None);
+				await Error.InvokeAsync(error, CancellationToken.None);
 		}
 	}
 

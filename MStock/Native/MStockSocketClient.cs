@@ -147,11 +147,11 @@ sealed class MStockSocketClient : IAsyncDisposable
 					WebSocketMessageType.Binary)
 				{
 					if (BinaryReceived is not null)
-						await BinaryReceived(payload,
+						await BinaryReceived.InvokeAsync(payload,
 							cancellationToken);
 				}
 				else if (TextReceived is not null)
-					await TextReceived(
+					await TextReceived.InvokeAsync(
 						Encoding.UTF8.GetString(payload),
 						cancellationToken);
 			}
@@ -164,7 +164,7 @@ sealed class MStockSocketClient : IAsyncDisposable
 		{
 			Volatile.Write(ref _faulted, 1);
 			if (Error is not null)
-				await Error(error, CancellationToken.None);
+				await Error.InvokeAsync(error, CancellationToken.None);
 		}
 	}
 

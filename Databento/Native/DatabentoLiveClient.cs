@@ -187,7 +187,7 @@ internal sealed class DatabentoLiveClient : BaseLogReceiver
 				if (record == null)
 					throw new EndOfStreamException("The Databento live gateway closed the stream.");
 				if (RecordReceived != null)
-					await RecordReceived(record, cancellationToken);
+					await RecordReceived.InvokeAsync(record, cancellationToken);
 			}
 			catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
 			{
@@ -199,7 +199,7 @@ internal sealed class DatabentoLiveClient : BaseLogReceiver
 				if (!await TryReconnect(cancellationToken))
 				{
 					if (Error != null)
-						await Error(ex, CancellationToken.None);
+						await Error.InvokeAsync(ex, CancellationToken.None);
 					return;
 				}
 			}
@@ -251,7 +251,7 @@ internal sealed class DatabentoLiveClient : BaseLogReceiver
 
 				this.AddInfoLog("Databento live session restored on attempt {0}.", attempt);
 				if (Reconnected != null)
-					await Reconnected(cancellationToken);
+					await Reconnected.InvokeAsync(cancellationToken);
 				return true;
 			}
 			catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

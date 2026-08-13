@@ -14,7 +14,7 @@ abstract class NativeAdapter(HuobiMessageAdapter parent, Authenticator authentic
 	protected ValueTask SendOutMessageAsync(Message message, CancellationToken cancellationToken)
 	{
 		if (NewOutMessage is { } handler)
-			return handler(message, cancellationToken);
+			return handler.InvokeAsync(message, cancellationToken);
 		return default;
 	}
 

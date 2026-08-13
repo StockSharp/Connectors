@@ -334,7 +334,7 @@ sealed class AmberdataSocketClient : BaseLogReceiver
 						"Amberdata WebSocket returned data for an unknown subscription.");
 			var update = DeserializeUpdate(key, json);
 			if (MessageReceived is { } handler)
-				await handler(update, cancellationToken);
+				await handler.InvokeAsync(update, cancellationToken);
 		}
 		catch (Exception error) when (error is JsonException or
 			InvalidDataException or InvalidOperationException or FormatException or
@@ -551,7 +551,7 @@ sealed class AmberdataSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{

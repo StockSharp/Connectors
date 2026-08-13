@@ -333,14 +333,14 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<SynFuturesMarket>(text);
 				if (envelope.Data is not null && MarketChanged is not null)
-					await MarketChanged(envelope.Data, cancellationToken);
+					await MarketChanged.InvokeAsync(envelope.Data, cancellationToken);
 				break;
 			}
 			case "orderBook":
 			{
 				var envelope = Deserialize<SynFuturesDepthSteps>(text);
 				if (envelope.Data is not null && DepthReceived is not null)
-					await DepthReceived(envelope.Instrument, envelope.Expiry,
+					await DepthReceived.InvokeAsync(envelope.Instrument, envelope.Expiry,
 						envelope.Data, cancellationToken);
 				break;
 			}
@@ -348,7 +348,7 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<SynFuturesTrade[]>(text);
 				if (envelope.Data is not null && TradesReceived is not null)
-					await TradesReceived(envelope.Instrument, envelope.Expiry,
+					await TradesReceived.InvokeAsync(envelope.Instrument, envelope.Expiry,
 						envelope.Data, cancellationToken);
 				break;
 			}
@@ -356,7 +356,7 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<SynFuturesCandle>(text);
 				if (envelope.Data is not null && KlineReceived is not null)
-					await KlineReceived(envelope.Instrument, envelope.Expiry,
+					await KlineReceived.InvokeAsync(envelope.Instrument, envelope.Expiry,
 						envelope.Data, cancellationToken);
 				break;
 			}
@@ -364,7 +364,7 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 			{
 				var envelope = Deserialize<SynFuturesPortfolioNotification>(text);
 				if (envelope.Data is not null && PortfolioChanged is not null)
-					await PortfolioChanged(envelope.Data, cancellationToken);
+					await PortfolioChanged.InvokeAsync(envelope.Data, cancellationToken);
 				break;
 			}
 			case "instrument":
@@ -411,11 +411,11 @@ sealed class SynFuturesSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is null ? default : Error(error, cancellationToken);
+		=> Error is null ? default : Error.InvokeAsync(error, cancellationToken);
 
 	private ValueTask RaiseStateAsync(ConnectionStates state,
 		CancellationToken cancellationToken)
-		=> StateChanged is null ? default : StateChanged(state,
+		=> StateChanged is null ? default : StateChanged.InvokeAsync(state,
 			cancellationToken);
 
 	protected override void DisposeManaged()

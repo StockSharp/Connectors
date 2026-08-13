@@ -26,7 +26,7 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
 
 	protected ValueTask SendOutErrorAsync(Exception exception, CancellationToken token)
-		=> Error?.Invoke(exception, token) ?? default;
+		=> Error.InvokeAsync(exception, token);
 
 	private readonly WebSocketClient _client;
 	private readonly string _address;
@@ -42,14 +42,14 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -144,7 +144,7 @@ class DataSocketClient : BaseSocketClient
 			}
 
 			if (Response is { } responseHandler)
-				await responseHandler(transId2, response, cancellationToken);
+				await responseHandler.InvokeAsync(transId2, response, cancellationToken);
 
 			return;
 		}
@@ -158,51 +158,51 @@ class DataSocketClient : BaseSocketClient
 		{
 			case Channels.Quote:
 				if (Quote is { } quoteHandler)
-					await quoteHandler(transId, data.DeserializeObject<Quote>(), cancellationToken);
+					await quoteHandler.InvokeAsync(transId, data.DeserializeObject<Quote>(), cancellationToken);
 				break;
 			case Channels.Status:
 				if (InstrumentStatus is { } statusHandler)
-					await statusHandler(transId, data.DeserializeObject<InstrumentStatus>(), cancellationToken);
+					await statusHandler.InvokeAsync(transId, data.DeserializeObject<InstrumentStatus>(), cancellationToken);
 				break;
 			case Channels.OrderBook:
 				if (OrderBook is { } orderBookHandler)
-					await orderBookHandler(transId, data.DeserializeObject<OrderBook>(), cancellationToken);
+					await orderBookHandler.InvokeAsync(transId, data.DeserializeObject<OrderBook>(), cancellationToken);
 				break;
 			case Channels.Order:
 				if (Order is { } orderHandler)
-					await orderHandler(transId, data.DeserializeObject<Order>(), cancellationToken);
+					await orderHandler.InvokeAsync(transId, data.DeserializeObject<Order>(), cancellationToken);
 				break;
 			case Channels.StopOrder:
 				if (StopOrder is { } stopOrderHandler)
-					await stopOrderHandler(transId, data.DeserializeObject<Order>(), cancellationToken);
+					await stopOrderHandler.InvokeAsync(transId, data.DeserializeObject<Order>(), cancellationToken);
 				break;
 			case Channels.Ohlc:
 				if (Ohlc is { } ohlcHandler)
-					await ohlcHandler(transId, data.DeserializeObject<Ohlc>(), cancellationToken);
+					await ohlcHandler.InvokeAsync(transId, data.DeserializeObject<Ohlc>(), cancellationToken);
 				break;
 			case Channels.Tick:
 				if (Tick is { } tickHandler)
-					await tickHandler(transId, data.DeserializeObject<Tick>(), cancellationToken);
+					await tickHandler.InvokeAsync(transId, data.DeserializeObject<Tick>(), cancellationToken);
 				break;
 			case Channels.Trade:
 				if (OwnTrade is { } ownTradeHandler)
-					await ownTradeHandler(transId, data.DeserializeObject<OwnTrade>(), cancellationToken);
+					await ownTradeHandler.InvokeAsync(transId, data.DeserializeObject<OwnTrade>(), cancellationToken);
 				break;
 			case Channels.SpectraRisk:
 				if (SpectraRisk is { } spectraRiskHandler)
-					await spectraRiskHandler(transId, data.DeserializeObject<SpectraRisk>(), cancellationToken);
+					await spectraRiskHandler.InvokeAsync(transId, data.DeserializeObject<SpectraRisk>(), cancellationToken);
 				break;
 			case Channels.Risk:
 				if (Risk is { } riskHandler)
-					await riskHandler(transId, data.DeserializeObject<Risk>(), cancellationToken);
+					await riskHandler.InvokeAsync(transId, data.DeserializeObject<Risk>(), cancellationToken);
 				break;
 			case Channels.Portfolio:
 				if (Portfolio is { } portfolioHandler)
-					await portfolioHandler(transId, data.DeserializeObject<Portfolio>(), cancellationToken);
+					await portfolioHandler.InvokeAsync(transId, data.DeserializeObject<Portfolio>(), cancellationToken);
 				break;
 			case Channels.Position:
 				if (Position is { } positionHandler)
-					await positionHandler(transId, data.DeserializeObject<Position>(), cancellationToken);
+					await positionHandler.InvokeAsync(transId, data.DeserializeObject<Position>(), cancellationToken);
 				break;
 			default:
 				this.AddErrorLog(LocalizedStrings.UnknownEvent, type);
@@ -403,13 +403,13 @@ class OrderSocketClient : BaseSocketClient
 					if (response.OrderNumber is long orderId)
 					{
 						if (OrderCreated is { } handler)
-							await handler(transId, orderId, cancellationToken);
+							await handler.InvokeAsync(transId, orderId, cancellationToken);
 					}
 				}
 				else
 				{
 					if (TransError is { } handler)
-						await handler(transId, new InvalidOperationException(response.Message), cancellationToken);
+						await handler.InvokeAsync(transId, new InvalidOperationException(response.Message), cancellationToken);
 				}
 			}
 		}

@@ -90,14 +90,14 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			async (c, msg1, t) =>
@@ -211,11 +211,11 @@ class PublicSocketClient : BaseSocketClient
 					{
 						case MarketDataType.Quote:
 							if (QuoteReceived is { } quoteHandler)
-								await quoteHandler(evt.DeserializeObject<Quote>(), cancellationToken);
+								await quoteHandler.InvokeAsync(evt.DeserializeObject<Quote>(), cancellationToken);
 							break;
 						case MarketDataType.Candle:
 							if (CandleReceived is { } candleHandler)
-								await candleHandler(evt.DeserializeObject<Candle>(), cancellationToken);
+								await candleHandler.InvokeAsync(evt.DeserializeObject<Candle>(), cancellationToken);
 							break;
 						default:
 							this.AddWarningLog(LocalizedStrings.UnknownEvent, type);
@@ -321,19 +321,19 @@ class PrivateSocketClient : BaseSocketClient
 		{
 			case MsgTypes.AccountPortfolios:
 				if (PortfolioReceived is { } portfolioHandler)
-					await portfolioHandler(getValue<AccountPortfolio>(), cancellationToken);
+					await portfolioHandler.InvokeAsync(getValue<AccountPortfolio>(), cancellationToken);
 				break;
 			case MsgTypes.AccountMetrics:
 				if (MetricsReceived is { } metricsHandler)
-					await metricsHandler(getValue<AccountMetrics>(), cancellationToken);
+					await metricsHandler.InvokeAsync(getValue<AccountMetrics>(), cancellationToken);
 				break;
 			case MsgTypes.AccountEvents:
 				if (EventReceived is { } eventHandler)
-					await eventHandler(getValue<AccountEvent>(), cancellationToken);
+					await eventHandler.InvokeAsync(getValue<AccountEvent>(), cancellationToken);
 				break;
 			case MsgTypes.CashTransfers:
 				if (CashTransferReceived is { } cashHandler)
-					await cashHandler(getValue<CashTransfer>(), cancellationToken);
+					await cashHandler.InvokeAsync(getValue<CashTransfer>(), cancellationToken);
 				break;
 			case MsgTypes.AccountPortfoliosSubscriptionClosed:
 				break;

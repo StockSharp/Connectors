@@ -252,7 +252,7 @@ internal sealed class DukasCopyJForexBridgeClient : Disposable
 		{
 			FailPending(ex);
 			if (Error != null)
-				await Error(ex, CancellationToken.None);
+				await Error.InvokeAsync(ex, CancellationToken.None);
 		}
 	}
 
@@ -265,19 +265,19 @@ internal sealed class DukasCopyJForexBridgeClient : Disposable
 					completion.TrySetResult(message);
 				break;
 			case DukasCopyJForexBridgeKinds.Tick when message.Tick != null && TickReceived != null:
-				await TickReceived(message.Tick, cancellationToken);
+				await TickReceived.InvokeAsync(message.Tick, cancellationToken);
 				break;
 			case DukasCopyJForexBridgeKinds.Bar when message.Bar != null && BarReceived != null:
-				await BarReceived(message.Bar, cancellationToken);
+				await BarReceived.InvokeAsync(message.Bar, cancellationToken);
 				break;
 			case DukasCopyJForexBridgeKinds.Order when message.Order != null && OrderReceived != null:
-				await OrderReceived(message.Order, cancellationToken);
+				await OrderReceived.InvokeAsync(message.Order, cancellationToken);
 				break;
 			case DukasCopyJForexBridgeKinds.Account when message.Account != null && AccountReceived != null:
-				await AccountReceived(message.Account, cancellationToken);
+				await AccountReceived.InvokeAsync(message.Account, cancellationToken);
 				break;
 			case DukasCopyJForexBridgeKinds.Error when Error != null:
-				await Error(new IOException(message.Error.IsEmpty("Dukascopy bridge reported an error.")),
+				await Error.InvokeAsync(new IOException(message.Error.IsEmpty("Dukascopy bridge reported an error.")),
 					cancellationToken);
 				break;
 		}

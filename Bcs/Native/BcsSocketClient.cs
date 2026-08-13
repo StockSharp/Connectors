@@ -28,9 +28,9 @@ sealed class BcsSocketClient : BaseLogReceiver
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
 			(state, token) => StateChanged is { } stateHandler
-				? stateHandler(state, token) : default,
+				? stateHandler.InvokeAsync(state, token) : default,
 			(error, token) => Error is { } errorHandler
-				? errorHandler(error, token) : default,
+				? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -159,25 +159,25 @@ sealed class BcsSocketClient : BaseLogReceiver
 		{
 			case "Quotes":
 				if (QuoteReceived is { } quoteHandler)
-					await quoteHandler(
+					await quoteHandler.InvokeAsync(
 						JsonConvert.DeserializeObject<BcsQuote>(raw, _jsonSettings),
 						cancellationToken);
 				break;
 			case "OrderBook":
 				if (OrderBookReceived is { } bookHandler)
-					await bookHandler(
+					await bookHandler.InvokeAsync(
 						JsonConvert.DeserializeObject<BcsOrderBook>(raw, _jsonSettings),
 						cancellationToken);
 				break;
 			case "LastTrades":
 				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(
+					await tradeHandler.InvokeAsync(
 						JsonConvert.DeserializeObject<BcsTrade>(raw, _jsonSettings),
 						cancellationToken);
 				break;
 			case "CandleStick":
 				if (CandleReceived is { } candleHandler)
-					await candleHandler(
+					await candleHandler.InvokeAsync(
 						JsonConvert.DeserializeObject<BcsCandle>(raw, _jsonSettings),
 						cancellationToken);
 				break;
@@ -237,7 +237,7 @@ sealed class BcsSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseError(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	protected override void DisposeManaged()
 	{

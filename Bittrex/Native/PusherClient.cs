@@ -70,7 +70,7 @@ class PusherClient : BaseLogReceiver
 		}
 
 		if (Connected is { } handler)
-			await handler(cancellationToken);
+			await handler.InvokeAsync(cancellationToken);
 	}
 
 	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
@@ -81,7 +81,7 @@ class PusherClient : BaseLogReceiver
 		_hub = null;
 
 		if (Disconnected is { } handler)
-			await handler(true, cancellationToken);
+			await handler.InvokeAsync(true, cancellationToken);
 	}
 
 	private async void Invoke(Channels channel, string tzip)
@@ -103,7 +103,7 @@ class PusherClient : BaseLogReceiver
 						foreach (var ticker in summary.Tickers)
 						{
 							if (TickerChanged is { } handler)
-								await handler(ticker, default);
+								await handler.InvokeAsync(ticker, CancellationToken.None);
 						}
 					}
 
@@ -116,14 +116,14 @@ class PusherClient : BaseLogReceiver
 					var book = decoded.DeserializeObject<WsOrderBook>();
 
 					if (OrderBookChanged is { } bookHandler)
-						await bookHandler(book, default);
+						await bookHandler.InvokeAsync(book, CancellationToken.None);
 
 					if (book.Fills != null)
 					{
 						foreach (var fill in book.Fills)
 						{
 							if (NewTrade is { } tradeHandler)
-								await tradeHandler(book.Market, fill, default);
+								await tradeHandler.InvokeAsync(book.Market, fill, default);
 						}
 					}
 
@@ -134,7 +134,7 @@ class PusherClient : BaseLogReceiver
 					dynamic payload = decoded.DeserializeObject<object>();
 
 					if (BalanceChanged is { } handler)
-						await handler(((JToken)payload.d).DeserializeObject<WsBalance>(), default);
+						await handler.InvokeAsync(((JToken)payload.d).DeserializeObject<WsBalance>(), CancellationToken.None);
 
 					break;
 				}
@@ -143,7 +143,7 @@ class PusherClient : BaseLogReceiver
 					dynamic payload = decoded.DeserializeObject<object>();
 
 					if (OrderChanged is { } handler)
-						await handler((int)payload.TY, ((JToken)payload.o).DeserializeObject<WsOrder>(), default);
+						await handler.InvokeAsync((int)payload.TY, ((JToken)payload.o).DeserializeObject<WsOrder>(), default);
 
 					break;
 				}
@@ -154,7 +154,7 @@ class PusherClient : BaseLogReceiver
 		catch (Exception ex)
 		{
 			if (Error is { } handler)
-				await handler(ex, default);
+				await handler.InvokeAsync(ex, CancellationToken.None);
 		}
 	}
 

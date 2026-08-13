@@ -26,11 +26,11 @@ sealed class BreezeMarketDataClient : BreezeSocketClient
 		if (BreezeSocketCodec.IsDepth(message))
 		{
 			if (DepthReceived is { } depthHandler)
-				await depthHandler(BreezeSocketCodec.ReadDepth(message), cancellationToken);
+				await depthHandler.InvokeAsync(BreezeSocketCodec.ReadDepth(message), cancellationToken);
 		}
 		else if (TickReceived is { } tickHandler)
 		{
-			await tickHandler(BreezeSocketCodec.ReadMarketTick(message,
+			await tickHandler.InvokeAsync(BreezeSocketCodec.ReadMarketTick(message,
 				token => _instruments.TryGetValue(token, out var kind) && kind != BreezeInstrumentKinds.Equity), cancellationToken);
 		}
 	}

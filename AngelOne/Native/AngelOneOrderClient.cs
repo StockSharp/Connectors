@@ -18,8 +18,8 @@ sealed class AngelOneOrderClient : BaseLogReceiver
 
 		_client = new(
 			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -70,6 +70,6 @@ sealed class AngelOneOrderClient : BaseLogReceiver
 			throw new InvalidOperationException($"Angel One order stream error {update.StatusCode}: {update.ErrorMessage}");
 
 		if (update.Order != null && !update.Order.OrderId.IsEmpty() && OrderReceived is { } handler)
-			await handler(update.Order, cancellationToken);
+			await handler.InvokeAsync(update.Order, cancellationToken);
 	}
 }

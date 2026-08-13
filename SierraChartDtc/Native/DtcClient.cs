@@ -177,7 +177,7 @@ internal sealed class DtcClient : BaseLogReceiver
 				else if (message is DtcLogoff logoff)
 					throw new IOException(logoff.Reason.IsEmpty("The DTC server closed the connection."));
 				else if (MessageReceived != null)
-					await MessageReceived(message, cancellationToken);
+					await MessageReceived.InvokeAsync(message, cancellationToken);
 			}
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -240,7 +240,7 @@ internal sealed class DtcClient : BaseLogReceiver
 		if (Interlocked.Exchange(ref _errorRaised, 1) != 0)
 			return;
 		if (Error != null)
-			await Error(error, CancellationToken.None);
+			await Error.InvokeAsync(error, CancellationToken.None);
 	}
 
 	private static TaskCompletionSource<T> NewCompletion<T>()

@@ -24,11 +24,11 @@ sealed class HdfcSocketClient : BaseLogReceiver
 			endpoint.AbsoluteUri,
 			(state, cancellationToken) =>
 				StateChanged is { } stateHandler
-					? stateHandler(state, cancellationToken)
+					? stateHandler.InvokeAsync(state, cancellationToken)
 					: default,
 			(error, cancellationToken) =>
 				Error is { } errorHandler
-					? errorHandler(error, cancellationToken)
+					? errorHandler.InvokeAsync(error, cancellationToken)
 					: default,
 			Process,
 			(message, args) => this.AddInfoLog(message, args),
@@ -156,7 +156,7 @@ sealed class HdfcSocketClient : BaseLogReceiver
 			{
 				if (Error is { } errorHandler)
 				{
-					await errorHandler(
+					await errorHandler.InvokeAsync(
 						new InvalidOperationException(
 							$"HDFC Securities WebSocket: {text}"),
 						cancellationToken);
@@ -168,7 +168,7 @@ sealed class HdfcSocketClient : BaseLogReceiver
 		if (MarketDataReceived is not { } handler)
 			return;
 		foreach (var update in Decode(data, DateTime.UtcNow))
-			await handler(update, cancellationToken);
+			await handler.InvokeAsync(update, cancellationToken);
 	}
 
 	internal static string CreateSubscriptionCommand(

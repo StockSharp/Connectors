@@ -155,7 +155,7 @@ sealed class BYDFiWebSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(WebSocketMessage message,
@@ -178,22 +178,22 @@ sealed class BYDFiWebSocketClient : BaseLogReceiver
 			{
 				case "24hrTicker":
 					if (TickerReceived is { } tickerHandler)
-						await tickerHandler(Deserialize<BYDFiWsTicker>(
+						await tickerHandler.InvokeAsync(Deserialize<BYDFiWsTicker>(
 							payload), cancellationToken);
 					break;
 				case "tradePriceUpdate":
 					if (RealTickerReceived is { } priceHandler)
-						await priceHandler(Deserialize<BYDFiWsRealTicker>(
+						await priceHandler.InvokeAsync(Deserialize<BYDFiWsRealTicker>(
 							payload), cancellationToken);
 					break;
 				case "depthUpdate":
 					if (DepthReceived is { } depthHandler)
-						await depthHandler(Deserialize<BYDFiWsDepth>(payload),
+						await depthHandler.InvokeAsync(Deserialize<BYDFiWsDepth>(payload),
 							cancellationToken);
 					break;
 				case "kline":
 					if (KlineReceived is { } candleHandler)
-						await candleHandler(Deserialize<BYDFiWsKline>(
+						await candleHandler.InvokeAsync(Deserialize<BYDFiWsKline>(
 							payload), cancellationToken);
 					break;
 			}
@@ -214,7 +214,7 @@ sealed class BYDFiWebSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 		else
 			this.AddErrorLog(error);
 	}

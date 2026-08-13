@@ -489,7 +489,7 @@ sealed class YuantaSdkClient : BaseLogReceiver
 			return;
 		foreach (var subscription in MatchSubscriptions(YuantaMarketDataKinds.Level1,
 			update.Market, update.Symbol))
-			await handler(subscription, update, cancellationToken);
+			await handler.InvokeAsync(subscription, update, cancellationToken);
 	}
 
 	private async ValueTask PublishTradeAsync(YuantaTradeUpdate update,
@@ -499,7 +499,7 @@ sealed class YuantaSdkClient : BaseLogReceiver
 			return;
 		foreach (var subscription in MatchSubscriptions(YuantaMarketDataKinds.Trades,
 			update.Market, update.Symbol))
-			await handler(subscription, update, cancellationToken);
+			await handler.InvokeAsync(subscription, update, cancellationToken);
 	}
 
 	private async ValueTask PublishBookAsync(YuantaBookUpdate update,
@@ -509,7 +509,7 @@ sealed class YuantaSdkClient : BaseLogReceiver
 			return;
 		foreach (var subscription in MatchSubscriptions(YuantaMarketDataKinds.MarketDepth,
 			update.Market, update.Symbol))
-			await handler(subscription, update, cancellationToken);
+			await handler.InvokeAsync(subscription, update, cancellationToken);
 	}
 
 	private async ValueTask PublishReportAsync(object value, bool isMerged,
@@ -517,7 +517,7 @@ sealed class YuantaSdkClient : BaseLogReceiver
 	{
 		var update = ReadRealtimeOrder(value, isMerged);
 		if (OrderReceived is { } orderHandler)
-			await orderHandler(update, cancellationToken);
+			await orderHandler.InvokeAsync(update, cancellationToken);
 		if (!isMerged)
 			return;
 		var total = Number(value, "OkQty");
@@ -533,7 +533,7 @@ sealed class YuantaSdkClient : BaseLogReceiver
 			return;
 		if (FillReceived is { } fillHandler)
 		{
-			await fillHandler(new()
+			await fillHandler.InvokeAsync(new()
 			{
 				Account = update.Account,
 				Market = update.Market,
@@ -1203,8 +1203,8 @@ sealed class YuantaSdkClient : BaseLogReceiver
 		};
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error?.Invoke(error, cancellationToken) ?? default;
+		=> Error.InvokeAsync(error, cancellationToken);
 
 	private ValueTask RaiseConnectionLostAsync(Exception error)
-		=> ConnectionLost?.Invoke(error, CancellationToken.None) ?? default;
+		=> ConnectionLost.InvokeAsync(error, CancellationToken.None);
 }

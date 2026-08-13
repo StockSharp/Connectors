@@ -387,7 +387,7 @@ sealed class DeltaExchangeIndiaWsClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(
@@ -417,7 +417,7 @@ sealed class DeltaExchangeIndiaWsClient : BaseLogReceiver
 			if (parsed.Type.IsEmpty())
 				return;
 			if (MessageReceived is { } handler)
-				await handler(parsed, cancellationToken);
+				await handler.InvokeAsync(parsed, cancellationToken);
 		}
 		catch (Exception error) when (
 			error is JsonException or InvalidDataException or
@@ -459,7 +459,7 @@ sealed class DeltaExchangeIndiaWsClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static Subscription Normalize(

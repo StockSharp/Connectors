@@ -39,14 +39,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(null, error, token);
+					return handler.InvokeAsync(null, error, token);
 				return default;
 			},
 			OnProcess,
@@ -97,7 +97,7 @@ class PusherClient : BaseLogReceiver
 		if (data != null && ((JToken)data).Type == JTokenType.Object && data.error != null)
 		{
 			if (Error is { } errorHandler)
-				await errorHandler((long?)data.oid, new InvalidOperationException((string)data.error), cancellationToken);
+				await errorHandler.InvokeAsync((long?)data.oid, new InvalidOperationException((string)data.error), cancellationToken);
 			return;
 		}
 
@@ -117,7 +117,7 @@ class PusherClient : BaseLogReceiver
 				{
 					this.AddErrorLog(reason);
 					if (StateChanged is { } handler)
-						await handler(ConnectionStates.Failed, cancellationToken);
+						await handler.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 				}
 
 				break;
@@ -131,7 +131,7 @@ class PusherClient : BaseLogReceiver
 
 			case Events.OrderBookSubscribe:
 				if (OrderBookSnapshot is { } obSnapHandler)
-					await obSnapHandler((long)obj.oid, ((JToken)data).DeserializeObject<OrderBook>(), cancellationToken);
+					await obSnapHandler.InvokeAsync((long)obj.oid, ((JToken)data).DeserializeObject<OrderBook>(), cancellationToken);
 				break;
 
 			case Events.OrderBookUnSubscribe:
@@ -139,7 +139,7 @@ class PusherClient : BaseLogReceiver
 
 			case Events.MarketDataUpdate:
 				if (OrderBookChanged is { } obChangedHandler)
-					await obChangedHandler(((JToken)data).DeserializeObject<OrderBook>(), cancellationToken);
+					await obChangedHandler.InvokeAsync(((JToken)data).DeserializeObject<OrderBook>(), cancellationToken);
 				break;
 
 			case Events.CandlesData:
@@ -148,7 +148,7 @@ class PusherClient : BaseLogReceiver
 				{
 					foreach (var item in data)
 					{
-						await candleHandler((string)obj.pair, "1m", ((JToken)item).DeserializeObject<Ohlc>(), cancellationToken);
+						await candleHandler.InvokeAsync((string)obj.pair, "1m", ((JToken)item).DeserializeObject<Ohlc>(), cancellationToken);
 					}
 				}
 
@@ -158,7 +158,7 @@ class PusherClient : BaseLogReceiver
 				if (NewCandle is { } candle1MHandler)
 				{
 					var candle1M = ((JToken)data).DeserializeObject<Ohlcv1M>();
-					await candle1MHandler(candle1M.Pair, "1m", new Ohlc
+					await candle1MHandler.InvokeAsync(candle1M.Pair, "1m", new Ohlc
 					{
 						Time = candle1M.Time,
 						Open = candle1M.Open,
@@ -171,7 +171,7 @@ class PusherClient : BaseLogReceiver
 
 			case Events.Ohlcv24:
 				if (Ohlcv24Changed is { } ohlcv24Handler)
-					await ohlcv24Handler((string)obj.pair, ((JToken)data).DeserializeObject<Ohlcv24>(), cancellationToken);
+					await ohlcv24Handler.InvokeAsync((string)obj.pair, ((JToken)data).DeserializeObject<Ohlcv24>(), cancellationToken);
 				break;
 
 			case Events.History:
@@ -181,7 +181,7 @@ class PusherClient : BaseLogReceiver
 					{
 						var parts = ((string)item).SplitByColon(false);
 
-						await histTradeHandler((string)obj.pair, new Trade
+						await histTradeHandler.InvokeAsync((string)obj.pair, new Trade
 						{
 							Type = parts[0],
 							Time = parts[1].To<long>().FromUnix(false),
@@ -198,7 +198,7 @@ class PusherClient : BaseLogReceiver
 				if (NewTrade is { } histUpdateHandler)
 				{
 					foreach (var trade in ((JToken)data).DeserializeObject<SocketTrade[]>())
-						await histUpdateHandler((string)obj.pair, trade.ToTrade(), cancellationToken);
+						await histUpdateHandler.InvokeAsync((string)obj.pair, trade.ToTrade(), cancellationToken);
 				}
 
 				break;
@@ -225,48 +225,48 @@ class PusherClient : BaseLogReceiver
 				}
 
 				if (BalancesReceived is { } balancesHandler)
-					await balancesHandler((long)obj.oid, ((long)data.time).FromUnix(false), dict, cancellationToken);
+					await balancesHandler.InvokeAsync((long)obj.oid, ((long)data.time).FromUnix(false), dict, cancellationToken);
 				break;
 			}
 
 			case Events.OpenOrders:
 				if (OpenOrdersReceived is { } openOrdersHandler)
-					await openOrdersHandler((long)obj.oid, ((JToken)data).DeserializeObject<Order[]>(), cancellationToken);
+					await openOrdersHandler.InvokeAsync((long)obj.oid, ((JToken)data).DeserializeObject<Order[]>(), cancellationToken);
 				break;
 
 			case Events.PlaceOrder:
 				if (OrderPlaced is { } placedHandler)
-					await placedHandler((long)obj.oid, ((JToken)data).DeserializeObject<Order>(), cancellationToken);
+					await placedHandler.InvokeAsync((long)obj.oid, ((JToken)data).DeserializeObject<Order>(), cancellationToken);
 				break;
 
 			case Events.ReplaceOrder:
 				if (OrderReplaced is { } replacedHandler)
-					await replacedHandler((long)obj.oid, ((JToken)data).DeserializeObject<Order>(), cancellationToken);
+					await replacedHandler.InvokeAsync((long)obj.oid, ((JToken)data).DeserializeObject<Order>(), cancellationToken);
 				break;
 
 			case Events.CancelOrder:
 				if (OrderCanceled is { } canceledHandler)
-					await canceledHandler((long)obj.oid, (long)data.order_id, ((long)data.time).FromUnix(false), cancellationToken);
+					await canceledHandler.InvokeAsync((long)obj.oid, (long)data.order_id, ((long)data.time).FromUnix(false), cancellationToken);
 				break;
 
 			case Events.Transaction:
 				if (NewTransaction is { } txHandler)
-					await txHandler(((JToken)data).DeserializeObject<Transaction>(), cancellationToken);
+					await txHandler.InvokeAsync(((JToken)data).DeserializeObject<Transaction>(), cancellationToken);
 				break;
 
 			case Events.Order:
 				if (OrderChanged is { } orderHandler)
-					await orderHandler(((JToken)data).DeserializeObject<Order>(), cancellationToken);
+					await orderHandler.InvokeAsync(((JToken)data).DeserializeObject<Order>(), cancellationToken);
 				break;
 
 			case Events.Balance:
 				if (BalanceReceived is { } balHandler)
-					await balHandler((string)data.symbol, (decimal)data.balance, false, cancellationToken);
+					await balHandler.InvokeAsync((string)data.symbol, (decimal)data.balance, false, cancellationToken);
 				break;
 
 			case Events.OrderBalance:
 				if (BalanceReceived is { } obalHandler)
-					await obalHandler((string)data.symbol, (decimal)data.balance, true, cancellationToken);
+					await obalHandler.InvokeAsync((string)data.symbol, (decimal)data.balance, true, cancellationToken);
 				break;
 
 			default:

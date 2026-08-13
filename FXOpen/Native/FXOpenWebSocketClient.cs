@@ -245,7 +245,7 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
 			this.AddWarningLog("FXOpen {0} WebSocket connection failed.",
 				isFeed ? "feed" : "trade");
 			if (notify && StateChanged is { } failedHandler)
-				await failedHandler(ConnectionStates.Failed, cancellationToken);
+				await failedHandler.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 			return;
 		}
 
@@ -282,7 +282,7 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
 			this.AddInfoLog("FXOpen {0} WebSocket restored and authenticated.",
 				isFeed ? "feed" : "trade");
 			if (notify && StateChanged is { } restoredHandler)
-				await restoredHandler(ConnectionStates.Restored, cancellationToken);
+				await restoredHandler.InvokeAsync(ConnectionStates.Restored, cancellationToken);
 		}
 		catch (Exception error)
 		{
@@ -298,7 +298,7 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
 			}
 			await RaiseErrorAsync(error, cancellationToken);
 			if (notify && StateChanged is { } failedHandler)
-				await failedHandler(ConnectionStates.Failed, cancellationToken);
+				await failedHandler.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 		}
 	}
 
@@ -542,28 +542,28 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
 						if (FeedReceived is { } handler)
 						{
 							foreach (var tick in result?.Snapshot ?? [])
-								await handler(tick, cancellationToken);
+								await handler.InvokeAsync(tick, cancellationToken);
 						}
 						break;
 					}
 				case "feedtick":
 					if (FeedReceived is { } feedHandler)
-						await feedHandler(Deserialize<TickTraderWsResponse<TickTraderFeedTick>>(payload).Result,
+						await feedHandler.InvokeAsync(Deserialize<TickTraderWsResponse<TickTraderFeedTick>>(payload).Result,
 							cancellationToken);
 					break;
 				case "feedbarupdate":
 					if (BarReceived is { } barHandler)
-						await barHandler(Deserialize<TickTraderWsResponse<TickTraderBarUpdateResult>>(payload).Result,
+						await barHandler.InvokeAsync(Deserialize<TickTraderWsResponse<TickTraderBarUpdateResult>>(payload).Result,
 							cancellationToken);
 					break;
 				case "account":
 					if (AccountReceived is { } accountHandler)
-						await accountHandler(Deserialize<TickTraderWsResponse<TickTraderAccount>>(payload).Result,
+						await accountHandler.InvokeAsync(Deserialize<TickTraderWsResponse<TickTraderAccount>>(payload).Result,
 							cancellationToken);
 					break;
 				case "executionreport":
 					if (ExecutionReceived is { } executionHandler)
-						await executionHandler(
+						await executionHandler.InvokeAsync(
 							Deserialize<TickTraderWsResponse<TickTraderExecutionReport>>(payload).Result,
 							cancellationToken);
 					break;
@@ -623,7 +623,7 @@ sealed class FXOpenWebSocketClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string NormalizeEndpoint(string endpoint, string path)

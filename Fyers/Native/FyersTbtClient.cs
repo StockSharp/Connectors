@@ -19,8 +19,8 @@ sealed class FyersTbtClient : BaseLogReceiver
 		_authorization = $"{clientId.ThrowIfEmpty(nameof(clientId))}:{token.ThrowIfEmpty(nameof(token))}";
 		_client = new(
 			url.ThrowIfEmpty(nameof(url)),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -137,7 +137,7 @@ sealed class FyersTbtClient : BaseLogReceiver
 			if (bids.Length == 0 && asks.Length == 0)
 				continue;
 
-			await handler(new FyersDepthUpdate
+			await handler.InvokeAsync(new FyersDepthUpdate
 			{
 				Symbol = feed.Symbol,
 				ServerTime = ToTime(feed.FeedTime),

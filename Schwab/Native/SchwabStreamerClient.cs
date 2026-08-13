@@ -32,8 +32,8 @@ sealed class SchwabStreamerClient : BaseLogReceiver
 
 		_client = new WebSocketClient(
 			address,
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -145,7 +145,7 @@ sealed class SchwabStreamerClient : BaseLogReceiver
 				if (response.RequestId == _loginRequestId)
 					_loginSource.TrySetException(error);
 				if (Error is { } errorHandler)
-					await errorHandler(error, cancellationToken);
+					await errorHandler.InvokeAsync(error, cancellationToken);
 			}
 			else if (response.RequestId == _loginRequestId)
 			{
@@ -159,7 +159,7 @@ sealed class SchwabStreamerClient : BaseLogReceiver
 			{
 				foreach (var item in data.Content ?? [])
 					if (LevelOneReceived is { } handler)
-						await handler(item.Key ?? item.Symbol, item, cancellationToken);
+						await handler.InvokeAsync(item.Key ?? item.Symbol, item, cancellationToken);
 			}
 		}
 
@@ -169,7 +169,7 @@ sealed class SchwabStreamerClient : BaseLogReceiver
 			{
 				foreach (var item in data.Content ?? [])
 					if (BookReceived is { } handler)
-						await handler(data.Service, item.Key ?? item.Symbol, item, cancellationToken);
+						await handler.InvokeAsync(data.Service, item.Key ?? item.Symbol, item, cancellationToken);
 			}
 		}
 
@@ -179,7 +179,7 @@ sealed class SchwabStreamerClient : BaseLogReceiver
 			{
 				foreach (var item in data.Content ?? [])
 					if (AccountActivityReceived is { } handler)
-						await handler(item, cancellationToken);
+						await handler.InvokeAsync(item, cancellationToken);
 			}
 		}
 	}

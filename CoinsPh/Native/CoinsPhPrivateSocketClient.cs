@@ -158,7 +158,7 @@ sealed class CoinsPhPrivateSocketClient : BaseLogReceiver
 	{
 		_ = client;
 		return StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 	}
 
@@ -175,7 +175,7 @@ sealed class CoinsPhPrivateSocketClient : BaseLogReceiver
 				payload, _jsonSettings) ?? throw new InvalidDataException(
 					"Coins.ph user stream returned an empty message.");
 			if (!value.Event.IsEmpty() && MessageReceived is { } handler)
-				await handler(value, cancellationToken);
+				await handler.InvokeAsync(value, cancellationToken);
 		}
 		catch (Exception error) when (error is JsonException or InvalidDataException or
 			InvalidOperationException or FormatException or OverflowException)
@@ -210,7 +210,7 @@ sealed class CoinsPhPrivateSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string CreateEndpoint(string endpoint, string listenKey)
 	{

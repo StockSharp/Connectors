@@ -441,7 +441,7 @@ sealed class SynthetixSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static ValueTask RaiseAsync<T>(
@@ -449,7 +449,7 @@ sealed class SynthetixSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 		=> handler is null || value is null
 			? default
-			: handler(value, cancellationToken);
+			: handler.InvokeAsync(value, cancellationToken);
 
 	private static async ValueTask DisposeClientAsync(WebSocketClient client,
 		CancellationToken cancellationToken)

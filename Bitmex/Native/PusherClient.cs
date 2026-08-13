@@ -40,14 +40,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -108,47 +108,47 @@ class PusherClient : BaseLogReceiver
 
 					case Topics.Trades:
 						if (NewTrades is { } tradesHandler)
-							await tradesHandler((string)obj.action, ((JToken)data).DeserializeObject<Trade[]>(), cancellationToken);
+							await tradesHandler.InvokeAsync((string)obj.action, ((JToken)data).DeserializeObject<Trade[]>(), cancellationToken);
 						break;
 
 					case Topics.OrderBookL2:
 						if (NewOrderLog is { } orderLogHandler)
-							await orderLogHandler((string)obj.action, ((JToken)data).DeserializeObject<Level2[]>(), cancellationToken);
+							await orderLogHandler.InvokeAsync((string)obj.action, ((JToken)data).DeserializeObject<Level2[]>(), cancellationToken);
 						break;
 
 					case Topics.Ticker:
 						if (TickersChanged is { } tickersHandler)
-							await tickersHandler((string)obj.action, ((JToken)data).DeserializeObject<Symbol[]>(), cancellationToken);
+							await tickersHandler.InvokeAsync((string)obj.action, ((JToken)data).DeserializeObject<Symbol[]>(), cancellationToken);
 						break;
 
 					case Topics.OrderBookTop10:
 						if (OrderBooksChanged is { } orderBooksHandler)
-							await orderBooksHandler((string)obj.action, ((JToken)data).DeserializeObject<OrderBook[]>(), cancellationToken);
+							await orderBooksHandler.InvokeAsync((string)obj.action, ((JToken)data).DeserializeObject<OrderBook[]>(), cancellationToken);
 						break;
 
 					case Topics.Margin:
 						if (MarginsChanged is { } marginsHandler)
-							await marginsHandler((string)obj.action, ((JToken)data).DeserializeObject<Margin[]>(), cancellationToken);
+							await marginsHandler.InvokeAsync((string)obj.action, ((JToken)data).DeserializeObject<Margin[]>(), cancellationToken);
 						break;
 
 					case Topics.Position:
 						if (PositionsChanged is { } positionsHandler)
-							await positionsHandler((string)obj.action, ((JToken)data).DeserializeObject<Position[]>(), cancellationToken);
+							await positionsHandler.InvokeAsync((string)obj.action, ((JToken)data).DeserializeObject<Position[]>(), cancellationToken);
 						break;
 
 					case Topics.Order:
 						if (OrderChanged is { } orderHandler)
-							await orderHandler((string)obj.action, ((JToken)data).DeserializeObject<IEnumerable<Order>>(), cancellationToken);
+							await orderHandler.InvokeAsync((string)obj.action, ((JToken)data).DeserializeObject<IEnumerable<Order>>(), cancellationToken);
 						break;
 
 					case Topics.Execution:
 						if (NewExecutions is { } executionsHandler)
-							await executionsHandler((string)obj.action, ((JToken)data).DeserializeObject<Execution[]>(), cancellationToken);
+							await executionsHandler.InvokeAsync((string)obj.action, ((JToken)data).DeserializeObject<Execution[]>(), cancellationToken);
 						break;
 
 					case Topics.Quote:
 						if (NewQuoteCandles is { } quoteHandler)
-							await quoteHandler((string)obj.action, null, ((JToken)data).DeserializeObject<QuoteOhlc[]>(), cancellationToken);
+							await quoteHandler.InvokeAsync((string)obj.action, null, ((JToken)data).DeserializeObject<QuoteOhlc[]>(), cancellationToken);
 						break;
 
 					default:
@@ -156,12 +156,12 @@ class PusherClient : BaseLogReceiver
 						if (topicName.StartsWithIgnoreCase(Topics.QuoteBin))
 						{
 							if (NewQuoteCandles is { } quoteBinHandler)
-								await quoteBinHandler((string)obj.action, topicName.Remove(Topics.QuoteBin, true), ((JToken)data).DeserializeObject<QuoteOhlc[]>(), cancellationToken);
+								await quoteBinHandler.InvokeAsync((string)obj.action, topicName.Remove(Topics.QuoteBin, true), ((JToken)data).DeserializeObject<QuoteOhlc[]>(), cancellationToken);
 						}
 						else if (topicName.StartsWithIgnoreCase(Topics.TradeBin))
 						{
 							if (NewTradeCandles is { } tradeBinHandler)
-								await tradeBinHandler((string)obj.action, topicName.Remove(Topics.TradeBin, true), ((JToken)data).DeserializeObject<TradeOhlc[]>(), cancellationToken);
+								await tradeBinHandler.InvokeAsync((string)obj.action, topicName.Remove(Topics.TradeBin, true), ((JToken)data).DeserializeObject<TradeOhlc[]>(), cancellationToken);
 						}
 						else
 							this.AddErrorLog(LocalizedStrings.UnknownEvent, topicName);
@@ -173,7 +173,7 @@ class PusherClient : BaseLogReceiver
 			else if (obj.error != null)
 			{
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException((string)obj.error.ToString()), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException((string)obj.error.ToString()), cancellationToken);
 			}
 		}
 		else

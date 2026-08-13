@@ -15,8 +15,8 @@ sealed class TastyTradeAccountStreamer : BaseLogReceiver
 		_accounts = accounts.Where(a => !a.IsEmpty()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 		_client = new WebSocketClient(
 			address,
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -77,7 +77,7 @@ sealed class TastyTradeAccountStreamer : BaseLogReceiver
 			catch (Exception ex)
 			{
 				if (Error is { } handler)
-					await handler(ex, CancellationToken.None);
+					await handler.InvokeAsync(ex, CancellationToken.None);
 			}
 		}
 	}
@@ -104,7 +104,7 @@ sealed class TastyTradeAccountStreamer : BaseLogReceiver
 		if (header is not null && !header.Message.IsEmpty() && !header.Status.EqualsIgnoreCase("ok"))
 		{
 			if (Error is { } errorHandler)
-				await errorHandler(new InvalidOperationException(header.Message), cancellationToken);
+				await errorHandler.InvokeAsync(new InvalidOperationException(header.Message), cancellationToken);
 			return;
 		}
 
@@ -127,7 +127,7 @@ sealed class TastyTradeAccountStreamer : BaseLogReceiver
 	}
 
 	private static ValueTask Dispatch<T>(T data, Func<T, CancellationToken, ValueTask> handler, CancellationToken cancellationToken)
-		=> data is null || handler is null ? default : handler(data, cancellationToken);
+		=> data is null || handler is null ? default : handler.InvokeAsync(data, cancellationToken);
 
 	protected override void DisposeManaged()
 	{

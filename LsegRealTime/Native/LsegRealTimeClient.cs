@@ -283,7 +283,7 @@ internal sealed class LsegRealTimeClient : IDisposable
 			var handler = MarketPriceReceived;
 			if (handler != null)
 			{
-				await handler(new LsegMarketPriceUpdate
+				await handler.InvokeAsync(new LsegMarketPriceUpdate
 				{
 					SubscriptionId = subscription.ExternalId,
 					Ric = subscription.Ric,
@@ -302,7 +302,7 @@ internal sealed class LsegRealTimeClient : IDisposable
 			var handler = DepthReceived;
 			if (handler != null)
 			{
-				await handler(new LsegDepthUpdate
+				await handler.InvokeAsync(new LsegDepthUpdate
 				{
 					SubscriptionId = subscription.ExternalId,
 					Ric = subscription.Ric,
@@ -800,8 +800,8 @@ internal sealed class LsegRealTimeClient : IDisposable
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error?.Invoke(error, cancellationToken) ?? default;
+		=> Error.InvokeAsync(error, cancellationToken);
 
 	private ValueTask RaiseConnectionLostAsync(Exception error)
-		=> ConnectionLost?.Invoke(error, CancellationToken.None) ?? default;
+		=> ConnectionLost.InvokeAsync(error, CancellationToken.None);
 }

@@ -265,7 +265,7 @@ sealed class BitruePublicWsClient : BaseLogReceiver
 				$"Bitrue {_section} WebSocket disconnected during a history request."));
 
 		if (StateChanged is { } handler)
-			await handler(_section, state, cancellationToken);
+			await handler.InvokeAsync(_section, state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(BitrueWsSubscriptionKey subscription,
@@ -385,26 +385,26 @@ sealed class BitruePublicWsClient : BaseLogReceiver
 				case BitrueWsTopics.Depth:
 					var book = Deserialize<BitrueWsBookEnvelope>(payload);
 					if (book.Tick is not null && BookReceived is { } bookHandler)
-						await bookHandler(_section, subscription.Symbol, book.Tick,
+						await bookHandler.InvokeAsync(_section, subscription.Symbol, book.Tick,
 							book.Timestamp, cancellationToken);
 					break;
 				case BitrueWsTopics.Ticker:
 					var ticker = Deserialize<BitrueWsTickerEnvelope>(payload);
 					if (ticker.Tick is not null && TickerReceived is { } tickerHandler)
-						await tickerHandler(subscription.Symbol, ticker.Tick,
+						await tickerHandler.InvokeAsync(subscription.Symbol, ticker.Tick,
 							ticker.Timestamp, cancellationToken);
 					break;
 				case BitrueWsTopics.Trades:
 					var trades = Deserialize<BitrueWsTradesEnvelope>(payload);
 					if (TradeReceived is { } tradeHandler)
 						foreach (var trade in trades.Tick?.Data ?? [])
-							await tradeHandler(subscription.Symbol, trade,
+							await tradeHandler.InvokeAsync(subscription.Symbol, trade,
 								trades.Timestamp, cancellationToken);
 					break;
 				case BitrueWsTopics.Candles:
 					var candle = Deserialize<BitrueWsCandleEnvelope>(payload);
 					if (candle.Tick is not null && CandleReceived is { } candleHandler)
-						await candleHandler(subscription.Symbol, subscription.TimeFrame,
+						await candleHandler.InvokeAsync(subscription.Symbol, subscription.TimeFrame,
 							candle.Tick, candle.Timestamp, cancellationToken);
 					break;
 				default:
@@ -501,5 +501,5 @@ sealed class BitruePublicWsClient : BaseLogReceiver
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

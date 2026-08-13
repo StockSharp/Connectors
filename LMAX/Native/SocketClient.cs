@@ -200,7 +200,7 @@ class SocketClient : BaseLogReceiver
 		this.AddErrorLog(error);
 
 		if (Error is { } handler)
-			return handler(error, cancellationToken);
+			return handler.InvokeAsync(error, cancellationToken);
 
 		return default;
 	}
@@ -212,7 +212,7 @@ class SocketClient : BaseLogReceiver
 		this.AddInfoLog("MarketData WebSocket state: {0}", state);
 
 		if (StateChanged is { } handler)
-			return handler(state, cancellationToken);
+			return handler.InvokeAsync(state, cancellationToken);
 
 		return default;
 	}
@@ -224,7 +224,7 @@ class SocketClient : BaseLogReceiver
 		this.AddInfoLog("Account WebSocket state: {0}", state);
 
 		if (StateChanged is { } handler)
-			return handler(state, cancellationToken);
+			return handler.InvokeAsync(state, cancellationToken);
 
 		return default;
 	}
@@ -456,13 +456,13 @@ class SocketClient : BaseLogReceiver
 						orderBook.InstrumentId) &&
 						OrderBookReceived is { } orderBookHandler)
 					{
-						await orderBookHandler(orderBook, cancellationToken);
+						await orderBookHandler.InvokeAsync(orderBook, cancellationToken);
 					}
 					if (_subscribedTickers.Contains(
 						orderBook.InstrumentId) &&
 						TickerReceived is { } tickerHandler)
 					{
-						await tickerHandler(orderBook, cancellationToken);
+						await tickerHandler.InvokeAsync(orderBook, cancellationToken);
 					}
 					break;
 
@@ -471,7 +471,7 @@ class SocketClient : BaseLogReceiver
 					if (_subscribedTrades.Contains(trade.InstrumentId) &&
 						TradeReceived is { } tradeHandler)
 					{
-						await tradeHandler(
+						await tradeHandler.InvokeAsync(
 							trade,
 							cancellationToken);
 					}
@@ -526,7 +526,7 @@ class SocketClient : BaseLogReceiver
 				case WsMessageTypes.WorkingOrder:
 					if (OrderReceived is { } orderHandler)
 					{
-						await orderHandler(
+						await orderHandler.InvokeAsync(
 							Deserialize<WsOrderMessage>(payload),
 							cancellationToken);
 					}
@@ -535,7 +535,7 @@ class SocketClient : BaseLogReceiver
 				case WsMessageTypes.Trade:
 					if (ExecutionReceived is { } executionHandler)
 					{
-						await executionHandler(
+						await executionHandler.InvokeAsync(
 							Deserialize<WsExecutionMessage>(payload),
 							cancellationToken);
 					}
@@ -544,7 +544,7 @@ class SocketClient : BaseLogReceiver
 				case WsMessageTypes.InstrumentPosition:
 					if (PositionReceived is { } positionHandler)
 					{
-						await positionHandler(
+						await positionHandler.InvokeAsync(
 							Deserialize<WsPositionMessage>(payload),
 							cancellationToken);
 					}
@@ -553,7 +553,7 @@ class SocketClient : BaseLogReceiver
 				case WsMessageTypes.WalletBalances:
 					if (WalletReceived is { } walletHandler)
 					{
-						await walletHandler(
+						await walletHandler.InvokeAsync(
 							Deserialize<WsWalletMessage>(payload),
 							cancellationToken);
 					}

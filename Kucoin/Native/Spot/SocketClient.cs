@@ -34,12 +34,12 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 
 		_client = new(
 			_address,
-			(state, token) => StateChanged?.Invoke(state, token) ?? default,
+			(state, token) => StateChanged.InvokeAsync(state, token),
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -72,7 +72,7 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 				return;
 			case "error":
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException((string)data), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException((string)data), cancellationToken);
 				return;
 		}
 
@@ -163,18 +163,18 @@ class PublicSocketClient : BaseSocketClient
 
 			if (topic.StartsWithIgnoreCase(Topics.Ticker))
 			{
-				return TickerChanged?.Invoke(getSymbol(), data.DeserializeObject<Ticker>(), cancellationToken) ?? default;
+				return TickerChanged.InvokeAsync(getSymbol(), data.DeserializeObject<Ticker>(), cancellationToken);
 			}
 			else if (topic.StartsWithIgnoreCase(Topics.Level2))
 			{
 				if (topic.ContainsIgnoreCase("Depth"))
-					return NewLevel2Snapshot?.Invoke(data.DeserializeObject<SocketLevel2Snapshot>(), getSymbol(), cancellationToken) ?? default;
+					return NewLevel2Snapshot.InvokeAsync(data.DeserializeObject<SocketLevel2Snapshot>(), getSymbol(), cancellationToken);
 				else
-					return NewLevel2?.Invoke(data.DeserializeObject<SocketLevel2>(), cancellationToken) ?? default;
+					return NewLevel2.InvokeAsync(data.DeserializeObject<SocketLevel2>(), cancellationToken);
 			}
 			else if (topic.StartsWithIgnoreCase(Topics.Matches))
 			{
-				return NewMatch?.Invoke(data.DeserializeObject<SocketMatch>(), cancellationToken) ?? default;
+				return NewMatch.InvokeAsync(data.DeserializeObject<SocketMatch>(), cancellationToken);
 			}
 			else if (topic.StartsWithIgnoreCase(Topics.Candles))
 			{
@@ -182,7 +182,7 @@ class PublicSocketClient : BaseSocketClient
 				var symbol = (string)dyn.symbol;
 				var tf = getSymbol().Remove(symbol, true)[1..];
 				var candles = (JArray)dyn.candles;
-				return NewCandle?.Invoke(symbol, tf.ToTimeFrame(), candles.DeserializeObject<Ohlc>(), cancellationToken) ?? default;
+				return NewCandle.InvokeAsync(symbol, tf.ToTimeFrame(), candles.DeserializeObject<Ohlc>(), cancellationToken);
 			}
 			else
 			{
@@ -292,17 +292,17 @@ class PrivateSocketClient : BaseSocketClient
 		if (topic.StartsWithIgnoreCase(Topics.Orders))
 		{
 			if (OrderChanged is { } handler)
-				await handler(data.DeserializeObject<SocketOrder>(), cancellationToken);
+				await handler.InvokeAsync(data.DeserializeObject<SocketOrder>(), cancellationToken);
 		}
 		else if (topic.StartsWithIgnoreCase(Topics.StopOrders))
 		{
 			if (StopOrderChanged is { } handler)
-				await handler(data.DeserializeObject<SocketStopOrder>(), cancellationToken);
+				await handler.InvokeAsync(data.DeserializeObject<SocketStopOrder>(), cancellationToken);
 		}
 		else if (topic.StartsWithIgnoreCase(Topics.Balance))
 		{
 			if (BalanceChanged is { } handler)
-				await handler(data.DeserializeObject<Balance>(), cancellationToken);
+				await handler.InvokeAsync(data.DeserializeObject<Balance>(), cancellationToken);
 		}
 		else
 			this.AddErrorLog(LocalizedStrings.UnknownEvent, topic);

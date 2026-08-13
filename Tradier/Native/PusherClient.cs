@@ -26,14 +26,14 @@ abstract class BaseSocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -137,18 +137,18 @@ class MarketDataClient : BaseSocketClient
 			case Topics.TradeEx:
 			case Topics.Trade:
 				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(obj.DeserializeObject<Trade>(), cancellationToken);
+					await tradeHandler.InvokeAsync(obj.DeserializeObject<Trade>(), cancellationToken);
 				break;
 
 			case Topics.Quote:
 			case Topics.TimeSale:
 				if (QuoteReceived is { } quoteHandler)
-					await quoteHandler(obj.DeserializeObject<Quote>(), cancellationToken);
+					await quoteHandler.InvokeAsync(obj.DeserializeObject<Quote>(), cancellationToken);
 				break;
 
 			case Topics.Summary:
 				if (SummaryReceived is { } summaryHandler)
-					await summaryHandler(obj.DeserializeObject<Summary>(), cancellationToken);
+					await summaryHandler.InvokeAsync(obj.DeserializeObject<Summary>(), cancellationToken);
 				break;
 
 			default:
@@ -212,7 +212,7 @@ class AccountClient : BaseSocketClient
 	protected override async ValueTask OnProcess(JObject obj, CancellationToken cancellationToken)
 	{
 		if (OrderReceived is { } handler)
-			await handler(obj.DeserializeObject<Order>(), cancellationToken);
+			await handler.InvokeAsync(obj.DeserializeObject<Order>(), cancellationToken);
 	}
 
 	public ValueTask Subscribe(long transId, CancellationToken cancellationToken)

@@ -81,7 +81,7 @@ sealed class WebullTradeEventsClient : IAsyncDisposable
 						break;
 					default:
 						if (EventReceived is not null)
-							await EventReceived(response, cancellationToken);
+							await EventReceived.InvokeAsync(response, cancellationToken);
 						break;
 				}
 			}
@@ -92,7 +92,7 @@ sealed class WebullTradeEventsClient : IAsyncDisposable
 		catch (Exception ex)
 		{
 			if (Error is not null)
-				await Error(ex, cancellationToken);
+				await Error.InvokeAsync(ex, cancellationToken);
 		}
 	}
 

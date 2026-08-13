@@ -96,7 +96,7 @@ sealed class CqgWebSocketClient : BaseLogReceiver
 				await ReceiveLogon(socket, cancellationToken);
 				attempt = 0;
 				if (Connected != null)
-					await Connected(cancellationToken);
+					await Connected.InvokeAsync(cancellationToken);
 				_firstConnection.TrySetResult();
 				await ReceiveLoop(socket, cancellationToken);
 				if (!cancellationToken.IsCancellationRequested)
@@ -114,7 +114,7 @@ sealed class CqgWebSocketClient : BaseLogReceiver
 					break;
 				}
 				if (Error != null)
-					await Error(ex);
+					await Error.InvokeAsync(ex);
 				var delay = TimeSpan.FromSeconds(Math.Min(30, Math.Pow(2, Math.Max(0, attempt - 1))));
 				try
 				{
@@ -165,7 +165,7 @@ sealed class CqgWebSocketClient : BaseLogReceiver
 			if (message.LoggedOff != null)
 				throw new InvalidOperationException($"CQG logged the session off: {message.LoggedOff.TextMessage}");
 			if (MessageReceived != null)
-				await MessageReceived(message, cancellationToken);
+				await MessageReceived.InvokeAsync(message, cancellationToken);
 		}
 	}
 

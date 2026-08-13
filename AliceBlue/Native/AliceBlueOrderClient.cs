@@ -19,8 +19,8 @@ sealed class AliceBlueOrderClient : BaseLogReceiver
 
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -98,7 +98,7 @@ sealed class AliceBlueOrderClient : BaseLogReceiver
 				var order = JsonConvert.DeserializeObject<AliceBlueOrderUpdate>(content, _jsonSettings)
 					?? throw new InvalidDataException("Alice Blue returned an invalid order update.");
 				if (!order.OrderId.IsEmpty() && OrderReceived is { } handler)
-					await handler(order, cancellationToken);
+					await handler.InvokeAsync(order, cancellationToken);
 				break;
 			}
 

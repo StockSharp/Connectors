@@ -30,7 +30,7 @@ abstract class BaseNativeAdapter : INativeAdapter
 	protected ValueTask SendOutMessageAsync(Message message, CancellationToken cancellationToken)
 	{
 		if (OutMessage is { } handler)
-			return handler(message, cancellationToken);
+			return handler.InvokeAsync(message, cancellationToken);
 		return default;
 	}
 

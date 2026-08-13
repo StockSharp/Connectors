@@ -149,7 +149,7 @@ sealed class FoxbitSocketClient : BaseLogReceiver
 		if (state == ConnectionStates.Restored)
 			await RestoreAsync(client, cancellationToken);
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreAsync(WebSocketClient client,
@@ -266,7 +266,7 @@ sealed class FoxbitSocketClient : BaseLogReceiver
 					var trades = Deserialize<FoxbitSocketEnvelope<
 						FoxbitSocketTrade[]>>(payload);
 					if (TradesReceived is { } tradesHandler)
-						await tradesHandler(marketSymbol, trades.Data ?? [],
+						await tradesHandler.InvokeAsync(marketSymbol, trades.Data ?? [],
 							cancellationToken);
 					break;
 				case FoxbitSocketChannels.Ticker
@@ -275,7 +275,7 @@ sealed class FoxbitSocketClient : BaseLogReceiver
 						FoxbitSocketTicker>>(payload);
 					if (TickerReceived is { } tickerHandler &&
 						ticker.Data is not null)
-						await tickerHandler(marketSymbol, ticker.Data,
+						await tickerHandler.InvokeAsync(marketSymbol, ticker.Data,
 							cancellationToken);
 					break;
 				case FoxbitSocketChannels.OrderBook100
@@ -284,7 +284,7 @@ sealed class FoxbitSocketClient : BaseLogReceiver
 						FoxbitSocketBookSnapshot>>(payload);
 					if (BookSnapshotReceived is { } snapshotHandler &&
 						snapshot.Data is not null)
-						await snapshotHandler(marketSymbol, snapshot.Data,
+						await snapshotHandler.InvokeAsync(marketSymbol, snapshot.Data,
 							cancellationToken);
 					break;
 				case FoxbitSocketChannels.OrderBook100
@@ -293,7 +293,7 @@ sealed class FoxbitSocketClient : BaseLogReceiver
 						FoxbitSocketBookUpdate>>(payload);
 					if (BookUpdateReceived is { } updateHandler &&
 						update.Data is not null)
-						await updateHandler(marketSymbol, update.Data,
+						await updateHandler.InvokeAsync(marketSymbol, update.Data,
 							cancellationToken);
 					break;
 				case FoxbitSocketChannels.Ping:
@@ -315,7 +315,7 @@ sealed class FoxbitSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static Uri ValidateEndpoint(string value)
 	{

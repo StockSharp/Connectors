@@ -56,14 +56,14 @@ class SpotPusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -116,7 +116,7 @@ class SpotPusherClient : BaseLogReceiver
 					break;
 				case "systemStatus":
 					if (SystemUpdated is { } sysHandler)
-						await sysHandler((string)obj.status, cancellationToken);
+						await sysHandler.InvokeAsync((string)obj.status, cancellationToken);
 					break;
 				case "subscriptionStatus":
 				{
@@ -129,16 +129,16 @@ class SpotPusherClient : BaseLogReceiver
 						case "subscribed":
 							_channelIds[(int)chanId] = (dt, reqIdLong, symbol, symbol);
 							if (SubscriptionResponse is { } subHandler)
-								await subHandler(reqIdLong, null, cancellationToken);
+								await subHandler.InvokeAsync(reqIdLong, null, cancellationToken);
 							break;
 						case "unsubscribed":
 							_channelIds.Remove((int)chanId);
 							if (SubscriptionResponse is { } unsubHandler)
-								await unsubHandler(reqIdLong, null, cancellationToken);
+								await unsubHandler.InvokeAsync(reqIdLong, null, cancellationToken);
 							break;
 						case "error":
 							if (SubscriptionResponse is { } errHandler)
-								await errHandler(reqIdLong, new InvalidOperationException((string)obj.errorMessage), cancellationToken);
+								await errHandler.InvokeAsync(reqIdLong, new InvalidOperationException((string)obj.errorMessage), cancellationToken);
 							break;
 						default:
 							this.AddErrorLog(LocalizedStrings.UnknownEvent, status);
@@ -168,23 +168,23 @@ class SpotPusherClient : BaseLogReceiver
 			if (info.dt == DataType.Level1)
 			{
 				if (TickerChanged is { } handler)
-					await handler(info.reqId, info.symbol, arr[1].DeserializeObject<TickerInfo>(), cancellationToken);
+					await handler.InvokeAsync(info.reqId, info.symbol, arr[1].DeserializeObject<TickerInfo>(), cancellationToken);
 			}
 			else if (info.dt == DataType.Ticks)
 			{
 				if (NewTrades is { } handler)
-					await handler(info.reqId, info.symbol, arr[1].DeserializeObject<Trade[]>(), cancellationToken);
+					await handler.InvokeAsync(info.reqId, info.symbol, arr[1].DeserializeObject<Trade[]>(), cancellationToken);
 			}
 			else if (info.dt == DataType.MarketDepth)
 			{
 				if (OrderBookChanged is { } handler)
-					await handler(info.reqId, info.symbol, arr[1].DeserializeObject<OrderBook>(), cancellationToken);
+					await handler.InvokeAsync(info.reqId, info.symbol, arr[1].DeserializeObject<OrderBook>(), cancellationToken);
 			}
 			else if (info.dt.IsTFCandles)
 			{
 				var ohlc = arr[1].DeserializeObject<PusherOhlc>();
 				if (NewCandle is { } handler)
-					await handler(info.reqId, info.symbol, (int)info.Item4, new Ohlc
+					await handler.InvokeAsync(info.reqId, info.symbol, (int)info.Item4, new Ohlc
 					{
 						StartTime = ohlc.EndTime - (int)info.Item4 * 60,
 						Open = ohlc.Open,

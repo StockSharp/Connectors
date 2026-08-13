@@ -285,7 +285,7 @@ sealed class PacificaWebSocketClient : BaseLogReceiver
 			FailPending(new InvalidOperationException(
 				"Pacifica WebSocket connection failed."));
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(PacificaSubscriptionKey key,
@@ -478,12 +478,12 @@ sealed class PacificaWebSocketClient : BaseLogReceiver
 		Func<T, CancellationToken, ValueTask> handler, T value,
 		CancellationToken cancellationToken)
 		=> value is not null && handler is not null
-			? handler(value, cancellationToken)
+			? handler.InvokeAsync(value, cancellationToken)
 			: default;
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private void FailPending(Exception error)
 	{

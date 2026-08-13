@@ -54,7 +54,7 @@ sealed class PrimarySocketClient : BaseLogReceiver
             OnStateChanged,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (s, a) => this.AddInfoLog(s, a),
@@ -225,7 +225,7 @@ sealed class PrimarySocketClient : BaseLogReceiver
                         JsonSerializer.Create(_jsonSettings));
                     if (update is not null)
                     {
-                        await marketHandler(update, cancellationToken);
+                        await marketHandler.InvokeAsync(update, cancellationToken);
                     }
                 }
                 break;
@@ -237,7 +237,7 @@ sealed class PrimarySocketClient : BaseLogReceiver
                         JsonSerializer.Create(_jsonSettings));
                     if (update?.Order is not null)
                     {
-                        await orderHandler(
+                        await orderHandler.InvokeAsync(
                             update.Order, cancellationToken);
                     }
                 }
@@ -275,7 +275,7 @@ sealed class PrimarySocketClient : BaseLogReceiver
         Exception error,
         CancellationToken cancellationToken)
         => Error is { } handler
-            ? handler(error, cancellationToken)
+            ? handler.InvokeAsync(error, cancellationToken)
             : default;
 
     private ValueTask OnStateChanged(
@@ -284,7 +284,7 @@ sealed class PrimarySocketClient : BaseLogReceiver
     {
         _isConnected = state == ConnectionStates.Connected;
         return StateChanged is { } handler
-            ? handler(state, cancellationToken)
+            ? handler.InvokeAsync(state, cancellationToken)
             : default;
     }
 

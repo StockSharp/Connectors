@@ -345,14 +345,14 @@ sealed class AvantisFeedClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (PriceReceived is { } handler)
-			await handler(update, cancellationToken);
+			await handler.InvokeAsync(update, cancellationToken);
 	}
 
 	private async ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 	{
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static TimeSpan GetReconnectDelay(int attempt)

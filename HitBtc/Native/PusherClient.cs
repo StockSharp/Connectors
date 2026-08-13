@@ -289,7 +289,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(WebSocketClient client, WebSocketMessage message,
@@ -368,7 +368,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 				pair.Value.Symbol = pair.Key;
 
 				if (TickerChanged is { } handler)
-					await handler(pair.Value, cancellationToken);
+					await handler.InvokeAsync(pair.Value, cancellationToken);
 			}
 
 			return;
@@ -402,7 +402,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 			return;
 
 		foreach (var pair in data)
-			await handler(pair.Key, (pair.Value ?? []).Select(static trade => trade.ToTrade()),
+			await handler.InvokeAsync(pair.Key, (pair.Value ?? []).Select(static trade => trade.ToTrade()),
 				cancellationToken);
 	}
 
@@ -419,7 +419,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 		foreach (var pair in data)
 		{
 			foreach (var candle in pair.Value ?? [])
-				await handler(pair.Key, period, candle.ToOhlc(), cancellationToken);
+				await handler.InvokeAsync(pair.Key, period, candle.ToOhlc(), cancellationToken);
 		}
 	}
 
@@ -462,7 +462,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 			}
 
 			if (OrderBookChanged is { } handler)
-				await handler(book, isSnapshot
+				await handler.InvokeAsync(book, isSnapshot
 					? QuoteChangeStates.SnapshotComplete
 					: QuoteChangeStates.Increment, cancellationToken);
 		}
@@ -481,7 +481,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 				{
 					var response = Deserialize<WsResponse<Order>>(payload);
 					if (response.Result is not null && OrderChanged is { } handler)
-						await handler(id, response.Result, cancellationToken);
+						await handler.InvokeAsync(id, response.Result, cancellationToken);
 					break;
 				}
 
@@ -489,7 +489,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 				{
 					var response = Deserialize<WsResponse<Order[]>>(payload);
 					if (NewOrders is { } handler)
-						await handler(id, response.Result ?? [], cancellationToken);
+						await handler.InvokeAsync(id, response.Result ?? [], cancellationToken);
 					break;
 				}
 
@@ -497,7 +497,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 				{
 					var response = Deserialize<WsResponse<Balance[]>>(payload);
 					if (BalanceChanged is { } handler)
-						await handler(id, response.Result ?? [], cancellationToken);
+						await handler.InvokeAsync(id, response.Result ?? [], cancellationToken);
 					break;
 				}
 
@@ -514,7 +514,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 			{
 				var notification = Deserialize<WsNotification<Order>>(payload);
 				if (notification.Params is not null && OrderChanged is { } handler)
-					await handler(0, notification.Params, cancellationToken);
+					await handler.InvokeAsync(0, notification.Params, cancellationToken);
 				break;
 			}
 
@@ -522,7 +522,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 			{
 				var notification = Deserialize<WsNotification<Order[]>>(payload);
 				if (NewOrders is { } handler)
-					await handler(0, notification.Params ?? [], cancellationToken);
+					await handler.InvokeAsync(0, notification.Params ?? [], cancellationToken);
 				break;
 			}
 
@@ -530,7 +530,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 			{
 				var notification = Deserialize<WsNotification<Balance[]>>(payload);
 				if (BalanceChanged is { } handler)
-					await handler(0, notification.Params ?? [], cancellationToken);
+					await handler.InvokeAsync(0, notification.Params ?? [], cancellationToken);
 				break;
 			}
 		}
@@ -543,7 +543,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 			request is Requests.PlaceOrder or Requests.CancelOrder or Requests.ReplaceOrder)
 		{
 			if (OrderError is { } handler)
-				await handler(requestId, error.ToString(), cancellationToken);
+				await handler.InvokeAsync(requestId, error.ToString(), cancellationToken);
 			return;
 		}
 
@@ -763,7 +763,7 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private void EnsurePublic()
 	{

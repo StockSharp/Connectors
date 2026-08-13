@@ -458,14 +458,14 @@ internal sealed class BloombergSdkClient : IDisposable
 			case BloombergSubscriptionKinds.MarketData:
 				var marketHandler = MarketDataReceived;
 				if (marketHandler != null)
-					await marketHandler(ParseMarketData(message, subscription.ExternalId), cancellationToken);
+					await marketHandler.InvokeAsync(ParseMarketData(message, subscription.ExternalId), cancellationToken);
 				break;
 			case BloombergSubscriptionKinds.EmsxOrder:
 			case BloombergSubscriptionKinds.EmsxRoute:
 				var update = ParseEmsxOrder(message, subscription.Kind == BloombergSubscriptionKinds.EmsxRoute);
 				var orderHandler = EmsxOrderReceived;
 				if (update != null && orderHandler != null)
-					await orderHandler(update, cancellationToken);
+					await orderHandler.InvokeAsync(update, cancellationToken);
 				break;
 		}
 	}
@@ -844,8 +844,8 @@ internal sealed class BloombergSdkClient : IDisposable
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error?.Invoke(error, cancellationToken) ?? default;
+		=> Error.InvokeAsync(error, cancellationToken);
 
 	private ValueTask RaiseConnectionLostAsync(Exception error)
-		=> ConnectionLost?.Invoke(error, CancellationToken.None) ?? default;
+		=> ConnectionLost.InvokeAsync(error, CancellationToken.None);
 }

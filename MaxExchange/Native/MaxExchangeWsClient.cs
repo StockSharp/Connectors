@@ -269,7 +269,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -415,7 +415,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 
 				case "kline":
 					if (KlineReceived is { } klineHandler)
-						await klineHandler(
+						await klineHandler.InvokeAsync(
 							DeserializeMessage<
 								MaxExchangeKlineEvent>(payload),
 							cancellationToken);
@@ -501,7 +501,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 		}
 		if (snapshot is not null &&
 			OrderBookReceived is { } handler)
-			await handler(snapshot, cancellationToken);
+			await handler.InvokeAsync(snapshot, cancellationToken);
 	}
 
 	private async ValueTask ProcessTradesAsync(
@@ -511,7 +511,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 		if (push?.Market.IsEmpty() != false ||
 			TradesReceived is not { } handler)
 			return;
-		await handler(new()
+		await handler.InvokeAsync(new()
 		{
 			Pair = push.Market,
 			EventId = push.Timestamp.ToString(
@@ -534,7 +534,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 			TickerReceived is not { } handler)
 			return;
 		var ticker = push.Ticker;
-		await handler(new()
+		await handler.InvokeAsync(new()
 		{
 			Pair = ticker.Market.IsEmpty(
 				push.Market),
@@ -559,7 +559,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 				static market => market.ToMarket())];
 		_marketSnapshot.TrySetResult(markets);
 		if (MarketsReceived is { } handler)
-			await handler(markets, cancellationToken);
+			await handler.InvokeAsync(markets, cancellationToken);
 	}
 
 	private MaxExchangeOrderBook CreateBookSnapshot(
@@ -635,7 +635,7 @@ sealed class MaxExchangeWsClient : BaseLogReceiver
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private bool HasCredentials

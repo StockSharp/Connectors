@@ -248,13 +248,13 @@ sealed class DriftDlobSocketClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static ValueTask RaiseAsync<T>(
 		Func<T, CancellationToken, ValueTask> handler, T value,
 		CancellationToken cancellationToken)
-		=> handler is null ? default : handler(value, cancellationToken);
+		=> handler is null ? default : handler.InvokeAsync(value, cancellationToken);
 
 	private static DriftDlobSubscribeRequest CreateRequest(string type,
 		DriftDlobChannels channel, string symbol)

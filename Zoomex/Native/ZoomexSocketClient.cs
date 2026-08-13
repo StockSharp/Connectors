@@ -195,7 +195,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(string topic,
@@ -357,7 +357,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 					payload);
 				if (envelope.Data is not null &&
 					TickerReceived is { } tickerHandler)
-					await tickerHandler(category, envelope.Data,
+					await tickerHandler.InvokeAsync(category, envelope.Data,
 						envelope.Timestamp, cancellationToken);
 				return;
 			}
@@ -368,7 +368,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 					payload);
 				if (envelope.Data is not null &&
 					BookReceived is { } bookHandler)
-					await bookHandler(category, envelope.Data, envelope.Topic,
+					await bookHandler.InvokeAsync(category, envelope.Data, envelope.Topic,
 						envelope.Type, envelope.Timestamp, cancellationToken);
 				return;
 			}
@@ -378,7 +378,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 				var envelope = Deserialize<ZoomexWsEnvelope<
 					ZoomexWsPublicTrade[]>>(payload);
 				if (PublicTradesReceived is { } tradesHandler)
-					await tradesHandler(category, envelope.Data ?? [],
+					await tradesHandler.InvokeAsync(category, envelope.Data ?? [],
 						envelope.Timestamp, cancellationToken);
 				return;
 			}
@@ -388,7 +388,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 				var envelope = Deserialize<ZoomexWsEnvelope<
 					ZoomexWsCandle[]>>(payload);
 				if (CandlesReceived is { } candleHandler)
-					await candleHandler(category, envelope.Topic,
+					await candleHandler.InvokeAsync(category, envelope.Topic,
 						envelope.Data ?? [], envelope.Timestamp,
 						cancellationToken);
 				return;
@@ -402,7 +402,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 			var envelope = Deserialize<ZoomexWsEnvelope<ZoomexOrder[]>>(
 				payload);
 			if (OrdersReceived is { } orderHandler)
-				await orderHandler(envelope.Data ?? [],
+				await orderHandler.InvokeAsync(envelope.Data ?? [],
 					envelope.CreationTime, cancellationToken);
 		}
 		else if (topic.StartsWith("execution",
@@ -411,7 +411,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 			var envelope = Deserialize<ZoomexWsEnvelope<ZoomexExecution[]>>(
 				payload);
 			if (ExecutionsReceived is { } executionHandler)
-				await executionHandler(envelope.Data ?? [],
+				await executionHandler.InvokeAsync(envelope.Data ?? [],
 					envelope.CreationTime, cancellationToken);
 		}
 		else if (topic.EqualsIgnoreCase("position"))
@@ -419,7 +419,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 			var envelope = Deserialize<ZoomexWsEnvelope<ZoomexPosition[]>>(
 				payload);
 			if (PositionsReceived is { } positionHandler)
-				await positionHandler(envelope.Data ?? [],
+				await positionHandler.InvokeAsync(envelope.Data ?? [],
 					envelope.CreationTime, cancellationToken);
 		}
 		else if (topic.EqualsIgnoreCase("wallet"))
@@ -427,7 +427,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 			var envelope = Deserialize<ZoomexWsEnvelope<
 				ZoomexWalletAccount[]>>(payload);
 			if (WalletsReceived is { } walletHandler)
-				await walletHandler(envelope.Data ?? [],
+				await walletHandler.InvokeAsync(envelope.Data ?? [],
 					envelope.CreationTime, cancellationToken);
 		}
 		else
@@ -445,7 +445,7 @@ sealed class ZoomexSocketClient : BaseLogReceiver
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private string NextRequestId()

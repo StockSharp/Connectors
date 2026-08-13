@@ -158,9 +158,9 @@ sealed class OstiumSocketClient : BaseLogReceiver
 			catch (Exception error)
 			{
 				if (Error is not null)
-					await Error(error, cancellationToken);
+					await Error.InvokeAsync(error, cancellationToken);
 				if (StateChanged is not null)
-					await StateChanged(ConnectionStates.Failed, cancellationToken);
+					await StateChanged.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 			}
 			if (cancellationToken.IsCancellationRequested)
 				break;
@@ -171,13 +171,13 @@ sealed class OstiumSocketClient : BaseLogReceiver
 				await OpenAsync(cancellationToken);
 				attempt = 0;
 				if (StateChanged is not null)
-					await StateChanged(ConnectionStates.Restored,
+					await StateChanged.InvokeAsync(ConnectionStates.Restored,
 						cancellationToken);
 			}
 			catch (Exception error)
 			{
 				if (Error is not null)
-					await Error(error, cancellationToken);
+					await Error.InvokeAsync(error, cancellationToken);
 			}
 		}
 	}
@@ -292,14 +292,14 @@ sealed class OstiumSocketClient : BaseLogReceiver
 
 				foreach (var price in snapshot.Data ?? [])
 					if (price is not null && PriceReceived is not null)
-						await PriceReceived(price, cancellationToken);
+						await PriceReceived.InvokeAsync(price, cancellationToken);
 				break;
 			case "tick":
 				var tick = JsonConvert.DeserializeObject<OstiumPriceTick>(text,
 					_settings) ?? throw new InvalidDataException(
 						"Ostium price stream returned an empty tick.");
 				if (tick.Data is not null && PriceReceived is not null)
-					await PriceReceived(tick.Data, cancellationToken);
+					await PriceReceived.InvokeAsync(tick.Data, cancellationToken);
 				break;
 			case "error":
 				var error = JsonConvert.DeserializeObject<OstiumPriceSocketError>(

@@ -13,8 +13,8 @@ sealed class DhanOrderClient : BaseLogReceiver
 
 		_client = new(
 			endpoint.ThrowIfEmpty(nameof(endpoint)),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -66,6 +66,6 @@ sealed class DhanOrderClient : BaseLogReceiver
 		if (!update.Message.IsEmpty() && !update.Type.EqualsIgnoreCase("order_alert"))
 			throw new InvalidOperationException($"Dhan order stream error: {update.Message}");
 		if (update.Type.EqualsIgnoreCase("order_alert") && update.Data != null && !update.Data.OrderId.IsEmpty() && OrderReceived is { } handler)
-			await handler(update.Data, cancellationToken);
+			await handler.InvokeAsync(update.Data, cancellationToken);
 	}
 }

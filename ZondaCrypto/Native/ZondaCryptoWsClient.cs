@@ -321,7 +321,7 @@ sealed class ZondaCryptoWsClient : BaseLogReceiver
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -414,7 +414,7 @@ sealed class ZondaCryptoWsClient : BaseLogReceiver
 			if (value.Action.EqualsIgnoreCase("pong"))
 				return;
 			if (MessageReceived is { } handler)
-				await handler(value, cancellationToken);
+				await handler.InvokeAsync(value, cancellationToken);
 		}
 		catch (Exception error) when (
 			error is JsonException or InvalidDataException or
@@ -485,7 +485,7 @@ sealed class ZondaCryptoWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string GetMarketCode(string topic)

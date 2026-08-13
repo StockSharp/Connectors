@@ -269,7 +269,7 @@ sealed class TokocryptoWsClient : BaseLogReceiver
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -374,7 +374,7 @@ sealed class TokocryptoWsClient : BaseLogReceiver
 				var ticker = envelope.Data?.ToTicker();
 				if (ticker is not null &&
 					TickerReceived is { } tickerHandler)
-					await tickerHandler(
+					await tickerHandler.InvokeAsync(
 						ticker, cancellationToken);
 				return;
 			}
@@ -390,7 +390,7 @@ sealed class TokocryptoWsClient : BaseLogReceiver
 					DateTime.UtcNow.ToTokocryptoMilliseconds();
 				envelope.Data.Limit = GetDepth(stream);
 				if (OrderBookReceived is { } bookHandler)
-					await bookHandler(
+					await bookHandler.InvokeAsync(
 						envelope.Data, cancellationToken);
 				return;
 			}
@@ -410,10 +410,10 @@ sealed class TokocryptoWsClient : BaseLogReceiver
 					Data = [trade],
 				};
 				if (TradesReceived is { } tradesHandler)
-					await tradesHandler(
+					await tradesHandler.InvokeAsync(
 						push, cancellationToken);
 				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(
+					await tradeHandler.InvokeAsync(
 						trade, cancellationToken);
 				return;
 			}
@@ -425,10 +425,10 @@ sealed class TokocryptoWsClient : BaseLogReceiver
 				if (envelope.Data is null)
 					return;
 				if (KlineReceived is { } klineHandler)
-					await klineHandler(
+					await klineHandler.InvokeAsync(
 						envelope.Data, cancellationToken);
 				if (CandleReceived is { } candleHandler)
-					await candleHandler(
+					await candleHandler.InvokeAsync(
 						envelope.Data, cancellationToken);
 			}
 		}
@@ -444,7 +444,7 @@ sealed class TokocryptoWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string NormalizeSymbol(string symbol)

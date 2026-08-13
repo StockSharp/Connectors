@@ -85,7 +85,7 @@ sealed class WebullMqttClient : IAsyncDisposable
 				}
 
 				if (MessageReceived is not null)
-					await MessageReceived(topic, payload[offset..], cancellationToken);
+					await MessageReceived.InvokeAsync(topic, payload[offset..], cancellationToken);
 				if (qos == 1)
 					await SendPacketAsync(0x40, [(byte)(packetId >> 8), (byte)packetId], cancellationToken);
 			}
@@ -96,7 +96,7 @@ sealed class WebullMqttClient : IAsyncDisposable
 		catch (Exception ex)
 		{
 			if (Error is not null)
-				await Error(ex, cancellationToken);
+				await Error.InvokeAsync(ex, cancellationToken);
 		}
 	}
 
@@ -116,7 +116,7 @@ sealed class WebullMqttClient : IAsyncDisposable
 		catch (Exception ex)
 		{
 			if (Error is not null)
-				await Error(ex, cancellationToken);
+				await Error.InvokeAsync(ex, cancellationToken);
 		}
 	}
 

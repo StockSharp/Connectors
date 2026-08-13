@@ -452,7 +452,7 @@ internal sealed class MasterLinkGatewayClient : Disposable
         {
             FailPending(error);
             if (Error != null)
-                await Error(error, CancellationToken.None);
+                await Error.InvokeAsync(error, CancellationToken.None);
         }
     }
 
@@ -468,7 +468,7 @@ internal sealed class MasterLinkGatewayClient : Disposable
                 if (line == null)
                     return;
                 if (!line.IsEmpty() && Log != null)
-                    await Log(3, line, cancellationToken);
+                    await Log.InvokeAsync(3, line, cancellationToken);
             }
         }
         catch (OperationCanceledException) when (
@@ -481,7 +481,7 @@ internal sealed class MasterLinkGatewayClient : Disposable
             if (!cancellationToken.IsCancellationRequested &&
                 Error != null)
             {
-                await Error(error, CancellationToken.None);
+                await Error.InvokeAsync(error, CancellationToken.None);
             }
         }
     }
@@ -504,7 +504,7 @@ internal sealed class MasterLinkGatewayClient : Disposable
                 when message.SubscriptionId != null &&
                     message.Data != null &&
                     MarketDataReceived != null:
-                await MarketDataReceived(
+                await MarketDataReceived.InvokeAsync(
                     message.SubscriptionId.Value,
                     message.Channel,
                     message.Data,
@@ -514,18 +514,18 @@ internal sealed class MasterLinkGatewayClient : Disposable
             case MasterLinkGatewayMessageKinds.Order
                 when message.Data != null &&
                     OrderReceived != null:
-                await OrderReceived(message.Data, cancellationToken);
+                await OrderReceived.InvokeAsync(message.Data, cancellationToken);
                 break;
 
             case MasterLinkGatewayMessageKinds.Fill
                 when message.Data != null &&
                     FillReceived != null:
-                await FillReceived(message.Data, cancellationToken);
+                await FillReceived.InvokeAsync(message.Data, cancellationToken);
                 break;
 
             case MasterLinkGatewayMessageKinds.Error
                 when Error != null:
-                await Error(
+                await Error.InvokeAsync(
                     new MasterLinkGatewayException(
                         message.Error?.Code,
                         message.Error?.Message ??
@@ -535,7 +535,7 @@ internal sealed class MasterLinkGatewayClient : Disposable
 
             case MasterLinkGatewayMessageKinds.Disconnected
                 when Disconnected != null:
-                await Disconnected(
+                await Disconnected.InvokeAsync(
                     new IOException(
                         message.Error?.Message ??
                             "MasterLink gateway connection was lost."),
@@ -544,7 +544,7 @@ internal sealed class MasterLinkGatewayClient : Disposable
 
             case MasterLinkGatewayMessageKinds.Log
                 when Log != null:
-                await Log(
+                await Log.InvokeAsync(
                     message.LogLevel ?? 1,
                     message.LogMessage,
                     cancellationToken);

@@ -341,7 +341,7 @@ sealed class KalshiSocketClient : BaseLogReceiver
 				await SendSubscribeAsync(subscription, cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(WebSocketClient client,
@@ -373,7 +373,7 @@ sealed class KalshiSocketClient : BaseLogReceiver
 				KalshiSocketEventTypes.Ok)
 				return;
 			if (EventReceived is { } handler)
-				await handler(item, cancellationToken);
+				await handler.InvokeAsync(item, cancellationToken);
 		}
 		catch (Exception error) when (error is JsonException or
 			InvalidDataException or InvalidOperationException)
@@ -418,7 +418,7 @@ sealed class KalshiSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string CreateKey(KalshiSocketChannels channel,
 		string ticker)

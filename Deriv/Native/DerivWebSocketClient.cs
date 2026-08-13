@@ -341,7 +341,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 					await RestoreSubscriptionsAsync(cancellationToken);
 					restored = true;
 					if (StateChanged is { } restoredHandler)
-						await restoredHandler(ConnectionStates.Restored, cancellationToken);
+						await restoredHandler.InvokeAsync(ConnectionStates.Restored, cancellationToken);
 					break;
 				}
 				catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -361,7 +361,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 				continue;
 
 			if (!cancellationToken.IsCancellationRequested && StateChanged is { } failedHandler)
-				await failedHandler(ConnectionStates.Failed, cancellationToken);
+				await failedHandler.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 			break;
 		}
 
@@ -468,7 +468,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 		{
 			try
 			{
-				await handler(subscriptionKey, response, cancellationToken);
+				await handler.InvokeAsync(subscriptionKey, response, cancellationToken);
 			}
 			catch (Exception error) when (!cancellationToken.IsCancellationRequested)
 			{
@@ -559,7 +559,7 @@ sealed class DerivWebSocketClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string GetStreamType(JObject request)

@@ -99,7 +99,7 @@ sealed class SSIWebSocketClient : IAsyncDisposable
 			{
 				var message = await ReceiveAsync(cancellationToken);
 				if (message is not null && MessageReceived is not null)
-					await MessageReceived(message, cancellationToken);
+					await MessageReceived.InvokeAsync(message, cancellationToken);
 			}
 		}
 		catch (OperationCanceledException)
@@ -110,7 +110,7 @@ sealed class SSIWebSocketClient : IAsyncDisposable
 		{
 			Volatile.Write(ref _faulted, 1);
 			if (Error is not null)
-				await Error(error, CancellationToken.None);
+				await Error.InvokeAsync(error, CancellationToken.None);
 		}
 	}
 
@@ -171,7 +171,7 @@ sealed class SSIWebSocketClient : IAsyncDisposable
 		{
 			Volatile.Write(ref _faulted, 1);
 			if (Error is not null)
-				await Error(error, CancellationToken.None);
+				await Error.InvokeAsync(error, CancellationToken.None);
 		}
 	}
 

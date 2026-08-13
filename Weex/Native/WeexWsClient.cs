@@ -161,7 +161,7 @@ sealed class WeexWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSessionAsync(CancellationToken cancellationToken)
@@ -219,50 +219,50 @@ sealed class WeexWsClient : BaseLogReceiver
 			{
 				case "24hrticker":
 					if (SpotTickerReceived is { } spotTickerHandler)
-						await spotTickerHandler(Deserialize<WeexWsEnvelope<WeexWsSpotTicker>>(payload), cancellationToken);
+						await spotTickerHandler.InvokeAsync(Deserialize<WeexWsEnvelope<WeexWsSpotTicker>>(payload), cancellationToken);
 					break;
 
 				case "ticker":
 					if (FuturesTickerReceived is { } futuresTickerHandler)
-						await futuresTickerHandler(Deserialize<WeexWsEnvelope<WeexWsFuturesTicker[]>>(payload), cancellationToken);
+						await futuresTickerHandler.InvokeAsync(Deserialize<WeexWsEnvelope<WeexWsFuturesTicker[]>>(payload), cancellationToken);
 					break;
 
 				case "depth":
 					if (DepthReceived is { } depthHandler)
-						await depthHandler(_section, Deserialize<WeexWsDepth>(payload), cancellationToken);
+						await depthHandler.InvokeAsync(_section, Deserialize<WeexWsDepth>(payload), cancellationToken);
 					break;
 
 				case "trade":
 					if (TradesReceived is { } tradeHandler)
-						await tradeHandler(_section, Deserialize<WeexWsEnvelope<WeexWsTrade[]>>(payload), cancellationToken);
+						await tradeHandler.InvokeAsync(_section, Deserialize<WeexWsEnvelope<WeexWsTrade[]>>(payload), cancellationToken);
 					break;
 
 				case "kline":
 					if (CandleReceived is { } candleHandler)
-						await candleHandler(_section, Deserialize<WeexWsEnvelope<WeexWsCandle[]>>(payload), cancellationToken);
+						await candleHandler.InvokeAsync(_section, Deserialize<WeexWsEnvelope<WeexWsCandle[]>>(payload), cancellationToken);
 					break;
 
 				case "account":
 					if (AccountReceived is { } accountHandler)
-						await accountHandler(_section,
+						await accountHandler.InvokeAsync(_section,
 							Deserialize<WeexWsEnvelope<WeexWsAccountEntry[]>>(payload).Data ?? [], cancellationToken);
 					break;
 
 				case "orders":
 					if (OrderReceived is { } orderHandler)
-						await orderHandler(_section,
+						await orderHandler.InvokeAsync(_section,
 							Deserialize<WeexWsEnvelope<WeexWsOrder[]>>(payload).Data ?? [], cancellationToken);
 					break;
 
 				case "fill":
 					if (FillReceived is { } fillHandler)
-						await fillHandler(_section,
+						await fillHandler.InvokeAsync(_section,
 							Deserialize<WeexWsEnvelope<WeexWsFill[]>>(payload).Data ?? [], cancellationToken);
 					break;
 
 				case "positions":
 					if (PositionReceived is { } positionHandler)
-						await positionHandler(
+						await positionHandler.InvokeAsync(
 							Deserialize<WeexWsEnvelope<WeexWsPosition[]>>(payload).Data ?? [], cancellationToken);
 					break;
 			}
@@ -296,7 +296,7 @@ sealed class WeexWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string CreateChannel(string symbol, string channel)

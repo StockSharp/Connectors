@@ -25,11 +25,11 @@ sealed class VenturaMarketDataClient : BaseLogReceiver
 			endpoint.AbsoluteUri,
 			(state, cancellationToken) =>
 				StateChanged is { } stateHandler
-					? stateHandler(state, cancellationToken)
+					? stateHandler.InvokeAsync(state, cancellationToken)
 					: default,
 			(error, cancellationToken) =>
 				Error is { } errorHandler
-					? errorHandler(error, cancellationToken)
+					? errorHandler.InvokeAsync(error, cancellationToken)
 					: default,
 			Process,
 			(message, args) => this.AddInfoLog(message, args),
@@ -152,7 +152,7 @@ sealed class VenturaMarketDataClient : BaseLogReceiver
 		{
 			if (Error is { } invalidHandler)
 			{
-				await invalidHandler(
+				await invalidHandler.InvokeAsync(
 					new InvalidDataException(
 						"Ventura EaseAPI market WebSocket returned invalid JSON.",
 						error),
@@ -175,7 +175,7 @@ sealed class VenturaMarketDataClient : BaseLogReceiver
 			{
 				if (Error is { } errorHandler)
 				{
-					await errorHandler(
+					await errorHandler.InvokeAsync(
 						new InvalidOperationException(
 							$"Ventura EaseAPI market WebSocket: {value}"),
 						cancellationToken);
@@ -187,7 +187,7 @@ sealed class VenturaMarketDataClient : BaseLogReceiver
 		if (MarketDataReceived is not { } handler)
 			return;
 		foreach (var update in Decode(text, DateTime.UtcNow))
-			await handler(update, cancellationToken);
+			await handler.InvokeAsync(update, cancellationToken);
 	}
 
 	internal static string CreateSubscriptionCommand(

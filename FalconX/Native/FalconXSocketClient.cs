@@ -180,7 +180,7 @@ abstract class FalconXSocketClient : BaseLogReceiver
 			return;
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(WebSocketClient client,
@@ -241,7 +241,7 @@ abstract class FalconXSocketClient : BaseLogReceiver
 			await OnAuthenticatedAsync(isRestore, cancellationToken);
 			authentication?.TrySetResult(true);
 			if (isRestore && StateChanged is { } handler)
-				await handler(ConnectionStates.Restored, cancellationToken);
+				await handler.InvokeAsync(ConnectionStates.Restored, cancellationToken);
 		}
 		catch (Exception error)
 		{
@@ -252,7 +252,7 @@ abstract class FalconXSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static Uri NormalizeEndpoint(string endpoint)
 	{

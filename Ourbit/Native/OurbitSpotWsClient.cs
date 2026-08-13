@@ -226,7 +226,7 @@ sealed class OurbitSpotWsClient : BaseLogReceiver
 			}
 		}
 		if (!isPrivate && StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreAsync(WebSocketClient client, bool isPrivate,
@@ -297,14 +297,14 @@ sealed class OurbitSpotWsClient : BaseLogReceiver
 			{
 				var data = Deserialize<OurbitSpotWsEnvelope<OurbitSpotWsBookTicker>>(payload);
 				if (data?.Data is not null && TickerReceived is { } handler)
-					await handler(data.Symbol, data.Data, data.Time, cancellationToken);
+					await handler.InvokeAsync(data.Symbol, data.Data, data.Time, cancellationToken);
 			}
 			else if (channel.Contains("public.limit.depth", StringComparison.OrdinalIgnoreCase) ||
 				channel.Contains("public.increase.depth", StringComparison.OrdinalIgnoreCase))
 			{
 				var data = Deserialize<OurbitSpotWsEnvelope<OurbitSpotWsDepth>>(payload);
 				if (data?.Data is not null && DepthReceived is { } handler)
-					await handler(data.Symbol, data.Data, data.Time, cancellationToken);
+					await handler.InvokeAsync(data.Symbol, data.Data, data.Time, cancellationToken);
 			}
 			else if (channel.Contains("public.deals", StringComparison.OrdinalIgnoreCase))
 			{
@@ -312,32 +312,32 @@ sealed class OurbitSpotWsClient : BaseLogReceiver
 				if (TradeReceived is { } handler)
 				{
 					foreach (var trade in data?.Data?.Trades ?? [])
-						await handler(data.Symbol, trade, cancellationToken);
+						await handler.InvokeAsync(data.Symbol, trade, cancellationToken);
 				}
 			}
 			else if (channel.Contains("public.kline", StringComparison.OrdinalIgnoreCase))
 			{
 				var data = Deserialize<OurbitSpotWsEnvelope<OurbitSpotWsKlineContainer>>(payload);
 				if (data?.Data?.Candle is not null && CandleReceived is { } handler)
-					await handler(data.Symbol, data.Data.Candle, data.Time, cancellationToken);
+					await handler.InvokeAsync(data.Symbol, data.Data.Candle, data.Time, cancellationToken);
 			}
 			else if (isPrivate && channel.Contains("private.account", StringComparison.OrdinalIgnoreCase))
 			{
 				var data = Deserialize<OurbitSpotWsEnvelope<OurbitSpotWsPrivateAccount>>(payload);
 				if (data?.Data is not null && AccountReceived is { } handler)
-					await handler(data.Data, cancellationToken);
+					await handler.InvokeAsync(data.Data, cancellationToken);
 			}
 			else if (isPrivate && channel.Contains("private.orders", StringComparison.OrdinalIgnoreCase))
 			{
 				var data = Deserialize<OurbitSpotWsEnvelope<OurbitSpotWsPrivateOrder>>(payload);
 				if (data?.Data is not null && OrderReceived is { } handler)
-					await handler(data.Symbol, data.Data, data.Time, cancellationToken);
+					await handler.InvokeAsync(data.Symbol, data.Data, data.Time, cancellationToken);
 			}
 			else if (isPrivate && channel.Contains("private.deals", StringComparison.OrdinalIgnoreCase))
 			{
 				var data = Deserialize<OurbitSpotWsEnvelope<OurbitSpotWsPrivateFill>>(payload);
 				if (data?.Data is not null && FillReceived is { } handler)
-					await handler(data.Symbol, data.Data, cancellationToken);
+					await handler.InvokeAsync(data.Symbol, data.Data, cancellationToken);
 			}
 		}
 		catch (Exception error) when (error is JsonException or InvalidDataException or
@@ -356,5 +356,5 @@ sealed class OurbitSpotWsClient : BaseLogReceiver
 		});
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

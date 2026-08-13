@@ -217,7 +217,7 @@ sealed class CoinMarketCapSocketClient : BaseLogReceiver
 						throw new InvalidDataException(
 							"CoinMarketCap WebSocket returned an invalid price message.");
 					if (PriceReceived is { } priceHandler)
-						await priceHandler(envelope.Data,
+						await priceHandler.InvokeAsync(envelope.Data,
 							envelope.Timestamp.Value, cancellationToken);
 					break;
 				case CoinMarketCapSocketMessageTypes.Error:
@@ -289,7 +289,7 @@ sealed class CoinMarketCapSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{

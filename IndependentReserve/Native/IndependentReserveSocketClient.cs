@@ -214,7 +214,7 @@ sealed class IndependentReserveSocketClient : BaseLogReceiver
 						envelope.Data?.Payload?.Message) ?? "unknown error"));
 			ValidateNonce(envelope);
 			if (MessageReceived is { } handler)
-				await handler(envelope, cancellationToken);
+				await handler.InvokeAsync(envelope, cancellationToken);
 		}
 		catch (Exception error)
 		{
@@ -245,7 +245,7 @@ sealed class IndependentReserveSocketClient : BaseLogReceiver
 			using (_sync.EnterScope())
 				_nonces.Clear();
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask DisposeClientAsync(
@@ -318,7 +318,7 @@ sealed class IndependentReserveSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static Uri ValidateEndpoint(string value)
 	{

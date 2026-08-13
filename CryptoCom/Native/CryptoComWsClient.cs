@@ -119,7 +119,7 @@ sealed class CryptoComWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSessionAsync(CancellationToken cancellationToken)
@@ -237,44 +237,44 @@ sealed class CryptoComWsClient : BaseLogReceiver
 			{
 				case "ticker":
 					if (TickerReceived is { } tickerHandler)
-						await tickerHandler(Deserialize<CryptoComWsEnvelope<CryptoComTicker>>(payload), cancellationToken);
+						await tickerHandler.InvokeAsync(Deserialize<CryptoComWsEnvelope<CryptoComTicker>>(payload), cancellationToken);
 					break;
 
 				case "book":
 				case "book.update":
 					if (BookReceived is { } bookHandler)
-						await bookHandler(Deserialize<CryptoComWsEnvelope<CryptoComWsBookItem>>(payload), cancellationToken);
+						await bookHandler.InvokeAsync(Deserialize<CryptoComWsEnvelope<CryptoComWsBookItem>>(payload), cancellationToken);
 					break;
 
 				case "trade":
 					if (TradeReceived is { } tradeHandler)
-						await tradeHandler(Deserialize<CryptoComWsEnvelope<CryptoComPublicTrade>>(payload), cancellationToken);
+						await tradeHandler.InvokeAsync(Deserialize<CryptoComWsEnvelope<CryptoComPublicTrade>>(payload), cancellationToken);
 					break;
 
 				case "candlestick":
 					if (CandleReceived is { } candleHandler)
-						await candleHandler(Deserialize<CryptoComWsEnvelope<CryptoComCandle>>(payload), cancellationToken);
+						await candleHandler.InvokeAsync(Deserialize<CryptoComWsEnvelope<CryptoComCandle>>(payload), cancellationToken);
 					break;
 
 				case "user.order":
 				case "user.advance.order":
 					if (UserOrderReceived is { } orderHandler)
-						await orderHandler(Deserialize<CryptoComWsEnvelope<CryptoComOrder>>(payload), cancellationToken);
+						await orderHandler.InvokeAsync(Deserialize<CryptoComWsEnvelope<CryptoComOrder>>(payload), cancellationToken);
 					break;
 
 				case "user.trade":
 					if (UserTradeReceived is { } userTradeHandler)
-						await userTradeHandler(Deserialize<CryptoComWsEnvelope<CryptoComUserTrade>>(payload), cancellationToken);
+						await userTradeHandler.InvokeAsync(Deserialize<CryptoComWsEnvelope<CryptoComUserTrade>>(payload), cancellationToken);
 					break;
 
 				case "user.balance":
 					if (BalanceReceived is { } balanceHandler)
-						await balanceHandler(Deserialize<CryptoComWsEnvelope<CryptoComBalance>>(payload), cancellationToken);
+						await balanceHandler.InvokeAsync(Deserialize<CryptoComWsEnvelope<CryptoComBalance>>(payload), cancellationToken);
 					break;
 
 				case "user.positions":
 					if (PositionReceived is { } positionHandler)
-						await positionHandler(Deserialize<CryptoComWsEnvelope<CryptoComPosition>>(payload), cancellationToken);
+						await positionHandler.InvokeAsync(Deserialize<CryptoComWsEnvelope<CryptoComPosition>>(payload), cancellationToken);
 					break;
 			}
 		}
@@ -296,7 +296,7 @@ sealed class CryptoComWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string NormalizeEndpoint(string endpoint)

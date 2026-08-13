@@ -252,7 +252,7 @@ sealed class AnchorageSocketClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(WebSocketClient client,
@@ -277,11 +277,11 @@ sealed class AnchorageSocketClient : BaseLogReceiver
 			{
 				case AnchorageWebSocketMessageTypes.MarketDataSnapshot:
 					if (MarketDataReceived is { } marketHandler)
-						await marketHandler(response, cancellationToken);
+						await marketHandler.InvokeAsync(response, cancellationToken);
 					break;
 				case AnchorageWebSocketMessageTypes.ExecutionReport:
 					if (ExecutionReceived is { } executionHandler)
-						await executionHandler(response, cancellationToken);
+						await executionHandler.InvokeAsync(response, cancellationToken);
 					break;
 				default:
 					throw new InvalidDataException(
@@ -330,7 +330,7 @@ sealed class AnchorageSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	public async ValueTask DisconnectAsync(
 		CancellationToken cancellationToken)

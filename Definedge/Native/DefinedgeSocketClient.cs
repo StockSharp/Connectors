@@ -40,11 +40,11 @@ sealed class DefinedgeSocketClient : BaseLogReceiver
                 .AbsoluteUri,
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (message, args) =>
@@ -227,7 +227,7 @@ sealed class DefinedgeSocketClient : BaseLogReceiver
                     !root.GetText("tk").IsEmpty() &&
                     MarketDataReceived is { } marketHandler)
                 {
-                    await marketHandler(root, cancellationToken);
+                    await marketHandler.InvokeAsync(root, cancellationToken);
                 }
                 break;
 
@@ -236,7 +236,7 @@ sealed class DefinedgeSocketClient : BaseLogReceiver
                 if (!order.OrderId.IsEmpty() &&
                     OrderReceived is { } orderHandler)
                 {
-                    await orderHandler(order, cancellationToken);
+                    await orderHandler.InvokeAsync(order, cancellationToken);
                 }
                 break;
 

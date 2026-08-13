@@ -209,7 +209,7 @@ sealed class CoinsPhPublicSocketClient : BaseLogReceiver
 					streams, cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(string stream,
@@ -271,19 +271,19 @@ sealed class CoinsPhPublicSocketClient : BaseLogReceiver
 			{
 				case "trade":
 					if (TradeReceived is { } tradeHandler)
-						await tradeHandler(value, cancellationToken);
+						await tradeHandler.InvokeAsync(value, cancellationToken);
 					break;
 				case "24hrTicker":
 					if (TickerReceived is { } tickerHandler)
-						await tickerHandler(value, cancellationToken);
+						await tickerHandler.InvokeAsync(value, cancellationToken);
 					break;
 				case "depth":
 					if (DepthReceived is { } depthHandler)
-						await depthHandler(value, cancellationToken);
+						await depthHandler.InvokeAsync(value, cancellationToken);
 					break;
 				case "kline":
 					if (KlineReceived is { } klineHandler)
-						await klineHandler(value, cancellationToken);
+						await klineHandler.InvokeAsync(value, cancellationToken);
 					break;
 			}
 		}
@@ -363,7 +363,7 @@ sealed class CoinsPhPublicSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string CreateEndpoint(string endpoint)
 	{

@@ -319,11 +319,11 @@ sealed class TiingoWebSocketClient : BaseLogReceiver
 
 	private static ValueTask Invoke<T>(Func<T, CancellationToken, ValueTask> handler, T value,
 		CancellationToken cancellationToken)
-		=> handler == null ? default : handler(value, cancellationToken);
+		=> handler.InvokeAsync(value, cancellationToken);
 
 	private static ValueTask Invoke<T1, T2>(Func<T1, T2, CancellationToken, ValueTask> handler,
 		T1 value1, T2 value2, CancellationToken cancellationToken)
-		=> handler == null ? default : handler(value1, value2, cancellationToken);
+		=> handler.InvokeAsync(value1, value2, cancellationToken);
 
 	protected override void DisposeManaged()
 	{

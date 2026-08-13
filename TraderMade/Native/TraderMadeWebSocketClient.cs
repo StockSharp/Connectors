@@ -135,7 +135,7 @@ sealed class TraderMadeWebSocketClient : BaseLogReceiver
 					continue;
 				}
 				if (quote is not null && QuoteReceived is not null)
-					await QuoteReceived(quote, cancellationToken);
+					await QuoteReceived.InvokeAsync(quote, cancellationToken);
 				else
 				{
 					var control = JObject.Parse(text);

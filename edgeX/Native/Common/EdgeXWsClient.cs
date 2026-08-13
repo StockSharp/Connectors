@@ -20,7 +20,7 @@ sealed class EdgeXWsClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 
 				return default;
 			},
@@ -29,7 +29,7 @@ sealed class EdgeXWsClient : BaseLogReceiver
 				this.AddErrorLog(error);
 
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 
 				return default;
 			},
@@ -114,7 +114,7 @@ sealed class EdgeXWsClient : BaseLogReceiver
 
 			case "error":
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException(obj.ToString(Formatting.None)), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException(obj.ToString(Formatting.None)), cancellationToken);
 				return;
 		}
 
@@ -136,34 +136,34 @@ sealed class EdgeXWsClient : BaseLogReceiver
 
 			if (channel.StartsWithIgnoreCase("ticker.") && TickerReceived is { } tickerHandler)
 			{
-				await tickerHandler(channel, item, cancellationToken);
+				await tickerHandler.InvokeAsync(channel, item, cancellationToken);
 				continue;
 			}
 
 			if (channel.StartsWithIgnoreCase("depth.") && DepthReceived is { } depthHandler)
 			{
-				await depthHandler(channel, item, cancellationToken);
+				await depthHandler.InvokeAsync(channel, item, cancellationToken);
 				continue;
 			}
 
 			if ((channel.StartsWithIgnoreCase("trade.") || channel.StartsWithIgnoreCase("trades.")) && TradeReceived is { } tradeHandler)
 			{
-				await tradeHandler(channel, item, cancellationToken);
+				await tradeHandler.InvokeAsync(channel, item, cancellationToken);
 				continue;
 			}
 
 			if (channel.StartsWithIgnoreCase("kline.") && CandleReceived is { } candleHandler)
 			{
-				await candleHandler(channel, item, cancellationToken);
+				await candleHandler.InvokeAsync(channel, item, cancellationToken);
 				continue;
 			}
 
 			if (IsPrivateChannel(channel) && PrivatePayloadReceived is { } privateHandler)
-				await privateHandler(channel, item, cancellationToken);
+				await privateHandler.InvokeAsync(channel, item, cancellationToken);
 		}
 
 		if (!hasRows && IsPrivateChannel(channel) && PrivatePayloadReceived is { } fallbackPrivateHandler)
-			await fallbackPrivateHandler(channel, content, cancellationToken);
+			await fallbackPrivateHandler.InvokeAsync(channel, content, cancellationToken);
 	}
 
 	private static IEnumerable<JObject> EnumeratePayloadRows(JObject content)

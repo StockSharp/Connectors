@@ -121,7 +121,7 @@ sealed class SamcoSocketClient : IAsyncDisposable
 				if (result.MessageType ==
 					WebSocketMessageType.Text &&
 					MessageReceived is not null)
-					await MessageReceived(
+					await MessageReceived.InvokeAsync(
 						Encoding.UTF8.GetString(stream.ToArray()),
 						cancellationToken);
 			}
@@ -133,7 +133,7 @@ sealed class SamcoSocketClient : IAsyncDisposable
 		catch (Exception error)
 		{
 			if (Error is not null)
-				await Error(error, CancellationToken.None);
+				await Error.InvokeAsync(error, CancellationToken.None);
 		}
 	}
 

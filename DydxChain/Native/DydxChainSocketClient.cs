@@ -125,7 +125,7 @@ sealed class DydxChainSocketClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -260,21 +260,21 @@ sealed class DydxChainSocketClient : BaseLogReceiver
 				break;
 			case DydxChainSocketChannels.Orderbook:
 				if (OrderbookSnapshotReceived is { } bookHandler)
-					await bookHandler(RequireId(header),
+					await bookHandler.InvokeAsync(RequireId(header),
 						Deserialize<DydxChainSocketEnvelope<
 							DydxChainOrderbookResponse>>(payload).Contents,
 						cancellationToken);
 				break;
 			case DydxChainSocketChannels.Trades:
 				if (TradesReceived is { } tradesHandler)
-					await tradesHandler(RequireId(header),
+					await tradesHandler.InvokeAsync(RequireId(header),
 						Deserialize<DydxChainSocketEnvelope<
 							DydxChainTradesResponse>>(payload).Contents.Trades ?? [],
 						cancellationToken);
 				break;
 			case DydxChainSocketChannels.Candles:
 				if (CandlesReceived is { } candlesHandler)
-					await candlesHandler(RequireId(header),
+					await candlesHandler.InvokeAsync(RequireId(header),
 						Deserialize<DydxChainSocketEnvelope<
 							DydxChainCandlesResponse>>(payload).Contents.Candles ?? [],
 						cancellationToken);
@@ -307,21 +307,21 @@ sealed class DydxChainSocketClient : BaseLogReceiver
 					break;
 				case DydxChainSocketChannels.Orderbook:
 					if (OrderbookUpdateReceived is { } bookHandler)
-						await bookHandler(RequireId(header),
+						await bookHandler.InvokeAsync(RequireId(header),
 							Deserialize<DydxChainSocketEnvelope<
 								DydxChainOrderbookUpdate>>(payload).Contents,
 							cancellationToken);
 					break;
 				case DydxChainSocketChannels.Trades:
 					if (TradesReceived is { } tradesHandler)
-						await tradesHandler(RequireId(header),
+						await tradesHandler.InvokeAsync(RequireId(header),
 							Deserialize<DydxChainSocketEnvelope<
 								DydxChainTradesResponse>>(payload).Contents.Trades ?? [],
 							cancellationToken);
 					break;
 				case DydxChainSocketChannels.Candles:
 					if (CandlesReceived is { } candlesHandler)
-						await candlesHandler(RequireId(header),
+						await candlesHandler.InvokeAsync(RequireId(header),
 							[Deserialize<DydxChainSocketEnvelope<
 								DydxChainCandle>>(payload).Contents],
 							cancellationToken);
@@ -352,7 +352,7 @@ sealed class DydxChainSocketClient : BaseLogReceiver
 					foreach (var item in Deserialize<
 						DydxChainSocketBatchEnvelope<
 							DydxChainOrderbookUpdate>>(payload).Contents ?? [])
-						await bookHandler(RequireId(header), item,
+						await bookHandler.InvokeAsync(RequireId(header), item,
 							cancellationToken);
 				break;
 			case DydxChainSocketChannels.Trades:
@@ -360,12 +360,12 @@ sealed class DydxChainSocketClient : BaseLogReceiver
 					foreach (var item in Deserialize<
 						DydxChainSocketBatchEnvelope<
 							DydxChainTradesResponse>>(payload).Contents ?? [])
-						await tradesHandler(RequireId(header), item.Trades ?? [],
+						await tradesHandler.InvokeAsync(RequireId(header), item.Trades ?? [],
 							cancellationToken);
 				break;
 			case DydxChainSocketChannels.Candles:
 				if (CandlesReceived is { } candlesHandler)
-					await candlesHandler(RequireId(header),
+					await candlesHandler.InvokeAsync(RequireId(header),
 						Deserialize<DydxChainSocketBatchEnvelope<
 							DydxChainCandle>>(payload).Contents ?? [],
 						cancellationToken);
@@ -399,12 +399,12 @@ sealed class DydxChainSocketClient : BaseLogReceiver
 		Func<T, CancellationToken, ValueTask> handler, T value,
 		CancellationToken cancellationToken)
 		=> value is not null && handler is not null
-			? handler(value, cancellationToken)
+			? handler.InvokeAsync(value, cancellationToken)
 			: default;
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private async ValueTask DisposeClientAsync(
 		CancellationToken cancellationToken)

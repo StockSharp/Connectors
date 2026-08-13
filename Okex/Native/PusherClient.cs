@@ -47,14 +47,14 @@ abstract class BasePusherClient : BaseLogReceiver, IConnection
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(this, error, token);
+					return handler.InvokeAsync(this, error, token);
 				return default;
 			},
 			OnProcess,
@@ -101,7 +101,7 @@ abstract class BasePusherClient : BaseLogReceiver, IConnection
 		{
 			var error = new InvalidOperationException($"error code={(string)obj.code}: '{(string)obj.msg}'");
 			if (Error is { } handler)
-				await handler(this, error, cancellationToken);
+				await handler.InvokeAsync(this, error, cancellationToken);
 			return true;
 		}
 		else if (evt == Operations.ChannelConnCount)
@@ -232,13 +232,13 @@ class PublicPusherClient : BasePusherClient
 				case PusherChannels.Instruments:
 					if (InstrumentReceived is { } instrumentHandler)
 						foreach (var i in data.DeserializeObject<IEnumerable<Instrument>>())
-							await instrumentHandler(i, cancellationToken);
+							await instrumentHandler.InvokeAsync(i, cancellationToken);
 					return true;
 
 				case PusherChannels.Level1:
 					if (Level1Received is { } level1Handler)
 						foreach (var t in data.DeserializeObject<IEnumerable<Ticker>>())
-							await level1Handler(t, cancellationToken);
+							await level1Handler.InvokeAsync(t, cancellationToken);
 					return true;
 
 				case PusherChannels.Depth:
@@ -251,7 +251,7 @@ class PublicPusherClient : BasePusherClient
 					};
 
 					if (OrderBookReceived is { } bookHandler)
-						await bookHandler(instId, state, data[0].DeserializeObject<OrderBook>(), cancellationToken);
+						await bookHandler.InvokeAsync(instId, state, data[0].DeserializeObject<OrderBook>(), cancellationToken);
 					return true;
 			}
 		}
@@ -379,7 +379,7 @@ class PrivatePusherClient : BaseAuthPusherClient
 				error = new InvalidOperationException($"unexpected result code: '{(string)obj.code}', msg='{(string)obj.msg}'");
 
 			if (OrderChanged is { } orderHandler)
-				await orderHandler(order, error, cancellationToken);
+				await orderHandler.InvokeAsync(order, error, cancellationToken);
 
 			return true;
 		}
@@ -394,19 +394,19 @@ class PrivatePusherClient : BaseAuthPusherClient
 				case PusherChannels.Orders:
 					if (OrderChanged is { } orderHandler2)
 						foreach (var o in data.DeserializeObject<IEnumerable<OkexOrder>>())
-							await orderHandler2(o, null, cancellationToken);
+							await orderHandler2.InvokeAsync(o, null, cancellationToken);
 					return true;
 
 				case PusherChannels.Positions:
 					if (PositionChanged is { } posHandler)
 						foreach (var p in data.DeserializeObject<IEnumerable<OkexPosition>>())
-							await posHandler(p, cancellationToken);
+							await posHandler.InvokeAsync(p, cancellationToken);
 					return true;
 
 				case PusherChannels.Account:
 					if (AccountChanged is { } accHandler)
 						foreach (var a in data.DeserializeObject<IEnumerable<OkexAccount>>())
-							await accHandler(a, cancellationToken);
+							await accHandler.InvokeAsync(a, cancellationToken);
 					return true;
 			}
 		}
@@ -526,7 +526,7 @@ class BusinessPusherClient : BaseAuthPusherClient
 				case PusherChannels.Ticks:
 					if (TickReceived is { } tickHandler)
 						foreach (var t in data.DeserializeObject<IEnumerable<OkexTick>>())
-							await tickHandler(t, cancellationToken);
+							await tickHandler.InvokeAsync(t, cancellationToken);
 					return true;
 
 				default:
@@ -536,7 +536,7 @@ class BusinessPusherClient : BaseAuthPusherClient
 
 						if (CandleReceived is { } candleHandler)
 							foreach (var item in data)
-								await candleHandler(instId, tf, item.DeserializeObject<Ohlc>(), cancellationToken);
+								await candleHandler.InvokeAsync(instId, tf, item.DeserializeObject<Ohlc>(), cancellationToken);
 
 						return true;
 					}

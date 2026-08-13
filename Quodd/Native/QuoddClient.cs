@@ -198,10 +198,10 @@ sealed class QuoddClient : IAsyncDisposable
 
 	private ValueTask ForwardSnap(SnapMessage message, QuoddAssetTypes assetType,
 		CancellationToken cancellationToken)
-		=> SnapReceived == null ? default : SnapReceived(message, assetType, cancellationToken);
+		=> SnapReceived == null ? default : SnapReceived.InvokeAsync(message, assetType, cancellationToken);
 
 	private ValueTask ForwardError(Exception error, CancellationToken cancellationToken)
-		=> Error == null ? default : Error(error, cancellationToken);
+		=> Error == null ? default : Error.InvokeAsync(error, cancellationToken);
 
 	public async ValueTask DisposeAsync()
 	{

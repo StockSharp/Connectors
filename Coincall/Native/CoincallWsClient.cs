@@ -471,7 +471,7 @@ sealed class CoincallWsClient : BaseLogReceiver
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(
@@ -575,7 +575,7 @@ sealed class CoincallWsClient : BaseLogReceiver
 		{
 			var parsed = DeserializeMessage(payload);
 			if (MessageReceived is { } handler)
-				await handler(parsed, cancellationToken);
+				await handler.InvokeAsync(parsed, cancellationToken);
 		}
 		catch (Exception error)
 		{
@@ -587,7 +587,7 @@ sealed class CoincallWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string NormalizeSymbol(string symbol)

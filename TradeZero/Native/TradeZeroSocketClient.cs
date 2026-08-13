@@ -24,8 +24,8 @@ sealed class TradeZeroSocketClient : BaseLogReceiver
 		var stream = kind == TradeZeroStreamKinds.Portfolio ? "portfolio" : "pnl";
 		_client = new(
 			$"{webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)).TrimEnd('/')}/{stream}",
-			(state, token) => StateChanged is { } stateHandler ? stateHandler(state, token) : default,
-			(error, token) => Error is { } errorHandler ? errorHandler(error, token) : default,
+			(state, token) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, token) : default,
+			(error, token) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, token) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -85,13 +85,13 @@ sealed class TradeZeroSocketClient : BaseLogReceiver
 		{
 			var portfolio = JsonConvert.DeserializeObject<TradeZeroPortfolioMessage>(raw);
 			if (portfolio != null && PortfolioReceived is { } portfolioHandler)
-				await portfolioHandler(portfolio, cancellationToken);
+				await portfolioHandler.InvokeAsync(portfolio, cancellationToken);
 		}
 		else
 		{
 			var pnl = JsonConvert.DeserializeObject<TradeZeroPnlMessage>(raw);
 			if (pnl != null && PnlReceived is { } pnlHandler)
-				await pnlHandler(ResolveAccount(pnl.Account), pnl, cancellationToken);
+				await pnlHandler.InvokeAsync(ResolveAccount(pnl.Account), pnl, cancellationToken);
 		}
 	}
 
@@ -111,12 +111,12 @@ sealed class TradeZeroSocketClient : BaseLogReceiver
 				var authError = new InvalidOperationException(message.Message.IsEmpty("TradeZero WebSocket authentication failed."));
 				_authorization.TrySetException(authError);
 				if (Error is { } authErrorHandler)
-					await authErrorHandler(authError, cancellationToken);
+					await authErrorHandler.InvokeAsync(authError, cancellationToken);
 				break;
 			case TradeZeroSystemStatuses.TERMINATED:
 			case TradeZeroSystemStatuses.INVALID_DATA:
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException(message.Message.IsEmpty($"TradeZero {_kind} subscription failed.")), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException(message.Message.IsEmpty($"TradeZero {_kind} subscription failed.")), cancellationToken);
 				break;
 		}
 	}

@@ -28,14 +28,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -92,7 +92,7 @@ class PusherClient : BaseLogReceiver
 			if (error != null)
 			{
 				if (Error is { } errorHandler)
-					await errorHandler(error, cancellationToken);
+					await errorHandler.InvokeAsync(error, cancellationToken);
 				return;
 			}
 
@@ -106,7 +106,7 @@ class PusherClient : BaseLogReceiver
 					var symbol = (string)obj.@params[2];
 
 					if (NewTrades is { } tradesHandler)
-						await tradesHandler(symbol, value.DeserializeObject<IEnumerable<Trade>>(), cancellationToken);
+						await tradesHandler.InvokeAsync(symbol, value.DeserializeObject<IEnumerable<Trade>>(), cancellationToken);
 					break;
 				}
 
@@ -116,7 +116,7 @@ class PusherClient : BaseLogReceiver
 					var symbol = (string)obj.@params[2];
 
 					if (OrderBookChanged is { } bookHandler)
-						await bookHandler(symbol, value.DeserializeObject<OrderBook>(), cancellationToken);
+						await bookHandler.InvokeAsync(symbol, value.DeserializeObject<OrderBook>(), cancellationToken);
 					break;
 				}
 
@@ -127,7 +127,7 @@ class PusherClient : BaseLogReceiver
 					foreach (var ticker in tickers)
 					{
 						if (TickerReceived is { } tickerHandler)
-							await tickerHandler(ticker, cancellationToken);
+							await tickerHandler.InvokeAsync(ticker, cancellationToken);
 					}
 
 					break;
@@ -147,7 +147,7 @@ class PusherClient : BaseLogReceiver
 			}
 
 			if (SubscriptionResult is { } subHandler)
-				await subHandler(id.Value, error, cancellationToken);
+				await subHandler.InvokeAsync(id.Value, error, cancellationToken);
 		}
 	}
 

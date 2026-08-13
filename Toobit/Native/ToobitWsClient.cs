@@ -16,7 +16,7 @@ sealed class ToobitWsClient : BaseLogReceiver
 		_isUserStream = isUserStream;
 		_client = new WebSocketClient(
 			NormalizeEndpoint(endpoint, isUserStream),
-			(state, token) => StateChanged?.Invoke(state, token) ?? default,
+			(state, token) => StateChanged.InvokeAsync(state, token),
 			(error, token) => RaiseErrorAsync(error, token),
 			OnProcessAsync,
 			(s, a) => this.AddInfoLog(s, a),
@@ -160,7 +160,7 @@ sealed class ToobitWsClient : BaseLogReceiver
 			{
 				var expiry = JsonConvert.DeserializeObject<ToobitListenKeyExpiry>(payload);
 				if (expiry?.EventType.EqualsIgnoreCase("listenKeyWillExpire") == true && ListenKeyExpiring is { } expiryHandler)
-					await expiryHandler(expiry, cancellationToken);
+					await expiryHandler.InvokeAsync(expiry, cancellationToken);
 				return;
 			}
 
@@ -171,23 +171,23 @@ sealed class ToobitWsClient : BaseLogReceiver
 			{
 				case "realtimes":
 					if (TickerReceived is { } tickerHandler)
-						await tickerHandler(Deserialize<ToobitWsTicker>(payload), cancellationToken);
+						await tickerHandler.InvokeAsync(Deserialize<ToobitWsTicker>(payload), cancellationToken);
 					break;
 
 				case "depth":
 				case "diffdepth":
 					if (DepthReceived is { } depthHandler)
-						await depthHandler(Deserialize<ToobitWsDepth>(payload), cancellationToken);
+						await depthHandler.InvokeAsync(Deserialize<ToobitWsDepth>(payload), cancellationToken);
 					break;
 
 				case "trade":
 					if (TradeReceived is { } tradeHandler)
-						await tradeHandler(Deserialize<ToobitWsTrade>(payload), cancellationToken);
+						await tradeHandler.InvokeAsync(Deserialize<ToobitWsTrade>(payload), cancellationToken);
 					break;
 
 				case "kline":
 					if (CandleReceived is { } candleHandler)
-						await candleHandler(Deserialize<ToobitWsCandle>(payload), cancellationToken);
+						await candleHandler.InvokeAsync(Deserialize<ToobitWsCandle>(payload), cancellationToken);
 					break;
 			}
 		}
@@ -211,7 +211,7 @@ sealed class ToobitWsClient : BaseLogReceiver
 						foreach (var update in JsonConvert.DeserializeObject<ToobitUserBalanceEvent[]>(payload) ?? [])
 						{
 							if (update.Event.EqualsIgnoreCase(eventName))
-								await balanceHandler(update, cancellationToken);
+								await balanceHandler.InvokeAsync(update, cancellationToken);
 						}
 					}
 					break;
@@ -222,7 +222,7 @@ sealed class ToobitWsClient : BaseLogReceiver
 						foreach (var update in JsonConvert.DeserializeObject<ToobitUserPositionEvent[]>(payload) ?? [])
 						{
 							if (update.Event.EqualsIgnoreCase(eventName))
-								await positionHandler(update, cancellationToken);
+								await positionHandler.InvokeAsync(update, cancellationToken);
 						}
 					}
 					break;
@@ -234,7 +234,7 @@ sealed class ToobitWsClient : BaseLogReceiver
 						foreach (var update in JsonConvert.DeserializeObject<ToobitUserOrderEvent[]>(payload) ?? [])
 						{
 							if (update.Event.EqualsIgnoreCase(eventName))
-								await orderHandler(update, cancellationToken);
+								await orderHandler.InvokeAsync(update, cancellationToken);
 						}
 					}
 					break;
@@ -245,7 +245,7 @@ sealed class ToobitWsClient : BaseLogReceiver
 						foreach (var update in JsonConvert.DeserializeObject<ToobitUserTradeEvent[]>(payload) ?? [])
 						{
 							if (update.Event.EqualsIgnoreCase(eventName))
-								await tradeHandler(update, cancellationToken);
+								await tradeHandler.InvokeAsync(update, cancellationToken);
 						}
 					}
 					break;
@@ -261,7 +261,7 @@ sealed class ToobitWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string CreateKey(string symbol, string topic)

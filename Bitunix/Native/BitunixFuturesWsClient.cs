@@ -303,7 +303,7 @@ sealed class BitunixFuturesWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private ValueTask SendPublicSubscriptionAsync(WebSocketClient client,
@@ -440,7 +440,7 @@ sealed class BitunixFuturesWsClient : BaseLogReceiver
 				{
 					var data = Deserialize<BitunixWsEnvelope<BitunixWsTicker>>(payload);
 					if (data.Data is not null && TickerReceived is { } handler)
-						await handler(data.Symbol.IsEmpty(data.Data.Symbol), data.Data, data.Time,
+						await handler.InvokeAsync(data.Symbol.IsEmpty(data.Data.Symbol), data.Data, data.Time,
 							cancellationToken);
 					break;
 				}
@@ -448,7 +448,7 @@ sealed class BitunixFuturesWsClient : BaseLogReceiver
 				{
 					var data = Deserialize<BitunixWsEnvelope<BitunixWsPrice>>(payload);
 					if (data.Data is not null && PriceReceived is { } handler)
-						await handler(data.Symbol, data.Data, data.Time, cancellationToken);
+						await handler.InvokeAsync(data.Symbol, data.Data, data.Time, cancellationToken);
 					break;
 				}
 				case "trade":
@@ -457,7 +457,7 @@ sealed class BitunixFuturesWsClient : BaseLogReceiver
 					if (TradeReceived is { } handler)
 					{
 						foreach (var trade in data.Data ?? [])
-							await handler(data.Symbol, trade, data.Time, cancellationToken);
+							await handler.InvokeAsync(data.Symbol, trade, data.Time, cancellationToken);
 					}
 					break;
 				}
@@ -465,21 +465,21 @@ sealed class BitunixFuturesWsClient : BaseLogReceiver
 				{
 					var data = Deserialize<BitunixWsEnvelope<BitunixWsOrder>>(payload);
 					if (data.Data is not null && OrderReceived is { } handler)
-						await handler(data.Data, data.Time, cancellationToken);
+						await handler.InvokeAsync(data.Data, data.Time, cancellationToken);
 					break;
 				}
 				case "balance":
 				{
 					var data = Deserialize<BitunixWsEnvelope<BitunixWsBalance>>(payload);
 					if (data.Data is not null && BalanceReceived is { } handler)
-						await handler(data.Data, data.Time, cancellationToken);
+						await handler.InvokeAsync(data.Data, data.Time, cancellationToken);
 					break;
 				}
 				case "position":
 				{
 					var data = Deserialize<BitunixWsEnvelope<BitunixWsPosition>>(payload);
 					if (data.Data is not null && PositionReceived is { } handler)
-						await handler(data.Data, data.Time, cancellationToken);
+						await handler.InvokeAsync(data.Data, data.Time, cancellationToken);
 					break;
 				}
 				default:
@@ -487,14 +487,14 @@ sealed class BitunixFuturesWsClient : BaseLogReceiver
 					{
 						var data = Deserialize<BitunixWsEnvelope<BitunixWsDepth>>(payload);
 						if (data.Data is not null && DepthReceived is { } depthHandler)
-							await depthHandler(data.Symbol, data.Channel, data.Data, data.Time,
+							await depthHandler.InvokeAsync(data.Symbol, data.Channel, data.Data, data.Time,
 								cancellationToken);
 					}
 					else if (header.Channel.Contains("_kline_", StringComparison.OrdinalIgnoreCase))
 					{
 						var data = Deserialize<BitunixWsEnvelope<BitunixWsCandle>>(payload);
 						if (data.Data is not null && CandleReceived is { } candleHandler)
-							await candleHandler(data.Symbol, data.Channel, data.Data, data.Time,
+							await candleHandler.InvokeAsync(data.Symbol, data.Channel, data.Data, data.Time,
 								cancellationToken);
 					}
 					break;
@@ -545,7 +545,7 @@ sealed class BitunixFuturesWsClient : BaseLogReceiver
 	}
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string Sha256(string value)
 		=> Convert.ToHexString(SHA256.HashData(value.UTF8())).ToLowerInvariant();

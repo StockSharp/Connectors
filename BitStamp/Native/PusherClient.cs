@@ -30,14 +30,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -91,7 +91,7 @@ class PusherClient : BaseLogReceiver
 
 			case "bts:error":
 				if (Error is { } errorHandler)
-					await errorHandler(new InvalidOperationException((string)data.message), cancellationToken);
+					await errorHandler.InvokeAsync(new InvalidOperationException((string)data.message), cancellationToken);
 				break;
 
 			case "ping":
@@ -131,19 +131,19 @@ class PusherClient : BaseLogReceiver
 
 			case "trade":
 				if (NewTrade is { } tradeHandler)
-					await tradeHandler(GetPair(channel, ChannelNames.Trades), ((JToken)data).DeserializeObject<Trade>(), cancellationToken);
+					await tradeHandler.InvokeAsync(GetPair(channel, ChannelNames.Trades), ((JToken)data).DeserializeObject<Trade>(), cancellationToken);
 				break;
 
 			case "data":
 				if (NewOrderBook is { } bookHandler)
-					await bookHandler(GetPair(channel, ChannelNames.OrderBook), ((JToken)data).DeserializeObject<OrderBook>(), cancellationToken);
+					await bookHandler.InvokeAsync(GetPair(channel, ChannelNames.OrderBook), ((JToken)data).DeserializeObject<OrderBook>(), cancellationToken);
 				break;
 
 			case "order_created":
 			case "order_changed":
 			case "order_deleted":
 				if (NewOrderLog is { } logHandler)
-					await logHandler(GetPair(channel, ChannelNames.OrderLog), evt == "order_deleted" ? OrderStates.Done : OrderStates.Active, ((JToken)data).DeserializeObject<Order>(), cancellationToken);
+					await logHandler.InvokeAsync(GetPair(channel, ChannelNames.OrderLog), evt == "order_deleted" ? OrderStates.Done : OrderStates.Active, ((JToken)data).DeserializeObject<Order>(), cancellationToken);
 				break;
 
 			default:

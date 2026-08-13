@@ -252,7 +252,7 @@ sealed class BitGoSocketClient : BaseLogReceiver
 					"BitGo WebSocket disconnected before subscription acknowledgement."));
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(WebSocketClient client,
@@ -275,7 +275,7 @@ sealed class BitGoSocketClient : BaseLogReceiver
 					BitGoSocketMessageTypes.Update)
 			{
 				if (BookReceived is { } bookHandler)
-					await bookHandler(Deserialize<BitGoBookMessage>(payload),
+					await bookHandler.InvokeAsync(Deserialize<BitGoBookMessage>(payload),
 						cancellationToken);
 				return;
 			}
@@ -287,7 +287,7 @@ sealed class BitGoSocketClient : BaseLogReceiver
 					BitGoSocketMessageTypes.Stop)
 			{
 				if (OrderReceived is { } orderHandler)
-					await orderHandler(Deserialize<BitGoOrderUpdate>(payload),
+					await orderHandler.InvokeAsync(Deserialize<BitGoOrderUpdate>(payload),
 						cancellationToken);
 				return;
 			}
@@ -348,7 +348,7 @@ sealed class BitGoSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static string GetKey(BitGoSocketChannels channel, string productId)
 		=> channel + ":" + (productId ?? string.Empty).Trim();

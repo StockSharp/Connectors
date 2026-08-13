@@ -324,13 +324,13 @@ sealed class NDAXSocketClient : BaseLogReceiver
 			{
 				await RaiseErrorAsync(error, cancellationToken);
 				if (StateChanged is { } failedHandler)
-					await failedHandler(ConnectionStates.Failed,
+					await failedHandler.InvokeAsync(ConnectionStates.Failed,
 						cancellationToken);
 				return;
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask AuthenticateAsync(
@@ -745,7 +745,7 @@ sealed class NDAXSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 
 	private static async ValueTask RaiseAsync<TPayload>(
 		Func<TPayload, CancellationToken, ValueTask> handler,
@@ -753,7 +753,7 @@ sealed class NDAXSocketClient : BaseLogReceiver
 		where TPayload : class
 	{
 		if (handler is not null && payload is not null)
-			await handler(payload, cancellationToken);
+			await handler.InvokeAsync(payload, cancellationToken);
 	}
 
 	private static async ValueTask RaiseAsync<TPayload>(
@@ -763,7 +763,7 @@ sealed class NDAXSocketClient : BaseLogReceiver
 		where TPayload : class
 	{
 		if (handler is not null && payload is not null)
-			await handler(payload, isSnapshot, cancellationToken);
+			await handler.InvokeAsync(payload, isSnapshot, cancellationToken);
 	}
 
 	private static Uri ValidateEndpoint(string value)

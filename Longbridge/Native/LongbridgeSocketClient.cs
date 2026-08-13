@@ -154,7 +154,7 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 				attempts = 0;
 				connectedOnce = true;
 				if (Connected != null)
-					await Connected(connection.Token);
+					await Connected.InvokeAsync(connection.Token);
 				_initialConnection.TrySetResult();
 				var heartbeatTask = Heartbeat(connection.Token);
 				var completed = await Task.WhenAny(receiveTask, heartbeatTask);
@@ -183,7 +183,7 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 					_ready = NewReadySource();
 				FailPending(ex);
 				if (Error != null)
-					await Error(ex, CancellationToken.None);
+					await Error.InvokeAsync(ex, CancellationToken.None);
 				if (!connectedOnce && attempts >= 5)
 				{
 					_initialConnection.TrySetException(ex);
@@ -283,7 +283,7 @@ sealed class LongbridgeSocketClient : BaseLogReceiver
 			return;
 		}
 		if (type == 3 && PushReceived != null)
-			await PushReceived(packet, cancellationToken);
+			await PushReceived.InvokeAsync(packet, cancellationToken);
 	}
 
 	private void FailPending(Exception error)

@@ -243,7 +243,7 @@ sealed class GeminiWsClient : BaseLogReceiver
 		{
 			CancelPending();
 			if (Resynchronizing is { } resynchronizing)
-				await resynchronizing(cancellationToken);
+				await resynchronizing.InvokeAsync(cancellationToken);
 			string[] subscriptions;
 			using (_sync.EnterScope())
 				subscriptions = [.. _subscriptions];
@@ -255,7 +255,7 @@ sealed class GeminiWsClient : BaseLogReceiver
 			CancelPending();
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private ValueTask ChangePrivateSubscriptionAsync(string stream, bool isSubscribe,
@@ -406,22 +406,22 @@ sealed class GeminiWsClient : BaseLogReceiver
 			{
 				case "depthUpdate":
 					if (DepthReceived is { } depthHandler)
-						await depthHandler(Deserialize<GeminiWsDepthUpdate>(payload),
+						await depthHandler.InvokeAsync(Deserialize<GeminiWsDepthUpdate>(payload),
 							cancellationToken);
 					return;
 				case "orderUpdate":
 					if (OrderReceived is { } orderHandler)
-						await orderHandler(Deserialize<GeminiWsOrderUpdate>(payload),
+						await orderHandler.InvokeAsync(Deserialize<GeminiWsOrderUpdate>(payload),
 							cancellationToken);
 					return;
 				case "balanceUpdate":
 					if (BalanceReceived is { } balanceHandler)
-						await balanceHandler(Deserialize<GeminiWsBalanceUpdate>(payload),
+						await balanceHandler.InvokeAsync(Deserialize<GeminiWsBalanceUpdate>(payload),
 							cancellationToken);
 					return;
 				case "positionReport":
 					if (PositionReceived is { } positionHandler)
-						await positionHandler(Deserialize<GeminiWsPositionReport>(payload),
+						await positionHandler.InvokeAsync(Deserialize<GeminiWsPositionReport>(payload),
 							cancellationToken);
 					return;
 				case null:
@@ -435,12 +435,12 @@ sealed class GeminiWsClient : BaseLogReceiver
 			if (header.TradeId is not null)
 			{
 				if (TradeReceived is { } tradeHandler)
-					await tradeHandler(Deserialize<GeminiWsTrade>(payload),
+					await tradeHandler.InvokeAsync(Deserialize<GeminiWsTrade>(payload),
 						cancellationToken);
 			}
 			else if (header.UpdateId is not null && !header.Symbol.IsEmpty() &&
 				TickerReceived is { } tickerHandler)
-				await tickerHandler(Deserialize<GeminiWsBookTicker>(payload),
+				await tickerHandler.InvokeAsync(Deserialize<GeminiWsBookTicker>(payload),
 					cancellationToken);
 		}
 		catch (Exception error) when (error is JsonException or InvalidDataException or
@@ -489,5 +489,5 @@ sealed class GeminiWsClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

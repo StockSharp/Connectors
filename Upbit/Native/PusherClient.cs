@@ -24,14 +24,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -70,7 +70,7 @@ class PusherClient : BaseLogReceiver
 		if (obj is JObject && obj.error != null)
 		{
 			if (Error is { } errorHandler)
-				await errorHandler(new InvalidOperationException((string)obj.error.ToString()), cancellationToken);
+				await errorHandler.InvokeAsync(new InvalidOperationException((string)obj.error.ToString()), cancellationToken);
 		}
 
 		var type = (string)obj.type;
@@ -80,15 +80,15 @@ class PusherClient : BaseLogReceiver
 		{
 			case Types.Ticker:
 				if (TickerChanged is { } tickerHandler)
-					await tickerHandler(data.DeserializeObject<Ticker>(), cancellationToken);
+					await tickerHandler.InvokeAsync(data.DeserializeObject<Ticker>(), cancellationToken);
 				break;
 			case Types.Trade:
 				if (NewTrade is { } tradeHandler)
-					await tradeHandler(data.DeserializeObject<Trade>(), cancellationToken);
+					await tradeHandler.InvokeAsync(data.DeserializeObject<Trade>(), cancellationToken);
 				break;
 			case Types.OrderBook:
 				if (OrderBookChanged is { } bookHandler)
-					await bookHandler(data.DeserializeObject<OrderBook>(), cancellationToken);
+					await bookHandler.InvokeAsync(data.DeserializeObject<OrderBook>(), cancellationToken);
 				break;
 			default:
 				this.AddErrorLog(LocalizedStrings.UnknownEvent, type);

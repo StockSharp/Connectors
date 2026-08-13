@@ -97,7 +97,7 @@ sealed class CoinMetricsStreamClient : BaseLogReceiver
 		{
 			var update = DeserializeUpdate(json);
 			if (update is not null && MessageReceived is { } handler)
-				await handler(update, cancellationToken);
+				await handler.InvokeAsync(update, cancellationToken);
 		}
 		catch (Exception error) when (error is JsonException or
 			InvalidDataException or InvalidOperationException or FormatException or
@@ -246,7 +246,7 @@ sealed class CoinMetricsStreamClient : BaseLogReceiver
 	private ValueTask RaiseSanitizedErrorAsync(Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(new IOException(Redact(error.Message)), cancellationToken)
+			? handler.InvokeAsync(new IOException(Redact(error.Message)), cancellationToken)
 			: default;
 
 	private string Redact(string value)

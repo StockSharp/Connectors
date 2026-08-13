@@ -171,7 +171,7 @@ class SocketClient : BaseLogReceiver
 				foreach (var ticker in tickers)
 					ticker.Symbol ??= instId;
 
-				await tickersHandler(tickers, cancellationToken);
+				await tickersHandler.InvokeAsync(tickers, cancellationToken);
 			}
 
 			return;
@@ -183,7 +183,7 @@ class SocketClient : BaseLogReceiver
 			{
 				var book = data.First().DeserializeObject<OrderBook>();
 				book.InstId ??= instId;
-				await bookHandler(book, cancellationToken);
+				await bookHandler.InvokeAsync(book, cancellationToken);
 			}
 
 			return;
@@ -198,7 +198,7 @@ class SocketClient : BaseLogReceiver
 				if (token is JObject tokenObj && tokenObj["instId"] == null && !instId.IsEmpty())
 					tokenObj["instId"] = instId;
 
-				await bookTickerHandler(token, cancellationToken);
+				await bookTickerHandler.InvokeAsync(token, cancellationToken);
 			}
 
 			return;
@@ -213,7 +213,7 @@ class SocketClient : BaseLogReceiver
 				foreach (var trade in trades)
 					trade.Symbol ??= instId;
 
-				await tradesHandler(trades, cancellationToken);
+				await tradesHandler.InvokeAsync(trades, cancellationToken);
 			}
 
 			return;
@@ -229,7 +229,7 @@ class SocketClient : BaseLogReceiver
 					.ToArray();
 
 				if (candles.Length > 0)
-					await candlesHandler(candles, cancellationToken);
+					await candlesHandler.InvokeAsync(candles, cancellationToken);
 			}
 
 			return;
@@ -239,19 +239,19 @@ class SocketClient : BaseLogReceiver
 		{
 			case Channels.Positions:
 				if (PositionsReceived is { } positionsHandler)
-					await positionsHandler(getList<Position>(), cancellationToken);
+					await positionsHandler.InvokeAsync(getList<Position>(), cancellationToken);
 				break;
 			case Channels.Orders:
 				if (OrdersReceived is { } ordersHandler)
-					await ordersHandler(getList<Order>(), cancellationToken);
+					await ordersHandler.InvokeAsync(getList<Order>(), cancellationToken);
 				break;
 			case Channels.UserTrades:
 				if (UserTradesReceived is { } userTradesHandler)
-					await userTradesHandler(getList<UserTrade>(), cancellationToken);
+					await userTradesHandler.InvokeAsync(getList<UserTrade>(), cancellationToken);
 				break;
 			case Channels.Account:
 				if (BalancesReceived is { } balancesHandler)
-					await balancesHandler(getList<Balance>(), cancellationToken);
+					await balancesHandler.InvokeAsync(getList<Balance>(), cancellationToken);
 				break;
 			default:
 				this.AddErrorLog(LocalizedStrings.UnknownEvent, msg.ToString());
@@ -481,7 +481,7 @@ class SocketClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
@@ -489,7 +489,7 @@ class SocketClient : BaseLogReceiver
 				this.AddErrorLog("{0} ws error: {1}", isPrivate ? "private" : "public", error);
 
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 
 				return default;
 			},

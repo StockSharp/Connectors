@@ -194,7 +194,7 @@ sealed class PionexWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ReplaceSpotPrivateClientAsync(WebSocketClient failedClient,
@@ -214,7 +214,7 @@ sealed class PionexWsClient : BaseLogReceiver
 				await RestoreSessionAsync(replacement, cancellationToken);
 				failedClient.Dispose();
 				if (StateChanged is { } handler)
-					await handler(ConnectionStates.Restored, cancellationToken);
+					await handler.InvokeAsync(ConnectionStates.Restored, cancellationToken);
 			}
 			catch
 			{
@@ -227,7 +227,7 @@ sealed class PionexWsClient : BaseLogReceiver
 		{
 			await RaiseErrorAsync(error, cancellationToken);
 			if (StateChanged is { } handler)
-				await handler(ConnectionStates.Failed, cancellationToken);
+				await handler.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 		}
 		finally
 		{
@@ -358,32 +358,32 @@ sealed class PionexWsClient : BaseLogReceiver
 			{
 				case "TRADE":
 					if (TradesReceived is { } tradeHandler)
-						await tradeHandler(Deserialize<PionexWsTradeMessage>(payload), cancellationToken);
+						await tradeHandler.InvokeAsync(Deserialize<PionexWsTradeMessage>(payload), cancellationToken);
 					break;
 				case "DEPTH":
 				case "ORDERBOOK":
 					if (DepthReceived is { } depthHandler)
-						await depthHandler(Deserialize<PionexWsDepthMessage>(payload), cancellationToken);
+						await depthHandler.InvokeAsync(Deserialize<PionexWsDepthMessage>(payload), cancellationToken);
 					break;
 				case "INDEX":
 					if (IndexReceived is { } indexHandler)
-						await indexHandler(Deserialize<PionexWsIndexMessage>(payload), cancellationToken);
+						await indexHandler.InvokeAsync(Deserialize<PionexWsIndexMessage>(payload), cancellationToken);
 					break;
 				case "ORDER":
 					if (OrderReceived is { } orderHandler && _section is PionexSections orderSection)
-						await orderHandler(orderSection, Deserialize<PionexWsOrderMessage>(payload), cancellationToken);
+						await orderHandler.InvokeAsync(orderSection, Deserialize<PionexWsOrderMessage>(payload), cancellationToken);
 					break;
 				case "FILL":
 					if (FillReceived is { } fillHandler && _section is PionexSections fillSection)
-						await fillHandler(fillSection, Deserialize<PionexWsFillMessage>(payload), cancellationToken);
+						await fillHandler.InvokeAsync(fillSection, Deserialize<PionexWsFillMessage>(payload), cancellationToken);
 					break;
 				case "BALANCE":
 					if (BalanceReceived is { } balanceHandler && _section is PionexSections balanceSection)
-						await balanceHandler(balanceSection, Deserialize<PionexWsBalanceMessage>(payload), cancellationToken);
+						await balanceHandler.InvokeAsync(balanceSection, Deserialize<PionexWsBalanceMessage>(payload), cancellationToken);
 					break;
 				case "POSITION":
 					if (PositionReceived is { } positionHandler)
-						await positionHandler(Deserialize<PionexWsPositionMessage>(payload), cancellationToken);
+						await positionHandler.InvokeAsync(Deserialize<PionexWsPositionMessage>(payload), cancellationToken);
 					break;
 			}
 		}
@@ -425,7 +425,7 @@ sealed class PionexWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string NormalizeEndpoint(string endpoint)

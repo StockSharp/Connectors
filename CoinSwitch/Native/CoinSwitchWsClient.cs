@@ -185,7 +185,7 @@ sealed class CoinSwitchWsClient : BaseLogReceiver
 				"CoinSwitch Socket.IO connection failed."));
 		}
 		return StateChanged is { } handler
-			? handler(state, cancellationToken)
+			? handler.InvokeAsync(state, cancellationToken)
 			: default;
 	}
 
@@ -291,7 +291,7 @@ sealed class CoinSwitchWsClient : BaseLogReceiver
 					throw new InvalidDataException(
 						"CoinSwitch Socket.IO returned an invalid event.");
 				if (MarketDataReceived is { } handler)
-					await handler(
+					await handler.InvokeAsync(
 						eventName,
 						eventPayload,
 						cancellationToken);
@@ -341,7 +341,7 @@ sealed class CoinSwitchWsClient : BaseLogReceiver
 					subscription, true, cancellationToken);
 			ready.TrySetResult(true);
 			if (isRestoring && StateChanged is { } handler)
-				await handler(
+				await handler.InvokeAsync(
 					ConnectionStates.Restored,
 					cancellationToken);
 		}
@@ -398,7 +398,7 @@ sealed class CoinSwitchWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static string NormalizeEvent(string value)

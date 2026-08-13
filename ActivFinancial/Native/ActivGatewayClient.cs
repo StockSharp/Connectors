@@ -278,7 +278,7 @@ internal sealed class ActivGatewayClient : Disposable
 		{
 			FailPending(ex);
 			if (Error != null)
-				await Error(null, ex, CancellationToken.None);
+				await Error.InvokeAsync(null, ex, CancellationToken.None);
 		}
 	}
 
@@ -292,7 +292,7 @@ internal sealed class ActivGatewayClient : Disposable
 				if (line == null)
 					return;
 				if (!line.IsEmpty() && Log != null)
-					await Log(3, line, cancellationToken);
+					await Log.InvokeAsync(3, line, cancellationToken);
 			}
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -304,12 +304,12 @@ internal sealed class ActivGatewayClient : Disposable
 		catch (IOException ex)
 		{
 			if (!cancellationToken.IsCancellationRequested && Error != null)
-				await Error(null, ex, CancellationToken.None);
+				await Error.InvokeAsync(null, ex, CancellationToken.None);
 		}
 		catch (ObjectDisposedException ex)
 		{
 			if (!cancellationToken.IsCancellationRequested && Error != null)
-				await Error(null, ex, CancellationToken.None);
+				await Error.InvokeAsync(null, ex, CancellationToken.None);
 		}
 	}
 
@@ -324,19 +324,19 @@ internal sealed class ActivGatewayClient : Disposable
 				break;
 			case ActivGatewayMessageKinds.Record when message.SubscriptionId != null &&
 				message.Record != null && RecordReceived != null:
-				await RecordReceived(message.SubscriptionId.Value, message.Record, cancellationToken);
+				await RecordReceived.InvokeAsync(message.SubscriptionId.Value, message.Record, cancellationToken);
 				break;
 			case ActivGatewayMessageKinds.SubscriptionFinished when
 				message.SubscriptionId != null && SubscriptionFinished != null:
-				await SubscriptionFinished(message.SubscriptionId.Value, cancellationToken);
+				await SubscriptionFinished.InvokeAsync(message.SubscriptionId.Value, cancellationToken);
 				break;
 			case ActivGatewayMessageKinds.Error when Error != null:
-				await Error(message.SubscriptionId,
+				await Error.InvokeAsync(message.SubscriptionId,
 					new ActivGatewayException(message.Error?.Code, message.Error?.Message ??
 						"ACTIV gateway reported an error."), cancellationToken);
 				break;
 			case ActivGatewayMessageKinds.Log when Log != null:
-				await Log(message.LogLevel ?? 1, message.LogMessage, cancellationToken);
+				await Log.InvokeAsync(message.LogLevel ?? 1, message.LogMessage, cancellationToken);
 				break;
 			default:
 				throw new InvalidDataException($"Unsupported ACTIV gateway message kind {message.Kind}.");

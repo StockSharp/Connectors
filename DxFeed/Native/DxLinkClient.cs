@@ -34,7 +34,7 @@ internal sealed class DxLinkClient : BaseLogReceiver
 		_client = new WebSocketClient(
 			address.ThrowIfEmpty(nameof(address)),
 			OnStateChanged,
-			(error, ct) => Error is { } handler ? handler(error, ct) : default,
+			(error, ct) => Error is { } handler ? handler.InvokeAsync(error, ct) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -228,7 +228,7 @@ internal sealed class DxLinkClient : BaseLogReceiver
 			}
 		}
 
-		return StateChanged is { } handler ? handler(state, cancellationToken) : default;
+		return StateChanged is { } handler ? handler.InvokeAsync(state, cancellationToken) : default;
 	}
 
 	private ValueTask OnPostConnect(bool isReconnect, CancellationToken cancellationToken)
@@ -313,7 +313,7 @@ internal sealed class DxLinkClient : BaseLogReceiver
 				if (FeedDataReceived is { } feedHandler)
 				{
 					foreach (var data in feedData?.Data ?? [])
-						await feedHandler(data, cancellationToken);
+						await feedHandler.InvokeAsync(data, cancellationToken);
 				}
 				break;
 
@@ -440,7 +440,7 @@ internal sealed class DxLinkClient : BaseLogReceiver
 
 		var snapshot = JsonConvert.DeserializeObject<DxDomSnapshot>(raw);
 		if (snapshot != null && DomSnapshotReceived is { } handler)
-			await handler(state.Symbol, snapshot, cancellationToken);
+			await handler.InvokeAsync(state.Symbol, snapshot, cancellationToken);
 	}
 
 	private ValueTask RequestDomChannel(DomSubscriptionState state,
@@ -483,14 +483,14 @@ internal sealed class DxLinkClient : BaseLogReceiver
 			catch (Exception ex)
 			{
 				if (Error is { } handler)
-					await handler(ex, CancellationToken.None);
+					await handler.InvokeAsync(ex, CancellationToken.None);
 			}
 		}
 	}
 
 	private ValueTask RaiseError(string message, CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(new InvalidOperationException(message), cancellationToken)
+			? handler.InvokeAsync(new InvalidOperationException(message), cancellationToken)
 			: default;
 
 	private static string GetDomKey(string symbol, string[] sources)

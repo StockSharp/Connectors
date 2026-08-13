@@ -704,7 +704,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 				var message = Deserialize<FubonNeoStreamMessage>(json);
 				if (message.Data != null && _serverSubscriptions.TryGetValue(GetServerKey(kind, message.Id), out var subscription) &&
 					MarketDataReceived is { } handler)
-					await handler(subscription, message.Data, cancellationToken);
+					await handler.InvokeAsync(subscription, message.Data, cancellationToken);
 				break;
 			}
 			case "error":
@@ -850,7 +850,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 			var native = new NativeOrder { Value = data, Account = account, IsFutures = isFutures };
 			CacheOrder(native);
 			if (OrderReceived is { } handler)
-				await handler(ReadOrder(data, isFutures), _lifetime?.Token ?? CancellationToken.None);
+				await handler.InvokeAsync(ReadOrder(data, isFutures), _lifetime?.Token ?? CancellationToken.None);
 		}
 		catch (Exception error)
 		{
@@ -875,7 +875,7 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 				return;
 			}
 			if (FillReceived is { } handler)
-				await handler(ReadFill(data, isFutures), _lifetime?.Token ?? CancellationToken.None);
+				await handler.InvokeAsync(ReadFill(data, isFutures), _lifetime?.Token ?? CancellationToken.None);
 		}
 		catch (Exception error)
 		{
@@ -1047,8 +1047,8 @@ sealed class FubonNeoSdkClient : BaseLogReceiver
 		=> value == FubonNeoFuturesOrderTypes.DayTrade ? "FdayTrade" : value.ToString();
 
 	private ValueTask RaiseErrorAsync(Exception error, CancellationToken cancellationToken)
-		=> Error?.Invoke(error, cancellationToken) ?? default;
+		=> Error.InvokeAsync(error, cancellationToken);
 
 	private ValueTask RaiseConnectionLostAsync(Exception error)
-		=> ConnectionLost?.Invoke(error, CancellationToken.None) ?? default;
+		=> ConnectionLost.InvokeAsync(error, CancellationToken.None);
 }

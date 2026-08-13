@@ -31,11 +31,11 @@ sealed class FirstockSocketClient : BaseLogReceiver
             address,
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (s, a) => this.AddInfoLog(s, a),
@@ -144,7 +144,7 @@ sealed class FirstockSocketClient : BaseLogReceiver
         {
             var order = ParseOrder(root);
             if (!order.OrderId.IsEmpty() && OrderReceived is { } orderHandler)
-                await orderHandler(order, cancellationToken);
+                await orderHandler.InvokeAsync(order, cancellationToken);
             return;
         }
 
@@ -152,7 +152,7 @@ sealed class FirstockSocketClient : BaseLogReceiver
         {
             var position = ParsePosition(root);
             if (PositionReceived is { } positionHandler)
-                await positionHandler(position, cancellationToken);
+                await positionHandler.InvokeAsync(position, cancellationToken);
             return;
         }
 
@@ -162,7 +162,7 @@ sealed class FirstockSocketClient : BaseLogReceiver
             if (MarketDataReceived is { } marketHandler)
             {
                 foreach (var update in updates)
-                    await marketHandler(update, cancellationToken);
+                    await marketHandler.InvokeAsync(update, cancellationToken);
             }
             return;
         }

@@ -61,14 +61,14 @@ class PusherClient : BaseLogReceiver
 			(state, token) =>
 			{
 				if (StateChanged is { } handler)
-					return handler(state, token);
+					return handler.InvokeAsync(state, token);
 				return default;
 			},
 			(error, token) =>
 			{
 				this.AddErrorLog(error);
 				if (Error is { } handler)
-					return handler(error, token);
+					return handler.InvokeAsync(error, token);
 				return default;
 			},
 			OnProcess,
@@ -151,7 +151,7 @@ class PusherClient : BaseLogReceiver
 					{
 					}
 					else if (Error is { } errorHandler)
-						await errorHandler(new InvalidOperationException("isAuthenticated == false"), cancellationToken);
+						await errorHandler.InvokeAsync(new InvalidOperationException("isAuthenticated == false"), cancellationToken);
 					break;
 				case MessageTypes.Publish:
 					break;

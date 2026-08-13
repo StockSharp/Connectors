@@ -17,7 +17,7 @@ sealed class TastyTradeMarketStreamer : BaseLogReceiver
 		_client = new WebSocketClient(
 			address,
 			OnStateChanged,
-			(error, ct) => Error is { } errorHandler ? errorHandler(error, ct) : default,
+			(error, ct) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, ct) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -144,7 +144,7 @@ sealed class TastyTradeMarketStreamer : BaseLogReceiver
 			case DxMessageTypes.FEED_DATA:
 				foreach (var data in JsonConvert.DeserializeObject<DxFeedData>(raw)?.Data ?? [])
 					if (DataReceived is { } handler)
-						await handler(data, cancellationToken);
+						await handler.InvokeAsync(data, cancellationToken);
 				break;
 			case DxMessageTypes.ERROR:
 				await RaiseError(header.Message.IsEmpty(header.Error), cancellationToken);
@@ -201,13 +201,13 @@ sealed class TastyTradeMarketStreamer : BaseLogReceiver
 			catch (Exception ex)
 			{
 				if (Error is { } handler)
-					await handler(ex, CancellationToken.None);
+					await handler.InvokeAsync(ex, CancellationToken.None);
 			}
 		}
 	}
 
 	private ValueTask RaiseError(string message, CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(new InvalidOperationException(message), cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(new InvalidOperationException(message), cancellationToken) : default;
 
 	protected override void DisposeManaged()
 	{

@@ -181,7 +181,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask RestoreSessionAsync(CancellationToken cancellationToken)
@@ -328,7 +328,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		var item = DeserializeSpotData<CoinWSpotWsTicker>(payload);
 		if (item is null)
 			return;
-		await handler(_section, new()
+		await handler.InvokeAsync(_section, new()
 		{
 			PairCode = header.PairCode,
 			LastPrice = item.LastPrice,
@@ -351,7 +351,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		var item = Deserialize<CoinWWsEnvelope<CoinWFuturesWsTicker>>(payload).Data;
 		if (item is null)
 			return;
-		await handler(_section, new()
+		await handler.InvokeAsync(_section, new()
 		{
 			PairCode = header.PairCode,
 			LastPrice = item.LastPrice,
@@ -374,7 +374,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 			var item = DeserializeSpotData<CoinWSpotWsDepth>(payload);
 			if (item is null)
 				return;
-			await handler(_section, new()
+			await handler.InvokeAsync(_section, new()
 			{
 				PairCode = header.PairCode,
 				Bids = item.Bids ?? [],
@@ -390,7 +390,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 			var item = Deserialize<CoinWWsEnvelope<CoinWFuturesWsDepth>>(payload).Data;
 			if (item is null)
 				return;
-			await handler(_section, new()
+			await handler.InvokeAsync(_section, new()
 			{
 				PairCode = item.NativeSymbol.IsEmpty(header.PairCode),
 				Bids = item.Bids ?? [],
@@ -409,7 +409,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		if (_section == CoinWSections.Spot)
 		{
 			var items = DeserializeSpotData<CoinWSpotWsTrade[]>(payload) ?? [];
-			await handler(_section, [.. items.Select(item => new CoinWWsTradeUpdate
+			await handler.InvokeAsync(_section, [.. items.Select(item => new CoinWWsTradeUpdate
 			{
 				PairCode = header.PairCode,
 				Id = item.Id,
@@ -422,7 +422,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		else
 		{
 			var items = Deserialize<CoinWWsEnvelope<CoinWFuturesWsTrade[]>>(payload).Data ?? [];
-			await handler(_section, [.. items.Select(item => new CoinWWsTradeUpdate
+			await handler.InvokeAsync(_section, [.. items.Select(item => new CoinWWsTradeUpdate
 			{
 				PairCode = header.PairCode,
 				Id = item.Id,
@@ -475,7 +475,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 				Volume = item.Volume,
 			};
 		}
-		await handler(_section, update, cancellationToken);
+		await handler.InvokeAsync(_section, update, cancellationToken);
 	}
 
 	private async ValueTask ProcessBalancesAsync(string payload, CancellationToken cancellationToken)
@@ -486,7 +486,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		{
 			var item = Deserialize<CoinWWsEnvelope<CoinWSpotWsBalance>>(payload).Data;
 			var items = item is null ? [] : new[] { item };
-			await handler(_section, [.. items.Select(item => new CoinWWsBalanceUpdate
+			await handler.InvokeAsync(_section, [.. items.Select(item => new CoinWWsBalanceUpdate
 			{
 				Asset = item.Asset,
 				Available = item.Available,
@@ -497,7 +497,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		else
 		{
 			var items = Deserialize<CoinWWsEnvelope<CoinWFuturesWsBalance[]>>(payload).Data ?? [];
-			await handler(_section, [.. items.Select(item => new CoinWWsBalanceUpdate
+			await handler.InvokeAsync(_section, [.. items.Select(item => new CoinWWsBalanceUpdate
 			{
 				Asset = item.Asset,
 				Available = item.Available,
@@ -516,7 +516,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		{
 			var item = Deserialize<CoinWWsEnvelope<CoinWSpotWsOrder>>(payload).Data;
 			var items = item is null ? [] : new[] { item };
-			await handler(_section, [.. items.Select(item => new CoinWWsOrderUpdate
+			await handler.InvokeAsync(_section, [.. items.Select(item => new CoinWWsOrderUpdate
 			{
 				Symbol = item.Symbol,
 				OrderId = item.OrderId,
@@ -535,7 +535,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		else
 		{
 			var items = Deserialize<CoinWWsEnvelope<CoinWFuturesWsOrder[]>>(payload).Data ?? [];
-			await handler(_section, [.. items.Select(item => new CoinWWsOrderUpdate
+			await handler.InvokeAsync(_section, [.. items.Select(item => new CoinWWsOrderUpdate
 			{
 				Symbol = item.NativeSymbol,
 				OrderId = item.OrderId,
@@ -562,7 +562,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		if (PositionReceived is not { } handler)
 			return;
 		var items = Deserialize<CoinWWsEnvelope<CoinWFuturesWsPosition[]>>(payload).Data ?? [];
-		await handler([.. items.Select(item => new CoinWWsPositionUpdate
+		await handler.InvokeAsync([.. items.Select(item => new CoinWWsPositionUpdate
 		{
 			Symbol = item.NativeSymbol,
 			PositionId = item.PositionId,
@@ -585,7 +585,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 		if (FillReceived is not { } handler)
 			return;
 		var items = Deserialize<CoinWWsEnvelope<CoinWFuturesWsFill[]>>(payload).Data ?? [];
-		await handler([.. items.Select(item => new CoinWWsFillUpdate
+		await handler.InvokeAsync([.. items.Select(item => new CoinWWsFillUpdate
 		{
 			Symbol = item.NativeSymbol,
 			TradeId = item.TradeId,
@@ -639,7 +639,7 @@ sealed class CoinWWsClient : BaseLogReceiver
 	{
 		this.AddErrorLog(error);
 		if (Error is { } handler)
-			await handler(error, cancellationToken);
+			await handler.InvokeAsync(error, cancellationToken);
 	}
 
 	private static string ToBusiness(CoinWSections section)

@@ -254,7 +254,7 @@ sealed class BitvavoWsClient : BaseLogReceiver
 		}
 
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(BitvavoChannels channel, string market,
@@ -431,49 +431,49 @@ sealed class BitvavoWsClient : BaseLogReceiver
 				{
 					var ticker = Deserialize<BitvavoWsTicker>(payload);
 					if (!ticker.Market.IsEmpty() && TickerReceived is { } handler)
-						await handler(ticker, cancellationToken);
+						await handler.InvokeAsync(ticker, cancellationToken);
 					break;
 				}
 				case BitvavoEvents.Ticker24:
 				{
 					var envelope = Deserialize<BitvavoWsTicker24Envelope>(payload);
 					if (envelope.Data is not null && Ticker24Received is { } handler)
-						await handler(envelope.Data, cancellationToken);
+						await handler.InvokeAsync(envelope.Data, cancellationToken);
 					break;
 				}
 				case BitvavoEvents.Trade:
 				{
 					var trade = Deserialize<BitvavoPublicTrade>(payload);
 					if (!trade.Market.IsEmpty() && TradeReceived is { } handler)
-						await handler(trade, cancellationToken);
+						await handler.InvokeAsync(trade, cancellationToken);
 					break;
 				}
 				case BitvavoEvents.Book:
 				{
 					var book = Deserialize<BitvavoOrderBook>(payload);
 					if (!book.Market.IsEmpty() && BookReceived is { } handler)
-						await handler(book, cancellationToken);
+						await handler.InvokeAsync(book, cancellationToken);
 					break;
 				}
 				case BitvavoEvents.Candles:
 				{
 					var candles = Deserialize<BitvavoWsCandles>(payload);
 					if (!candles.Market.IsEmpty() && CandlesReceived is { } handler)
-						await handler(candles, cancellationToken);
+						await handler.InvokeAsync(candles, cancellationToken);
 					break;
 				}
 				case BitvavoEvents.Order:
 				{
 					var order = Deserialize<BitvavoOrder>(payload);
 					if (!order.Market.IsEmpty() && OrderReceived is { } handler)
-						await handler(order, cancellationToken);
+						await handler.InvokeAsync(order, cancellationToken);
 					break;
 				}
 				case BitvavoEvents.Fill:
 				{
 					var fill = Deserialize<BitvavoFill>(payload);
 					if (!fill.Market.IsEmpty() && FillReceived is { } handler)
-						await handler(fill, cancellationToken);
+						await handler.InvokeAsync(fill, cancellationToken);
 					break;
 				}
 				case BitvavoEvents.Subscribed:
@@ -509,5 +509,5 @@ sealed class BitvavoWsClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

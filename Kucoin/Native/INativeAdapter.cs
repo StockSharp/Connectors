@@ -68,7 +68,7 @@ abstract class BaseNativeAdapter : Disposable, INativeAdapter
 
 	protected ValueTask SendOutConnectionStateAsync(ConnectionStates state, CancellationToken cancellationToken)
 	{
-		return StateChanged?.Invoke(state, cancellationToken) ?? default;
+		return StateChanged.InvokeAsync(state, cancellationToken);
 	}
 
 	public abstract ValueTask CancelOrderAsync(OrderCancelMessage cancelMsg, CancellationToken cancellationToken);

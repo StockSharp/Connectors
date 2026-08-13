@@ -22,8 +22,8 @@ sealed class MotilalOswalMarketDataClient : BaseLogReceiver
 
 		_client = new(
 			webSocketEndpoint.ThrowIfEmpty(nameof(webSocketEndpoint)),
-			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler(state, cancellationToken) : default,
-			(error, cancellationToken) => Error is { } errorHandler ? errorHandler(error, cancellationToken) : default,
+			(state, cancellationToken) => StateChanged is { } stateHandler ? stateHandler.InvokeAsync(state, cancellationToken) : default,
+			(error, cancellationToken) => Error is { } errorHandler ? errorHandler.InvokeAsync(error, cancellationToken) : default,
 			Process,
 			(s, a) => this.AddInfoLog(s, a),
 			(s, a) => this.AddErrorLog(s, a),
@@ -141,7 +141,7 @@ sealed class MotilalOswalMarketDataClient : BaseLogReceiver
 			if (update != null &&
 				_subscriptions.ContainsKey(update.Exchange.ToInstrumentKey(update.ScripCode)) &&
 				UpdateReceived is { } handler)
-				await handler(update, cancellationToken);
+				await handler.InvokeAsync(update, cancellationToken);
 		}
 
 		_pending = data[completeLength..];

@@ -352,7 +352,7 @@ sealed class WazirXWsClient : BaseLogReceiver
 					cancellationToken);
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask OnProcessAsync(
@@ -368,7 +368,7 @@ sealed class WazirXWsClient : BaseLogReceiver
 			if (parsed.Stream.IsEmpty())
 				return;
 			if (MessageReceived is { } handler)
-				await handler(parsed, cancellationToken);
+				await handler.InvokeAsync(parsed, cancellationToken);
 		}
 		catch (Exception error) when (
 			error is JsonException or InvalidDataException or
@@ -401,7 +401,7 @@ sealed class WazirXWsClient : BaseLogReceiver
 		Exception error,
 		CancellationToken cancellationToken)
 		=> Error is { } handler
-			? handler(error, cancellationToken)
+			? handler.InvokeAsync(error, cancellationToken)
 			: default;
 
 	private static WazirXCandle ParseCandle(

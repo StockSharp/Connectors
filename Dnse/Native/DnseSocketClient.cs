@@ -43,11 +43,11 @@ sealed class DnseSocketClient : BaseLogReceiver
             endpoint.AbsoluteUri,
             (state, cancellationToken) =>
                 StateChanged is { } stateHandler
-                    ? stateHandler(state, cancellationToken)
+                    ? stateHandler.InvokeAsync(state, cancellationToken)
                     : default,
             (error, cancellationToken) =>
                 Error is { } errorHandler
-                    ? errorHandler(error, cancellationToken)
+                    ? errorHandler.InvokeAsync(error, cancellationToken)
                     : default,
             Process,
             (s, a) => this.AddInfoLog(s, a),
@@ -285,7 +285,7 @@ sealed class DnseSocketClient : BaseLogReceiver
                 if (candle is not null &&
                     CandleReceived is { } candleHandler)
                 {
-                    await candleHandler(
+                    await candleHandler.InvokeAsync(
                         candle,
                         type == "bc",
                         cancellationToken);
@@ -375,7 +375,7 @@ sealed class DnseSocketClient : BaseLogReceiver
         Exception error,
         CancellationToken cancellationToken)
         => Error is { } handler
-            ? handler(error, cancellationToken)
+            ? handler.InvokeAsync(error, cancellationToken)
             : default;
 
     private static ValueTask Raise<T>(
@@ -384,7 +384,7 @@ sealed class DnseSocketClient : BaseLogReceiver
         CancellationToken cancellationToken)
         where T : class
         => value is not null && handler is not null
-            ? handler(value, cancellationToken)
+            ? handler.InvokeAsync(value, cancellationToken)
             : default;
 
     private static T Deserialize<T>(JObject value)

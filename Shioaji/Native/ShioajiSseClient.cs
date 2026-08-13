@@ -68,7 +68,7 @@ sealed class ShioajiSseClient : BaseLogReceiver
 			try
 			{
 				if (BeforeConnect is { } beforeConnect)
-					await beforeConnect(cancellationToken);
+					await beforeConnect.InvokeAsync(cancellationToken);
 
 				using var response = await _rest.OpenStream(cancellationToken);
 				_initialConnection?.TrySetResult(true);
@@ -89,7 +89,7 @@ sealed class ShioajiSseClient : BaseLogReceiver
 				{
 					_initialConnection?.TrySetException(ex);
 					if (Error is { } errorHandler)
-						await errorHandler(ex, cancellationToken);
+						await errorHandler.InvokeAsync(ex, cancellationToken);
 					break;
 				}
 				await Task.Delay(TimeSpan.FromSeconds(Math.Min(30, Math.Pow(2, attempt - 1))), cancellationToken);
@@ -113,7 +113,7 @@ sealed class ShioajiSseClient : BaseLogReceiver
 			if (line.Length == 0)
 			{
 				if (data.Length > 0 && EventReceived is { } handler)
-					await handler(eventName, data.ToString(), cancellationToken);
+					await handler.InvokeAsync(eventName, data.ToString(), cancellationToken);
 				eventName = string.Empty;
 				data.Clear();
 				continue;
@@ -135,6 +135,6 @@ sealed class ShioajiSseClient : BaseLogReceiver
 		}
 
 		if (data.Length > 0 && EventReceived is { } finalHandler)
-			await finalHandler(eventName, data.ToString(), cancellationToken);
+			await finalHandler.InvokeAsync(eventName, data.ToString(), cancellationToken);
 	}
 }

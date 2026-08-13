@@ -115,12 +115,12 @@ sealed class BitkubPrivateWebSocketClient : BaseLogReceiver
 			{
 				await RaiseErrorAsync(error, cancellationToken);
 				if (StateChanged is { } failedHandler)
-					await failedHandler(ConnectionStates.Failed, cancellationToken);
+					await failedHandler.InvokeAsync(ConnectionStates.Failed, cancellationToken);
 				return;
 			}
 		}
 		if (StateChanged is { } handler)
-			await handler(state, cancellationToken);
+			await handler.InvokeAsync(state, cancellationToken);
 	}
 
 	private async ValueTask AuthenticateAsync(WebSocketClient client,
@@ -175,7 +175,7 @@ sealed class BitkubPrivateWebSocketClient : BaseLogReceiver
 					var envelope = Deserialize<BitkubPrivateWebSocketEnvelope<
 						BitkubOrderUpdate>>(payload);
 					if (envelope.Data is not null && OrderUpdated is { } handler)
-						await handler(envelope.Data, cancellationToken);
+						await handler.InvokeAsync(envelope.Data, cancellationToken);
 					return;
 				}
 				case BitkubPrivateWebSocketEvents.MatchUpdate:
@@ -183,7 +183,7 @@ sealed class BitkubPrivateWebSocketClient : BaseLogReceiver
 					var envelope = Deserialize<BitkubPrivateWebSocketEnvelope<
 						BitkubMatchUpdate>>(payload);
 					if (envelope.Data is not null && MatchUpdated is { } handler)
-						await handler(envelope.Data, cancellationToken);
+						await handler.InvokeAsync(envelope.Data, cancellationToken);
 					return;
 				}
 				case BitkubPrivateWebSocketEvents.Subscribe:
@@ -254,5 +254,5 @@ sealed class BitkubPrivateWebSocketClient : BaseLogReceiver
 
 	private ValueTask RaiseErrorAsync(Exception error,
 		CancellationToken cancellationToken)
-		=> Error is { } handler ? handler(error, cancellationToken) : default;
+		=> Error is { } handler ? handler.InvokeAsync(error, cancellationToken) : default;
 }

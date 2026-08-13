@@ -270,11 +270,11 @@ sealed class BenzingaNewsWebSocketClient : BaseLogReceiver
 
 	private static ValueTask Invoke(Func<BenzingaNewsStreamData, CancellationToken, ValueTask> handler,
 		BenzingaNewsStreamData value, CancellationToken cancellationToken)
-		=> handler == null ? default : handler(value, cancellationToken);
+		=> handler.InvokeAsync(value, cancellationToken);
 
 	private static ValueTask Invoke(Func<Exception, bool, CancellationToken, ValueTask> handler,
 		Exception error, bool isTerminal, CancellationToken cancellationToken)
-		=> handler == null ? default : handler(error, isTerminal, cancellationToken);
+		=> handler.InvokeAsync(error, isTerminal, cancellationToken);
 
 	protected override void DisposeManaged()
 	{
