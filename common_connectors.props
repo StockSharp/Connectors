@@ -1,5 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\StockSharp (GitHub)\common_target_net.props" />
+  <Import Project="..\StockSharp (GitHub)\props\common_target_net.props" />
   <PropertyGroup>
     <IsPrivatePackable>true</IsPrivatePackable>
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>

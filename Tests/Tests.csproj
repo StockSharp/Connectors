@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\StockSharp (GitHub)\common_target_tests.props" />
+  <Import Project="..\..\StockSharp (GitHub)\props\common_target_tests.props" />
   <ItemGroup>
     <ProjectReference Include="..\Aerodrome\Aerodrome.csproj" />
 	<ProjectReference Include="..\Velodrome\Velodrome.csproj" />

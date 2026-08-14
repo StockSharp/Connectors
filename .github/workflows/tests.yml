@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      # The connector projects import "../StockSharp (GitHub)/common_target_net.props" and
+      # The connector projects import "../StockSharp (GitHub)/props/common_target_net.props" and
       # reference Messages.csproj and Media.Names.csproj from there, so both repos must sit
       # side by side and the StockSharp folder must be named exactly "StockSharp (GitHub)".
       - name: Checkout Connectors
