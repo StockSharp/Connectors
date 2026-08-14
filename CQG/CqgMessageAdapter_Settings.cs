@@ -2,7 +2,7 @@ namespace StockSharp.CQG;
 
 /// <summary>The message adapter for CQG Web API.</summary>
 [MediaIcon(Media.MediaNames.cqg)]
-[Doc("topics/api/connectors/stock_market/cqg_web_api.html")]
+[Doc("topics/api/connectors/stock_market/cqg.html")]
 [Display(
 	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.CqgWebApiKey,
