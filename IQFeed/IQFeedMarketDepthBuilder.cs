@@ -49,8 +49,11 @@ class IQFeedOrderLogMarketDepthBuilder : IOrderLogMarketDepthBuilder
 			throw new ArgumentNullException(nameof(item));
 		if (item.DataTypeEx != DataType.OrderLog)
 			throw new ArgumentException("The message is not an order-log record.", nameof(item));
+		// The depth has two halves and every record is booked into one of them.
+		if (item.Side is not Sides side)
+			throw new ArgumentException("An IQFeed order-log record states no side.", nameof(item));
 		if (item.OrderId == IQFeedLevel2.ClearDepthId)
-			return Clear(item.Side, item);
+			return Clear(side, item);
 		if (item.OrderId == null)
 			throw new InvalidOperationException("An IQFeed order-log record has no order identifier.");
 
@@ -70,7 +73,7 @@ class IQFeedOrderLogMarketDepthBuilder : IOrderLogMarketDepthBuilder
 
 			var current = new OrderInfo
 			{
-				Side = item.Side,
+				Side = side,
 				Price = item.OrderPrice,
 				Volume = volume,
 			};
