@@ -27,7 +27,7 @@ public class MT5TransactionMessageAdapter : FixMessageAdapter
 		this.ChangeSupported(false, true);
 
 		Address = MTAddresses.MT5;
-		TargetCompId = "StockSharpTS";
+		TargetCompId = "StockSharp";
 		SenderCompId = "mql";
 	}
 }

@@ -30,7 +30,7 @@ public class LuaFixMarketDataMessageAdapter : FixMessageAdapter
 		Login = "quik";
 		Password = "quik".Secure();
 		Address = LuaFixExtensions.DefaultLuaAddress;
-		TargetCompId = "StockSharpMD";
+		TargetCompId = "StockSharp";
 		SenderCompId = "quik";
 		//ExchangeBoard = ExchangeBoard.Forts;
 		//Version = FixVersions.Fix44_Lua;
