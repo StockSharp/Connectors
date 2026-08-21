@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\StockSharp (GitHub)\props\common_target_tests.props" />
   <ItemGroup>
     <ProjectReference Include="..\Aerodrome\Aerodrome.csproj" />
@@ -194,6 +194,7 @@
     <ProjectReference Include="..\Zebu\Zebu.csproj" />
 	<ProjectReference Include="..\ZondaCrypto\ZondaCrypto.csproj" />
     <ProjectReference Include="..\Zoomex\Zoomex.csproj" />
+    <ProjectReference Include="..\Fix\Fix.csproj" />
   </ItemGroup>
   <ItemGroup>
 	<PackageReference Include="TonSdk.Core" Version="$(TonSdkCoreVer)" />

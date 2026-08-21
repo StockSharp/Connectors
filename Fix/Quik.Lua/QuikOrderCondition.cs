@@ -1,5 +1,6 @@
 namespace StockSharp.Fix.Quik.Lua;
 
+using System.Globalization;
 using System.Runtime.Serialization;
 
 /// <summary>
@@ -140,8 +141,14 @@ public enum QuikOrderConditionTypes
 [Display(ResourceType = typeof(LocalizedStrings), Name = LocalizedStrings.QuikKey)]
 public class QuikOrderCondition : OrderCondition,
                                   IStopLossOrderCondition, ITakeProfitOrderCondition,
-								  IRepoOrderCondition, INtmOrderCondition
+								  IRepoOrderCondition, INtmOrderCondition, IWireCondition
 {
+	private const string _wireVersion = "v1";
+	private const string _activeTimeFromKey = nameof(ActiveTime) + ".From";
+	private const string _activeTimeToKey = nameof(ActiveTime) + ".To";
+	private const string _repoPrefix = "Repo.";
+	private const string _ntmPrefix = "Ntm.";
+
 	/// <summary>
 	/// Create <see cref="QuikOrderCondition"/>.
 	/// </summary>
@@ -151,6 +158,20 @@ public class QuikOrderCondition : OrderCondition,
 		IsNtm = false;
 		RepoInfo = new RepoOrderInfo();
 		NtmInfo = new NtmOrderInfo();
+	}
+
+	/// <inheritdoc />
+	public override QuikOrderCondition Clone()
+	{
+		var parameters = ((SynchronizedDictionary<string, object>)Parameters).SyncGet(source =>
+			source.Select(pair => new KeyValuePair<string, object>(
+				pair.Key,
+				pair.Value is ICloneable cloneable ? cloneable.Clone() : pair.Value)).ToArray());
+
+		var clone = new QuikOrderCondition();
+		clone.Parameters.Clear();
+		clone.Parameters.AddRange(parameters);
+		return clone;
 	}
 
 	/// <summary>
@@ -257,7 +278,9 @@ public class QuikOrderCondition : OrderCondition,
 	//[Editor(typeof(RangeEditor<DateTime>), typeof(RangeEditor<DateTime>))]
 	public (DateTime from, DateTime to) ActiveTime
 	{
-		get => ((DateTime, DateTime))Parameters.TryGetValue(nameof(ActiveTime));
+		get => Parameters.TryGetValue(nameof(ActiveTime), out var value) && value is ValueTuple<DateTime, DateTime> activeTime
+			? activeTime
+			: default;
 		set => Parameters[nameof(ActiveTime)] = value;
 	}
 
@@ -454,4 +477,272 @@ public class QuikOrderCondition : OrderCondition,
 			StopPrice = value;
 		}
 	}
+
+	/// <inheritdoc />
+	public string ToWire()
+	{
+		var values = new List<string> { _wireVersion };
+
+		if (Type is { } type)
+			AddWireValue(values, nameof(Type), ((int)type).ToString(CultureInfo.InvariantCulture));
+
+		if (OtherSecurityId is { } otherSecurityId)
+			AddWireValue(values, nameof(OtherSecurityId), otherSecurityId.ToStringId());
+
+		if (StopPriceCondition is { } stopPriceCondition)
+			AddWireValue(values, nameof(StopPriceCondition), ((int)stopPriceCondition).ToString(CultureInfo.InvariantCulture));
+
+		AddWireValue(values, nameof(StopPrice), StopPrice);
+		AddWireValue(values, nameof(StopLimitPrice), StopLimitPrice);
+		AddWireValue(values, nameof(IsMarketStopLimit), IsMarketStopLimit);
+
+		var activeTime = ActiveTime;
+
+		if (activeTime.from != default)
+			AddWireValue(values, _activeTimeFromKey, activeTime.from);
+
+		if (activeTime.to != default)
+			AddWireValue(values, _activeTimeToKey, activeTime.to);
+
+		AddWireValue(values, nameof(ConditionOrderId), ConditionOrderId);
+
+		if (ConditionOrderSide is { } conditionOrderSide)
+			AddWireValue(values, nameof(ConditionOrderSide), ((int)conditionOrderSide).ToString(CultureInfo.InvariantCulture));
+
+		AddWireValue(values, nameof(ConditionOrderPartiallyMatched), ConditionOrderPartiallyMatched);
+		AddWireValue(values, nameof(ConditionOrderUseMatchedBalance), ConditionOrderUseMatchedBalance);
+		AddWireValue(values, nameof(LinkedOrderPrice), LinkedOrderPrice);
+		AddWireValue(values, nameof(LinkedOrderCancel), LinkedOrderCancel);
+
+		if (Offset is { } offset)
+			AddWireValue(values, nameof(Offset), offset.ToString());
+
+		if (Spread is { } spread)
+			AddWireValue(values, nameof(Spread), spread.ToString());
+
+		AddWireValue(values, nameof(IsMarketTakeProfit), IsMarketTakeProfit);
+		AddWireValue(values, nameof(IsRepo), IsRepo);
+
+		var repo = RepoInfo;
+
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.Partner), repo.Partner);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.Term), repo.Term);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.Rate), repo.Rate);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.BlockSecurities), repo.BlockSecurities);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.RefundRate), repo.RefundRate);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.MatchRef), repo.MatchRef);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.SettleCode), repo.SettleCode);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.SecondPrice), repo.SecondPrice);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.SettleDate), repo.SettleDate);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.StartDiscount), repo.StartDiscount);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.LowerDiscount), repo.LowerDiscount);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.UpperDiscount), repo.UpperDiscount);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.Value), repo.Value);
+		AddWireValue(values, _repoPrefix + nameof(RepoOrderInfo.IsModified), repo.IsModified);
+
+		AddWireValue(values, nameof(IsNtm), IsNtm);
+
+		var ntm = NtmInfo;
+
+		AddWireValue(values, _ntmPrefix + nameof(NtmOrderInfo.Partner), ntm.Partner);
+		AddWireValue(values, _ntmPrefix + nameof(NtmOrderInfo.SettleDate), ntm.SettleDate);
+		AddWireValue(values, _ntmPrefix + nameof(NtmOrderInfo.MatchRef), ntm.MatchRef);
+		AddWireValue(values, _ntmPrefix + nameof(NtmOrderInfo.SettleCode), ntm.SettleCode);
+		AddWireValue(values, _ntmPrefix + nameof(NtmOrderInfo.ForAccount), ntm.ForAccount);
+		AddWireValue(values, _ntmPrefix + nameof(NtmOrderInfo.CurrencyType), ((int)ntm.CurrencyType).ToString(CultureInfo.InvariantCulture));
+
+		return string.Join(';', values);
+	}
+
+	/// <inheritdoc />
+	public void FromWire(string payload)
+	{
+		if (payload.IsEmpty())
+			return;
+
+		var fields = payload.Split(';');
+
+		if (!fields[0].Equals(_wireVersion, StringComparison.Ordinal))
+			throw new ArgumentOutOfRangeException(nameof(payload), payload, LocalizedStrings.InvalidValue);
+
+		foreach (var field in fields.Skip(1))
+		{
+			var separatorIndex = field.IndexOf('=');
+
+			if (separatorIndex <= 0)
+				continue;
+
+			var key = field[..separatorIndex];
+			var value = UnescapeWireValue(field[(separatorIndex + 1)..]);
+
+			switch (key)
+			{
+				case nameof(Type):
+					Type = (QuikOrderConditionTypes)value.To<int>();
+					break;
+				case nameof(OtherSecurityId):
+					OtherSecurityId = value.ToSecurityId();
+					break;
+				case nameof(StopPriceCondition):
+					StopPriceCondition = (QuikStopPriceConditions)value.To<int>();
+					break;
+				case nameof(StopPrice):
+					StopPrice = value.To<decimal>();
+					break;
+				case nameof(StopLimitPrice):
+					StopLimitPrice = value.To<decimal>();
+					break;
+				case nameof(IsMarketStopLimit):
+					IsMarketStopLimit = value.To<bool>();
+					break;
+				case _activeTimeFromKey:
+				{
+					var activeTime = ActiveTime;
+					ActiveTime = (value.To<long>().FromUnixMcs(), activeTime.to);
+					break;
+				}
+				case _activeTimeToKey:
+				{
+					var activeTime = ActiveTime;
+					ActiveTime = (activeTime.from, value.To<long>().FromUnixMcs());
+					break;
+				}
+				case nameof(ConditionOrderId):
+					ConditionOrderId = value.To<long>();
+					break;
+				case nameof(ConditionOrderSide):
+					ConditionOrderSide = (Sides)value.To<int>();
+					break;
+				case nameof(ConditionOrderPartiallyMatched):
+					ConditionOrderPartiallyMatched = value.To<bool>();
+					break;
+				case nameof(ConditionOrderUseMatchedBalance):
+					ConditionOrderUseMatchedBalance = value.To<bool>();
+					break;
+				case nameof(LinkedOrderPrice):
+					LinkedOrderPrice = value.To<decimal>();
+					break;
+				case nameof(LinkedOrderCancel):
+					LinkedOrderCancel = value.To<bool>();
+					break;
+				case nameof(Offset):
+					Offset = value.ToUnit();
+					break;
+				case nameof(Spread):
+					Spread = value.ToUnit();
+					break;
+				case nameof(IsMarketTakeProfit):
+					IsMarketTakeProfit = value.To<bool>();
+					break;
+				case nameof(IsRepo):
+					IsRepo = value.To<bool>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.Partner):
+					RepoInfo.Partner = value;
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.Term):
+					RepoInfo.Term = value.To<decimal>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.Rate):
+					RepoInfo.Rate = value.To<decimal>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.BlockSecurities):
+					RepoInfo.BlockSecurities = value.To<bool>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.RefundRate):
+					RepoInfo.RefundRate = value.To<decimal>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.MatchRef):
+					RepoInfo.MatchRef = value;
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.SettleCode):
+					RepoInfo.SettleCode = value;
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.SecondPrice):
+					RepoInfo.SecondPrice = value.To<decimal>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.SettleDate):
+					RepoInfo.SettleDate = value.To<long>().FromUnixMcs();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.StartDiscount):
+					RepoInfo.StartDiscount = value.To<decimal>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.LowerDiscount):
+					RepoInfo.LowerDiscount = value.To<decimal>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.UpperDiscount):
+					RepoInfo.UpperDiscount = value.To<decimal>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.Value):
+					RepoInfo.Value = value.To<decimal>();
+					break;
+				case _repoPrefix + nameof(RepoOrderInfo.IsModified):
+					RepoInfo.IsModified = value.To<bool>();
+					break;
+				case nameof(IsNtm):
+					IsNtm = value.To<bool>();
+					break;
+				case _ntmPrefix + nameof(NtmOrderInfo.Partner):
+					NtmInfo.Partner = value;
+					break;
+				case _ntmPrefix + nameof(NtmOrderInfo.SettleDate):
+					NtmInfo.SettleDate = value.To<long>().FromUnixMcs();
+					break;
+				case _ntmPrefix + nameof(NtmOrderInfo.MatchRef):
+					NtmInfo.MatchRef = value;
+					break;
+				case _ntmPrefix + nameof(NtmOrderInfo.SettleCode):
+					NtmInfo.SettleCode = value;
+					break;
+				case _ntmPrefix + nameof(NtmOrderInfo.ForAccount):
+					NtmInfo.ForAccount = value;
+					break;
+				case _ntmPrefix + nameof(NtmOrderInfo.CurrencyType):
+					NtmInfo.CurrencyType = (CurrencyTypes)value.To<int>();
+					break;
+			}
+		}
+	}
+
+	private static void AddWireValue(ICollection<string> values, string key, string value)
+	{
+		if (value is not null)
+			values.Add($"{key}={EscapeWireValue(value)}");
+	}
+
+	private static void AddWireValue(ICollection<string> values, string key, decimal? value)
+	{
+		if (value is not null)
+			AddWireValue(values, key, value.Value.ToString(CultureInfo.InvariantCulture));
+	}
+
+	private static void AddWireValue(ICollection<string> values, string key, long? value)
+	{
+		if (value is not null)
+			AddWireValue(values, key, value.Value.ToString(CultureInfo.InvariantCulture));
+	}
+
+	private static void AddWireValue(ICollection<string> values, string key, bool? value)
+	{
+		if (value is not null)
+			AddWireValue(values, key, value.Value.ToString());
+	}
+
+	private static void AddWireValue(ICollection<string> values, string key, DateTime? value)
+	{
+		if (value is not null)
+			AddWireValue(values, key, value.Value.ToUnixMcs().ToString(CultureInfo.InvariantCulture));
+	}
+
+	private static string EscapeWireValue(string value)
+		=> value
+			.Replace("%", "%25", StringComparison.Ordinal)
+			.Replace(";", "%3B", StringComparison.Ordinal)
+			.Replace("=", "%3D", StringComparison.Ordinal);
+
+	private static string UnescapeWireValue(string value)
+		=> value
+			.Replace("%3D", "=", StringComparison.Ordinal)
+			.Replace("%3B", ";", StringComparison.Ordinal)
+			.Replace("%25", "%", StringComparison.Ordinal);
 }
