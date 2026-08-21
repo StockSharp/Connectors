@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\StockSharp (GitHub)\props\common_target_net.props" />
   <PropertyGroup>
-    <IsPrivatePackable>true</IsPrivatePackable>
+    <IsPrivatePackable>false</IsPrivatePackable>
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
     <InformationalVersion>S#.$(MSBuildProjectName)</InformationalVersion>
     <SourceRevisionId>v$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
