@@ -19,5 +19,6 @@ enum LuaFixTags
 	LinkedOrderPrice = 5034,
 	Offset = 5035,
 	StopSpread = 5036,
-	IsMarketTakeProfit = 5037
+	IsMarketTakeProfit = 5037,
+	OtherSecurityBoard = 5038
 }

@@ -1,4 +1,4 @@
-namespace StockSharp.Fix.Quik.Lua;
+﻿namespace StockSharp.Fix.Quik.Lua;
 
 using System.Net;
 
@@ -87,6 +87,14 @@ public static class LuaFixExtensions
 		{
 			await writer.WriteAsync((FixTags)LuaFixTags.OtherSecurityCode, cancellationToken);
 			await writer.WriteAsync(condition.OtherSecurityId.Value.SecurityCode, cancellationToken);
+
+			// The board is what the terminal resolves the class code from; a code on its own
+			// names no instrument there.
+			if (!condition.OtherSecurityId.Value.BoardCode.IsEmpty())
+			{
+				await writer.WriteAsync((FixTags)LuaFixTags.OtherSecurityBoard, cancellationToken);
+				await writer.WriteAsync(condition.OtherSecurityId.Value.BoardCode, cancellationToken);
+			}
 		}
 
 		if (condition.StopPrice != null)
@@ -193,8 +201,20 @@ public static class LuaFixExtensions
 			//	condition.Result = (QuikOrderConditionResults)await reader.ReadIntAsync(cancellationToken);
 			//	return true;
 			case LuaFixTags.OtherSecurityCode:
-				condition.OtherSecurityId = new SecurityId { SecurityCode = await reader.ReadStringAsync(cancellationToken) };
+			{
+				// The two halves arrive as separate tags, so each keeps whatever the other already set.
+				var id = condition.OtherSecurityId ?? default;
+				id.SecurityCode = await reader.ReadStringAsync(cancellationToken);
+				condition.OtherSecurityId = id;
 				return true;
+			}
+			case LuaFixTags.OtherSecurityBoard:
+			{
+				var id = condition.OtherSecurityId ?? default;
+				id.BoardCode = await reader.ReadStringAsync(cancellationToken);
+				condition.OtherSecurityId = id;
+				return true;
+			}
 			case LuaFixTags.StopPrice:
 				condition.StopPrice = await reader.ReadDecimalAsync(cancellationToken);
 				return true;
