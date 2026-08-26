@@ -157,7 +157,7 @@ sealed class TigerNativeClient : BaseLogReceiver
 			BeginTime = from,
 			EndTime = to,
 			Limit = limit,
-			Rigth = RightOption.br,
+			Right = RightOption.br,
 		}, cancellationToken);
 
 	public Task<FutureKlineResponse> GetFutureCandles(string symbol, string period, long from, long to, int limit,
@@ -188,7 +188,6 @@ sealed class TigerNativeClient : BaseLogReceiver
 					BeginTime = from,
 					EndTime = to,
 					Limit = limit,
-					SortDir = SortDir.SortDir_Ascend,
 				},
 			],
 		}, cancellationToken);
