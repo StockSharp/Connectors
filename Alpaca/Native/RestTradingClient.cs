@@ -1,6 +1,7 @@
 ﻿namespace StockSharp.Alpaca.Native;
 
 using System.Dynamic;
+using System.Runtime.CompilerServices;
 
 class RestTradingClient : RestAlpacaClient
 {
@@ -12,11 +13,73 @@ class RestTradingClient : RestAlpacaClient
 	// to get readable name after obfuscation
 	public override string Name => nameof(Alpaca) + "_" + nameof(RestTradingClient);
 
+	private const string _dateFormat = "yyyy-MM-dd";
+
 	public Task<IEnumerable<Asset>> GetAssets(CancellationToken cancellationToken)
 		=> MakeRequest<IEnumerable<Asset>>("v2/assets", CreateRequest(Method.Get), cancellationToken);
 
 	public Task<Account> GetAccount(CancellationToken cancellationToken)
 		=> MakeRequest<Account>("v2/account", CreateRequest(Method.Get), cancellationToken);
+
+	/// <summary>
+	/// Lists option contracts, page by page.
+	/// </summary>
+	/// <remarks>
+	/// There are hundreds of thousands of listed contracts, which is why they are not part of
+	/// <c>v2/assets</c> and why this always pages rather than asking for everything at once. The caller
+	/// stops reading when it has enough.
+	/// </remarks>
+	public async IAsyncEnumerable<OptionContract> GetOptionContracts(string underlying, string status,
+		string type, DateTime? expirationFrom, DateTime? expirationTo,
+		[EnumeratorCancellation]CancellationToken cancellationToken)
+	{
+		var token = string.Empty;
+
+		while (true)
+		{
+			var request = CreateRequest(Method.Get);
+
+			if (!underlying.IsEmpty())
+				request.AddQueryParameter("underlying_symbols", underlying);
+
+			if (!status.IsEmpty())
+				request.AddQueryParameter("status", status);
+
+			// Narrowing here rather than after the fact: a chain runs to thousands of contracts, and
+			// fetching all of them to keep the puts costs a request per thousand thrown away.
+			if (!type.IsEmpty())
+				request.AddQueryParameter("type", type);
+
+			// Without an explicit range the venue defaults the upper bound to the coming weekend, so a
+			// caller asking for a chain receives only whatever expires within days of asking.
+			if (expirationFrom is not null)
+				request.AddQueryParameter("expiration_date_gte", expirationFrom.Value.ToString(_dateFormat));
+
+			if (expirationTo is not null)
+				request.AddQueryParameter("expiration_date_lte", expirationTo.Value.ToString(_dateFormat));
+
+			// The maximum the endpoint accepts. A smaller page only means more round trips.
+			request.AddQueryParameter("limit", 10000);
+
+			if (!token.IsEmpty())
+				request.AddQueryParameter("page_token", token);
+
+			dynamic result = await MakeRequest<object>("v2/options/contracts", request, cancellationToken);
+
+			var contracts = ((JToken)result.option_contracts).DeserializeObject<IEnumerable<OptionContract>>();
+
+			foreach (var contract in contracts)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				yield return contract;
+			}
+
+			token = (string)result.next_page_token;
+
+			if (token.IsEmpty())
+				break;
+		}
+	}
 
 	public Task<IEnumerable<Order>> GetOrders(CancellationToken cancellationToken)
 		=> MakeRequest<IEnumerable<Order>>(GetOrderUrlPart(), CreateRequest(Method.Get), cancellationToken);

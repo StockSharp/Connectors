@@ -3,6 +3,7 @@ namespace StockSharp.Alpaca;
 partial class AlpacaMessageAdapter
 {
 	private readonly SynchronizedSet<SecurityId> _cryptoSecIds = [];
+	private readonly SynchronizedSet<SecurityId> _optionSecIds = [];
 	private readonly SynchronizedDictionary<string, SecurityId> _assetIds = new(StringComparer.InvariantCultureIgnoreCase);
 	private readonly SynchronizedPairSet<(DataType, string), long> _mdTransIds = [];
 
@@ -20,12 +21,21 @@ partial class AlpacaMessageAdapter
 		}
 	}
 
-	private async Task<bool> EnsureIsCrypto(SecurityId requiredSecId, CancellationToken cancellationToken)
+	/// <summary>
+	/// Which market an instrument belongs to, and therefore which client answers for it.
+	/// </summary>
+	private async Task<SecurityTypes> EnsureKind(SecurityId requiredSecId, CancellationToken cancellationToken)
 	{
+		// An option is recognised by its board rather than by a lookup: the consolidated tape is the only
+		// board options are quoted on here, and a caller can name a contract without having listed the
+		// chain first.
+		if (requiredSecId.BoardCode.EqualsIgnoreCase(BoardCodes.Opra) || _optionSecIds.Contains(requiredSecId))
+			return SecurityTypes.Option;
+
 		if (_cryptoSecIds.Count == 0)
 			await FillSecurities(cancellationToken);
 
-		return _cryptoSecIds.Contains(requiredSecId);
+		return _cryptoSecIds.Contains(requiredSecId) ? SecurityTypes.CryptoCurrency : SecurityTypes.Stock;
 	}
 
 	private async Task<SecurityId> EnsureGetSecId(string assetId, CancellationToken cancellationToken)
@@ -78,8 +88,66 @@ partial class AlpacaMessageAdapter
 				break;
 		}
 
+		if (left > 0)
+			left = await LookupOptionsAsync(lookupMsg, secTypes, left, cancellationToken);
+
 		await SendSubscriptionResultAsync(lookupMsg, cancellationToken);
 	}
+
+	/// <summary>
+	/// Adds option contracts to a lookup that asked for them.
+	/// </summary>
+	/// <remarks>
+	/// Only when they were asked for by type. There are hundreds of thousands of listed contracts, and a
+	/// caller that asked for everything wants the instruments it can hold a position in, not every
+	/// strike of every expiry of every name.
+	///
+	/// The underlying is passed to the venue rather than filtered here, because the alternative is
+	/// downloading the whole option universe to throw nearly all of it away.
+	/// </remarks>
+	private async Task<long> LookupOptionsAsync(SecurityLookupMessage lookupMsg, HashSet<SecurityTypes> secTypes, long left, CancellationToken cancellationToken)
+	{
+		if (!Sections.Contains(AlpacaSections.Option) || !secTypes.Contains(SecurityTypes.Option))
+			return left;
+
+		var underlying = lookupMsg.UnderlyingSecurityId.SecurityCode;
+
+		if (underlying.IsEmpty())
+			underlying = lookupMsg.SecurityId.SecurityCode.ToUnderlyingCode();
+
+		// Left to itself the venue answers with the nearest expiry and nothing else - a hundred and sixty
+		// contracts of one date, which reads like the whole chain and is not. The range is therefore always
+		// stated: the exact date when the caller named one, and everything still listed when it did not.
+		var expiryFrom = lookupMsg.ExpiryDate ?? CurrentTime.Date;
+		var expiryTo = lookupMsg.ExpiryDate ?? expiryFrom.AddYears(_listedYears);
+
+		await foreach (var contract in _tradingClient.GetOptionContracts(
+			underlying, _activeContracts, lookupMsg.OptionType?.ToNative(), expiryFrom, expiryTo, cancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var secMsg = contract.ToSecurityMessage();
+
+			secMsg.OriginalTransactionId = lookupMsg.TransactionId;
+
+			_optionSecIds.Add(secMsg.SecurityId);
+
+			if (!secMsg.IsMatch(lookupMsg, secTypes))
+				continue;
+
+			await SendOutMessageAsync(secMsg, cancellationToken);
+
+			if (--left <= 0)
+				break;
+		}
+
+		return left;
+	}
+
+	private const string _activeContracts = "active";
+
+	// Longer than any listed option runs, so the range never becomes the filter.
+	private const int _listedYears = 3;
 
 	/// <inheritdoc />
 	protected override async ValueTask OnTFCandlesSubscriptionAsync(MarketDataMessage mdMsg, CancellationToken cancellationToken)
@@ -87,16 +155,17 @@ partial class AlpacaMessageAdapter
 		var secId = mdMsg.SecurityId;
 		var symbol = secId.SecurityCode;
 		var transId = mdMsg.TransactionId;
-		var isCrypto = await EnsureIsCrypto(secId, cancellationToken);
+		var kind = await EnsureKind(secId, cancellationToken);
 
-		SocketMarketDataClient socketClient = isCrypto ? _socketCryptoClient : _socketStockClient;
+		SocketMarketDataClient socketClient = kind == SecurityTypes.CryptoCurrency ? _socketCryptoClient : _socketStockClient;
 
 		await SendSubscriptionReplyAsync(transId, cancellationToken);
 
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveTransId(transId);
-			await socketClient.UnSubscribeOhlc(mdMsg.OriginalTransactionId, symbol, cancellationToken);
+			if (IsStreamOpen(socketClient))
+				await socketClient.UnSubscribeOhlc(mdMsg.OriginalTransactionId, symbol, cancellationToken);
 			return;
 		}
 
@@ -108,43 +177,32 @@ partial class AlpacaMessageAdapter
 			var to = mdMsg.To ?? CurrentTime;
 			var left = mdMsg.Count ?? long.MaxValue;
 
-			if (isCrypto)
+			var candles = kind switch
 			{
-				await foreach (var c in _cryptoClient.GetOhlc(symbol, tf, from, to, null, CryptoLocation, cancellationToken).WithEnforcedCancellation(cancellationToken))
-				{
-					if (c.Time < from)
-						continue;
+				SecurityTypes.CryptoCurrency => _cryptoClient.GetOhlc(symbol, tf, from, to, null, CryptoLocation, cancellationToken),
+				SecurityTypes.Option => _optionClient.GetOhlc(symbol, tf, from, to, null, cancellationToken),
+				_ => _stockClient.GetOhlc(symbol, tf, from, to, null, StockFeed, cancellationToken),
+			};
 
-					if (c.Time > to)
-						break;
-
-					await ProcessOhlcAsync(transId, c, cancellationToken);
-
-					if (--left <= 0)
-						break;
-				}
-			}
-			else
+			await foreach (var c in candles.WithEnforcedCancellation(cancellationToken))
 			{
-				await foreach (var c in _stockClient.GetOhlc(symbol, tf, from, to, null, StockFeed, cancellationToken).WithEnforcedCancellation(cancellationToken))
-				{
-					if (c.Time < from)
-						continue;
+				if (c.Time < from)
+					continue;
 
-					if (c.Time > to)
-						break;
+				if (c.Time > to)
+					break;
 
-					await ProcessOhlcAsync(transId, c, cancellationToken);
+				await ProcessOhlcAsync(transId, c, cancellationToken);
 
-					if (--left <= 0)
-						break;
-				}
+				if (--left <= 0)
+					break;
 			}
 		}
 
 		if (!mdMsg.IsHistoryOnly())
 		{
 			AddTransId(DataType.CandleTimeFrame, symbol, transId);
+			await OpenStreamAsync(socketClient, cancellationToken);
 			await socketClient.SubscribeOhlc(mdMsg.TransactionId, symbol, cancellationToken);
 		}
 
@@ -157,16 +215,17 @@ partial class AlpacaMessageAdapter
 		var secId = mdMsg.SecurityId;
 		var symbol = secId.SecurityCode;
 		var transId = mdMsg.TransactionId;
-		var isCrypto = await EnsureIsCrypto(secId, cancellationToken);
+		var kind = await EnsureKind(secId, cancellationToken);
 
-		SocketMarketDataClient socketClient = isCrypto ? _socketCryptoClient : _socketStockClient;
+		SocketMarketDataClient socketClient = kind == SecurityTypes.CryptoCurrency ? _socketCryptoClient : _socketStockClient;
 
 		await SendSubscriptionReplyAsync(transId, cancellationToken);
 
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveTransId(transId);
-			await socketClient.UnSubscribeTicks(mdMsg.OriginalTransactionId, symbol, cancellationToken);
+			if (IsStreamOpen(socketClient))
+				await socketClient.UnSubscribeTicks(mdMsg.OriginalTransactionId, symbol, cancellationToken);
 			return;
 		}
 
@@ -176,43 +235,32 @@ partial class AlpacaMessageAdapter
 			var to = mdMsg.To ?? CurrentTime;
 			var left = mdMsg.Count ?? long.MaxValue;
 
-			if (isCrypto)
+			var ticks = kind switch
 			{
-				await foreach (var t in _cryptoClient.GetTicks(symbol, from, to, null, CryptoLocation, cancellationToken).WithEnforcedCancellation(cancellationToken))
-				{
-					if (t.Time < from)
-						continue;
+				SecurityTypes.CryptoCurrency => _cryptoClient.GetTicks(symbol, from, to, null, CryptoLocation, cancellationToken),
+				SecurityTypes.Option => _optionClient.GetTicks(symbol, from, to, null, cancellationToken),
+				_ => _stockClient.GetTicks(symbol, from, to, null, StockFeed, cancellationToken),
+			};
 
-					if (t.Time > to)
-						break;
-
-					await ProcessTickAsync(mdMsg.TransactionId, t, cancellationToken);
-
-					if (--left <= 0)
-						break;
-				}
-			}
-			else
+			await foreach (var t in ticks.WithEnforcedCancellation(cancellationToken))
 			{
-				await foreach (var t in _stockClient.GetTicks(symbol, from, to, null, StockFeed, cancellationToken).WithEnforcedCancellation(cancellationToken))
-				{
-					if (t.Time < from)
-						continue;
+				if (t.Time < from)
+					continue;
 
-					if (t.Time > to)
-						break;
+				if (t.Time > to)
+					break;
 
-					await ProcessTickAsync(mdMsg.TransactionId, t, cancellationToken);
+				await ProcessTickAsync(mdMsg.TransactionId, t, cancellationToken);
 
-					if (--left <= 0)
-						break;
-				}
+				if (--left <= 0)
+					break;
 			}
 		}
 
 		if (!mdMsg.IsHistoryOnly())
 		{
 			AddTransId(DataType.Ticks, symbol, transId);
+			await OpenStreamAsync(socketClient, cancellationToken);
 			await socketClient.SubscribeTicks(mdMsg.TransactionId, symbol, cancellationToken);
 		}
 
@@ -225,16 +273,20 @@ partial class AlpacaMessageAdapter
 		var secId = mdMsg.SecurityId;
 		var symbol = secId.SecurityCode;
 		var transId = mdMsg.TransactionId;
-		var isCrypto = await EnsureIsCrypto(secId, cancellationToken);
+		var kind = await EnsureKind(secId, cancellationToken);
 
-		SocketMarketDataClient socketClient = isCrypto ? _socketCryptoClient : _socketStockClient;
+		SocketMarketDataClient socketClient = kind == SecurityTypes.CryptoCurrency ? _socketCryptoClient : _socketStockClient;
 
 		await SendSubscriptionReplyAsync(transId, cancellationToken);
 
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveTransId(transId);
-			await socketClient.UnSubscribeQuotes(mdMsg.OriginalTransactionId, symbol, cancellationToken);
+
+			// An option was never put on a socket, so there is nothing to take off one.
+			if (kind != SecurityTypes.Option && IsStreamOpen(socketClient))
+				await socketClient.UnSubscribeQuotes(mdMsg.OriginalTransactionId, symbol, cancellationToken);
+
 			return;
 		}
 
@@ -244,44 +296,55 @@ partial class AlpacaMessageAdapter
 			var to = mdMsg.To ?? CurrentTime;
 			var left = mdMsg.Count ?? long.MaxValue;
 
-			if (isCrypto)
+			// An option has no quote history at this venue - the only quote it has is the current one - so
+			// there is nothing to replay and saying so beats returning an empty range that reads like a
+			// contract nobody has ever quoted.
+			var quotes = kind switch
 			{
-				await foreach (var q in _cryptoClient.GetQuotes(symbol, from, to, null, CryptoLocation, cancellationToken))
-				{
-					if (q.Time < from)
-						continue;
+				SecurityTypes.CryptoCurrency => _cryptoClient.GetQuotes(symbol, from, to, null, CryptoLocation, cancellationToken),
+				SecurityTypes.Option => null,
+				_ => _stockClient.GetQuotes(symbol, from, to, null, StockFeed, cancellationToken),
+			};
 
-					if (q.Time > to)
-						break;
+			if (quotes is null)
+				this.AddWarningLog("{0}: this venue publishes no option quote history, only the current quote.", secId);
 
-					await ProcessQuoteAsync(mdMsg.TransactionId, q, cancellationToken);
-
-					if (--left <= 0)
-						break;
-				}
-			}
-			else
+			await foreach (var q in quotes ?? AsyncEnumerable.Empty<Quote>())
 			{
-				await foreach (var q in _stockClient.GetQuotes(symbol, from, to, null, StockFeed, cancellationToken))
-				{
-					if (q.Time < from)
-						continue;
+				if (q.Time < from)
+					continue;
 
-					if (q.Time > to)
-						break;
+				if (q.Time > to)
+					break;
 
-					await ProcessQuoteAsync(mdMsg.TransactionId, q, cancellationToken);
+				await ProcessQuoteAsync(mdMsg.TransactionId, q, cancellationToken);
 
-					if (--left <= 0)
-						break;
-				}
+				if (--left <= 0)
+					break;
 			}
 		}
 
 		if (!mdMsg.IsHistoryOnly())
 		{
-			AddTransId(DataType.Level1, symbol, transId);
-			await socketClient.SubscribeQuotes(mdMsg.TransactionId, symbol, cancellationToken);
+			// Options do not stream from this venue - the option feed speaks a format nothing here reads -
+			// so the subscription answers with the quote the contract shows at the moment it is made and
+			// finishes. A caller wanting a later quote asks again, which is the truth of what is available
+			// rather than a subscription that looks live and never updates.
+			if (kind == SecurityTypes.Option)
+			{
+				var quotes = await _optionClient.GetLatestQuotes([symbol], OptionFeed, cancellationToken);
+
+				if (quotes.TryGetValue(symbol, out var latest))
+					await ProcessQuoteAsync(transId, latest, cancellationToken);
+				else
+					this.AddWarningLog("{0}: the venue shows no quote for this contract.", secId);
+			}
+			else
+			{
+				AddTransId(DataType.Level1, symbol, transId);
+				await OpenStreamAsync(socketClient, cancellationToken);
+				await socketClient.SubscribeQuotes(mdMsg.TransactionId, symbol, cancellationToken);
+			}
 		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -293,9 +356,10 @@ partial class AlpacaMessageAdapter
 		var secId = mdMsg.SecurityId;
 		var symbol = secId.SecurityCode;
 		var transId = mdMsg.TransactionId;
-		var isCrypto = await EnsureIsCrypto(secId, cancellationToken);
+		var kind = await EnsureKind(secId, cancellationToken);
 
-		if (!isCrypto)
+		// Only the crypto feed publishes a book here.
+		if (kind != SecurityTypes.CryptoCurrency)
 		{
 			await SendSubscriptionNotSupportedAsync(transId, cancellationToken);
 			return;
@@ -308,6 +372,7 @@ partial class AlpacaMessageAdapter
 			if (!mdMsg.IsHistoryOnly())
 			{
 				AddTransId(DataType.MarketDepth, symbol, transId);
+				await OpenStreamAsync(_socketCryptoClient, cancellationToken);
 				await _socketCryptoClient.SubscribeOrderBook(mdMsg.TransactionId, symbol, cancellationToken);
 			}
 
@@ -316,7 +381,8 @@ partial class AlpacaMessageAdapter
 		else
 		{
 			RemoveTransId(transId);
-			await _socketCryptoClient.UnSubscribeOrderBook(mdMsg.OriginalTransactionId, symbol, cancellationToken);
+			if (IsStreamOpen(_socketCryptoClient))
+				await _socketCryptoClient.UnSubscribeOrderBook(mdMsg.OriginalTransactionId, symbol, cancellationToken);
 		}
 	}
 
@@ -330,7 +396,8 @@ partial class AlpacaMessageAdapter
 		if (!mdMsg.IsSubscribe)
 		{
 			RemoveTransId(transId);
-			await _socketNewsClient.UnSubscribeNews(mdMsg.OriginalTransactionId, cancellationToken);
+			if (IsStreamOpen(_socketNewsClient))
+				await _socketNewsClient.UnSubscribeNews(mdMsg.OriginalTransactionId, cancellationToken);
 			return;
 		}
 
@@ -358,6 +425,7 @@ partial class AlpacaMessageAdapter
 		if (!mdMsg.IsHistoryOnly())
 		{
 			AddTransId(DataType.News, string.Empty, transId);
+			await OpenStreamAsync(_socketNewsClient, cancellationToken);
 			await _socketNewsClient.SubscribeNews(mdMsg.TransactionId, cancellationToken);
 		}
 

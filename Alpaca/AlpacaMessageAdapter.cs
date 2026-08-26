@@ -1,10 +1,11 @@
-namespace StockSharp.Alpaca;
+﻿namespace StockSharp.Alpaca;
 
 partial class AlpacaMessageAdapter
 {
 	private RestTradingClient _tradingClient;
 	private RestStockClient _stockClient;
 	private RestCryptoClient _cryptoClient;
+	private RestOptionClient _optionClient;
 	private RestNewsClient _newsClient;
 
 	private SocketTradingClient _socketTradingClient;
@@ -13,6 +14,9 @@ partial class AlpacaMessageAdapter
 	private SocketNewsClient _socketNewsClient;
 
 	private ConnectionStateTracker _tracker;
+
+	private readonly SynchronizedSet<SocketAlpacaClient> _openStreams = [];
+	private readonly SemaphoreSlim _streamOpening = new(1, 1);
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="AlpacaMessageAdapter"/>.
@@ -29,6 +33,14 @@ partial class AlpacaMessageAdapter
 		this.AddSupportedMarketDataType(DataType.News);
 		this.AddSupportedMarketDataType(DataType.MarketDepth);
 		this.AddSupportedCandleTimeFrames(AllTimeFrames);
+	}
+
+	/// <inheritdoc />
+	protected override void DisposeManaged()
+	{
+		_streamOpening.Dispose();
+
+		base.DisposeManaged();
 	}
 
 	/// <inheritdoc />
@@ -101,6 +113,7 @@ partial class AlpacaMessageAdapter
 		_tradingClient = new(tradingRestEndpoint, Key, Secret) { Parent = this };
 		_stockClient = new(MarketDataRestEndpoint, Key, Secret) { Parent = this };
 		_cryptoClient = new(MarketDataRestEndpoint, Key, Secret) { Parent = this };
+		_optionClient = new(MarketDataRestEndpoint, Key, Secret) { Parent = this };
 		_newsClient = new(MarketDataRestEndpoint, Key, Secret) { Parent = this };
 
 		var attemptsCount = ReConnectionSettings.ReAttemptCount;
@@ -115,33 +128,70 @@ partial class AlpacaMessageAdapter
 		SubscribeSocketClient(_socketCryptoClient);
 		SubscribeSocketClient(_socketNewsClient);
 
-		var isTrans = this.IsTransactional();
-		var isMD = this.IsMarketData();
+		_tracker = new();
+		_tracker.StateChanged += SendOutConnectionStateAsync;
 
-		if (!isTrans && !isMD)
+		// Orders report over their stream, so a transactional session is not usable until it is up.
+		// Market data streams are opened by whoever needs one: history comes over REST, and the venue
+		// sells its streams apart from it, so an account can hold years of bars and no stream at all.
+		if (!this.IsTransactional())
 		{
 			await base.ConnectAsync(msg, cancellationToken);
 			return;
 		}
 
-		_tracker = new();
-		_tracker.StateChanged += SendOutConnectionStateAsync;
+		await OpenStreamAsync(_socketTradingClient, cancellationToken);
+	}
 
-		if (isTrans)
-			_tracker.Add(_socketTradingClient);
+	/// <summary>
+	/// How many live streams are open.
+	/// </summary>
+	internal int OpenStreamsCount => _openStreams.Count;
 
-		if (isMD)
+	private bool IsStreamOpen(SocketAlpacaClient client) => _openStreams.Contains(client);
+
+	/// <summary>
+	/// Opens a live stream unless it is open already.
+	/// </summary>
+	/// <param name="client">The stream to open.</param>
+	/// <param name="cancellationToken">Cancellation token.</param>
+	/// <remarks>
+	/// The tracker aggregates the state of every stream it holds, so a stream joins it only once it is
+	/// wanted: a stream that is never opened would otherwise hold the whole connection short of ready.
+	/// </remarks>
+	private async ValueTask OpenStreamAsync(SocketAlpacaClient client, CancellationToken cancellationToken)
+	{
+		if (client is null)
+			throw new ArgumentNullException(nameof(client));
+
+		if (IsStreamOpen(client))
+			return;
+
+		await _streamOpening.WaitAsync(cancellationToken);
+
+		try
 		{
-			if (Sections.Contains(AlpacaSections.Stock))
-				_tracker.Add(_socketStockClient);
+			if (IsStreamOpen(client))
+				return;
 
-			if (Sections.Contains(AlpacaSections.Crypto))
-				_tracker.Add(_socketCryptoClient);
+			_tracker.Add(client);
 
-			_tracker.Add(_socketNewsClient);
+			try
+			{
+				await client.ConnectAsync(cancellationToken);
+			}
+			catch
+			{
+				_tracker.Remove(client);
+				throw;
+			}
+
+			_openStreams.Add(client);
 		}
-
-		await _tracker.ConnectAsync(cancellationToken);
+		finally
+		{
+			_streamOpening.Release();
+		}
 	}
 
 	/// <inheritdoc />
@@ -153,7 +203,7 @@ partial class AlpacaMessageAdapter
 		if (_socketTradingClient == null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
-		if (_tracker is null)
+		if (_tracker is null || _openStreams.Count == 0)
 			return base.DisconnectAsync(msg, cancellationToken);
 
 		return _tracker.DisconnectAsync(cancellationToken);
@@ -163,6 +213,7 @@ partial class AlpacaMessageAdapter
 	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
 	{
 		_cryptoSecIds.Clear();
+		_optionSecIds.Clear();
 		_assetIds.Clear();
 		_mdTransIds.Clear();
 		_accountName = default;
@@ -184,6 +235,7 @@ partial class AlpacaMessageAdapter
 
 		_stockClient = await disposeClient(_stockClient);
 		_cryptoClient = await disposeClient(_cryptoClient);
+		_optionClient = await disposeClient(_optionClient);
 		_newsClient = await disposeClient(_newsClient);
 		_tradingClient = await disposeClient(_tradingClient);
 
@@ -212,6 +264,8 @@ partial class AlpacaMessageAdapter
 		_socketCryptoClient = await disposeSocketClient(_socketCryptoClient, UnsubscribeSocketClient);
 		_socketNewsClient = await disposeSocketClient(_socketNewsClient, UnsubscribeSocketClient);
 		_socketTradingClient = await disposeSocketClient(_socketTradingClient, UnsubscribeSocketClient);
+
+		_openStreams.Clear();
 
 		if (_tracker is not null)
 		{

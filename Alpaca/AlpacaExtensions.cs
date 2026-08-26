@@ -135,4 +135,82 @@ static class AlpacaExtensions
 
 	public static SecurityId ToSecId(this Asset asset)
 		=> new() { SecurityCode = asset.Symbol, BoardCode = asset.Exchange?.ToUpperInvariant() };
+
+	/// <summary>
+	/// The underlying an option symbol was written for.
+	/// </summary>
+	/// <remarks>
+	/// A listed option is named for its underlying followed by the expiry, the right and the strike -
+	/// NVDA260828C00050000 - so the underlying is everything before the first digit. A plain ticker is
+	/// already its own underlying and comes back unchanged, which is what lets a caller name either.
+	/// </remarks>
+	public static string ToUnderlyingCode(this string symbol)
+	{
+		if (symbol.IsEmpty())
+			return symbol;
+
+		var end = 0;
+
+		while (end < symbol.Length && !char.IsDigit(symbol[end]))
+			end++;
+
+		return end == 0 ? symbol : symbol[..end];
+	}
+
+	public static string ToNative(this OptionTypes type)
+		=> type switch
+		{
+			OptionTypes.Call => "call",
+			OptionTypes.Put => "put",
+			_ => throw new ArgumentOutOfRangeException(nameof(type), type, LocalizedStrings.InvalidValue),
+		};
+
+	public static OptionTypes ToOptionType(this string type)
+		=> type?.ToLowerInvariant() switch
+		{
+			"call" or "c" => OptionTypes.Call,
+			"put" or "p" => OptionTypes.Put,
+			_ => throw new ArgumentOutOfRangeException(nameof(type), type, LocalizedStrings.InvalidValue),
+		};
+
+	public static OptionStyles? ToOptionStyle(this string style)
+		=> style?.ToLowerInvariant() switch
+		{
+			null or "" => null,
+			"american" => OptionStyles.American,
+			"european" => OptionStyles.European,
+			_ => throw new ArgumentOutOfRangeException(nameof(style), style, LocalizedStrings.InvalidValue),
+		};
+
+	// A listed option is quoted on the consolidated tape rather than on any single exchange, and the
+	// contract Alpaca returns names no exchange at all.
+	public static SecurityId ToSecId(this OptionContract contract)
+		=> new()
+		{
+			SecurityCode = contract.CheckOnNull(nameof(contract)).Symbol,
+			BoardCode = BoardCodes.Opra,
+		};
+
+	public static SecurityMessage ToSecurityMessage(this OptionContract contract)
+	{
+		if (contract is null)
+			throw new ArgumentNullException(nameof(contract));
+
+		return new()
+		{
+			SecurityId = contract.ToSecId(),
+			SecurityType = SecurityTypes.Option,
+			Name = contract.Name,
+			OptionType = contract.Type.ToOptionType(),
+			OptionStyle = contract.Style.ToOptionStyle(),
+			Strike = contract.StrikePrice,
+			ExpiryDate = contract.ExpirationDate.UtcKind(),
+			Multiplier = contract.Multiplier,
+
+			// The symbol of the underlying is all the contract carries; which exchange lists it is not in
+			// the payload, and guessing a board here would put a wrong one on every name that is not
+			// listed where the guess assumed.
+			UnderlyingSecurityId = new() { SecurityCode = contract.UnderlyingSymbol },
+		};
+	}
 }

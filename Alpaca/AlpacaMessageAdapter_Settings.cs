@@ -27,6 +27,15 @@ public enum AlpacaSections
 		ResourceType = typeof(LocalizedStrings),
 		Name = LocalizedStrings.CryptoKey)]
 	Crypto,
+
+	/// <summary>
+	/// Options.
+	/// </summary>
+	[EnumMember]
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OptionsKey)]
+	Option,
 }
 
 /// <summary>
@@ -65,6 +74,14 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	{
 		public CryptoLocationSource()
 			: base(new[] { "us" })
+		{
+		}
+	}
+
+	private class OptionFeedSource : ItemsSourceBase<string>
+	{
+		public OptionFeedSource()
+			: base(new[] { "opra", "indicative" })
 		{
 		}
 	}
@@ -150,6 +167,24 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	public string CryptoLocation { get; set; } = "us";
 
 	/// <summary>
+	/// Data for the option market.
+	/// </summary>
+	/// <remarks>
+	/// Left empty the venue answers with whatever the account is entitled to, which is what most accounts
+	/// want. Named explicitly it is either the consolidated tape or the delayed indicative one, and
+	/// asking for a tape the account cannot read is refused rather than quietly downgraded.
+	/// </remarks>
+	[Display(
+		ResourceType = typeof(LocalizedStrings),
+		Name = LocalizedStrings.OptionsKey,
+		Description = LocalizedStrings.SourceKey,
+		GroupName = LocalizedStrings.ConnectionKey,
+		Order = 4)]
+	[BasicSetting]
+	[ItemsSource(typeof(OptionFeedSource), IsEditable = true)]
+	public string OptionFeed { get; set; }
+
+	/// <summary>
 	/// Sections.
 	/// </summary>
 	[Display(
@@ -227,6 +262,7 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 			.Set(nameof(IsDemo), IsDemo)
 			.Set(nameof(StockFeed), StockFeed)
 			.Set(nameof(CryptoLocation), CryptoLocation)
+			.Set(nameof(OptionFeed), OptionFeed)
 			.Set(nameof(Sections), Sections.Select(s => s.To<string>()).JoinComma())
 			.Set(nameof(TradingRestEndpoint), TradingRestEndpoint)
 			.Set(nameof(DemoTradingRestEndpoint), DemoTradingRestEndpoint)
@@ -246,6 +282,7 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
 		StockFeed = storage.GetValue<string>(nameof(StockFeed));
+		OptionFeed = storage.GetValue<string>(nameof(OptionFeed));
 		CryptoLocation = storage.GetValue<string>(nameof(CryptoLocation));
 		Sections = storage.GetValue<string>(nameof(Sections)).SplitByComma().Select(s => s.To<AlpacaSections>()).ToArray();
 		TradingRestEndpoint = storage.GetValue(nameof(TradingRestEndpoint), TradingRestEndpoint);
