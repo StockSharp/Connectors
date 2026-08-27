@@ -100,6 +100,12 @@ partial class AlpacaMessageAdapter
 			.TryAdd(PositionChangeTypes.BuyOrdersMargin, account.BuyingPower?.ToDecimal())
 			.TryAdd(PositionChangeTypes.VariationMargin, account.MaintenanceMargin?.ToDecimal())
 			.TryAdd(PositionChangeTypes.Leverage, (decimal?)account.Multiplier)
+
+			// Whether the account may trade at all. Without it a caller cannot tell a flat account from a
+			// blocked one: both report no positions, and only one of them will accept an order.
+			.TryAdd(PositionChangeTypes.State, account.AccountBlocked || account.TradingBlocked
+				? PortfolioStates.Blocked
+				: PortfolioStates.Active)
 			, cancellationToken);
 
 			var positions = await _tradingClient.GetPositions(cancellationToken);
