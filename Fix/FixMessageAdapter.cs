@@ -65,9 +65,6 @@ public partial class FixMessageAdapter : MessageAdapter
 	public override string StorageName => FixDialect.StorageName;
 
 	/// <inheritdoc />
-	public override IEnumerable<(string, Type)> SecurityExtendedFields => FixDialect.SecurityExtendedFields ?? [];
-
-	/// <inheritdoc />
 	public override IAsyncEnumerable<DataType> GetSupportedMarketDataTypesAsync(SecurityId securityId, DateTime? from, DateTime? to)
 		=> FixDialect.GetSupportedMarketDataTypesAsync(securityId, from, to);
 
