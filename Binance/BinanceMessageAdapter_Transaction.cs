@@ -18,6 +18,9 @@ public partial class BinanceMessageAdapter
 
 	private static string TryGetSymbolFromIsolatedPortfolioName(string portfolioName)
 	{
+		if (string.IsNullOrEmpty(portfolioName))
+			return null;
+
 		var idx = portfolioName.LastIndexOf(_isolatedPortfolioSuffix, StringComparison.InvariantCulture);
 		if(idx < 0)
 			return null;

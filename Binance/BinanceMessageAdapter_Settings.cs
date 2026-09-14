@@ -140,7 +140,7 @@ public partial class BinanceMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 	private const string _defaultHostWebSocketSpot         = "stream.binance.com";
 	private const string _defaultHostWebSocketFuture       = "fstream.binance.com";
 	private const string _defaultHostWebSocketFutureCoin   = "dstream.binance.com";
-	private const string _defaultDemoHostWebSocketSpot     = "testnet.binance.vision";
+	private const string _defaultDemoHostWebSocketSpot     = "stream.testnet.binance.vision";
 	private const string _defaultDemoHostWebSocketFuture   = "stream.binancefuture.com";
 	private const string _defaultDemoHostWebSocketFutureCoin = "dstream.binancefuture.com";
 
