@@ -98,7 +98,6 @@ public partial class DerivMessageAdapter
 			_lastAccountRefresh = now;
 		}
 
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask<DerivRestAccount> ResolveAccountAsync(

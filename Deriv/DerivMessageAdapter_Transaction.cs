@@ -474,6 +474,17 @@ public partial class DerivMessageAdapter
 		var volume = tracker?.Volume ?? 1m;
 		var isDone = IsContractDone(contract);
 		var serverTime = GetContractTime(contract);
+		// validation_error describes whether an otherwise valid open contract can be
+		// sold or updated at this instant (for example SameStartSellTime). It is not
+		// the lifecycle state of the purchased contract.
+		if (!contract.ValidationError.IsEmpty())
+			this.AddDebugLog("Deriv contract {0} action is temporarily unavailable ({1}): {2}",
+				contract.ContractId, contract.ValidationErrorCode, contract.ValidationError);
+		var isFailed = contract.Status.EqualsIgnoreCase("failed");
+		var contractError = isFailed
+			? new InvalidOperationException($"Deriv contract {contract.ContractId} failed" +
+				(contract.ValidationError.IsEmpty() ? "." : $": {contract.ValidationError}"))
+			: null;
 		await SendOutMessageAsync(new ExecutionMessage
 		{
 			DataTypeEx = DataType.Transactions,
@@ -489,9 +500,10 @@ public partial class DerivMessageAdapter
 			OrderVolume = volume,
 			Balance = isDone ? 0 : volume,
 			AveragePrice = contract.BidPrice,
-			OrderState = !contract.ValidationError.IsEmpty()
+			OrderState = isFailed
 				? OrderStates.Failed
 				: isDone ? OrderStates.Done : OrderStates.Active,
+			Error = contractError,
 			ServerTime = serverTime,
 			PnL = contract.Profit,
 			Condition = tracker?.Condition,
