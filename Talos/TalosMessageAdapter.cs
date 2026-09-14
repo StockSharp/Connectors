@@ -1,5 +1,8 @@
 namespace StockSharp.Talos;
 
+using System.Threading;
+using System.Threading.Tasks;
+
 /// <summary>The message adapter for Talos institutional FIX sessions.</summary>
 [MediaIcon(Media.MediaNames.talos)]
 [Doc("topics/api/connectors/crypto_exchanges/talos.html")]
@@ -38,11 +41,12 @@ public sealed class TalosMessageAdapter : FixMessageAdapter
 			securityId.IsAssociated(BoardCodes.Talos);
 
 	/// <inheritdoc />
-	protected override bool OnSendInMessage(Message message)
+	protected override ValueTask OnSendInMessageAsync(Message message, CancellationToken cancellationToken)
 	{
 		if (message.Type == MessageTypes.Connect)
 			ValidateConfiguration();
-		return base.OnSendInMessage(message);
+
+		return base.OnSendInMessageAsync(message, cancellationToken);
 	}
 
 	private void ValidateConfiguration()
