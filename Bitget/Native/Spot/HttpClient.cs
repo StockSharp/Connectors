@@ -80,26 +80,22 @@ class HttpClient : BaseLogReceiver
 			throw new NotSupportedException(LocalizedStrings.WithdrawTypeNotSupported.Put(info.Type));
 
 		var url = CreateUrl("spot/wallet/withdrawal");
-		var request = CreateRequest(Method.Post);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			coin,
 			amount = amount.To<string>(),
 			address = info.CryptoAddress,
 			tag = info.Comment,
 			transferType = "on_chain"
-		});
+		};
 
-		await MakeRequest<object>(url, ApplySecret(request, url), cancellationToken);
+		await MakeRequest<object>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	public Task<Order> PlaceOrder(OrderRegisterMessage regMsg, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("spot/trade/place-order");
-		var request = ApplySecret(CreateRequest(Method.Post), url);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			symbol = regMsg.SecurityId.ToSymbol(),
 			side = regMsg.Side.ToNative(),
@@ -108,53 +104,47 @@ class HttpClient : BaseLogReceiver
 			size = regMsg.Volume.To<string>(),
 			clientOid = regMsg.TransactionId.ToRequestId(),
 			force = regMsg.TimeInForce.ToNative(),
-		});
+		};
 
-		return MakeRequest<Order>(url, request, cancellationToken);
+		return MakeRequest<Order>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	public Task CancelOrder(OrderCancelMessage cancelMsg, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("spot/trade/cancel-order");
-		var request = ApplySecret(CreateRequest(Method.Post), url);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			symbol = cancelMsg.SecurityId.ToSymbol(),
 			orderId = cancelMsg.OrderId.Value.To<string>(),
-		});
+		};
 
-		return MakeRequest<object>(url, request, cancellationToken);
+		return MakeRequest<object>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	public Task AmendOrder(OrderReplaceMessage replaceMsg, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("spot/trade/cancel-replace-order");
-		var request = ApplySecret(CreateRequest(Method.Post), url);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			symbol = replaceMsg.SecurityId.ToSymbol(),
 			orderId = replaceMsg.OldOrderId.Value.To<string>(),
 			price = replaceMsg.Price.To<string>(),
 			size = replaceMsg.Volume.To<string>(),
 			newClientOid = replaceMsg.TransactionId.ToRequestId(),
-		});
+		};
 
-		return MakeRequest<object>(url, request, cancellationToken);
+		return MakeRequest<object>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	public Task BatchCancelOrders(IEnumerable<object> orderList, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("spot/trade/batch-cancel-order");
-		var request = ApplySecret(CreateRequest(Method.Post), url);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			orderList,
-		});
+		};
 
-		return MakeRequest<object>(url, request, cancellationToken);
+		return MakeRequest<object>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	private Uri CreateUrl(string methodName)
@@ -170,8 +160,8 @@ class HttpClient : BaseLogReceiver
 		return new RestRequest((string)null, method);
 	}
 
-	private RestRequest ApplySecret(RestRequest request, Uri url)
-		=> request.ApplySecret(url, _authenticator);
+	private RestRequest ApplySecret(RestRequest request, Uri url, object body = null)
+		=> request.ApplySecret(url, _authenticator, body);
 
 	private async Task<T> MakeRequest<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
 	{

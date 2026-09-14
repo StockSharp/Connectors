@@ -93,9 +93,7 @@ class HttpClient : BaseLogReceiver
 	public Task<Order> PlaceOrder(OrderRegisterMessage regMsg, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("mix/order/place-order");
-		var request = ApplySecret(CreateRequest(Method.Post), url);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			productType = _productType,
 			symbol = regMsg.SecurityId.ToSymbol(),
@@ -106,32 +104,28 @@ class HttpClient : BaseLogReceiver
 			clientOid = regMsg.TransactionId.ToRequestId(),
 			force = regMsg.TimeInForce.ToNative(),
 			reduceOnly = regMsg.PositionEffect is not null ? (bool?)regMsg.PositionEffect.Value.ToNative() : null,
-		});
+		};
 
-		return MakeRequest<Order>(url, request, cancellationToken);
+		return MakeRequest<Order>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	public Task CancelOrder(OrderCancelMessage cancelMsg, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("mix/order/cancel-order");
-		var request = ApplySecret(CreateRequest(Method.Post), url);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			productType = _productType,
 			symbol = cancelMsg.SecurityId.ToSymbol(),
 			orderId = cancelMsg.OrderId.Value.ToString(),
-		});
+		};
 
-		return MakeRequest<object>(url, request, cancellationToken);
+		return MakeRequest<object>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	public Task AmendOrder(OrderReplaceMessage replaceMsg, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("mix/order/modify-order");
-		var request = ApplySecret(CreateRequest(Method.Post), url);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			productType = _productType,
 			symbol = replaceMsg.SecurityId.ToSymbol(),
@@ -139,23 +133,21 @@ class HttpClient : BaseLogReceiver
 			newPrice = replaceMsg.OldOrderPrice != replaceMsg.Price ? replaceMsg.Price.To<string>() : null,
 			newSize = replaceMsg.OldOrderVolume != replaceMsg.Volume ? replaceMsg.Volume.To<string>() : null,
 			newClientOid = replaceMsg.TransactionId.ToRequestId(),
-		});
+		};
 
-		return MakeRequest<object>(url, request, cancellationToken);
+		return MakeRequest<object>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	public Task BatchCancelOrders(IEnumerable<object> orderList, CancellationToken cancellationToken)
 	{
 		var url = CreateUrl("mix/order/batch-cancel-orders");
-		var request = ApplySecret(CreateRequest(Method.Post), url);
-
-		request.AddJsonBody(new
+		var body = new
 		{
 			orderList = orderList.ToArray(),
 			productType = _productType
-		});
+		};
 
-		return MakeRequest<object>(url, request, cancellationToken);
+		return MakeRequest<object>(url, ApplySecret(CreateRequest(Method.Post), url, body), cancellationToken);
 	}
 
 	private Uri CreateUrl(string methodName)
@@ -171,8 +163,8 @@ class HttpClient : BaseLogReceiver
 		return new RestRequest((string)null, method);
 	}
 
-	private RestRequest ApplySecret(RestRequest request, Uri url)
-		=> request.ApplySecret(url, _authenticator);
+	private RestRequest ApplySecret(RestRequest request, Uri url, object body = null)
+		=> request.ApplySecret(url, _authenticator, body);
 
 	private async Task<T> MakeRequest<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
 	{

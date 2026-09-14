@@ -94,7 +94,9 @@ static class Extensions
 	public static bool TryToTransId(this string requestId, out long transId)
 		=> long.TryParse(requestId.Remove("t-"), out transId);
 
-	public static RestRequest ApplySecret(this RestRequest request, Uri url, Authenticator authenticator)
+	private static readonly JsonSerializerSettings _serializerSettings = JsonHelper.CreateJsonSerializerSettings();
+
+	public static RestRequest ApplySecret(this RestRequest request, Uri url, Authenticator authenticator, object body = null)
 	{
 		if (request is null)		throw new ArgumentNullException(nameof(request));
 		if (url is null)			throw new ArgumentNullException(nameof(url));
@@ -105,12 +107,10 @@ static class Extensions
 
 		var queryString = request.Parameters
 			.Where(p => p.Type == ParameterType.QueryString)
-			.OrderBy(p => p.Name)
-			.Select(p => $"{p.Name}={p.Value}")
-			.JoinComma();
+			.Select(p => $"{Uri.EscapeDataString(p.Name)}={Uri.EscapeDataString(p.Value?.ToString() ?? string.Empty)}")
+			.JoinAnd();
 
-		var bodyString = request.Parameters
-			.FirstOrDefault(p => p.Type == ParameterType.RequestBody)?.Value?.ToString() ?? string.Empty;
+		var bodyString = body is null ? string.Empty : JsonConvert.SerializeObject(body, _serializerSettings);
 
 		var path = url.PathAndQuery;
 		if (!queryString.IsEmpty())
@@ -128,6 +128,9 @@ static class Extensions
 
 		if (authenticator.IsDemo)
 			request.AddHeader("paptrading", "1");
+
+		if (!bodyString.IsEmpty())
+			request.AddBodyAsStr(bodyString);
 
 		return request;
 	}
