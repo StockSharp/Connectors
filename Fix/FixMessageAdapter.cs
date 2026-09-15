@@ -20,6 +20,23 @@ public partial class FixMessageAdapter : MessageAdapter
 	private bool _connectedOnce;
 	private Task _readerTask;
 
+	// The read's silence deadline, held so a disconnect can end a read that is waiting on a peer
+	// which will never answer.
+	private CancellationTokenSource _silenceSource;
+
+	// A read parked on a hung peer only ends when its deadline runs out, and whoever is shutting
+	// down should not wait that long.
+	private void EndWaitingForTheVenue()
+	{
+		try
+		{
+			_silenceSource?.Cancel();
+		}
+		catch (ObjectDisposedException)
+		{
+		}
+	}
+
 	private async Task WaitReaderTaskAsync()
 	{
 		if (_readerTask == null)
@@ -171,6 +188,7 @@ public partial class FixMessageAdapter : MessageAdapter
 				var dialect = FixDialect;
 
 				_isDisconnecting = true;
+				EndWaitingForTheVenue();
 
 				if (_client != null || _isReconnecting)
 				{
@@ -232,6 +250,7 @@ public partial class FixMessageAdapter : MessageAdapter
 			case MessageTypes.Disconnect:
 			{
 				_isDisconnecting = true;
+				EndWaitingForTheVenue();
 
 				// Logout is a courtesy to a live connection. When the peer hung up first - or our own
 				// reader gave up on the socket and closed it - the write lands on a disposed stream,
@@ -394,6 +413,21 @@ public partial class FixMessageAdapter : MessageAdapter
 
 	private async Task ProcessIncomingFixMessages(IFixDialect dialect, int expectingLogonCount, bool reconnect, CancellationToken cancellationToken)
 	{
+		// A read on a socket whose peer went away waits for ever: nothing arrives and nothing fails.
+		// The other side undertook in the logon to speak every HeartbeatInterval, so waiting for a
+		// frame is given a deadline of two of them. It covers the wait only - it is lifted as soon as
+		// a frame arrives, so time spent handing that frame on is not counted against the peer. One
+		// pass of the loop is one frame, including the frames that carry no message of ours, so a
+		// heartbeat keeping a quiet session alive pushes the deadline out the same as anything else.
+		var silence = HeartbeatInterval > TimeSpan.Zero
+			? HeartbeatInterval + HeartbeatInterval
+			: Timeout.InfiniteTimeSpan;
+
+		using var silenceSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+		// Held so a disconnect can end a read that is waiting on a peer which will never answer.
+		_silenceSource = silenceSource;
+
 		try
 		{
 			this.AddInfoLog("Start message processing.");
@@ -412,15 +446,25 @@ public partial class FixMessageAdapter : MessageAdapter
 
 				try
 				{
-					await foreach (var msg in dialect.ReadAsync(cancellationToken))
+					silenceSource.CancelAfter(silence);
+
+					await foreach (var msg in dialect.ReadAsync(silenceSource.Token))
 						messages.Add(msg);
+
+					silenceSource.CancelAfter(Timeout.InfiniteTimeSpan);
 				}
 				catch (Exception ex)
 				{
 					//this.AddErrorLog(ex);
 
 					if (ex is OperationCanceledException)
-						break;
+					{
+						if (cancellationToken.IsCancellationRequested || _isDisconnecting)
+							break;
+
+						// The deadline ran out rather than the caller asking to stop: the link is gone.
+						throw new IOException($"Nothing received for {silence}.", ex);
+					}
 
 					if (expectingLogonCount > 0)
 						throw;
@@ -557,6 +601,9 @@ public partial class FixMessageAdapter : MessageAdapter
 			{
 				// First connect or explicit disconnect — report error to caller
 				// (internal reconnect only after a successful connection was established)
+				try { _client?.Close(); } catch { }
+				_client = null;
+
 				await SendOutDisconnectMessageAsync(ex, cancellationToken);
 				return;
 			}
@@ -566,6 +613,10 @@ public partial class FixMessageAdapter : MessageAdapter
 			_client = null;
 
 			await TryReconnectLoopAsync(cancellationToken);
+		}
+		finally
+		{
+			_silenceSource = null;
 		}
 	}
 
