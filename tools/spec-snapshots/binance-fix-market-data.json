@@ -1,0 +1,25 @@
+{
+ "key": "binance-fix-market-data",
+ "venue": "Binance",
+ "format": "fix_xml",
+ "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/fix/schemas/spot-fix-md.xml",
+ "entries": 16,
+ "shape": {
+  "header": "cde323e962d4a4a8",
+  "message Heartbeat (msgtype 0)": "f0dc0c64fe29c0d2",
+  "message InstrumentList (msgtype y)": "f51eca82f224b3ea",
+  "message InstrumentListRequest (msgtype x)": "1453f2c0c38c5921",
+  "message LimitQuery (msgtype XLQ)": "274a897e0920d299",
+  "message LimitResponse (msgtype XLR)": "c9b896fabdc6c426",
+  "message Logon (msgtype A)": "3e2fb3d5619a62b0",
+  "message Logout (msgtype 5)": "20a6d4fabe175081",
+  "message MarketDataIncrementalRefresh (msgtype X)": "0bfc2695ec8382e2",
+  "message MarketDataRequest (msgtype V)": "c56545659f831c72",
+  "message MarketDataRequestReject (msgtype Y)": "1aefd4bc72cd4ee1",
+  "message MarketDataSnapshot (msgtype W)": "80505f4f6d5354f2",
+  "message News (msgtype B)": "88da0d3abd77887f",
+  "message Reject (msgtype 3)": "2445ce6f0b6428b8",
+  "message TestRequest (msgtype 1)": "3055150ecc81f64d",
+  "trailer": "31d390a6fb1c84b5"
+ }
+}

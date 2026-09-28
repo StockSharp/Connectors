@@ -1,0 +1,10 @@
+{
+ "key": "binance-ws-streams-spot",
+ "venue": "Binance",
+ "format": "raw",
+ "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/web-socket-streams.md",
+ "entries": 1,
+ "shape": {
+  "file": "32bf73a0bed3b75e"
+ }
+}

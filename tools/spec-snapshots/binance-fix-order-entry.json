@@ -1,0 +1,30 @@
+{
+ "key": "binance-fix-order-entry",
+ "venue": "Binance",
+ "format": "fix_xml",
+ "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/fix/schemas/spot-fix-oe.xml",
+ "entries": 21,
+ "shape": {
+  "header": "cde323e962d4a4a8",
+  "message ExecutionReport (msgtype 8)": "26c69c0cf1976bed",
+  "message Heartbeat (msgtype 0)": "f0dc0c64fe29c0d2",
+  "message LimitQuery (msgtype XLQ)": "274a897e0920d299",
+  "message LimitResponse (msgtype XLR)": "c9b896fabdc6c426",
+  "message ListStatus (msgtype N)": "c3aa0894f176d826",
+  "message Logon (msgtype A)": "da28f21a1d2f645b",
+  "message Logout (msgtype 5)": "20a6d4fabe175081",
+  "message NewOrderList (msgtype E)": "4fa5ab882b0414a3",
+  "message NewOrderSingle (msgtype D)": "f5b7777b722b104e",
+  "message News (msgtype B)": "88da0d3abd77887f",
+  "message OrderAmendKeepPriorityRequest (msgtype XAK)": "a4b8750904066111",
+  "message OrderAmendReject (msgtype XAR)": "09fd2cf6d4acbebf",
+  "message OrderCancelReject (msgtype 9)": "2ee3b6b2dc092d93",
+  "message OrderCancelRequest (msgtype F)": "dee4d20196aea32c",
+  "message OrderCancelRequestAndNewOrderSingle (msgtype XCN)": "c8b777e54fd883c6",
+  "message OrderMassCancelReport (msgtype r)": "55d9fb6f3a21783d",
+  "message OrderMassCancelRequest (msgtype q)": "c23b5c2ba437ccee",
+  "message Reject (msgtype 3)": "2445ce6f0b6428b8",
+  "message TestRequest (msgtype 1)": "3055150ecc81f64d",
+  "trailer": "31d390a6fb1c84b5"
+ }
+}

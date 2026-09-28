@@ -1,0 +1,10 @@
+{
+ "key": "binance-sbe-prod-pointer",
+ "venue": "Binance",
+ "format": "raw",
+ "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/sbe/schemas/spot_prod_latest.xml",
+ "entries": 1,
+ "shape": {
+  "file": "a76d997139ab32ea"
+ }
+}

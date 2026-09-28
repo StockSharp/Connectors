@@ -1,0 +1,25 @@
+{
+ "key": "bybit-market",
+ "venue": "Bybit",
+ "format": "openapi",
+ "url": "https://raw.githubusercontent.com/bybit-exchange/docs/master/yml-folder/v5/market.yaml",
+ "entries": 16,
+ "shape": {
+  "GET /v5/market/account-ratio": "01ae6c08e3e54a9e",
+  "GET /v5/market/delivery-price": "1dc1416b66fa8834",
+  "GET /v5/market/funding/history": "b40ca177d911e6e1",
+  "GET /v5/market/historical-volatility": "61dd3e4209d2e2a8",
+  "GET /v5/market/index-price-kline": "93b323167459b2f4",
+  "GET /v5/market/instruments-info": "2b0f3ca268ddd35f",
+  "GET /v5/market/insurance": "892f56f8fc7d394d",
+  "GET /v5/market/kline": "93b323167459b2f4",
+  "GET /v5/market/mark-price-kline": "93b323167459b2f4",
+  "GET /v5/market/open-interest": "bcaf3cadcd5f1b1f",
+  "GET /v5/market/orderbook": "14f774ebcefc1565",
+  "GET /v5/market/premium-index-price-kline": "93b323167459b2f4",
+  "GET /v5/market/recent-trade": "051db7cf98a2e883",
+  "GET /v5/market/risk-limit": "a5884cb140beb932",
+  "GET /v5/market/tickers": "a3daadcb5c9590d1",
+  "GET /v5/market/time": "2ef2713b1bd0b047"
+ }
+}

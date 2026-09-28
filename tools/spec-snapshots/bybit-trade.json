@@ -1,0 +1,19 @@
+{
+ "key": "bybit-trade",
+ "venue": "Bybit",
+ "format": "openapi",
+ "url": "https://raw.githubusercontent.com/bybit-exchange/docs/master/yml-folder/v5/trade.yaml",
+ "entries": 10,
+ "shape": {
+  "GET /v5/order/history": "c68670c8eefe40a0",
+  "GET /v5/order/realtime": "94e91e377371be25",
+  "GET /v5/order/spot-borrow-check": "94c8705f661a7160",
+  "POST /v5/order/amend": "6ba29168619adafa",
+  "POST /v5/order/amend-batch": "6ba29168619adafa",
+  "POST /v5/order/cancel": "6ba29168619adafa",
+  "POST /v5/order/cancel-all": "6ba29168619adafa",
+  "POST /v5/order/cancel-batch": "6ba29168619adafa",
+  "POST /v5/order/create": "6ba29168619adafa",
+  "POST /v5/order/create-batch": "6ba29168619adafa"
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "key": "mexc-ws-proto",
+ "venue": "MEXC",
+ "format": "proto",
+ "url": "https://raw.githubusercontent.com/mexcdevelop/websocket-proto/main/PushDataV3ApiWrapper.proto",
+ "entries": 1,
+ "shape": {
+  "message PushDataV3ApiWrapper": "07eca4454bfeb6c8"
+ }
+}
