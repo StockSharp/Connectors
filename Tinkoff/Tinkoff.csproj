@@ -10,5 +10,10 @@
     <PackageReference Include="Ecng.IO.Compression" Version="$(EcngVer)" />
     <PackageReference Include="Grpc.Net.Client" Version="$(GrpcVer)" />
     <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVer)" />
+    <PackageReference Include="Grpc.Tools" Version="$(GrpcVer)" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Native\Protos\**\*.proto" ProtoRoot="Native\Protos" GrpcServices="Client" Access="Internal" />
   </ItemGroup>
 </Project>

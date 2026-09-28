@@ -614,6 +614,7 @@ public partial class TinkoffMessageAdapter
 			}
 			.TryAdd(PositionChangeTypes.CurrentValue, portfolio.TotalAmountPortfolio?.ToDecimal(), true)
 			.TryAdd(PositionChangeTypes.RealizedPnL, portfolio.ExpectedYield?.ToDecimal(), true)
+			.TryAdd(PositionChangeTypes.VariationMargin, portfolio.TotalVarMargin?.ToDecimal(), true)
 			, cancellationToken);
 
 			foreach (var position in portfolio.Positions)
