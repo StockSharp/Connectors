@@ -5,150 +5,233 @@
       "key": "deribit-rest",
       "venue": "Deribit",
       "format": "openapi",
-      "url": "https://docs.deribit.com/specifications/deribit_openapi.json"
+      "url": "https://docs.deribit.com/specifications/deribit_openapi.json",
+      "connectors": [
+        "Deribit"
+      ]
     },
     {
       "key": "deribit-rest-upcoming",
       "venue": "Deribit",
       "format": "openapi",
       "url": "https://docs.deribit.com/specifications/deribit_upcoming_openapi.json",
-      "note": "The next release's shape. Diffing this against deribit-rest says what is about to change, before it ships."
+      "note": "The next release's shape. Diffing this against deribit-rest says what is about to change, before it ships.",
+      "connectors": [
+        "Deribit"
+      ]
     },
     {
       "key": "deribit-ws",
       "venue": "Deribit",
       "format": "asyncapi",
-      "url": "https://docs.deribit.com/specifications/deribit_asyncapi.json"
+      "url": "https://docs.deribit.com/specifications/deribit_asyncapi.json",
+      "connectors": [
+        "Deribit"
+      ]
     },
     {
       "key": "deribit-ws-upcoming",
       "venue": "Deribit",
       "format": "asyncapi",
-      "url": "https://docs.deribit.com/specifications/deribit_upcoming_asyncapi.json"
+      "url": "https://docs.deribit.com/specifications/deribit_upcoming_asyncapi.json",
+      "connectors": [
+        "Deribit"
+      ]
     },
     {
       "key": "coinbase-rest",
       "venue": "Coinbase",
       "format": "openapi",
-      "url": "https://docs.cdp.coinbase.com/api-reference/advanced-trade-api/rest-api/advanced-trade-spec.yaml"
+      "url": "https://docs.cdp.coinbase.com/api-reference/advanced-trade-api/rest-api/advanced-trade-spec.yaml",
+      "connectors": [
+        "Coinbase"
+      ]
     },
     {
       "key": "coinbase-ws",
       "venue": "Coinbase",
       "format": "asyncapi",
-      "url": "https://docs.cdp.coinbase.com/api-reference/advanced-trade-api/advanced-trade-asyncapi.json"
+      "url": "https://docs.cdp.coinbase.com/api-reference/advanced-trade-api/advanced-trade-asyncapi.json",
+      "connectors": [
+        "Coinbase"
+      ]
     },
     {
       "key": "kraken-spot",
       "venue": "Kraken",
       "format": "openapi",
-      "url": "https://docs.kraken.com/openapi/spot-rest.yaml"
+      "url": "https://docs.kraken.com/openapi/spot-rest.yaml",
+      "connectors": [
+        "Kraken"
+      ]
     },
     {
       "key": "cryptocom-exchange",
       "venue": "Crypto.com",
       "format": "openapi",
       "url": "https://exchange-developer.crypto.com/exchange/v1/openapi/exchange-openapi.generated.yaml",
-      "note": "Not linked from their documentation; the path comes from their own CLI."
+      "note": "Not linked from their documentation; the path comes from their own CLI.",
+      "connectors": [
+        "CryptoCom"
+      ]
     },
     {
       "key": "binance-sbe-lifecycle",
       "venue": "Binance",
       "format": "raw",
       "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/sbe/schemas/sbe_schema_lifecycle_prod.json",
-      "note": "Names the live schema id and version with its release and retirement dates. The cheapest thing to watch for Binance."
+      "note": "Names the live schema id and version with its release and retirement dates. The cheapest thing to watch for Binance.",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-sbe-prod-pointer",
       "venue": "Binance",
       "format": "raw",
       "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/sbe/schemas/spot_prod_latest.xml",
-      "note": "Twelve bytes naming the schema file production is on."
+      "note": "Twelve bytes naming the schema file production is on.",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-fix-market-data",
       "venue": "Binance",
       "format": "fix_xml",
-      "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/fix/schemas/spot-fix-md.xml"
+      "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/fix/schemas/spot-fix-md.xml",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-fix-order-entry",
       "venue": "Binance",
       "format": "fix_xml",
-      "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/fix/schemas/spot-fix-oe.xml"
+      "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/fix/schemas/spot-fix-oe.xml",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-postman-spot",
       "venue": "Binance",
       "format": "postman",
-      "url": "https://raw.githubusercontent.com/binance/binance-api-postman/master/collections/Binance%20Spot%20API.json"
+      "url": "https://raw.githubusercontent.com/binance/binance-api-postman/master/collections/Binance%20Spot%20API.json",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-postman-usds-futures",
       "venue": "Binance",
       "format": "postman",
       "url": "https://raw.githubusercontent.com/binance/binance-api-postman/master/collections/Binance%20Derivatives%20Trading%20USDS%20Futures%20API.json",
-      "note": "fapi, which the connector uses and the spot documentation does not cover."
+      "note": "fapi, which the connector uses and the spot documentation does not cover.",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-postman-coin-futures",
       "venue": "Binance",
       "format": "postman",
       "url": "https://raw.githubusercontent.com/binance/binance-api-postman/master/collections/Binance%20Derivatives%20Trading%20COIN%20Futures%20API.json",
-      "note": "dapi."
+      "note": "dapi.",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-changelog-spot",
       "venue": "Binance",
       "format": "raw",
       "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/CHANGELOG.md",
-      "note": "Hand-written, but in git and current, so a change here points at what the structured sources cannot show."
+      "note": "Hand-written, but in git and current, so a change here points at what the structured sources cannot show.",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-ws-streams-spot",
       "venue": "Binance",
       "format": "raw",
       "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/web-socket-streams.md",
-      "note": "The market streams the connector subscribes to. Prose, so this only says that something moved; the diff is in their repository."
+      "note": "The market streams the connector subscribes to. Prose, so this only says that something moved; the diff is in their repository.",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "binance-user-data-stream-spot",
       "venue": "Binance",
       "format": "raw",
       "url": "https://raw.githubusercontent.com/binance/binance-spot-api-docs/master/user-data-stream.md",
-      "note": "The private stream behind listenKey."
+      "note": "The private stream behind listenKey.",
+      "connectors": [
+        "Binance",
+        "BinanceHistory"
+      ]
     },
     {
       "key": "bybit-market",
       "venue": "Bybit",
       "format": "openapi",
       "url": "https://raw.githubusercontent.com/bybit-exchange/docs/master/yml-folder/v5/market.yaml",
-      "note": "Their spec folder has not moved since December 2023; watched anyway, because the day it does move is worth knowing."
+      "note": "Their spec folder has not moved since December 2023; watched anyway, because the day it does move is worth knowing.",
+      "connectors": [
+        "ByBit",
+        "ByBitHistory"
+      ]
     },
     {
       "key": "bybit-trade",
       "venue": "Bybit",
       "format": "openapi",
-      "url": "https://raw.githubusercontent.com/bybit-exchange/docs/master/yml-folder/v5/trade.yaml"
+      "url": "https://raw.githubusercontent.com/bybit-exchange/docs/master/yml-folder/v5/trade.yaml",
+      "connectors": [
+        "ByBit",
+        "ByBitHistory"
+      ]
     },
     {
       "key": "kucoin-spot-order",
       "venue": "KuCoin",
       "format": "openapi",
-      "url": "https://raw.githubusercontent.com/Kucoin/kucoin-universal-sdk/main/spec/rest/api/openapi-spot-order.json"
+      "url": "https://raw.githubusercontent.com/Kucoin/kucoin-universal-sdk/main/spec/rest/api/openapi-spot-order.json",
+      "connectors": [
+        "Kucoin",
+        "KucoinHistory"
+      ]
     },
     {
       "key": "mexc-ws-proto",
       "venue": "MEXC",
       "format": "proto",
-      "url": "https://raw.githubusercontent.com/mexcdevelop/websocket-proto/main/PushDataV3ApiWrapper.proto"
+      "url": "https://raw.githubusercontent.com/mexcdevelop/websocket-proto/main/PushDataV3ApiWrapper.proto",
+      "connectors": [
+        "Mexc"
+      ]
     },
     {
       "key": "tinkoff-marketdata",
       "venue": "T-Bank",
       "format": "proto",
       "url": "https://raw.githubusercontent.com/RussianInvestments/investAPI/main/src/docs/contracts/marketdata.proto",
-      "note": "The contracts also sit in the Tinkoff checkout beside this repository; watched here so a release is noticed without cloning it."
+      "note": "The contracts also sit in the Tinkoff checkout beside this repository; watched here so a release is noticed without cloning it.",
+      "connectors": [
+        "Tinkoff"
+      ]
     }
-  ]
+  ],
+  "//connectors": "Which connector projects a source speaks for. Written out rather than guessed from the venue name: CryptoQuant is not Crypto.com, and T-Bank's folder is called Tinkoff."
 }

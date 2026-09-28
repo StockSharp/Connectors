@@ -301,6 +301,7 @@ class Source:
     fmt: str
     url: str
     note: str = ""
+    connectors: tuple = ()
 
     @property
     def snapshot(self) -> Path:
@@ -314,6 +315,7 @@ def load_sources() -> list[Source]:
         out.append(Source(
             key=entry["key"], venue=entry["venue"], fmt=entry["format"],
             url=entry["url"], note=entry.get("note", ""),
+            connectors=tuple(entry.get("connectors", ())),
         ))
     unknown = sorted({s.fmt for s in out} - set(SHAPES))
     if unknown:
@@ -345,7 +347,7 @@ def compare(old: dict[str, str], new: dict[str, str]):
 def cmd_list(sources: list[Source]) -> int:
     for s in sources:
         state = "recorded" if s.snapshot.exists() else "never recorded"
-        print("  %-26s %-9s %-14s %s" % (s.key, s.fmt, state, s.venue))
+        print("  %-26s %-9s %-14s %s" % (s.key, s.fmt, state, ", ".join(s.connectors) or s.venue))
         print("      %s" % s.url)
         if s.note:
             print("      %s" % s.note)
@@ -355,6 +357,7 @@ def cmd_list(sources: list[Source]) -> int:
 def cmd_check(sources: list[Source], timeout: int, update: bool) -> int:
     changed_any = False
     unreachable = []
+    touched: dict[str, list[str]] = {}
 
     for s in sources:
         try:
@@ -379,6 +382,8 @@ def cmd_check(sources: list[Source], timeout: int, update: bool) -> int:
             continue
 
         changed_any = True
+        for connector in s.connectors:
+            touched.setdefault(connector, []).append(s.key)
         print("  %-26s %d entries: %d added, %d removed, %d changed"
               % (s.key, len(new), len(added), len(gone), len(altered)))
         for label, items in (("+", added), ("-", gone), ("~", altered)):
@@ -388,6 +393,13 @@ def cmd_check(sources: list[Source], timeout: int, update: bool) -> int:
                 print("      %s ... and %d more" % (label, len(items) - 12))
         if update:
             write_snapshot(s, new)
+
+    if touched:
+        # The point of the run: which connectors somebody has to go and look at.
+        print()
+        print("  Connectors to look at:")
+        for connector, keys in sorted(touched.items()):
+            print("      %-22s %s" % (connector, ", ".join(sorted(keys))))
 
     if unreachable:
         return 2
