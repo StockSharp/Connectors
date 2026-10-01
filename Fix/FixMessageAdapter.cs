@@ -451,6 +451,11 @@ public partial class FixMessageAdapter : MessageAdapter
 					await foreach (var msg in dialect.ReadAsync(silenceSource.Token))
 						messages.Add(msg);
 
+					// The dialect stops in front of the checksum that ends a frame; reading it verifies the frame
+					// and leaves the reader at the start of the next one.
+					if (reader.LastTag == FixTags.CheckSum && !reader.IsValueRead)
+						await reader.ReadTrailerAsync(silenceSource.Token);
+
 					silenceSource.CancelAfter(Timeout.InfiniteTimeSpan);
 				}
 				catch (Exception ex)
