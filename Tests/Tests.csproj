@@ -6,6 +6,7 @@
     <ProjectReference Include="..\Aevo\Aevo.csproj" />
     <ProjectReference Include="..\AlorHistory\AlorHistory.csproj" />
     <ProjectReference Include="..\Alpaca\Alpaca.csproj" />
+    <ProjectReference Include="..\LMAX\LMAX.csproj" />
 	<ProjectReference Include="..\AltCoinTrader\AltCoinTrader.csproj" />
     <ProjectReference Include="..\ApexOmni\ApexOmni.csproj" />
 	<ProjectReference Include="..\AscendEx\AscendEx.csproj" />

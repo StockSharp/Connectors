@@ -219,7 +219,5 @@ public partial class ByBitMessageAdapter : MessageAdapter, IKeySecretAdapter, ID
 
 	/// <inheritdoc />
 	public override string ToString()
-	{
-		return $"{base.ToString()}: {LocalizedStrings.Key} = {Key.ToId()}";
-	}
+		=> Key.IsEmpty() ? base.ToString() : $"{base.ToString()}: {LocalizedStrings.Key} = {Key.ToId()}";
 }

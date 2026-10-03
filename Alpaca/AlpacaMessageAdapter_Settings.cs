@@ -295,5 +295,5 @@ public partial class AlpacaMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 
 	/// <inheritdoc />
 	public override string ToString()
-		=> base.ToString() + $": {LocalizedStrings.Key} = {Key.ToId()}";
+		=> Key.IsEmpty() ? base.ToString() : $"{base.ToString()}: {LocalizedStrings.Key} = {Key.ToId()}";
 }
