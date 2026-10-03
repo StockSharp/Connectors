@@ -116,7 +116,12 @@ public partial class ByBitMessageAdapter
 			try
 			{
 				UnsubscribePusherClient(client);
-				await client.DisconnectAsync(cancellationToken);
+
+				// A disconnect has closed it already, and a socket closed twice answers with an error.
+				if (client.IsConnected)
+					await client.DisconnectAsync(cancellationToken);
+
+				client.Dispose();
 			}
 			catch (Exception ex)
 			{

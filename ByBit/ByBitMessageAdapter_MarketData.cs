@@ -56,13 +56,16 @@ public partial class ByBitMessageAdapter
 				if (coin == "BIT")
 					coin = null;
 
+				var priceStep = instrument.PriceFilter?.TickSize?.ToDecimal();
+
 				var secMsg = new SecurityMessage
 				{
 					SecurityId = instrument.Symbol.ToStockSharp(section),
 					SecurityType = secType,
-					PriceStep = instrument.PriceFilter?.TickSize?.ToDecimal(),
+					PriceStep = priceStep,
 					VolumeStep = (sizeFilter?.QtyStep ?? sizeFilter.BasePrecision)?.ToDecimal(),
-					Decimals = instrument.PriceScale,
+					// The venue gives a price scale for its derivatives alone; a spot price has as many decimals as its step.
+					Decimals = instrument.PriceScale ?? priceStep?.GetCachedDecimals(),
 					MinVolume = sizeFilter?.MinOrderQty?.ToDecimal(),
 					MaxVolume = sizeFilter?.MaxOrderQty?.ToDecimal(),
 					Currency = coin.FromMicexCurrencyName(ex => this.AddDebugLog(ex.ToString())),

@@ -84,7 +84,12 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 		return new(adapter);
 	}
 
-	private async Task RunAsync(Func<MarketDataTestHarness, Task> body)
+	/// <summary>
+	/// Runs a check against a session of its own with the venue.
+	/// </summary>
+	/// <param name="body">The check.</param>
+	/// <returns>A task that completes when the check is done.</returns>
+	private protected async Task RunAsync(Func<MarketDataTestHarness, Task> body)
 	{
 		var harness = CreateHarness();
 
@@ -139,7 +144,13 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 			: frames.Min();
 	}
 
-	private void CheckData<TMessage>(MarketDataResult<TMessage> result, string what)
+	/// <summary>
+	/// Fails a check that received nothing, and leaves one the adapter does not support inconclusive.
+	/// </summary>
+	/// <typeparam name="TMessage">What was asked for.</typeparam>
+	/// <param name="result">What came back.</param>
+	/// <param name="what">What was asked for, in words.</param>
+	private protected void CheckData<TMessage>(MarketDataResult<TMessage> result, string what)
 		where TMessage : Message
 	{
 		if (result.IsNotSupported)

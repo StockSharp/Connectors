@@ -47,6 +47,8 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 		_client.PostConnect += OnPostConnect;
 	}
 
+	public bool IsConnected => _client.IsConnected;
+
 	protected override void DisposeManaged()
 	{
 		_client.PostConnect -= OnPostConnect;

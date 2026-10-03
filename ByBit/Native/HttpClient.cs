@@ -40,11 +40,13 @@ class HttpClient(string baseMdUrl, string baseTsUrl, Authenticator authenticator
 		if (limit.HasValue)
 			request.AddParameter("limit", limit.Value);
 
+		// The candles take "start" and "end", unlike the open interest and the volatility beside them; under any other
+		// name the moment is ignored and the latest page comes back instead.
 		if (startTime.HasValue)
-			request.AddParameter("startTime", startTime.Value);
+			request.AddParameter("start", startTime.Value);
 
 		if (endTime.HasValue)
-			request.AddParameter("endTime", endTime.Value);
+			request.AddParameter("end", endTime.Value);
 
 		return MakeRequest<Kline>(_baseMdUrl, request, false, cancellationToken);
 	}
