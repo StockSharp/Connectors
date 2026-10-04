@@ -44,7 +44,8 @@ public partial class CSVMessageAdapter
 			if (SecurityImportSettings != null)
 				this.AddSupportedMessage(MessageTypes.SecurityLookup, true);
 
-			if (AsyncHelper.Run(() => GetSupportedMarketDataTypesAsync(default, default, default).AnyAsync()))
+			// every import setting names a data type, which is what the adapter offers as market data
+			if (_settings.Any())
 				this.AddSupportedMessage(MessageTypes.MarketData, true);
 
 			if (PortfolioImportSettings != null)
