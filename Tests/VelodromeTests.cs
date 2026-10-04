@@ -38,7 +38,7 @@ public class VelodromeTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointsAndRiskControls()
+	public async Task SettingsRoundTripKeepsEndpointsAndRiskControls()
 	{
 		var source = new VelodromeMessageAdapter(
 			new IncrementalIdGenerator())
@@ -60,11 +60,11 @@ public class VelodromeTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(8),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new VelodromeMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(source.WalletAddress, target.WalletAddress);
 		AreEqual("secret", target.PrivateKey.UnSecure());

@@ -183,9 +183,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <inheritdoc />
-    public override void Save(SettingsStorage storage)
+    public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Save(storage);
+        await base.SaveAsync(storage, cancellationToken);
         storage
             .Set(nameof(ClientId), ClientId)
             .Set(nameof(OAuthClientId), OAuthClientId)
@@ -203,9 +203,9 @@ public partial class MastertrustMessageAdapter : MessageAdapter, ITokenAdapter
     }
 
     /// <inheritdoc />
-    public override void Load(SettingsStorage storage)
+    public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Load(storage);
+        await base.LoadAsync(storage, cancellationToken);
         ClientId = storage.GetValue<string>(nameof(ClientId));
         OAuthClientId = storage.GetValue<string>(nameof(OAuthClientId));
         OAuthClientSecret = storage.GetValue<SecureString>(nameof(OAuthClientSecret));

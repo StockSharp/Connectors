@@ -212,9 +212,9 @@ public partial class ZeroXMessageAdapter : MessageAdapter
 	public bool IsAutoApprove { get; set; } = true;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(ApiKey), ApiKey)
 			.Set(nameof(Chain), Chain)
@@ -231,9 +231,9 @@ public partial class ZeroXMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		ApiKey = storage.GetValue<SecureString>(nameof(ApiKey));
 		Chain = storage.GetValue(nameof(Chain), Chain);
 		if (!System.Enum.IsDefined(Chain))

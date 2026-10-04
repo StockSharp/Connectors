@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -33,7 +34,7 @@ public class ZondaCryptoTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new ZondaCryptoMessageAdapter(
 			new IncrementalIdGenerator())
@@ -45,11 +46,11 @@ public class ZondaCryptoTests : BaseTestClass
 			PrivatePollingInterval = TimeSpan.FromSeconds(17),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new ZondaCryptoMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("public", target.Key.UnSecure());
 		AreEqual("secret", target.Secret.UnSecure());

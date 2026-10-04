@@ -157,9 +157,9 @@ public partial class CoinGeckoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Tier), Tier)
 			.Set(nameof(Token), Token)
@@ -175,9 +175,9 @@ public partial class CoinGeckoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Tier = storage.GetValue(nameof(Tier), Tier);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		ApiEndpoint = storage.GetValue(nameof(ApiEndpoint), ApiEndpoint);
@@ -193,8 +193,8 @@ public partial class CoinGeckoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new CoinGeckoMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new CoinGeckoMessageAdapter(TransactionIdGenerator)
 		{
 			Tier = Tier,
 			Token = Token,
@@ -207,7 +207,7 @@ public partial class CoinGeckoMessageAdapter
 			MaximumItems = MaximumItems,
 			PoolSearchPages = PoolSearchPages,
 			HistoryLimit = HistoryLimit,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString() => base.ToString() + $": {Tier}";

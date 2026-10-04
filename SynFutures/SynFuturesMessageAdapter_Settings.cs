@@ -196,9 +196,9 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(ApiEndpoint), ApiEndpoint)
 			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
@@ -216,9 +216,9 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		ApiEndpoint = NormalizeEndpoint(storage.GetValue(nameof(ApiEndpoint),
 			ApiEndpoint), false, nameof(ApiEndpoint));
 		WebSocketEndpoint = NormalizeEndpoint(storage.GetValue(
@@ -243,8 +243,8 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new SynFuturesMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new SynFuturesMessageAdapter(TransactionIdGenerator)
 		{
 			ApiEndpoint = ApiEndpoint,
 			WebSocketEndpoint = WebSocketEndpoint,
@@ -259,7 +259,7 @@ public partial class SynFuturesMessageAdapter : MessageAdapter
 			AccountRefreshInterval = AccountRefreshInterval,
 			HistoryLimit = HistoryLimit,
 			MarketDepth = MarketDepth,
-		};
+		});
 
 	private static string NormalizeEndpoint(string endpoint, bool isWebSocket,
 		string parameterName)

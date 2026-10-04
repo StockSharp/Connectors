@@ -143,7 +143,7 @@ public class NorenTests : BaseTestClass
     }
 
     [TestMethod]
-    public void ShoonyaFacadeLoadsLegacyProductSetting()
+    public async Task ShoonyaFacadeLoadsLegacyProductSetting()
     {
         var storage = new SettingsStorage()
             .Set(
@@ -152,11 +152,11 @@ public class NorenTests : BaseTestClass
         var adapter = new ShoonyaMessageAdapter(
             new IncrementalIdGenerator());
 
-        adapter.Load(storage);
+        await adapter.LoadAsync(storage, CancellationToken);
 
         AreEqual(ShoonyaProducts.Normal, adapter.DefaultProduct);
         var saved = new SettingsStorage();
-        adapter.Save(saved);
+        await adapter.SaveAsync(saved, CancellationToken);
         AreEqual(
             NorenProducts.Normal,
             saved.GetValue<object>(
@@ -175,7 +175,7 @@ public class NorenTests : BaseTestClass
 
         var zebuAdapter = new ZebuMessageAdapter(
             new IncrementalIdGenerator());
-        zebuAdapter.Load(storage);
+        await zebuAdapter.LoadAsync(storage, CancellationToken);
         AreEqual(NorenProducts.Normal, zebuAdapter.DefaultProduct);
 
         var condition = new ShoonyaOrderCondition();

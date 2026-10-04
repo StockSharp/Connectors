@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -36,7 +37,7 @@ public class AscendExTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new AscendExMessageAdapter(
 			new IncrementalIdGenerator())
@@ -52,11 +53,11 @@ public class AscendExTests : BaseTestClass
 				"wss://futures.example.test/stream/",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new AscendExMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("public-key", target.Key.UnSecure());
 		AreEqual("private-secret", target.Secret.UnSecure());

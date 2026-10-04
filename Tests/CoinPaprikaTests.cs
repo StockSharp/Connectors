@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -33,7 +34,7 @@ public class CoinPaprikaTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointAndFilters()
+	public async Task SettingsRoundTripKeepsEndpointAndFilters()
 	{
 		var source = new CoinPaprikaMessageAdapter(
 			new IncrementalIdGenerator())
@@ -50,11 +51,11 @@ public class CoinPaprikaTests : BaseTestClass
 			HistoryLimit = 123,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new CoinPaprikaMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("token", target.Token.UnSecure());
 		AreEqual(

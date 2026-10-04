@@ -75,9 +75,9 @@ public partial class TinkoffMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 	public string HistoryEndpoint { get; set; } = _defaultHistoryEndpoint;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 
 		storage
 			.Set(nameof(Token), Token)
@@ -88,9 +88,9 @@ public partial class TinkoffMessageAdapter : MessageAdapter, ITokenAdapter, IDem
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));

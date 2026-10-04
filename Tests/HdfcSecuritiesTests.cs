@@ -31,7 +31,7 @@ using StockSharp.Messages;
 public class HdfcSecuritiesTests : BaseTestClass
 {
 	[TestMethod]
-	public void SettingsRoundTripKeepsAuthenticationAndEndpoints()
+	public async Task SettingsRoundTripKeepsAuthenticationAndEndpoints()
 	{
 		var source = new HdfcMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -49,10 +49,10 @@ public class HdfcSecuritiesTests : BaseTestClass
 			WebSocketAddress = new("wss://stream.example.test/session"),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new HdfcMessageAdapter(new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(source.Key.UnSecure(), target.Key.UnSecure());
 		AreEqual(source.Secret.UnSecure(), target.Secret.UnSecure());

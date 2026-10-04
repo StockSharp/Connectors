@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -32,7 +33,7 @@ public class QuidaxTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new QuidaxMessageAdapter(
 			new IncrementalIdGenerator())
@@ -43,11 +44,11 @@ public class QuidaxTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(9),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new QuidaxMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("secret-token", target.Token.UnSecure());
 		AreEqual("sub-user-42", target.UserId);

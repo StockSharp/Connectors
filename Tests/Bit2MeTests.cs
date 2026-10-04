@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -30,7 +31,7 @@ public class Bit2MeTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new Bit2MeMessageAdapter(
 			new IncrementalIdGenerator())
@@ -41,11 +42,11 @@ public class Bit2MeTests : BaseTestClass
 			WebSocketEndpoint = "wss://stream.example.test/trading/",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new Bit2MeMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("api-key", target.Key.UnSecure());
 		AreEqual("api-secret", target.Secret.UnSecure());

@@ -104,7 +104,7 @@ public class DerivTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsAuthenticationAndEndpoints()
+	public async Task SettingsRoundTripKeepsAuthenticationAndEndpoints()
 	{
 		var source = new DerivMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -116,10 +116,10 @@ public class DerivTests : BaseTestClass
 			PublicWebSocketAddress = "wss://example.test/public",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new DerivMessageAdapter(new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("secret-token", target.Token.UnSecure());
 		AreEqual(source.AppId, target.AppId);

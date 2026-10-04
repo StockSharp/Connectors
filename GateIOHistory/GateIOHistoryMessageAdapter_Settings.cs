@@ -31,17 +31,17 @@ public partial class GateIOHistoryMessageAdapter : HistoricalMessageAdapter
 	public bool CheckDates { get; set; } = true;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 
 		storage.SetValue(nameof(CheckDates), CheckDates);
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 
 		CheckDates = storage.GetValue(nameof(CheckDates), CheckDates);
 	}

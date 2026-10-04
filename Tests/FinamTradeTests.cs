@@ -3,6 +3,7 @@ namespace StockSharp.Connectors.Tests;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -21,7 +22,7 @@ using StockSharp.Messages;
 public class FinamTradeTests : BaseTestClass
 {
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new FinamTradeMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -34,10 +35,10 @@ public class FinamTradeTests : BaseTestClass
 			WebSocketAddress = "wss://stream.example.test/ws",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new FinamTradeMessageAdapter(new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("secret-token", target.Token.UnSecure());
 		AreEqual(source.AccountId, target.AccountId);

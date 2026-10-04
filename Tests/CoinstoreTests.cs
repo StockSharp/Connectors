@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -30,7 +31,7 @@ public class CoinstoreTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new CoinstoreMessageAdapter(
 			new IncrementalIdGenerator())
@@ -41,11 +42,11 @@ public class CoinstoreTests : BaseTestClass
 			WebSocketEndpoint = "wss://stream.example.test/ws/",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new CoinstoreMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("public-key", target.Key.UnSecure());
 		AreEqual("private-secret", target.Secret.UnSecure());

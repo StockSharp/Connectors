@@ -52,7 +52,7 @@ public class StonFiTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointsWalletAndLimits()
+	public async Task SettingsRoundTripKeepsEndpointsWalletAndLimits()
 	{
 		var source = new StonFiMessageAdapter(
 			new IncrementalIdGenerator())
@@ -74,11 +74,11 @@ public class StonFiTests : BaseTestClass
 			TransactionTimeout = TimeSpan.FromMinutes(20),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new StonFiMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("https://api.example.test", target.ApiEndpoint);
 		AreEqual("https://ton.example.test", target.TonCenterEndpoint);

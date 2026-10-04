@@ -178,9 +178,9 @@ public partial class StandXMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(RestEndpoint), RestEndpoint)
 			.Set(nameof(AuthEndpoint), AuthEndpoint)
@@ -196,9 +196,9 @@ public partial class StandXMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		RestEndpoint = NormalizeEndpoint(storage.GetValue(nameof(RestEndpoint),
 			RestEndpoint), false, nameof(RestEndpoint));
 		AuthEndpoint = NormalizeEndpoint(storage.GetValue(nameof(AuthEndpoint),

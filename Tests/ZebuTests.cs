@@ -28,7 +28,7 @@ using StockSharp.Zebu.Native;
 public class ZebuTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsOAuthAndNorenConfiguration()
+    public async Task SettingsRoundTripKeepsOAuthAndNorenConfiguration()
     {
         var expires = new DateTime(
             2026,
@@ -58,10 +58,10 @@ public class ZebuTests : BaseTestClass
             WebSocketEndpoint = "wss://stream.example.test/",
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new ZebuMessageAdapter(new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.Key.UnSecure(), target.Key.UnSecure());
         AreEqual(source.Secret.UnSecure(), target.Secret.UnSecure());

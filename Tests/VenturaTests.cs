@@ -28,7 +28,7 @@ using StockSharp.Ventura.Native;
 public class VenturaTests : BaseTestClass
 {
 	[TestMethod]
-	public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+	public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
 	{
 		var source = new VenturaMessageAdapter(
 			new IncrementalIdGenerator())
@@ -51,11 +51,11 @@ public class VenturaTests : BaseTestClass
 			OrderStatusAddress = new("wss://stream.example.test/orders"),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new VenturaMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(source.Key.UnSecure(), target.Key.UnSecure());
 		AreEqual(source.Secret.UnSecure(), target.Secret.UnSecure());

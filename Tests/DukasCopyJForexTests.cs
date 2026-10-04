@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -15,7 +16,7 @@ using StockSharp.Messages;
 public class DukasCopyJForexTests : BaseTestClass
 {
 	[TestMethod]
-	public void SettingsRoundTripKeepsJForexConnectionOptions()
+	public async Task SettingsRoundTripKeepsJForexConnectionOptions()
 	{
 		var source = new DukasCopyJForexMessageAdapter(
 			new IncrementalIdGenerator())
@@ -29,11 +30,11 @@ public class DukasCopyJForexTests : BaseTestClass
 			BridgeJarPath = @"C:\bridges\dukascopy-jforex.jar",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new DukasCopyJForexMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(source.Login, target.Login);
 		AreEqual("demo-password", target.Password.UnSecure());

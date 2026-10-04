@@ -52,18 +52,18 @@ public partial class VariationalOmniMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Endpoint), Endpoint)
 			.Set(nameof(PollingInterval), PollingInterval);
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Endpoint = NormalizeEndpoint(storage.GetValue(nameof(Endpoint), Endpoint));
 		PollingInterval = storage.GetValue(nameof(PollingInterval),
 			PollingInterval);

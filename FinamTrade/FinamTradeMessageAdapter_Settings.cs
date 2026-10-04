@@ -106,9 +106,9 @@ public partial class FinamTradeMessageAdapter : MessageAdapter, ITokenAdapter
 	public string WebSocketAddress { get; set; } = _defaultWebSocketAddress;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Token), Token)
 			.Set(nameof(AccountId), AccountId)
@@ -120,9 +120,9 @@ public partial class FinamTradeMessageAdapter : MessageAdapter, ITokenAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		AccountId = storage.GetValue(nameof(AccountId), AccountId);
 		AppId = storage.GetValue(nameof(AppId), AppId);

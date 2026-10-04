@@ -32,9 +32,9 @@ public abstract partial class NorenMessageAdapter : MessageAdapter, ITokenAdapte
 	public abstract string WebSocketEndpoint { get; set; }
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(UserId), UserId)
 			.Set(nameof(AccountId), AccountId)
@@ -47,9 +47,9 @@ public abstract partial class NorenMessageAdapter : MessageAdapter, ITokenAdapte
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		UserId = storage.GetValue<string>(nameof(UserId));
 		AccountId = storage.GetValue<string>(nameof(AccountId));
 		Token = storage.GetValue<SecureString>(nameof(Token));

@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -35,7 +36,7 @@ public class CoinSpotTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new CoinSpotMessageAdapter(
 			new IncrementalIdGenerator())
@@ -48,11 +49,11 @@ public class CoinSpotTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(17),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new CoinSpotMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("key", target.Key.UnSecure());
 		AreEqual("secret", target.Secret.UnSecure());

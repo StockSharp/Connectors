@@ -32,7 +32,7 @@ using StockSharp.Nubra.Native.Protocol;
 public class NubraTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsAuthenticationAndEndpoints()
+    public async Task SettingsRoundTripKeepsAuthenticationAndEndpoints()
     {
         var source = new NubraMessageAdapter(new IncrementalIdGenerator())
         {
@@ -52,10 +52,10 @@ public class NubraTests : BaseTestClass
             UatMarketDataAddress = new("wss://uatstream.example.test/ws"),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new NubraMessageAdapter(new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.Token.UnSecure(), target.Token.UnSecure());
         AreEqual(source.Phone, target.Phone);

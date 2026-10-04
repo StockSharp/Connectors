@@ -46,9 +46,9 @@ public partial class RakutenRssMessageAdapter : MessageAdapter
 	public int MaxTableRows { get; set; } = 1000;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(PortfolioName), PortfolioName)
 			.Set(nameof(IsExcelVisible), IsExcelVisible)
@@ -56,9 +56,9 @@ public partial class RakutenRssMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		PortfolioName = storage.GetValue(nameof(PortfolioName), PortfolioName);
 		IsExcelVisible = storage.GetValue(nameof(IsExcelVisible), IsExcelVisible);
 		MaxTableRows = storage.GetValue(nameof(MaxTableRows), MaxTableRows);

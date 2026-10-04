@@ -109,7 +109,7 @@ public class StocksTraderTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsTokenAccountAndPolling()
+	public async Task SettingsRoundTripKeepsTokenAccountAndPolling()
 	{
 		var source = new StocksTraderMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -120,10 +120,10 @@ public class StocksTraderTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(7),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new StocksTraderMessageAdapter(new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("test-token", target.Token.UnSecure());
 		AreEqual(source.AccountId, target.AccountId);

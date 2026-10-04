@@ -178,9 +178,9 @@ public partial class KalshiMessageAdapter
 		: ProductionSocketEndpoint;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(ApiKey), ApiKey)
 			.Set(nameof(PrivateKey), PrivateKey)
@@ -197,9 +197,9 @@ public partial class KalshiMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		ApiKey = storage.GetValue<string>(nameof(ApiKey));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
@@ -216,8 +216,8 @@ public partial class KalshiMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new KalshiMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new KalshiMessageAdapter(TransactionIdGenerator)
 		{
 			ApiKey = ApiKey,
 			PrivateKey = PrivateKey,
@@ -231,7 +231,7 @@ public partial class KalshiMessageAdapter
 			DemoRestEndpoint = DemoRestEndpoint,
 			ProductionSocketEndpoint = ProductionSocketEndpoint,
 			DemoSocketEndpoint = DemoSocketEndpoint,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString()

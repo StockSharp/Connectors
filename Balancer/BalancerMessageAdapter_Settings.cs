@@ -246,9 +246,9 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Network), Network)
 			.Set(nameof(WalletAddress), WalletAddress)
@@ -267,9 +267,9 @@ public partial class BalancerMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Network = storage.GetValue(nameof(Network), Network);
 		WalletAddress = storage.GetValue<string>(nameof(WalletAddress));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));

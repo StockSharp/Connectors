@@ -183,9 +183,9 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(ClobEndpoint), ClobEndpoint)
 			.Set(nameof(DataEndpoint), DataEndpoint)
@@ -205,9 +205,9 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		ClobEndpoint = storage.GetValue(nameof(ClobEndpoint), ClobEndpoint);
 		DataEndpoint = storage.GetValue(nameof(DataEndpoint), DataEndpoint);
 		MarketSocketEndpoint = storage.GetValue(nameof(MarketSocketEndpoint),
@@ -229,8 +229,8 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new PolymarketMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new PolymarketMessageAdapter(TransactionIdGenerator)
 		{
 			ClobEndpoint = ClobEndpoint,
 			DataEndpoint = DataEndpoint,
@@ -247,7 +247,7 @@ public partial class PolymarketMessageAdapter : IKeySecretAdapter, IPassphraseAd
 			PollingInterval = PollingInterval,
 			HistoryLimit = HistoryLimit,
 			MarketDepth = MarketDepth,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString()

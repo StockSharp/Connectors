@@ -95,9 +95,9 @@ public partial class KabuStationMessageAdapter : MessageAdapter, IDemoAdapter
 	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(ApiPassword), ApiPassword)
 			.Set(nameof(IsDemo), IsDemo)
@@ -110,9 +110,9 @@ public partial class KabuStationMessageAdapter : MessageAdapter, IDemoAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		ApiPassword = storage.GetValue<SecureString>(nameof(ApiPassword));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);
 		DefaultAccountType = storage.GetValue(nameof(DefaultAccountType), DefaultAccountType);

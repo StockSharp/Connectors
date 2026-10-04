@@ -29,7 +29,7 @@ using StockSharp.Nuvama.Native;
 public class NuvamaTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsSessionsAndEndpoints()
+    public async Task SettingsRoundTripKeepsSessionsAndEndpoints()
     {
         var source = new NuvamaMessageAdapter(new IncrementalIdGenerator())
         {
@@ -55,10 +55,10 @@ public class NuvamaTests : BaseTestClass
             StreamPort = 19443,
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new NuvamaMessageAdapter(new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.Key.UnSecure(), target.Key.UnSecure());
         AreEqual(source.Secret.UnSecure(), target.Secret.UnSecure());

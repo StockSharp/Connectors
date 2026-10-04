@@ -44,7 +44,7 @@ public class ChainflipTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointsAddressesAndLimits()
+	public async Task SettingsRoundTripKeepsEndpointsAddressesAndLimits()
 	{
 		var source = new ChainflipMessageAdapter(
 			new IncrementalIdGenerator())
@@ -73,11 +73,11 @@ public class ChainflipTests : BaseTestClass
 			IsAutoApprove = false,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new ChainflipMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("https://state.example.test", target.StateRpcEndpoint);
 		AreEqual("https://backend.example.test", target.BackendEndpoint);

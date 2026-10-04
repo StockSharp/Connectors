@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -37,7 +38,7 @@ public class DeltaExchangeIndiaTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsAllAddresses()
+	public async Task SettingsRoundTripKeepsAllAddresses()
 	{
 		var source = new DeltaExchangeIndiaMessageAdapter(
 			new IncrementalIdGenerator())
@@ -52,11 +53,11 @@ public class DeltaExchangeIndiaTests : BaseTestClass
 			PrivatePollingInterval = TimeSpan.FromSeconds(17),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new DeltaExchangeIndiaMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("key", target.Key.UnSecure());
 		AreEqual("secret", target.Secret.UnSecure());

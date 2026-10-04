@@ -513,7 +513,7 @@ partial class FixMessageAdapter : ILoginPasswordAdapter, IAddressAdapter<EndPoin
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		Dialect = storage.GetValue<string>(nameof(Dialect)).ToDialect(this) ?? typeof(DefaultFixDialect);
 		SenderCompId = storage.GetValue<string>(nameof(SenderCompId));
@@ -551,11 +551,11 @@ partial class FixMessageAdapter : ILoginPasswordAdapter, IAddressAdapter<EndPoin
 		OverrideExecIdByNative = storage.GetValue(nameof(OverrideExecIdByNative), OverrideExecIdByNative);
 		ClientVersion = storage.GetValue(nameof(ClientVersion), ClientVersion);
 		Accounts = storage.GetValue(nameof(Accounts), Accounts);
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		storage.SetValue(nameof(Dialect), Dialect.FromDialect());
 		storage.SetValue(nameof(SenderCompId), SenderCompId);
@@ -588,7 +588,7 @@ partial class FixMessageAdapter : ILoginPasswordAdapter, IAddressAdapter<EndPoin
 		storage.SetValue(nameof(OverrideExecIdByNative), OverrideExecIdByNative);
 		storage.SetValue(nameof(ClientVersion), ClientVersion);
 		storage.SetValue(nameof(Accounts), Accounts);
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 	}
 
 	/// <inheritdoc />

@@ -145,9 +145,9 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, IToken
 	public string DemoWebSocketEndpoint { get; set; } = _defaultDemoWebSocketEndpoint;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Token), Token)
 			.Set(nameof(ChannelId), ChannelId)
@@ -165,9 +165,9 @@ public partial class UsmartMessageAdapter : MessageAdapter, IDemoAdapter, IToken
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		ChannelId = storage.GetValue<string>(nameof(ChannelId));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));

@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -17,7 +18,7 @@ using StockSharp.Messages;
 public class BcsTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsConnectionOptions()
+    public async Task SettingsRoundTripKeepsConnectionOptions()
     {
         var source = new BcsMessageAdapter(new IncrementalIdGenerator())
         {
@@ -29,10 +30,10 @@ public class BcsTests : BaseTestClass
             WebSocketEndpoint = "wss://stream.example.test/market-data",
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new BcsMessageAdapter(new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual("refresh-token", target.Token.UnSecure());
         AreEqual(source.IsReadOnly, target.IsReadOnly);

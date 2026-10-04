@@ -58,6 +58,7 @@
 	<ProjectReference Include="..\WazirX\WazirX.csproj" />
 	<ProjectReference Include="..\DeltaExchangeIndia\DeltaExchangeIndia.csproj" />
 	<ProjectReference Include="..\Dexalot\Dexalot.csproj" />
+	<ProjectReference Include="..\ETrade\ETrade.csproj" />
 	<ProjectReference Include="..\StonFi\StonFi.csproj" />
 	<ProjectReference Include="..\Xrpl\Xrpl.csproj" />
 	<ProjectReference Include="..\Settrade\Settrade.csproj" />

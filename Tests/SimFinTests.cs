@@ -34,7 +34,7 @@ public class SimFinTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void DefaultsAndSettingsRoundTrip()
+	public async Task DefaultsAndSettingsRoundTrip()
 	{
 		var source = new SimFinMessageAdapter(
 			new IncrementalIdGenerator());
@@ -58,11 +58,11 @@ public class SimFinTests : BaseTestClass
 		source.IncludeRatios = true;
 		source.MaximumRecords = 500;
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new SimFinMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("secret", target.Key.UnSecure());
 		AreEqual(source.RestEndpoint, target.RestEndpoint);

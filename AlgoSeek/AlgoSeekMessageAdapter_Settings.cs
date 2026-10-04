@@ -53,9 +53,9 @@ public partial class AlgoSeekMessageAdapter : MessageAdapter
 	public bool IsNationalBestQuotesOnly { get; set; } = true;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(DataDirectory), DataDirectory)
 			.Set(nameof(MarketTimeZoneId), MarketTimeZoneId)
@@ -64,9 +64,9 @@ public partial class AlgoSeekMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		DataDirectory = storage.GetValue<string>(nameof(DataDirectory));
 		MarketTimeZoneId = storage.GetValue(nameof(MarketTimeZoneId), MarketTimeZoneId);
 		IsRecursive = storage.GetValue(nameof(IsRecursive), IsRecursive);

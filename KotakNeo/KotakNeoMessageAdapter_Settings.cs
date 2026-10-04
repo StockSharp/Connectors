@@ -118,9 +118,9 @@ public partial class KotakNeoMessageAdapter : MessageAdapter
 	public string OrderWebSocketEndpointTemplate { get; set; } = _defaultOrderWebSocketEndpointTemplate;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(ConsumerKey), ConsumerKey)
 			.Set(nameof(MobileNumber), MobileNumber)
@@ -135,9 +135,9 @@ public partial class KotakNeoMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		ConsumerKey = storage.GetValue<SecureString>(nameof(ConsumerKey));
 		MobileNumber = storage.GetValue<string>(nameof(MobileNumber));
 		UserCode = storage.GetValue<string>(nameof(UserCode));

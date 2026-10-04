@@ -163,9 +163,9 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Environment), Environment)
 			.Set(nameof(ApiKey), ApiKey)
@@ -179,9 +179,9 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Environment = storage.GetValue(nameof(Environment), Environment);
 		ApiKey = storage.GetValue<string>(nameof(ApiKey));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));
@@ -197,8 +197,8 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new FireblocksMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new FireblocksMessageAdapter(TransactionIdGenerator)
 		{
 			Environment = Environment,
 			ApiKey = ApiKey,
@@ -209,7 +209,7 @@ public partial class FireblocksMessageAdapter : MessageAdapter
 			MaximumVaultAccounts = MaximumVaultAccounts,
 			SecurityLookupLimit = SecurityLookupLimit,
 			HistoryLimit = HistoryLimit,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString()

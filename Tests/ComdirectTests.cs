@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -17,7 +18,7 @@ using StockSharp.Messages;
 public class ComdirectTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsConnectionOptions()
+    public async Task SettingsRoundTripKeepsConnectionOptions()
     {
         var source = new ComdirectMessageAdapter(
             new IncrementalIdGenerator())
@@ -32,11 +33,11 @@ public class ComdirectTests : BaseTestClass
             Address = new("https://api.example.test/"),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new ComdirectMessageAdapter(
             new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual("client-id", target.Key.UnSecure());
         AreEqual("client-secret", target.Secret.UnSecure());

@@ -149,9 +149,9 @@ public partial class FivePaisaMessageAdapter : MessageAdapter, ITokenAdapter
 	public string DepthWebSocketEndpoint { get; set; } = _defaultDepthWebSocketEndpoint;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(AppKey), AppKey)
 			.Set(nameof(ClientCode), ClientCode)
@@ -168,9 +168,9 @@ public partial class FivePaisaMessageAdapter : MessageAdapter, ITokenAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		AppKey = storage.GetValue<string>(nameof(AppKey));
 		ClientCode = storage.GetValue<string>(nameof(ClientCode));
 		Token = storage.GetValue<SecureString>(nameof(Token));

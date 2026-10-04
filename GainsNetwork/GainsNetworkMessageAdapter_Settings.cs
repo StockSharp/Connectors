@@ -224,9 +224,9 @@ public partial class GainsNetworkMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Environment), Environment)
 			.Set(nameof(RpcEndpoint), RpcEndpoint)
@@ -248,9 +248,9 @@ public partial class GainsNetworkMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Environment = storage.GetValue(nameof(Environment), Environment);
 		RpcEndpoint = NormalizeOptionalEndpoint(storage.GetValue<string>(
 			nameof(RpcEndpoint)), false, nameof(RpcEndpoint));
@@ -284,8 +284,8 @@ public partial class GainsNetworkMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new GainsNetworkMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new GainsNetworkMessageAdapter(TransactionIdGenerator)
 		{
 			Environment = Environment,
 			RpcEndpoint = RpcEndpoint,
@@ -304,7 +304,7 @@ public partial class GainsNetworkMessageAdapter
 			TransactionTimeout = TransactionTimeout,
 			AccountRefreshInterval = AccountRefreshInterval,
 			HistoryLimit = HistoryLimit,
-		};
+		});
 
 	private static string NormalizeOptionalEndpoint(string endpoint,
 		bool isWebSocket, string parameterName)

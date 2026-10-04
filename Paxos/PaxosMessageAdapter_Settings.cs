@@ -198,9 +198,9 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Environment), Environment)
 			.Set(nameof(Key), Key)
@@ -217,9 +217,9 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Environment = storage.GetValue(nameof(Environment), Environment);
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
@@ -236,8 +236,8 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new PaxosMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new PaxosMessageAdapter(TransactionIdGenerator)
 		{
 			Environment = Environment,
 			Key = Key,
@@ -251,7 +251,7 @@ public partial class PaxosMessageAdapter : IKeySecretAdapter
 			MaximumItems = MaximumItems,
 			HistoryLimit = HistoryLimit,
 			MarketDepth = MarketDepth,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString() => base.ToString() + $": {Environment}";

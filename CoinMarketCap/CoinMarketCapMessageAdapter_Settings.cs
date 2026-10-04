@@ -134,9 +134,9 @@ public partial class CoinMarketCapMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(AccessMode), AccessMode)
 			.Set(nameof(Token), Token)
@@ -150,9 +150,9 @@ public partial class CoinMarketCapMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		AccessMode = storage.GetValue(nameof(AccessMode), AccessMode);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		ApiEndpoint = storage.GetValue(nameof(ApiEndpoint), ApiEndpoint);
@@ -166,8 +166,8 @@ public partial class CoinMarketCapMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new CoinMarketCapMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new CoinMarketCapMessageAdapter(TransactionIdGenerator)
 		{
 			AccessMode = AccessMode,
 			Token = Token,
@@ -178,7 +178,7 @@ public partial class CoinMarketCapMessageAdapter
 			RequestInterval = RequestInterval,
 			MaximumItems = MaximumItems,
 			HistoryLimit = HistoryLimit,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString() => base.ToString() + $": {AccessMode}";

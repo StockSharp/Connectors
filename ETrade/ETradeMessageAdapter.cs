@@ -147,7 +147,7 @@ public partial class ETradeMessageAdapter : MessageAdapter, IKeySecretAdapter, I
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage) { base.Save(storage); storage.Set(nameof(Key), Key).Set(nameof(Secret), Secret).Set(nameof(Token), Token).Set(nameof(AccessSecret), AccessSecret).Set(nameof(IsDemo), IsDemo).Set(nameof(RestEndpoint), RestEndpoint).Set(nameof(SandboxRestEndpoint), SandboxRestEndpoint); }
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken) { await base.SaveAsync(storage, cancellationToken); storage.Set(nameof(Key), Key).Set(nameof(Secret), Secret).Set(nameof(Token), Token).Set(nameof(AccessSecret), AccessSecret).Set(nameof(IsDemo), IsDemo).Set(nameof(RestEndpoint), RestEndpoint).Set(nameof(SandboxRestEndpoint), SandboxRestEndpoint); }
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage) { base.Load(storage); Key = storage.GetValue<SecureString>(nameof(Key)); Secret = storage.GetValue<SecureString>(nameof(Secret)); Token = storage.GetValue<SecureString>(nameof(Token)); AccessSecret = storage.GetValue<SecureString>(nameof(AccessSecret)); IsDemo = storage.GetValue<bool>(nameof(IsDemo)); RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint); SandboxRestEndpoint = storage.GetValue(nameof(SandboxRestEndpoint), SandboxRestEndpoint); }
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken) { await base.LoadAsync(storage, cancellationToken); Key = storage.GetValue<SecureString>(nameof(Key)); Secret = storage.GetValue<SecureString>(nameof(Secret)); Token = storage.GetValue<SecureString>(nameof(Token)); AccessSecret = storage.GetValue<SecureString>(nameof(AccessSecret)); IsDemo = storage.GetValue<bool>(nameof(IsDemo)); RestEndpoint = storage.GetValue(nameof(RestEndpoint), RestEndpoint); SandboxRestEndpoint = storage.GetValue(nameof(SandboxRestEndpoint), SandboxRestEndpoint); }
 }

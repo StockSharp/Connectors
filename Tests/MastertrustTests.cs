@@ -24,7 +24,7 @@ using StockSharp.Messages;
 public class MastertrustTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+    public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
     {
         var source = new MastertrustMessageAdapter(new IncrementalIdGenerator())
         {
@@ -43,10 +43,10 @@ public class MastertrustTests : BaseTestClass
             PollingInterval = TimeSpan.FromSeconds(17),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new MastertrustMessageAdapter(new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.ClientId, target.ClientId);
         AreEqual(source.OAuthClientId, target.OAuthClientId);

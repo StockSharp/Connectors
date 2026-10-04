@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -17,7 +18,7 @@ using StockSharp.Messages;
 public class DirectaTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsSocketOptions()
+    public async Task SettingsRoundTripKeepsSocketOptions()
     {
         var source = new DirectaMessageAdapter(
             new IncrementalIdGenerator())
@@ -34,11 +35,11 @@ public class DirectaTests : BaseTestClass
             TimeZoneId = "UTC",
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new DirectaMessageAdapter(
             new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.Address.ToString(),
             target.Address.ToString());

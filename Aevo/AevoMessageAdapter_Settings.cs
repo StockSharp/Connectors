@@ -144,9 +144,9 @@ public partial class AevoMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Environment), Environment)
 			.Set(nameof(Key), Key)
@@ -161,9 +161,9 @@ public partial class AevoMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Environment = storage.GetValue(nameof(Environment), Environment);
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		Secret = storage.GetValue<SecureString>(nameof(Secret));
@@ -178,8 +178,8 @@ public partial class AevoMessageAdapter : IKeySecretAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new AevoMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new AevoMessageAdapter(TransactionIdGenerator)
 		{
 			Environment = Environment,
 			Key = Key,
@@ -191,5 +191,5 @@ public partial class AevoMessageAdapter : IKeySecretAdapter
 			PollingInterval = PollingInterval,
 			HistoryLimit = HistoryLimit,
 			MarketDepth = MarketDepth,
-		};
+		});
 }

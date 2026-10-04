@@ -206,9 +206,9 @@ public partial class InteractiveBrokersMessageAdapter : MessageAdapter, IAddress
 	public string TargetHost { get; set; }
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 
 		Address = storage.GetValue<EndPoint>(nameof(Address));
 		ClientId = storage.GetValue<int>(nameof(ClientId));
@@ -229,9 +229,9 @@ public partial class InteractiveBrokersMessageAdapter : MessageAdapter, IAddress
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 
 		storage.SetValue(nameof(Address), Address.To<string>());
 		storage.SetValue(nameof(ClientId), ClientId);

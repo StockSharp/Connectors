@@ -140,7 +140,7 @@ public class SettradeTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+	public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
 	{
 		var source = new SettradeMessageAdapter(
 			new IncrementalIdGenerator())
@@ -161,11 +161,11 @@ public class SettradeTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(9),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new SettradeMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("app-id", target.Key.UnSecure());
 		AreEqual("AQ==", target.Secret.UnSecure());

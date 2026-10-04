@@ -34,7 +34,7 @@ public class TraderMadeTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void DefaultsAndSettingsRoundTrip()
+	public async Task DefaultsAndSettingsRoundTrip()
 	{
 		var source = new TraderMadeMessageAdapter(
 			new IncrementalIdGenerator());
@@ -64,11 +64,11 @@ public class TraderMadeTests : BaseTestClass
 		source.Symbols = "EURUSD,GBPUSD";
 		source.MaximumSecurities = 500;
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new TraderMadeMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("rest", target.RestKey.UnSecure());
 		AreEqual("stream", target.StreamingKey.UnSecure());

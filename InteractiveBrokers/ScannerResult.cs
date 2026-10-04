@@ -3,7 +3,7 @@ namespace StockSharp.InteractiveBrokers;
 /// <summary>
 /// The filter result of scanner starting via <see cref="ScannerMarketDataMessage"/>.
 /// </summary>
-public class ScannerResult : IPersistable
+public class ScannerResult : Cloneable<ScannerResult>, IAsyncPersistable
 {
 	/// <summary>
 	/// Security ID.
@@ -35,7 +35,13 @@ public class ScannerResult : IPersistable
 	/// </summary>
 	public string Legs { get; set; }
 
-	void IPersistable.Load(SettingsStorage storage)
+	/// <summary>
+	/// Create a copy of <see cref="ScannerResult"/>.
+	/// </summary>
+	/// <returns>Copy.</returns>
+	public override ScannerResult Clone() => (ScannerResult)MemberwiseClone();
+
+	Task IAsyncPersistable.LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		if (storage.ContainsKey(nameof(SecurityId)))
 			SecurityId = storage.GetValue<string>(nameof(SecurityId)).ToSecurityId();
@@ -45,9 +51,11 @@ public class ScannerResult : IPersistable
 		Benchmark = storage.GetValue<string>(nameof(Benchmark));
 		Projection = storage.GetValue<string>(nameof(Projection));
 		Legs = storage.GetValue<string>(nameof(Legs));
+
+		return Task.CompletedTask;
 	}
 
-	void IPersistable.Save(SettingsStorage storage)
+	Task IAsyncPersistable.SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		if (SecurityId != default)
 			storage.SetValue(nameof(SecurityId), SecurityId.ToStringId());
@@ -57,5 +65,7 @@ public class ScannerResult : IPersistable
 		storage.SetValue(nameof(Benchmark), Benchmark);
 		storage.SetValue(nameof(Projection), Projection);
 		storage.SetValue(nameof(Legs), Legs);
+
+		return Task.CompletedTask;
 	}
 }

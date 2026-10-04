@@ -34,7 +34,7 @@ public class FinageTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void DefaultsAndSettingsRoundTrip()
+	public async Task DefaultsAndSettingsRoundTrip()
 	{
 		var source = new FinageMessageAdapter(
 			new IncrementalIdGenerator());
@@ -58,11 +58,11 @@ public class FinageTests : BaseTestClass
 		source.Symbols = "EURUSD,GBPUSD";
 		source.MaximumSecurities = 500;
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new FinageMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("rest", target.ApiKey.UnSecure());
 		AreEqual("stream", target.StreamingToken.UnSecure());

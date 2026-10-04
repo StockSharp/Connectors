@@ -201,9 +201,9 @@ public partial class AnchorageMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Environment), Environment)
 			.Set(nameof(ApiKey), ApiKey)
@@ -221,9 +221,9 @@ public partial class AnchorageMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Environment = storage.GetValue(nameof(Environment), Environment);
 		ApiKey = storage.GetValue<SecureString>(nameof(ApiKey));
 		SigningKey = storage.GetValue<SecureString>(nameof(SigningKey));
@@ -243,8 +243,8 @@ public partial class AnchorageMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new AnchorageMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new AnchorageMessageAdapter(TransactionIdGenerator)
 		{
 			Environment = Environment,
 			ApiKey = ApiKey,
@@ -259,7 +259,7 @@ public partial class AnchorageMessageAdapter
 			MaximumItems = MaximumItems,
 			HistoryLimit = HistoryLimit,
 			MarketDepth = MarketDepth,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString()

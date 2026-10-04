@@ -103,9 +103,9 @@ public partial class TradingTechnologiesMessageAdapter : MessageAdapter
 	public bool IsOptionsEnabled { get; set; } = true;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(SdkPath), SdkPath)
 			.Set(nameof(AppSecretKey), AppSecretKey)
@@ -117,9 +117,9 @@ public partial class TradingTechnologiesMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		SdkPath = storage.GetValue<string>(nameof(SdkPath));
 		AppSecretKey = storage.GetValue<SecureString>(nameof(AppSecretKey));
 		Environment = storage.GetValue(nameof(Environment), Environment);

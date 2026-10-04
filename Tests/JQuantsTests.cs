@@ -37,7 +37,7 @@ public class JQuantsTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void DefaultsAndSettingsUseV2Endpoint()
+	public async Task DefaultsAndSettingsUseV2Endpoint()
 	{
 		var source = new JQuantsMessageAdapter(
 			new IncrementalIdGenerator());
@@ -56,11 +56,11 @@ public class JQuantsTests : BaseTestClass
 		source.RequestInterval = TimeSpan.FromMilliseconds(250);
 		source.MaximumPages = 25;
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new JQuantsMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("api-key", target.Key.UnSecure());
 		AreEqual("https://api.example/v2",

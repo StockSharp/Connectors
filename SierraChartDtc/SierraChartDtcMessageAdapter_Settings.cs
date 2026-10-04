@@ -131,9 +131,9 @@ public partial class SierraChartDtcMessageAdapter : MessageAdapter,
 	public string TargetHost { get; set; }
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Address), Address?.To<string>())
 			.Set(nameof(HistoryAddress), HistoryAddress?.To<string>())
@@ -149,9 +149,9 @@ public partial class SierraChartDtcMessageAdapter : MessageAdapter,
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Address = storage.GetValue<EndPoint>(nameof(Address)) ?? DefaultAddress;
 		HistoryAddress = storage.GetValue<EndPoint>(nameof(HistoryAddress)) ?? DefaultHistoryAddress;
 		Login = storage.GetValue<string>(nameof(Login));

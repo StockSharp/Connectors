@@ -113,9 +113,9 @@ public partial class SynthetixMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(SubAccountId), SubAccountId)
 			.Set(nameof(PrivateKey), PrivateKey)
@@ -129,9 +129,9 @@ public partial class SynthetixMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		SubAccountId = storage.GetValue<string>(nameof(SubAccountId));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));
 		InfoEndpoint = storage.GetValue<string>(nameof(InfoEndpoint));
@@ -146,8 +146,8 @@ public partial class SynthetixMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new SynthetixMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new SynthetixMessageAdapter(TransactionIdGenerator)
 		{
 			SubAccountId = SubAccountId,
 			PrivateKey = PrivateKey,
@@ -158,5 +158,5 @@ public partial class SynthetixMessageAdapter
 			PollingInterval = PollingInterval,
 			HistoryLimit = HistoryLimit,
 			MarketDepth = MarketDepth,
-		};
+		});
 }

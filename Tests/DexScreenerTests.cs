@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -50,7 +51,7 @@ public class DexScreenerTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsLookupMode()
+	public async Task SettingsRoundTripKeepsLookupMode()
 	{
 		var source = new DexScreenerMessageAdapter(
 			new IncrementalIdGenerator())
@@ -65,11 +66,11 @@ public class DexScreenerTests : BaseTestClass
 			MaximumItems = 55,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new DexScreenerMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(
 			"https://example.test",

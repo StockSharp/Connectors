@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -37,7 +38,7 @@ public class CoinmetroTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new CoinmetroMessageAdapter(
 			new IncrementalIdGenerator())
@@ -52,11 +53,11 @@ public class CoinmetroTests : BaseTestClass
 			PrivatePollingInterval = TimeSpan.FromSeconds(75),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new CoinmetroMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("token", target.Token.UnSecure());
 		IsTrue(target.IsDemo);

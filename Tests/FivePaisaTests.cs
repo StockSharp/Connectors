@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -17,7 +18,7 @@ using StockSharp.Messages;
 public class FivePaisaTests : BaseTestClass
 {
 	[TestMethod]
-	public void FeedEndpointsRoundTripThroughSettings()
+	public async Task FeedEndpointsRoundTripThroughSettings()
 	{
 		var source = new FivePaisaMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -26,10 +27,10 @@ public class FivePaisaTests : BaseTestClass
 			FeedWebSocketBEndpoint = "wss://feed.example.test/b",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new FivePaisaMessageAdapter(new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(source.FeedWebSocketEndpoint, target.FeedWebSocketEndpoint);
 		AreEqual(source.FeedWebSocketAEndpoint, target.FeedWebSocketAEndpoint);

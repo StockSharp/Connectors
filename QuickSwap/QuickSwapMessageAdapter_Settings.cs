@@ -214,9 +214,9 @@ public partial class QuickSwapMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(GraphApiKey), GraphApiKey)
 			.Set(nameof(WalletAddress), WalletAddress)
@@ -234,9 +234,9 @@ public partial class QuickSwapMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		GraphApiKey = storage.GetValue<SecureString>(nameof(GraphApiKey));
 		WalletAddress = storage.GetValue<string>(nameof(WalletAddress));
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));

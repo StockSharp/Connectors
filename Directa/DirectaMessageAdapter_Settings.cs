@@ -128,9 +128,9 @@ public partial class DirectaMessageAdapter :
     public string TimeZoneId { get; set; } = "Europe/Rome";
 
     /// <inheritdoc />
-    public override void Save(SettingsStorage storage)
+    public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Save(storage);
+        await base.SaveAsync(storage, cancellationToken);
         storage
             .Set(nameof(Address), Address?.To<string>())
             .Set(nameof(DataAddress),
@@ -145,9 +145,9 @@ public partial class DirectaMessageAdapter :
     }
 
     /// <inheritdoc />
-    public override void Load(SettingsStorage storage)
+    public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Load(storage);
+        await base.LoadAsync(storage, cancellationToken);
         Address = storage.GetValue<EndPoint>(
             nameof(Address)) ?? DefaultAddress;
         DataAddress = storage.GetValue<EndPoint>(

@@ -53,7 +53,7 @@ public class SSITests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+	public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
 	{
 		var source = new SSIMessageAdapter(
 			new IncrementalIdGenerator())
@@ -69,11 +69,11 @@ public class SSITests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(11),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new SSIMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("api-key", target.Key.UnSecure());
 		AreEqual("api-secret", target.Secret.UnSecure());

@@ -27,7 +27,7 @@ using StockSharp.Messages;
 public class JainamTests : BaseTestClass
 {
 	[TestMethod]
-	public void SettingsRoundTripKeepsVendorCredentialsAndEndpoints()
+	public async Task SettingsRoundTripKeepsVendorCredentialsAndEndpoints()
 	{
 		var source = new JainamMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -45,10 +45,10 @@ public class JainamTests : BaseTestClass
 			WebSocketAddress = "wss://socket.example.test/feed/",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new JainamMessageAdapter(new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(source.UserId, target.UserId);
 		AreEqual(source.AppCode, target.AppCode);

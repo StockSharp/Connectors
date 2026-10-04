@@ -35,7 +35,7 @@ public class MarketDataAppTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void DefaultsAndSettingsArePersisted()
+	public async Task DefaultsAndSettingsArePersisted()
 	{
 		var source = new MarketDataAppMessageAdapter(
 			new IncrementalIdGenerator());
@@ -57,11 +57,11 @@ public class MarketDataAppTests : BaseTestClass
 		source.AdjustSplits = false;
 		source.MaximumOptionContracts = 250;
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new MarketDataAppMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("token", target.Token.UnSecure());
 		AreEqual(new Uri("https://api.example/v1/"),

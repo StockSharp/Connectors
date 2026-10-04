@@ -171,9 +171,9 @@ public partial class ReyaMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(WalletAddress), WalletAddress)
 			.Set(nameof(AccountId), AccountId)
@@ -190,9 +190,9 @@ public partial class ReyaMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		WalletAddress = storage.GetValue<string>(nameof(WalletAddress))?.Trim();
 		AccountId = storage.GetValue<string>(nameof(AccountId))?.Trim();
 		PrivateKey = storage.GetValue<SecureString>(nameof(PrivateKey));

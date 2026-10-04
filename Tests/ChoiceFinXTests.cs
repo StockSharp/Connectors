@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -18,7 +19,7 @@ using StockSharp.Messages;
 public class ChoiceFinXTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+    public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
     {
         var source = new ChoiceFinXMessageAdapter(
             new IncrementalIdGenerator())
@@ -44,11 +45,11 @@ public class ChoiceFinXTests : BaseTestClass
                 TimeSpan.FromSeconds(17),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new ChoiceFinXMessageAdapter(
             new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(
             source.Token.UnSecure(),

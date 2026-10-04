@@ -55,7 +55,7 @@ public class MStockTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+	public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
 	{
 		var source = new MStockMessageAdapter(
 			new IncrementalIdGenerator())
@@ -73,11 +73,11 @@ public class MStockTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(13),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new MStockMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("api-key", target.Key.UnSecure());
 		AreEqual("client-code", target.ClientCode);

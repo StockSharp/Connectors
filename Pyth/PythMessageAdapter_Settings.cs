@@ -183,9 +183,9 @@ public partial class PythMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Token), Token)
 			.Set(nameof(HistoryEndpoint), HistoryEndpoint)
@@ -204,9 +204,9 @@ public partial class PythMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		HistoryEndpoint = storage.GetValue(nameof(HistoryEndpoint), HistoryEndpoint);
 		RouterEndpoint = storage.GetValue(nameof(RouterEndpoint), RouterEndpoint);
@@ -229,8 +229,8 @@ public partial class PythMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new PythMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new PythMessageAdapter(TransactionIdGenerator)
 		{
 			Token = Token,
 			HistoryEndpoint = HistoryEndpoint,
@@ -246,5 +246,5 @@ public partial class PythMessageAdapter
 			HistoryLimit = HistoryLimit,
 			HistoryLookback = HistoryLookback,
 			MaximumBarsPerRequest = MaximumBarsPerRequest,
-		};
+		});
 }

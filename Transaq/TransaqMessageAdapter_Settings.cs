@@ -196,7 +196,7 @@ partial class TransaqMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAd
 	public TimeSpan? ServerTimeDiff { get; set; }
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		storage.SetValue(nameof(Login), Login);
 		storage.SetValue(nameof(Password), Password);
@@ -205,7 +205,7 @@ partial class TransaqMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAd
 		storage.SetValue(nameof(ApiLogsPath), ApiLogsPath);
 		storage.SetValue(nameof(ApiLogLevel), ApiLogLevel.To<string>());
 		storage.SetValue(nameof(MarketDataInterval), MarketDataInterval);
-		storage.SetValue(nameof(Proxy), Proxy.Save());
+		storage.SetValue(nameof(Proxy), await Proxy.SaveAsync(cancellationToken));
 		storage.SetValue(nameof(IsHFT), IsHFT);
 
 		// не нужно сохранять это свойство, так как иначе окно смены пароля будет показывать каждый раз
@@ -213,11 +213,11 @@ partial class TransaqMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAd
 
 		storage.SetValue(nameof(MicexRegisters), MicexRegisters);
 
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));
@@ -230,13 +230,13 @@ partial class TransaqMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAd
 
 		var proxy = storage.GetValue<SettingsStorage>(nameof(Proxy));
 		if (proxy != null)
-			((IPersistable)Proxy).Load(proxy);
+			await ((IAsyncPersistable)Proxy).LoadAsync(proxy, cancellationToken);
 
 		//ShowChangePasswordWindowOnConnect = storage.GetValue<bool>("ChangePasswordOnConnect");
 
 		MicexRegisters = storage.GetValue(nameof(MicexRegisters), true);
 
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 	}
 
 	/// <inheritdoc />

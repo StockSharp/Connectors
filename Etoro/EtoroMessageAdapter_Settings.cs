@@ -68,9 +68,9 @@ public partial class EtoroMessageAdapter : MessageAdapter, IDemoAdapter
 	public string WebSocketEndpoint { get; set; } = _defaultWebSocketEndpoint;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(PublicApiKey), PublicApiKey)
 			.Set(nameof(UserKey), UserKey)
@@ -80,9 +80,9 @@ public partial class EtoroMessageAdapter : MessageAdapter, IDemoAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		PublicApiKey = storage.GetValue<SecureString>(nameof(PublicApiKey));
 		UserKey = storage.GetValue<SecureString>(nameof(UserKey));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);

@@ -143,9 +143,9 @@ public partial class MStockMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Key), Key)
 			.Set(nameof(ClientCode), ClientCode)
@@ -161,9 +161,9 @@ public partial class MStockMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Key = storage.GetValue<SecureString>(nameof(Key));
 		ClientCode = storage.GetValue<string>(nameof(ClientCode));
 		Password = storage.GetValue<SecureString>(nameof(Password));

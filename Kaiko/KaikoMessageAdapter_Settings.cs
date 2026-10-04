@@ -149,9 +149,9 @@ public partial class KaikoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Token), Token)
 			.Set(nameof(Region), Region)
@@ -167,9 +167,9 @@ public partial class KaikoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		Region = storage.GetValue(nameof(Region), Region);
 		ReferenceEndpoint = storage.GetValue(nameof(ReferenceEndpoint),
@@ -187,8 +187,8 @@ public partial class KaikoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new KaikoMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new KaikoMessageAdapter(TransactionIdGenerator)
 		{
 			Token = Token,
 			Region = Region,
@@ -201,7 +201,7 @@ public partial class KaikoMessageAdapter
 			RequestInterval = RequestInterval,
 			MaximumItems = MaximumItems,
 			HistoryLimit = HistoryLimit,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString() => base.ToString() + $": {Region}";

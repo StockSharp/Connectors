@@ -203,7 +203,7 @@ public class AlpacaTests : BaseTestClass
 
 	/// <summary>A chosen set of sections survives being saved and loaded.</summary>
 	[TestMethod]
-	public void TheChosenSectionsSurviveARoundTrip()
+	public async Task TheChosenSectionsSurviveARoundTrip()
 	{
 		var source = new AlpacaMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -212,11 +212,11 @@ public class AlpacaTests : BaseTestClass
 
 		var storage = new SettingsStorage();
 
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new AlpacaMessageAdapter(new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(1, target.Sections.Count());
 		AreEqual(AlpacaSections.Option, target.Sections.First());

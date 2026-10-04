@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -31,7 +32,7 @@ public class BtcTurkTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new BtcTurkMessageAdapter(
 			new IncrementalIdGenerator())
@@ -43,11 +44,11 @@ public class BtcTurkTests : BaseTestClass
 			WebSocketEndpoint = "wss://stream.example.test/feed/",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new BtcTurkMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("public-key", target.Key.UnSecure());
 		AreEqual("private-key", target.Secret.UnSecure());

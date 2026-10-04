@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -34,7 +35,7 @@ public class CoinalyzeTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsHistorySelection()
+	public async Task SettingsRoundTripKeepsHistorySelection()
 	{
 		var source = new CoinalyzeMessageAdapter(
 			new IncrementalIdGenerator())
@@ -51,11 +52,11 @@ public class CoinalyzeTests : BaseTestClass
 			HistoryLimit = 123,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new CoinalyzeMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("key", target.Token.UnSecure());
 		AreEqual(

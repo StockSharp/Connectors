@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -30,7 +31,7 @@ public class BitoProTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new BitoProMessageAdapter(
 			new IncrementalIdGenerator())
@@ -42,11 +43,11 @@ public class BitoProTests : BaseTestClass
 			WebSocketEndpoint = "wss://stream.example.test/ws/",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new BitoProMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("trader@example.test", target.Email);
 		AreEqual("public-key", target.Key.UnSecure());

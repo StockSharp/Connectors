@@ -166,7 +166,7 @@ public class MetaApiTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionAndSynchronizationOptions()
+	public async Task SettingsRoundTripKeepsConnectionAndSynchronizationOptions()
 	{
 		var source = new MetaApiMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -177,10 +177,10 @@ public class MetaApiTests : BaseTestClass
 			SynchronizationTimeout = TimeSpan.FromSeconds(45),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new MetaApiMessageAdapter(new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("test-token", target.Token.UnSecure());
 		AreEqual(source.AccountId, target.AccountId);

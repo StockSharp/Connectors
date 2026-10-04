@@ -1,6 +1,8 @@
 ﻿namespace StockSharp.Rss;
 
 using System.ComponentModel.DataAnnotations;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.ComponentModel;
@@ -53,18 +55,18 @@ partial class RssMessageAdapter : HistoricalMessageAdapter, IAddressAdapter<stri
 	public string CustomDateFormat { get; set; }
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 
 		Address = storage.GetValue<string>(nameof(Address));
 		CustomDateFormat = storage.GetValue<string>(nameof(CustomDateFormat));
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 
 		storage.SetValue(nameof(Address), Address);
 		storage.SetValue(nameof(CustomDateFormat), CustomDateFormat);

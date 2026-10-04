@@ -34,7 +34,7 @@ public class SecEdgarTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void DefaultsAndSettingsFollowSecPolicy()
+	public async Task DefaultsAndSettingsFollowSecPolicy()
 	{
 		var source = new SecEdgarMessageAdapter(
 			new IncrementalIdGenerator());
@@ -60,11 +60,11 @@ public class SecEdgarTests : BaseTestClass
 		source.MaximumHistoricalFiles = 5;
 		source.MaximumFacts = 500;
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new SecEdgarMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(source.DataEndpoint, target.DataEndpoint);
 		AreEqual(source.WebsiteEndpoint, target.WebsiteEndpoint);

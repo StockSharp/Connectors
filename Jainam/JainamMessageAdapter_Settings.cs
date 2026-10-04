@@ -135,9 +135,9 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
     public string WebSocketAddress { get; set; } = _defaultWebSocketAddress;
 
     /// <inheritdoc />
-    public override void Save(SettingsStorage storage)
+    public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Save(storage);
+        await base.SaveAsync(storage, cancellationToken);
         storage
             .Set(nameof(UserId), UserId)
             .Set(nameof(AppCode), AppCode)
@@ -154,9 +154,9 @@ public partial class JainamMessageAdapter : MessageAdapter, ITokenAdapter
     }
 
     /// <inheritdoc />
-    public override void Load(SettingsStorage storage)
+    public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Load(storage);
+        await base.LoadAsync(storage, cancellationToken);
         UserId = storage.GetValue<string>(nameof(UserId));
         AppCode = storage.GetValue<string>(nameof(AppCode));
         ApiSecret = storage.GetValue<SecureString>(nameof(ApiSecret));

@@ -26,7 +26,7 @@ using StockSharp.Tradejini.Native;
 public class TradejiniTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsIndividualCredentials()
+    public async Task SettingsRoundTripKeepsIndividualCredentials()
     {
         var source = new TradejiniMessageAdapter(
             new IncrementalIdGenerator())
@@ -42,11 +42,11 @@ public class TradejiniTests : BaseTestClass
             PollingInterval = TimeSpan.FromSeconds(17),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new TradejiniMessageAdapter(
             new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.ApiKey.UnSecure(), target.ApiKey.UnSecure());
         AreEqual(source.Password.UnSecure(), target.Password.UnSecure());

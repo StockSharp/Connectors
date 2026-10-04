@@ -182,9 +182,9 @@ public partial class NadoMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(GatewayEndpoint), GatewayEndpoint)
 			.Set(nameof(GatewayV2Endpoint), GatewayV2Endpoint)
@@ -201,9 +201,9 @@ public partial class NadoMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		GatewayEndpoint = NormalizeEndpoint(storage.GetValue(
 			nameof(GatewayEndpoint), GatewayEndpoint), false,
 			nameof(GatewayEndpoint));

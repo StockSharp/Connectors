@@ -75,18 +75,18 @@ public partial class MatchTraderMessageAdapter : MessageAdapter, ILoginPasswordA
 	public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(2);
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage.Set(nameof(Address), Address).Set(nameof(Login), Login).Set(nameof(Password), Password)
 			.Set(nameof(BrokerId), BrokerId).Set(nameof(AccountId), AccountId)
 			.Set(nameof(PollingInterval), PollingInterval);
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Address = storage.GetValue(nameof(Address), Address);
 		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));

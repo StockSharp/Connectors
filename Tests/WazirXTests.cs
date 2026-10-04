@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -32,7 +33,7 @@ public class WazirXTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new WazirXMessageAdapter(
 			new IncrementalIdGenerator())
@@ -45,11 +46,11 @@ public class WazirXTests : BaseTestClass
 			PrivatePollingInterval = TimeSpan.FromSeconds(15),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new WazirXMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("key", target.Key.UnSecure());
 		AreEqual("secret", target.Secret.UnSecure());

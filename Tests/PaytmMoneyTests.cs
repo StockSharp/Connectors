@@ -21,7 +21,7 @@ using StockSharp.PaytmMoney.Native;
 public class PaytmMoneyTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+    public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
     {
         var source = new PaytmMoneyMessageAdapter(
             new IncrementalIdGenerator())
@@ -41,11 +41,11 @@ public class PaytmMoneyTests : BaseTestClass
             PollingInterval = TimeSpan.FromSeconds(17),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new PaytmMoneyMessageAdapter(
             new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.Key.UnSecure(), target.Key.UnSecure());
         AreEqual(

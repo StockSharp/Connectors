@@ -56,18 +56,18 @@ public partial class CSVMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 
-		Settings = storage.GetValue<SettingsStorage[]>(nameof(Settings)).Select(s => s.Load<ImportSettings>());
+		Settings = await storage.GetValue<SettingsStorage[]>(nameof(Settings)).LoadAllAsync<ImportSettings>(cancellationToken);
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 
-		storage.SetValue(nameof(Settings), Settings.Select(s => s.Save()).ToArray());
+		storage.SetValue(nameof(Settings), await Settings.SaveAllAsync(cancellationToken));
 	}
 }

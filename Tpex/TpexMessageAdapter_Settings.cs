@@ -81,9 +81,9 @@ public partial class TpexMessageAdapter :
     public int MaxHistoryMonths { get; set; } = 120;
 
     /// <inheritdoc />
-    public override void Save(SettingsStorage storage)
+    public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Save(storage);
+        await base.SaveAsync(storage, cancellationToken);
         storage
             .Set(nameof(Address), Address)
             .Set(nameof(Market), Market)
@@ -96,9 +96,9 @@ public partial class TpexMessageAdapter :
     }
 
     /// <inheritdoc />
-    public override void Load(SettingsStorage storage)
+    public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Load(storage);
+        await base.LoadAsync(storage, cancellationToken);
         Address = storage.GetValue(nameof(Address), Address);
         Market = storage.GetValue(nameof(Market), Market);
         IncludeListedDerivatives = storage.GetValue(

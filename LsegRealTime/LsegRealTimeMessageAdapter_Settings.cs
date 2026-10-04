@@ -205,9 +205,9 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(AuthenticationMode), AuthenticationMode)
 			.Set(nameof(Address), Address)
@@ -227,9 +227,9 @@ public partial class LsegRealTimeMessageAdapter : MessageAdapter, IAddressAdapte
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		AuthenticationMode = storage.GetValue(nameof(AuthenticationMode), AuthenticationMode);
 		Address = storage.GetValue(nameof(Address), Address);
 		StandbyAddress = storage.GetValue(nameof(StandbyAddress), StandbyAddress);

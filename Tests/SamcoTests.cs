@@ -58,7 +58,7 @@ public class SamcoTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+	public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
 	{
 		var source = new SamcoMessageAdapter(
 			new IncrementalIdGenerator())
@@ -73,11 +73,11 @@ public class SamcoTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(17),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new SamcoMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("encrypted-key", target.Key.UnSecure());
 		AreEqual("encrypted-secret", target.Secret.UnSecure());

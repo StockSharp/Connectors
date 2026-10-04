@@ -135,9 +135,9 @@ public partial class OandaMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 	public static IEnumerable<TimeSpan> AllTimeFrames => _timeFrames;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 
 		storage
 			.Set(nameof(IsDemo), IsDemo)
@@ -152,9 +152,9 @@ public partial class OandaMessageAdapter : MessageAdapter, ITokenAdapter, IDemoA
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 
 		IsDemo = storage.GetValue<bool>(nameof(IsDemo));
 		Token = storage.GetValue<SecureString>(nameof(Token));

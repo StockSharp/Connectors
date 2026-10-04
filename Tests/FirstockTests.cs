@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -18,7 +19,7 @@ using StockSharp.Messages;
 public class FirstockTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+    public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
     {
         var source = new FirstockMessageAdapter(new IncrementalIdGenerator())
         {
@@ -39,10 +40,10 @@ public class FirstockTests : BaseTestClass
             PollingInterval = TimeSpan.FromSeconds(17),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new FirstockMessageAdapter(new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.UserId, target.UserId);
         AreEqual(source.Password.UnSecure(), target.Password.UnSecure());

@@ -115,9 +115,9 @@ public partial class GlassnodeMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Token), Token)
 			.Set(nameof(ApiEndpoint), ApiEndpoint)
@@ -129,9 +129,9 @@ public partial class GlassnodeMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		ApiEndpoint = storage.GetValue(nameof(ApiEndpoint), ApiEndpoint);
 		PriceTimeFrame = storage.GetValue(nameof(PriceTimeFrame), PriceTimeFrame);
@@ -142,8 +142,8 @@ public partial class GlassnodeMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new GlassnodeMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new GlassnodeMessageAdapter(TransactionIdGenerator)
 		{
 			Token = Token,
 			ApiEndpoint = ApiEndpoint,
@@ -152,5 +152,5 @@ public partial class GlassnodeMessageAdapter
 			MaximumItems = MaximumItems,
 			HistoryLimit = HistoryLimit,
 			HistoryLookback = HistoryLookback,
-		};
+		});
 }

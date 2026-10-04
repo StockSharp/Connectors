@@ -221,9 +221,9 @@ partial class IQFeedMessageAdapter : ILoginPasswordAdapter
 	public static IEnumerable<TimeSpan> AllTimeFrames => _timeFrames;
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 
 		ProductId = storage.GetValue<string>(nameof(ProductId));
 		if(ProductId.IsEmptyOrWhiteSpace())
@@ -253,9 +253,9 @@ partial class IQFeedMessageAdapter : ILoginPasswordAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 
 		storage.SetValue(nameof(ProductId), ProductId);
 		storage.SetValue(nameof(Login), Login);

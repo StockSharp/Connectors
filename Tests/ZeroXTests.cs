@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Numerics;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -34,7 +35,7 @@ public class ZeroXTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointsAndTradingOptions()
+	public async Task SettingsRoundTripKeepsEndpointsAndTradingOptions()
 	{
 		var source = new ZeroXMessageAdapter(new IncrementalIdGenerator())
 		{
@@ -55,10 +56,10 @@ public class ZeroXTests : BaseTestClass
 			IsAutoApprove = false,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new ZeroXMessageAdapter(new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("key", target.ApiKey.UnSecure());
 		AreEqual(ZeroXChains.Arbitrum, target.Chain);

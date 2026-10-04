@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -33,7 +34,7 @@ public class TokocryptoTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new TokocryptoMessageAdapter(
 			new IncrementalIdGenerator())
@@ -46,11 +47,11 @@ public class TokocryptoTests : BaseTestClass
 			WebSocketEndpoint = "wss://stream.example.test/",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new TokocryptoMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("public-key", target.Key.UnSecure());
 		AreEqual("private-secret", target.Secret.UnSecure());

@@ -21,7 +21,7 @@ using StockSharp.Messages;
 public class DefinedgeTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+    public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
     {
         var source = new DefinedgeMessageAdapter(
             new IncrementalIdGenerator())
@@ -47,11 +47,11 @@ public class DefinedgeTests : BaseTestClass
             PollingInterval = TimeSpan.FromSeconds(17),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new DefinedgeMessageAdapter(
             new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.Key.UnSecure(), target.Key.UnSecure());
         AreEqual(

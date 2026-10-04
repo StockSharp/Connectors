@@ -49,7 +49,7 @@ public class PendleTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointsAndLimits()
+	public async Task SettingsRoundTripKeepsEndpointsAndLimits()
 	{
 		var source = new PendleMessageAdapter(
 			new IncrementalIdGenerator())
@@ -70,11 +70,11 @@ public class PendleTests : BaseTestClass
 			IsAutoApprove = false,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new PendleMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(PendleChains.Arbitrum, target.Chain);
 		AreEqual(source.WalletAddress, target.WalletAddress);

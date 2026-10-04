@@ -3,7 +3,7 @@
 /// <summary>
 /// Soft Dollar Tier information.
 /// </summary>
-public class SoftDollarTier : IPersistable
+public class SoftDollarTier : Cloneable<SoftDollarTier>, IAsyncPersistable
 {
 	/// <summary>
 	/// Name.
@@ -20,17 +20,27 @@ public class SoftDollarTier : IPersistable
 	/// </summary>
 	public string DisplayName { get; set; }
 
-	void IPersistable.Load(SettingsStorage storage)
+	/// <summary>
+	/// Create a copy of <see cref="SoftDollarTier"/>.
+	/// </summary>
+	/// <returns>Copy.</returns>
+	public override SoftDollarTier Clone() => (SoftDollarTier)MemberwiseClone();
+
+	Task IAsyncPersistable.LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		Name = storage.GetValue<string>(nameof(Name));
 		Value = storage.GetValue<string>(nameof(Value));
 		DisplayName = storage.GetValue<string>(nameof(DisplayName));
+
+		return Task.CompletedTask;
 	}
 
-	void IPersistable.Save(SettingsStorage storage)
+	Task IAsyncPersistable.SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		storage.SetValue(nameof(Name), Name);
 		storage.SetValue(nameof(Value), Value);
 		storage.SetValue(nameof(DisplayName), DisplayName);
+
+		return Task.CompletedTask;
 	}
 }

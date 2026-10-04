@@ -47,7 +47,7 @@ public class XrplTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointsAccountAndLimits()
+	public async Task SettingsRoundTripKeepsEndpointsAccountAndLimits()
 	{
 		var account = "rLUEXYuLiQptky37CqLcm9USQpPiz5rkpD";
 		var source = new XrplMessageAdapter(
@@ -67,11 +67,11 @@ public class XrplTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(9),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new XrplMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("https://rpc.example.test/",
 			target.RpcEndpoint);

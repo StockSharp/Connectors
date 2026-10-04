@@ -110,9 +110,9 @@ public partial class QuoddMessageAdapter : MessageAdapter, ITokenAdapter, ILogin
 	public bool IsTickerInfoEnabled { get; set; } = true;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(AuthenticationMode), AuthenticationMode)
 			.Set(nameof(Token), Token)
@@ -127,9 +127,9 @@ public partial class QuoddMessageAdapter : MessageAdapter, ITokenAdapter, ILogin
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		AuthenticationMode = storage.GetValue(nameof(AuthenticationMode), AuthenticationMode);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		Login = storage.GetValue<string>(nameof(Login));

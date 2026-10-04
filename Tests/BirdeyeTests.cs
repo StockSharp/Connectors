@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -39,7 +40,7 @@ public class BirdeyeTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsHostsAndChain()
+	public async Task SettingsRoundTripKeepsHostsAndChain()
 	{
 		var source = new BirdeyeMessageAdapter(
 			new IncrementalIdGenerator())
@@ -59,11 +60,11 @@ public class BirdeyeTests : BaseTestClass
 			HistoryLimit = 123,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new BirdeyeMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("key", target.Token.UnSecure());
 		AreEqual(

@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Numerics;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -44,7 +45,7 @@ public class KyberSwapTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsRoutingOptions()
+	public async Task SettingsRoundTripKeepsRoutingOptions()
 	{
 		var source = new KyberSwapMessageAdapter(
 			new IncrementalIdGenerator())
@@ -65,11 +66,11 @@ public class KyberSwapTests : BaseTestClass
 			IsAutoApprove = false,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new KyberSwapMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("StockSharp.Tests", target.ClientId);
 		AreEqual(KyberSwapChains.Arbitrum, target.Chain);

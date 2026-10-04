@@ -188,9 +188,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <inheritdoc />
-    public override void Save(SettingsStorage storage)
+    public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Save(storage);
+        await base.SaveAsync(storage, cancellationToken);
         storage
             .Set(nameof(ClientCode), ClientCode)
             .Set(nameof(ApiKey), ApiKey)
@@ -209,9 +209,9 @@ public partial class BigulMessageAdapter : MessageAdapter, ITokenAdapter
     }
 
     /// <inheritdoc />
-    public override void Load(SettingsStorage storage)
+    public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Load(storage);
+        await base.LoadAsync(storage, cancellationToken);
         ClientCode = storage.GetValue<string>(nameof(ClientCode));
         ApiKey = storage.GetValue<SecureString>(nameof(ApiKey));
         ApiSecret = storage.GetValue<SecureString>(nameof(ApiSecret));

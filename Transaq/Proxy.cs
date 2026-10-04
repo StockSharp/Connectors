@@ -6,7 +6,7 @@ using System.ComponentModel;
 /// Прокси.
 /// </summary>
 [TypeConverter(typeof(ExpandableObjectConverter))]
-public class Proxy : IPersistable
+public class Proxy : IAsyncPersistable
 {
 	/// <summary>
 	/// Использовать прокси.
@@ -69,22 +69,26 @@ public class Proxy : IPersistable
 		set => _password = value.Secure();
 	}
 
-	void IPersistable.Load(SettingsStorage storage)
+	Task IAsyncPersistable.LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		IsEnabled = storage.GetValue<bool>(nameof(IsEnabled));
 		Address = storage.GetValue<EndPoint>(nameof(Address));
 		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<string>(nameof(Password));
 		Type = storage.GetValue<ProxyTypes>(nameof(Type));
+
+		return Task.CompletedTask;
 	}
 
-	void IPersistable.Save(SettingsStorage storage)
+	Task IAsyncPersistable.SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
 		storage.SetValue(nameof(IsEnabled), IsEnabled);
 		storage.SetValue(nameof(Address), Address.To<string>());
 		storage.SetValue(nameof(Login), Login);
 		storage.SetValue(nameof(Password), Password);
 		storage.SetValue(nameof(Type), Type.To<string>());
+
+		return Task.CompletedTask;
 	}
 }
 

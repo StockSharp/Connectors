@@ -58,7 +58,7 @@ public class IIFLTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsCredentialsAndAddresses()
+	public async Task SettingsRoundTripKeepsCredentialsAndAddresses()
 	{
 		var source = new IIFLMessageAdapter(
 			new IncrementalIdGenerator())
@@ -78,11 +78,11 @@ public class IIFLTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(12),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new IIFLMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("app-key", target.Key.UnSecure());
 		AreEqual("app-secret", target.Secret.UnSecure());

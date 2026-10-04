@@ -93,9 +93,9 @@ public partial class BitGoMessageAdapter
 	public bool IsIncludeUnsettledInAvailable { get; set; }
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Token), Token)
 			.Set(nameof(Account), Account)
@@ -108,9 +108,9 @@ public partial class BitGoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Token = storage.GetValue<SecureString>(nameof(Token));
 		Account = storage.GetValue<string>(nameof(Account));
 		ApiEndpoint = storage.GetValue(nameof(ApiEndpoint), ApiEndpoint);
@@ -124,8 +124,8 @@ public partial class BitGoMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
-		=> new BitGoMessageAdapter(TransactionIdGenerator)
+	public override ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
+		=> new(new BitGoMessageAdapter(TransactionIdGenerator)
 		{
 			Token = Token,
 			Account = Account,
@@ -135,7 +135,7 @@ public partial class BitGoMessageAdapter
 			HistoryLimit = HistoryLimit,
 			IsIncludeUnsettledInAvailable =
 				IsIncludeUnsettledInAvailable,
-		};
+		});
 
 	/// <inheritdoc />
 	public override string ToString()

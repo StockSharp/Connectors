@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -17,7 +18,7 @@ using StockSharp.Messages;
 public class ExanteTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsConnectionOptions()
+    public async Task SettingsRoundTripKeepsConnectionOptions()
     {
         var source = new ExanteMessageAdapter(
             new IncrementalIdGenerator())
@@ -33,11 +34,11 @@ public class ExanteTests : BaseTestClass
             DemoAddress = new("https://demo.example.test/"),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new ExanteMessageAdapter(
             new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual("api-key", target.Key.UnSecure());
         AreEqual("api-secret", target.Secret.UnSecure());

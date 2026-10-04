@@ -25,7 +25,7 @@ using StockSharp.Rupeezy.Native;
 public class RupeezyTests : BaseTestClass
 {
     [TestMethod]
-    public void SettingsRoundTripKeepsCredentialsAndEndpoints()
+    public async Task SettingsRoundTripKeepsCredentialsAndEndpoints()
     {
         var source = new RupeezyMessageAdapter(new IncrementalIdGenerator())
         {
@@ -42,10 +42,10 @@ public class RupeezyTests : BaseTestClass
             PollingInterval = TimeSpan.FromSeconds(17),
         };
         var storage = new SettingsStorage();
-        source.Save(storage);
+        await source.SaveAsync(storage, CancellationToken);
 
         var target = new RupeezyMessageAdapter(new IncrementalIdGenerator());
-        target.Load(storage);
+        await target.LoadAsync(storage, CancellationToken);
 
         AreEqual(source.ApplicationId, target.ApplicationId);
         AreEqual(source.ApiKey.UnSecure(), target.ApiKey.UnSecure());

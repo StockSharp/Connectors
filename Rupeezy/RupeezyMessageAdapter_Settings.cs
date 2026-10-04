@@ -155,9 +155,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <inheritdoc />
-    public override void Save(SettingsStorage storage)
+    public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Save(storage);
+        await base.SaveAsync(storage, cancellationToken);
         storage
             .Set(nameof(ApplicationId), ApplicationId)
             .Set(nameof(ApiKey), ApiKey)
@@ -173,9 +173,9 @@ public partial class RupeezyMessageAdapter : MessageAdapter, ITokenAdapter
     }
 
     /// <inheritdoc />
-    public override void Load(SettingsStorage storage)
+    public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
     {
-        base.Load(storage);
+        await base.LoadAsync(storage, cancellationToken);
         ApplicationId = storage.GetValue<string>(nameof(ApplicationId));
         ApiKey = storage.GetValue<SecureString>(nameof(ApiKey));
         AuthCode = storage.GetValue<SecureString>(nameof(AuthCode));

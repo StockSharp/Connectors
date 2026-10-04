@@ -88,9 +88,9 @@ public partial class DukasCopyJForexMessageAdapter : MessageAdapter, ILoginPassw
 	public string BridgeJarPath { get; set; }
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
@@ -102,9 +102,9 @@ public partial class DukasCopyJForexMessageAdapter : MessageAdapter, ILoginPassw
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Login = storage.GetValue<string>(nameof(Login));
 
 		if (Login.IsEmpty())

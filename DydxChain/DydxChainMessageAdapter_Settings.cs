@@ -159,9 +159,9 @@ public partial class DydxChainMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(IndexerEndpoint), IndexerEndpoint)
 			.Set(nameof(WebSocketEndpoint), WebSocketEndpoint)
@@ -177,9 +177,9 @@ public partial class DydxChainMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		IndexerEndpoint = NormalizeEndpoint(storage.GetValue(
 			nameof(IndexerEndpoint), IndexerEndpoint), false,
 			nameof(IndexerEndpoint));

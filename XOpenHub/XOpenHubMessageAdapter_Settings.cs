@@ -87,9 +87,9 @@ public partial class XOpenHubMessageAdapter : MessageAdapter, ILoginPasswordAdap
 	public string DemoStreamEndpoint { get; set; } = _defaultDemoStreamEndpoint;
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Login), Login)
 			.Set(nameof(Password), Password)
@@ -101,9 +101,9 @@ public partial class XOpenHubMessageAdapter : MessageAdapter, ILoginPasswordAdap
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Login = storage.GetValue<string>(nameof(Login));
 		Password = storage.GetValue<SecureString>(nameof(Password));
 		IsDemo = storage.GetValue(nameof(IsDemo), IsDemo);

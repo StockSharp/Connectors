@@ -226,9 +226,9 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(Cluster), Cluster)
 			.Set(nameof(RpcEndpoint), RpcEndpoint)
@@ -247,9 +247,9 @@ public partial class OrcaMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		Cluster = storage.GetValue(nameof(Cluster), Cluster);
 		RpcEndpoint = storage.GetValue<string>(nameof(RpcEndpoint));
 		StreamingEndpoint = storage.GetValue<string>(nameof(StreamingEndpoint));

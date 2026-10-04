@@ -79,9 +79,9 @@ public partial class BloombergMessageAdapter : MessageAdapter
 	public string Broker { get; set; }
 
 	/// <inheritdoc />
-	public override void Save(SettingsStorage storage)
+	public override async Task SaveAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Save(storage);
+		await base.SaveAsync(storage, cancellationToken);
 		storage
 			.Set(nameof(ServerAddress), ServerAddress)
 			.Set(nameof(SdkPath), SdkPath)
@@ -91,9 +91,9 @@ public partial class BloombergMessageAdapter : MessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override void Load(SettingsStorage storage)
+	public override async Task LoadAsync(SettingsStorage storage, CancellationToken cancellationToken)
 	{
-		base.Load(storage);
+		await base.LoadAsync(storage, cancellationToken);
 		ServerAddress = storage.GetValue(nameof(ServerAddress), ServerAddress);
 		SdkPath = storage.GetValue<string>(nameof(SdkPath));
 		IsEmsxEnabled = storage.GetValue(nameof(IsEmsxEnabled), IsEmsxEnabled);

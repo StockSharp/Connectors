@@ -49,7 +49,7 @@ public class DeepBookTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointsAndLimits()
+	public async Task SettingsRoundTripKeepsEndpointsAndLimits()
 	{
 		var source = new DeepBookMessageAdapter(
 			new IncrementalIdGenerator())
@@ -67,11 +67,11 @@ public class DeepBookTests : BaseTestClass
 			PollingInterval = TimeSpan.FromSeconds(9),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new DeepBookMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual(source.WalletAddress, target.WalletAddress);
 		AreEqual("secret", target.PrivateKey.UnSecure());

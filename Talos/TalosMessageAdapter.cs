@@ -66,12 +66,12 @@ public sealed class TalosMessageAdapter : FixMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override IMessageAdapter Clone()
+	public override async ValueTask<IMessageAdapter> CloneAsync(CancellationToken cancellationToken)
 	{
 		var storage = new SettingsStorage();
-		Save(storage);
+		await SaveAsync(storage, cancellationToken);
 		var clone = new TalosMessageAdapter(TransactionIdGenerator);
-		clone.Load(storage);
+		await clone.LoadAsync(storage, cancellationToken);
 		return clone;
 	}
 

@@ -35,7 +35,7 @@ public class OpenFigiTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void DefaultsAndSettingsRoundTrip()
+	public async Task DefaultsAndSettingsRoundTrip()
 	{
 		var source = new OpenFigiMessageAdapter(
 			new IncrementalIdGenerator());
@@ -61,11 +61,11 @@ public class OpenFigiTests : BaseTestClass
 		source.SecurityType2 = "Common Stock";
 		source.IncludeUnlistedEquities = true;
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 		var target = new OpenFigiMessageAdapter(
 			new IncrementalIdGenerator());
 
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("secret", target.Key.UnSecure());
 		AreEqual(source.RestEndpoint, target.RestEndpoint);

@@ -3,6 +3,7 @@ namespace StockSharp.Connectors.Tests;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -40,7 +41,7 @@ public class BigOneTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsConnectionOptions()
+	public async Task SettingsRoundTripKeepsConnectionOptions()
 	{
 		var source = new BigOneMessageAdapter(
 			new IncrementalIdGenerator())
@@ -57,11 +58,11 @@ public class BigOneTests : BaseTestClass
 				"wss://contract.example.test/private/",
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new BigOneMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("public-key", target.Key.UnSecure());
 		AreEqual("private-secret", target.Secret.UnSecure());

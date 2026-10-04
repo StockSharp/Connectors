@@ -3,6 +3,7 @@ namespace StockSharp.Connectors.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
@@ -41,7 +42,7 @@ public class CoincallTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsAllAddresses()
+	public async Task SettingsRoundTripKeepsAllAddresses()
 	{
 		var source = new CoincallMessageAdapter(
 			new IncrementalIdGenerator())
@@ -58,11 +59,11 @@ public class CoincallTests : BaseTestClass
 			PrivatePollingInterval = TimeSpan.FromSeconds(17),
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new CoincallMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("key", target.Key.UnSecure());
 		AreEqual("secret", target.Secret.UnSecure());

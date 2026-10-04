@@ -44,7 +44,7 @@ public class DexalotTests : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SettingsRoundTripKeepsEndpointsWalletAndLimits()
+	public async Task SettingsRoundTripKeepsEndpointsWalletAndLimits()
 	{
 		var source = new DexalotMessageAdapter(
 			new IncrementalIdGenerator())
@@ -67,11 +67,11 @@ public class DexalotTests : BaseTestClass
 				DexalotSelfTradePrevention.CancelBoth,
 		};
 		var storage = new SettingsStorage();
-		source.Save(storage);
+		await source.SaveAsync(storage, CancellationToken);
 
 		var target = new DexalotMessageAdapter(
 			new IncrementalIdGenerator());
-		target.Load(storage);
+		await target.LoadAsync(storage, CancellationToken);
 
 		AreEqual("https://rest.example.test", target.RestEndpoint);
 		AreEqual("wss://ws.example.test", target.WebSocketEndpoint);
