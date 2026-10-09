@@ -23,6 +23,7 @@ public partial class BinanceMessageAdapter
 
 			Section = section;
 			Symbol = symbol;
+			Sequence = new(section.IsCommonFutures());
 		}
 
 		public BinanceSections Section { get; }
@@ -33,7 +34,10 @@ public partial class BinanceMessageAdapter
 		public DepthStates State { get; set; }
 		public int ErrorCount { get; set; }
 
-		public long LastUpdateId { get; set; }
+		public DepthSequence Sequence { get; }
+
+		// When a book that could not be built is asked for again.
+		public DateTime RetryAfter { get; set; }
 
 		public List<OrderBook> Increments { get; } = [];
 	}
@@ -43,6 +47,10 @@ public partial class BinanceMessageAdapter
 	private Channel<DepthInfo> _snapshotRequests;
 
 	private const int _maxFetch = 1000;
+
+	// How long a book that could not be built is left alone: every attempt is a snapshot request, and they count
+	// towards the venue's limit.
+	private static readonly TimeSpan _depthRetryPause = TimeSpan.FromSeconds(30);
 
 	/// <inheritdoc />
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken cancellationToken)
@@ -417,48 +425,24 @@ public partial class BinanceMessageAdapter
 		}, cancellationToken);
 	}
 
-	private bool? CanProcess(DepthInfo info, OrderBook book)
+	private bool? TryAdvance(DepthInfo info, OrderBook book)
 	{
-		var lastId = info.LastUpdateId;
+		var step = info.Sequence.TryAdvance(book.FirstUpdateId, book.LastUpdateId, book.FutLastUpdateId);
 
-		if (info.Section.IsCommonFutures())
-		{
-			if (book.FutLastUpdateId == lastId)
-			{
-				info.LastUpdateId = book.LastUpdateId;
-				return true;
-			}
-			else if (book.FutLastUpdateId > lastId)
-			{
-				this.AddDebugLog($"{book.Symbol}: {lastId}<{book.FutLastUpdateId}");
-				return false;
-			}
-			else
-			{
-				return null;
-			}
-		}
-		else
-		{
-			var currId = book.FirstUpdateId;
+		if (step == false)
+			this.AddDebugLog($"{book.Symbol}: the book ends at {info.Sequence.LastUpdateId}, the update covers {book.FirstUpdateId}-{book.LastUpdateId}");
 
-			if ((lastId + 1) < currId)
-			{
-				// gap
-				info.LastUpdateId = book.LastUpdateId;
-				return true;
-				//return false;
-			}
-			else if (lastId >= currId)
-			{
-				this.AddDebugLog($"{book.Symbol}: {currId}<={lastId}");
+		return step;
+	}
 
-				return null;
-			}
+	// A book that could not be built is asked for again later rather than left as it was for good.
+	private void Fail(DepthInfo info)
+	{
+		this.AddErrorLog($"{info.Symbol}: {info.State}->{DepthStates.Failed}");
 
-			info.LastUpdateId = book.LastUpdateId;
-			return true;
-		}
+		info.Increments.Clear();
+		info.State = DepthStates.Failed;
+		info.RetryAfter = CurrentTime + _depthRetryPause;
 	}
 
 	private Task StartSnapshotsThread(CancellationToken cancellationToken)
@@ -497,12 +481,7 @@ public partial class BinanceMessageAdapter
 							using (await info.Sync.LockAsync(cancellationToken))
 							{
 								info.ErrorCount = 0;
-								info.LastUpdateId = depth.LastUpdateId;
-
-								if (section.IsCommonFutures())
-									info.Increments.RemoveWhere(b => b.LastUpdateId < info.LastUpdateId);
-								else
-									info.Increments.RemoveWhere(b => b.LastUpdateId <= info.LastUpdateId);
+								info.Sequence.Reset(depth.LastUpdateId);
 
 								info.Increments.Sort((b1, b2) => b1.FirstUpdateId.CompareTo(b2.FirstUpdateId));
 
@@ -512,15 +491,14 @@ public partial class BinanceMessageAdapter
 								{
 									var increment = info.Increments[0];
 
-									switch (CanProcess(info, increment))
+									switch (TryAdvance(info, increment))
 									{
 										case true:
 											await ProcessIncrementBook(section, increment, cancellationToken);
 											info.Increments.RemoveAt(0);
 											continue;
 										case null:
-											// stored increments can be duplicated
-											//throw new InvalidOperationException("res=null");
+											// what the snapshot already holds
 											info.Increments.RemoveAt(0);
 											continue;
 										default:
@@ -529,29 +507,23 @@ public partial class BinanceMessageAdapter
 									}
 								}
 
-								if (gap)
-								{
-									if (i == (maxError - 1))
-									{
-										this.AddErrorLog($"Depth {info.Symbol} max attempts.");
-
-										info.Increments.Clear();
-
-										this.AddErrorLog($"{info.Symbol}: {info.State}->{DepthStates.Failed}");
-										info.State = DepthStates.Failed;
-										break;
-									}
-
-									continue;
-								}
-								else
+								if (!gap)
 								{
 									this.AddInfoLog($"{info.Symbol}: {info.State}->{DepthStates.Incremental}");
 									info.State = DepthStates.Incremental;
+									break;
 								}
 
-								break;
+								if (i == (maxError - 1))
+								{
+									this.AddErrorLog($"Depth {info.Symbol} max attempts.");
+									Fail(info);
+									break;
+								}
 							}
+
+							// The snapshot ends before the updates kept for it begin: a later one is asked for.
+							await sleep.Delay(cancellationToken);
 						}
 						catch (Exception ex)
 						{
@@ -564,15 +536,15 @@ public partial class BinanceMessageAdapter
 							{
 								info.ErrorCount++;
 
-								if (info.ErrorCount < maxError)
-									continue;
-
-								this.AddErrorLog($"Depth {info.Symbol} max errors.");
-
-								this.AddErrorLog($"{info.Symbol}: {info.State}->{DepthStates.Failed}");
-								info.State = DepthStates.Failed;
-								break;
+								if (info.ErrorCount >= maxError)
+								{
+									this.AddErrorLog($"Depth {info.Symbol} max errors.");
+									Fail(info);
+									break;
+								}
 							}
+
+							await sleep.Delay(cancellationToken);
 						}
 					}
 				}
@@ -618,16 +590,22 @@ public partial class BinanceMessageAdapter
 				case DepthStates.Incremental:
 					break;
 				case DepthStates.Failed:
+					if (CurrentTime < info.RetryAfter)
+						return;
+
+					ToSnapshot(true);
 					return;
 				default:
 					throw new InvalidOperationException(info.State.To<string>());
 			}
 
-			switch (CanProcess(info, book))
+			switch (TryAdvance(info, book))
 			{
 				case null:
 					return;
 				case false:
+					// Updates between the book and this one never came, most of them removals of levels: carried
+					// on, the book would keep those levels for good.
 					ToSnapshot(true);
 					return;
 			}
