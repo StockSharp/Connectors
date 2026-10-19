@@ -37,6 +37,12 @@ enum FoxbitOrderTypes
 
 	[EnumMember(Value = "STOP_MARKET")]
 	StopMarket,
+
+	[EnumMember(Value = "TRAILING_STOP_LIMIT")]
+	TrailingStopLimit,
+
+	[EnumMember(Value = "TRAILING_STOP_MARKET")]
+	TrailingStopMarket,
 }
 
 sealed class FoxbitMarketCurrency

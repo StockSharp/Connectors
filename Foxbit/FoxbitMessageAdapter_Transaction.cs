@@ -192,8 +192,7 @@ public partial class FoxbitMessageAdapter
 			FoxbitOrderStates.Active or FoxbitOrderStates.PartiallyFilled or
 			FoxbitOrderStates.PendingCancel))
 		{
-			var isStop = order.Type is FoxbitOrderTypes.StopLimit or
-				FoxbitOrderTypes.StopMarket;
+			var isStop = order.Type.ToStockSharp() == OrderTypes.Conditional;
 			if (isStop != cancelMsg.IsStop.Value)
 				continue;
 			var canceled = await RestClient.CancelOrdersAsync(new()
