@@ -18,16 +18,10 @@ public class FluidDexMarketDataTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new FluidDexMessageAdapter(new IncrementalIdGenerator())
 	{
-		// ethereum-rpc.publicnode.com serves eth_getLogs only for the last hundred blocks and
-		// rejects anything older with HTTP 403 "archive requests require a personal token",
-		// which leaves the swap history unreadable
-		RpcEndpoint = "https://gateway.tenderly.co/public/mainnet",
-
 		Pools = "0x667701e51b4d1ca244f17c78f7ab8744b4c99f9b",
 
-		// a tick request without a start time walks the whole window and reads the timestamp of
-		// every block a swap sits in, so the default quarter of a million blocks never finishes
-		HistoryBlockCount = 500,
+		// The default public RPC serves recent logs without an archive subscription.
+		HistoryBlockCount = 50,
 	};
 
 	/// <inheritdoc />
@@ -43,4 +37,14 @@ public class FluidDexMarketDataTests : LiveMarketDataTestBase
 	/// every matched log costs another block read.
 	/// </remarks>
 	protected override TimeSpan DataTimeout => TimeSpan.FromSeconds(60);
+
+	/// <inheritdoc />
+	protected override int CandlesDepth => 2;
+
+	/// <inheritdoc />
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		if (message.DataType2 == DataType.Ticks || message.DataType2.IsTFCandles)
+			message.Count = 1;
+	}
 }
