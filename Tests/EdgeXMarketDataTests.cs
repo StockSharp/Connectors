@@ -22,7 +22,7 @@ public class EdgeXMarketDataTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "BTCUSD",
+		SecurityCode = "BTCUSDC",
 		BoardCode = BoardCodes.EdgeXDerivatives,
 	};
 }

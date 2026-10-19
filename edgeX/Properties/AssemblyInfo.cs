@@ -1,5 +1,8 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+[assembly: InternalsVisibleTo("StockSharp.Tests")]
 
 [assembly: AssemblyTitle("S#.EdgeX")]
 [assembly: AssemblyDescription("EdgeX connector.")]

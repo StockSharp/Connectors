@@ -31,16 +31,16 @@ sealed class EdgeXRestClient : BaseLogReceiver
 	}
 
 	public ValueTask<JObject> GetMetaDataAsync(CancellationToken cancellationToken)
-		=> new(GetPublicAsync("/api/v1/public/meta/getMetaData", null, cancellationToken));
+		=> new(GetPublicAsync("/api/v2/public/meta/getMetaData", null, cancellationToken));
 
 	public ValueTask<JObject> GetServerTimeAsync(CancellationToken cancellationToken)
-		=> new(GetPublicAsync("/api/v1/public/meta/getServerTime", null, cancellationToken));
+		=> new(GetPublicAsync("/api/v2/public/meta/getServerTime", null, cancellationToken));
 
 	public ValueTask<JObject> GetTickerAsync(string contractId, CancellationToken cancellationToken)
-		=> new(GetPublicAsync("/api/v1/public/quote/getTicker", request => request.AddParameter("contractId", contractId), cancellationToken));
+		=> new(GetPublicAsync("/api/v2/public/quote/getTicker", request => request.AddParameter("contractId", contractId), cancellationToken));
 
 	public ValueTask<JObject> GetDepthAsync(string contractId, int level, CancellationToken cancellationToken)
-		=> new(GetPublicAsync("/api/v1/public/quote/getDepth", request =>
+		=> new(GetPublicAsync("/api/v2/public/quote/getDepth", request =>
 		{
 			request
 				.AddParameter("contractId", contractId)
@@ -48,7 +48,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 		}, cancellationToken));
 
 	public ValueTask<JObject> GetKlineAsync(string contractId, string klineType, string priceType, int size, DateTime? from, DateTime? to, CancellationToken cancellationToken)
-		=> new(GetPublicAsync("/api/v1/public/quote/getKline", request =>
+		=> new(GetPublicAsync("/api/v2/public/quote/getKline", request =>
 		{
 			request
 				.AddParameter("contractId", contractId)
@@ -65,7 +65,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 
 	public ValueTask<JObject> GetAccountAssetAsync(string accountId, CancellationToken cancellationToken)
 		=> new(SendPrivateAsync(
-			"/api/v1/private/account/getAccountAsset",
+			"/api/v2/private/account/getAccountAsset",
 			Method.Get,
 			request => request.AddParameter("accountId", accountId),
 			null,
@@ -73,7 +73,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 
 	public ValueTask<JObject> GetActiveOrdersAsync(string accountId, string contractId, int? size, DateTime? from, DateTime? to, CancellationToken cancellationToken)
 		=> new(SendPrivateAsync(
-			"/api/v1/private/order/getActiveOrderPage",
+			"/api/v2/private/order/getActiveOrderPage",
 			Method.Get,
 			request =>
 			{
@@ -96,7 +96,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 
 	public ValueTask<JObject> GetFillTransactionsAsync(string accountId, string contractId, int? size, DateTime? from, DateTime? to, CancellationToken cancellationToken)
 		=> new(SendPrivateAsync(
-			"/api/v1/private/order/getHistoryOrderFillTransactionPage",
+			"/api/v2/private/order/getHistoryOrderFillTransactionPage",
 			Method.Get,
 			request =>
 			{
@@ -119,7 +119,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 
 	public ValueTask<JObject> CreateOrderAsync(JObject payload, CancellationToken cancellationToken)
 		=> new(SendPrivateAsync(
-			"/api/v1/private/order/createOrder",
+			"/api/v2/private/order/createOrder",
 			Method.Post,
 			request => request.AddStringBody(payload.ToString(Formatting.None), DataFormat.Json),
 			payload,
@@ -127,7 +127,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 
 	public ValueTask<JObject> CancelOrderByIdAsync(string accountId, IEnumerable<string> orderIdList, CancellationToken cancellationToken)
 		=> new(SendPrivateAsync(
-			"/api/v1/private/order/cancelOrderById",
+			"/api/v2/private/order/cancelOrderById",
 			Method.Post,
 			request =>
 			{
@@ -148,7 +148,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 
 	public ValueTask<JObject> CancelOrderByClientIdAsync(string accountId, IEnumerable<string> clientOrderIds, CancellationToken cancellationToken)
 		=> new(SendPrivateAsync(
-			"/api/v1/private/order/cancelOrderByClientOrderId",
+			"/api/v2/private/order/cancelOrderByClientOrderId",
 			Method.Post,
 			request =>
 			{
@@ -169,7 +169,7 @@ sealed class EdgeXRestClient : BaseLogReceiver
 
 	public ValueTask<JObject> CancelAllOrdersAsync(string accountId, IEnumerable<string> contractIds, CancellationToken cancellationToken)
 		=> new(SendPrivateAsync(
-			"/api/v1/private/order/cancelAllOrder",
+			"/api/v2/private/order/cancelAllOrder",
 			Method.Post,
 			request =>
 			{

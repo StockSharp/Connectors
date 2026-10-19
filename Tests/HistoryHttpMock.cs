@@ -41,6 +41,7 @@ sealed class HistoryHttpServer : IAsyncDisposable
 	}
 
 	public Uri Address { get; }
+	public string RequestTarget { get; private set; }
 
 	private async Task RunAsync(Func<string> response, CancellationToken cancellationToken)
 	{
@@ -49,6 +50,7 @@ sealed class HistoryHttpServer : IAsyncDisposable
 			using var client = await _listener.AcceptTcpClientAsync(cancellationToken);
 			await using var stream = client.GetStream();
 			using var reader = new StreamReader(stream, Encoding.ASCII, false, 1024, true);
+			RequestTarget = (await reader.ReadLineAsync(cancellationToken))?.Split(' ')[1];
 			while (!string.IsNullOrEmpty(await reader.ReadLineAsync(cancellationToken)))
 			{
 			}
