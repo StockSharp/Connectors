@@ -138,7 +138,7 @@ sealed class MeteoraRpcTransactionConfig
 		MeteoraCommitments.Confirmed;
 
 	[JsonProperty("maxSupportedTransactionVersion")]
-	public int MaximumSupportedTransactionVersion { get; init; }
+	public int MaximumSupportedTransactionVersion { get; init; } = 1;
 }
 
 sealed class MeteoraRpcSendConfig
