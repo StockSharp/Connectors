@@ -18,9 +18,9 @@ sealed class HistoryHttpHandler(Func<HttpRequestMessage, HttpResponseMessage> re
 		return Task.FromResult(response(request));
 	}
 
-	public static void ReplaceClient(object adapter, HttpClient client)
+	public static void ReplaceClient(object adapter, HttpClient client, string fieldName = "_client")
 	{
-		var field = adapter.GetType().GetField("_client", BindingFlags.Instance | BindingFlags.NonPublic);
+		var field = adapter.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
 		((HttpClient)field.GetValue(adapter)).Dispose();
 		field.SetValue(adapter, client);
 	}
