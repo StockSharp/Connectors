@@ -78,6 +78,14 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	/// </summary>
 	protected virtual DataType[] SkippedDataTypes => [];
 
+	/// <summary>
+	/// Sets venue-specific bounds on a market data request.
+	/// </summary>
+	/// <param name="message">Subscription to configure.</param>
+	protected virtual void ConfigureSubscription(MarketDataMessage message)
+	{
+	}
+
 	private MarketDataTestHarness CreateHarness()
 	{
 		var adapter = CreateAdapter();
@@ -196,7 +204,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 			Inconclusive("Level1 is not supported by the adapter.");
 
 		var result = await harness.SubscribeAsync<Level1ChangeMessage>(
-			DataType.Level1, TestSecurityId, null,
+			DataType.Level1, TestSecurityId, ConfigureSubscription,
 			m => m.Changes.Count > 0,
 			DataTimeout, CancellationToken);
 
@@ -211,7 +219,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 			Inconclusive("Order book is not supported by the adapter.");
 
 		var result = await harness.SubscribeAsync<QuoteChangeMessage>(
-			DataType.MarketDepth, TestSecurityId, null,
+			DataType.MarketDepth, TestSecurityId, ConfigureSubscription,
 			m => m.Bids.Length > 0 || m.Asks.Length > 0,
 			DataTimeout, CancellationToken);
 
@@ -231,7 +239,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 			Inconclusive("Ticks are not supported by the adapter.");
 
 		var result = await harness.SubscribeAsync<ExecutionMessage>(
-			DataType.Ticks, TestSecurityId, null,
+			DataType.Ticks, TestSecurityId, ConfigureSubscription,
 			m => m.DataType == DataType.Ticks && m.TradePrice is not null,
 			DataTimeout, CancellationToken);
 
@@ -258,6 +266,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 			{
 				mdMsg.From = from;
 				mdMsg.To = to;
+				ConfigureSubscription(mdMsg);
 			},
 			null,
 			DataTimeout, CancellationToken);

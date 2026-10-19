@@ -1,5 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
+using System;
+
 using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,9 +26,14 @@ public class OkexHistoryMarketDataTests : LiveMarketDataTestBase
 	};
 
 	/// <inheritdoc />
-	/// <remarks>
-	/// This source serves daily archive files, so the most recent hours are not published yet
-	/// and the request has to reach back past the last complete day.
-	/// </remarks>
-	protected override int CandlesDepth => 3 * 24 * 60;
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		// Daily archives are published after the trading day closes. Start at midnight so
+		// the first record also verifies the request without scanning most of a large file.
+		message.From = DateTime.UtcNow.Date.AddDays(-3);
+		message.To = message.From.Value.AddDays(1);
+		message.Count = 1;
+		if (message.DataType2 == DataType.MarketDepth)
+			message.MaxDepth = 20;
+	}
 }
