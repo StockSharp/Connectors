@@ -69,6 +69,8 @@ public partial class BitmartMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 	[BasicSetting]
 	public SecureString Secret { get; set; }
 
+	private BitmartSections _section;
+
 	/// <summary>
 	/// Section.
 	/// </summary>
@@ -79,7 +81,15 @@ public partial class BitmartMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
 	[BasicSetting]
-	public BitmartSections Section { get; set; }
+	public BitmartSections Section
+	{
+		get => _section;
+		set
+		{
+			_section = value;
+			Address = value == BitmartSections.Spot ? "api-cloud.bitmart.com" : "api-cloud-v2.bitmart.com";
+		}
+	}
 
 	/// <summary>
 	/// Memo.
@@ -101,7 +111,7 @@ public partial class BitmartMessageAdapter : MessageAdapter, IKeySecretAdapter, 
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 4)]
 	[BasicSetting]
-	public string Address { get; set; } = "api-cloud-v2.bitmart.com";
+	public string Address { get; set; } = "api-cloud.bitmart.com";
 
 	/// <summary>
 	/// Spot public websocket endpoint.
