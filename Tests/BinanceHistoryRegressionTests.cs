@@ -22,6 +22,32 @@ public class BinanceHistoryRegressionTests : HistoryTestBase
 {
 	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task SpotLookupUsesPublicMarketDataEndpoint()
+	{
+		using var http = new HttpClient(new HistoryHttpHandler(request =>
+			request.RequestUri.Host == "data-api.binance.vision" &&
+			request.RequestUri.AbsolutePath == "/api/v3/exchangeInfo"
+				? new(HttpStatusCode.OK)
+				{
+					Content = new StringContent("""{"symbols":[{"symbol":"BTCUSDT","baseAsset":"BTC","quoteAssetPrecision":8}]}"""),
+				}
+				: new((HttpStatusCode)451)));
+		var adapter = CreateAdapter<BinanceHistoryMessageAdapter>();
+		HistoryHttpHandler.ReplaceClient(adapter.FindAdapter<BinanceHistoryMessageAdapter>(), http);
+
+		var securities = await DownloadSecurities(adapter, new()
+		{
+			SecurityType = SecurityTypes.CryptoCurrency,
+			Count = 1,
+		}).ToArrayAsync(CancellationToken);
+
+		AreEqual(1, securities.Length);
+		AreEqual("BTCUSDT", securities[0].SecurityId.SecurityCode);
+		AreEqual(BoardCodes.Binance, securities[0].SecurityId.BoardCode);
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task LookupPropagatesHttpFailure()
 	{
 		var adapter = CreateAdapter<BinanceHistoryMessageAdapter>();

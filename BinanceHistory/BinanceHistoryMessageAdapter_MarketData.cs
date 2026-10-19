@@ -34,7 +34,7 @@ public partial class BinanceHistoryMessageAdapter
 
 		var endpoints = new Dictionary<string, (SecurityTypes type, string board)>
 		{
-			{ "https://api.binance.com/api/v3/exchangeInfo", (SecurityTypes.CryptoCurrency, BoardCodes.Binance) },
+			{ "https://data-api.binance.vision/api/v3/exchangeInfo", (SecurityTypes.CryptoCurrency, BoardCodes.Binance) },
 			{ "https://fapi.binance.com/fapi/v1/exchangeInfo", (SecurityTypes.Future, BoardCodes.BinanceFut) },
 			{ _coinExchangeInfoUrl, (SecurityTypes.Future, BoardCodes.BinanceCoin) }
 		};
