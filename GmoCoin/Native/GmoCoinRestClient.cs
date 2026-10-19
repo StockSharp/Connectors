@@ -37,7 +37,7 @@ sealed class GmoCoinRestClient : BaseLogReceiver
 	private readonly HttpClient _http = new();
 	private readonly string _apiKey;
 	private readonly byte[] _secret;
-	private readonly RateGate _publicGate = new(TimeSpan.FromMilliseconds(50));
+	private static readonly RateGate _publicGate = new(TimeSpan.FromSeconds(1));
 	private readonly RateGate _privateReadGate = new(TimeSpan.FromMilliseconds(55));
 	private readonly RateGate _privateWriteGate = new(TimeSpan.FromMilliseconds(55));
 	private readonly Lock _timestampSync = new();
@@ -74,7 +74,6 @@ sealed class GmoCoinRestClient : BaseLogReceiver
 	protected override void DisposeManaged()
 	{
 		_http.Dispose();
-		_publicGate.Dispose();
 		_privateReadGate.Dispose();
 		_privateWriteGate.Dispose();
 		if (_secret is not null)
@@ -267,7 +266,16 @@ sealed class GmoCoinRestClient : BaseLogReceiver
 
 			var envelope = Deserialize<GmoCoinResponse<TData>>(responseBody);
 			if (!envelope.IsSuccess)
+			{
+				if (canRetry && attempt < _maximumReadAttempts - 1 &&
+					envelope.Messages?.Any(message => message?.Code == "ERR-5003") == true)
+				{
+					await DelayRetryAsync(response, attempt, cancellationToken);
+					continue;
+				}
+
 				throw CreateApiError(envelope.Status, envelope.Messages);
+			}
 			return envelope.Data;
 		}
 	}
