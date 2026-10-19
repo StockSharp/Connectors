@@ -147,42 +147,22 @@ public partial class PaxosMessageAdapter
 			throw new NotSupportedException(
 				"Paxos exposes the current order book, not historical book changes.");
 
+		EnsureAuthenticated();
 		var market = GetMarket(message.SecurityId);
 		var depth = dataType == DataType.MarketDepth
 			? (message.MaxDepth ?? MarketDepth).Max(1).Min(MarketDepth)
 			: 1;
-		if (dataType == DataType.Level1)
-		{
-			var ticker = await RestClient.GetTickerAsync(market.Market,
-				cancellationToken) ?? throw new InvalidDataException(
-					$"Paxos returned no ticker for '{market.Market}'.");
-			await SendTickerAsync(ticker, message.TransactionId,
-				cancellationToken);
-		}
-		else
-		{
-			var book = await RestClient.GetOrderBookAsync(market.Market,
-				cancellationToken) ?? throw new InvalidDataException(
-					$"Paxos returned no order book for '{market.Market}'.");
-			await SendRestBookAsync(market, book, message.TransactionId, depth,
-				cancellationToken);
-		}
-
-		if (message.IsHistoryOnly())
-		{
-			await CompleteMarketSubscriptionAsync(message, cancellationToken);
-			return;
-		}
-
 		using (_sync.EnterScope())
 			_marketSubscriptions.Add(message.TransactionId, new()
 			{
 				Market = market,
 				DataType = dataType,
 				Depth = depth,
+				Remaining = message.Count,
 			});
 		try
 		{
+			await SendCachedBookAsync(market.Market, message.TransactionId, dataType, depth, cancellationToken);
 			await UpdateSocketsAsync(market.Market, cancellationToken);
 		}
 		catch
@@ -192,7 +172,8 @@ public partial class PaxosMessageAdapter
 			await CleanupSocketsAsync(market.Market, cancellationToken);
 			throw;
 		}
-		await SendSubscriptionResultAsync(message, cancellationToken);
+		if (message.Count is null)
+			await SendSubscriptionOnlineAsync(message.TransactionId, cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -215,38 +196,10 @@ public partial class PaxosMessageAdapter
 			return;
 		}
 
+		if (message.From is not null || message.To is not null)
+			throw new NotSupportedException("Paxos exposes live executions through WebSocket, not historical ticks.");
+		EnsureAuthenticated();
 		var market = GetMarket(message.SecurityId);
-		var from = message.From?.EnsureUtc();
-		var to = (message.To ?? CurrentTime).EnsureUtc();
-		if (from is DateTime start && start > to)
-			throw new ArgumentOutOfRangeException(nameof(message),
-				"Paxos execution start time cannot be later than end time.");
-		var limit = (message.Count ?? (message.IsHistoryOnly()
-			? HistoryLimit
-			: 100)).Min(HistoryLimit).Max(1).To<int>();
-		var executions = await RestClient.GetRecentExecutionsAsync(market.Market,
-			cancellationToken);
-		var selected = executions.Where(static execution =>
-				execution?.MatchNumber.IsEmpty() == false)
-			.Where(execution => from is null ||
-				execution.ExecutedAt.ToPaxosTime(DateTime.UnixEpoch) >= from.Value)
-			.Where(execution =>
-				execution.ExecutedAt.ToPaxosTime(DateTime.UnixEpoch) <= to)
-			.OrderBy(static execution => execution.ExecutedAt.ToPaxosTime(
-				DateTime.UnixEpoch)).TakeLast(limit).ToArray();
-
-		foreach (var execution in selected)
-		{
-			await SendPublicExecutionAsync(market.Market, execution,
-				message.TransactionId, DataType.Ticks, cancellationToken);
-			RememberPublicTrade(market.Market, execution.MatchNumber);
-		}
-
-		if (message.IsHistoryOnly())
-		{
-			await CompleteMarketSubscriptionAsync(message, cancellationToken);
-			return;
-		}
 
 		using (_sync.EnterScope())
 			_marketSubscriptions.Add(message.TransactionId, new()
@@ -254,6 +207,7 @@ public partial class PaxosMessageAdapter
 				Market = market,
 				DataType = DataType.Ticks,
 				Depth = 0,
+				Remaining = message.Count,
 			});
 		try
 		{
@@ -266,7 +220,8 @@ public partial class PaxosMessageAdapter
 			await CleanupSocketsAsync(market.Market, cancellationToken);
 			throw;
 		}
-		await SendSubscriptionResultAsync(message, cancellationToken);
+		if (message.Count is null)
+			await SendSubscriptionOnlineAsync(message.TransactionId, cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -374,7 +329,7 @@ public partial class PaxosMessageAdapter
 				return;
 			socket = new(SocketEndpoint, market, feed,
 				ReConnectionSettings.WorkingTime,
-				ReConnectionSettings.ReAttemptCount)
+				ReConnectionSettings.ReAttemptCount, RestClient.GetAccessTokenAsync)
 			{
 				Parent = this,
 			};
@@ -440,7 +395,7 @@ public partial class PaxosMessageAdapter
 		CancellationToken cancellationToken)
 		=> SendOutErrorAsync(error, cancellationToken);
 
-	private async ValueTask OnBookSnapshotAsync(PaxosBookSnapshot snapshot,
+	private async ValueTask OnBookSnapshotAsync(PaxosBookMessage snapshot,
 		CancellationToken cancellationToken)
 	{
 		if (snapshot?.Market.IsEmpty() != false)
@@ -449,21 +404,16 @@ public partial class PaxosMessageAdapter
 		KeyValuePair<long, MarketSubscription>[] subscriptions;
 		QuoteChange[] bids;
 		QuoteChange[] asks;
+		var time = snapshot.Time.ToPaxosTime(CurrentTime.EnsureUtc());
 		using (_sync.EnterScope())
 		{
 			if (!_books.TryGetValue(snapshot.Market, out var state))
 				_books[snapshot.Market] = state = new();
-			if (!state.IsSnapshotLoading)
-			{
-				state.Bids.Clear();
-				state.Asks.Clear();
-				state.IsSnapshotLoading = true;
-			}
+			state.Bids.Clear();
+			state.Asks.Clear();
 			ApplySnapshotLevels(state.Bids, snapshot.Bids);
 			ApplySnapshotLevels(state.Asks, snapshot.Asks);
-			if (!snapshot.IsFinalSnapshot)
-				return;
-			state.IsSnapshotLoading = false;
+			state.ServerTime = time;
 			bids = ToQuotes(state.Bids, MarketDepth);
 			asks = ToQuotes(state.Asks, MarketDepth);
 			subscriptions = [.. _marketSubscriptions.Where(item =>
@@ -474,45 +424,45 @@ public partial class PaxosMessageAdapter
 
 		foreach (var (transactionId, subscription) in subscriptions)
 		{
+			if (!TryTakeMarketData(transactionId, out var finished))
+				continue;
 			if (subscription.DataType == DataType.Level1)
-				await SendBestQuotesAsync(snapshot.Market, bids, asks,
+				await SendBestQuotesAsync(snapshot.Market, bids, asks, time,
 					transactionId, cancellationToken);
 			else
 				await SendOutMessageAsync(new QuoteChangeMessage
 				{
 					SecurityId = ToSecurityId(snapshot.Market),
-					ServerTime = CurrentTime.EnsureUtc(),
+					ServerTime = time,
 					OriginalTransactionId = transactionId,
 					State = QuoteChangeStates.SnapshotComplete,
 					Bids = [.. bids.Take(subscription.Depth)],
 					Asks = [.. asks.Take(subscription.Depth)],
 				}, cancellationToken);
+			if (finished)
+				await FinishMarketDataAsync(transactionId, snapshot.Market, cancellationToken);
 		}
 	}
 
-	private async ValueTask OnBookUpdateAsync(PaxosBookUpdate update,
+	private async ValueTask OnBookUpdateAsync(PaxosBookMessage update,
 		CancellationToken cancellationToken)
 	{
 		if (update?.Market.IsEmpty() != false)
 			throw new InvalidDataException(
 				"Paxos returned an incomplete order-book update.");
-		var price = update.Price.ParsePaxosAmount();
-		var amount = update.Amount.ParsePaxosAmount();
-		if (price <= 0 || amount < 0 || update.Side == PaxosSides.Unknown)
-			throw new InvalidDataException(
-				"Paxos returned an invalid order-book update.");
+		var changedBids = ConvertLevels(update.Bids, true);
+		var changedAsks = ConvertLevels(update.Asks, false);
+		var time = update.Time.ToPaxosTime(CurrentTime.EnsureUtc());
 		KeyValuePair<long, MarketSubscription>[] subscriptions;
 		QuoteChange[] bids;
 		QuoteChange[] asks;
 		using (_sync.EnterScope())
 		{
 			if (!_books.TryGetValue(update.Market, out var state))
-				_books[update.Market] = state = new();
-			var side = update.Side == PaxosSides.Buy ? state.Bids : state.Asks;
-			if (amount == 0)
-				side.Remove(price);
-			else
-				side[price] = amount;
+				throw new InvalidDataException("Paxos order-book update arrived before its snapshot.");
+			ApplySnapshotLevels(state.Bids, update.Bids);
+			ApplySnapshotLevels(state.Asks, update.Asks);
+			state.ServerTime = time;
 			bids = ToQuotes(state.Bids, 1);
 			asks = ToQuotes(state.Asks, 1);
 			subscriptions = [.. _marketSubscriptions.Where(item =>
@@ -523,35 +473,32 @@ public partial class PaxosMessageAdapter
 
 		foreach (var (transactionId, subscription) in subscriptions)
 		{
+			if (!TryTakeMarketData(transactionId, out var finished))
+				continue;
 			if (subscription.DataType == DataType.Level1)
-				await SendBestQuotesAsync(update.Market, bids, asks,
+				await SendBestQuotesAsync(update.Market, bids, asks, time,
 					transactionId, cancellationToken);
 			else
 				await SendOutMessageAsync(new QuoteChangeMessage
 				{
 					SecurityId = ToSecurityId(update.Market),
-					ServerTime = CurrentTime.EnsureUtc(),
+					ServerTime = time,
 					OriginalTransactionId = transactionId,
 					State = QuoteChangeStates.Increment,
-					Bids = update.Side == PaxosSides.Buy
-						? [new(price, amount)]
-						: [],
-					Asks = update.Side == PaxosSides.Sell
-						? [new(price, amount)]
-						: [],
+					Bids = changedBids,
+					Asks = changedAsks,
 				}, cancellationToken);
+			if (finished)
+				await FinishMarketDataAsync(transactionId, update.Market, cancellationToken);
 		}
 	}
 
 	private async ValueTask OnPublicExecutionAsync(
 		PaxosPublicExecution execution, CancellationToken cancellationToken)
 	{
-		if (execution?.Market.IsEmpty() != false ||
-			execution.MatchNumber.IsEmpty())
+		if (execution?.Market.IsEmpty() != false)
 			throw new InvalidDataException(
 				"Paxos returned an incomplete public execution.");
-		if (!RememberPublicTrade(execution.Market, execution.MatchNumber))
-			return;
 		KeyValuePair<long, MarketSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _marketSubscriptions.Where(item =>
@@ -560,24 +507,40 @@ public partial class PaxosMessageAdapter
 					item.Value.DataType == DataType.Level1))];
 
 		foreach (var (transactionId, subscription) in subscriptions)
+		{
+			if (!TryTakeMarketData(transactionId, out var finished))
+				continue;
 			await SendPublicExecutionAsync(execution.Market, execution,
 				transactionId, subscription.DataType, cancellationToken);
+			if (finished)
+				await FinishMarketDataAsync(transactionId, execution.Market, cancellationToken);
+		}
 	}
 
-	private bool RememberPublicTrade(string market, string matchNumber)
+	private bool TryTakeMarketData(long transactionId, out bool finished)
 	{
-		var key = market + ":" + matchNumber;
+		finished = false;
 		using (_sync.EnterScope())
 		{
-			if (!_seenPublicTrades.Add(key))
+			if (!_marketSubscriptions.TryGetValue(transactionId, out var subscription))
 				return false;
-			_publicTradeOrder.Enqueue(key);
-
-			while (_publicTradeOrder.Count > 10000)
-				_seenPublicTrades.Remove(_publicTradeOrder.Dequeue());
-
+			if (subscription.Remaining is { } remaining)
+			{
+				subscription.Remaining = remaining - 1;
+				if (remaining <= 1)
+				{
+					_marketSubscriptions.Remove(transactionId);
+					finished = true;
+				}
+			}
 			return true;
 		}
+	}
+
+	private async ValueTask FinishMarketDataAsync(long transactionId, string market, CancellationToken cancellationToken)
+	{
+		await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
+		await CleanupSocketsAsync(market, cancellationToken);
 	}
 
 	private async ValueTask SendPublicExecutionAsync(string market,
@@ -597,7 +560,6 @@ public partial class PaxosMessageAdapter
 				ServerTime = time,
 				OriginalTransactionId = transactionId,
 			}
-			.TryAdd(Level1Fields.LastTradeId, execution.MatchNumber)
 			.TryAdd(Level1Fields.LastTradePrice, price)
 			.TryAdd(Level1Fields.LastTradeVolume, volume)
 			.TryAdd(Level1Fields.LastTradeTime, time), cancellationToken);
@@ -607,7 +569,6 @@ public partial class PaxosMessageAdapter
 		{
 			DataTypeEx = DataType.Ticks,
 			SecurityId = ToSecurityId(market),
-			TradeStringId = execution.MatchNumber,
 			TradePrice = price,
 			TradeVolume = volume,
 			ServerTime = time,
@@ -615,73 +576,40 @@ public partial class PaxosMessageAdapter
 		}, cancellationToken);
 	}
 
-	private ValueTask SendTickerAsync(PaxosTicker ticker, long transactionId,
-		CancellationToken cancellationToken)
+	private async ValueTask SendCachedBookAsync(string market, long transactionId,
+		DataType dataType, int depth, CancellationToken cancellationToken)
 	{
-		var time = ticker.SnapshotAt.ToPaxosTime(CurrentTime.EnsureUtc());
-		return SendOutMessageAsync(new Level1ChangeMessage
-		{
-			SecurityId = ToSecurityId(ticker.Market),
-			ServerTime = time,
-			OriginalTransactionId = transactionId,
-		}
-		.TryAdd(Level1Fields.BestBidPrice,
-			ticker.BestBid?.Price.ParsePaxosAmount())
-		.TryAdd(Level1Fields.BestBidVolume,
-			ticker.BestBid?.Amount.ParsePaxosAmount())
-		.TryAdd(Level1Fields.BestAskPrice,
-			ticker.BestAsk?.Price.ParsePaxosAmount())
-		.TryAdd(Level1Fields.BestAskVolume,
-			ticker.BestAsk?.Amount.ParsePaxosAmount())
-		.TryAdd(Level1Fields.LastTradePrice,
-			ticker.LastExecution?.Price.ParsePaxosAmount())
-		.TryAdd(Level1Fields.LastTradeVolume,
-			ticker.LastExecution?.Amount.ParsePaxosAmount())
-		.TryAdd(Level1Fields.OpenPrice,
-			ticker.LastDay?.Open.ParsePaxosAmount())
-		.TryAdd(Level1Fields.HighPrice,
-			ticker.LastDay?.High.ParsePaxosAmount())
-		.TryAdd(Level1Fields.LowPrice,
-			ticker.LastDay?.Low.ParsePaxosAmount())
-		.TryAdd(Level1Fields.Volume,
-			ticker.LastDay?.Volume.ParsePaxosAmount())
-		.TryAdd(Level1Fields.VWAP,
-			ticker.LastDay?.VolumeWeightedAveragePrice.ParsePaxosAmount())
-		.TryAdd(Level1Fields.State, ToSecurityState(
-			GetMarket(ToSecurityId(ticker.Market)).MarketStatus)),
-			cancellationToken);
-	}
-
-	private async ValueTask SendRestBookAsync(PaxosMarket market,
-		PaxosOrderBook book, long transactionId, int depth,
-		CancellationToken cancellationToken)
-	{
-		var bids = ConvertLevels(book.Bids, true, depth);
-		var asks = ConvertLevels(book.Asks, false, depth);
+		QuoteChange[] bids;
+		QuoteChange[] asks;
+		DateTime time;
 		using (_sync.EnterScope())
 		{
-			_books[market.Market] = new();
-			var state = _books[market.Market];
-
-			foreach (var quote in bids)
-				state.Bids[quote.Price] = quote.Volume;
-
-			foreach (var quote in asks)
-				state.Asks[quote.Price] = quote.Volume;
+			if (!_books.TryGetValue(market, out var state))
+				return;
+			bids = ToQuotes(state.Bids, depth);
+			asks = ToQuotes(state.Asks, depth);
+			time = state.ServerTime;
 		}
-		await SendOutMessageAsync(new QuoteChangeMessage
-		{
-			SecurityId = ToSecurityId(market.Market),
-			ServerTime = CurrentTime.EnsureUtc(),
-			OriginalTransactionId = transactionId,
-			State = QuoteChangeStates.SnapshotComplete,
-			Bids = bids,
-			Asks = asks,
-		}, cancellationToken);
+		if (!TryTakeMarketData(transactionId, out var finished))
+			return;
+		if (dataType == DataType.Level1)
+			await SendBestQuotesAsync(market, bids, asks, time, transactionId, cancellationToken);
+		else
+			await SendOutMessageAsync(new QuoteChangeMessage
+			{
+				SecurityId = ToSecurityId(market),
+				ServerTime = time,
+				OriginalTransactionId = transactionId,
+				State = QuoteChangeStates.SnapshotComplete,
+				Bids = bids,
+				Asks = asks,
+			}, cancellationToken);
+		if (finished)
+			await FinishMarketDataAsync(transactionId, market, cancellationToken);
 	}
 
 	private ValueTask SendBestQuotesAsync(string market, QuoteChange[] bids,
-		QuoteChange[] asks, long transactionId,
+		QuoteChange[] asks, DateTime time, long transactionId,
 		CancellationToken cancellationToken)
 	{
 		var bid = bids.FirstOrDefault();
@@ -689,13 +617,14 @@ public partial class PaxosMessageAdapter
 		return SendOutMessageAsync(new Level1ChangeMessage
 		{
 			SecurityId = ToSecurityId(market),
-			ServerTime = CurrentTime.EnsureUtc(),
+			ServerTime = time,
 			OriginalTransactionId = transactionId,
 		}
 		.TryAdd(Level1Fields.BestBidPrice, bid.Price > 0 ? bid.Price : null)
 		.TryAdd(Level1Fields.BestBidVolume, bid.Volume > 0 ? bid.Volume : null)
 		.TryAdd(Level1Fields.BestAskPrice, ask.Price > 0 ? ask.Price : null)
-		.TryAdd(Level1Fields.BestAskVolume, ask.Volume > 0 ? ask.Volume : null),
+		.TryAdd(Level1Fields.BestAskVolume, ask.Volume > 0 ? ask.Volume : null)
+		.TryAdd(Level1Fields.State, ToSecurityState(GetMarket(ToSecurityId(market)).MarketStatus)),
 			cancellationToken);
 	}
 
@@ -745,7 +674,7 @@ public partial class PaxosMessageAdapter
 			new QuoteChange(item.Key, item.Value))];
 
 	private static QuoteChange[] ConvertLevels(IEnumerable<PaxosBookLevel> levels,
-		bool isBid, int depth)
+		bool isBid)
 	{
 		var result = new List<QuoteChange>();
 
@@ -758,20 +687,15 @@ public partial class PaxosMessageAdapter
 			if (price <= 0 || amount < 0)
 				throw new InvalidDataException(
 					"Paxos returned an invalid order-book level.");
-			if (amount > 0)
-				result.Add(new(price, amount));
+			result.Add(new(price, amount));
 		}
 
 		return [.. (isBid
 			? result.OrderByDescending(static quote => quote.Price)
-			: result.OrderBy(static quote => quote.Price)).Take(depth)];
+			: result.OrderBy(static quote => quote.Price))];
 	}
 
-	private async ValueTask CompleteMarketSubscriptionAsync(
+	private ValueTask CompleteMarketSubscriptionAsync(
 		MarketDataMessage message, CancellationToken cancellationToken)
-	{
-		await SendSubscriptionResultAsync(message, cancellationToken);
-		await SendSubscriptionFinishedAsync(message.TransactionId,
-			cancellationToken);
-	}
+		=> SendSubscriptionFinishedAsync(message.TransactionId, cancellationToken);
 }

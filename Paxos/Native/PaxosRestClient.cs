@@ -67,26 +67,25 @@ sealed class PaxosRestClient : BaseLogReceiver
 
 	public bool IsAuthenticationAvailable => !_clientId.IsEmpty();
 
+	public async ValueTask<string> GetAccessTokenAsync(CancellationToken cancellationToken)
+	{
+		EnsureAuthenticationAvailable();
+		await _gate.WaitAsync(cancellationToken);
+		try
+		{
+			await EnsureTokenAsync(cancellationToken);
+			return _accessToken;
+		}
+		finally
+		{
+			_gate.Release();
+		}
+	}
+
 	public async ValueTask<PaxosMarket[]> GetMarketsAsync(
 		CancellationToken cancellationToken)
 		=> (await GetAsync<PaxosMarketsResponse>("markets", false,
 			cancellationToken))?.Markets ?? [];
-
-	public ValueTask<PaxosOrderBook> GetOrderBookAsync(string market,
-		CancellationToken cancellationToken)
-		=> GetAsync<PaxosOrderBook>("markets/" + Escape(market) +
-			"/order-book", false, cancellationToken);
-
-	public ValueTask<PaxosTicker> GetTickerAsync(string market,
-		CancellationToken cancellationToken)
-		=> GetAsync<PaxosTicker>("markets/" + Escape(market) + "/ticker",
-			false, cancellationToken);
-
-	public async ValueTask<PaxosPublicExecution[]> GetRecentExecutionsAsync(
-		string market, CancellationToken cancellationToken)
-		=> (await GetAsync<PaxosRecentExecutionsResponse>("markets/" +
-			Escape(market) + "/recent-executions", false,
-			cancellationToken))?.Items ?? [];
 
 	public async ValueTask<PaxosCandle[]> GetCandlesAsync(string market,
 		PaxosCandleIncrements increment, DateTime? from, DateTime? to,
@@ -110,8 +109,6 @@ sealed class PaxosRestClient : BaseLogReceiver
 			var requestPath = AddCursor(path, cursor);
 			if (!visited.Add(requestPath))
 				break;
-			// unlike the rest of the market data, historical candles are served
-			// to an authenticated session only
 			var response = await GetAsync<PaxosCandlesResponse>(requestPath,
 				true, cancellationToken);
 			var items = response?.Items ?? [];

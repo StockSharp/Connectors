@@ -37,6 +37,7 @@ public partial class PaxosMessageAdapter : MessageAdapter, IKeySecretAdapter
 		public PaxosMarket Market { get; init; }
 		public DataType DataType { get; init; }
 		public int Depth { get; init; }
+		public long? Remaining { get; set; }
 	}
 
 	private sealed class PortfolioSubscription
@@ -75,7 +76,7 @@ public partial class PaxosMessageAdapter : MessageAdapter, IKeySecretAdapter
 		public SortedDictionary<decimal, decimal> Bids { get; } = new(
 			Comparer<decimal>.Create(static (left, right) => right.CompareTo(left)));
 		public SortedDictionary<decimal, decimal> Asks { get; } = [];
-		public bool IsSnapshotLoading { get; set; }
+		public DateTime ServerTime { get; set; }
 	}
 
 	private readonly record struct BalanceFingerprint(decimal Current,
@@ -119,9 +120,6 @@ public partial class PaxosMessageAdapter : MessageAdapter, IKeySecretAdapter
 		_transferFingerprints = new(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, ConversionFingerprint>
 		_conversionFingerprints = new(StringComparer.OrdinalIgnoreCase);
-	private readonly HashSet<string> _seenPublicTrades =
-		new(StringComparer.OrdinalIgnoreCase);
-	private readonly Queue<string> _publicTradeOrder = [];
 	private readonly HashSet<string> _seenPrivateExecutions =
 		new(StringComparer.OrdinalIgnoreCase);
 	private PaxosRestClient _restClient;
@@ -195,7 +193,7 @@ public partial class PaxosMessageAdapter : MessageAdapter, IKeySecretAdapter
 		EnsureConnected();
 		if (!RestClient.IsAuthenticationAvailable)
 			throw new InvalidOperationException(
-				"Paxos Client ID and Client Secret are required for private operations.");
+				"Paxos Client ID and Client Secret are required for this operation.");
 	}
 
 	private PaxosMarket GetMarket(SecurityId securityId)

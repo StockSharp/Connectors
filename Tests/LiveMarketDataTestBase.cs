@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StockSharp.Messages;
 
 /// <summary>
-/// Live market data checks for a connector whose public feed needs no credentials.
+/// Live market data checks for a connector with the access required by its feed.
 /// </summary>
 /// <remarks>
 /// Every check opens its own session against the real venue. A derived class only has to
@@ -33,7 +33,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	}
 
 	/// <summary>
-	/// Create the adapter under test. Credentials must not be required.
+	/// Create the adapter under test with any credentials required by its market data feed.
 	/// </summary>
 	/// <returns><see cref="MessageAdapter"/></returns>
 	protected abstract MessageAdapter CreateAdapter();
@@ -82,7 +82,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	{
 		var adapter = CreateAdapter();
 
-		// the public feed is the whole point of these checks, transactions would demand credentials
+		// These checks exercise market data without sending account or trading requests.
 		adapter.RemoveTransactionalSupport();
 
 		return new(adapter);

@@ -219,6 +219,19 @@ enum PaxosSocketMessageTypes
 	Update,
 }
 
+[JsonConverter(typeof(PaxosEnumConverter<PaxosSocketOperations>))]
+enum PaxosSocketOperations
+{
+	[EnumMember(Value = "subscribe")]
+	Subscribe,
+	[EnumMember(Value = "unsubscribe")]
+	Unsubscribe,
+	[EnumMember(Value = "subscription_list")]
+	SubscriptionList,
+	[EnumMember(Value = "error")]
+	Error,
+}
+
 sealed class PaxosItemsResponse<TItem>
 {
 	[JsonProperty("items")]

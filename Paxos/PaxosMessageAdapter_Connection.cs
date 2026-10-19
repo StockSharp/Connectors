@@ -29,7 +29,7 @@ public partial class PaxosMessageAdapter
 			connectMsg.SessionId = $"Paxos {Environment}; {markets.Length} markets; " +
 				(RestClient.IsAuthenticationAvailable
 					? "OAuth private API enabled"
-					: "public market data only");
+					: "public market reference data only");
 			await SendOutConnectionStateAsync(ConnectionStates.Connected,
 				cancellationToken);
 		}
@@ -244,8 +244,6 @@ public partial class PaxosMessageAdapter
 			_orderFingerprints.Clear();
 			_transferFingerprints.Clear();
 			_conversionFingerprints.Clear();
-			_seenPublicTrades.Clear();
-			_publicTradeOrder.Clear();
 			_seenPrivateExecutions.Clear();
 			_nextPrivatePoll = default;
 		}

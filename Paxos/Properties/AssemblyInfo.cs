@@ -1,5 +1,8 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("StockSharp.Tests")]
 
 [assembly: AssemblyTitle("S#.Paxos")]
 [assembly: AssemblyDescription("Paxos brokerage and custody connector.")]

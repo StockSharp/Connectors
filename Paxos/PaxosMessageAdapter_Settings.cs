@@ -3,6 +3,7 @@ namespace StockSharp.Paxos;
 public partial class PaxosMessageAdapter : IKeySecretAdapter
 {
 	private const string _defaultScopes =
+		"exchange:read_aggregated_marketdata_stream exchange:historical_prices " +
 		"funding:read_profile exchange:read_order exchange:write_order " +
 		"transfer:read_transfer transfer:write_crypto_withdrawal " +
 		"transfer:write_internal_transfer transfer:write_paxos_transfer " +

@@ -19,3 +19,5 @@ The **Paxos connector** connects StockSharp to a digital-asset custody, settleme
 Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
 Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Paxos and by the connected account or API plan.
+
+Market reference data is public. Quotes, order books, and executions use the [Smart Order Routing WebSocket API](https://docs.paxos.com/api-reference/websockets/smart-order-routing-overview), which requires an allowlisted customer and an OAuth client with the `exchange:read_aggregated_marketdata_stream` scope. Historical candles require the `exchange:historical_prices` scope.
