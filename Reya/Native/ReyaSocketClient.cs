@@ -38,8 +38,6 @@ sealed class ReyaSocketClient : BaseLogReceiver
 		ValueTask> PerpetualSummaryReceived;
 	public event Func<ReyaSocketEnvelope<ReyaSpotMarketSummary>, CancellationToken,
 		ValueTask> SpotSummaryReceived;
-	public event Func<ReyaSocketEnvelope<ReyaPrice>, CancellationToken, ValueTask>
-		PriceReceived;
 	public event Func<ReyaSocketEnvelope<ReyaDepth>, CancellationToken, ValueTask>
 		DepthReceived;
 	public event Func<ReyaSocketEnvelope<ReyaPerpetualExecution[]>,
@@ -321,13 +319,10 @@ sealed class ReyaSocketClient : BaseLogReceiver
 			await RaiseAsync(SpotSummaryReceived, Deserialize<
 				ReyaSocketEnvelope<ReyaSpotMarketSummary>>(payload),
 				cancellationToken);
-		else if (channel.StartsWith("/v2/market/", StringComparison.Ordinal) &&
+		else if (channel.StartsWith("/v2/perpMarket/", StringComparison.Ordinal) &&
 			channel.EndsWith("/summary", StringComparison.Ordinal))
 			await RaiseAsync(PerpetualSummaryReceived, Deserialize<
 				ReyaSocketEnvelope<ReyaMarketSummary>>(payload), cancellationToken);
-		else if (channel.StartsWith("/v2/prices/", StringComparison.Ordinal))
-			await RaiseAsync(PriceReceived, Deserialize<
-				ReyaSocketEnvelope<ReyaPrice>>(payload), cancellationToken);
 		else if (channel.StartsWith("/v2/market/", StringComparison.Ordinal) &&
 			channel.EndsWith("/depth", StringComparison.Ordinal))
 			await RaiseAsync(DepthReceived, Deserialize<

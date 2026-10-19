@@ -1068,7 +1068,7 @@ public partial class ReyaMessageAdapter
 	private decimal GetProtectivePrice(ReyaMarket market, Sides side)
 	{
 		var state = GetPriceState(market.Symbol);
-		var reference = state?.PoolPrice ?? state?.OraclePrice;
+		var reference = state?.MarkPrice ?? state?.OraclePrice;
 		if (reference is not > 0)
 			throw new InvalidOperationException(
 				"Reya current price is unavailable for a protected market order.");

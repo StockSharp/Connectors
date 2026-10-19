@@ -126,7 +126,7 @@ sealed class ReyaMarket
 sealed class ReyaPriceState
 {
 	public decimal? OraclePrice { get; set; }
-	public decimal? PoolPrice { get; set; }
+	public decimal? MarkPrice { get; set; }
 	public decimal? Volume24Hours { get; set; }
 	public decimal? PriceChange24Hours { get; set; }
 	public decimal? OpenInterest { get; set; }

@@ -129,9 +129,6 @@ public partial class ReyaMessageAdapter
 				"Reya does not publish historical order books.");
 
 		var market = GetMarket(mdMsg.SecurityId);
-		if (!market.IsSpot)
-			throw new NotSupportedException(
-				"Reya publishes L2 order books for spot markets only.");
 		var depth = (mdMsg.MaxDepth ?? MarketDepth).Max(1).Min(MarketDepth);
 		await SendDepthSnapshotAsync(market.Symbol, mdMsg.TransactionId, depth,
 			cancellationToken);
@@ -342,31 +339,21 @@ public partial class ReyaMessageAdapter
 	private async ValueTask RefreshLevel1Async(ReyaMarket market,
 		CancellationToken cancellationToken)
 	{
-		var priceTask = RestClient.GetPriceAsync(market.Symbol, cancellationToken)
-			.AsTask();
 		if (market.IsSpot)
 		{
-			var summaryTask = RestClient.GetSpotSummaryAsync(market.Symbol,
-				cancellationToken).AsTask();
-			await Task.WhenAll(priceTask, summaryTask);
-			var price = await priceTask;
-			var summary = await summaryTask;
+			var summary = await RestClient.GetSpotSummaryAsync(market.Symbol,
+				cancellationToken);
 			using (_sync.EnterScope())
 			{
-				ApplyPriceUnsafe(price);
 				ApplySummaryUnsafe(summary);
 			}
 		}
 		else
 		{
-			var summaryTask = RestClient.GetPerpetualSummaryAsync(market.Symbol,
-				cancellationToken).AsTask();
-			await Task.WhenAll(priceTask, summaryTask);
-			var price = await priceTask;
-			var summary = await summaryTask;
+			var summary = await RestClient.GetPerpetualSummaryAsync(market.Symbol,
+				cancellationToken);
 			using (_sync.EnterScope())
 			{
-				ApplyPriceUnsafe(price);
 				ApplySummaryUnsafe(summary);
 			}
 		}
@@ -385,7 +372,7 @@ public partial class ReyaMessageAdapter
 			state = new()
 			{
 				OraclePrice = source.OraclePrice,
-				PoolPrice = source.PoolPrice,
+				MarkPrice = source.MarkPrice,
 				Volume24Hours = source.Volume24Hours,
 				PriceChange24Hours = source.PriceChange24Hours,
 				OpenInterest = source.OpenInterest,
@@ -406,9 +393,7 @@ public partial class ReyaMessageAdapter
 		.TryAdd(Level1Fields.MinVolume, market.MinimumQuantity)
 		.TryAdd(Level1Fields.State, SecurityStates.Trading)
 		.TryAdd(Level1Fields.Index, state.OraclePrice)
-		.TryAdd(Level1Fields.SettlementPrice, state.PoolPrice)
-		.TryAdd(Level1Fields.LastTradePrice,
-			state.PoolPrice ?? state.OraclePrice)
+		.TryAdd(Level1Fields.TheorPrice, state.MarkPrice)
 		.TryAdd(Level1Fields.Volume, state.Volume24Hours)
 		.TryAdd(Level1Fields.Change, state.PriceChange24Hours)
 		.TryAdd(Level1Fields.OpenInterest, state.OpenInterest), cancellationToken);
@@ -530,24 +515,6 @@ public partial class ReyaMessageAdapter
 		using (_sync.EnterScope())
 		{
 			ApplySummaryUnsafe(envelope.Data);
-			subscriptions = GetLevel1IdsUnsafe(envelope.Data.Symbol);
-		}
-		UpdateServerTime(envelope.Timestamp ?? envelope.Data.UpdatedAt);
-
-		foreach (var transactionId in subscriptions)
-			await SendLevel1SnapshotAsync(envelope.Data.Symbol, transactionId,
-				cancellationToken);
-	}
-
-	private async ValueTask OnPriceAsync(ReyaSocketEnvelope<ReyaPrice> envelope,
-		CancellationToken cancellationToken)
-	{
-		if (envelope?.Data?.Symbol.IsEmpty() != false)
-			return;
-		long[] subscriptions;
-		using (_sync.EnterScope())
-		{
-			ApplyPriceUnsafe(envelope.Data);
 			subscriptions = GetLevel1IdsUnsafe(envelope.Data.Symbol);
 		}
 		UpdateServerTime(envelope.Timestamp ?? envelope.Data.UpdatedAt);
@@ -797,15 +764,12 @@ public partial class ReyaMessageAdapter
 			.Select(static subscription => subscription.TransactionId)];
 
 	private static string[] Level1Channels(ReyaMarket market)
-		=> [SummaryChannel(market), PriceChannel(market.Symbol)];
+		=> [SummaryChannel(market)];
 
 	private static string SummaryChannel(ReyaMarket market)
 		=> market.IsSpot
 			? "/v2/spotMarket/" + market.Symbol + "/summary"
-			: "/v2/market/" + market.Symbol + "/summary";
-
-	private static string PriceChannel(string symbol)
-		=> "/v2/prices/" + symbol;
+			: "/v2/perpMarket/" + market.Symbol + "/summary";
 
 	private static string DepthChannel(string symbol)
 		=> "/v2/market/" + symbol + "/depth";

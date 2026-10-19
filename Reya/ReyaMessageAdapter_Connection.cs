@@ -117,7 +117,6 @@ public partial class ReyaMessageAdapter
 		};
 		socket.PerpetualSummaryReceived += OnPerpetualSummaryAsync;
 		socket.SpotSummaryReceived += OnSpotSummaryAsync;
-		socket.PriceReceived += OnPriceAsync;
 		socket.DepthReceived += OnDepthAsync;
 		socket.PerpetualExecutionsReceived += OnPerpetualExecutionsAsync;
 		socket.SpotExecutionsReceived += OnSpotExecutionsAsync;
@@ -140,15 +139,13 @@ public partial class ReyaMessageAdapter
 			cancellationToken).AsTask();
 		var spotSummaryTask = RestClient.GetSpotSummariesAsync(cancellationToken)
 			.AsTask();
-		var priceTask = RestClient.GetPricesAsync(cancellationToken).AsTask();
 		await Task.WhenAll(perpetualTask, spotTask, perpetualSummaryTask,
-			spotSummaryTask, priceTask);
+			spotSummaryTask);
 
 		var perpetualDefinitions = await perpetualTask;
 		var spotDefinitions = await spotTask;
 		var perpetualSummaries = await perpetualSummaryTask;
 		var spotSummaries = await spotSummaryTask;
-		var prices = await priceTask;
 		var markets = perpetualDefinitions
 			.Where(static value => value is not null)
 			.Select(static value => value.ToMarket())
@@ -178,9 +175,6 @@ public partial class ReyaMessageAdapter
 
 			foreach (var summary in spotSummaries)
 				ApplySummaryUnsafe(summary);
-
-			foreach (var price in prices)
-				ApplyPriceUnsafe(price);
 		}
 	}
 
@@ -190,7 +184,7 @@ public partial class ReyaMessageAdapter
 			!_prices.TryGetValue(summary.Symbol, out var state))
 			return;
 		state.OraclePrice = summary.OraclePrice.TryParseReyaDecimal();
-		state.PoolPrice = summary.PoolPrice.TryParseReyaDecimal();
+		state.MarkPrice = summary.MarkPrice.TryParseReyaDecimal();
 		state.Volume24Hours = summary.Volume24Hours.TryParseReyaDecimal();
 		state.PriceChange24Hours =
 			summary.PriceChange24Hours.TryParseReyaDecimal();
@@ -212,18 +206,6 @@ public partial class ReyaMessageAdapter
 			summary.PriceChange24Hours.TryParseReyaDecimal();
 		state.UpdatedAt = summary.UpdatedAt > 0
 			? summary.UpdatedAt.FromReyaMilliseconds()
-			: state.UpdatedAt;
-	}
-
-	private void ApplyPriceUnsafe(ReyaPrice price)
-	{
-		if (price?.Symbol.IsEmpty() != false ||
-			!_prices.TryGetValue(price.Symbol, out var state))
-			return;
-		state.OraclePrice = price.OraclePrice.TryParseReyaDecimal();
-		state.PoolPrice = price.PoolPrice.TryParseReyaDecimal();
-		state.UpdatedAt = price.UpdatedAt > 0
-			? price.UpdatedAt.FromReyaMilliseconds()
 			: state.UpdatedAt;
 	}
 

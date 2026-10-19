@@ -89,11 +89,11 @@ sealed class ReyaMarketSummary
 	[JsonProperty("pxChange24h")]
 	public string PriceChange24Hours { get; init; }
 
-	[JsonProperty("throttledOraclePrice")]
+	[JsonProperty("oraclePrice")]
 	public string OraclePrice { get; init; }
 
-	[JsonProperty("throttledPoolPrice")]
-	public string PoolPrice { get; init; }
+	[JsonProperty("markPrice")]
+	public string MarkPrice { get; init; }
 
 	[JsonProperty("pricesUpdatedAt")]
 	public long? PricesUpdatedAt { get; init; }
@@ -115,21 +115,6 @@ sealed class ReyaSpotMarketSummary
 
 	[JsonProperty("oraclePrice")]
 	public string OraclePrice { get; init; }
-}
-
-sealed class ReyaPrice
-{
-	[JsonProperty("symbol")]
-	public string Symbol { get; init; }
-
-	[JsonProperty("oraclePrice")]
-	public string OraclePrice { get; init; }
-
-	[JsonProperty("poolPrice")]
-	public string PoolPrice { get; init; }
-
-	[JsonProperty("updatedAt")]
-	public long UpdatedAt { get; init; }
 }
 
 sealed class ReyaPriceLevel

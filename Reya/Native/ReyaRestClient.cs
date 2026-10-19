@@ -39,7 +39,7 @@ sealed class ReyaRestClient : BaseLogReceiver
 
 	public async ValueTask<ReyaPerpetualMarketDefinition[]>
 		GetPerpetualMarketsAsync(CancellationToken cancellationToken)
-		=> await GetAsync<ReyaPerpetualMarketDefinition[]>("marketDefinitions",
+		=> await GetAsync<ReyaPerpetualMarketDefinition[]>("perpMarketDefinitions",
 			cancellationToken) ?? [];
 
 	public async ValueTask<ReyaSpotMarketDefinition[]> GetSpotMarketsAsync(
@@ -49,7 +49,7 @@ sealed class ReyaRestClient : BaseLogReceiver
 
 	public async ValueTask<ReyaMarketSummary[]> GetPerpetualSummariesAsync(
 		CancellationToken cancellationToken)
-		=> await GetAsync<ReyaMarketSummary[]>("markets/summary",
+		=> await GetAsync<ReyaMarketSummary[]>("perpMarkets/summary",
 			cancellationToken) ?? [];
 
 	public async ValueTask<ReyaSpotMarketSummary[]> GetSpotSummariesAsync(
@@ -59,21 +59,13 @@ sealed class ReyaRestClient : BaseLogReceiver
 
 	public ValueTask<ReyaMarketSummary> GetPerpetualSummaryAsync(string symbol,
 		CancellationToken cancellationToken)
-		=> GetAsync<ReyaMarketSummary>("market/" + Escape(symbol) + "/summary",
+		=> GetAsync<ReyaMarketSummary>("perpMarket/" + Escape(symbol) + "/summary",
 			cancellationToken);
 
 	public ValueTask<ReyaSpotMarketSummary> GetSpotSummaryAsync(string symbol,
 		CancellationToken cancellationToken)
 		=> GetAsync<ReyaSpotMarketSummary>("spotMarket/" + Escape(symbol) +
 			"/summary", cancellationToken);
-
-	public async ValueTask<ReyaPrice[]> GetPricesAsync(
-		CancellationToken cancellationToken)
-		=> await GetAsync<ReyaPrice[]>("prices", cancellationToken) ?? [];
-
-	public ValueTask<ReyaPrice> GetPriceAsync(string symbol,
-		CancellationToken cancellationToken)
-		=> GetAsync<ReyaPrice>("prices/" + Escape(symbol), cancellationToken);
 
 	public ValueTask<ReyaDepth> GetDepthAsync(string symbol,
 		CancellationToken cancellationToken)
