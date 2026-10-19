@@ -44,6 +44,9 @@ enum BackpackRealWorldAssetMarketTypes
 {
 	[EnumMember(Value = "STOCK")]
 	Stock,
+
+	[EnumMember(Value = "INDEX")]
+	Index,
 }
 
 sealed class BackpackMarketFilters
