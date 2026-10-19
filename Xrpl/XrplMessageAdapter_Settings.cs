@@ -20,7 +20,7 @@ public partial class XrplMessageAdapter : MessageAdapter
 {
 	private const string _defaultRpcEndpoint = "https://xrplcluster.com/";
 	private const string _defaultStreamingEndpoint =
-		"wss://xrplcluster.com/";
+		"wss://s1.ripple.com/";
 	private const string _rlusdIssuer =
 		"rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De";
 	private const string _defaultMarkets = "XRP/RLUSD:" + _rlusdIssuer;
