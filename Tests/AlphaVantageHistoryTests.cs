@@ -12,6 +12,7 @@ using StockSharp.Messages;
 
 [TestClass]
 [DoNotParallelize]
+[CLSCompliant(false)]
 public class AlphaVantageHistoryTests : HistoryTestBase
 {
 	// The token comes from the environment. A machine without the variable reports the tests
@@ -131,50 +132,72 @@ public class AlphaVantageHistoryTests : HistoryTestBase
 
 	[TestMethod]
 	[TestCategory("Integration")]
+	[DataRow(1440)]
+	[DataRow(10080)]
+	[DataRow(43200)]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task AlphaVantageCandlesAapl()
-	{
-		SkipUnlessLive();
-
-		return DownloadCandlesMultiTf(CreateAlphaVantage, $"AAPL@{BoardCodes.AlphaVantage}".ToSecurityId(), default, new DateTime(2023, 08, 01).UtcKind(), new()
-		{
-			{ TimeSpan.FromMinutes(1), 956 },
-			{ TimeSpan.FromMinutes(5), 576 },
-			{ TimeSpan.FromMinutes(15), 192 },
-			{ TimeSpan.FromMinutes(30), 96 },
-			{ TimeSpan.FromHours(1), 48 },
-			{ TimeSpan.FromDays(7), 4 },
-			{ TimeSpan.FromDays(30), 2 },
-		}, CancellationToken);
-	}
+	public Task AlphaVantageCandlesAapl(int minutes)
+		=> CheckCandles("AAPL", SecurityTypes.Stock, minutes);
 
 	[TestMethod]
 	[TestCategory("Integration")]
+	[DataRow(1440)]
+	[DataRow(10080)]
+	[DataRow(43200)]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task AlphaVantageCandlesCrypto()
-	{
-		SkipUnlessLive();
-
-		return DownloadCandlesMultiTf(CreateAlphaVantage, $"BTC/USD@{BoardCodes.AlphaVantage}".ToSecurityId(), SecurityTypes.CryptoCurrency, new DateTime(PrevYear, 08, 01).UtcKind(), new()
-		{
-			{ TimeSpan.FromDays(1), 8 },
-			{ TimeSpan.FromDays(7), 4 },
-			{ TimeSpan.FromDays(30), 2 },
-		}, CancellationToken);
-	}
+	public Task AlphaVantageCandlesCrypto(int minutes)
+		=> CheckCandles("BTC/USD", SecurityTypes.CryptoCurrency, minutes);
 
 	[TestMethod]
 	[TestCategory("Integration")]
+	[DataRow(1440)]
+	[DataRow(10080)]
+	[DataRow(43200)]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task AlphaVantageCandlesFX()
+	public Task AlphaVantageCandlesFX(int minutes)
+		=> CheckCandles("EUR/USD", SecurityTypes.Currency, minutes);
+
+	[TestMethod]
+	[TestCategory("Integration")]
+	[TestCategory("Paid")]
+	[DataRow(1)]
+	[DataRow(5)]
+	[DataRow(15)]
+	[DataRow(30)]
+	[DataRow(60)]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public Task AlphaVantageIntradayCandlesAapl(int minutes)
 	{
 		SkipUnlessLive();
 
-		return DownloadCandlesMultiTf(CreateAlphaVantage, $"EUR/USD@{BoardCodes.AlphaVantage}".ToSecurityId(), SecurityTypes.Currency, DateTime.UtcNow.AddDays(-30), new()
+		if (!Env("ALPHAVANTAGE_PAID_TESTS").EqualsIgnoreCase("1"))
+			Inconclusive("Intraday stock history requires a paid Alpha Vantage plan. Set ALPHAVANTAGE_PAID_TESTS=1 when it is available.");
+
+		return CheckCandles("AAPL", SecurityTypes.Stock, minutes);
+	}
+
+	private async Task CheckCandles(string symbol, SecurityTypes securityType, int minutes)
+	{
+		SkipUnlessLive();
+
+		var now = DateTime.UtcNow;
+		var month = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+		var from = month.AddMonths(-4);
+		var to = month.AddTicks(-1);
+		var securityId = $"{symbol}@{BoardCodes.AlphaVantage}".ToSecurityId();
+		var timeFrame = TimeSpan.FromMinutes(minutes);
+		var lastTime = ResetTimeOrder();
+		var count = 0;
+
+		await foreach (var candle in DownloadCandles(CreateAlphaVantage(), securityId, timeFrame,
+			from, to, count: 2, secType: securityType).WithCancellation(CancellationToken))
 		{
-			{ TimeSpan.FromDays(1), 5 },
-			{ TimeSpan.FromDays(7), 5 },
-			{ TimeSpan.FromDays(30), 2 },
-		}, CancellationToken);
+			Validate(candle, securityId, from, to, ref lastTime);
+			AreEqual(timeFrame.TimeFrame(), candle.DataType);
+			AreEqual(CandleStates.Finished, candle.State);
+			count++;
+		}
+
+		AreEqual(2, count);
 	}
 }

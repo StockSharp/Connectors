@@ -1,5 +1,6 @@
 ﻿namespace StockSharp.AlphaVantage;
 
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -146,10 +147,17 @@ partial class AlphaVantageMessageAdapter
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 
-				if (time < from)
+				var openTime = tf.Ticks switch
+				{
+					TimeHelper.TicksPerWeek => time.StartOfWeek(DayOfWeek.Monday),
+					TimeHelper.TicksPerMonth => time.AddDays(1 - time.Day),
+					_ => time,
+				};
+
+				if (openTime < from)
 					continue;
 
-				if (time > to)
+				if (openTime > to)
 				{
 					noData = true;
 					break;
@@ -161,7 +169,7 @@ partial class AlphaVantageMessageAdapter
 				{
 					OriginalTransactionId = mdMsg.TransactionId,
 					DataType = mdMsg.DataType2,
-					OpenTime = time,
+					OpenTime = openTime,
 					OpenPrice = ohlc.Open?.ToDecimal() ?? 0,
 					HighPrice = ohlc.High?.ToDecimal() ?? 0,
 					LowPrice = ohlc.Low?.ToDecimal() ?? 0,
