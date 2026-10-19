@@ -18,7 +18,8 @@ public partial class PolygonIOMessageAdapter
 		this.AddSupportedMarketDataType(DataType.Ticks);
 		this.AddSupportedCandleTimeFrames(AllTimeFrames);
 
-		IterationInterval = default;
+		// Basic permits five REST requests per minute.
+		IterationInterval = TimeSpan.FromMinutes(1) / 5;
 	}
 
 	/// <inheritdoc />

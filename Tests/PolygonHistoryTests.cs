@@ -27,9 +27,16 @@ public class PolygonHistoryTests : HistoryTestBase
 		return CreateAdapter<PolygonIOMessageAdapter>(a =>
 		{
 			a.Token = token.Secure();
-			a.IterationInterval = TimeSpan.FromSeconds(0);
 			a.ConnectionType = PolygonIOConnectionTypes.History;
 		});
+	}
+
+	private static void SkipUnlessPaid()
+	{
+		SkipUnlessLive();
+
+		if (!Env("POLYGON_PAID_TESTS").EqualsIgnoreCase("1"))
+			Inconclusive("Trade and quote history requires a paid Massive stocks plan. Set POLYGON_PAID_TESTS=1 when it is available.");
 	}
 
 	[TestMethod]
@@ -39,11 +46,12 @@ public class PolygonHistoryTests : HistoryTestBase
 	{
 		SkipUnlessLive();
 
+		var criteria = LookupAll;
+		criteria.Count = 2000;
 		var counter = 0;
-		await foreach (var _ in DownloadSecurities(CreatePolygon(), LookupAll).WithCancellation(CancellationToken))
+		await foreach (var _ in DownloadSecurities(CreatePolygon(), criteria).WithCancellation(CancellationToken))
 			counter++;
-		IsLess(counter, 60000);
-		IsGreater(counter, 40000);
+		AreEqual(2000, counter);
 	}
 
 	[TestMethod]
@@ -67,10 +75,11 @@ public class PolygonHistoryTests : HistoryTestBase
 
 	[TestMethod]
 	[TestCategory("Integration")]
+	[TestCategory("Paid")]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public async Task PolygonTicksAapl()
 	{
-		SkipUnlessLive();
+		SkipUnlessPaid();
 
 		var secId = new Security
 		{
@@ -95,10 +104,11 @@ public class PolygonHistoryTests : HistoryTestBase
 
 	[TestMethod]
 	[TestCategory("Integration")]
+	[TestCategory("Paid")]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public async Task PolygonQuotesAapl()
 	{
-		SkipUnlessLive();
+		SkipUnlessPaid();
 
 		var secId = new Security
 		{
@@ -123,20 +133,32 @@ public class PolygonHistoryTests : HistoryTestBase
 
 	[TestMethod]
 	[TestCategory("Integration")]
+	[DataRow(1)]
+	[DataRow(30)]
+	[DataRow(60)]
+	[DataRow(1440)]
+	[DataRow(10080)]
+	[DataRow(43200)]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task PolygonCandlesAapl()
+	public async Task PolygonCandlesAapl(int minutes)
 	{
 		SkipUnlessLive();
 
-		return DownloadCandlesMultiTf(CreatePolygon, $"AAPL@{BoardCodes.StockSharp}".ToSecurityId(), default, new DateTime(2022, 11, 18).UtcKind(), new()
+		var secId = $"AAPL@{BoardCodes.StockSharp}".ToSecurityId();
+		var from = new DateTime(PrevYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		var to = from.AddMonths(3).AddTicks(-1);
+		var timeFrame = TimeSpan.FromMinutes(minutes);
+		var lastTime = ResetTimeOrder();
+		var counter = 0;
+		await foreach (var msg in DownloadCandles(CreatePolygon(), secId, timeFrame, from, to, count: 2).WithCancellation(CancellationToken))
 		{
-			{ TimeSpan.FromMinutes(1), 760 },
-			{ TimeSpan.FromMinutes(30), 34 },
-			{ TimeSpan.FromHours(1), 17 },
-			{ TimeSpan.FromDays(1), 4 },
-			{ TimeSpan.FromDays(7), 4 },
-			{ TimeSpan.FromDays(30), 2 },
-		}, CancellationToken);
+			AreEqual(timeFrame.TimeFrame(), msg.DataType);
+			AreEqual(CandleStates.Finished, msg.State);
+			IsGreater(msg.OpenTime, lastTime);
+			Validate(msg, secId, from, to, ref lastTime);
+			counter++;
+		}
+		AreEqual(2, counter);
 	}
 
 	[TestMethod]
@@ -147,8 +169,8 @@ public class PolygonHistoryTests : HistoryTestBase
 		SkipUnlessLive();
 
 		var secId = new Security { Id = "AAPL@STSH" }.ToSecurityId();
-		var from = new DateTime(2010, 1, 30);
-		var to = new DateTime(PrevYear, 5, 31);
+		var from = new DateTime(PrevYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		var to = from.AddYears(1).AddTicks(-1);
 
 		var lastTime = ResetTimeOrder();
 		var counter = 0;
@@ -158,7 +180,7 @@ public class PolygonHistoryTests : HistoryTestBase
 			IsGreater((decimal)msg.Changes[Level1Fields.Dividend], 0m);
 			counter++;
 		}
-		IsInRange(counter, 30, 50);
+		AreEqual(4, counter);
 	}
 
 	[TestMethod]
@@ -172,7 +194,7 @@ public class PolygonHistoryTests : HistoryTestBase
 		{
 			IsSubscribe = true,
 			DataType2 = DataType.News,
-			From = new DateTime(2010, 1, 1),
+			From = DateTime.UtcNow.Date.AddMonths(-1),
 			To = DateTime.UtcNow,
 			Count = 100,
 		};

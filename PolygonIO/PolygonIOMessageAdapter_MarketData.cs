@@ -259,7 +259,8 @@ public partial class PolygonIOMessageAdapter
 
 			var left = mdMsg.Count ?? long.MaxValue;
 
-			await foreach (var candle in _client.GetBars(IterationInterval, mdMsg.SecurityId.SecurityCode, mdMsg.GetTimeFrame().ToNative(out var multiplier), multiplier, from, to, true, _ascOrd, left.Min(_maxBar), Token.UnSecure(), cancellationToken).WithEnforcedCancellation(cancellationToken))
+			// The API limit counts base minute/day bars rather than the resulting candles.
+			await foreach (var candle in _client.GetBars(IterationInterval, mdMsg.SecurityId.SecurityCode, mdMsg.GetTimeFrame().ToNative(out var multiplier), multiplier, from, to, true, _ascOrd, _maxBar, Token.UnSecure(), cancellationToken).WithEnforcedCancellation(cancellationToken))
 			{
 				if (candle.Time < from)
 					continue;
@@ -385,8 +386,9 @@ public partial class PolygonIOMessageAdapter
 			return;
 
 		var left = mdMsg.Count ?? 10;
+		var ticker = mdMsg.SecurityId == SecurityId.News ? null : mdMsg.SecurityId.SecurityCode;
 
-		await foreach (var news in _client.GetNews(IterationInterval, mdMsg.SecurityId.SecurityCode, mdMsg.From, _ascOrd, left.Min(_maxNewsDiv), Token.UnSecure(), cancellationToken).WithEnforcedCancellation(cancellationToken))
+		await foreach (var news in _client.GetNews(IterationInterval, ticker, mdMsg.From, _ascOrd, left.Min(_maxNewsDiv), Token.UnSecure(), cancellationToken).WithEnforcedCancellation(cancellationToken))
 		{
 			if (news.PublishedUtc > mdMsg.To)
 				break;
