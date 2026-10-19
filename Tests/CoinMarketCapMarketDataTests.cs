@@ -14,10 +14,23 @@ using StockSharp.Messages;
 public class CoinMarketCapMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />
-	protected override MessageAdapter CreateAdapter() => new CoinMarketCapMessageAdapter(new IncrementalIdGenerator())
+	protected override MessageAdapter CreateAdapter()
 	{
-		AccessMode = CoinMarketCapAccessModes.Keyless,
-	};
+		var token = Env("COINMARKETCAP_TOKEN");
+		return new CoinMarketCapMessageAdapter(new IncrementalIdGenerator())
+		{
+			AccessMode = token.IsEmpty() ? CoinMarketCapAccessModes.Keyless : CoinMarketCapAccessModes.ApiKey,
+			Token = token.IsEmpty() ? null : token.Secure(),
+		};
+	}
+
+	/// <inheritdoc />
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		if (message.DataType2.IsTFCandles &&
+			(!Env("COINMARKETCAP_PAID_TESTS").EqualsIgnoreCase("1") || Env("COINMARKETCAP_TOKEN").IsEmpty()))
+			Inconclusive("CoinMarketCap OHLCV requires Startup or above. Set COINMARKETCAP_TOKEN and COINMARKETCAP_PAID_TESTS=1 when that plan is available.");
+	}
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
