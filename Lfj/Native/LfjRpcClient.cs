@@ -657,8 +657,12 @@ sealed class LfjRpcClient : BaseLogReceiver
 			if (isRead && attempt < 3 && (response.StatusCode ==
 					(HttpStatusCode)429 || (int)response.StatusCode >= 500))
 			{
-				await Task.Delay(TimeSpan.FromMilliseconds(
-					250 * (1 << attempt)), cancellationToken);
+				var retryAfter = response.Headers.RetryAfter;
+				var delay = retryAfter?.Delta ??
+					(retryAfter?.Date?.UtcDateTime - DateTime.UtcNow) ??
+					TimeSpan.FromMilliseconds(250 * (1 << attempt));
+				if (delay > TimeSpan.Zero)
+					await Task.Delay(delay, cancellationToken);
 				continue;
 			}
 			if (!response.IsSuccessStatusCode)

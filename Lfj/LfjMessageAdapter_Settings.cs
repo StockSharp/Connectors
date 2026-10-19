@@ -83,7 +83,7 @@ public partial class LfjMessageAdapter : MessageAdapter
 		Order = 2)]
 	public string Pools { get; set; } = _defaultPools;
 
-	private int _historyBlockRange = 2_000;
+	private int _historyBlockRange = 100;
 
 	/// <summary>Maximum block range requested by one log query.</summary>
 	[Display(
