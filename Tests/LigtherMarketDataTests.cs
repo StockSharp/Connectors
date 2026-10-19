@@ -17,6 +17,7 @@ public class LigtherMarketDataTests : LiveMarketDataTestBase
 	protected override MessageAdapter CreateAdapter() => new LigtherMessageAdapter(new IncrementalIdGenerator())
 	{
 		Sections = [LigtherSections.Derivatives],
+		UseWsReadOnlyMode = true,
 	};
 
 	/// <inheritdoc />
