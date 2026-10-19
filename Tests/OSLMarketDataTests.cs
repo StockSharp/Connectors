@@ -19,7 +19,7 @@ public class OSLMarketDataTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "BTCUSD",
+		SecurityCode = "BTCUSDC",
 		BoardCode = BoardCodes.OSL,
 	};
 }
