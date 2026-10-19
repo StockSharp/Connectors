@@ -221,8 +221,6 @@ public partial class VenturaMessageAdapter
 				cancellationToken);
 			_lastPortfolioRefresh = CurrentTime;
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

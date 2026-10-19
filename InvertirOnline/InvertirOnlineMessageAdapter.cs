@@ -202,7 +202,6 @@ public partial class InvertirOnlineMessageAdapter
         }
 
         CaptureTokens();
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

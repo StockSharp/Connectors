@@ -249,8 +249,6 @@ public partial class TradernetMessageAdapter
                     error, cancellationToken);
             }
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     private async ValueTask AddMarketSubscription(

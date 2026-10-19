@@ -83,7 +83,6 @@ public partial class PaxosMessageAdapter
 		}
 		if (isPollRequired)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private void UpdateMarkets(IEnumerable<PaxosMarket> markets)

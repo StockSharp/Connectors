@@ -161,7 +161,6 @@ public partial class UsmartMessageAdapter
 				_lastPoll = CurrentTime;
 			}
 		}
-		await base.TimeAsync(message, cancellationToken);
 	}
 
 	private string ResolvePortfolio(string portfolioName)

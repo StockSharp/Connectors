@@ -251,8 +251,6 @@ public partial class DxFeedMessageAdapter
 
 			await SendSubscriptionResultAsync(context.Message, cancellationToken);
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private DxLinkClient SafeClient()

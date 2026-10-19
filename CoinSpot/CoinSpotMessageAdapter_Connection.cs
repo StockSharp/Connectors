@@ -107,7 +107,6 @@ public partial class CoinSpotMessageAdapter
 				_pollSync.Release();
 			}
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshMarketDataAsync(

@@ -184,8 +184,6 @@ public partial class CapitalComMessageAdapter
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, null, cancellationToken);
 			_lastPortfolioRefresh = now;
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private void DisposeClients()

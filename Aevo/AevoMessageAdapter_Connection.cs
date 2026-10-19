@@ -92,7 +92,6 @@ public partial class AevoMessageAdapter
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
 		if (isPing)
 			await RunSafelyAsync(SocketClient.PingAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshMarketsAsync(

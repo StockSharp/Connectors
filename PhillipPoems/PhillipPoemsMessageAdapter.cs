@@ -171,7 +171,6 @@ public partial class PhillipPoemsMessageAdapter
 				_lastPoll = CurrentTime;
 			}
 		}
-		await base.TimeAsync(message, cancellationToken);
 	}
 
 	private async Task RunNextPollingJob(CancellationToken cancellationToken)

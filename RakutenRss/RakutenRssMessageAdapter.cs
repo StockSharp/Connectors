@@ -153,7 +153,6 @@ public partial class RakutenRssMessageAdapter
 			}
 			catch (Exception error) { await SendOutErrorAsync(error, cancellationToken); }
 		}
-		await base.TimeAsync(message, cancellationToken);
 	}
 
 	private void DisposeClient()

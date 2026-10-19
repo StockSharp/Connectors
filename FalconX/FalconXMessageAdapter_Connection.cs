@@ -108,7 +108,6 @@ public partial class FalconXMessageAdapter
 		}
 		if (isPollRequired)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private ValueTask OnSocketErrorAsync(Exception error,

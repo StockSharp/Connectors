@@ -105,7 +105,6 @@ public partial class ZoomexMessageAdapter
 		if (shouldPing)
 			foreach (var socket in sockets)
 				await RunSafelyAsync(socket.PingAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask LoadProductsAsync(ZoomexCategories category,

@@ -132,7 +132,6 @@ public partial class AnchorageMessageAdapter
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
 		if (isMarketPollRequired)
 			await RunSafelyAsync(PollMarketDataAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private string ResolveMarketDataAccount(

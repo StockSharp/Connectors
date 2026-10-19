@@ -93,7 +93,6 @@ public partial class KalshiMessageAdapter
 		}
 		if (isPrivatePoll)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private ValueTask OnSocketErrorAsync(Exception error,

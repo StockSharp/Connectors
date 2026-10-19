@@ -153,8 +153,6 @@ public partial class RupeezyMessageAdapter
                 cancellationToken);
             _lastPortfolioRefresh = CurrentTime;
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

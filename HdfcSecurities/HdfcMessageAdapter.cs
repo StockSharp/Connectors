@@ -185,8 +185,6 @@ public partial class HdfcMessageAdapter
 				cancellationToken);
 			_lastPortfolioRefresh = CurrentTime;
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

@@ -211,7 +211,6 @@ public partial class MetaApiMessageAdapter
 	{
 		if (_stream is not null)
 			await _stream.PingAsync(cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask ProcessPacketAsync(MetaApiSynchronizationPacket packet,

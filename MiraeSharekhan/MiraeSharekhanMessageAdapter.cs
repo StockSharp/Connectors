@@ -130,7 +130,6 @@ public partial class MiraeSharekhanMessageAdapter
 		if (_portfolioSubscriptionId != 0 &&
 			DateTime.UtcNow - _lastPortfolioRefresh >= TimeSpan.FromSeconds(30))
 			await SendPortfolioSnapshot(cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

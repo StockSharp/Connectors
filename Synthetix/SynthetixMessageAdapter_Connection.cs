@@ -110,7 +110,6 @@ public partial class SynthetixMessageAdapter
 			await RunSafelyAsync(SocketClient.PingAsync, cancellationToken);
 		if (isPoll)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshMarketsAsync(

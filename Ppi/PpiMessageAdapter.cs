@@ -177,7 +177,6 @@ public partial class PpiMessageAdapter
         }
 
         CaptureTokens();
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

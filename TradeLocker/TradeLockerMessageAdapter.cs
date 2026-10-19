@@ -102,7 +102,6 @@ public partial class TradeLockerMessageAdapter
 			}
 			_lastPoll = now;
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async Task<bool> RunNextPollingJob(CancellationToken cancellationToken)

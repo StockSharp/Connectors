@@ -173,8 +173,6 @@ public partial class MastertrustMessageAdapter
                 cancellationToken);
             _lastPortfolioRefresh = CurrentTime;
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

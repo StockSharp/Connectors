@@ -155,7 +155,6 @@ public partial class DaishinMessageAdapter
 		if (_portfolioSubscriptionId != 0 &&
 			now - _lastPortfolioRefresh >= TimeSpan.FromSeconds(30))
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, _portfolioFilter, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private ValueTask OnConnectionLost(Exception error, CancellationToken cancellationToken)

@@ -140,7 +140,6 @@ public partial class XOpenHubMessageAdapter
 			}
 			_lastPing = CurrentTime;
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private XApiSymbol ResolveSymbol(SecurityId securityId)

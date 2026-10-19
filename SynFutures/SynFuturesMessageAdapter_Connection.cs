@@ -108,7 +108,6 @@ public partial class SynFuturesMessageAdapter
 		if (refreshAccount)
 			await RunSafelyAsync(RefreshAccountSubscriptionsAsync,
 				cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshMarketsAsync(

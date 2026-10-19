@@ -84,7 +84,6 @@ public partial class NDAXMessageAdapter
 			}
 		if (ping)
 			await RunSafelyAsync(SocketClient.PingAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private NDAXSocketClient CreateSocketClient()

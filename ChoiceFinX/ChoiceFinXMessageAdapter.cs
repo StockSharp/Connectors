@@ -233,8 +233,6 @@ public partial class ChoiceFinXMessageAdapter
                     cancellationToken);
             }
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

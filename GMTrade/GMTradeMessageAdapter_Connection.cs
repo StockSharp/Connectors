@@ -104,8 +104,6 @@ public partial class GMTradeMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private GMTradeGraphQlWebSocketClient CreateMarketSocket()

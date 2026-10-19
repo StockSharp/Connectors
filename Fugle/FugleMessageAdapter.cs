@@ -96,8 +96,6 @@ public partial class FugleMessageAdapter
 				await _futuresSocket.SendHeartbeat(cancellationToken);
 			_lastHeartbeat = CurrentTime;
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

@@ -131,8 +131,6 @@ public partial class QmtMessageAdapter
 			await SendPortfolioSnapshotAsync(_portfolioSubscriptionId, _portfolioName, cancellationToken);
 			_lastPortfolioRefresh = DateTime.UtcNow;
 		}
-
-		await base.TimeAsync(message, cancellationToken);
 	}
 
 	private QmtGatewayClient EnsureClient()

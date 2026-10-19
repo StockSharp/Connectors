@@ -75,7 +75,6 @@ public partial class CoinMarketCapMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-		await base.TimeAsync(message, cancellationToken);
 	}
 
 	private CoinMarketCapRestClient SafeRest()

@@ -139,7 +139,6 @@ public partial class LsSecuritiesMessageAdapter
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, cancellationToken);
 			_lastPortfolioRefresh = DateTime.UtcNow;
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private LsSecuritiesRestClient GetRest()

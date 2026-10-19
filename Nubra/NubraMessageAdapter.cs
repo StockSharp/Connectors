@@ -170,8 +170,6 @@ public partial class NubraMessageAdapter
 				cancellationToken);
 			_lastPortfolioRefresh = CurrentTime;
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

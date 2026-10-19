@@ -98,7 +98,6 @@ public partial class AngelOneMessageAdapter
 			await _orderClient.SendHeartbeat(cancellationToken);
 		if (_portfolioSubscriptionId != 0)
 			await SendPortfolioSnapshot(cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

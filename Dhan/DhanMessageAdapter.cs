@@ -99,7 +99,6 @@ public partial class DhanMessageAdapter
 	{
 		if (_portfolioSubscriptionId != 0)
 			await SendPortfolioSnapshot(cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

@@ -119,7 +119,6 @@ public partial class SunIoMessageAdapter
 			await RunSafelyAsync(PollMarketAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private SunIoMarketDefinition[] ParseMarketDefinitions()

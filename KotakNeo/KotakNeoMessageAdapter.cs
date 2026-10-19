@@ -92,7 +92,6 @@ public partial class KotakNeoMessageAdapter
 			await _orderClient.SendHeartbeat(cancellationToken);
 		if (_portfolioSubscriptionId != 0)
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

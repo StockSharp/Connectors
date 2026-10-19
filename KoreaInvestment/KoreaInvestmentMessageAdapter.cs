@@ -149,7 +149,6 @@ public partial class KoreaInvestmentMessageAdapter
 				await SendOrderSnapshot(_orderStatusSubscriptionId, DateTime.UtcNow.AddDays(-7), DateTime.UtcNow, cancellationToken);
 			_lastAccountRefresh = CurrentTime;
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

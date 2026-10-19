@@ -147,8 +147,6 @@ public partial class Trading212MessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async Task RefreshMetadata(CancellationToken cancellationToken)

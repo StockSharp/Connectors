@@ -211,7 +211,6 @@ public partial class CurveMessageAdapter
 			await RunSafelyAsync(PollMarketAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private bool IsDiscoverablePool(CurveApiPool pool)

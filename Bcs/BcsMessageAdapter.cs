@@ -189,8 +189,6 @@ public partial class BcsMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask PollTrackedOrders(

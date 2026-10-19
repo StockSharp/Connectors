@@ -175,7 +175,6 @@ public partial class UniswapMessageAdapter
 			await RunSafelyAsync(PollMarketAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RegisterDefinitionAsync(

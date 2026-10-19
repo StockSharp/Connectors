@@ -94,7 +94,6 @@ public partial class FoxbitMessageAdapter
 		if (refreshPortfolio)
 			await RunPollingAsync(RefreshPortfolioSubscriptionsAsync,
 				cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private FoxbitSocketClient CreateSocketClient()

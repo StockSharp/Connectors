@@ -109,7 +109,6 @@ public partial class OstiumMessageAdapter
 		if (refreshAccount)
 			await RunSafelyAsync(RefreshAccountSubscriptionsAsync,
 				cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshMarketsAsync(

@@ -195,8 +195,6 @@ public partial class NuvamaMessageAdapter
                 cancellationToken);
             _lastPortfolioRefresh = CurrentTime;
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

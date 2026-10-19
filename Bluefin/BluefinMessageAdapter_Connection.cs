@@ -98,7 +98,6 @@ public partial class BluefinMessageAdapter
 			await RunSafelyAsync(RefreshAuthenticationAsync, cancellationToken);
 		if (isPoll)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshMarketsAsync(

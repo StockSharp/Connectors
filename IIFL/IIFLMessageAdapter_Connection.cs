@@ -105,7 +105,6 @@ public partial class IIFLMessageAdapter
 				await PollMarketDataAsync(cancellationToken);
 			_lastPolling = CurrentTime;
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask SubscribeFeedAsync(

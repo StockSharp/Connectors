@@ -106,6 +106,5 @@ public partial class LimeMessageAdapter
 	{
 		if (_accountSocket != null)
 			await _accountSocket.SendHeartbeat(cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 }

@@ -288,8 +288,6 @@ public partial class DnseMessageAdapter
                 await SendOutErrorAsync(error, cancellationToken);
             }
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     private void InitializeAccounts()

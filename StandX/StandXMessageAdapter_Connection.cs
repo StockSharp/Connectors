@@ -102,8 +102,6 @@ public partial class StandXMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private StandXMarketWebSocketClient CreateMarketSocket()

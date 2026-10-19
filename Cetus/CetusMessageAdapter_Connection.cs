@@ -150,8 +150,6 @@ public partial class CetusMessageAdapter
 
 		foreach (var target in expiredTicks)
 			await SendSubscriptionFinishedAsync(target, cancellationToken);
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private static void ValidateService(GetServiceInfoResponse service)

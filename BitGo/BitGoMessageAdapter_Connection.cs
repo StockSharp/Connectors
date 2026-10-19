@@ -100,7 +100,6 @@ public partial class BitGoMessageAdapter
 		}
 		if (isPollRequired)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private BitGoAccount SelectAccount(BitGoAccount[] accounts)

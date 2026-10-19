@@ -267,8 +267,6 @@ public partial class MasterLinkMessageAdapter
                 await SendOutErrorAsync(error, cancellationToken);
             }
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     private ValueTask OnConnectionLost(

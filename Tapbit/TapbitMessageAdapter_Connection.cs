@@ -136,7 +136,6 @@ public partial class TapbitMessageAdapter
 			await RunSafelyAsync(PollMarketAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private ValueTask OnSocketErrorAsync(Exception error,

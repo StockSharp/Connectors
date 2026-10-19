@@ -139,7 +139,6 @@ public partial class PolymarketMessageAdapter
 			await RunSafelyAsync(RefreshMarketsAsync, cancellationToken);
 		if (isPrivatePoll)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshMarketsAsync(

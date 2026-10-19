@@ -169,8 +169,6 @@ public partial class StocksTraderMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private StocksTraderAccount SelectAccount(StocksTraderAccount[] accounts)

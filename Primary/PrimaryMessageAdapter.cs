@@ -196,7 +196,6 @@ public partial class PrimaryMessageAdapter
         }
 
         CaptureToken();
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

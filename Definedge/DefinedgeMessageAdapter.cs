@@ -202,8 +202,6 @@ public partial class DefinedgeMessageAdapter
                     cancellationToken);
             }
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

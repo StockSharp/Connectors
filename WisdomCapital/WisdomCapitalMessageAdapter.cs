@@ -253,7 +253,6 @@ public partial class WisdomCapitalMessageAdapter
                 cancellationToken);
             _lastPortfolioRefresh = CurrentTime;
         }
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

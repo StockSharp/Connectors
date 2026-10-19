@@ -77,7 +77,6 @@ public partial class FireblocksMessageAdapter
 		}
 		if (isPollRequired)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask<FireblocksVaultAccount[]> RefreshVaultsAsync(

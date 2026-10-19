@@ -158,7 +158,6 @@ public partial class QuickSwapMessageAdapter
 			await RunSafelyAsync(PollMarketAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private string ResolveSubgraph(string configured, string fallback)

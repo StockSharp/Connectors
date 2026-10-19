@@ -187,8 +187,6 @@ public partial class ExanteMessageAdapter
                 await SendOutErrorAsync(error, cancellationToken);
             }
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     private async Task EnsurePrivateStreams(

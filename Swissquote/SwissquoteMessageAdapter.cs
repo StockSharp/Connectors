@@ -119,7 +119,6 @@ public partial class SwissquoteMessageAdapter
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, null, cancellationToken);
 			_lastPortfolioRefresh = now;
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private SwissquoteRestClient GetRest()

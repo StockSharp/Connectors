@@ -135,7 +135,6 @@ public partial class GrowwMessageAdapter
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, cancellationToken);
 		if (_orderStatusSubscriptionId != 0 && CurrentTime - _lastOrderRefresh >= TimeSpan.FromSeconds(30))
 			await SendOrderSnapshot(_orderStatusSubscriptionId, false, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

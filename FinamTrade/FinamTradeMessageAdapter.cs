@@ -196,8 +196,6 @@ public partial class FinamTradeMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask PollTrackedOrders(

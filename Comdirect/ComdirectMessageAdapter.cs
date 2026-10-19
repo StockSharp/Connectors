@@ -164,8 +164,6 @@ public partial class ComdirectMessageAdapter
                 await SendOutErrorAsync(error, cancellationToken);
             }
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     private async Task RefreshDepots(CancellationToken cancellationToken)

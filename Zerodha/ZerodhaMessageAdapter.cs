@@ -156,7 +156,6 @@ public partial class ZerodhaMessageAdapter
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, cancellationToken);
 			_lastPortfolioRefresh = DateTime.UtcNow;
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private ZerodhaRestClient GetRest()

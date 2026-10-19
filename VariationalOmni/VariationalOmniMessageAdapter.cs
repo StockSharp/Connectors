@@ -124,8 +124,6 @@ public partial class VariationalOmniMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshStatisticsAsync(

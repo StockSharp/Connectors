@@ -185,8 +185,6 @@ public partial class LemonMarketsMessageAdapter
 				await SendOutErrorAsync(error, cancellationToken);
 			}
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private LemonAccount SelectAccount(LemonAccount[] accounts)

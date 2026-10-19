@@ -188,8 +188,6 @@ public partial class JainamMessageAdapter
                 cancellationToken);
             _lastPortfolioRefresh = CurrentTime;
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

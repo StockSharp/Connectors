@@ -136,8 +136,6 @@ public partial class TradejiniMessageAdapter
                 cancellationToken);
             _lastPortfolioRefresh = CurrentTime;
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

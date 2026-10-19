@@ -77,7 +77,6 @@ public partial class RainMessageAdapter
 			}
 		if (ping)
 			await RunSafelyAsync(SocketClient.PingAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private RainSocketClient CreateSocketClient()

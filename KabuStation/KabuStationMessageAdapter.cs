@@ -134,8 +134,6 @@ public partial class KabuStationMessageAdapter
 			await SendOrderSnapshot(_orderStatusSubscriptionId, _lastOrderRefresh == default ? null : _lastOrderRefresh.AddSeconds(-1), cancellationToken);
 		if (_portfolioSubscriptionId != 0 && now - _lastPortfolioRefresh >= TimeSpan.FromSeconds(30))
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, cancellationToken);
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask OnSocketConnected(bool reconnect, CancellationToken cancellationToken)

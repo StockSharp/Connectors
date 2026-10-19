@@ -168,7 +168,6 @@ public partial class OpenMarketsMessageAdapter
 			}
 			_lastDepthPoll = CurrentTime;
 		}
-		await base.TimeAsync(message, cancellationToken);
 	}
 
 	private string ResolveAccount(string portfolioName)

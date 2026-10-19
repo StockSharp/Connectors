@@ -157,8 +157,6 @@ public partial class FirstockMessageAdapter
             await SendPortfolioSnapshot(_portfolioSubscriptionId, cancellationToken);
             _lastPortfolioRefresh = CurrentTime;
         }
-
-        await base.TimeAsync(timeMsg, cancellationToken);
     }
 
     /// <inheritdoc />

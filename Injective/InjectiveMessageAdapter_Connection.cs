@@ -139,8 +139,6 @@ public partial class InjectiveMessageAdapter
 		foreach (var candle in candles)
 			await RunSafelyAsync(ct => PollCandleAsync(candle, ct),
 				cancellationToken);
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshMarketsAsync(

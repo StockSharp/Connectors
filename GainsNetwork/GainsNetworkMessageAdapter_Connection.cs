@@ -125,7 +125,6 @@ public partial class GainsNetworkMessageAdapter
 			await RunSafelyAsync(RefreshPublicAsync, cancellationToken);
 		if (isAccountRefresh)
 			await RunSafelyAsync(PollAccountAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private async ValueTask RefreshPublicAsync(

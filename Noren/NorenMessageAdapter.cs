@@ -141,8 +141,6 @@ public partial class NorenMessageAdapter
 			await SendPortfolioSnapshot(_portfolioSubscriptionId, cancellationToken);
 			_lastPortfolioRefresh = CurrentTime;
 		}
-
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	/// <inheritdoc />

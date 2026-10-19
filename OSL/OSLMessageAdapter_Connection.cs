@@ -106,7 +106,6 @@ public partial class OSLMessageAdapter
 				await RunSafelyAsync(PrivateSocket.PingAsync,
 					cancellationToken);
 		}
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private OSLSocketClient CreateSocketClient(string endpoint,

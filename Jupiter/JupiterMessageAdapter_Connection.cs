@@ -113,7 +113,6 @@ public partial class JupiterMessageAdapter
 			await RunSafelyAsync(PollMarketAsync, cancellationToken);
 		if (pollPrivate)
 			await RunSafelyAsync(PollPrivateAsync, cancellationToken);
-		await base.TimeAsync(timeMsg, cancellationToken);
 	}
 
 	private JupiterMarketDefinition[] ParseMarketDefinitions()
