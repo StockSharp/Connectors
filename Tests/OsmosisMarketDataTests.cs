@@ -19,7 +19,7 @@ public class OsmosisMarketDataTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "OSMO-USDC",
+		SecurityCode = "OSMO-USDC.NOBLE",
 		BoardCode = BoardCodes.Osmosis,
 	};
 
