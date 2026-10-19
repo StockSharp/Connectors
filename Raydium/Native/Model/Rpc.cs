@@ -129,7 +129,7 @@ sealed class RaydiumRpcTransactionConfig
 
 	[JsonProperty("maxSupportedTransactionVersion")]
 	public RaydiumSolanaMessageVersions MessageVersion { get; init; } =
-		RaydiumSolanaMessageVersions.V0;
+		RaydiumSolanaMessageVersions.V1;
 }
 
 sealed class RaydiumRpcSendConfig

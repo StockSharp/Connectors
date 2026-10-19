@@ -59,6 +59,7 @@ enum RaydiumTransactionVersions
 enum RaydiumSolanaMessageVersions
 {
 	V0 = 0,
+	V1 = 1,
 }
 
 sealed class RaydiumToken
