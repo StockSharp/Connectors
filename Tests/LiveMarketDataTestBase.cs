@@ -149,17 +149,14 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	}
 
 	/// <summary>
-	/// Fails a check that received nothing, and leaves one the adapter does not support inconclusive.
+	/// Fails a declared subscription when it is rejected or returns no data.
 	/// </summary>
 	/// <typeparam name="TMessage">What was asked for.</typeparam>
 	/// <param name="result">What came back.</param>
 	/// <param name="what">What was asked for, in words.</param>
-	private protected void CheckData<TMessage>(MarketDataResult<TMessage> result, string what)
+	internal void CheckData<TMessage>(MarketDataResult<TMessage> result, string what)
 		where TMessage : Message
 	{
-		if (result.IsNotSupported)
-			Inconclusive($"{what} is not supported by the adapter.");
-
 		if (result.Error is not null)
 			throw result.Error;
 
@@ -252,11 +249,16 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 		if (tf is null)
 			Inconclusive("Time frame candles are not supported by the adapter.");
 
-		var from = DateTime.UtcNow - tf.Value.Multiply(CandlesDepth);
+		var to = DateTime.UtcNow;
+		var from = to - tf.Value.Multiply(CandlesDepth);
 
 		var result = await harness.SubscribeAsync<TimeFrameCandleMessage>(
 			tf.Value.TimeFrame(), TestSecurityId,
-			mdMsg => mdMsg.From = from,
+			mdMsg =>
+			{
+				mdMsg.From = from;
+				mdMsg.To = to;
+			},
 			null,
 			DataTimeout, CancellationToken);
 

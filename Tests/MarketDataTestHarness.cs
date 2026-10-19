@@ -540,10 +540,4 @@ record SecurityLookupResult(SecurityMessage[] Securities, bool IsComplete);
 /// <param name="Error">Error reported by the adapter, if any.</param>
 /// <param name="Data">First received message, or <see langword="null"/> if none arrived in time.</param>
 record MarketDataResult<TMessage>(long TransactionId, Exception Error, TMessage Data)
-	where TMessage : Message
-{
-	/// <summary>
-	/// The adapter explicitly reported the subscription as unsupported.
-	/// </summary>
-	public bool IsNotSupported => Error is NotSupportedException;
-}
+	where TMessage : Message;
