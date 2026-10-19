@@ -1,13 +1,11 @@
 name: Live tests
 
 # The checks that talk to real venues and archives. Kept off every push: they depend on third
-# party uptime and rate limits, and several venues refuse cloud addresses. Run nightly and on
-# demand, so a venue that changed its answers shows up within a day without reddening each commit.
+# party uptime and rate limits, and several venues refuse cloud addresses. Run on demand to
+# investigate venue changes independently of the regular build.
 # The keys come from the repository's secrets; a check whose key is missing reports itself
 # inconclusive and names the variable.
 on:
-  schedule:
-    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
