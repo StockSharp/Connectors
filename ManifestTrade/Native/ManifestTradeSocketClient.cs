@@ -25,6 +25,7 @@ sealed class ManifestTradeSocketClient : BaseLogReceiver
 		_accountHandler;
 	private readonly Func<string, string[], ValueTask> _logsHandler;
 	private readonly Func<Exception, ValueTask> _errorHandler;
+	private readonly TimeSpan _subscriptionTimeout;
 	private readonly Lock _sync = new();
 	private readonly Dictionary<long, PendingSubscription> _pending = [];
 	private readonly Dictionary<long, ActiveSubscription> _subscriptions = [];
@@ -37,7 +38,7 @@ sealed class ManifestTradeSocketClient : BaseLogReceiver
 	public ManifestTradeSocketClient(string endpoint,
 		Func<string, ManifestTradeRpcAccount, long, ValueTask> accountHandler,
 		Func<string, string[], ValueTask> logsHandler,
-		Func<Exception, ValueTask> errorHandler)
+		Func<Exception, ValueTask> errorHandler, TimeSpan? subscriptionTimeout = null)
 	{
 		endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).Trim();
 		if (!endpoint.Contains("://", StringComparison.Ordinal))
@@ -53,6 +54,9 @@ sealed class ManifestTradeSocketClient : BaseLogReceiver
 			nameof(logsHandler));
 		_errorHandler = errorHandler ?? throw new ArgumentNullException(
 			nameof(errorHandler));
+		_subscriptionTimeout = subscriptionTimeout ?? TimeSpan.FromSeconds(10);
+		if (_subscriptionTimeout <= TimeSpan.Zero)
+			throw new ArgumentOutOfRangeException(nameof(subscriptionTimeout));
 	}
 
 	public bool IsConnected => _socket?.State == WebSocketState.Open;
@@ -75,21 +79,29 @@ sealed class ManifestTradeSocketClient : BaseLogReceiver
 				nameof(marketAddresses));
 
 		_socket = new();
-		_socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
-		_lifetime = new();
-		await _socket.ConnectAsync(_endpoint, cancellationToken);
-		_receiveTask = ReceiveLoopAsync(_lifetime.Token);
-		var confirmations = new List<Task<long>>(markets.Length * 2);
-
-		foreach (var market in markets)
+		try
 		{
-			confirmations.Add(await SubscribeAccountAsync(market,
-				cancellationToken));
-			confirmations.Add(await SubscribeLogsAsync(market,
-				cancellationToken));
-		}
+			_socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
+			_lifetime = new();
+			await _socket.ConnectAsync(_endpoint, cancellationToken);
+			_receiveTask = ReceiveLoopAsync(_lifetime.Token);
+			var confirmations = new List<Task<long>>(markets.Length * 2);
 
-		await Task.WhenAll(confirmations).WaitAsync(cancellationToken);
+			foreach (var market in markets)
+			{
+				confirmations.Add(await SubscribeAccountAsync(market,
+					cancellationToken));
+				confirmations.Add(await SubscribeLogsAsync(market,
+					cancellationToken));
+			}
+
+			await Task.WhenAll(confirmations).WaitAsync(_subscriptionTimeout, cancellationToken);
+		}
+		catch
+		{
+			Dispose();
+			throw;
+		}
 	}
 
 	protected override void DisposeManaged()
