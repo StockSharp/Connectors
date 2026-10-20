@@ -26,5 +26,6 @@ public class DexalotMarketDataTests : LiveMarketDataTestBase
 	};
 
 	/// <inheritdoc />
-	protected override int CandlesDepth => 24;
+	// ALOT/USDC trades sparsely; cover a day of five-minute candles.
+	protected override int CandlesDepth => 24 * 12;
 }
