@@ -25,4 +25,8 @@ public class InjectiveMarketDataTests : LiveMarketDataTestBase
 		SecurityCode = "INJ-USDT",
 		BoardCode = BoardCodes.Injective,
 	};
+
+	/// <inheritdoc />
+	// INJ/USDT spot candles can be hours apart; cover a day of one-minute history.
+	protected override int CandlesDepth => 24 * 60;
 }
