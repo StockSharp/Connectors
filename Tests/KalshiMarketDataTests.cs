@@ -19,11 +19,15 @@ public class KalshiMarketDataTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	/// <remarks>
 	/// Kalshi markets expire, so the checks use one of the few long living ones - the
-	/// 2030 World Cup winner - which is quoted around the clock and closes in 2031.
+	/// 2030 World Cup winner, which closes in 2031.
 	/// </remarks>
 	protected override SecurityId TestSecurityId => new()
 	{
 		SecurityCode = "KXWC-30-ESP",
 		BoardCode = BoardCodes.Kalshi,
 	};
+
+	/// <inheritdoc />
+	/// <remarks>The contract can go hours between trades, so request a full day.</remarks>
+	protected override int CandlesDepth => 24 * 60;
 }
