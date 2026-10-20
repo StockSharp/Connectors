@@ -83,7 +83,9 @@ public class NuvamaTests : BaseTestClass
     }
 
     [TestMethod]
-    public void InstrumentCsvSupportsQuotedCommasQuotesAndNewlines()
+    [DataRow("\n")]
+    [DataRow("\r\n")]
+    public void InstrumentCsvSupportsQuotedCommasQuotesAndNewlines(string newLine)
     {
         var instruments = NuvamaRestClient.ParseInstrumentCsv(
             """"
@@ -91,10 +93,10 @@ public class NuvamaTests : BaseTestClass
 			2885,RELIANCE-EQ,RELIANCE,"Reliance, Industries
 			Limited",,0,0.05,1,,EQ,EQUITY,nse,INE002A01018,1,1,1,1,Y,"ASM ""Stage 1"""
 			35000,BANKNIFTY29SEP26C72600,BANKNIFTY,"Bank Nifty call",29/Sep/26,72600,0.05,30,CE,,OPTIDX,NFO,,1,1,1,1,N,
-			"""");
+			"""".ReplaceLineEndings(newLine));
 
         AreEqual(2, instruments.Length);
-        AreEqual("Reliance, Industries\nLimited", instruments[0].Description);
+        AreEqual($"Reliance, Industries{newLine}Limited", instruments[0].Description);
         AreEqual("ASM \"Stage 1\"", instruments[0].AsmGsmMessage);
         AreEqual("NSE", instruments[0].Exchange);
         AreEqual("BANKNIFTY29SEP26C72600", instruments[1].TradingSymbol);
