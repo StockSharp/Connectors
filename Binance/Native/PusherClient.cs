@@ -738,11 +738,15 @@ class PusherClient : BaseLogReceiver
 		public const string OrderLog = "!forceOrder@arr";
 	}
 
+	// Spot no longer publishes its all-market ticker, so its pairs are always read by name.
+	private static string AllSymbolsTicker(BinanceSections section)
+		=> section == BinanceSections.Spot ? string.Empty : AllSymbolsStreams.Ticker;
+
 	public void SubscribeTicker(BinanceSections section, string symbol)
-		=> Process(true, section, symbol, OneSymbolStreams.Ticker, AllSymbolsStreams.Ticker);
+		=> Process(true, section, symbol, OneSymbolStreams.Ticker, AllSymbolsTicker(section));
 
 	public void UnSubscribeTicker(BinanceSections section, string symbol)
-		=> Process(false, section, symbol, OneSymbolStreams.Ticker, AllSymbolsStreams.Ticker);
+		=> Process(false, section, symbol, OneSymbolStreams.Ticker, AllSymbolsTicker(section));
 
 	public void SubscribeBookTicker(BinanceSections section, string symbol)
 		=> Process(true, section, symbol, OneSymbolStreams.BookTicker, section == BinanceSections.Spot ? string.Empty : AllSymbolsStreams.BookTicker);

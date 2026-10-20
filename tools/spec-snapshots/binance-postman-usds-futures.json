@@ -31,7 +31,7 @@
   "GET {{url}}/fapi/v1/fundingInfo": "4f53cda18c2baa0c",
   "GET {{url}}/fapi/v1/fundingRate": "4472e06f1b0a9c0c",
   "GET {{url}}/fapi/v1/historicalTrades": "11296a931556e0eb",
-  "GET {{url}}/fapi/v1/income": "d794b53260f1aa95",
+  "GET {{url}}/fapi/v1/income": "79fe2212ab3adf1a",
   "GET {{url}}/fapi/v1/income/asyn": "2a29a3d35b70cead",
   "GET {{url}}/fapi/v1/income/asyn/id": "9580253e0ee4d0ca",
   "GET {{url}}/fapi/v1/indexInfo": "7d99ee89817441b2",
