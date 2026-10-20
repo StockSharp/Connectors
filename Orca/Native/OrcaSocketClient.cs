@@ -13,6 +13,7 @@ sealed class OrcaSocketClient : BaseLogReceiver
 	private readonly Uri _endpoint;
 	private readonly Func<string, string[], ValueTask> _logsHandler;
 	private readonly Func<Exception, ValueTask> _errorHandler;
+	private readonly TimeSpan _subscriptionTimeout;
 	private readonly Lock _sync = new();
 	private readonly Dictionary<long, PendingSubscription> _pending = [];
 	private readonly Dictionary<long, string> _subscriptions = [];
@@ -24,7 +25,7 @@ sealed class OrcaSocketClient : BaseLogReceiver
 
 	public OrcaSocketClient(string endpoint,
 		Func<string, string[], ValueTask> logsHandler,
-		Func<Exception, ValueTask> errorHandler)
+		Func<Exception, ValueTask> errorHandler, TimeSpan? subscriptionTimeout = null)
 	{
 		endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).Trim();
 		if (!endpoint.Contains("://", StringComparison.Ordinal))
@@ -38,6 +39,9 @@ sealed class OrcaSocketClient : BaseLogReceiver
 			nameof(logsHandler));
 		_errorHandler = errorHandler ?? throw new ArgumentNullException(
 			nameof(errorHandler));
+		_subscriptionTimeout = subscriptionTimeout ?? TimeSpan.FromSeconds(10);
+		if (_subscriptionTimeout <= TimeSpan.Zero)
+			throw new ArgumentOutOfRangeException(nameof(subscriptionTimeout));
 	}
 
 	public bool IsConnected => _socket?.State == WebSocketState.Open;
@@ -60,41 +64,49 @@ sealed class OrcaSocketClient : BaseLogReceiver
 				nameof(poolAddresses));
 
 		_socket = new();
-		_socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
-		_lifetime = new();
-		await _socket.ConnectAsync(_endpoint, cancellationToken);
-		_receiveTask = ReceiveLoopAsync(_lifetime.Token);
-
-		var confirmations = new List<Task<long>>(pools.Length);
-
-		foreach (var pool in pools)
+		try
 		{
-			var id = Interlocked.Increment(ref _requestId);
-			var completion = new TaskCompletionSource<long>(
-				TaskCreationOptions.RunContinuationsAsynchronously);
-			using (_sync.EnterScope())
-				_pending.Add(id, new()
-				{
-					PoolAddress = pool,
-					Completion = completion,
-				});
-			confirmations.Add(completion.Task);
-			await SendAsync(new OrcaSocketRequest<OrcaSocketParameters>
-			{
-				Id = id,
-				Method = "logsSubscribe",
-				Parameters = new OrcaSocketLogsParameters
-				{
-					Filter = new()
-					{
-						Mentions = [pool],
-					},
-					Config = new(),
-				},
-			}, cancellationToken);
-		}
+			_socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
+			_lifetime = new();
+			await _socket.ConnectAsync(_endpoint, cancellationToken);
+			_receiveTask = ReceiveLoopAsync(_lifetime.Token);
 
-		await Task.WhenAll(confirmations).WaitAsync(cancellationToken);
+			var confirmations = new List<Task<long>>(pools.Length);
+
+			foreach (var pool in pools)
+			{
+				var id = Interlocked.Increment(ref _requestId);
+				var completion = new TaskCompletionSource<long>(
+					TaskCreationOptions.RunContinuationsAsynchronously);
+				using (_sync.EnterScope())
+					_pending.Add(id, new()
+					{
+						PoolAddress = pool,
+						Completion = completion,
+					});
+				confirmations.Add(completion.Task);
+				await SendAsync(new OrcaSocketRequest<OrcaSocketParameters>
+				{
+					Id = id,
+					Method = "logsSubscribe",
+					Parameters = new OrcaSocketLogsParameters
+					{
+						Filter = new()
+						{
+							Mentions = [pool],
+							},
+						Config = new(),
+					},
+				}, cancellationToken);
+			}
+
+			await Task.WhenAll(confirmations).WaitAsync(_subscriptionTimeout, cancellationToken);
+		}
+		catch
+		{
+			Dispose();
+			throw;
+		}
 	}
 
 	protected override void DisposeManaged()
