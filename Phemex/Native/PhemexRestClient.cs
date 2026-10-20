@@ -161,6 +161,7 @@ sealed class PhemexRestClient : BaseLogReceiver
 			], cancellationToken);
 		return [.. (data?.Rows ?? [])
 			.Where(row => to is null || row.Time * 1000 <= to.Value.ToUnixMilliseconds())
+			.OrderBy(static row => row.Time)
 			.TakeLast(requestedLimit)
 			.Select(row => NormalizeKline(symbol, row))];
 	}
