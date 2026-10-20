@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -6,6 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("S#.Digifinex")]
 [assembly: AssemblyDescription("Digifinex connector.")]
+[assembly: InternalsVisibleTo("StockSharp.Tests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("87EC89A6-4152-4346-A0FB-4E9B6AA23B2B")]

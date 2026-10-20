@@ -27,18 +27,20 @@ class HttpClient : BaseLogReceiver
 	// to get readable name after obfuscation
 	public override string Name => nameof(Digifinex) + "_" + nameof(HttpClient);
 
-	public async Task<IEnumerable<Symbol>> GetSpotSymbols(CancellationToken cancellationToken)
+	public Task<IEnumerable<Symbol>> GetSpotSymbols(CancellationToken cancellationToken)
+		=> GetSymbols("spot", cancellationToken);
+
+	public Task<IEnumerable<Symbol>> GetMarginSymbols(CancellationToken cancellationToken)
+		=> GetSymbols("margin", cancellationToken);
+
+	private async Task<IEnumerable<Symbol>> GetSymbols(string market, CancellationToken cancellationToken)
 	{
-		dynamic response = await MakeRequest<object>(CreateUrl("spot/symbols"), CreateRequest(Method.Get), cancellationToken);
+		dynamic response = await MakeRequest<object>(CreateUrl($"{market}/symbols"), CreateRequest(Method.Get), cancellationToken);
+		var symbols = (JToken)response.symbol_list;
+		if (symbols is JObject { Count: 0 })
+			return [];
 
-		return ((JToken)response.symbol_list).DeserializeObject<IEnumerable<Symbol>>();
-	}
-
-	public async Task<IEnumerable<Symbol>> GetMarginSymbols(CancellationToken cancellationToken)
-	{
-		dynamic response = await MakeRequest<object>(CreateUrl("margin/symbols"), CreateRequest(Method.Get), cancellationToken);
-
-		return ((JToken)response.symbol_list).DeserializeObject<IEnumerable<Symbol>>();
+		return symbols.DeserializeObject<IEnumerable<Symbol>>();
 	}
 
 	public Task<IEnumerable<Trade>> GetTrades(string symbol, int? limit, CancellationToken cancellationToken)
