@@ -165,7 +165,7 @@ sealed class BigOneRestClient : BaseLogReceiver
 				("time", to.ToUtc().ToString(
 					"O", CultureInfo.InvariantCulture)),
 				("limit", count),
-				("direction", "ASC")),
+				("direction", "DESC")),
 			null, false, cancellationToken) ?? [];
 		return [.. candles
 			.Where(candle =>
