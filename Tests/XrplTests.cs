@@ -33,7 +33,7 @@ public class XrplTests : BaseTestClass
 			new IncrementalIdGenerator());
 
 		AreEqual("https://xrplcluster.com/", adapter.RpcEndpoint);
-		AreEqual("wss://xrplcluster.com/",
+		AreEqual("wss://s1.ripple.com/",
 			adapter.StreamingEndpoint);
 		AreEqual(_market, adapter.Markets);
 		AreEqual(50, adapter.OrderBookDepth);
