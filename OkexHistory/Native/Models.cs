@@ -85,6 +85,12 @@ class OkxHistoryFile
 {
 	[JsonProperty("filename")]
 	public string FileName { get; set; }
+
+	[JsonProperty("dateTs")]
+	public long Timestamp { get; set; }
+
+	[JsonProperty("url")]
+	public Uri Url { get; set; }
 }
 
 class OkxOrderBook

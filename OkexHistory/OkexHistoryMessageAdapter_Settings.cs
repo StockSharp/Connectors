@@ -23,7 +23,7 @@ public partial class OkexHistoryMessageAdapter : IAddressAdapter<string>
 	/// </summary>
 	public static IEnumerable<TimeSpan> AllTimeFrames => _timeFrames.CachedKeys;
 
-	private string _address = "www.okx.com";
+	private string _address = "openapi.okx.com";
 	private string _archiveAddress = "static.okx.com";
 
 	/// <inheritdoc />

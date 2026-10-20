@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Formats.Tar;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Ecng.IO;
 using Ecng.IO.Compression;
@@ -214,10 +215,6 @@ partial class OkexHistoryMessageAdapter
 			return new SynchronizedSet<DateTime>();
 
 		var instrumentType = GetInstrumentType(mdMsg, secId);
-		var filterName = instrumentType == OkxInstrumentTypes.Spot ? "instIdList" : "instFamilyList";
-		var filterValue = instrumentType == OkxInstrumentTypes.Spot
-			? secId
-			: GetInstrumentFamily(secId, instrumentType);
 		var cacheKey = $"{module}:{instrumentType}:{secId}:{rangeFrom:yyyyMMdd}:{rangeTo:yyyyMMdd}";
 
 		if (_datesCache.TryGetValue(cacheKey, out var cached) && cached.till > now)
@@ -225,62 +222,58 @@ partial class OkexHistoryMessageAdapter
 
 		var result = new SynchronizedSet<DateTime>();
 
-		for (var chunkFrom = rangeFrom; chunkFrom <= rangeTo; chunkFrom = chunkFrom.AddDays(20))
+		try
 		{
-			token.ThrowIfCancellationRequested();
-
-			var chunkTo = chunkFrom.AddDays(19);
-			if (chunkTo > rangeTo)
-				chunkTo = rangeTo;
-
-			var url = $"https://{Address}/api/v5/public/market-data-history" +
-				$"?module={(int)module}" +
-				$"&instType={instrumentType.ToString().ToUpperInvariant()}" +
-				$"&{filterName}={filterValue.DataEscape()}" +
-				$"&dateAggrType=daily" +
-				$"&begin={(long)chunkFrom.ToUnix(false)}" +
-				$"&end={(long)chunkTo.ToUnix(false)}";
-
-			try
+			await foreach (var file in GetHistoryFilesAsync(module, mdMsg, secId, rangeFrom, rangeTo, token))
 			{
-				var json = await _client.GetStringAsync(url, token);
+				var name = Path.GetFileNameWithoutExtension(file.FileName);
+				if (name.Length < 10)
+					continue;
 
-				foreach (var batch in DeserializeResponse<OkxHistoryBatch>(json))
-				{
-					foreach (var group in batch.Details ?? [])
-					{
-						foreach (var file in group.Files ?? [])
-						{
-							if (!file.FileName.StartsWithIgnoreCase(secId + "-"))
-								continue;
-
-							var name = Path.GetFileNameWithoutExtension(file.FileName);
-							if (name.Length < 10)
-								continue;
-
-							if (DateTime.TryParseExact(
-								name[^10..],
-								"yyyy-MM-dd",
-								CultureInfo.InvariantCulture,
-								DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
-								out var date))
-								result.Add(date.Date);
-						}
-					}
-				}
+				if (DateTime.TryParseExact(name[^10..], "yyyy-MM-dd", CultureInfo.InvariantCulture,
+					DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var date))
+					result.Add(date.Date);
 			}
-			catch (Exception ex)
-			{
-				this.AddWarningLog("OKX range request failed: {0}", ex);
-				return null;
-			}
-
-			if (chunkTo < rangeTo)
-				await Task.Delay(TimeSpan.FromMilliseconds(400), token);
+		}
+		catch (Exception ex) when (!token.IsCancellationRequested)
+		{
+			this.AddWarningLog("OKX range request failed: {0}", ex);
+			return null;
 		}
 
 		_datesCache[cacheKey] = (now.AddMinutes(30), result);
 		return result;
+	}
+
+	private async IAsyncEnumerable<OkxHistoryFile> GetHistoryFilesAsync(
+		OkxHistoryModules module, MarketDataMessage message, string secId,
+		DateTime from, DateTime to, [EnumeratorCancellation] CancellationToken token)
+	{
+		var instrumentType = GetInstrumentType(message, secId);
+		var filterName = instrumentType == OkxInstrumentTypes.Spot ? "instIdList" : "instFamilyList";
+		var filterValue = instrumentType == OkxInstrumentTypes.Spot
+			? secId : GetInstrumentFamily(secId, instrumentType);
+
+		for (var chunkFrom = from.Date; chunkFrom <= to.Date; chunkFrom = chunkFrom.AddDays(10))
+		{
+			var chunkTo = chunkFrom.AddDays(9).Min(to.Date);
+			var url = $"https://{Address}/api/v5/public/market-data-history" +
+				$"?module={(int)module}&instType={instrumentType.ToString().ToUpperInvariant()}" +
+				$"&{filterName}={filterValue.DataEscape()}&dateAggrType=daily" +
+				$"&begin={(long)chunkFrom.ToUnix(false)}&end={(long)chunkTo.ToUnix(false)}";
+			var json = await _client.GetStringAsync(url, token);
+
+			foreach (var batch in DeserializeResponse<OkxHistoryBatch>(json))
+			foreach (var group in batch.Details ?? [])
+			foreach (var file in group.Files ?? [])
+			{
+				if (file.FileName?.StartsWithIgnoreCase(secId + "-") == true)
+					yield return file;
+			}
+
+			if (chunkTo < to.Date)
+				await Task.Delay(TimeSpan.FromMilliseconds(400), token);
+		}
 	}
 
 	/// <inheritdoc />
@@ -560,21 +553,15 @@ partial class OkexHistoryMessageAdapter
 
 		var secId = GetNativeSecurityId(mdMsg);
 
-		// Iterate from start date to end date inclusive
-		for (var date = from.Date; date <= to.Date; date = date.AddDays(1))
-		{
-			// URL format: https://static.okx.com/cdn/okx/match/orderbook/L2/400lv/daily/{yyyyMMdd}/{secId}-L2orderbook-400lv-{yyyy-MM-dd}.tar.gz
-			var url = $"https://{ArchiveAddress}/cdn/okx/match/orderbook/L2/400lv/daily/{date:yyyyMMdd}/{secId}-L2orderbook-400lv-{date:yyyy-MM-dd}.tar.gz";
+		var files = await GetHistoryFilesAsync(OkxHistoryModules.OrderBook400, mdMsg, secId,
+			from, to, cancellationToken).ToArrayAsync(cancellationToken);
 
-			Stream networkStream;
-			try
-			{
-				networkStream = await _client.GetStreamAsync(url, cancellationToken);
-			}
-			catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
-			{
-				continue; // no file for that date — continue to next date
-			}
+		foreach (var file in files.OrderBy(static file => file.Timestamp))
+		{
+			if (file.Url is null || !file.Url.IsAbsoluteUri)
+				throw new InvalidDataException($"OKX did not provide a download URL for '{file.FileName}'.");
+
+			var networkStream = await _client.GetStreamAsync(file.Url, cancellationToken);
 
 			var needBreak = false;
 
