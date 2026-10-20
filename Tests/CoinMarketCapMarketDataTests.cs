@@ -8,7 +8,7 @@ using StockSharp.CoinMarketCap;
 using StockSharp.Messages;
 
 /// <summary>
-/// CoinMarketCap publishes market data without credentials.
+/// CoinMarketCap checks use an API key or explicit access to the anonymous quota.
 /// </summary>
 [TestClass]
 public class CoinMarketCapMarketDataTests : LiveMarketDataTestBase
@@ -17,6 +17,9 @@ public class CoinMarketCapMarketDataTests : LiveMarketDataTestBase
 	protected override MessageAdapter CreateAdapter()
 	{
 		var token = Env("COINMARKETCAP_TOKEN");
+		if (token.IsEmpty() && !Env("COINMARKETCAP_KEYLESS_TESTS").EqualsIgnoreCase("1"))
+			Inconclusive("Set COINMARKETCAP_TOKEN, or COINMARKETCAP_KEYLESS_TESTS=1 to use the limited anonymous quota.");
+
 		return new CoinMarketCapMessageAdapter(new IncrementalIdGenerator())
 		{
 			AccessMode = token.IsEmpty() ? CoinMarketCapAccessModes.Keyless : CoinMarketCapAccessModes.ApiKey,

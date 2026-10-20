@@ -15,6 +15,7 @@ public class BinanceHistoryTests : HistoryTestBase
 {
 	[TestMethod]
 	[TestCategory("Integration")]
+	[RegionalLiveTests]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public async Task BinHistLookupAll()
 	{
@@ -247,6 +248,7 @@ public class BinanceHistoryTests : HistoryTestBase
 
 	[TestMethod]
 	[TestCategory("Integration")]
+	[RegionalLiveTests]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public async Task BinHistOrderBookFutCoin()
 	{

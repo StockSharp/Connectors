@@ -10,6 +10,8 @@ using Ecng.Common;
 using Ecng.Logging;
 using Ecng.UnitTesting;
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using StockSharp.Algo;
 using StockSharp.Algo.Storages;
 using StockSharp.Messages;
@@ -23,6 +25,17 @@ using StockSharp.Messages;
 /// </remarks>
 public abstract class HistoryTestBase : BaseTestClass
 {
+	/// <summary>
+	/// Requires venue access before a region-restricted history check starts.
+	/// </summary>
+	[TestInitialize]
+	public void InitializeHistoryAccess()
+	{
+		if (LiveTestAccess.GetRegionalSkipReason(GetType(), TestContext?.TestName,
+			Env(LiveTestAccess.RegionalOptInVariable)) is string reason)
+			Inconclusive(reason);
+	}
+
 	private static readonly LogManager _logManager = new(false)
 	{
 		Listeners =

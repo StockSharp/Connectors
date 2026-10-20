@@ -15,6 +15,7 @@ public class ByBitHistoryTests : HistoryTestBase
 {
 	[TestMethod]
 	[TestCategory("Integration")]
+	[RegionalLiveTests]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public async Task ByBitHistLookupAll()
 	{
@@ -28,6 +29,7 @@ public class ByBitHistoryTests : HistoryTestBase
 
 	[TestMethod]
 	[TestCategory("Integration")]
+	[RegionalLiveTests]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public async Task ByBitHistLookupLimit()
 	{

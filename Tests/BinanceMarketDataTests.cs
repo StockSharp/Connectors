@@ -11,6 +11,7 @@ using StockSharp.Messages;
 /// Binance publishes spot market data without credentials.
 /// </summary>
 [TestClass]
+[RegionalLiveTests]
 public class BinanceMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />

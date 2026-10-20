@@ -16,6 +16,7 @@ using StockSharp.Tokocrypto.Native;
 /// Tokocrypto publishes MAIN spot market data without credentials.
 /// </summary>
 [TestClass]
+[RegionalLiveTests]
 public class TokocryptoMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />

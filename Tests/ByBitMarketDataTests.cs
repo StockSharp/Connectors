@@ -15,6 +15,10 @@ using StockSharp.Messages;
 /// ByBit publishes market data without credentials.
 /// </summary>
 [TestClass]
+[RegionalLiveTests(nameof(ByBitMarketDataTests.Securities))]
+[RegionalLiveTests(nameof(ByBitMarketDataTests.Candles))]
+[RegionalLiveTests(nameof(ByBitMarketDataTests.ASpotInstrumentSaysHowManyDecimalsItsPricesHave))]
+[RegionalLiveTests(nameof(ByBitMarketDataTests.ADayOfCandlesFromDaysAgo))]
 public class ByBitMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />
