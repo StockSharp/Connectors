@@ -1,22 +1,102 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Web;
 
 using Ecng.Common;
 using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Newtonsoft.Json;
+
+using StockSharp.GmoCoin;
 using StockSharp.GmoCoin.Native;
 using StockSharp.GmoCoin.Native.Model;
 
 [TestClass]
 public class GmoCoinRegressionTests : BaseTestClass
 {
+	[TestMethod]
+	[DataRow(3, 0, "20261020")]
+	[DataRow(15, 30, "20261020")]
+	[DataRow(20, 59, "20261020")]
+	[DataRow(21, 0, "20261021")]
+	[Timeout(15000, CooperativeCancellation = true)]
+	public async Task IntradayHistoryUsesTheTradingDateStartingAtSixInJapan(int hour, int minute, string expectedDate)
+	{
+		var to = new DateTime(2026, 10, 20, hour, minute, 0, DateTimeKind.Utc);
+		string actualDate = null;
+		var candles = await DownloadCandlesAsync(to.AddMinutes(-1), to, 1, request =>
+		{
+			actualDate = HttpUtility.ParseQueryString(request.RequestUri.Query)["date"];
+			return actualDate == expectedDate
+				? CandleResponse(to)
+				: new(HttpStatusCode.NotFound)
+				{
+					Content = new StringContent("""{"status":2,"messages":[{"message_code":"ERR-5207","message_string":"Not found"}]}"""),
+				};
+		});
+
+		AreEqual(expectedDate, actualDate);
+		AreEqual(1, candles.Length);
+		AreEqual(to, DateTime.UnixEpoch.AddMilliseconds(candles[0].OpenTime));
+	}
+
+	[TestMethod]
+	[Timeout(15000, CooperativeCancellation = true)]
+	public async Task IntradayHistoryReadsBothTradingDatesAcrossTheSixAmBoundary()
+	{
+		var from = new DateTime(2026, 10, 20, 20, 59, 0, DateTimeKind.Utc);
+		var to = from.AddMinutes(1);
+		var dates = new List<string>();
+		var candles = await DownloadCandlesAsync(from, to, 2, request =>
+		{
+			var date = HttpUtility.ParseQueryString(request.RequestUri.Query)["date"];
+			dates.Add(date);
+			return CandleResponse(date == "20261021" ? to : from);
+		});
+
+		AreEqual(2, candles.Length);
+		AreEqual(2, dates.Count);
+		AreEqual("20261021", dates[0]);
+		AreEqual("20261020", dates[1]);
+		AreEqual(from, DateTime.UnixEpoch.AddMilliseconds(candles[0].OpenTime));
+		AreEqual(to, DateTime.UnixEpoch.AddMilliseconds(candles[1].OpenTime));
+	}
+
+	private async ValueTask<GmoCoinCandle[]> DownloadCandlesAsync(DateTime from, DateTime to, int count,
+		Func<HttpRequestMessage, HttpResponseMessage> respond)
+	{
+		using var client = new GmoCoinRestClient("https://api.example.test", null, null);
+		HistoryHttpHandler.ReplaceClient(client, new(new HistoryHttpHandler(respond)), "_http");
+		using var adapter = new GmoCoinMessageAdapter(new IncrementalIdGenerator());
+		var adapterType = typeof(GmoCoinMessageAdapter);
+		adapterType.GetField("_restClient", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(adapter, client);
+		var marketType = adapterType.GetNestedType("MarketDefinition", BindingFlags.NonPublic);
+		var market = Activator.CreateInstance(marketType, true);
+		marketType.GetProperty("Symbol").SetValue(market, "BTC");
+		var loading = (ValueTask<GmoCoinCandle[]>)adapterType.GetMethod("DownloadCandlesAsync", BindingFlags.Instance | BindingFlags.NonPublic)
+			.Invoke(adapter, [market, "1min", TimeSpan.FromMinutes(1), from, to, count, CancellationToken]);
+		return await loading;
+	}
+
+	private static HttpResponseMessage CandleResponse(DateTime time)
+		=> Response(JsonConvert.SerializeObject(new
+		{
+			status = 0,
+			data = new[]
+			{
+				new { openTime = (long)(time - DateTime.UnixEpoch).TotalMilliseconds, open = "100", high = "110", low = "90", close = "105", volume = "1" },
+			},
+		}));
+
 	private static HttpResponseMessage Response(string body) => new(HttpStatusCode.OK)
 	{
 		Content = new StringContent(body),

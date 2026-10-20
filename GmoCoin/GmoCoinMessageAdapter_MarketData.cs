@@ -368,8 +368,9 @@ public partial class GmoCoinMessageAdapter
 		}
 		else
 		{
-			var date = to.AddHours(9).Date;
-			var firstDate = from.AddHours(9).Date;
+			// Daily kline files roll over at 06:00 JST (21:00 UTC).
+			var date = to.AddHours(3).Date;
+			var firstDate = from.AddHours(3).Date;
 
 			for (; date >= firstDate && values.Count < count;
 				date = date.AddDays(-1))
