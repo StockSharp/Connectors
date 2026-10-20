@@ -16,12 +16,6 @@ public class MeteoraMarketDataTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new MeteoraMessageAdapter(new IncrementalIdGenerator())
 	{
-		// api.mainnet-beta.solana.com throttles getTransaction after ten calls,
-		// which is far less than one page of trade history needs, and the bin-array
-		// snapshot rules out the endpoints that cap getMultipleAccounts at ten keys
-		RpcEndpoint = "https://rpc.magicblock.app/mainnet",
-		StreamingEndpoint = "wss://rpc.magicblock.app/mainnet",
-
 		// pin the pool instead of taking whatever tops the volume ranking today
 		Pools = "5rCf1DM8LjKTw4YqhnoLcngyZYeNnQqztScTogYHAS6|SOL|USDC",
 		MaximumDiscoveredPools = 0,
@@ -33,4 +27,14 @@ public class MeteoraMarketDataTests : LiveMarketDataTestBase
 		SecurityCode = "SOL-USDC",
 		BoardCode = BoardCodes.Meteora,
 	};
+
+	/// <inheritdoc />
+	protected override int CandlesDepth => 2;
+
+	/// <inheritdoc />
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		if (message.DataType2 == DataType.Ticks || message.DataType2.IsTFCandles)
+			message.Count = 1;
+	}
 }

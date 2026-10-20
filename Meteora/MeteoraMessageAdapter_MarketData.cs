@@ -336,6 +336,8 @@ public partial class MeteoraMessageAdapter
 
 			foreach (var signature in signatures)
 			{
+				if (trades.Count >= maximum)
+					break;
 				inspected++;
 				if (signature.BlockTime is long seconds)
 				{
@@ -366,6 +368,8 @@ public partial class MeteoraMessageAdapter
 					var trade = ToTrade(market, meteoraEvent);
 					if (trade is not null && trade.Time >= from && trade.Time <= to)
 						trades.Add(trade);
+					if (trades.Count >= maximum)
+						break;
 				}
 			}
 
