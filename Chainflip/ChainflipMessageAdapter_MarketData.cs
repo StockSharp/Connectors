@@ -124,7 +124,7 @@ public partial class ChainflipMessageAdapter
 		var market = GetMarket(mdMsg.SecurityId);
 		var depth = (mdMsg.MaxDepth ?? OrderBookDepth).Max(1)
 			.Min(OrderBookDepth);
-		var book = await StateClient.GetOrderBookAsync(market, depth,
+		var book = await StateClient.GetOrderBookAsync(market, depth, null,
 			cancellationToken);
 		await SendDepthAsync(market, book, mdMsg.TransactionId, true,
 			cancellationToken);
@@ -310,7 +310,7 @@ public partial class ChainflipMessageAdapter
 			await PollOneAsync(async token =>
 			{
 				var book = await StateClient.GetOrderBookAsync(
-					item.Value.Market, item.Value.Depth, token);
+					item.Value.Market, item.Value.Depth, null, token);
 				await SendDepthAsync(item.Value.Market, book, item.Key,
 					false, token);
 			}, cancellationToken);

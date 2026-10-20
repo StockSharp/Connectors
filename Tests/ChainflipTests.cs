@@ -182,7 +182,7 @@ public class ChainflipTests : BaseTestClass
 				"USDT@ETHEREUM-USDC@ETHEREUM");
 		var prices = await state.GetPricesAsync(market, null,
 			CancellationToken);
-		var book = await state.GetOrderBookAsync(market, 20,
+		var book = await state.GetOrderBookAsync(market, 20, null,
 			CancellationToken);
 		var best = await state.GetBestBlockNumberAsync(CancellationToken);
 		var byKey = markets.ToDictionary(static item => item.Key,

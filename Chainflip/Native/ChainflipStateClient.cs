@@ -152,17 +152,10 @@ sealed class ChainflipStateClient : BaseLogReceiver
 		CancellationToken cancellationToken)
 	{
 		ArgumentNullException.ThrowIfNull(market);
-		var parameters = CreatePoolParameters(market, blockHash);
-		var price = await SendAsync<ChainflipPoolPrice>(
-			"cf_pool_price_v2", parameters, cancellationToken);
-		if (price is null || price.Sell.IsEmpty() || price.Buy.IsEmpty())
-			throw new InvalidDataException(
-				$"Chainflip pool '{market.SecurityCode}' has no two-sided " +
-					"price.");
-		var bid = ChainflipExtensions.DecodeSqrtPrice(price.Sell,
-			market.BaseAsset.Decimals, market.QuoteAsset.Decimals);
-		var ask = ChainflipExtensions.DecodeSqrtPrice(price.Buy,
-			market.BaseAsset.Decimals, market.QuoteAsset.Decimals);
+		var book = await GetOrderBookAsync(market, 1, blockHash,
+			cancellationToken);
+		var bid = book.Bids.Max(static level => level.Price);
+		var ask = book.Asks.Min(static level => level.Price);
 		if (bid <= 0 || ask <= 0 || bid > ask)
 			throw new InvalidDataException(
 				$"Chainflip pool '{market.SecurityCode}' returned an invalid " +
@@ -171,13 +164,13 @@ sealed class ChainflipStateClient : BaseLogReceiver
 	}
 
 	public async ValueTask<ChainflipOrderBook> GetOrderBookAsync(
-		ChainflipMarket market, int depth,
+		ChainflipMarket market, int depth, string blockHash,
 		CancellationToken cancellationToken)
 	{
 		ArgumentNullException.ThrowIfNull(market);
 		if (depth is < 1 or > 16384)
 			throw new ArgumentOutOfRangeException(nameof(depth));
-		var parameters = CreatePoolParameters(market, null);
+		var parameters = CreatePoolParameters(market, blockHash);
 		parameters["orders"] = depth;
 		var response = await SendAsync<ChainflipRpcOrderBook>(
 			"cf_pool_orderbook", parameters, cancellationToken);

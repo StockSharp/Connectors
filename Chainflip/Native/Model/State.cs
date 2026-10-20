@@ -50,20 +50,6 @@ sealed class ChainflipRpcPool
 	public ChainflipRpcAsset Quote { get; init; }
 }
 
-sealed class ChainflipPoolPrice
-{
-	[JsonProperty("base_asset")]
-	public ChainflipRpcAsset BaseAsset { get; init; }
-	[JsonProperty("quote_asset")]
-	public ChainflipRpcAsset QuoteAsset { get; init; }
-	[JsonProperty("sell")]
-	public string Sell { get; init; }
-	[JsonProperty("buy")]
-	public string Buy { get; init; }
-	[JsonProperty("range_order")]
-	public string RangeOrder { get; init; }
-}
-
 sealed class ChainflipRpcLevel
 {
 	[JsonProperty("amount")]
