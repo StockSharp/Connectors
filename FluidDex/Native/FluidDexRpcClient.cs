@@ -528,8 +528,18 @@ sealed class FluidDexRpcClient : BaseLogReceiver
 		time = time.ToUniversalTime();
 		if (time >= await GetBlockTimeAsync(latestBlock, cancellationToken))
 			return latestBlock;
-		var low = BigInteger.Zero;
 		var high = latestBlock;
+		var distance = BigInteger.One;
+		var low = BigInteger.Max(BigInteger.Zero, latestBlock - distance);
+		// Bracket recent requests from the chain tip before bisecting retained history.
+		while (await GetBlockTimeAsync(low, cancellationToken) >= time)
+		{
+			if (low.IsZero)
+				return BigInteger.Zero;
+			high = low;
+			distance *= 2;
+			low = BigInteger.Max(BigInteger.Zero, latestBlock - distance);
+		}
 		while (low < high)
 		{
 			var middle = (low + high) / 2;
