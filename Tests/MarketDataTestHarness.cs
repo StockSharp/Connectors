@@ -3,6 +3,7 @@ namespace StockSharp.Connectors.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -179,7 +180,12 @@ class MarketDataTestHarness : IAsyncDisposable
 			timeoutSource.Token);
 
 		if (response.Error is not null)
-			throw response.Error;
+		{
+			var errors = Errors.Prepend(response.Error).Distinct().ToArray();
+			if (errors.Length > 1)
+				throw new AggregateException("The adapter reported errors while connecting.", errors);
+			ExceptionDispatchInfo.Throw(response.Error);
+		}
 
 		_connected = true;
 		_pump = PumpTimeAsync(_pumpSource.Token);
@@ -253,7 +259,7 @@ class MarketDataTestHarness : IAsyncDisposable
 				if (message is SubscriptionResponseMessage response)
 				{
 					if (response.Error is not null)
-						throw response.Error;
+						ExceptionDispatchInfo.Throw(response.Error);
 
 					continue;
 				}

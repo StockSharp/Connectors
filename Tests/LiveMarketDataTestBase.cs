@@ -3,6 +3,7 @@ namespace StockSharp.Connectors.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -166,7 +167,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 		where TMessage : Message
 	{
 		if (result.Error is not null)
-			throw result.Error;
+			ExceptionDispatchInfo.Throw(result.Error);
 
 		if (result.Data is null)
 			Fail($"No {what} received in {DataTimeout}.");
