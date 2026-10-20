@@ -33,12 +33,16 @@ public class PolygonHistoryRegressionTests : BaseTestClass
 	}
 
 	[TestMethod]
-	[DataRow("quote")]
-	[DataRow("parallel")]
-	[DataRow("reconnect")]
-	[DataRow("pagination")]
+	[DataRow("quote", 150.0)]
+	[DataRow("parallel", 150.0)]
+	[DataRow("reconnect", 150.0)]
+	[DataRow("pagination", 150.0)]
+	[DataRow("quote", 0.5)]
+	[DataRow("parallel", 0.5)]
+	[DataRow("reconnect", 0.5)]
+	[DataRow("pagination", 0.5)]
 	[Timeout(10000, CooperativeCancellation = true)]
-	public async Task EveryRestRequestHonorsTheConfiguredInterval(string scenario)
+	public async Task EveryRestRequestHonorsTheConfiguredInterval(string scenario, double milliseconds)
 	{
 		var timer = Stopwatch.StartNew();
 		var requestTimes = new ConcurrentQueue<TimeSpan>();
@@ -53,7 +57,7 @@ public class PolygonHistoryRegressionTests : BaseTestClass
 			};
 		}));
 		var client = new RestClient(http, "massive.com");
-		var delay = TimeSpan.FromMilliseconds(150);
+		var delay = TimeSpan.FromMilliseconds(milliseconds);
 		Task lookup(RestClient source) => source.GetTickers(delay, null, null, true, 1, "test-key", CancellationToken).ToArrayAsync(CancellationToken).AsTask();
 
 		switch (scenario)

@@ -1,5 +1,6 @@
 ﻿namespace StockSharp.PolygonIO.Native;
 
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 class RestClient : RestBaseApiClient
@@ -20,7 +21,16 @@ class RestClient : RestBaseApiClient
 		try
 		{
 			if (delay > TimeSpan.Zero)
-				await delay.Delay(cancellationToken);
+			{
+				var started = Stopwatch.GetTimestamp();
+				var remaining = delay;
+				while (remaining > TimeSpan.Zero)
+				{
+					// Timer resolution must not shorten the minimum request interval.
+					await TimeSpan.FromMilliseconds(Math.Ceiling(remaining.TotalMilliseconds)).Delay(cancellationToken);
+					remaining = delay - Stopwatch.GetElapsedTime(started);
+				}
+			}
 			return await DoAsync<Response<T>>(HttpMethod.Get, url, default, cancellationToken);
 		}
 		catch (Exception ex) when (ex is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
