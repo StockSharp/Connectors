@@ -131,8 +131,8 @@ class SpotAdapter : BaseNativeAdapter
 	{
 		return new[]
 		{
-			_publicClient.Ping(cancellationToken),
-			_privateClient.Ping(cancellationToken)
+			_publicClient?.Ping(cancellationToken) ?? default,
+			_privateClient?.Ping(cancellationToken) ?? default
 		}.WhenAll();
 	}
 
