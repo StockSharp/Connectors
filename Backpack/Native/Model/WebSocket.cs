@@ -54,6 +54,9 @@ sealed class BackpackWsEnvelope<TData>
 
 sealed class BackpackWsBookTicker
 {
+	[JsonProperty("e")]
+	public BackpackMarketDataEvents Event { get; set; }
+
 	[JsonProperty("E")]
 	public long EventTime { get; set; }
 
@@ -81,6 +84,9 @@ sealed class BackpackWsBookTicker
 
 sealed class BackpackWsDepth
 {
+	[JsonProperty("e")]
+	public BackpackMarketDataEvents Event { get; set; }
+
 	[JsonProperty("E")]
 	public long EventTime { get; set; }
 
@@ -105,6 +111,9 @@ sealed class BackpackWsDepth
 
 sealed class BackpackWsTrade
 {
+	[JsonProperty("e")]
+	public BackpackMarketDataEvents Event { get; set; }
+
 	[JsonProperty("E")]
 	public long EventTime { get; set; }
 
@@ -129,6 +138,9 @@ sealed class BackpackWsTrade
 
 sealed class BackpackWsTicker
 {
+	[JsonProperty("e")]
+	public BackpackMarketDataEvents Event { get; set; }
+
 	[JsonProperty("E")]
 	public long EventTime { get; set; }
 
@@ -159,6 +171,9 @@ sealed class BackpackWsTicker
 
 sealed class BackpackWsKline
 {
+	[JsonProperty("e")]
+	public BackpackMarketDataEvents Event { get; set; }
+
 	[JsonProperty("E")]
 	public long EventTime { get; set; }
 
@@ -195,6 +210,9 @@ sealed class BackpackWsKline
 
 sealed class BackpackWsMarkPrice
 {
+	[JsonProperty("e")]
+	public BackpackMarketDataEvents Event { get; set; }
+
 	[JsonProperty("E")]
 	public long EventTime { get; set; }
 
