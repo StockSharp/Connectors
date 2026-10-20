@@ -118,6 +118,8 @@ sealed class OsmosisApiClient : BaseLogReceiver
 			throw new InvalidDataException(
 				"Osmosis SQS returned a mismatched exact-output amount.");
 		var input = response.Input.ParseAmount("quote input", true);
+		// SQS lists exact-output pools from the output token back to the input.
+		Array.Reverse(route.Pools);
 		ValidateExactOutputRoute(route, inputDenomination);
 		return new()
 		{
