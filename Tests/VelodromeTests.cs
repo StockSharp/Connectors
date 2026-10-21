@@ -6,17 +6,19 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using StockSharp.Messages;
 using StockSharp.Velodrome;
 using StockSharp.Velodrome.Native;
 using StockSharp.Velodrome.Native.Model;
-using StockSharp.Messages;
 
+/// <summary>
+/// Tests for the Velodrome connector.
+/// </summary>
 [TestClass]
-public class VelodromeTests : BaseTestClass
+public class VelodromeTests : LiveMarketDataTestBase
 {
 	[TestMethod]
 	public void DefaultsUseOptimismAndPublishedPools()
@@ -187,4 +189,23 @@ public class VelodromeTests : BaseTestClass
 				CancellationToken);
 		}
 	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter()
+		=> new VelodromeMessageAdapter(new IncrementalIdGenerator())
+		{
+			RpcEndpoint = "https://optimism-rpc.publicnode.com",
+			WebSocketEndpoint = "wss://optimism-rpc.publicnode.com",
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "WETH-USDC-VOLATILE",
+		BoardCode = BoardCodes.Velodrome,
+	};
+
+	/// <inheritdoc />
+	protected override DataType[] SkippedDataTypes =>
+		[DataType.Ticks, DataType.CandleTimeFrame];
 }

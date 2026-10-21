@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,8 +15,11 @@ using StockSharp.BtcTurk.Native;
 using StockSharp.BtcTurk.Native.Model;
 using StockSharp.Messages;
 
+/// <summary>
+/// Tests for the BtcTurk connector.
+/// </summary>
 [TestClass]
-public class BtcTurkTests : BaseTestClass
+public class BtcTurkTests : LiveMarketDataTestBase
 {
 	[TestMethod]
 	public void DefaultsUseOfficialServiceAddresses()
@@ -181,4 +183,15 @@ public class BtcTurkTests : BaseTestClass
 
 		AreEqual(65000.5m, condition.TriggerPrice);
 	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter()
+		=> new BtcTurkMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTC/TRY",
+		BoardCode = BoardCodes.BtcTurk,
+	};
 }

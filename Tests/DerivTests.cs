@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,8 +13,11 @@ using StockSharp.Deriv.Native;
 using StockSharp.Deriv.Native.Model;
 using StockSharp.Messages;
 
+/// <summary>
+/// Tests for the Deriv connector.
+/// </summary>
 [TestClass]
-public class DerivTests : BaseTestClass
+public class DerivTests : LiveMarketDataTestBase
 {
 	[TestMethod]
 	public void ProtocolResponseParsesSubscriptionAndPayload()
@@ -176,4 +178,14 @@ public class DerivTests : BaseTestClass
 			await client.DisconnectAsync(CancellationToken);
 		}
 	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new DerivMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "R_100",
+		BoardCode = BoardCodes.Deriv,
+	};
 }

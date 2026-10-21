@@ -42,6 +42,7 @@ public class ByBitMarketDataTests : LiveMarketDataTestBase
 	/// product that checks for it - Hydra marks such an instrument as not set up - took them for broken.
 	/// </remarks>
 	[TestMethod]
+	[TestCategory("Integration")]
 	[Timeout(120000)]
 	public Task ASpotInstrumentSaysHowManyDecimalsItsPricesHave() => RunAsync(async harness =>
 	{
@@ -61,6 +62,7 @@ public class ByBitMarketDataTests : LiveMarketDataTestBase
 	/// with an error: a product that looked instruments up and let the connection go showed one per section.
 	/// </remarks>
 	[TestMethod]
+	[TestCategory("Integration")]
 	[Timeout(120000)]
 	public Task ASessionLetGoAfterADisconnectEndsWithoutErrors() => RunAsync(async harness =>
 	{
@@ -82,6 +84,7 @@ public class ByBitMarketDataTests : LiveMarketDataTestBase
 	/// is days old, so the day came back empty.
 	/// </remarks>
 	[TestMethod]
+	[TestCategory("Integration")]
 	[Timeout(120000)]
 	public Task ADayOfCandlesFromDaysAgo() => RunAsync(async harness =>
 	{

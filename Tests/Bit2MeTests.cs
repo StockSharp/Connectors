@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,8 +15,11 @@ using StockSharp.Bit2Me.Native;
 using StockSharp.Bit2Me.Native.Model;
 using StockSharp.Messages;
 
+/// <summary>
+/// Tests for the Bit2Me connector.
+/// </summary>
 [TestClass]
-public class Bit2MeTests : BaseTestClass
+public class Bit2MeTests : LiveMarketDataTestBase
 {
 	[TestMethod]
 	public void DefaultsUseOfficialServiceAddresses()
@@ -157,4 +159,14 @@ public class Bit2MeTests : BaseTestClass
 		AreEqual(65000.5m, condition.TriggerPrice);
 	}
 
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter()
+		=> new Bit2MeMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTC/EUR",
+		BoardCode = BoardCodes.Bit2Me,
+	};
 }

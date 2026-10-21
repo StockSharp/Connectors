@@ -82,12 +82,12 @@ public class LiveTestOptInTests : BaseTestClass
 	}
 
 	[TestMethod]
-	[DataRow(typeof(BinanceMarketDataTests), nameof(BinanceMarketDataTests.Securities))]
+	[DataRow(typeof(BinanceTests), nameof(BinanceTests.Securities))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.ASpotInstrumentSaysHowManyDecimalsItsPricesHave))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.Securities))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.Candles))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.ADayOfCandlesFromDaysAgo))]
-	[DataRow(typeof(TokocryptoMarketDataTests), nameof(TokocryptoMarketDataTests.PublicWebSocketStreams))]
+	[DataRow(typeof(TokocryptoTests), nameof(TokocryptoTests.PublicWebSocketStreams))]
 	[DataRow(typeof(BinanceHistoryTests), nameof(BinanceHistoryTests.BinHistLookupAll))]
 	[DataRow(typeof(BinanceHistoryTests), nameof(BinanceHistoryTests.BinHistOrderBookFutCoin))]
 	[DataRow(typeof(ByBitHistoryTests), nameof(ByBitHistoryTests.ByBitHistLookupAll))]
@@ -116,10 +116,10 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.OrderBook))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.Ticks))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.ASessionLetGoAfterADisconnectEndsWithoutErrors))]
-	[DataRow(typeof(KucoinMarketDataTests), nameof(KucoinMarketDataTests.Securities))]
+	[DataRow(typeof(KucoinTests), nameof(KucoinTests.Securities))]
 	[DataRow(typeof(BYDFiMarketDataTests), nameof(BYDFiMarketDataTests.Securities))]
-	[DataRow(typeof(MoexISSHistoryTests), nameof(MoexISSHistoryTests.MoexIssLookupSber))]
-	[DataRow(typeof(AlorHistoryMarketDataTests), nameof(AlorHistoryMarketDataTests.Securities))]
+	[DataRow(typeof(MoexISSTests), nameof(MoexISSTests.MoexIssLookupSber))]
+	[DataRow(typeof(AlorHistoryTests), nameof(AlorHistoryTests.Securities))]
 	[Timeout(10000)]
 	public void RegionalOptInDoesNotExcludeOtherChecks(Type fixtureType, string testName)
 	{
@@ -127,9 +127,9 @@ public class LiveTestOptInTests : BaseTestClass
 	}
 
 	[TestMethod]
-	[DataRow(typeof(BinanceMarketDataTests), nameof(BinanceMarketDataTests.Securities))]
+	[DataRow(typeof(BinanceTests), nameof(BinanceTests.Securities))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.Securities))]
-	[DataRow(typeof(TokocryptoMarketDataTests), nameof(TokocryptoMarketDataTests.PublicWebSocketStreams))]
+	[DataRow(typeof(TokocryptoTests), nameof(TokocryptoTests.PublicWebSocketStreams))]
 	[Timeout(10000)]
 	public void RegionalOptInStillRequiresGeneralLiveAccess(Type fixtureType, string testName)
 	{
@@ -137,6 +137,17 @@ public class LiveTestOptInTests : BaseTestClass
 
 		IsNotNull(reason);
 		IsTrue(reason.Contains("STOCKSHARP_LIVE_TESTS=1"), reason);
+	}
+
+	[TestMethod]
+	[DataRow(typeof(BinanceTests), nameof(BinanceTests.Spot_AnUpdateThatStartsWhereTheBookEnds_IsApplied))]
+	[DataRow(typeof(BackpackTests), nameof(BackpackTests.MarketListAcceptsIndexAlongsideCryptoAndStocks))]
+	[DataRow(typeof(BinanceHistoryTests), nameof(BinanceHistoryTests.SpotLookupUsesPublicMarketDataEndpoint))]
+	public void OrdinaryTestsIgnoreLiveAccessSettings(Type fixtureType, string testName)
+	{
+		foreach (var live in new[] { "", "0", "1" })
+			foreach (var regional in new[] { "", "0", "1" })
+				IsNull(LiveTestAccess.GetMarketDataSkipReason(fixtureType, testName, live, regional));
 	}
 
 	[TestMethod]
@@ -195,8 +206,8 @@ public class LiveTestOptInTests : BaseTestClass
 	[Timeout(10000)]
 	public void MoexDividendHistoryRequiresItsOwnExplicitOptIn(string live, string regional, string dividends, bool expectedToRun)
 	{
-		const string testName = nameof(MoexISSHistoryTests.MoexIssDivSber);
-		IsNull(LiveTestAccess.GetRegionalSkipReason(typeof(MoexISSHistoryTests), testName, regional));
+		const string testName = nameof(MoexISSTests.MoexIssDivSber);
+		IsNull(LiveTestAccess.GetRegionalSkipReason(typeof(MoexISSTests), testName, regional));
 
 		var reason = LiveTestAccess.GetMoexDividendSkipReason(testName, live, dividends);
 
@@ -206,11 +217,11 @@ public class LiveTestOptInTests : BaseTestClass
 	}
 
 	[TestMethod]
-	[DataRow(nameof(MoexISSHistoryTests.MoexIssLookupAll))]
-	[DataRow(nameof(MoexISSHistoryTests.MoexIssLookupLimit))]
-	[DataRow(nameof(MoexISSHistoryTests.MoexIssLookupSber))]
-	[DataRow(nameof(MoexISSHistoryTests.MoexIssLookupSberLimit))]
-	[DataRow(nameof(MoexISSHistoryTests.MoexIssCandlesSber))]
+	[DataRow(nameof(MoexISSTests.MoexIssLookupAll))]
+	[DataRow(nameof(MoexISSTests.MoexIssLookupLimit))]
+	[DataRow(nameof(MoexISSTests.MoexIssLookupSber))]
+	[DataRow(nameof(MoexISSTests.MoexIssLookupSberLimit))]
+	[DataRow(nameof(MoexISSTests.MoexIssCandlesSber))]
 	[Timeout(10000)]
 	public void MoexDividendOptInDoesNotExcludePublicIssHistory(string testName)
 	{

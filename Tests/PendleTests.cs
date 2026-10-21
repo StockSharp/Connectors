@@ -7,18 +7,21 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Newtonsoft.Json;
 
+using StockSharp.Messages;
 using StockSharp.Pendle;
 using StockSharp.Pendle.Native;
 using StockSharp.Pendle.Native.Model;
 
+/// <summary>
+/// Tests for the Pendle connector.
+/// </summary>
 [TestClass]
-public class PendleTests : BaseTestClass
+public class PendleTests : LiveMarketDataTestBase
 {
 	private const string _market =
 		"0x34280882267ffa6383b363e278b027be083bbe3b";
@@ -237,4 +240,26 @@ public class PendleTests : BaseTestClass
 				: "YT-WSTETH",
 		};
 	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter()
+		=> new PendleMessageAdapter(new IncrementalIdGenerator())
+		{
+			MarketAddresses =
+				"0x34280882267ffa6383b363e278b027be083bbe3b",
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "PT-STETH-30DEC2027",
+		BoardCode = BoardCodes.Pendle,
+	};
+
+	/// <inheritdoc />
+	protected override DataType[] SkippedDataTypes =>
+		[DataType.Ticks, DataType.MarketDepth];
+
+	/// <inheritdoc />
+	protected override int CandlesDepth => 24;
 }

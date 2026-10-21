@@ -7,7 +7,6 @@ using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 using Ecng.Common;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,20 +19,8 @@ using StockSharp.Messages;
 /// Every check opens its own session against the real venue. A derived class only has to
 /// build the adapter and name an instrument that is liquid enough to produce data quickly.
 /// </remarks>
-[TestCategory("Integration")]
-public abstract class LiveMarketDataTestBase : BaseTestClass
+public abstract class LiveMarketDataTestBase : HistoryTestBase
 {
-	/// <summary>
-	/// Requires explicit opt-in on local machines and CI runners.
-	/// </summary>
-	[TestInitialize]
-	public void InitializeLiveTests()
-	{
-		if (LiveTestAccess.GetMarketDataSkipReason(GetType(), TestContext?.TestName,
-			Env("STOCKSHARP_LIVE_TESTS"), Env(LiveTestAccess.RegionalOptInVariable)) is string reason)
-			Inconclusive(reason);
-	}
-
 	/// <summary>
 	/// Create the adapter under test with any credentials required by its market data feed.
 	/// </summary>
@@ -175,6 +162,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	}
 
 	[TestMethod]
+	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public Task Securities() => RunAsync(async harness =>
 	{
@@ -199,6 +187,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	});
 
 	[TestMethod]
+	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public Task Level1() => RunAsync(async harness =>
 	{
@@ -214,6 +203,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	});
 
 	[TestMethod]
+	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public Task OrderBook() => RunAsync(async harness =>
 	{
@@ -234,6 +224,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	});
 
 	[TestMethod]
+	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public Task Ticks() => RunAsync(async harness =>
 	{
@@ -251,6 +242,7 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	});
 
 	[TestMethod]
+	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
 	public Task Candles() => RunAsync(async harness =>
 	{

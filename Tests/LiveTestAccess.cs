@@ -6,6 +6,8 @@ using System.Reflection;
 
 using Ecng.Common;
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
 sealed class RegionalLiveTestsAttribute : Attribute
 {
@@ -32,17 +34,23 @@ static class LiveTestAccess
 		=> setting.EqualsIgnoreCase("1") ? null : "Set STOCKSHARP_LIVE_TESTS=1 for live API tests.";
 
 	/// <summary>
-	/// Requires general live access before checking venue restrictions.
+	/// Applies live access requirements only to integration methods in a mixed test class.
 	/// </summary>
 	public static string GetMarketDataSkipReason(Type fixtureType, string testName, string liveSetting, string regionalSetting)
-		=> GetLiveSkipReason(liveSetting) ?? GetRegionalSkipReason(fixtureType, testName, regionalSetting);
+	{
+		if (testName.IsEmpty() || fixtureType.GetMethod(testName)?.GetCustomAttributes<TestCategoryAttribute>(true)
+			.Any(category => category.TestCategories.Contains("Integration")) != true)
+			return null;
+
+		return GetLiveSkipReason(liveSetting) ?? GetRegionalSkipReason(fixtureType, testName, regionalSetting);
+	}
 
 	/// <summary>
 	/// Requires explicit dividend access without restricting public ISS history.
 	/// </summary>
 	public static string GetMoexDividendSkipReason(string testName, string liveSetting, string dividendSetting)
 	{
-		if (testName != nameof(MoexISSHistoryTests.MoexIssDivSber))
+		if (testName != nameof(MoexISSTests.MoexIssDivSber))
 			return null;
 
 		return GetLiveSkipReason(liveSetting) ?? (dividendSetting.EqualsIgnoreCase("1")

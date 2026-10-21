@@ -12,8 +12,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StockSharp.AlorHistory;
 using StockSharp.Messages;
 
+/// <summary>
+/// Tests for the AlorHistory connector.
+/// </summary>
 [TestClass]
-public class AlorHistoryTests : HistoryTestBase
+public class AlorHistoryTests : LiveMarketDataTestBase
 {
 	[TestMethod]
 	[TestCategory("Integration")]
@@ -157,4 +160,14 @@ public class AlorHistoryTests : HistoryTestBase
 
 		IsTrue(adapter.IsAllDownloadingSupported(DataType.Securities));
 	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new AlorHistoryMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "SBER",
+		BoardCode = BoardCodes.Moex,
+	};
 }

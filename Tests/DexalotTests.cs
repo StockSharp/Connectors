@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,8 +17,11 @@ using StockSharp.Dexalot.Native;
 using StockSharp.Dexalot.Native.Model;
 using StockSharp.Messages;
 
+/// <summary>
+/// Tests for the Dexalot connector.
+/// </summary>
 [TestClass]
-public class DexalotTests : BaseTestClass
+public class DexalotTests : LiveMarketDataTestBase
 {
 	[TestMethod]
 	public void DefaultsUsePublishedProductionEndpoints()
@@ -250,4 +252,22 @@ public class DexalotTests : BaseTestClass
 			QuoteDecimals = 6,
 			Status = "deployed",
 		};
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter()
+		=> new DexalotMessageAdapter(new IncrementalIdGenerator())
+		{
+			Pairs = "ALOT/USDC",
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "ALOT/USDC",
+		BoardCode = BoardCodes.Dexalot,
+	};
+
+	/// <inheritdoc />
+	// ALOT/USDC trades sparsely; cover a day of five-minute candles.
+	protected override int CandlesDepth => 24 * 12;
 }

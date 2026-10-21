@@ -2,12 +2,15 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 using Ecng.Common;
+using Ecng.ComponentModel;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,8 +22,11 @@ using StockSharp.BigOne.Native;
 using StockSharp.BigOne.Native.Model;
 using StockSharp.Messages;
 
+/// <summary>
+/// Tests for the BigOne connector.
+/// </summary>
 [TestClass]
-public class BigOneTests : BaseTestClass
+public class BigOneTests : LiveMarketDataTestBase
 {
 	[TestMethod]
 	public void DefaultsUseOfficialServiceAddresses()
@@ -272,4 +278,185 @@ public class BigOneTests : BaseTestClass
 		value += new string('=', (4 - value.Length % 4) % 4);
 		return Encoding.UTF8.GetString(Convert.FromBase64String(value));
 	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task CandleHistoryReadsBackwardsFromItsUpperBound()
+	{
+		var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		var to = from.AddMinutes(2);
+		using var client = new BigOneRestClient("https://spot.example.test", "https://contract.example.test", null, null);
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(request =>
+		{
+			var query = HttpUtility.ParseQueryString(request.RequestUri.Query);
+			AreEqual(to, DateTime.Parse(query["time"]).ToUniversalTime());
+			var body = query["direction"] == "DESC"
+				? """{"code":0,"data":[{"time":"2026-01-01T00:02:00Z","open":"100","high":"110","low":"90","close":"105","volume":"1"},{"time":"2026-01-01T00:01:00Z","open":"100","high":"110","low":"90","close":"105","volume":"1"}]}"""
+				: """{"code":0,"data":[]}""";
+			return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body) };
+		})), "_http");
+
+		var candles = await client.GetCandlesAsync("BTC-USDT", "min1", from, to, CancellationToken);
+
+		AreEqual(2, candles.Length);
+		AreEqual((long)(from.AddMinutes(1) - DateTime.UnixEpoch).TotalMilliseconds, candles[0].Timestamp);
+		AreEqual((long)(to - DateTime.UnixEpoch).TotalMilliseconds, candles[1].Timestamp);
+	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter()
+		=> new BigOneMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTC/USDT",
+		BoardCode = BoardCodes.BigOne,
+	};
+
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000)]
+	public async Task PublicSpotWebSocketStreams()
+	{
+		var ticker = NewSignal();
+		var book = NewSignal();
+		var trade = NewSignal();
+		var candle = NewSignal();
+		var error = new TaskCompletionSource<Exception>(
+			TaskCreationOptions.RunContinuationsAsynchronously);
+		var client = new BigOneSpotWsClient(
+			"wss://api.big.one/ws/v2",
+			new WorkingTime(), 0);
+
+		client.TickerReceived += (_, _) =>
+		{
+			ticker.TrySetResult();
+			return default;
+		};
+		client.OrderBookReceived += (_, _) =>
+		{
+			book.TrySetResult();
+			return default;
+		};
+		client.TradesReceived += (_, _) =>
+		{
+			trade.TrySetResult();
+			return default;
+		};
+		client.CandleReceived += (_, _) =>
+		{
+			candle.TrySetResult();
+			return default;
+		};
+		client.Error += (exception, _) =>
+		{
+			error.TrySetResult(exception);
+			return default;
+		};
+
+		try
+		{
+			await client.ConnectAsync(CancellationToken);
+			await client.SubscribeTickerAsync(
+				"BTC-USDT", CancellationToken);
+			await client.SubscribeOrderBookAsync(
+				"BTC-USDT", CancellationToken);
+			await client.SubscribeTradesAsync(
+				"BTC-USDT", CancellationToken);
+			await client.SubscribeCandlesAsync(
+				"BTC-USDT", "MIN1", CancellationToken);
+
+			await AwaitStreamsAsync(
+				[ticker.Task, book.Task, trade.Task, candle.Task],
+				error.Task, "BigONE spot WebSocket streams");
+		}
+		finally
+		{
+			await client.DisconnectAsync(CancellationToken);
+			client.Dispose();
+		}
+	}
+
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000)]
+	public async Task PublicContractWebSocketStreams()
+	{
+		var ticker = NewSignal();
+		var book = NewSignal();
+		var trade = NewSignal();
+		var candle = NewSignal();
+		var error = new TaskCompletionSource<Exception>(
+			TaskCreationOptions.RunContinuationsAsynchronously);
+		var client = new BigOneContractWsClient(
+			"wss://api.big.one/ws/contract/v2",
+			"wss://api.big.one/ws/contract/v2/stream",
+			null, new WorkingTime(), 0);
+
+		client.InstrumentReceived += (_, _) =>
+		{
+			ticker.TrySetResult();
+			return default;
+		};
+		client.OrderBookReceived += (_, _) =>
+		{
+			book.TrySetResult();
+			return default;
+		};
+		client.TradesReceived += (_, _) =>
+		{
+			trade.TrySetResult();
+			return default;
+		};
+		client.CandlesReceived += (_, _) =>
+		{
+			candle.TrySetResult();
+			return default;
+		};
+		client.Error += (exception, _) =>
+		{
+			error.TrySetResult(exception);
+			return default;
+		};
+
+		try
+		{
+			await client.ConnectAsync(CancellationToken);
+			await client.SubscribeInstrumentAsync(
+				"BTCUSD", CancellationToken);
+			await client.SubscribeOrderBookAsync(
+				"BTCUSD", CancellationToken);
+			await client.SubscribeTradesAsync(
+				"BTCUSD", CancellationToken);
+			await client.SubscribeCandlesAsync(
+				"BTCUSD", "1MIN", CancellationToken);
+
+			await AwaitStreamsAsync(
+				[ticker.Task, book.Task, trade.Task, candle.Task],
+				error.Task, "BigONE contract WebSocket streams");
+		}
+		finally
+		{
+			await client.DisconnectAsync(CancellationToken);
+			client.Dispose();
+		}
+	}
+
+	private async Task AwaitStreamsAsync(Task[] tasks,
+		Task<Exception> error, string description)
+	{
+		var streams = Task.WhenAll(tasks);
+		var timeout = Task.Delay(
+			TimeSpan.FromSeconds(30), CancellationToken);
+		var completed = await Task.WhenAny(streams, error, timeout);
+		if (completed == error)
+			throw await error;
+		if (completed != streams)
+			Fail($"{description} timed out.");
+		await streams;
+	}
+
+	private static TaskCompletionSource NewSignal()
+		=> new(TaskCreationOptions.RunContinuationsAsynchronously);
 }

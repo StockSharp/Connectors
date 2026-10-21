@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,8 +19,11 @@ using StockSharp.StonFi;
 using StockSharp.StonFi.Native;
 using StockSharp.StonFi.Native.Model;
 
+/// <summary>
+/// Tests for the StonFi connector.
+/// </summary>
 [TestClass]
-public class StonFiTests : BaseTestClass
+public class StonFiTests : LiveMarketDataTestBase
 {
 	private const string _poolAddress =
 		"EQCGScrZe1xbyWqWDvdI6mzP-GAcAWFv6ZXuaJOuSqemxku4";
@@ -251,4 +253,23 @@ public class StonFiTests : BaseTestClass
 		IsGreater(quote.AskUnits.ParseInteger(), BigInteger.Zero);
 		IsTrue(quote.PoolAddress.SameTonAddress(pool.Address));
 	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter()
+		=> new StonFiMessageAdapter(new IncrementalIdGenerator())
+		{
+			Pools =
+				"EQCGScrZe1xbyWqWDvdI6mzP-GAcAWFv6ZXuaJOuSqemxku4",
+			PoolLimit = 1,
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "USD₮/GRAM",
+		BoardCode = BoardCodes.StonFi,
+	};
+
+	/// <inheritdoc />
+	protected override int CandlesDepth => 10;
 }

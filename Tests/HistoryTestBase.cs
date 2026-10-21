@@ -26,13 +26,13 @@ using StockSharp.Messages;
 public abstract class HistoryTestBase : BaseTestClass
 {
 	/// <summary>
-	/// Requires venue access before a region-restricted history check starts.
+	/// Requires explicit live access for integration methods, including venue restrictions.
 	/// </summary>
 	[TestInitialize]
-	public void InitializeHistoryAccess()
+	public void InitializeLiveTests()
 	{
-		if (LiveTestAccess.GetRegionalSkipReason(GetType(), TestContext?.TestName,
-			Env(LiveTestAccess.RegionalOptInVariable)) is string reason)
+		if (LiveTestAccess.GetMarketDataSkipReason(GetType(), TestContext?.TestName,
+			Env("STOCKSHARP_LIVE_TESTS"), Env(LiveTestAccess.RegionalOptInVariable)) is string reason)
 			Inconclusive(reason);
 	}
 

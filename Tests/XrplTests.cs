@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -17,8 +16,11 @@ using StockSharp.Messages;
 using StockSharp.Xrpl;
 using StockSharp.Xrpl.Native;
 
+/// <summary>
+/// Tests for the Xrpl connector.
+/// </summary>
 [TestClass]
-public class XrplTests : BaseTestClass
+public class XrplTests : LiveMarketDataTestBase
 {
 	private const string _rlusdIssuer =
 		"rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De";
@@ -274,4 +276,21 @@ public class XrplTests : BaseTestClass
 		IsGreater(streamLedger.Value<uint>("ledger_index"), 0u);
 		IsTrue(socket.IsConnected);
 	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter()
+		=> new XrplMessageAdapter(new IncrementalIdGenerator())
+		{
+			HistoryLedgerLimit = 1000,
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "XRP/RLUSD",
+		BoardCode = BoardCodes.Xrpl,
+	};
+
+	/// <inheritdoc />
+	protected override int CandlesDepth => 5;
 }
