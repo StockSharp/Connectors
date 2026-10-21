@@ -46,7 +46,7 @@ public class ByBitMarketDataTests : LiveMarketDataTestBase
 	[Timeout(120000)]
 	public Task ASpotInstrumentSaysHowManyDecimalsItsPricesHave() => RunAsync(async harness =>
 	{
-		var result = await harness.LookupSecuritiesAsync(SecuritiesLimit, SecuritiesTimeout, CancellationToken);
+		var result = await harness.LookupSecuritiesAsync(SecuritiesLookup, SecuritiesLimit, SecuritiesTimeout, CancellationToken);
 
 		var instrument = result.Securities.Single(security => security.SecurityId == TestSecurityId);
 

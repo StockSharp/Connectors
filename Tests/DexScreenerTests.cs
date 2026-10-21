@@ -6,16 +6,31 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using StockSharp.DexScreener;
+using StockSharp.Messages;
 using StockSharp.DexScreener.Native;
 
 [TestClass]
-public class DexScreenerTests : BaseTestClass
+public class DexScreenerTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new DexScreenerMessageAdapter(new IncrementalIdGenerator())
+		{
+			ChainId = "ethereum",
+			SearchQuery = "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640",
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "WETH/USDC@uniswap:ethereum",
+		Native = "ethereum:0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640",
+		BoardCode = BoardCodes.DexScreener,
+	};
+
 	private const string _pairJson =
 		"{\"chainId\":\"solana\",\"dexId\":\"orca\"," +
 		"\"pairAddress\":\"PAIR123\",\"baseToken\":{" +

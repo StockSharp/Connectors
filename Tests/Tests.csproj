@@ -200,6 +200,29 @@
     <ProjectReference Include="..\Zebu\Zebu.csproj" />
     <ProjectReference Include="..\Zoomex\Zoomex.csproj" />
     <ProjectReference Include="..\Fix\Fix.csproj" />
+    <ProjectReference Include="..\Bithumb\Bithumb.csproj" />
+    <ProjectReference Include="..\BloFin\BloFin.csproj" />
+    <ProjectReference Include="..\Bullish\Bullish.csproj" />
+    <ProjectReference Include="..\CoinMetrics\CoinMetrics.csproj" />
+    <ProjectReference Include="..\CoinW\CoinW.csproj" />
+    <ProjectReference Include="..\Coinhako\Coinhako.csproj" />
+    <ProjectReference Include="..\DxFeed\DxFeed.csproj" />
+    <ProjectReference Include="..\PancakeSwap\PancakeSwap.csproj" />
+    <ProjectReference Include="..\Paradex\Paradex.csproj" />
+    <ProjectReference Include="..\PintuPro\PintuPro.csproj" />
+    <ProjectReference Include="..\Poloniex\Poloniex.csproj" />
+    <ProjectReference Include="..\ProBit\ProBit.csproj" />
+    <ProjectReference Include="..\QuickSwap\QuickSwap.csproj" />
+    <ProjectReference Include="..\Rain\Rain.csproj" />
+    <ProjectReference Include="..\Tapbit\Tapbit.csproj" />
+    <ProjectReference Include="..\Tpex\Tpex.csproj" />
+    <ProjectReference Include="..\Twse\Twse.csproj" />
+    <ProjectReference Include="..\Uniswap\Uniswap.csproj" />
+    <ProjectReference Include="..\Zaif\Zaif.csproj" />
+    <ProjectReference Include="..\Gleif\Gleif.csproj" />
+    <ProjectReference Include="..\EsmaFirds\EsmaFirds.csproj" />
+    <ProjectReference Include="..\XbrlFilings\XbrlFilings.csproj" />
+    <ProjectReference Include="..\MoexLchi\MoexLchi.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\S3BucketHelper.cs" Link="S3BucketHelper.cs" />

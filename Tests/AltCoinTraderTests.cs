@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,8 +14,18 @@ using StockSharp.AltCoinTrader.Native.Model;
 using StockSharp.Messages;
 
 [TestClass]
-public class AltCoinTraderTests : BaseTestClass
+public class AltCoinTraderTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new AltCoinTraderMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTCZAR",
+		BoardCode = BoardCodes.AltCoinTrader,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddresses()
 	{

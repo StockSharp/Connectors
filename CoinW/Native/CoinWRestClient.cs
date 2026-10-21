@@ -49,11 +49,11 @@ sealed class CoinWRestClient : BaseLogReceiver
 
 	public async ValueTask<CoinWSpotOrderBook> GetSpotOrderBookAsync(string symbol, int depth,
 		CancellationToken cancellationToken)
-		=> (await SendSpotPublicAsync<CoinWSpotOrderBook[]>("returnOrderBook",
+		=> (await SendSpotPublicAsync<CoinWSpotOrderBook>("returnOrderBook",
 			[
 				new("size", (depth > 5 ? 20 : 5).ToString(CultureInfo.InvariantCulture)),
 				new("symbol", symbol),
-			], cancellationToken)).Data?.FirstOrDefault();
+			], cancellationToken)).Data;
 
 	public async ValueTask<CoinWSpotPublicTrade[]> GetSpotTradesAsync(string symbol, DateTime? from,
 		DateTime? to, CancellationToken cancellationToken)

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,8 +14,19 @@ using StockSharp.NovaDax.Native;
 using StockSharp.NovaDax.Native.Model;
 
 [TestClass]
-public class NovaDaxTests : BaseTestClass
+[RegionalLiveTests]
+public class NovaDaxTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new NovaDaxMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTC_BRL",
+		BoardCode = BoardCodes.NovaDax,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddresses()
 	{

@@ -6,16 +6,47 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using StockSharp.CoinPaprika;
+using StockSharp.Messages;
 using StockSharp.CoinPaprika.Native;
 
 [TestClass]
-public class CoinPaprikaTests : BaseTestClass
+public class CoinPaprikaTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new CoinPaprikaMessageAdapter(new IncrementalIdGenerator())
+		{
+			MaximumItems = 100,
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTC/USD",
+		Native = "coin:btc-bitcoin:USD",
+		BoardCode = BoardCodes.CoinPaprika,
+	};
+
+	/// <inheritdoc />
+	protected override TimeSpan CandleTimeFrame => TimeSpan.FromDays(1);
+
+	/// <inheritdoc />
+	protected override SecurityLookupMessage SecuritiesLookup => new() { SecurityId = TestSecurityId, Count = 1 };
+
+	/// <inheritdoc />
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		if (message.DataType2.IsTFCandles)
+		{
+			// The free OHLCV endpoint permits only the most recent 24 hours.
+			message.From = DateTime.UtcNow.Date;
+			message.Count = 1;
+		}
+	}
+
 	[TestMethod]
 	public void DefaultsUsePublishedFreeEndpoint()
 	{

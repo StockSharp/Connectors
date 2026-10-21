@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,8 +14,18 @@ using StockSharp.WazirX;
 using StockSharp.WazirX.Native;
 
 [TestClass]
-public class WazirXTests : BaseTestClass
+public class WazirXTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new WazirXMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "btcinr",
+		BoardCode = BoardCodes.WazirX,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddresses()
 	{

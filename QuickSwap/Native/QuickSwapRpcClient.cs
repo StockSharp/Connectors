@@ -72,7 +72,7 @@ sealed class QuickSwapRpcClient : BaseLogReceiver
 		}
 		else
 		{
-			WalletAddress = walletAddress.NormalizeAddress();
+			WalletAddress = walletAddress.IsEmpty() ? null : walletAddress.NormalizeAddress();
 		}
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"StockSharp-QuickSwap-Connector/1.0");

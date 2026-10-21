@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,8 +15,18 @@ using StockSharp.Coinmetro.Native.Model;
 using StockSharp.Messages;
 
 [TestClass]
-public class CoinmetroTests : BaseTestClass
+public class CoinmetroTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new CoinmetroMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTC/EUR",
+		BoardCode = BoardCodes.Coinmetro,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddresses()
 	{

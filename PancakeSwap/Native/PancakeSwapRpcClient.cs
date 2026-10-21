@@ -69,7 +69,7 @@ sealed class PancakeSwapRpcClient : BaseLogReceiver
 		}
 		else
 		{
-			WalletAddress = walletAddress.NormalizeAddress();
+			WalletAddress = walletAddress.IsEmpty() ? null : walletAddress.NormalizeAddress();
 		}
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"StockSharp-PancakeSwap-Connector/1.0");

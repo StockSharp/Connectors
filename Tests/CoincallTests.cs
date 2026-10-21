@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,8 +15,21 @@ using StockSharp.Coincall.Native;
 using StockSharp.Messages;
 
 [TestClass]
-public class CoincallTests : BaseTestClass
+public class CoincallTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new CoincallMessageAdapter(new IncrementalIdGenerator())
+		{
+			ProductType = CoincallProductTypes.Futures,
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTCUSD",
+		BoardCode = BoardCodes.CoincallFutures,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddresses()
 	{

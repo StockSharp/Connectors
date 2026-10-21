@@ -57,9 +57,19 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	protected virtual int CandlesDepth => 100;
 
 	/// <summary>
+	/// Preferred candle interval supported by the public data plan.
+	/// </summary>
+	protected virtual TimeSpan CandleTimeFrame => TimeSpan.FromMinutes(1);
+
+	/// <summary>
 	/// Securities the lookup check downloads before it stops.
 	/// </summary>
 	protected virtual int SecuritiesLimit => 5000;
+
+	/// <summary>
+	/// Criteria for feeds that require a symbol or reference-data filter.
+	/// </summary>
+	protected virtual SecurityLookupMessage SecuritiesLookup => new();
 
 	/// <summary>
 	/// Data types to leave out even though the adapter reports them as supported, because the
@@ -139,9 +149,9 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 		if (frames.Length == 0)
 			return null;
 
-		// the shortest frame keeps the history request small, one minute is the usual sweet spot
-		return frames.Contains(TimeSpan.FromMinutes(1))
-			? TimeSpan.FromMinutes(1)
+		// Prefer the interval allowed by this feed's public plan, otherwise use its shortest frame.
+		return frames.Contains(CandleTimeFrame)
+			? CandleTimeFrame
 			: frames.Min();
 	}
 
@@ -166,7 +176,7 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	[Timeout(120000, CooperativeCancellation = true)]
 	public Task Securities() => RunAsync(async harness =>
 	{
-		var result = await harness.LookupSecuritiesAsync(SecuritiesLimit,
+		var result = await harness.LookupSecuritiesAsync(SecuritiesLookup, SecuritiesLimit,
 			SecuritiesTimeout, CancellationToken);
 
 		IsGreater(result.Securities.Length, 0, "No securities received.");

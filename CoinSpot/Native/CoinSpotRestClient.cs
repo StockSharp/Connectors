@@ -76,13 +76,15 @@ sealed class CoinSpotRestClient : BaseLogReceiver
 		var response = await SendPublicAsync(
 			"latest/" + market.ToCoinSpotPath(),
 			cancellationToken);
-		var markets = DeserializeMarkets(response);
-		return markets.FirstOrDefault(item =>
-			item.NativeSymbol.EqualsIgnoreCase(
-				market.NativeSymbol))?.Ticker ??
-			markets.FirstOrDefault()?.Ticker ??
+		var prices = ParseRoot(response)["prices"] as JObject ??
 			throw new InvalidDataException(
 				$"CoinSpot returned no ticker for '{nativeSymbol}'.");
+		return new()
+		{
+			BidPrice = ReadPrice(prices["bid"]),
+			AskPrice = ReadPrice(prices["ask"]),
+			LastPrice = ReadPrice(prices["last"]),
+		};
 	}
 
 	public async ValueTask<CoinSpotDepth> GetDepthAsync(
@@ -276,13 +278,17 @@ sealed class CoinSpotRestClient : BaseLogReceiver
 				var value = property.Value;
 				return new CoinSpotMarket(
 					property.Name,
-					value.Value<decimal?>("bid"),
-					value.Value<decimal?>("ask"),
-					value.Value<decimal?>("last"));
+					ReadPrice(value["bid"]),
+					ReadPrice(value["ask"]),
+					ReadPrice(value["last"]));
 			})
 			.OrderBy(static market => market.SecurityCode,
 				StringComparer.OrdinalIgnoreCase)];
 	}
+
+	private static decimal? ReadPrice(JToken value)
+		=> decimal.TryParse(value?.ToString(), NumberStyles.Float,
+			CultureInfo.InvariantCulture, out var price) ? price : null;
 
 	internal static CoinSpotDepth DeserializeOrderBook(string body)
 	{

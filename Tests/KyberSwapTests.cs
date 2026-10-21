@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,12 +13,23 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using StockSharp.KyberSwap;
+using StockSharp.Messages;
 using StockSharp.KyberSwap.Native;
 using StockSharp.KyberSwap.Native.Model;
 
 [TestClass]
-public class KyberSwapTests : BaseTestClass
+public class KyberSwapTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new KyberSwapMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "WETH-USDC",
+		BoardCode = BoardCodes.KyberSwap,
+	};
+
 	private const string _tokenIn =
 		"0x1111111111111111111111111111111111111111";
 	private const string _tokenOut =

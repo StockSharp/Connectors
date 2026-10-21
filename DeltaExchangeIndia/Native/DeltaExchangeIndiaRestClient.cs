@@ -455,12 +455,12 @@ sealed class DeltaExchangeIndiaRestClient : BaseLogReceiver
 			State = value.Value<string>("state"),
 			TradingStatus = value.Value<string>("trading_status"),
 			UnderlyingAsset =
-				value["underlying_asset"]?.Value<string>("symbol") ??
+				(value["underlying_asset"] as JObject)?.Value<string>("symbol") ??
 				value.Value<string>("underlying_asset_symbol"),
 			QuotingAsset =
-				value["quoting_asset"]?.Value<string>("symbol"),
+				(value["quoting_asset"] as JObject)?.Value<string>("symbol"),
 			SettlingAsset =
-				value["settling_asset"]?.Value<string>("symbol"),
+				(value["settling_asset"] as JObject)?.Value<string>("symbol"),
 			PriceStep = Decimal(value["tick_size"]) ?? 0,
 			ContractValue = Decimal(value["contract_value"]) ?? 0,
 			Strike = Decimal(value["strike_price"]),

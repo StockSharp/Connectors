@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,8 +14,33 @@ using StockSharp.DeltaExchangeIndia.Native;
 using StockSharp.Messages;
 
 [TestClass]
-public class DeltaExchangeIndiaTests : BaseTestClass
+public class DeltaExchangeIndiaTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	public void ProductsMayHaveNullOptionalAssetObjects()
+	{
+		var products = DeltaExchangeIndiaRestClient.DeserializeProducts(
+			"{\"success\":true,\"result\":[{\"id\":27,\"symbol\":\"BTCUSD\"," +
+			"\"underlying_asset\":null,\"underlying_asset_symbol\":\"BTC\"," +
+			"\"quoting_asset\":null,\"settling_asset\":null,\"tick_size\":\"0.5\"}]}");
+
+		AreEqual(1, products.Length);
+		AreEqual("BTC", products[0].UnderlyingAsset);
+		IsNull(products[0].QuotingAsset);
+		IsNull(products[0].SettlingAsset);
+		AreEqual(0.5m, products[0].PriceStep);
+	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new DeltaExchangeIndiaMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTCUSD",
+		BoardCode = BoardCodes.DeltaExchangeIndia,
+	};
+
 	[TestMethod]
 	public void DefaultsUseCurrentIndiaServiceAddresses()
 	{

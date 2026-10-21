@@ -69,7 +69,7 @@ sealed class UniswapRpcClient : BaseLogReceiver
 		}
 		else
 		{
-			WalletAddress = walletAddress.NormalizeAddress();
+			WalletAddress = walletAddress.IsEmpty() ? null : walletAddress.NormalizeAddress();
 		}
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"StockSharp-Uniswap-Connector/1.0");

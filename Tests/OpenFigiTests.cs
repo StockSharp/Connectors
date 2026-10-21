@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -22,8 +21,29 @@ using StockSharp.OpenFigi;
 using StockSharp.OpenFigi.Native;
 
 [TestClass]
-public class OpenFigiTests : BaseTestClass
+public class OpenFigiTests : HistoryTestBase
 {
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public async Task Securities()
+	{
+		var adapter = CreateAdapter<OpenFigiMessageAdapter>();
+		var lookup = new SecurityLookupMessage
+		{
+			SecurityId = new() { Isin = "US0378331005" },
+			Count = 1,
+		};
+		var count = 0;
+		await foreach (var security in DownloadSecurities(adapter, lookup).WithCancellation(CancellationToken))
+		{
+			IsTrue(!security.SecurityId.Bloomberg.IsEmpty());
+			IsFalse(security.Name.IsEmpty());
+			count++;
+		}
+		AreEqual(1, count);
+	}
+
 	private sealed class Handler(
 		Func<HttpRequestMessage, CancellationToken,
 			Task<HttpResponseMessage>> callback) : HttpMessageHandler

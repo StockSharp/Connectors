@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -17,8 +16,24 @@ using StockSharp.LCX.Native;
 using StockSharp.Messages;
 
 [TestClass]
-public class LcxTests : BaseTestClass
+public class LcxTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new LcxMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override TimeSpan CandleTimeFrame => TimeSpan.FromDays(1);
+
+	/// <inheritdoc />
+	protected override int CandlesDepth => 30;
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "LCX/EUR",
+		BoardCode = BoardCodes.Lcx,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddresses()
 	{

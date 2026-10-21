@@ -214,19 +214,22 @@ class MarketDataTestHarness : IAsyncDisposable
 	/// <summary>
 	/// Download securities.
 	/// </summary>
+	/// <param name="lookup">Lookup criteria. The caller's message is not modified.</param>
 	/// <param name="max">Stop once that many securities have been received.</param>
 	/// <param name="timeout">Maximum wait time.</param>
 	/// <param name="cancellationToken"><see cref="CancellationToken"/></param>
 	/// <returns>Lookup result.</returns>
-	public async Task<SecurityLookupResult> LookupSecuritiesAsync(int max, TimeSpan timeout, CancellationToken cancellationToken)
+	public async Task<SecurityLookupResult> LookupSecuritiesAsync(SecurityLookupMessage lookup, int max, TimeSpan timeout, CancellationToken cancellationToken)
 	{
 		var transId = _adapter.TransactionIdGenerator.GetNextId();
 		var reader = CreateReader();
+		lookup = lookup.TypedClone();
+		lookup.TransactionId = transId;
 
 		using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(
 			cancellationToken);
 		timeoutSource.CancelAfter(timeout);
-		Post(new SecurityLookupMessage { TransactionId = transId },
+		Post(lookup,
 			timeoutSource.Token);
 
 		var securities = new List<SecurityMessage>();

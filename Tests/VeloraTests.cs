@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,12 +13,23 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using StockSharp.Velora;
+using StockSharp.Messages;
 using StockSharp.Velora.Native;
 using StockSharp.Velora.Native.Model;
 
 [TestClass]
-public class VeloraTests : BaseTestClass
+public class VeloraTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new VeloraMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "WETH-USDC",
+		BoardCode = BoardCodes.Velora,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedMarketEndpoint()
 	{

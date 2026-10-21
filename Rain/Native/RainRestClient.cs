@@ -104,9 +104,10 @@ sealed class RainRestClient : BaseLogReceiver
 		var path = $"/api/1/pro/candles/" +
 			$"{symbol.NormalizeSymbol().EscapePath()}/" +
 			timeFrame.ToWire().EscapePath();
-		var query = "from=" + Uri.EscapeDataString(from.ToUtcTime().ToString(
+		// Rain's history cursors run backwards: from is the newer bound.
+		var query = "from=" + Uri.EscapeDataString(to.ToUtcTime().ToString(
 			"O", CultureInfo.InvariantCulture)) + "&to=" +
-			Uri.EscapeDataString(to.ToUtcTime().ToString("O",
+			Uri.EscapeDataString(from.ToUtcTime().ToString("O",
 				CultureInfo.InvariantCulture)) + "&count=" +
 			count.Min(500).Max(1).ToString(CultureInfo.InvariantCulture);
 		return SendAsync<RainCandle[]>(HttpMethod.Get, path, query, null,

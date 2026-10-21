@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,8 +14,22 @@ using StockSharp.Quidax.Native;
 using StockSharp.Quidax.Native.Model;
 
 [TestClass]
-public class QuidaxTests : BaseTestClass
+public class QuidaxTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new QuidaxMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	// The recent-trades endpoint requires an API key; the other market endpoints are public.
+	protected override DataType[] SkippedDataTypes => [DataType.Ticks];
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTC/NGN",
+		BoardCode = BoardCodes.Quidax,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddress()
 	{

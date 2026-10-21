@@ -18,6 +18,47 @@ using StockSharp.Messages;
 public class LiveMarketDataValidationTests : BaseTestClass
 {
 	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task FilteredLookupPreservesTheRequestAndTheCallerMessage()
+	{
+		var lookup = new SecurityLookupMessage
+		{
+			TransactionId = 42,
+			SecurityId = new() { SecurityCode = "AAPL", BoardCode = "DXFEED" },
+			Count = 1,
+		};
+		await using var harness = new MarketDataTestHarness(new LookupAdapter());
+		await harness.ConnectAsync(TimeSpan.FromSeconds(2), CancellationToken);
+
+		var result = await harness.LookupSecuritiesAsync(lookup, 2, TimeSpan.FromSeconds(2), CancellationToken);
+
+		AreEqual(1, result.Securities.Length);
+		AreEqual(lookup.SecurityId, result.Securities[0].SecurityId);
+		IsTrue(result.IsComplete);
+		AreEqual(42L, lookup.TransactionId);
+		AreEqual(1L, lookup.Count);
+	}
+
+	private sealed class LookupAdapter : MessageAdapter
+	{
+		public LookupAdapter() : base(new IncrementalIdGenerator())
+		{
+			this.AddMarketDataSupport();
+		}
+
+		protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage message, CancellationToken cancellationToken)
+		{
+			if (message.SecurityId.SecurityCode == "AAPL" && message.Count == 1)
+				await SendOutMessageAsync(new SecurityMessage
+				{
+					SecurityId = message.SecurityId,
+					OriginalTransactionId = message.TransactionId,
+				}, cancellationToken);
+			await SendSubscriptionResultAsync(message, cancellationToken);
+		}
+	}
+
+	[TestMethod]
 	public void MissingDataNamesTheConnector()
 	{
 		var error = Throws<AssertFailedException>(() => new KucoinTests()
@@ -45,7 +86,7 @@ public class LiveMarketDataValidationTests : BaseTestClass
 			{
 				await harness.ConnectAsync(TimeSpan.FromSeconds(2), CancellationToken);
 				if (operation == "lookup")
-					await harness.LookupSecuritiesAsync(1, TimeSpan.FromSeconds(2), CancellationToken);
+					await harness.LookupSecuritiesAsync(new(), 1, TimeSpan.FromSeconds(2), CancellationToken);
 			});
 		}
 

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,8 +20,75 @@ using StockSharp.SecEdgar;
 using StockSharp.SecEdgar.Native;
 
 [TestClass]
-public class SecEdgarTests : BaseTestClass
+public class SecEdgarTests : HistoryTestBase
 {
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public async Task CompanyFacts()
+	{
+		var adapter = CreateAdapter<SecEdgarMessageAdapter>();
+		var subscription = new MarketDataMessage
+		{
+			IsSubscribe = true,
+			DataType2 = SecEdgarDataTypes.CompanyFacts,
+			SecurityId = new() { SecurityCode = "AAPL" },
+			Count = 1,
+		};
+		var count = 0;
+		await foreach (var fact in Download<SecEdgarFactMessage>(adapter, subscription).WithCancellation(CancellationToken))
+		{
+			IsFalse(fact.Concept.IsEmpty());
+			IsFalse(fact.Value.IsEmpty());
+			count++;
+		}
+		AreEqual(1, count);
+	}
+
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public async Task Securities()
+	{
+		var adapter = CreateAdapter<SecEdgarMessageAdapter>();
+		var lookup = new SecurityLookupMessage
+		{
+			SecurityId = new() { SecurityCode = "AAPL" },
+			Count = 1,
+		};
+		var count = 0;
+		await foreach (var security in DownloadSecurities(adapter, lookup).WithCancellation(CancellationToken))
+		{
+			AreEqual("AAPL", security.SecurityId.SecurityCode);
+			IsFalse(security.Name.IsEmpty());
+			count++;
+		}
+		AreEqual(1, count);
+	}
+
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public async Task News()
+	{
+		var adapter = CreateAdapter<SecEdgarMessageAdapter>();
+		var subscription = new MarketDataMessage
+		{
+			IsSubscribe = true,
+			DataType2 = DataType.News,
+			SecurityId = new() { SecurityCode = "AAPL" },
+			Count = 1,
+		};
+		var count = 0;
+		await foreach (var news in Download<NewsMessage>(adapter, subscription).WithCancellation(CancellationToken))
+		{
+			IsFalse(news.Headline.IsEmpty());
+			IsFalse(news.Url.IsEmpty());
+			count++;
+		}
+		AreEqual(1, count);
+	}
+
 	private sealed class Handler(
 		Func<HttpRequestMessage, CancellationToken,
 			Task<HttpResponseMessage>> callback) : HttpMessageHandler

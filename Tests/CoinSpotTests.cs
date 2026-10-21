@@ -1,11 +1,12 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,8 +16,52 @@ using StockSharp.CoinSpot.Native.Model;
 using StockSharp.Messages;
 
 [TestClass]
-public class CoinSpotTests : BaseTestClass
+public class CoinSpotTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task AOneCoinTickerUsesTheSinglePriceSnapshot()
+	{
+		using var client = new CoinSpotRestClient("https://public.example.test/", "https://trade.example.test/", "https://read.example.test/", null, null);
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(_ => new(HttpStatusCode.OK)
+		{
+			Content = new StringContent("{\"status\":\"ok\",\"prices\":{\"bid\":\"120010\",\"ask\":\"120457.59\",\"last\":\"119945.01\"}}"),
+		})), "_http");
+
+		var ticker = await client.GetTickerAsync("btc", CancellationToken);
+
+		AreEqual(120010m, ticker.BidPrice);
+		AreEqual(120457.59m, ticker.AskPrice);
+		AreEqual(119945.01m, ticker.LastPrice);
+	}
+
+	[TestMethod]
+	[DataRow("NaN")]
+	[DataRow("Infinity")]
+	[DataRow("-Infinity")]
+	public void UnavailablePricesDoNotPreventMarketDiscovery(string unavailable)
+	{
+		var markets = CoinSpotRestClient.DeserializeMarkets(
+			"{\"status\":\"ok\",\"prices\":{\"BTC\":{\"bid\":\"" + unavailable +
+			"\",\"ask\":\"67001.5\",\"last\":null}}}");
+
+		AreEqual(1, markets.Length);
+		AreEqual("BTC/AUD", markets[0].SecurityCode);
+		IsNull(markets[0].Ticker.BidPrice);
+		AreEqual(67001.5m, markets[0].Ticker.AskPrice);
+		IsNull(markets[0].Ticker.LastPrice);
+	}
+
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new CoinSpotMessageAdapter(new IncrementalIdGenerator());
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "BTC/AUD",
+		BoardCode = BoardCodes.CoinSpot,
+	};
+
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddresses()
 	{

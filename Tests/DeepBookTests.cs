@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.Serialization;
-using Ecng.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,8 +18,32 @@ using StockSharp.DeepBook.Native.Sui;
 using StockSharp.Messages;
 
 [TestClass]
-public class DeepBookTests : BaseTestClass
+public class DeepBookTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override MessageAdapter CreateAdapter() => new DeepBookMessageAdapter(new IncrementalIdGenerator())
+		{
+			Pools = "SUI_USDC",
+		};
+
+	/// <inheritdoc />
+	protected override SecurityId TestSecurityId => new()
+	{
+		SecurityCode = "SUI-USDC",
+		BoardCode = BoardCodes.DeepBook,
+	};
+
+	/// <inheritdoc />
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		if (message.DataType2 == DataType.Ticks)
+		{
+			message.From = DateTime.UtcNow.AddHours(-1);
+			message.To = DateTime.UtcNow;
+			message.Count = 1;
+		}
+	}
+
 	private const string _baseCoin =
 		"0x2::sui::SUI";
 	private const string _quoteCoin =
