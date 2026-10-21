@@ -23,7 +23,8 @@ public partial class StonFiMessageAdapter
 			{
 				Parent = this,
 			};
-			await TonClient.VerifyAsync(cancellationToken);
+			if (TonClient.IsWalletConfigured)
+				await TonClient.VerifyAsync(cancellationToken);
 			var pools = await RestClient.GetPoolsAsync(PoolLimit, Pools,
 				cancellationToken);
 			var assets = await RestClient.GetAssetsAsync(pools.SelectMany(

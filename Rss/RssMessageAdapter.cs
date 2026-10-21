@@ -26,7 +26,8 @@ public partial class RssMessageAdapter
 		this.AddSupportedMessage(MessageTypes.MarketData, true);
 		this.AddSupportedMarketDataType(DataType.News);
 
-		_client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
+		_client.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-RSS-Connector/1.0");
+		_client.DefaultRequestHeaders.Accept.ParseAdd("application/rss+xml, application/atom+xml, application/xml, text/xml");
 	}
 
 	/// <inheritdoc />

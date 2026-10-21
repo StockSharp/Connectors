@@ -16,7 +16,14 @@ using StockSharp.Messages;
 public class LfjMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />
-	protected override MessageAdapter CreateAdapter() => new LfjMessageAdapter(new IncrementalIdGenerator());
+	protected override MessageAdapter CreateAdapter()
+	{
+		var adapter = new LfjMessageAdapter(new IncrementalIdGenerator());
+		if (TestContext?.TestName is nameof(Ticks) or nameof(Candles))
+			// These requests read historical swaps over HTTP RPC and do not use the live socket.
+			adapter.WebSocketEndpoint = null;
+		return adapter;
+	}
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()

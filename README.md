@@ -19,13 +19,17 @@ Additional access is explicit:
 
 | Variable | Purpose |
 | --- | --- |
-| `STOCKSHARP_LIVE_REGIONAL_TESTS=1` | Enables Binance live checks, Tokocrypto WebSockets, Bybit REST checks, Binance history lookup across futures markets and COIN-M order book metadata, and Bybit history lookup. Set it on a runner permitted to access those venue APIs. |
+| `STOCKSHARP_LIVE_REGIONAL_TESTS=1` | Enables Binance live checks, Tokocrypto WebSockets, Bybit REST checks, Binance history lookup across futures markets and COIN-M order book metadata, Bybit history lookup, and CoW Protocol checks. Set it on a runner permitted to access those venue APIs. |
 | `COINMARKETCAP_TOKEN` | Uses a CoinMarketCap API key. The workflow reads it from the repository secret with the same name. |
 | `COINMARKETCAP_KEYLESS_TESTS=1` | Enables CoinMarketCap checks without a key, subject to its anonymous quota. |
 | `STOCKSHARP_LIVE_MOEX_DIVIDENDS_TESTS=1` | Enables the separate MOEX dividend-history check on an ISS service providing dividend data. Ordinary ISS security lookup and candle checks do not require it. |
+| `STOCKSHARP_LIVE_BYDFI_TESTS=1` | Enables BYDFi futures checks when the published API is accessible. The documented futures routes currently return HTTP 404. |
+| `STOCKSHARP_LIVE_GMTRADE_TESTS=1` | Enables GMTrade checks when the runner has access to keeper REST and WebSocket API quota. Anonymous requests currently return HTTP 429. |
+| `STOCKSHARP_LIVE_REUTERS_RSS_TESTS=1` | Enables the Thomson Reuters feed when the runner has programmatic access to it. Other RSS feeds remain in the default live run. |
 
-The workflow exposes `include_regional_tests`, `include_keyless_cmc_tests`, and
-`include_moex_dividends_tests`, all disabled by default. Checks that lack the required access
+The workflow exposes `include_regional_tests`, `include_keyless_cmc_tests`,
+`include_moex_dividends_tests`, `include_bydfi_tests`, `include_gmtrade_tests`, and
+`include_reuters_rss_tests`, all disabled by default. Checks that lack the required access
 report **Skipped** with the variable to set. The regional and CoinMarketCap options do not
 enable MOEX dividends.
 Public Binance and Bybit archives and Bybit WebSocket checks remain in the default live run.

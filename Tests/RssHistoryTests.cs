@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Ecng.Common;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using StockSharp.Messages;
@@ -20,6 +22,8 @@ public class RssHistoryTests : HistoryTestBase
 	public async Task Rss(string address)
 	{
 		SkipUnlessLive();
+		if (GetFeedSkipReason(address, Env("STOCKSHARP_LIVE_REUTERS_RSS_TESTS")) is string reason)
+			Inconclusive(reason);
 
 		var adapter = CreateAdapter<RssMessageAdapter>();
 		adapter.FindAdapter<RssMessageAdapter>().Address = address;
@@ -42,4 +46,9 @@ public class RssHistoryTests : HistoryTestBase
 
 	public static IEnumerable<object[]> RssFeeds
 		=> RssAddresses.All.Select(address => new object[] { address });
+
+	internal static string GetFeedSkipReason(string address, string setting)
+		=> address == RssAddresses.Reuters && !setting.EqualsIgnoreCase("1")
+			? "Set STOCKSHARP_LIVE_REUTERS_RSS_TESTS=1 when this runner has programmatic access to the Thomson Reuters RSS feed."
+			: null;
 }

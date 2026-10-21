@@ -13,6 +13,7 @@ using StockSharp.Messages;
 /// CowProtocol publishes market data without credentials.
 /// </summary>
 [TestClass]
+[RegionalLiveTests]
 public class CowProtocolMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />

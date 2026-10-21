@@ -2,7 +2,7 @@ namespace StockSharp.Ostium.Native;
 
 static class OstiumExtensions
 {
-	public const string BuilderEndpoint = "https://builder.ostium.io";
+	public const string BuilderEndpoint = "https://builder.prod.bedrock.ostium.io";
 	public const string ZeroAddress =
 		"0x0000000000000000000000000000000000000000";
 	public const decimal MinimumCollateral = 5m;
@@ -25,7 +25,7 @@ static class OstiumExtensions
 				Name = "Arbitrum One",
 				RpcEndpoint = "https://arb1.arbitrum.io/rpc",
 				SubgraphEndpoint =
-					"https://builder.ostium.io/v1/subgraph/gn",
+					"https://builder.prod.bedrock.ostium.io/v1/subgraph/gn",
 				UsdcAddress =
 					"0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
 				TradingAddress =
@@ -39,7 +39,7 @@ static class OstiumExtensions
 				Name = "Arbitrum Sepolia",
 				RpcEndpoint = "https://sepolia-rollup.arbitrum.io/rpc",
 				SubgraphEndpoint =
-					"https://api.subgraph.ormilabs.com/api/public/67a599d5-c8d2-4cc4-9c4d-2975a97bc5d8/subgraphs/ost-sep/live/gn",
+					"https://builder.prod.bedrock.ostium.io/v1/subgraph/gn?chainId=421614",
 				UsdcAddress =
 					"0xe73B11Fb1e3eeEe8AF2a23079A4410Fe1B370548",
 				TradingAddress =

@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       include_regional_tests:
-        description: 'Include Binance, Bybit and Tokocrypto checks that require access from a permitted region'
+        description: 'Include Binance, Bybit, Tokocrypto and CoW Protocol checks requiring permitted venue access'
         type: boolean
         default: false
       include_keyless_cmc_tests:
@@ -18,6 +18,18 @@ on:
         default: false
       include_moex_dividends_tests:
         description: 'Include MOEX dividend-history checks (requires an ISS dividend data service)'
+        type: boolean
+        default: false
+      include_bydfi_tests:
+        description: 'Include BYDFi futures checks (requires an accessible futures API)'
+        type: boolean
+        default: false
+      include_gmtrade_tests:
+        description: 'Include GMTrade checks (requires keeper and WebSocket API quota)'
+        type: boolean
+        default: false
+      include_reuters_rss_tests:
+        description: 'Include Thomson Reuters RSS (requires programmatic access from this runner)'
         type: boolean
         default: false
 
@@ -32,6 +44,9 @@ jobs:
       COINMARKETCAP_TOKEN: ${{ secrets.COINMARKETCAP_TOKEN }}
       COINMARKETCAP_KEYLESS_TESTS: ${{ inputs.include_keyless_cmc_tests && '1' || '0' }}
       STOCKSHARP_LIVE_MOEX_DIVIDENDS_TESTS: ${{ inputs.include_moex_dividends_tests && '1' || '0' }}
+      STOCKSHARP_LIVE_BYDFI_TESTS: ${{ inputs.include_bydfi_tests && '1' || '0' }}
+      STOCKSHARP_LIVE_GMTRADE_TESTS: ${{ inputs.include_gmtrade_tests && '1' || '0' }}
+      STOCKSHARP_LIVE_REUTERS_RSS_TESTS: ${{ inputs.include_reuters_rss_tests && '1' || '0' }}
       ALPHAVANTAGE_TOKEN: ${{ secrets.ALPHAVANTAGE_TOKEN }}
       POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
       ALPACA_KEY: ${{ secrets.ALPACA_KEY }}

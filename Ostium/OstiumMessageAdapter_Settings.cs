@@ -16,9 +16,9 @@ namespace StockSharp.Ostium;
 public partial class OstiumMessageAdapter : MessageAdapter
 {
 	private const string _defaultBuilderEndpoint =
-		"https://builder.ostium.io";
+		"https://builder.prod.bedrock.ostium.io";
 	private const string _defaultPriceStreamEndpoint =
-		"wss://builder.ostium.io/v1/prices/stream";
+		"wss://builder.prod.bedrock.ostium.io/v1/prices/stream";
 
 	/// <summary>Ostium deployment environment.</summary>
 	[Display(

@@ -14,7 +14,14 @@ using StockSharp.Messages;
 public class BYDFiMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />
-	protected override MessageAdapter CreateAdapter() => new BYDFiMessageAdapter(new IncrementalIdGenerator());
+	protected override MessageAdapter CreateAdapter() => CreateAdapter(Env("STOCKSHARP_LIVE_BYDFI_TESTS"));
+
+	internal static BYDFiMessageAdapter CreateAdapter(string setting)
+	{
+		if (!setting.EqualsIgnoreCase("1"))
+			Inconclusive("Set STOCKSHARP_LIVE_BYDFI_TESTS=1 when the published BYDFi futures API is accessible on this runner.");
+		return new(new IncrementalIdGenerator());
+	}
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()

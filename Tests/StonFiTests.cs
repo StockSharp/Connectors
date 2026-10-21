@@ -31,6 +31,53 @@ public class StonFiTests : BaseTestClass
 		"kQB_TOJSB7q3-Jm1O8s0jKFtqLElZDPjATs5uJGsujcjznq3";
 
 	[TestMethod]
+	[DataRow(false)]
+	[DataRow(true)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task PublicMarketDataDoesNotRequireTonCenter(bool isWalletConfigured)
+	{
+		var token0 = _ownerAddress;
+		var token1 = _poolAddress;
+		var tonRequests = 0;
+		HistoryHttpServer server = null;
+		await using (server = new HistoryHttpServer(() =>
+		{
+			if (server.RequestTarget.StartsWith("/ton/"))
+			{
+				tonRequests++;
+				return """{"ok":false,"result":"Ratelimit exceed","code":429}""";
+			}
+
+			if (server.RequestTarget.StartsWith("/v1/pools/"))
+				return $$$"""{"pool":{"address":"{{{_poolAddress}}}","token0_address":"{{{token0}}}","token1_address":"{{{token1}}}","reserve0":"1000000","reserve1":"2000000"}}""";
+			if (server.RequestTarget == "/v1/assets/query")
+				return $$$"""{"asset_list":[{"contract_address":"{{{token0}}}","symbol":"BASE","decimals":6},{"contract_address":"{{{token1}}}","symbol":"QUOTE","decimals":6}]}""";
+			return """{"block":{"blockNumber":100,"blockTimestamp":1760000000}}""";
+		}, CancellationToken))
+		{
+			var adapter = new StonFiMessageAdapter(new IncrementalIdGenerator())
+			{
+				ApiEndpoint = server.Address.ToString(),
+				TonCenterEndpoint = new Uri(server.Address, "ton/").ToString(),
+				Pools = _poolAddress,
+				WalletAddress = isWalletConfigured ? _ownerAddress : null,
+			};
+			await using var harness = new MarketDataTestHarness(adapter);
+			if (isWalletConfigured)
+			{
+				var error = await ThrowsAsync<InvalidOperationException>(() => harness.ConnectAsync(TimeSpan.FromSeconds(5), CancellationToken));
+				IsTrue(error.Message.Contains("Ratelimit exceed"), error.Message);
+				AreEqual(1, tonRequests);
+			}
+			else
+			{
+				await harness.ConnectAsync(TimeSpan.FromSeconds(5), CancellationToken);
+				AreEqual(0, tonRequests);
+			}
+		}
+	}
+
+	[TestMethod]
 	public void DefaultsUsePublishedProductionEndpoints()
 	{
 		var adapter = new StonFiMessageAdapter(

@@ -6,14 +6,14 @@ sealed class OstiumApiClient : BaseLogReceiver
 	private const int _pageSize = 1000;
 	private const string _pairsQuery = """
 		query GetPairsAndGroups {
-		  pairs(orderBy: id, orderDirection: asc, subgraphError: allow) {
+		  pairs(orderBy: id, orderDirection: asc) {
 		    id from to maxLeverage overnightMaxLeverage takerFeeP
 		    maxOI longOI shortOI
 		    group { id name maxLeverage }
 		    lastUpdateTimestamp buyVolume sellVolume decayRate netVolThreshold
 		    priceImpactK accRolloverLong accRolloverShort lastRolloverBlock
 		    lastRolloverLongPure brokerPremium isNegativeRolloverAllowed
-		    lastTradePrice spreadP
+		    lastTradePrice
 		  }
 		}
 		""";
@@ -33,7 +33,7 @@ sealed class OstiumApiClient : BaseLogReceiver
 		      lastUpdateTimestamp buyVolume sellVolume decayRate netVolThreshold
 		      priceImpactK accRolloverLong accRolloverShort lastRolloverBlock
 		      lastRolloverLongPure brokerPremium isNegativeRolloverAllowed
-		      lastTradePrice spreadP
+		      lastTradePrice
 		    }
 		  }
 		}

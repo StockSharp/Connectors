@@ -92,6 +92,9 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(BinanceHistoryTests), nameof(BinanceHistoryTests.BinHistOrderBookFutCoin))]
 	[DataRow(typeof(ByBitHistoryTests), nameof(ByBitHistoryTests.ByBitHistLookupAll))]
 	[DataRow(typeof(ByBitHistoryTests), nameof(ByBitHistoryTests.ByBitHistLookupLimit))]
+	[DataRow(typeof(CowProtocolMarketDataTests), nameof(CowProtocolMarketDataTests.Securities))]
+	[DataRow(typeof(CowProtocolMarketDataTests), nameof(CowProtocolMarketDataTests.Level1))]
+	[DataRow(typeof(CowProtocolMarketDataTests), nameof(CowProtocolMarketDataTests.OrderBook))]
 	[Timeout(10000)]
 	public void RegionalTestsRequireAdditionalExplicitOptIn(Type fixtureType, string testName)
 	{
@@ -134,6 +137,29 @@ public class LiveTestOptInTests : BaseTestClass
 
 		IsNotNull(reason);
 		IsTrue(reason.Contains("STOCKSHARP_LIVE_TESTS=1"), reason);
+	}
+
+	[TestMethod]
+	[DataRow("", false)]
+	[DataRow("0", false)]
+	[DataRow("true", false)]
+	[DataRow("1", true)]
+	public void UnavailableVenueApisRequireTheirOwnExplicitOptIn(string setting, bool expectedToRun)
+	{
+		if (expectedToRun)
+		{
+			using var bydfi = BYDFiMarketDataTests.CreateAdapter(setting);
+			using var gmtrade = GMTradeMarketDataTests.CreateAdapter(setting);
+			IsNotNull(bydfi);
+			IsNotNull(gmtrade);
+		}
+		else
+		{
+			var bydfi = Throws<AssertInconclusiveException>(() => BYDFiMarketDataTests.CreateAdapter(setting));
+			IsTrue(bydfi.Message.Contains("STOCKSHARP_LIVE_BYDFI_TESTS=1"));
+			var gmtrade = Throws<AssertInconclusiveException>(() => GMTradeMarketDataTests.CreateAdapter(setting));
+			IsTrue(gmtrade.Message.Contains("STOCKSHARP_LIVE_GMTRADE_TESTS=1"));
+		}
 	}
 
 	[TestMethod]

@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -28,6 +29,7 @@ sealed class HistoryHttpHandler(Func<HttpRequestMessage, HttpResponseMessage> re
 
 sealed class HistoryHttpServer : IAsyncDisposable
 {
+	private readonly Dictionary<string, string> _requestHeaders = new(StringComparer.OrdinalIgnoreCase);
 	private readonly TcpListener _listener = new(IPAddress.Loopback, 0);
 	private readonly CancellationTokenSource _source;
 	private readonly Task _run;
@@ -42,6 +44,7 @@ sealed class HistoryHttpServer : IAsyncDisposable
 
 	public Uri Address { get; }
 	public string RequestTarget { get; private set; }
+	public IReadOnlyDictionary<string, string> RequestHeaders => _requestHeaders;
 
 	private async Task RunAsync(Func<string> response, CancellationToken cancellationToken)
 	{
@@ -51,8 +54,12 @@ sealed class HistoryHttpServer : IAsyncDisposable
 			await using var stream = client.GetStream();
 			using var reader = new StreamReader(stream, Encoding.ASCII, false, 1024, true);
 			RequestTarget = (await reader.ReadLineAsync(cancellationToken))?.Split(' ')[1];
-			while (!string.IsNullOrEmpty(await reader.ReadLineAsync(cancellationToken)))
+			_requestHeaders.Clear();
+			while (await reader.ReadLineAsync(cancellationToken) is string line && !string.IsNullOrEmpty(line))
 			{
+				var separator = line.IndexOf(':');
+				if (separator > 0)
+					_requestHeaders[line[..separator]] = line[(separator + 1)..].Trim();
 			}
 
 			var body = Encoding.UTF8.GetBytes(response());

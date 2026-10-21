@@ -636,10 +636,15 @@ sealed class HitBtcSocketClient : BaseLogReceiver
 		HitBtcSubscription subscription, bool subscribe, long transactionId,
 		CancellationToken cancellationToken)
 		=> SendCommandAsync(client, subscribe ? "subscribe" : "unsubscribe",
-			subscription.Channel, new SubscriptionRequest
-			{
-				Symbols = [subscription.Symbol],
-			}, transactionId, cancellationToken);
+			subscription.Channel, CreatePublicSubscription(subscription.Channel,
+				subscription.Symbol, subscribe), transactionId, cancellationToken);
+
+	internal static SubscriptionRequest CreatePublicSubscription(string channel, string symbol, bool subscribe)
+		=> new()
+		{
+			Symbols = [symbol],
+			Limit = subscribe && channel == "trades" ? 100 : null,
+		};
 
 	private ValueTask SendPrivateSubscriptionAsync(WebSocketClient client, bool reports,
 		bool subscribe, CancellationToken cancellationToken)

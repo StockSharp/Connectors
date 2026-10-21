@@ -146,9 +146,6 @@ sealed class OstiumGraphPair
 
 	[JsonProperty("lastTradePrice")]
 	public string LastTradePrice { get; init; }
-
-	[JsonProperty("spreadP")]
-	public string SpreadPercent { get; init; }
 }
 
 sealed class OstiumGraphTrade
