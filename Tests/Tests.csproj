@@ -10,7 +10,6 @@
     <ProjectReference Include="..\LMAX\LMAX.csproj" />
 	<ProjectReference Include="..\AltCoinTrader\AltCoinTrader.csproj" />
     <ProjectReference Include="..\ApexOmni\ApexOmni.csproj" />
-	<ProjectReference Include="..\AscendEx\AscendEx.csproj" />
     <ProjectReference Include="..\Aster\Aster.csproj" />
     <ProjectReference Include="..\Avantis\Avantis.csproj" />
     <ProjectReference Include="..\Backpack\Backpack.csproj" />
@@ -28,8 +27,6 @@
     <ProjectReference Include="..\BitFlyer\BitFlyer.csproj" />
     <ProjectReference Include="..\Bitget\Bitget.csproj" />
     <ProjectReference Include="..\Bitkub\Bitkub.csproj" />
-    <ProjectReference Include="..\Bitmart\Bitmart.csproj" />
-    <ProjectReference Include="..\Bitmex\Bitmex.csproj" />
     <ProjectReference Include="..\Bitrue\Bitrue.csproj" />
     <ProjectReference Include="..\Bitso\Bitso.csproj" />
     <ProjectReference Include="..\BitStamp\BitStamp.csproj" />
@@ -50,13 +47,11 @@
     <ProjectReference Include="..\Coinbase\Coinbase.csproj" />
     <ProjectReference Include="..\Coincheck\Coincheck.csproj" />
     <ProjectReference Include="..\CoinDCX\CoinDCX.csproj" />
-    <ProjectReference Include="..\CoinEx\CoinEx.csproj" />
     <ProjectReference Include="..\CoinJar\CoinJar.csproj" />
     <ProjectReference Include="..\CoinMarketCap\CoinMarketCap.csproj" />
     <ProjectReference Include="..\Coinone\Coinone.csproj" />
 	<ProjectReference Include="..\CoinTR\CoinTR.csproj" />
 	<ProjectReference Include="..\CoinSwitch\CoinSwitch.csproj" />
-	<ProjectReference Include="..\CoinCatch\CoinCatch.csproj" />
 	<ProjectReference Include="..\Coinmetro\Coinmetro.csproj" />
 	<ProjectReference Include="..\LCX\LCX.csproj" />
 	<ProjectReference Include="..\WazirX\WazirX.csproj" />
@@ -107,7 +102,6 @@
     <ProjectReference Include="..\DydxChain\DydxChain.csproj" />
     <ProjectReference Include="..\edgeX\EdgeX.csproj" />
     <ProjectReference Include="..\Exante\Exante.csproj" />
-    <ProjectReference Include="..\Exmo\Exmo.csproj" />
     <ProjectReference Include="..\Extended\Extended.csproj" />
     <ProjectReference Include="..\FivePaisa\FivePaisa.csproj" />
 	<ProjectReference Include="..\FinamTrade\FinamTrade.csproj" />
@@ -204,7 +198,6 @@
     <ProjectReference Include="..\Xt\Xt.csproj" />
     <ProjectReference Include="..\Yobit\Yobit.csproj" />
     <ProjectReference Include="..\Zebu\Zebu.csproj" />
-	<ProjectReference Include="..\ZondaCrypto\ZondaCrypto.csproj" />
     <ProjectReference Include="..\Zoomex\Zoomex.csproj" />
     <ProjectReference Include="..\Fix\Fix.csproj" />
   </ItemGroup>

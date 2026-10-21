@@ -147,7 +147,7 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.OrderBook))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.Ticks))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.ASessionLetGoAfterADisconnectEndsWithoutErrors))]
-	[DataRow(typeof(BitmartMarketDataTests), nameof(BitmartMarketDataTests.Securities))]
+	[DataRow(typeof(KucoinMarketDataTests), nameof(KucoinMarketDataTests.Securities))]
 	[DataRow(typeof(BYDFiMarketDataTests), nameof(BYDFiMarketDataTests.Securities))]
 	[DataRow(typeof(MoexISSHistoryTests), nameof(MoexISSHistoryTests.MoexIssDivSber))]
 	[DataRow(typeof(AlorHistoryMarketDataTests), nameof(AlorHistoryMarketDataTests.Securities))]

@@ -27,7 +27,7 @@ public class LiveMarketDataValidationTests : BaseTestClass
 		var expected = CreateVenueError();
 		Exception actual;
 		if (operation == "data")
-			actual = ThrowsExactly<InvalidOperationException>(() => new BitmartMarketDataTests()
+			actual = ThrowsExactly<InvalidOperationException>(() => new KucoinMarketDataTests()
 				.CheckData(new MarketDataResult<ExecutionMessage>(1, expected, null), "ticks"));
 		else
 		{
@@ -89,7 +89,7 @@ public class LiveMarketDataValidationTests : BaseTestClass
 	public void ARejectedAdvertisedSubscriptionFailsInsteadOfBeingSkipped()
 	{
 		var expected = new NotSupportedException("The venue rejected a supported subscription.");
-		var actual = ThrowsExactly<NotSupportedException>(() => new BitmartMarketDataTests()
+		var actual = ThrowsExactly<NotSupportedException>(() => new KucoinMarketDataTests()
 			.CheckData(new MarketDataResult<ExecutionMessage>(1, expected, null), "ticks"));
 
 		AreEqual(expected, actual);
