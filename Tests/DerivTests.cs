@@ -143,7 +143,7 @@ public class DerivTests : BaseTestClass
 	[Timeout(30000)]
 	public async Task PublicApiSmoke()
 	{
-		if (!Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS")
+		if (!Env("STOCKSHARP_LIVE_TESTS")
 			.EqualsIgnoreCase("1"))
 			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 to run Deriv public API smoke tests.");
 

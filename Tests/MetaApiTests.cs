@@ -194,10 +194,10 @@ public class MetaApiTests : BaseTestClass
 	[Timeout(60000)]
 	public async Task AuthenticatedApiSmoke()
 	{
-		var token = Environment.GetEnvironmentVariable("STOCKSHARP_METAAPI_TOKEN");
-		var accountId = Environment.GetEnvironmentVariable(
+		var token = Env("STOCKSHARP_METAAPI_TOKEN");
+		var accountId = Env(
 			"STOCKSHARP_METAAPI_ACCOUNT");
-		if (!Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS")
+		if (!Env("STOCKSHARP_LIVE_TESTS")
 				.EqualsIgnoreCase("1") || token.IsEmpty() || accountId.IsEmpty())
 		{
 			Inconclusive(
@@ -205,8 +205,8 @@ public class MetaApiTests : BaseTestClass
 				"STOCKSHARP_METAAPI_ACCOUNT to run the MetaApi smoke test.");
 		}
 
-		var region = Environment.GetEnvironmentVariable("STOCKSHARP_METAAPI_REGION");
-		var domain = Environment.GetEnvironmentVariable("STOCKSHARP_METAAPI_DOMAIN")
+		var region = Env("STOCKSHARP_METAAPI_REGION");
+		var domain = Env("STOCKSHARP_METAAPI_DOMAIN")
 			.IsEmpty("agiliumtrade.agiliumtrade.ai");
 		using var client = new MetaApiRestClient(domain, token.Secure(), region, 2);
 		await client.GetServerSettingsAsync(CancellationToken);

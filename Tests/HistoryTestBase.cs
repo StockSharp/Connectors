@@ -59,8 +59,8 @@ public abstract class HistoryTestBase : BaseTestClass
 	/// </summary>
 	protected static void SkipUnlessLive()
 	{
-		if (!Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS").EqualsIgnoreCase("1"))
-			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");
+		if (LiveTestAccess.GetLiveSkipReason(Env("STOCKSHARP_LIVE_TESTS")) is string reason)
+			Inconclusive(reason);
 	}
 
 	/// <summary>

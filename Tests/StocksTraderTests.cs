@@ -137,9 +137,9 @@ public class StocksTraderTests : BaseTestClass
 	[Timeout(30000)]
 	public async Task AuthenticatedApiSmoke()
 	{
-		var token = Environment.GetEnvironmentVariable(
+		var token = Env(
 			"STOCKSHARP_STOCKSTRADER_TOKEN");
-		if (!Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS")
+		if (!Env("STOCKSHARP_LIVE_TESTS")
 				.EqualsIgnoreCase("1") || token.IsEmpty())
 		{
 			Inconclusive(

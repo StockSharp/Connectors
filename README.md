@@ -22,9 +22,12 @@ Additional access is explicit:
 | `STOCKSHARP_LIVE_REGIONAL_TESTS=1` | Enables Binance live checks, Tokocrypto WebSockets, Bybit REST checks, Binance history lookup across futures markets and COIN-M order book metadata, and Bybit history lookup. Set it on a runner permitted to access those venue APIs. |
 | `COINMARKETCAP_TOKEN` | Uses a CoinMarketCap API key. The workflow reads it from the repository secret with the same name. |
 | `COINMARKETCAP_KEYLESS_TESTS=1` | Enables CoinMarketCap checks without a key, subject to its anonymous quota. |
+| `STOCKSHARP_LIVE_MOEX_DIVIDENDS_TESTS=1` | Enables the separate MOEX dividend-history check on an ISS service providing dividend data. Ordinary ISS security lookup and candle checks do not require it. |
 
-The workflow exposes `include_regional_tests` and `include_keyless_cmc_tests`, both disabled by
-default. Checks that lack the required access report **Skipped** with the variable to set.
+The workflow exposes `include_regional_tests`, `include_keyless_cmc_tests`, and
+`include_moex_dividends_tests`, all disabled by default. Checks that lack the required access
+report **Skipped** with the variable to set. The regional and CoinMarketCap options do not
+enable MOEX dividends.
 Public Binance and Bybit archives and Bybit WebSocket checks remain in the default live run.
 Once a check is enabled, HTTP errors, missing data and parsing failures fail the test.
 

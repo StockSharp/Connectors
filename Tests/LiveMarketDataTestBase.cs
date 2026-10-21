@@ -29,11 +29,8 @@ public abstract class LiveMarketDataTestBase : BaseTestClass
 	[TestInitialize]
 	public void InitializeLiveTests()
 	{
-		if (!Env("STOCKSHARP_LIVE_TESTS").EqualsIgnoreCase("1"))
-			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");
-
-		if (LiveTestAccess.GetRegionalSkipReason(GetType(), TestContext?.TestName,
-			Env(LiveTestAccess.RegionalOptInVariable)) is string reason)
+		if (LiveTestAccess.GetMarketDataSkipReason(GetType(), TestContext?.TestName,
+			Env("STOCKSHARP_LIVE_TESTS"), Env(LiveTestAccess.RegionalOptInVariable)) is string reason)
 			Inconclusive(reason);
 	}
 

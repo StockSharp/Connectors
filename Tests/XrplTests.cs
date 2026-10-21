@@ -231,7 +231,7 @@ public class XrplTests : BaseTestClass
 	[TestCategory("Integration")]
 	public async Task LiveMainnetReturnsLedgerBookChangesAndStream()
 	{
-		if (!Environment.GetEnvironmentVariable(
+		if (!Env(
 			"STOCKSHARP_LIVE_TESTS").EqualsIgnoreCase("1"))
 			Inconclusive(
 				"Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");

@@ -82,8 +82,8 @@ public class AlpacaTests : BaseTestClass
 
 	private (SecureString Key, SecureString Secret) Credentials()
 	{
-		var key = Environment.GetEnvironmentVariable("ALPACA_KEY");
-		var secret = Environment.GetEnvironmentVariable("ALPACA_SECRET");
+		var key = Env("ALPACA_KEY");
+		var secret = Env("ALPACA_SECRET");
 
 		if (key.IsEmpty() || secret.IsEmpty())
 			Inconclusive("Set ALPACA_KEY and ALPACA_SECRET to run the live Alpaca tests.");

@@ -112,7 +112,7 @@ public class VelodromeTests : BaseTestClass
 	[TestCategory("Integration")]
 	public async Task LiveClassicPoolReturnsBothQuoteDirections()
 	{
-		if (!Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS")
+		if (!Env("STOCKSHARP_LIVE_TESTS")
 			.EqualsIgnoreCase("1"))
 			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");
 		using var client = new VelodromeRpcClient(
@@ -155,7 +155,7 @@ public class VelodromeTests : BaseTestClass
 	[TestCategory("Integration")]
 	public async Task LiveAdapterPublishesLevel1()
 	{
-		if (!Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS")
+		if (!Env("STOCKSHARP_LIVE_TESTS")
 			.EqualsIgnoreCase("1"))
 			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");
 		var adapter = new VelodromeMessageAdapter(

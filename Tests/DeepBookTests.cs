@@ -174,7 +174,7 @@ public class DeepBookTests : BaseTestClass
 	[TestCategory("Integration")]
 	public async Task LiveReadOnlyEndpointsReturnCurrentDeepBookData()
 	{
-		if (!Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS")
+		if (!Env("STOCKSHARP_LIVE_TESTS")
 			.EqualsIgnoreCase("1"))
 			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");
 		using var indexer = new DeepBookApiClient(

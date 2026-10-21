@@ -170,7 +170,7 @@ public class StonFiTests : BaseTestClass
 	[TestCategory("Integration")]
 	public async Task LiveApisReturnPoolAssetsEventsQuoteAndTonState()
 	{
-		if (!Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS")
+		if (!Env("STOCKSHARP_LIVE_TESTS")
 			.EqualsIgnoreCase("1"))
 			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");
 

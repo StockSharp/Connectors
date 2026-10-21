@@ -14,6 +14,17 @@ using StockSharp.MoexISS;
 [TestClass]
 public class MoexISSHistoryTests : HistoryTestBase
 {
+	/// <summary>
+	/// Requires separate opt-in for the ISS dividend-history service.
+	/// </summary>
+	[TestInitialize]
+	public void InitializeDividendAccess()
+	{
+		if (LiveTestAccess.GetMoexDividendSkipReason(TestContext?.TestName,
+			Env("STOCKSHARP_LIVE_TESTS"), Env(LiveTestAccess.MoexDividendOptInVariable)) is string reason)
+			Inconclusive(reason);
+	}
+
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]

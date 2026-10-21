@@ -1,8 +1,6 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +16,6 @@ using StockSharp.CoinMarketCap;
 using StockSharp.Messages;
 
 [TestClass]
-[DoNotParallelize]
 [CLSCompliant(false)]
 public class LiveTestOptInTests : BaseTestClass
 {
@@ -77,30 +74,11 @@ public class LiveTestOptInTests : BaseTestClass
 	[Timeout(10000)]
 	public void LiveTestsHonorExplicitOptIn(string setting, bool expectedToRun)
 	{
-		var previous = Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS");
-		try
-		{
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_TESTS", setting);
-			var probe = new AlorHistoryMarketDataTests();
-			var skipped = false;
-			foreach (var method in probe.GetType().GetMethods().Where(m => m.IsDefined(typeof(TestInitializeAttribute))))
-			{
-				try
-				{
-					method.Invoke(probe, null);
-				}
-				catch (TargetInvocationException ex) when (ex.InnerException is AssertInconclusiveException)
-				{
-					skipped = true;
-				}
-			}
+		var reason = LiveTestAccess.GetLiveSkipReason(setting);
 
-			AreEqual(expectedToRun, !skipped);
-		}
-		finally
-		{
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_TESTS", previous);
-		}
+		AreEqual(expectedToRun, reason is null);
+		if (reason is not null)
+			IsTrue(reason.Contains("STOCKSHARP_LIVE_TESTS=1"), reason);
 	}
 
 	[TestMethod]
@@ -117,25 +95,13 @@ public class LiveTestOptInTests : BaseTestClass
 	[Timeout(10000)]
 	public void RegionalTestsRequireAdditionalExplicitOptIn(Type fixtureType, string testName)
 	{
-		var previousLive = Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS");
-		var previousRegional = Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS");
-		try
+		foreach (var setting in new[] { "", "0", "true", "1" })
 		{
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_TESTS", "1");
-			foreach (var setting in new[] { "", "0", "true", "1" })
-			{
-				Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS", setting);
-				var reason = GetInitializationSkipReason(fixtureType, testName);
+			var reason = LiveTestAccess.GetMarketDataSkipReason(fixtureType, testName, "1", setting);
 
-				AreEqual(setting == "1", reason is null, $"Regional setting '{setting}' was not respected.");
-				if (reason is not null)
-					IsTrue(reason.Contains("STOCKSHARP_LIVE_REGIONAL_TESTS=1"), reason);
-			}
-		}
-		finally
-		{
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_TESTS", previousLive);
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS", previousRegional);
+			AreEqual(setting == "1", reason is null, $"Regional setting '{setting}' was not respected.");
+			if (reason is not null)
+				IsTrue(reason.Contains("STOCKSHARP_LIVE_REGIONAL_TESTS=1"), reason);
 		}
 	}
 
@@ -149,25 +115,12 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.ASessionLetGoAfterADisconnectEndsWithoutErrors))]
 	[DataRow(typeof(KucoinMarketDataTests), nameof(KucoinMarketDataTests.Securities))]
 	[DataRow(typeof(BYDFiMarketDataTests), nameof(BYDFiMarketDataTests.Securities))]
-	[DataRow(typeof(MoexISSHistoryTests), nameof(MoexISSHistoryTests.MoexIssDivSber))]
+	[DataRow(typeof(MoexISSHistoryTests), nameof(MoexISSHistoryTests.MoexIssLookupSber))]
 	[DataRow(typeof(AlorHistoryMarketDataTests), nameof(AlorHistoryMarketDataTests.Securities))]
 	[Timeout(10000)]
 	public void RegionalOptInDoesNotExcludeOtherChecks(Type fixtureType, string testName)
 	{
-		var previousLive = Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS");
-		var previousRegional = Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS");
-		try
-		{
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_TESTS", "1");
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS", null);
-
-			IsNull(GetInitializationSkipReason(fixtureType, testName));
-		}
-		finally
-		{
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_TESTS", previousLive);
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS", previousRegional);
-		}
+		IsNull(LiveTestAccess.GetMarketDataSkipReason(fixtureType, testName, "1", null));
 	}
 
 	[TestMethod]
@@ -177,23 +130,10 @@ public class LiveTestOptInTests : BaseTestClass
 	[Timeout(10000)]
 	public void RegionalOptInStillRequiresGeneralLiveAccess(Type fixtureType, string testName)
 	{
-		var previousLive = Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_TESTS");
-		var previousRegional = Environment.GetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS");
-		try
-		{
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_TESTS", "0");
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS", "1");
+		var reason = LiveTestAccess.GetMarketDataSkipReason(fixtureType, testName, "0", "1");
 
-			var reason = GetInitializationSkipReason(fixtureType, testName);
-
-			IsNotNull(reason);
-			IsTrue(reason.Contains("STOCKSHARP_LIVE_TESTS=1"), reason);
-		}
-		finally
-		{
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_TESTS", previousLive);
-			Environment.SetEnvironmentVariable("STOCKSHARP_LIVE_REGIONAL_TESTS", previousRegional);
-		}
+		IsNotNull(reason);
+		IsTrue(reason.Contains("STOCKSHARP_LIVE_TESTS=1"), reason);
 	}
 
 	[TestMethod]
@@ -205,59 +145,50 @@ public class LiveTestOptInTests : BaseTestClass
 	[Timeout(10000)]
 	public void CoinMarketCapRequiresAKeyOrExplicitKeylessOptIn(string token, string keylessSetting, bool expectedToRun)
 	{
-		var previousToken = Environment.GetEnvironmentVariable("COINMARKETCAP_TOKEN");
-		var previousKeyless = Environment.GetEnvironmentVariable("COINMARKETCAP_KEYLESS_TESTS");
-		CoinMarketCapMessageAdapter adapter = null;
-		try
+		if (expectedToRun)
 		{
-			Environment.SetEnvironmentVariable("COINMARKETCAP_TOKEN", token);
-			Environment.SetEnvironmentVariable("COINMARKETCAP_KEYLESS_TESTS", keylessSetting);
-			string reason = null;
-			try
-			{
-				adapter = (CoinMarketCapMessageAdapter)typeof(CoinMarketCapMarketDataTests)
-					.GetMethod("CreateAdapter", BindingFlags.Instance | BindingFlags.NonPublic)
-					.Invoke(new CoinMarketCapMarketDataTests(), null);
-			}
-			catch (TargetInvocationException error) when (error.InnerException is AssertInconclusiveException skipped)
-			{
-				reason = skipped.Message;
-			}
-
-			AreEqual(expectedToRun, reason is null);
-			if (expectedToRun)
-				AreEqual(token.IsEmpty() ? CoinMarketCapAccessModes.Keyless : CoinMarketCapAccessModes.ApiKey, adapter.AccessMode);
-			else
-			{
-				IsTrue(reason.Contains("COINMARKETCAP_TOKEN"), reason);
-				IsTrue(reason.Contains("COINMARKETCAP_KEYLESS_TESTS=1"), reason);
-			}
+			using var adapter = CoinMarketCapMarketDataTests.CreateAdapter(token, keylessSetting);
+			AreEqual(token.IsEmpty() ? CoinMarketCapAccessModes.Keyless : CoinMarketCapAccessModes.ApiKey, adapter.AccessMode);
 		}
-		finally
+		else
 		{
-			adapter?.Dispose();
-			Environment.SetEnvironmentVariable("COINMARKETCAP_TOKEN", previousToken);
-			Environment.SetEnvironmentVariable("COINMARKETCAP_KEYLESS_TESTS", previousKeyless);
+			var reason = Throws<AssertInconclusiveException>(() => CoinMarketCapMarketDataTests.CreateAdapter(token, keylessSetting)).Message;
+			IsTrue(reason.Contains("COINMARKETCAP_TOKEN"), reason);
+			IsTrue(reason.Contains("COINMARKETCAP_KEYLESS_TESTS=1"), reason);
 		}
 	}
 
-	private static string GetInitializationSkipReason(Type fixtureType, string testName)
+	[TestMethod]
+	[DataRow("1", "0", "", false)]
+	[DataRow("1", "0", "0", false)]
+	[DataRow("1", "0", "true", false)]
+	[DataRow("1", "0", "1", true)]
+	[DataRow("1", "1", "0", false)]
+	[DataRow("1", "1", "1", true)]
+	[DataRow("0", "1", "1", false)]
+	[Timeout(10000)]
+	public void MoexDividendHistoryRequiresItsOwnExplicitOptIn(string live, string regional, string dividends, bool expectedToRun)
 	{
-		var context = new Mock<TestContext>();
-		context.SetupGet(value => value.TestName).Returns(testName);
-		var fixture = (BaseTestClass)Activator.CreateInstance(fixtureType);
-		fixture.TestContext = context.Object;
-		foreach (var method in fixtureType.GetMethods().Where(method => method.IsDefined(typeof(TestInitializeAttribute))))
-		{
-			try
-			{
-				method.Invoke(fixture, null);
-			}
-			catch (TargetInvocationException error) when (error.InnerException is AssertInconclusiveException skipped)
-			{
-				return skipped.Message;
-			}
-		}
-		return null;
+		const string testName = nameof(MoexISSHistoryTests.MoexIssDivSber);
+		IsNull(LiveTestAccess.GetRegionalSkipReason(typeof(MoexISSHistoryTests), testName, regional));
+
+		var reason = LiveTestAccess.GetMoexDividendSkipReason(testName, live, dividends);
+
+		AreEqual(expectedToRun, reason is null);
+		if (reason is not null)
+			IsTrue(reason.Contains(live == "1" ? "STOCKSHARP_LIVE_MOEX_DIVIDENDS_TESTS=1" : "STOCKSHARP_LIVE_TESTS=1"), reason);
+	}
+
+	[TestMethod]
+	[DataRow(nameof(MoexISSHistoryTests.MoexIssLookupAll))]
+	[DataRow(nameof(MoexISSHistoryTests.MoexIssLookupLimit))]
+	[DataRow(nameof(MoexISSHistoryTests.MoexIssLookupSber))]
+	[DataRow(nameof(MoexISSHistoryTests.MoexIssLookupSberLimit))]
+	[DataRow(nameof(MoexISSHistoryTests.MoexIssCandlesSber))]
+	[Timeout(10000)]
+	public void MoexDividendOptInDoesNotExcludePublicIssHistory(string testName)
+	{
+		foreach (var setting in new[] { "", "0", "1" })
+			IsNull(LiveTestAccess.GetMoexDividendSkipReason(testName, "1", setting));
 	}
 }
