@@ -258,8 +258,10 @@ sealed class NDAXSocketClient : BaseLogReceiver
 
 	public async ValueTask PingAsync(CancellationToken cancellationToken)
 	{
-		_ = await RequestAsync<NdaxOmsRequest, string>("Ping",
+		var response = await RequestAsync<NdaxOmsRequest, NdaxPingResponse>("Ping",
 			new() { OmsId = _omsId }, cancellationToken);
+		if (!response.Message.EqualsIgnoreCase("PONG"))
+			throw new InvalidDataException("NDAX Ping returned an unexpected heartbeat message.");
 	}
 
 	private WebSocketClient CreateClient()
@@ -531,10 +533,6 @@ sealed class NDAXSocketClient : BaseLogReceiver
 		var payload = JsonConvert.SerializeObject(request, _jsonSettings);
 		var response = await RequestRawAsync(operation, payload,
 			cancellationToken);
-		if (typeof(TResponse) == typeof(string) &&
-			!response.TrimStart().StartsWith('{') &&
-			!response.TrimStart().StartsWith('['))
-			return (TResponse)(object)response.Trim('"');
 		try
 		{
 			return JsonConvert.DeserializeObject<TResponse>(response,

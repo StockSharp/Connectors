@@ -281,15 +281,22 @@ public class ChainflipTests : LiveMarketDataTestBase
 	protected override MessageAdapter CreateAdapter()
 		=> new ChainflipMessageAdapter(new IncrementalIdGenerator())
 		{
-			Pools = "USDT@ETHEREUM-USDC@ETHEREUM",
+			Pools = "BTC@BITCOIN-USDC@ETHEREUM",
+			// Recent fills keep this check independent of the next swap in a quiet market.
+			InitialTickBlocks = 250,
 		};
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "USDT@ETHEREUM-USDC@ETHEREUM",
+		SecurityCode = "BTC@BITCOIN-USDC@ETHEREUM",
 		BoardCode = BoardCodes.Chainflip,
 	};
+
+	// The initial tick replay reads recent blocks through multiple RPC calls per block.
+	protected override TimeSpan DataTimeout => TestContext?.TestName == nameof(Ticks)
+		? TimeSpan.FromSeconds(90)
+		: base.DataTimeout;
 
 	/// <inheritdoc />
 	protected override DataType[] SkippedDataTypes =>

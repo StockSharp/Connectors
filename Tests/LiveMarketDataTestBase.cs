@@ -158,7 +158,7 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 			ExceptionDispatchInfo.Throw(result.Error);
 
 		if (result.Data is null)
-			Fail($"No {what} received in {DataTimeout}.");
+			Fail($"{GetType().Name}: No {what} received in {DataTimeout}.");
 	}
 
 	[TestMethod]

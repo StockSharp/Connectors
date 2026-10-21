@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using StockSharp.Lfj;
 using StockSharp.Lfj.Native;
+using StockSharp.Lfj.Native.Model;
 using StockSharp.Messages;
 
 /// <summary>
@@ -23,6 +24,31 @@ using StockSharp.Messages;
 [TestClass]
 public class LfjTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[DataRow(false)]
+	[DataRow(true)]
+	[Timeout(6000, CooperativeCancellation = true)]
+	public async Task SocketStartupIsBoundedWhenThePeerDoesNotRespond(bool acceptUpgrade)
+	{
+		using var server = new WebSocketTestServer();
+		using var client = new LfjSocketClient(server.Endpoint, TimeSpan.FromMilliseconds(500));
+		var starting = client.ConnectAsync([new LfjMarket
+		{
+			PoolId = "0x1111111111111111111111111111111111111111",
+			PoolVersion = LfjPoolVersions.V22,
+		}], CancellationToken).AsTask();
+		using var socket = acceptUpgrade ? await server.AcceptAsync(CancellationToken) : null;
+		if (socket is not null)
+		{
+			var request = await WebSocketTestServer.ReadRequestAsync(socket, CancellationToken);
+			AreEqual("eth_subscribe", request.Value<string>("method"));
+		}
+
+		var error = await ThrowsAsync<TimeoutException>(() => starting.WaitAsync(TimeSpan.FromSeconds(3), CancellationToken));
+
+		IsTrue(error.Message.Contains("LFJ WebSocket"), error.Message);
+	}
+
 	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task RpcReadHonorsRetryAfter()
@@ -65,6 +91,9 @@ public class LfjTests : LiveMarketDataTestBase
 			adapter.WebSocketEndpoint = null;
 		return adapter;
 	}
+
+	// Chain verification, pool loading and token metadata use several sequential public RPC reads.
+	protected override TimeSpan ConnectTimeout => TimeSpan.FromSeconds(60);
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()

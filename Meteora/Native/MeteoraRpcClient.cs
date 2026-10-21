@@ -276,12 +276,12 @@ sealed class MeteoraRpcClient : BaseLogReceiver
 				Encoding.UTF8, "application/json");
 			using var response = await _httpClient.PostAsync(string.Empty,
 				content, cancellationToken);
-			if (attempt < 2 && (response.StatusCode ==
+			if (attempt < 3 && (response.StatusCode ==
 					HttpStatusCode.TooManyRequests ||
 				(int)response.StatusCode >= 500))
 			{
-				await Task.Delay(TimeSpan.FromMilliseconds(250 * (attempt + 1)),
-					cancellationToken);
+				await WaitForRetryAsync(response, attempt,
+					response.StatusCode == HttpStatusCode.TooManyRequests, cancellationToken);
 				continue;
 			}
 			if (response.Content.Headers.ContentLength is long length &&
@@ -309,11 +309,29 @@ sealed class MeteoraRpcClient : BaseLogReceiver
 				throw new InvalidDataException(
 					$"Solana RPC returned an empty response for '{method}'.");
 			if (envelope.Error is not null)
+			{
+				if (envelope.Error.Code == 429 && attempt < 3)
+				{
+					await WaitForRetryAsync(response, attempt, true, cancellationToken);
+					continue;
+				}
 				throw new InvalidOperationException(
 					$"Solana RPC '{method}' failed ({envelope.Error.Code}): " +
 					$"{envelope.Error.Message}");
+			}
 			return envelope.Result;
 		}
+	}
+
+	private static async ValueTask WaitForRetryAsync(HttpResponseMessage response,
+		int attempt, bool isRateLimited, CancellationToken cancellationToken)
+	{
+		var retryAfter = response.Headers.RetryAfter;
+		var delay = retryAfter?.Delta ??
+			(retryAfter?.Date?.UtcDateTime - DateTime.UtcNow) ??
+			TimeSpan.FromMilliseconds((isRateLimited ? 2000 : 250) * (1 << attempt));
+		if (delay > TimeSpan.Zero)
+			await Task.Delay(delay, cancellationToken);
 	}
 
 	private async ValueTask WaitForRateLimitAsync(

@@ -18,6 +18,15 @@ using StockSharp.Messages;
 public class LiveMarketDataValidationTests : BaseTestClass
 {
 	[TestMethod]
+	public void MissingDataNamesTheConnector()
+	{
+		var error = Throws<AssertFailedException>(() => new KucoinTests()
+			.CheckData(new MarketDataResult<ExecutionMessage>(1, null, null), "ticks"));
+
+		IsTrue(error.Message.Contains(nameof(KucoinTests)), error.Message);
+	}
+
+	[TestMethod]
 	[DataRow("connect")]
 	[DataRow("lookup")]
 	[DataRow("data")]

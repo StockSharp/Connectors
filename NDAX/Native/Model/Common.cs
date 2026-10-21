@@ -40,6 +40,12 @@ sealed class NdaxGenericResponse
 	public string Detail { get; init; }
 }
 
+sealed class NdaxPingResponse
+{
+	[JsonProperty("msg", Required = Required.Always)]
+	public string Message { get; init; }
+}
+
 sealed class NdaxApiException : InvalidOperationException
 {
 	public NdaxApiException(string operation, int? code, string message)

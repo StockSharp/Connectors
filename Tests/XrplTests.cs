@@ -292,5 +292,6 @@ public class XrplTests : LiveMarketDataTestBase
 	};
 
 	/// <inheritdoc />
-	protected override int CandlesDepth => 5;
+	// Each ledger requires an RPC read; one minute supplies enough bars for the OHLC check.
+	protected override int CandlesDepth => 1;
 }

@@ -1,9 +1,12 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +28,71 @@ using StockSharp.Meteora.Native.Model;
 [TestClass]
 public class MeteoraTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[DataRow(false, false)]
+	[DataRow(true, false)]
+	[DataRow(false, true)]
+	[DataRow(true, true)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task RpcRateLimitsHonorRetryAfter(bool useDate, bool useRpcError)
+	{
+		var timer = Stopwatch.StartNew();
+		var requests = new List<TimeSpan>();
+		using var client = new MeteoraRpcClient("https://rpc.example.test", MeteoraClusters.Mainnet, null, null);
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(_ =>
+		{
+			requests.Add(timer.Elapsed);
+			if (requests.Count == 1)
+			{
+				var response = new HttpResponseMessage(useRpcError ? HttpStatusCode.OK : HttpStatusCode.TooManyRequests)
+				{
+					Content = new StringContent("""{"jsonrpc":"2.0","id":null,"error":{"code":429,"message":"Connection rate limits exceeded"}}"""),
+				};
+				response.Headers.RetryAfter = useDate
+					? new RetryConditionHeaderValue(DateTimeOffset.UtcNow.AddSeconds(1))
+					: new RetryConditionHeaderValue(TimeSpan.FromSeconds(1));
+				return response;
+			}
+			return new(HttpStatusCode.OK)
+			{
+				Content = new StringContent("""{"jsonrpc":"2.0","id":2,"result":{"context":{"slot":1},"value":[null]}}"""),
+			};
+		})) { BaseAddress = new("https://rpc.example.test") }, "_httpClient");
+
+		var accounts = await client.GetAccountsAsync([new string('1', 32)], CancellationToken);
+
+		AreEqual(1, accounts.Length);
+		AreEqual(2, requests.Count);
+		IsTrue(requests[1] - requests[0] >= TimeSpan.FromMilliseconds(950),
+			$"RPC retried before Retry-After elapsed: {requests[1] - requests[0]}.");
+	}
+
+	[TestMethod]
+	[DataRow(false)]
+	[DataRow(true)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ExhaustedRpcRateLimitsStillFail(bool useRpcError)
+	{
+		var requests = 0;
+		using var client = new MeteoraRpcClient("https://rpc.example.test", MeteoraClusters.Mainnet, null, null);
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(_ =>
+		{
+			requests++;
+			var response = new HttpResponseMessage(useRpcError ? HttpStatusCode.OK : HttpStatusCode.TooManyRequests)
+			{
+				Content = new StringContent("""{"jsonrpc":"2.0","id":null,"error":{"code":429,"message":"Connection rate limits exceeded"}}"""),
+			};
+			response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromMilliseconds(10));
+			return response;
+		})) { BaseAddress = new("https://rpc.example.test") }, "_httpClient");
+
+		var error = await ThrowsAsync<InvalidOperationException>(async () =>
+			await client.GetAccountsAsync([new string('1', 32)], CancellationToken));
+
+		IsTrue(error.Message.Contains("429"), error.Message);
+		AreEqual(4, requests);
+	}
+
 	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task RequestedTradeCountStopsReadingTransactionsWithinThePage()
@@ -114,6 +182,9 @@ public class MeteoraTests : LiveMarketDataTestBase
 		Pools = "5rCf1DM8LjKTw4YqhnoLcngyZYeNnQqztScTogYHAS6|SOL|USDC",
 		MaximumDiscoveredPools = 0,
 	};
+
+	// Allow connection setup to honor the public Solana RPC Retry-After response.
+	protected override TimeSpan ConnectTimeout => TimeSpan.FromSeconds(60);
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
