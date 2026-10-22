@@ -9,3 +9,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("C908D957-BA4A-4681-93B6-16820DC33E7B")]
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("StockSharp.Tests")]

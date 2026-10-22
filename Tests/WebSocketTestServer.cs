@@ -35,6 +35,9 @@ sealed class WebSocketTestServer : IDisposable
 	}
 
 	public static async Task<JObject> ReadRequestAsync(WebSocket socket, CancellationToken cancellationToken)
+		=> JObject.Parse(await ReadTextAsync(socket, cancellationToken));
+
+	public static async Task<string> ReadTextAsync(WebSocket socket, CancellationToken cancellationToken)
 	{
 		using var body = new MemoryStream();
 		var buffer = new byte[4096];
@@ -45,8 +48,11 @@ sealed class WebSocketTestServer : IDisposable
 			body.Write(buffer, 0, frame.Count);
 		}
 		while (!frame.EndOfMessage);
-		return JObject.Parse(Encoding.UTF8.GetString(body.ToArray()));
+		return Encoding.UTF8.GetString(body.ToArray());
 	}
+
+	public static Task SendTextAsync(WebSocket socket, string text, CancellationToken cancellationToken)
+		=> socket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(text)), WebSocketMessageType.Text, true, cancellationToken);
 
 	public static Task ReplyAsync(WebSocket socket, long requestId, long subscriptionId, CancellationToken cancellationToken)
 	{

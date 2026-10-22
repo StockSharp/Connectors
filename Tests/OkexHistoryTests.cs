@@ -15,6 +15,8 @@ using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Newtonsoft.Json;
+
 using StockSharp.Messages;
 using StockSharp.OkexHistory;
 
@@ -25,6 +27,33 @@ using StockSharp.OkexHistory;
 [CLSCompliant(false)]
 public class OkexHistoryTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[DataRow(null)]
+	[DataRow("")]
+	[DataRow(" ")]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task AnInstrumentFamilyDoesNotConsumeTheLookupLimit(string placeholderId)
+	{
+		var response = JsonConvert.SerializeObject(new
+		{
+			code = "0",
+			data = new[]
+			{
+				new { instId = placeholderId, instFamily = "IBM-USD_UM_XPERP", state = "preopen" },
+				new { instId = "BTC-USDT-261225", instFamily = "BTC-USDT", state = "live" },
+			},
+		});
+		var adapter = CreateAdapter<OkexHistoryMessageAdapter>();
+		HistoryHttpHandler.ReplaceClient(adapter.FindAdapter<OkexHistoryMessageAdapter>(),
+			new(new HistoryHttpHandler(_ => new(HttpStatusCode.OK) { Content = new StringContent(response) })));
+
+		var securities = await DownloadSecurities(adapter,
+			new SecurityLookupMessage { SecurityType = SecurityTypes.Future, Count = 1 }).ToArrayAsync(CancellationToken);
+
+		AreEqual(1, securities.Length);
+		AreEqual("BTC-USDT-261225", securities[0].SecurityId.SecurityCode);
+	}
+
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]

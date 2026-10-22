@@ -12,7 +12,7 @@ class PusherClient : BaseLogReceiver
 	public event Func<OrderBook, CancellationToken, ValueTask> OrderBookChanged;
 	public event Func<Ticker, CancellationToken, ValueTask> TickerChanged;
 	public event Func<Announcement, CancellationToken, ValueTask> NewAnnouncement;
-	public event Func<long, IEnumerable<Ohlc>, CancellationToken, ValueTask> NewCandles;
+	public event Func<long, TimeSpan, IEnumerable<Ohlc>, CancellationToken, ValueTask> NewCandles;
 	public event Func<long, IEnumerable<Position>, CancellationToken, ValueTask> PositionChanged;
 	public event Func<long, Account, CancellationToken, ValueTask> AccountChanged;
 	public event Func<long, Order, CancellationToken, ValueTask> OrderChanged;
@@ -209,7 +209,7 @@ class PusherClient : BaseLogReceiver
 					else if (channel.StartsWithIgnoreCase("chart.trades."))
 					{
 						if (NewCandles is { } handler)
-							await handler.InvokeAsync(0, [data.DeserializeObject<Ohlc>()], cancellationToken);
+							await handler.InvokeAsync(0, channel.Split('.')[^1].ToTimeFrame(), [data.DeserializeObject<Ohlc>()], cancellationToken);
 					}
 					else if (channel.StartsWithIgnoreCase("user.changes."))
 					{

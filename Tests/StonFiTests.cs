@@ -1,7 +1,10 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +28,66 @@ using StockSharp.StonFi.Native.Model;
 [TestClass]
 public class StonFiTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ARepeatedHistoryConnectionFailureEscapesAfterTheRetryLimit()
+	{
+		var attempts = 0;
+		var expected = new HttpRequestException("Connection reset by peer.");
+		using var client = new StonFiRestClient("https://api.example.test");
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(_ =>
+		{
+			attempts++;
+			throw expected;
+		})), "_http");
+
+		var actual = await ThrowsAsync<HttpRequestException>(async () =>
+			await client.GetEventsAsync(90, 100, CancellationToken));
+
+		AreEqual(expected, actual);
+		AreEqual(4, attempts);
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task APostRequestIsNotReplayedAfterATransportFailure()
+	{
+		var attempts = 0;
+		using var client = new StonFiRestClient("https://api.example.test");
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(request =>
+		{
+			AreEqual(HttpMethod.Post, request.Method);
+			attempts++;
+			throw new HttpRequestException("Connection reset by peer.");
+		})), "_http");
+
+		await ThrowsAsync<HttpRequestException>(async () =>
+			await client.SimulateSwapAsync(_poolAddress, _poolAddress, 1, 0.01m, _poolAddress, false, CancellationToken));
+
+		AreEqual(1, attempts);
+	}
+
+	[TestMethod]
+	[DataRow(1)]
+	[DataRow(2)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task EventHistoryRetriesAResetConnection(int failures)
+	{
+		var attempts = 0;
+		using var client = new StonFiRestClient("https://api.example.test");
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(_ =>
+		{
+			if (attempts++ < failures)
+				throw new HttpRequestException("Connection reset by peer.", new IOException("Connection reset by peer."));
+			return new(HttpStatusCode.OK) { Content = new StringContent("""{"events":[]}""") };
+		})), "_http");
+
+		var events = await client.GetEventsAsync(90, 100, CancellationToken);
+
+		AreEqual(0, events.Length);
+		AreEqual(failures + 1, attempts);
+	}
+
 	private const string _poolAddress =
 		"EQCGScrZe1xbyWqWDvdI6mzP-GAcAWFv6ZXuaJOuSqemxku4";
 	private const string _ownerAddress =

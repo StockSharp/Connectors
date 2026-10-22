@@ -63,6 +63,7 @@ partial class BitStampMessageAdapter
 
 				while (true)
 				{
+					var snapshotTime = DateTime.UtcNow;
 					var ohlc = await _httpClient.GetOhlc(currency, step, 1000, from, cancellationToken);
 
 					var hasData = false;
@@ -80,20 +81,7 @@ partial class BitStampMessageAdapter
 							break;
 						}
 
-						await SendOutMessageAsync(new TimeFrameCandleMessage
-						{
-							OriginalTransactionId = mdMsg.TransactionId,
-
-							OpenTime = c.Time,
-
-							OpenPrice = (decimal)c.Open,
-							HighPrice = (decimal)c.High,
-							LowPrice = (decimal)c.Low,
-							ClosePrice = (decimal)c.Close,
-							TotalVolume = (decimal)c.Volume,
-
-							State = CandleStates.Finished,
-						}, cancellationToken);
+						await SendOutMessageAsync(c.ToCandleMessage(mdMsg, snapshotTime), cancellationToken);
 
 						if (--left <= 0)
 							break;

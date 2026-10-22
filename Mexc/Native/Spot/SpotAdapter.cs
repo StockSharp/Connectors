@@ -188,6 +188,7 @@ class SpotAdapter : NativeAdapter
 				while (from < to)
 				{
 					var needBreak = true;
+					var snapshotTime = DateTime.UtcNow;
 					var candles = await _httpClient.GetCandles(symbol, tf, (long)from.ToUnix(false), (long)to.ToUnix(false), maxCount, cancellationToken);
 
 					foreach (var candle in candles.OrderBy(c => c.OpenTime))
@@ -203,17 +204,7 @@ class SpotAdapter : NativeAdapter
 							break;
 						}
 
-						await SendOutMessageAsync(new TimeFrameCandleMessage
-						{
-							OpenPrice = (decimal)candle.Open,
-							ClosePrice = (decimal)candle.Close,
-							HighPrice = (decimal)candle.High,
-							LowPrice = (decimal)candle.Low,
-							TotalVolume = (decimal)candle.Volume,
-							OpenTime = time,
-							State = CandleStates.Finished,
-							OriginalTransactionId = mdMsg.TransactionId,
-						}, cancellationToken);
+						await SendOutMessageAsync(candle.ToCandleMessage(mdMsg.TransactionId, snapshotTime), cancellationToken);
 
 						if (--left <= 0)
 						{

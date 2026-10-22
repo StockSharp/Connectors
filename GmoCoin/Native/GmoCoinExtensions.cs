@@ -2,6 +2,29 @@ namespace StockSharp.GmoCoin.Native;
 
 static class GmoCoinExtensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Model.GmoCoinCandle candle, SecurityId securityId, TimeSpan timeFrame, long transactionId, DateTime snapshotTime)
+	{
+		var openTime = candle.OpenTime.FromGmoCoinTime(snapshotTime);
+		// The trading day starts at 06:00 JST, so month boundaries are shifted by three hours from UTC.
+		var closeTime = timeFrame.Ticks == TimeHelper.TicksPerMonth
+			? openTime.AddHours(3).AddMonths(1).AddHours(-3)
+			: openTime + timeFrame;
+		return new()
+		{
+			SecurityId = securityId,
+			OpenTime = openTime,
+			CloseTime = closeTime,
+			OpenPrice = candle.Open,
+			HighPrice = candle.High,
+			LowPrice = candle.Low,
+			ClosePrice = candle.Close,
+			TotalVolume = candle.Volume,
+			TypedArg = timeFrame,
+			OriginalTransactionId = transactionId,
+			State = closeTime <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+		};
+	}
+
 	private static readonly TimeSpan[] _timeFrames =
 	[
 		TimeSpan.FromMinutes(1),

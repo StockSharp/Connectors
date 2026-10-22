@@ -191,8 +191,8 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 
 		foreach (var security in result.Securities)
 		{
-			IsFalse(security.SecurityId.SecurityCode.IsEmpty(), "Security code is empty.");
-			IsFalse(security.SecurityId.BoardCode.IsEmpty(), "Board code is empty.");
+			IsFalse(security.SecurityId.SecurityCode.IsEmpty(), $"{GetType().Name}: Security code is empty ({security}).");
+			IsFalse(security.SecurityId.BoardCode.IsEmpty(), $"{GetType().Name}: Board code is empty ({security}).");
 		}
 
 		// the instrument the subscription checks use must be one the adapter itself reports,

@@ -258,10 +258,26 @@ sealed class StonFiRestClient : BaseLogReceiver
 				request.Content = new StringContent(
 					JsonConvert.SerializeObject(body, _jsonSettings),
 					Encoding.UTF8, "application/json");
-			using var response = await _http.SendAsync(request,
-				HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-			var content = await ReadBodyAsync(response.Content,
-				cancellationToken);
+			HttpResponseMessage response = null;
+			string content;
+			try
+			{
+				response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+				content = await ReadBodyAsync(response.Content, cancellationToken);
+			}
+			catch (Exception error) when (error is HttpRequestException or IOException &&
+				method == HttpMethod.Get && attempt < 3 && !cancellationToken.IsCancellationRequested)
+			{
+				response?.Dispose();
+				await Task.Delay(TimeSpan.FromMilliseconds(250 * (1 << attempt)), cancellationToken);
+				continue;
+			}
+			catch
+			{
+				response?.Dispose();
+				throw;
+			}
+			using var responseScope = response;
 			if (attempt < 3 && (response.StatusCode ==
 					(HttpStatusCode)429 || (int)response.StatusCode >= 500))
 			{

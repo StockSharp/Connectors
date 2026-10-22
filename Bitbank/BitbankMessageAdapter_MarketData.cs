@@ -119,11 +119,12 @@ public partial class BitbankMessageAdapter
 
 				while (date <= to)
 				{
+					var snapshotTime = DateTime.UtcNow;
 					var candles = await _httpClient.GetCandlesAsync(currency, tfName, date, cancellationToken);
 
 					foreach (var candle in candles.OrderBy(c => c.Time))
 					{
-						await ProcessCandleAsync(candle, mdMsg.SecurityId, tf, mdMsg.TransactionId, cancellationToken);
+						await ProcessCandleAsync(candle, mdMsg.SecurityId, tf, mdMsg.TransactionId, snapshotTime, cancellationToken);
 					}
 
 					date = date.AddDays(1);
@@ -134,21 +135,9 @@ public partial class BitbankMessageAdapter
 		}
 	}
 
-	private ValueTask ProcessCandleAsync(Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originTransId, CancellationToken cancellationToken)
+	private ValueTask ProcessCandleAsync(Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originTransId, DateTime snapshotTime, CancellationToken cancellationToken)
 	{
-		return SendOutMessageAsync(new TimeFrameCandleMessage
-		{
-			SecurityId = securityId,
-			TypedArg = timeFrame,
-			OpenPrice = candle.Open.ToDecimal() ?? 0,
-			ClosePrice = candle.Close.ToDecimal() ?? 0,
-			HighPrice = candle.High.ToDecimal() ?? 0,
-			LowPrice = candle.Low.ToDecimal() ?? 0,
-			TotalVolume = candle.Volume.ToDecimal() ?? 0,
-			OpenTime = candle.Time.FromUnix(false),
-			State = CandleStates.Finished,
-			OriginalTransactionId = originTransId,
-		}, cancellationToken);
+		return SendOutMessageAsync(candle.ToCandleMessage(securityId, timeFrame, originTransId, snapshotTime), cancellationToken);
 	}
 
 	private ValueTask SessionOnTickerChanged(string currencyPair, Ticker ticker, CancellationToken cancellationToken)

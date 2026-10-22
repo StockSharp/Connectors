@@ -2,6 +2,25 @@ namespace StockSharp.Binance.Native;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this HttpOhlc candle, MarketDataMessage subscription, DateTime snapshotTime)
+		=> new()
+		{
+			SecurityId = subscription.SecurityId,
+			TypedArg = subscription.GetTimeFrame(),
+			OpenPrice = candle.Open,
+			ClosePrice = candle.Close,
+			HighPrice = candle.High,
+			LowPrice = candle.Low,
+			TotalVolume = candle.AssetVolume,
+			BuyVolume = candle.TakerBuyAssetVolume,
+			SellVolume = candle.AssetVolume - candle.TakerBuyAssetVolume,
+			OpenTime = candle.StartTime.FromUnix(false),
+			// Binance's close timestamp includes the final millisecond of the interval.
+			State = candle.CloseTime.FromUnix(false).AddMilliseconds(1) <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			TotalTicks = candle.TradesCount,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+
 	public static bool IsCommonFutures(this BinanceSections section)
 		=> section == BinanceSections.Futures || section == BinanceSections.FuturesCoin;
 

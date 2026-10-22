@@ -2,6 +2,19 @@ namespace StockSharp.BitStamp.Native;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Model.Ohlc candle, MarketDataMessage subscription, DateTime snapshotTime)
+		=> new()
+		{
+			OriginalTransactionId = subscription.TransactionId,
+			OpenTime = candle.Time,
+			OpenPrice = (decimal)candle.Open,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			ClosePrice = (decimal)candle.Close,
+			TotalVolume = (decimal)candle.Volume,
+			State = candle.Time + subscription.GetTimeFrame() <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+		};
+
 	public static Sides ToSide(this int type)
 	{
 		return type == 0 ? Sides.Buy : Sides.Sell;

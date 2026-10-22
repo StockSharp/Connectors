@@ -2,6 +2,12 @@ namespace StockSharp.Bitget.Native;
 
 static class Extensions
 {
+	public static DateTime GetCandleCloseTime(this TimeSpan timeFrame, DateTime openTime)
+		// The published 1M interval is aligned to UTC+8.
+		=> timeFrame.Ticks == TimeHelper.TicksPerMonth
+			? openTime.AddHours(8).AddMonths(1).AddHours(-8)
+			: openTime + timeFrame;
+
 	/// <summary>
 	/// Time frames as they are named in the web socket channel suffix (candle1m, candle1H, ...)
 	/// and in the mix (futures) REST granularity. Only the frames Bitget serves are listed.

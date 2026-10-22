@@ -2,6 +2,26 @@ namespace StockSharp.Upbit;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Native.Model.Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originTransId, DateTime snapshotTime)
+	{
+		var openTime = candle.DateTimeUtc;
+		var closeTime = timeFrame.Ticks == TimeHelper.TicksPerMonth ? openTime.AddMonths(1) : openTime + timeFrame;
+
+		return new()
+		{
+			SecurityId = securityId,
+			TypedArg = timeFrame,
+			OpenPrice = candle.Open.ToDecimal() ?? 0,
+			ClosePrice = candle.Close.ToDecimal() ?? 0,
+			HighPrice = candle.High.ToDecimal() ?? 0,
+			LowPrice = candle.Low.ToDecimal() ?? 0,
+			TotalVolume = candle.Volume.ToDecimal() ?? 0,
+			OpenTime = candle.DateTimeUtc,
+			State = closeTime <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = originTransId,
+		};
+	}
+
 	public static string ToNative(this Sides side)
 	{
 		return side switch

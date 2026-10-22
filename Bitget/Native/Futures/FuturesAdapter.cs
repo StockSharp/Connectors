@@ -217,6 +217,7 @@ class MixAdapter : NativeAdapter
 				while (from < to)
 				{
 					var needBreak = true;
+					var snapshotTime = DateTime.UtcNow;
 					var candles = await _httpClient.GetCandles(symbol, tf, startTime, endTime, maxCount, cancellationToken);
 
 					foreach (var candle in candles.OrderBy(c => c.Time))
@@ -232,17 +233,7 @@ class MixAdapter : NativeAdapter
 							break;
 						}
 
-						await SendOutMessageAsync(new TimeFrameCandleMessage
-						{
-							OpenPrice = (decimal)(candle.Open ?? 0),
-							ClosePrice = (decimal)(candle.Close ?? 0),
-							HighPrice = (decimal)(candle.High ?? 0),
-							LowPrice = (decimal)(candle.Low ?? 0),
-							TotalVolume = (decimal)(candle.BaseVolume ?? 0),
-							OpenTime = time,
-							State = CandleStates.Finished,
-							OriginalTransactionId = mdMsg.TransactionId,
-						}, cancellationToken);
+						await SendOutMessageAsync(candle.ToCandleMessage(mdMsg, snapshotTime), cancellationToken);
 
 						if (--left <= 0)
 						{

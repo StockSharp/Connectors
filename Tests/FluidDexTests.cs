@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 
 using StockSharp.FluidDex;
 using StockSharp.FluidDex.Native;
+using StockSharp.FluidDex.Native.Model;
 using StockSharp.Messages;
 
 /// <summary>
@@ -22,6 +23,67 @@ using StockSharp.Messages;
 [TestClass]
 public class FluidDexTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[DataRow(1)]
+	[DataRow(2)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task LogQueriesRetryTheSameRangeWhenAnRpcNodeLagsBehindItsHead(int failures)
+	{
+		var attempts = 0;
+		using var client = CreateLogClient(payload =>
+		{
+			AreEqual("eth_getLogs", payload["method"].Value<string>());
+			AreEqual("0x5a", payload["params"][0]["fromBlock"].Value<string>());
+			AreEqual("0x64", payload["params"][0]["toBlock"].Value<string>());
+			var response = new JObject { ["jsonrpc"] = "2.0", ["id"] = payload["id"] };
+			if (attempts++ < failures)
+				response["error"] = new JObject { ["code"] = -32602, ["message"] = "block range extends beyond current head block" };
+			else
+				response["result"] = new JArray();
+			return response;
+		});
+
+		var logs = await client.GetLogsAsync(new FluidDexMarket { PoolId = "0x667701e51b4d1ca244f17c78f7ab8744b4c99f9b" }, 90, 100, CancellationToken);
+
+		AreEqual(0, logs.Length);
+		AreEqual(failures + 1, attempts);
+	}
+
+	[TestMethod]
+	[DataRow("block range extends beyond current head block", 4)]
+	[DataRow("invalid address", 1)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task LogRetryIsBoundedAndDoesNotHideInvalidParameters(string message, int expectedAttempts)
+	{
+		var attempts = 0;
+		using var client = CreateLogClient(payload =>
+		{
+			attempts++;
+			return new JObject
+			{
+				["jsonrpc"] = "2.0", ["id"] = payload["id"],
+				["error"] = new JObject { ["code"] = -32602, ["message"] = message },
+			};
+		});
+
+		await ThrowsAsync<InvalidOperationException>(async () =>
+			await client.GetLogsAsync(new FluidDexMarket { PoolId = "0x667701e51b4d1ca244f17c78f7ab8744b4c99f9b" }, 90, 100, CancellationToken));
+
+		AreEqual(expectedAttempts, attempts);
+	}
+
+	private FluidDexRpcClient CreateLogClient(Func<JObject, JObject> response)
+	{
+		using var adapter = new FluidDexMessageAdapter(new IncrementalIdGenerator());
+		var client = new FluidDexRpcClient("https://rpc.example.test", FluidDexChains.Ethereum, adapter.FactoryAddress, adapter.ResolverAddress, null, null);
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(request =>
+		{
+			var payload = JObject.Parse(request.Content.ReadAsStringAsync(CancellationToken).GetAwaiter().GetResult());
+			return new(HttpStatusCode.OK) { Content = new StringContent(response(payload).ToString()) };
+		})), "_http");
+		return client;
+	}
+
 	[TestMethod]
 	[DataRow(990, 0, 990)]
 	[DataRow(990, 1, 991)]
@@ -98,7 +160,8 @@ public class FluidDexTests : LiveMarketDataTestBase
 	protected override TimeSpan DataTimeout => TimeSpan.FromSeconds(60);
 
 	/// <inheritdoc />
-	protected override int CandlesDepth => 2;
+	// Allow a wider window when this pool has no swap in the latest two minutes.
+	protected override int CandlesDepth => 10;
 
 	/// <inheritdoc />
 	protected override void ConfigureSubscription(MarketDataMessage message)

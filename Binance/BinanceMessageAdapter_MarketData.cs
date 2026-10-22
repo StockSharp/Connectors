@@ -277,6 +277,8 @@ public partial class BinanceMessageAdapter
 
 				while (true)
 				{
+					// A response can arrive after a candle closes while still containing its earlier partial snapshot.
+					var snapshotTime = _httpClient.ServerTime;
 					var candles = (await _httpClient.GetCandles(section, symbol, tfName, (long)from.ToUnix(false), null, _maxFetch, cancellationToken)).ToArray();
 
 					if (candles.IsEmpty())
@@ -308,22 +310,7 @@ public partial class BinanceMessageAdapter
 						if (timestamp <= last)
 							continue;
 
-						await SendOutMessageAsync(new TimeFrameCandleMessage
-						{
-							SecurityId = mdMsg.SecurityId,
-							TypedArg = tf,
-							OpenPrice = candle.Open,
-							ClosePrice = candle.Close,
-							HighPrice = candle.High,
-							LowPrice = candle.Low,
-							TotalVolume = candle.AssetVolume,
-							BuyVolume = candle.TakerBuyAssetVolume,
-							SellVolume = candle.AssetVolume - candle.TakerBuyAssetVolume,
-							OpenTime = timestamp,
-							State = CandleStates.Finished,
-							TotalTicks = candle.TradesCount,
-							OriginalTransactionId = mdMsg.TransactionId,
-						}, cancellationToken);
+						await SendOutMessageAsync(candle.ToCandleMessage(mdMsg, snapshotTime), cancellationToken);
 
 						last = timestamp;
 						hasNew = true;

@@ -2,6 +2,36 @@ namespace StockSharp.Mexc.Native;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Spot.Model.Candle candle, long originalTransactionId, DateTime snapshotTime)
+	{
+		return new TimeFrameCandleMessage
+		{
+			OpenPrice = (decimal)candle.Open,
+			ClosePrice = (decimal)candle.Close,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			TotalVolume = (decimal)candle.Volume,
+			OpenTime = candle.OpenTime,
+			State = candle.CloseTime.AddMilliseconds(1) <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = originalTransactionId,
+		};
+	}
+
+	public static TimeFrameCandleMessage ToCandleMessage(this Futures.Model.Candle candle, long originalTransactionId, DateTime snapshotTime)
+	{
+		return new TimeFrameCandleMessage
+		{
+			OpenPrice = (decimal)candle.Open,
+			ClosePrice = (decimal)candle.Close,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			TotalVolume = (decimal)candle.Volume,
+			OpenTime = candle.OpenTime,
+			State = candle.CloseTime.AddMilliseconds(1) <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = originalTransactionId,
+		};
+	}
+
 	public static string ToNative(this Sides side)
 	{
 		return side switch

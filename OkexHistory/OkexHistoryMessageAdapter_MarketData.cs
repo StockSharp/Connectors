@@ -52,6 +52,10 @@ partial class OkexHistoryMessageAdapter
 
 					var instId = item.Id; // e.g. "BTC-USDT"
 
+					// A pre-open family without an instrument ID is not a downloadable security.
+					if (instId.IsEmptyOrWhiteSpace())
+						continue;
+
 					if (!secCodeLike.IsEmpty() && !instId.ContainsIgnoreCase(secCodeLike))
 						continue;
 

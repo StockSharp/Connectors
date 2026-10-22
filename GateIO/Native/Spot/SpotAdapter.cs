@@ -185,17 +185,7 @@ class SpotAdapter : NativeAdapter
 							break;
 						}
 
-						await SendOutMessageAsync(new TimeFrameCandleMessage
-						{
-							OpenPrice = (decimal)candle.Open,
-							ClosePrice = (decimal)candle.Close,
-							HighPrice = (decimal)candle.High,
-							LowPrice = (decimal)candle.Low,
-							TotalVolume = (decimal)candle.Volume,
-							OpenTime = time,
-							State = CandleStates.Finished,
-							OriginalTransactionId = mdMsg.TransactionId,
-						}, cancellationToken);
+						await SendOutMessageAsync(candle.ToCandleMessage(mdMsg), cancellationToken);
 
 						if (--left <= 0)
 						{

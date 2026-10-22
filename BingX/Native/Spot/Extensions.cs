@@ -2,6 +2,19 @@ namespace StockSharp.BingX.Native.Spot;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Model.RestCandle candle, MarketDataMessage subscription, DateTime snapshotTime)
+		=> new()
+		{
+			OpenPrice = (decimal)candle.Open,
+			ClosePrice = (decimal)candle.Close,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			TotalVolume = (decimal)candle.Volume,
+			OpenTime = candle.OpenTime,
+			State = candle.CloseTime.AddMilliseconds(1) <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+
 	public static string ToNative(this Sides side)
 	{
 		return side switch

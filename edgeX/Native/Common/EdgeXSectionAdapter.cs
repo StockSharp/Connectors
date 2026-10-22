@@ -295,8 +295,9 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 		var from = mdMsg.From ?? (DateTime.UtcNow - TimeSpan.FromDays(1));
 		var to = mdMsg.To ?? DateTime.UtcNow;
 		var left = mdMsg.Count ?? long.MaxValue;
-		var lastOpenTime = from;
+		var lastOpenTime = Extensions.StartCandleCursor(from);
 
+		var snapshotTime = DateTime.UtcNow;
 		var kline = await RestClient.GetKlineAsync(contractId, timeFrame.ToNativeKlineType(), "LAST_PRICE", _maxHistoryLimit, from, to, cancellationToken);
 
 		foreach (var row in GetKlineRows(kline).OrderBy(static r => r["klineTime"]?.Value<long>() ?? 0))
@@ -307,21 +308,10 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 			if (openTime > to)
 				break;
 
-			await SendOutMessageAsync(new TimeFrameCandleMessage
-			{
-				SecurityId = symbol.ToStockSharp(BoardCode),
-				TypedArg = timeFrame,
-				OpenTime = openTime,
-				OpenPrice = row["open"]?.Value<string>().To<decimal?>() ?? 0m,
-				HighPrice = row["high"]?.Value<string>().To<decimal?>() ?? 0m,
-				LowPrice = row["low"]?.Value<string>().To<decimal?>() ?? 0m,
-				ClosePrice = row["close"]?.Value<string>().To<decimal?>() ?? 0m,
-				TotalVolume = row["size"]?.Value<string>().To<decimal?>() ?? 0m,
-				State = CandleStates.Finished,
-				OriginalTransactionId = mdMsg.TransactionId,
-			}, cancellationToken);
+			var candle = row.ToCandleMessage(symbol.ToStockSharp(BoardCode), timeFrame, mdMsg.TransactionId, snapshotTime);
+			await SendOutMessageAsync(candle, cancellationToken);
 
-			lastOpenTime = openTime;
+			lastOpenTime = Extensions.AdvanceCandleCursor(lastOpenTime, openTime, candle.State);
 
 			if (--left <= 0)
 				break;
@@ -693,6 +683,7 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 	{
 		var from = state.LastOpenTime == default ? DateTime.UtcNow - TimeSpan.FromHours(6) : state.LastOpenTime - state.TimeFrame;
 		var to = DateTime.UtcNow;
+		var snapshotTime = DateTime.UtcNow;
 		var response = await RestClient.GetKlineAsync(state.ContractId, state.TimeFrame.ToNativeKlineType(), "LAST_PRICE", 60, from, to, cancellationToken);
 		var lastOpen = state.LastOpenTime;
 
@@ -702,21 +693,10 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 			if (openTime <= state.LastOpenTime)
 				continue;
 
-			await SendOutMessageAsync(new TimeFrameCandleMessage
-			{
-				SecurityId = state.Symbol.ToStockSharp(BoardCode),
-				TypedArg = state.TimeFrame,
-				OpenTime = openTime,
-				OpenPrice = row["open"]?.Value<string>().To<decimal?>() ?? 0m,
-				HighPrice = row["high"]?.Value<string>().To<decimal?>() ?? 0m,
-				LowPrice = row["low"]?.Value<string>().To<decimal?>() ?? 0m,
-				ClosePrice = row["close"]?.Value<string>().To<decimal?>() ?? 0m,
-				TotalVolume = row["size"]?.Value<string>().To<decimal?>() ?? 0m,
-				State = CandleStates.Finished,
-				OriginalTransactionId = state.TransactionId,
-			}, cancellationToken);
+			var candle = row.ToCandleMessage(state.Symbol.ToStockSharp(BoardCode), state.TimeFrame, state.TransactionId, snapshotTime);
+			await SendOutMessageAsync(candle, cancellationToken);
 
-			lastOpen = openTime;
+			lastOpen = Extensions.AdvanceCandleCursor(lastOpen, openTime, candle.State);
 		}
 
 		using (_sync.EnterScope())
@@ -1503,25 +1483,11 @@ abstract class EdgeXSectionAdapter : BaseNativeAdapter
 		if (subscriptions.Length == 0)
 			return;
 
-		var openTime = ParseUnixMs(row["klineTime"] ?? row["openTime"]) ?? CurrentTime;
-		var closeTime = ParseUnixMs(row["endTime"]) ?? openTime + timeFrame;
+		var snapshotTime = DateTime.UtcNow;
 
 		foreach (var subscription in subscriptions)
 		{
-			await SendOutMessageAsync(new TimeFrameCandleMessage
-			{
-				SecurityId = subscription.Symbol.ToStockSharp(BoardCode),
-				TypedArg = timeFrame,
-				OpenTime = openTime,
-				CloseTime = closeTime,
-				OpenPrice = row["open"]?.Value<string>().To<decimal?>() ?? 0m,
-				HighPrice = row["high"]?.Value<string>().To<decimal?>() ?? 0m,
-				LowPrice = row["low"]?.Value<string>().To<decimal?>() ?? 0m,
-				ClosePrice = row["close"]?.Value<string>().To<decimal?>() ?? 0m,
-				TotalVolume = row["size"]?.Value<string>().To<decimal?>() ?? 0m,
-				State = CandleStates.Finished,
-				OriginalTransactionId = subscription.TransactionId,
-			}, cancellationToken);
+			await SendOutMessageAsync(row.ToCandleMessage(subscription.Symbol.ToStockSharp(BoardCode), timeFrame, subscription.TransactionId, snapshotTime), cancellationToken);
 		}
 	}
 

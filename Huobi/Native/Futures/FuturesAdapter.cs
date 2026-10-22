@@ -444,22 +444,9 @@ class FuturesAdapter(HuobiMessageAdapter parent, Authenticator authenticator, st
 		await SendSubscriptionResultAsync(message, cancellationToken);
 	}
 
-	private ValueTask ProcessCandleAsync(SecurityId securityId, TimeSpan tf, Ohlc candle, long originalTransactionId, CancellationToken cancellationToken)
+	private ValueTask ProcessCandleAsync(SecurityId securityId, TimeSpan tf, Ohlc candle, long originalTransactionId, DateTime snapshotTime, CancellationToken cancellationToken)
 	{
-		return SendOutMessageAsync(new TimeFrameCandleMessage
-		{
-			SecurityId = securityId,
-			TypedArg = tf,
-			OpenPrice = (decimal?)candle.Open ?? 0,
-			ClosePrice = (decimal?)candle.Close ?? 0,
-			HighPrice = (decimal?)candle.High ?? 0,
-			LowPrice = (decimal?)candle.Low ?? 0,
-			TotalVolume = (decimal?)candle.Amount ?? 0,
-			OpenTime = candle.OpenTime,
-			TotalTicks = candle.Count,
-			State = CandleStates.Finished,
-			OriginalTransactionId = originalTransactionId,
-		}, cancellationToken);
+		return SendOutMessageAsync(candle.ToCandleMessage(securityId, tf, originalTransactionId, snapshotTime), cancellationToken);
 	}
 
 	private ValueTask ProcessTickAsync(SecurityId securityId, TradeBase tick, long id, long originalTransactionId, CancellationToken cancellationToken)
@@ -479,11 +466,11 @@ class FuturesAdapter(HuobiMessageAdapter parent, Authenticator authenticator, st
 		}, cancellationToken);
 	}
 
-	private async ValueTask SessionOnCandlesReceived(SecurityId securityId, TimeSpan timeFrame, long transactionId, Ohlc[] candles, CancellationToken cancellationToken)
+	private async ValueTask SessionOnCandlesReceived(DateTime snapshotTime, SecurityId securityId, TimeSpan timeFrame, long transactionId, Ohlc[] candles, CancellationToken cancellationToken)
 	{
 		foreach (var candle in candles)
 		{
-			await ProcessCandleAsync(securityId, timeFrame, candle, transactionId, cancellationToken);
+			await ProcessCandleAsync(securityId, timeFrame, candle, transactionId, snapshotTime, cancellationToken);
 		}
 
 		await SendSubscriptionFinishedAsync(transactionId, cancellationToken);
@@ -491,7 +478,7 @@ class FuturesAdapter(HuobiMessageAdapter parent, Authenticator authenticator, st
 
 	private ValueTask SessionOnNewCandle(DateTime timestamp, SecurityId securityId, TimeSpan timeFrame, long transactionId, Ohlc candle, CancellationToken cancellationToken)
 	{
-		return ProcessCandleAsync(securityId, timeFrame, candle, transactionId, cancellationToken);
+		return ProcessCandleAsync(securityId, timeFrame, candle, transactionId, timestamp, cancellationToken);
 	}
 
 	private async ValueTask SessionOnNewTrades(DateTime timestamp, SecurityId securityId, SocketTrade[] trades, CancellationToken cancellationToken)

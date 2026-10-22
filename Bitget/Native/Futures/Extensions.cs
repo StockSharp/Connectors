@@ -2,6 +2,19 @@ namespace StockSharp.Bitget.Native.Futures;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Model.RestCandle candle, MarketDataMessage subscription, DateTime snapshotTime)
+		=> new()
+		{
+			OpenPrice = (decimal)(candle.Open ?? 0),
+			ClosePrice = (decimal)(candle.Close ?? 0),
+			HighPrice = (decimal)(candle.High ?? 0),
+			LowPrice = (decimal)(candle.Low ?? 0),
+			TotalVolume = (decimal)(candle.BaseVolume ?? 0),
+			OpenTime = candle.Time,
+			State = subscription.GetTimeFrame().GetCandleCloseTime(candle.Time) <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+
 	public static string ToNative(this Sides side)
 	{
 		return side switch

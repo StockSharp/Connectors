@@ -2,6 +2,69 @@ namespace StockSharp.Huobi;
 
 static class Extensions
 {
+	private static CandleStates GetCandleState(DateTime openTime, TimeSpan timeFrame, DateTime snapshotTime)
+	{
+		// Monthly bars follow the venue's UTC+8 calendar rather than a fixed 30-day duration.
+		var closeTime = timeFrame.Ticks == TimeHelper.TicksPerMonth
+			? openTime.AddHours(8).AddMonths(1).AddHours(-8)
+			: openTime + timeFrame;
+		return closeTime <= snapshotTime ? CandleStates.Finished : CandleStates.Active;
+	}
+
+	public static TimeFrameCandleMessage ToCandleMessage(this Native.Spot.Model.Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originalTransactionId, DateTime snapshotTime)
+	{
+		return new TimeFrameCandleMessage
+		{
+			SecurityId = securityId,
+			TypedArg = timeFrame,
+			OpenPrice = (decimal?)candle.Open ?? 0,
+			ClosePrice = (decimal?)candle.Close ?? 0,
+			HighPrice = (decimal?)candle.High ?? 0,
+			LowPrice = (decimal?)candle.Low ?? 0,
+			TotalVolume = (decimal?)candle.Amount ?? 0,
+			OpenTime = candle.OpenTime,
+			TotalTicks = candle.Count,
+			State = GetCandleState(candle.OpenTime, timeFrame, snapshotTime),
+			OriginalTransactionId = originalTransactionId,
+		};
+	}
+
+	public static TimeFrameCandleMessage ToCandleMessage(this Native.Futures.Model.Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originalTransactionId, DateTime snapshotTime)
+	{
+		return new TimeFrameCandleMessage
+		{
+			SecurityId = securityId,
+			TypedArg = timeFrame,
+			OpenPrice = (decimal?)candle.Open ?? 0,
+			ClosePrice = (decimal?)candle.Close ?? 0,
+			HighPrice = (decimal?)candle.High ?? 0,
+			LowPrice = (decimal?)candle.Low ?? 0,
+			TotalVolume = (decimal?)candle.Amount ?? 0,
+			OpenTime = candle.OpenTime,
+			TotalTicks = candle.Count,
+			State = GetCandleState(candle.OpenTime, timeFrame, snapshotTime),
+			OriginalTransactionId = originalTransactionId,
+		};
+	}
+
+	public static TimeFrameCandleMessage ToCandleMessage(this Native.Usdt.Model.Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originalTransactionId, DateTime snapshotTime)
+	{
+		return new TimeFrameCandleMessage
+		{
+			SecurityId = securityId,
+			TypedArg = timeFrame,
+			OpenPrice = (decimal?)candle.Open ?? 0,
+			ClosePrice = (decimal?)candle.Close ?? 0,
+			HighPrice = (decimal?)candle.High ?? 0,
+			LowPrice = (decimal?)candle.Low ?? 0,
+			TotalVolume = (decimal?)candle.Amount ?? 0,
+			OpenTime = candle.OpenTime,
+			TotalTicks = candle.Count,
+			State = GetCandleState(candle.OpenTime, timeFrame, snapshotTime),
+			OriginalTransactionId = originalTransactionId,
+		};
+	}
+
 	public static bool? ToInitiator(this string role)
 	{
 		if (role.IsEmpty())

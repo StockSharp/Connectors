@@ -222,6 +222,7 @@ class DeliveryAdapter : NativeAdapter
 				while (from < to)
 				{
 					var needBreak = true;
+					var snapshotTime = DateTime.UtcNow;
 					var candles = await _httpClient.GetCandles(symbol, tf, (long)last.ToUnix(), (long)(last + timeFrame.Multiply(maxCount)).ToUnix(), null, cancellationToken);
 
 					foreach (var candle in candles.OrderBy(c => c.Time))
@@ -237,17 +238,7 @@ class DeliveryAdapter : NativeAdapter
 							break;
 						}
 
-						await SendOutMessageAsync(new TimeFrameCandleMessage
-						{
-							OpenPrice = (decimal)candle.Open,
-							ClosePrice = (decimal)candle.Close,
-							HighPrice = (decimal)candle.High,
-							LowPrice = (decimal)candle.Low,
-							TotalVolume = (decimal)candle.Volume,
-							OpenTime = time,
-							State = CandleStates.Finished,
-							OriginalTransactionId = mdMsg.TransactionId,
-						}, cancellationToken);
+						await SendOutMessageAsync(candle.ToCandleMessage(mdMsg, snapshotTime), cancellationToken);
 
 						if (--left <= 0)
 						{

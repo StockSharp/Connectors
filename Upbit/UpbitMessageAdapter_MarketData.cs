@@ -115,6 +115,7 @@ partial class UpbitMessageAdapter
 		var isSinglePage = from is null && mdMsg.Count is null;
 
 		var received = new List<Ohlc>();
+		var snapshotTime = DateTime.UtcNow;
 
 		// Upbit returns the newest candles preceding the exclusive 'to' bound,
 		// so the requested range is walked backwards page by page
@@ -155,26 +156,14 @@ partial class UpbitMessageAdapter
 		}
 
 		for (var i = received.Count - 1; i >= 0; i--)
-			await ProcessCandleAsync(received[i], secId, tf, transId, cancellationToken);
+			await ProcessCandleAsync(received[i], secId, tf, transId, snapshotTime, cancellationToken);
 
 		await SendSubscriptionFinishedAsync(transId, cancellationToken);
 	}
 
-	private ValueTask ProcessCandleAsync(Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originTransId, CancellationToken cancellationToken)
+	private ValueTask ProcessCandleAsync(Ohlc candle, SecurityId securityId, TimeSpan timeFrame, long originTransId, DateTime snapshotTime, CancellationToken cancellationToken)
 	{
-		return SendOutMessageAsync(new TimeFrameCandleMessage
-		{
-			SecurityId = securityId,
-			TypedArg = timeFrame,
-			OpenPrice = candle.Open.ToDecimal() ?? 0,
-			ClosePrice = candle.Close.ToDecimal() ?? 0,
-			HighPrice = candle.High.ToDecimal() ?? 0,
-			LowPrice = candle.Low.ToDecimal() ?? 0,
-			TotalVolume = candle.Volume.ToDecimal() ?? 0,
-			OpenTime = candle.DateTimeUtc,
-			State = CandleStates.Finished,
-			OriginalTransactionId = originTransId,
-		}, cancellationToken);
+		return SendOutMessageAsync(candle.ToCandleMessage(securityId, timeFrame, originTransId, snapshotTime), cancellationToken);
 	}
 
 	private ValueTask SessionOnTickerChanged(Ticker ticker, CancellationToken cancellationToken)

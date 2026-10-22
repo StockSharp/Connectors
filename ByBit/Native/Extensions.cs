@@ -2,6 +2,25 @@ namespace StockSharp.ByBit.Native;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Model.Kline candle, MarketDataMessage subscription, DateTime snapshotTime)
+	{
+		var openTime = candle.OpenTime.FromUnix(false);
+		var timeFrame = subscription.GetTimeFrame();
+		var closeTime = timeFrame.Ticks == TimeHelper.TicksPerMonth ? openTime.AddMonths(1) : openTime + timeFrame;
+
+		return new()
+		{
+			OpenPrice = candle.Open.ToDecimal() ?? 0,
+			HighPrice = candle.High.ToDecimal() ?? 0,
+			LowPrice = candle.Low.ToDecimal() ?? 0,
+			ClosePrice = candle.Close.ToDecimal() ?? 0,
+			TotalVolume = candle.Volume.ToDecimal() ?? 0,
+			OpenTime = candle.OpenTime.FromUnix(false),
+			OriginalTransactionId = subscription.TransactionId,
+			State = closeTime <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+		};
+	}
+
 	public static string ToNative(this Sides side)
 		=> side switch
 		{

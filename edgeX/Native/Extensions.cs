@@ -2,6 +2,33 @@ namespace StockSharp.EdgeX.Native;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this JObject row, SecurityId securityId, TimeSpan timeFrame, long originalTransactionId, DateTime snapshotTime)
+	{
+		var openTime = (row["klineTime"] ?? row["openTime"]).Value<long>().FromUnix(false);
+		var closeTime = timeFrame.Ticks == TimeHelper.TicksPerMonth ? openTime.AddMonths(1) : openTime + timeFrame;
+		return new TimeFrameCandleMessage
+		{
+			SecurityId = securityId,
+			TypedArg = timeFrame,
+			OpenTime = openTime,
+			CloseTime = closeTime,
+			OpenPrice = row["open"]?.Value<string>().To<decimal?>() ?? 0m,
+			HighPrice = row["high"]?.Value<string>().To<decimal?>() ?? 0m,
+			LowPrice = row["low"]?.Value<string>().To<decimal?>() ?? 0m,
+			ClosePrice = row["close"]?.Value<string>().To<decimal?>() ?? 0m,
+			TotalVolume = row["size"]?.Value<string>().To<decimal?>() ?? 0m,
+			State = closeTime <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = originalTransactionId,
+		};
+	}
+
+	// A subscription can start with only its current bar; that bar must remain eligible for polling.
+	internal static DateTime StartCandleCursor(DateTime from)
+		=> from == DateTime.MinValue ? from : from.AddTicks(-1);
+
+	public static DateTime AdvanceCandleCursor(DateTime previous, DateTime openTime, CandleStates state)
+		=> state == CandleStates.Finished ? openTime : previous;
+
 	public static readonly PairSet<TimeSpan, string> TimeFrames = new()
 	{
 		{ TimeSpan.FromMinutes(1), "MINUTE_1" },

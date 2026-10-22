@@ -7,7 +7,10 @@ using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Newtonsoft.Json.Linq;
+
 using StockSharp.EdgeX;
+using StockSharp.EdgeX.Native;
 using StockSharp.EdgeX.Native.Common;
 using StockSharp.Messages;
 
@@ -18,6 +21,47 @@ using StockSharp.Messages;
 [CLSCompliant(false)]
 public class EdgeXTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	public void PollingCanCompleteTheOnlyBarReturnedAtTheStartOfASubscription()
+	{
+		var open = new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc);
+		var cursor = StockSharp.EdgeX.Native.Extensions.StartCandleCursor(open);
+		cursor = StockSharp.EdgeX.Native.Extensions.AdvanceCandleCursor(cursor, open, CandleStates.Active);
+
+		IsTrue(cursor < open, "The forming first bar must remain eligible for another poll.");
+		AreEqual(open, StockSharp.EdgeX.Native.Extensions.AdvanceCandleCursor(cursor, open, CandleStates.Finished));
+	}
+
+	[TestMethod]
+	[DataRow(20000, CandleStates.Active)]
+	[DataRow(59999, CandleStates.Active)]
+	[DataRow(60000, CandleStates.Finished)]
+	[DataRow(120000, CandleStates.Finished)]
+	public void HistoricalAndStreamingCandlesKeepTheirFormingState(int elapsedMilliseconds, CandleStates expected)
+	{
+		var open = new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc);
+		var row = new JObject
+		{
+			["klineTime"] = (long)open.ToUnix(false), ["open"] = "100", ["high"] = "110", ["low"] = "90", ["close"] = "105", ["size"] = "12.5",
+		};
+
+		var message = row.ToCandleMessage(TestSecurityId, TimeSpan.FromMinutes(1), 42, open.AddMilliseconds(elapsedMilliseconds));
+
+		AreEqual(expected, message.State);
+		AreEqual(open, message.OpenTime);
+		AreEqual(105m, message.ClosePrice);
+		AreEqual(12.5m, message.TotalVolume);
+	}
+
+	[TestMethod]
+	public void PollingRevisitsAnOpenMinuteUntilItCloses()
+	{
+		var open = new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc);
+		var previous = open.AddMinutes(-1);
+		AreEqual(previous, StockSharp.EdgeX.Native.Extensions.AdvanceCandleCursor(previous, open, CandleStates.Active));
+		AreEqual(open, StockSharp.EdgeX.Native.Extensions.AdvanceCandleCursor(previous, open, CandleStates.Finished));
+	}
+
 	[TestMethod]
 	[DataRow(nameof(EdgeXRestClient.GetMetaDataAsync), "/api/v2/public/meta/getMetaData")]
 	[DataRow(nameof(EdgeXRestClient.GetServerTimeAsync), "/api/v2/public/meta/getServerTime")]

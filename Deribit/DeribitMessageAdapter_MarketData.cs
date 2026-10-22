@@ -197,6 +197,7 @@ public partial class DeribitMessageAdapter
 				while (last < to)
 				{
 					var end = last + tf.Multiply(1000);
+					var snapshotTime = DateTime.UtcNow;
 					var candles = await _httpClient.GetCandles(currency, (long)last.ToUnix(false), (long)end.ToUnix(false), resolutuon, cancellationToken);
 
 					var needFinish = false;
@@ -214,17 +215,7 @@ public partial class DeribitMessageAdapter
 							break;
 						}
 
-						await SendOutMessageAsync(new TimeFrameCandleMessage
-						{
-							OriginalTransactionId = transId,
-							OpenTime = candle.Tick.FromUnix(false),
-							OpenPrice = (decimal)candle.Open,
-							HighPrice = (decimal)candle.High,
-							LowPrice = (decimal)candle.Low,
-							ClosePrice = (decimal)candle.Close,
-							TotalVolume = (decimal)candle.Volume,
-							State = CandleStates.Finished,
-						}, cancellationToken);
+						await SendOutMessageAsync(candle.ToCandleMessage(tf, transId, snapshotTime), cancellationToken);
 
 						if (--left <= 0)
 						{
@@ -346,21 +337,13 @@ public partial class DeribitMessageAdapter
 		.TryAdd(Level1Fields.State, ticker.State.ToSecurityState()), cancellationToken);
 	}
 
-	private async ValueTask SessionOnNewCandles(long transId, IEnumerable<Ohlc> candles, CancellationToken cancellationToken)
+	private async ValueTask SessionOnNewCandles(long transId, TimeSpan timeFrame, IEnumerable<Ohlc> candles, CancellationToken cancellationToken)
 	{
+		var snapshotTime = DateTime.UtcNow;
+
 		foreach (var candle in candles)
 		{
-			await SendOutMessageAsync(new TimeFrameCandleMessage
-			{
-				OriginalTransactionId = transId,
-				OpenTime = candle.Tick.FromUnix(false),
-				OpenPrice = (decimal)candle.Open,
-				HighPrice = (decimal)candle.High,
-				LowPrice = (decimal)candle.Low,
-				ClosePrice = (decimal)candle.Close,
-				TotalVolume = (decimal)candle.Volume,
-				State = CandleStates.Finished,
-			}, cancellationToken);
+			await SendOutMessageAsync(candle.ToCandleMessage(timeFrame, transId, snapshotTime), cancellationToken);
 		}
 
 		//SendSubscriptionFinished(transId);

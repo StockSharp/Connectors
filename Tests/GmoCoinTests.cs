@@ -27,6 +27,36 @@ using StockSharp.Messages;
 public class GmoCoinTests : LiveMarketDataTestBase
 {
 	[TestMethod]
+	[DataRow(20000, CandleStates.Active)]
+	[DataRow(59999, CandleStates.Active)]
+	[DataRow(60000, CandleStates.Finished)]
+	[DataRow(120000, CandleStates.Finished)]
+	public void RestCandlesKeepTheirFormingState(int elapsedMilliseconds, CandleStates expected)
+	{
+		var open = new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc);
+		var candle = new GmoCoinCandle { OpenTime = (long)open.ToUnix(false), Open = 100, High = 110, Low = 90, Close = 105, Volume = 12.5m };
+
+		var message = candle.ToCandleMessage(default, TimeSpan.FromMinutes(1), 42, open.AddMilliseconds(elapsedMilliseconds));
+
+		AreEqual(expected, message.State);
+		AreEqual(open, message.OpenTime);
+		AreEqual(105m, message.ClosePrice);
+		AreEqual(12.5m, message.TotalVolume);
+	}
+
+	[TestMethod]
+	public void MonthlyRestCandleClosesAtTheNextTradingMonth()
+	{
+		var open = new DateTime(2024, 2, 29, 21, 0, 0, DateTimeKind.Utc);
+		var close = new DateTime(2024, 3, 31, 21, 0, 0, DateTimeKind.Utc);
+		var candle = new GmoCoinCandle { OpenTime = (long)open.ToUnix(false) };
+
+		AreEqual(CandleStates.Active, candle.ToCandleMessage(default, TimeSpan.FromDays(30), 42, close.AddMilliseconds(-1)).State);
+		AreEqual(CandleStates.Finished, candle.ToCandleMessage(default, TimeSpan.FromDays(30), 42, close).State);
+		AreEqual(close, candle.ToCandleMessage(default, TimeSpan.FromDays(30), 42, close).CloseTime);
+	}
+
+	[TestMethod]
 	[DataRow(3, 0, "20261020")]
 	[DataRow(15, 30, "20261020")]
 	[DataRow(20, 59, "20261020")]

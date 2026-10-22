@@ -707,6 +707,15 @@ sealed class FluidDexRpcClient : BaseLogReceiver
 			if (rpc is null || rpc.Id != requestId)
 				throw new InvalidDataException(
 					"JSON-RPC returned an invalid response identifier.");
+			if (isRead && method == "eth_getLogs" && attempt < 3 &&
+				rpc.Error?.Code == -32602 &&
+				rpc.Error.Message.ContainsIgnoreCase("block range extends beyond current head block"))
+			{
+				// Public RPC backends may observe different tips. Retry the original range so
+				// the subscription cannot advance past blocks whose logs have not been read.
+				await Task.Delay(TimeSpan.FromMilliseconds(250 * (1 << attempt)), cancellationToken);
+				continue;
+			}
 			if (rpc.Error is not null)
 				throw new InvalidOperationException(
 					$"JSON-RPC {rpc.Error.Code}: " +

@@ -9,6 +9,8 @@ using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Newtonsoft.Json;
+
 using RestSharp;
 
 using StockSharp.Bitget;
@@ -23,6 +25,44 @@ using StockSharp.Messages;
 [TestClass]
 public class BitgetTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[DataRow(20000, CandleStates.Active)]
+	[DataRow(59999, CandleStates.Active)]
+	[DataRow(60000, CandleStates.Finished)]
+	[DataRow(120000, CandleStates.Finished)]
+	public void SpotAndFuturesRestCandlesKeepTheirFormingState(int elapsedMilliseconds, CandleStates expected)
+	{
+		var open = new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc);
+		var payload = JsonConvert.SerializeObject(new object[] { (long)open.ToUnix(false), "100", "110", "90", "105", "12.5", "1300" });
+		var spot = JsonConvert.DeserializeObject<StockSharp.Bitget.Native.Spot.Model.RestCandle>(payload);
+		var futures = JsonConvert.DeserializeObject<StockSharp.Bitget.Native.Futures.Model.RestCandle>(payload);
+		var subscription = new MarketDataMessage { TransactionId = 42, DataType2 = TimeSpan.FromMinutes(1).TimeFrame() };
+		var snapshotTime = open.AddMilliseconds(elapsedMilliseconds);
+
+		foreach (var message in new[] { SpotExtensions.ToCandleMessage(spot, subscription, snapshotTime), FuturesExtensions.ToCandleMessage(futures, subscription, snapshotTime) })
+		{
+			AreEqual(expected, message.State);
+			AreEqual(open, message.OpenTime);
+			AreEqual(105m, message.ClosePrice);
+			AreEqual(12.5m, message.TotalVolume);
+		}
+	}
+
+	[TestMethod]
+	public void RestMonthlyCandleKeepsTheVenueUtcPlusEightBoundary()
+	{
+		var open = new DateTime(2024, 2, 29, 16, 0, 0, DateTimeKind.Utc);
+		var close = new DateTime(2024, 3, 31, 16, 0, 0, DateTimeKind.Utc);
+		var subscription = new MarketDataMessage { DataType2 = TimeSpan.FromDays(30).TimeFrame() };
+		var spot = new StockSharp.Bitget.Native.Spot.Model.RestCandle { Timestamp = (long)open.ToUnix(false) };
+		var futures = new StockSharp.Bitget.Native.Futures.Model.RestCandle { Timestamp = (long)open.ToUnix(false) };
+
+		AreEqual(CandleStates.Active, SpotExtensions.ToCandleMessage(spot, subscription, close.AddMilliseconds(-1)).State);
+		AreEqual(CandleStates.Finished, SpotExtensions.ToCandleMessage(spot, subscription, close).State);
+		AreEqual(CandleStates.Active, FuturesExtensions.ToCandleMessage(futures, subscription, close.AddMilliseconds(-1)).State);
+		AreEqual(CandleStates.Finished, FuturesExtensions.ToCandleMessage(futures, subscription, close).State);
+	}
+
 	[TestMethod]
 	public void SpotPostSignatureCoversSerializedBodyAndAddsDemoHeader()
 	{

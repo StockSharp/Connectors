@@ -160,24 +160,13 @@ partial class PoloniexMessageAdapter
 			return;
 
 		var timeFrame = mdMsg.GetTimeFrame();
+		var snapshotTime = DateTime.UtcNow;
 		var candles = await _restClient.GetCandlesAsync(mdMsg.SecurityId.ToCurrency(), timeFrame,
 			mdMsg.From, mdMsg.To, cancellationToken) ?? [];
 
 		foreach (var candle in candles.OrderBy(static candle => candle.StartTime))
 		{
-			await SendOutMessageAsync(new TimeFrameCandleMessage
-			{
-				SecurityId = mdMsg.SecurityId,
-				TypedArg = timeFrame,
-				OpenPrice = candle.Open,
-				ClosePrice = candle.Close,
-				HighPrice = candle.High,
-				LowPrice = candle.Low,
-				TotalVolume = candle.Quantity,
-				OpenTime = candle.StartTime.FromUnix(false),
-				State = CandleStates.Finished,
-				OriginalTransactionId = mdMsg.TransactionId,
-			}, cancellationToken);
+			await SendOutMessageAsync(candle.ToCandleMessage(mdMsg, snapshotTime), cancellationToken);
 		}
 
 		await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);

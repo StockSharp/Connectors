@@ -2,6 +2,21 @@ namespace StockSharp.Poloniex;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Native.Model.PoloniexCandle candle, MarketDataMessage subscription, DateTime snapshotTime)
+		=> new()
+		{
+			SecurityId = subscription.SecurityId,
+			TypedArg = subscription.GetTimeFrame(),
+			OpenPrice = candle.Open,
+			ClosePrice = candle.Close,
+			HighPrice = candle.High,
+			LowPrice = candle.Low,
+			TotalVolume = candle.Quantity,
+			OpenTime = candle.StartTime.FromUnix(false),
+			State = candle.CloseTime.FromUnix(false).AddMilliseconds(1) <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+
 	public static string ToNative(this Sides value)
 	{
 		return value switch

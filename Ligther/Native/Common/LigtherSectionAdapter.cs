@@ -35,6 +35,8 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 		public long TransactionId { get; init; }
 		public TimeSpan TimeFrame { get; init; }
 		public DateTime LastOpenTime { get; set; }
+		// REST revisits a forming bar while the stream skips its already observed trade history.
+		public DateTime LastRestOpenTime { get; set; }
 		public long LastTradeId { get; set; }
 		public DateTime CurrentOpenTime { get; set; }
 		public decimal? OpenPrice { get; set; }
@@ -351,15 +353,18 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 		var from = mdMsg.From ?? (DateTime.UtcNow - TimeSpan.FromDays(1));
 		var to = mdMsg.To ?? DateTime.UtcNow;
 		var left = mdMsg.Count ?? long.MaxValue;
-		var lastOpen = from;
+		var lastOpen = StartCandleCursor(from);
+		var lastObservedOpen = from;
 
+		var snapshotTime = DateTime.UtcNow;
 		var rows = GetTradeRows(await RestClient.GetRecentTradesAsync(marketId, _maxTradesLimit, cancellationToken));
 
-		foreach (var candle in BuildCandles(rows, marketId, timeFrame, from, to))
+		foreach (var candle in BuildCandles(rows, GetSecurityId(marketId), timeFrame, from, to, snapshotTime))
 		{
 			candle.OriginalTransactionId = mdMsg.TransactionId;
 			await SendOutMessageAsync(candle, cancellationToken);
-			lastOpen = candle.OpenTime;
+			lastOpen = AdvanceCandleCursor(lastOpen, candle.OpenTime, candle.State);
+			lastObservedOpen = candle.OpenTime;
 
 			if (--left <= 0)
 				break;
@@ -370,7 +375,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 		if (mdMsg.IsHistoryOnly())
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId, cancellationToken);
 		else
-			await RegisterCandlesAsync(mdMsg.TransactionId, marketId, timeFrame, lastOpen, cancellationToken);
+			await RegisterCandlesAsync(mdMsg.TransactionId, marketId, timeFrame, lastObservedOpen, lastOpen, cancellationToken);
 	}
 
 	public override async ValueTask RegisterOrderAsync(OrderRegisterMessage regMsg, CancellationToken cancellationToken)
@@ -731,25 +736,26 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 
 	private async ValueTask PollCandlesAsync(CandleState state, CancellationToken cancellationToken)
 	{
+		var snapshotTime = DateTime.UtcNow;
 		var rows = GetTradeRows(await RestClient.GetRecentTradesAsync(state.MarketId, _maxTradesLimit, cancellationToken));
-		var from = state.LastOpenTime == default ? DateTime.UtcNow - TimeSpan.FromHours(6) : state.LastOpenTime;
+		var from = state.LastRestOpenTime == default ? DateTime.UtcNow - TimeSpan.FromHours(6) : state.LastRestOpenTime;
 		var to = DateTime.UtcNow;
-		var lastOpen = state.LastOpenTime;
+		var lastOpen = state.LastRestOpenTime;
 
-		foreach (var candle in BuildCandles(rows, state.MarketId, state.TimeFrame, from, to))
+		foreach (var candle in BuildCandles(rows, GetSecurityId(state.MarketId), state.TimeFrame, from, to, snapshotTime))
 		{
-			if (candle.OpenTime <= state.LastOpenTime)
+			if (candle.OpenTime <= state.LastRestOpenTime)
 				continue;
 
 			candle.OriginalTransactionId = state.TransactionId;
 			await SendOutMessageAsync(candle, cancellationToken);
-			lastOpen = candle.OpenTime;
+			lastOpen = AdvanceCandleCursor(lastOpen, candle.OpenTime, candle.State);
 		}
 
 		using (_sync.EnterScope())
 		{
 			if (_candlesRealtime.TryGetValue(state.TransactionId, out var stored))
-				stored.LastOpenTime = lastOpen;
+				stored.LastRestOpenTime = lastOpen;
 		}
 	}
 
@@ -770,17 +776,17 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 		};
 	}
 
-	private IEnumerable<TimeFrameCandleMessage> BuildCandles(IEnumerable<JObject> trades, int marketId, TimeSpan timeFrame, DateTime from, DateTime to)
+	internal static IEnumerable<TimeFrameCandleMessage> BuildCandles(IEnumerable<JObject> trades, SecurityId securityId, TimeSpan timeFrame, DateTime from, DateTime to, DateTime snapshotTime)
 	{
 		var buckets = new SortedDictionary<DateTime, List<(decimal Price, decimal Volume)>>();
 
 		// the venue returns the most recent trade first, so without ordering the open and the
 		// close prices of every bucket would be swapped
 		foreach (var trade in trades
-			.OrderBy(t => ParseUnixMs(t["timestamp"]) ?? CurrentTime)
+			.OrderBy(t => ParseUnixMs(t["timestamp"]) ?? snapshotTime)
 			.ThenBy(static t => t["trade_id"]?.Value<long?>() ?? 0))
 		{
-			var time = ParseUnixMs(trade["timestamp"]) ?? CurrentTime;
+			var time = ParseUnixMs(trade["timestamp"]) ?? snapshotTime;
 			if (time < from || time > to)
 				continue;
 
@@ -806,7 +812,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 
 			yield return new TimeFrameCandleMessage
 			{
-				SecurityId = GetSecurityId(marketId),
+				SecurityId = securityId,
 				TypedArg = timeFrame,
 				OpenTime = pair.Key,
 				OpenPrice = prices.FirstOrDefault(),
@@ -814,10 +820,17 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 				LowPrice = prices.Length == 0 ? 0m : prices.Min(),
 				ClosePrice = prices.LastOrDefault(),
 				TotalVolume = volume,
-				State = CandleStates.Finished,
+				State = pair.Key + timeFrame <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
 			};
 		}
 	}
+
+	// A subscription can start with only its current bar; that bar must remain eligible for polling.
+	internal static DateTime StartCandleCursor(DateTime from)
+		=> from == DateTime.MinValue ? from : from.AddTicks(-1);
+
+	internal static DateTime AdvanceCandleCursor(DateTime previous, DateTime openTime, CandleStates state)
+		=> state == CandleStates.Finished ? openTime : previous;
 
 	private static DateTime FloorTime(DateTime value, TimeSpan step)
 	{
@@ -1412,7 +1425,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 			await WsClient.UnsubscribeAsync(channel, cancellationToken);
 	}
 
-	private async ValueTask RegisterCandlesAsync(long transactionId, int marketId, TimeSpan timeFrame, DateTime lastOpenTime, CancellationToken cancellationToken)
+	private async ValueTask RegisterCandlesAsync(long transactionId, int marketId, TimeSpan timeFrame, DateTime lastOpenTime, DateTime lastRestOpenTime, CancellationToken cancellationToken)
 	{
 		var channel = GetTradeChannel(marketId);
 		var shouldSubscribe = false;
@@ -1425,6 +1438,7 @@ abstract class LigtherSectionAdapter : BaseNativeAdapter
 				TransactionId = transactionId,
 				TimeFrame = timeFrame,
 				LastOpenTime = lastOpenTime,
+				LastRestOpenTime = lastRestOpenTime,
 				LastTradeId = 0,
 				CurrentOpenTime = default,
 				TotalVolume = 0m,

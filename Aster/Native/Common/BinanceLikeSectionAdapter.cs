@@ -4,6 +4,16 @@ using StockSharp.Aster.Native.Common.Model;
 
 abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 {
+	internal static CandleStates GetRestCandleState(JArray candle, DateTime snapshotTime)
+		=> candle[6].Value<long>().FromUnix(false).AddMilliseconds(1) <= snapshotTime ? CandleStates.Finished : CandleStates.Active;
+
+	// A subscription can start with only its current bar; that bar must remain eligible for polling.
+	internal static DateTime StartCandleCursor(DateTime from)
+		=> from == DateTime.MinValue ? from : from.AddTicks(-1);
+
+	internal static DateTime AdvanceCandleCursor(DateTime previous, DateTime openTime, CandleStates state)
+		=> state == CandleStates.Finished ? openTime : previous;
+
 	private const int _maxHistoryLimit = 1000;
 
 	private AsterRestClient _restClient;
@@ -304,8 +314,9 @@ abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 		var from = mdMsg.From ?? (DateTime.UtcNow - TimeSpan.FromDays(1));
 		var to = mdMsg.To ?? DateTime.UtcNow;
 		var left = mdMsg.Count ?? long.MaxValue;
-		var lastOpenTime = from;
+		var lastOpenTime = StartCandleCursor(from);
 
+		var snapshotTime = DateTime.UtcNow;
 		var candles = await RestClient.GetCandlesAsync(symbol, interval, from, to, _maxHistoryLimit, cancellationToken);
 
 		foreach (var item in candles.OfType<JArray>().OrderBy(static c => c[0]?.Value<long>() ?? 0))
@@ -329,11 +340,11 @@ abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 				LowPrice = item[3]?.Value<string>().To<decimal?>() ?? 0m,
 				ClosePrice = item[4]?.Value<string>().To<decimal?>() ?? 0m,
 				TotalVolume = item[5]?.Value<string>().To<decimal?>() ?? 0m,
-				State = CandleStates.Finished,
+				State = GetRestCandleState(item, snapshotTime),
 				OriginalTransactionId = mdMsg.TransactionId,
 			}, cancellationToken);
 
-			lastOpenTime = openTime;
+			lastOpenTime = AdvanceCandleCursor(lastOpenTime, openTime, GetRestCandleState(item, snapshotTime));
 
 			if (--left <= 0)
 				break;
@@ -1400,6 +1411,7 @@ abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 			? DateTime.UtcNow - TimeSpan.FromTicks(state.TimeFrame.Ticks * 5)
 			: state.LastOpenTime - state.TimeFrame;
 		var to = DateTime.UtcNow;
+		var snapshotTime = DateTime.UtcNow;
 		var candles = await RestClient.GetCandlesAsync(state.Symbol, interval, from, to, 200, cancellationToken);
 		var lastOpenTime = state.LastOpenTime;
 
@@ -1421,11 +1433,11 @@ abstract class BinanceLikeSectionAdapter : BaseNativeAdapter
 				LowPrice = item[3]?.Value<string>().To<decimal?>() ?? 0m,
 				ClosePrice = item[4]?.Value<string>().To<decimal?>() ?? 0m,
 				TotalVolume = item[5]?.Value<string>().To<decimal?>() ?? 0m,
-				State = CandleStates.Finished,
+				State = GetRestCandleState(item, snapshotTime),
 				OriginalTransactionId = state.TransactionId,
 			}, cancellationToken);
 
-			lastOpenTime = openTime;
+			lastOpenTime = AdvanceCandleCursor(lastOpenTime, openTime, GetRestCandleState(item, snapshotTime));
 		}
 
 		using (_sync.EnterScope())

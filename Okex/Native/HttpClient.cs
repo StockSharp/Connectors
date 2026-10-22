@@ -108,13 +108,16 @@ class HttpClient : BaseLogReceiver
 		if(isOption && underlying.IsEmptyOrWhiteSpace())
 			throw new InvalidOperationException("underlying must be set for options");
 
-		return await OkexEndPoint.Instruments.MakeRequestAsync<IEnumerable<Instrument>>(this, token, req =>
+		var instruments = await OkexEndPoint.Instruments.MakeRequestAsync<IEnumerable<Instrument>>(this, token, req =>
 		{
 			req.AddParameter("instType", instType);
 
 			if(!underlying.IsEmptyOrWhiteSpace())
 				req.AddParameter("uly", underlying);
 		});
+
+		// Pre-open instrument families can be published before an instrument ID is assigned.
+		return instruments.Where(static instrument => !instrument.Id.IsEmptyOrWhiteSpace());
 	}
 
 	public async Task<IEnumerable<Ohlc>> GetCandlesAsync(string instrumentId, bool isHistory, string bar, DateTime before, DateTime after, CancellationToken token)

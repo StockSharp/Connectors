@@ -284,6 +284,7 @@ public partial class ByBitMessageAdapter
 
 				while (from < to)
 				{
+					var snapshotTime = DateTime.UtcNow;
 					var candles = await _httpClient.GetKlines(category, symbol, interval, 1000, from, default, cancellationToken).ToArrayAsync(cancellationToken);
 					var needBreak = true;
 
@@ -295,17 +296,7 @@ public partial class ByBitMessageAdapter
 							break;
 						}
 
-						await SendOutMessageAsync(new TimeFrameCandleMessage
-						{
-							OpenPrice = ohlc.Open.ToDecimal() ?? 0,
-							HighPrice = ohlc.High.ToDecimal() ?? 0,
-							LowPrice = ohlc.Low.ToDecimal() ?? 0,
-							ClosePrice = ohlc.Close.ToDecimal() ?? 0,
-							TotalVolume = ohlc.Volume.ToDecimal() ?? 0,
-							OpenTime = ohlc.OpenTime.FromUnix(false),
-							OriginalTransactionId = mdMsg.TransactionId,
-							State = CandleStates.Finished,
-						}, cancellationToken);
+						await SendOutMessageAsync(ohlc.ToCandleMessage(mdMsg, snapshotTime), cancellationToken);
 
 						if (--left <= 0)
 						{

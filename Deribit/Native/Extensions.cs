@@ -2,6 +2,21 @@ namespace StockSharp.Deribit.Native;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Model.Ohlc candle, TimeSpan timeFrame, long originalTransactionId, DateTime snapshotTime)
+	{
+		return new TimeFrameCandleMessage
+		{
+			OriginalTransactionId = originalTransactionId,
+			OpenTime = candle.Tick.FromUnix(false),
+			OpenPrice = (decimal)candle.Open,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			ClosePrice = (decimal)candle.Close,
+			TotalVolume = (decimal)candle.Volume,
+			State = candle.Tick.FromUnix(false) + timeFrame <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+		};
+	}
+
 	public static string ToNative(this Sides side)
 	{
 		return side switch

@@ -15,6 +15,7 @@ class PusherClient : BaseLogReceiver
 		public SecurityId SecurityId { get; } = securityId;
 		public MessageTypes Type { get; } = type;
 		public object Arg { get; } = arg;
+		public DateTime RequestedAt { get; } = DateTime.UtcNow;
 	}
 
 	private static class Commands
@@ -463,7 +464,7 @@ class PusherClient : BaseLogReceiver
 					if (subscription.Type == MessageTypes.CandleTimeFrame && subscription.IsSubscribe == null)
 					{
 						if (parent.CandlesReceived is { } handler)
-							await handler.InvokeAsync(subscription.SecurityId, (TimeSpan)subscription.Arg, id, ((JToken)obj.data).DeserializeObject<Ohlc[]>(), cancellationToken);
+							await handler.InvokeAsync(subscription.RequestedAt, subscription.SecurityId, (TimeSpan)subscription.Arg, id, ((JToken)obj.data).DeserializeObject<Ohlc[]>(), cancellationToken);
 					}
 				}
 
@@ -527,7 +528,7 @@ class PusherClient : BaseLogReceiver
 	public event Func<DateTime, SecurityId, SocketTrade[], CancellationToken, ValueTask> NewTrades;
 	public event Func<DateTime, SecurityId, OrderBook, CancellationToken, ValueTask> OrderBookChanged;
 	public event Func<DateTime, SecurityId, TimeSpan, long, Ohlc, CancellationToken, ValueTask> NewCandle;
-	public event Func<SecurityId, TimeSpan, long, Ohlc[], CancellationToken, ValueTask> CandlesReceived;
+	public event Func<DateTime, SecurityId, TimeSpan, long, Ohlc[], CancellationToken, ValueTask> CandlesReceived;
 	public event Func<DateTime, SecurityId, Best, CancellationToken, ValueTask> BestChanged;
 	public event Func<DateTime, SocketOrder, CancellationToken, ValueTask> OrderChanged;
 	public event Func<DateTime, IEnumerable<Balance>, CancellationToken, ValueTask> BalancesChanged;

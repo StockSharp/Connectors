@@ -294,4 +294,16 @@ public class XrplTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	// Each ledger requires an RPC read; one minute supplies enough bars for the OHLC check.
 	protected override int CandlesDepth => 1;
+
+	/// <inheritdoc />
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		if (message.DataType2 != DataType.Ticks)
+			return;
+
+		// Read a recent validated ledger bar without waiting for a new trade on this pair.
+		message.From = DateTime.UtcNow.AddMinutes(-10);
+		message.To = DateTime.UtcNow;
+		message.Count = 1;
+	}
 }

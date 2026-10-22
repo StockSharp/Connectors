@@ -4,6 +4,58 @@ using System.Security.Cryptography;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Options.Model.RestCandle candle, MarketDataMessage subscription, DateTime snapshotTime)
+		=> new()
+		{
+			OpenPrice = (decimal)candle.Open,
+			ClosePrice = (decimal)candle.Close,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			TotalVolume = (decimal)candle.Volume,
+			OpenTime = candle.Time,
+			State = candle.Time + subscription.GetTimeFrame() <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+
+	public static TimeFrameCandleMessage ToCandleMessage(this Delivery.Model.RestCandle candle, MarketDataMessage subscription, DateTime snapshotTime)
+		=> new()
+		{
+			OpenPrice = (decimal)candle.Open,
+			ClosePrice = (decimal)candle.Close,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			TotalVolume = (decimal)candle.Volume,
+			OpenTime = candle.Time,
+			State = candle.Time + subscription.GetTimeFrame() <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+
+	public static TimeFrameCandleMessage ToCandleMessage(this Futures.Model.RestCandle candle, MarketDataMessage subscription, DateTime snapshotTime)
+		=> new()
+		{
+			OpenPrice = (decimal)candle.Open,
+			ClosePrice = (decimal)candle.Close,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			TotalVolume = (decimal)candle.Volume,
+			OpenTime = candle.Time,
+			State = candle.Time + subscription.GetTimeFrame() <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+
+	public static TimeFrameCandleMessage ToCandleMessage(this Spot.Model.RestCandle candle, MarketDataMessage subscription)
+		=> new()
+		{
+			OpenPrice = (decimal)candle.Open,
+			ClosePrice = (decimal)candle.Close,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			TotalVolume = (decimal)candle.Volume,
+			OpenTime = candle.Time.FromUnix(),
+			State = candle.IsClosed ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+
 	public static string ToNative(this Sides side)
 	{
 		return side switch

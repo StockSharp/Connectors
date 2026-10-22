@@ -2,6 +2,25 @@ namespace StockSharp.BingX.Native.Futures;
 
 static class Extensions
 {
+	public static TimeFrameCandleMessage ToCandleMessage(this Model.RestCandle candle, MarketDataMessage subscription, DateTime snapshotTime)
+	{
+		var openTime = candle.Time;
+		var timeFrame = subscription.GetTimeFrame();
+		var closeTime = timeFrame.Ticks == TimeHelper.TicksPerMonth ? openTime.AddMonths(1) : openTime + timeFrame;
+
+		return new()
+		{
+			OpenPrice = (decimal)candle.Open,
+			ClosePrice = (decimal)candle.Close,
+			HighPrice = (decimal)candle.High,
+			LowPrice = (decimal)candle.Low,
+			TotalVolume = (decimal)candle.Volume,
+			OpenTime = candle.Time,
+			State = closeTime <= snapshotTime ? CandleStates.Finished : CandleStates.Active,
+			OriginalTransactionId = subscription.TransactionId,
+		};
+	}
+
 	public static string ToNative(this Sides side)
 	{
 		return side switch

@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,6 +23,47 @@ using StockSharp.PumpSwap.Native.Model;
 [TestClass]
 public class PumpSwapTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ARepeatedHistoryConnectionFailureEscapesAfterTheRetryLimit()
+	{
+		var attempts = 0;
+		var expected = new HttpRequestException("Connection reset by peer.");
+		using var client = new PumpSwapRpcClient("https://rpc.example.test", PumpSwapClusters.Mainnet, null, null);
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(_ =>
+		{
+			attempts++;
+			throw expected;
+		})) { BaseAddress = new("https://rpc.example.test") }, "_httpClient");
+
+		var actual = await ThrowsAsync<HttpRequestException>(async () =>
+			await client.GetTransactionAsync(new string('1', 64), CancellationToken));
+
+		AreEqual(expected, actual);
+		AreEqual(3, attempts);
+	}
+
+	[TestMethod]
+	[DataRow(1)]
+	[DataRow(2)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task TransactionHistoryRetriesAResetConnection(int failures)
+	{
+		var attempts = 0;
+		using var client = new PumpSwapRpcClient("https://rpc.example.test", PumpSwapClusters.Mainnet, null, null);
+		HistoryHttpHandler.ReplaceClient(client, new HttpClient(new HistoryHttpHandler(_ =>
+		{
+			if (attempts++ < failures)
+				throw new HttpRequestException("Connection reset by peer.", new IOException("Connection reset by peer."));
+			return new(HttpStatusCode.OK) { Content = new StringContent("""{"jsonrpc":"2.0","id":1,"result":{"slot":123}}""") };
+		})) { BaseAddress = new("https://rpc.example.test") }, "_httpClient");
+
+		var transaction = await client.GetTransactionAsync(new string('1', 64), CancellationToken);
+
+		AreEqual(123L, transaction.Slot);
+		AreEqual(failures + 1, attempts);
+	}
+
 	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task TransactionRequestAcceptsVersionOne()

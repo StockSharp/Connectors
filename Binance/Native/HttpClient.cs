@@ -10,6 +10,8 @@ class HttpClient : BaseLogReceiver
 
 	private TimeSpan _serverTimeDiff;
 
+	public DateTime ServerTime => DateTime.UtcNow + _serverTimeDiff;
+
 	public HttpClient(SecureString key, SecureString secret, bool isDemo)
 	{
 		_key = key;
@@ -516,7 +518,7 @@ class HttpClient : BaseLogReceiver
 		if (request == null)
 			throw new ArgumentNullException(nameof(request));
 
-		return request.AddParameter("timestamp", (long)(DateTime.UtcNow + _serverTimeDiff).ToUnix(false), type);
+		return request.AddParameter("timestamp", (long)ServerTime.ToUnix(false), type);
 	}
 
 	private void ApplyKey(RestRequest request)

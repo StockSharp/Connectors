@@ -284,8 +284,18 @@ sealed class PumpSwapRpcClient : BaseLogReceiver
 			using var content = new StringContent(
 				JsonConvert.SerializeObject(request, _serializerSettings),
 				Encoding.UTF8, "application/json");
-			using var response = await _httpClient.PostAsync(string.Empty,
-				content, cancellationToken);
+			HttpResponseMessage response;
+			try
+			{
+				response = await _httpClient.PostAsync(string.Empty, content, cancellationToken);
+			}
+			catch (HttpRequestException) when (attempt < 2 &&
+				method.StartsWith("get", StringComparison.Ordinal) && !cancellationToken.IsCancellationRequested)
+			{
+				await Task.Delay(TimeSpan.FromMilliseconds(250 * (attempt + 1)), cancellationToken);
+				continue;
+			}
+			using var responseScope = response;
 			if (attempt < 2 && (response.StatusCode ==
 					HttpStatusCode.TooManyRequests ||
 				(int)response.StatusCode >= 500))

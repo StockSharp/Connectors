@@ -267,7 +267,7 @@ public partial class GmoCoinMessageAdapter
 
 		foreach (var candle in candles)
 			await SendCandleAsync(market, candle, timeFrame,
-				mdMsg.TransactionId, cancellationToken);
+				mdMsg.TransactionId, now, cancellationToken);
 
 		await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 	}
@@ -575,23 +575,9 @@ public partial class GmoCoinMessageAdapter
 
 	private ValueTask SendCandleAsync(MarketDefinition market,
 		GmoCoinCandle candle, TimeSpan timeFrame, long transactionId,
-		CancellationToken cancellationToken)
+		DateTime snapshotTime, CancellationToken cancellationToken)
 	{
-		var openTime = candle.OpenTime.FromGmoCoinTime(CurrentTime);
-		return SendOutMessageAsync(new TimeFrameCandleMessage
-		{
-			SecurityId = market.Symbol.ToStockSharp(),
-			OpenTime = openTime,
-			CloseTime = openTime + timeFrame,
-			OpenPrice = candle.Open,
-			HighPrice = candle.High,
-			LowPrice = candle.Low,
-			ClosePrice = candle.Close,
-			TotalVolume = candle.Volume,
-			TypedArg = timeFrame,
-			OriginalTransactionId = transactionId,
-			State = CandleStates.Finished,
-		}, cancellationToken);
+		return SendOutMessageAsync(candle.ToCandleMessage(market.Symbol.ToStockSharp(), timeFrame, transactionId, snapshotTime), cancellationToken);
 	}
 
 	private static QuoteChange[] ToQuotes(IEnumerable<GmoCoinBookLevel> levels,
