@@ -21,7 +21,8 @@ public class AerodromeMarketDataTests : LiveMarketDataTestBase
 	protected override MessageAdapter CreateAdapter() => new AerodromeMessageAdapter(new IncrementalIdGenerator())
 	{
 		RpcEndpoint = "https://base-rpc.publicnode.com",
-		WebSocketEndpoint = "wss://base-rpc.publicnode.com",
+		// These public quote checks use HTTP RPC; historical swaps are excluded below.
+		WebSocketEndpoint = null,
 	};
 
 	/// <inheritdoc />
@@ -33,8 +34,8 @@ public class AerodromeMarketDataTests : LiveMarketDataTestBase
 
 	/// <inheritdoc />
 	/// <remarks>
-	/// Both are folded from past swap logs, which a pruning node answers with
-	/// "pruned history unavailable" - they need an archive RPC endpoint.
+	/// Order books are unsupported. Trades and candles use past swap logs, which a pruning
+	/// node answers with "pruned history unavailable"; they need an archive RPC endpoint.
 	/// </remarks>
-	protected override DataType[] SkippedDataTypes => [DataType.Ticks, DataType.CandleTimeFrame];
+	protected override DataType[] SkippedDataTypes => [DataType.MarketDepth, DataType.Ticks, DataType.CandleTimeFrame];
 }

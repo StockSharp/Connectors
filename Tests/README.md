@@ -31,6 +31,14 @@ Some public services need additional access:
   This includes endpoints blocked by the runner's region, WAF, DNS or shared-IP
   quota. Newly covered services in this group are Bithumb, BloFin, Bullish,
   Coinhako, NovaDAX, Paradex, Pintu Pro, ProBit, Tapbit and the MOEX FTP archive.
+  It also enables dxFeed demo depth, trades and candles, which do not reliably
+  arrive on hosted runners, ESMA FIRDS, whose public gateway can time out, and
+  LFJ swap and candle history, which requires many sequential public RPC reads.
+  LFJ securities and quotes remain enabled without this additional switch.
+- `STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS=1` enables BtcTurk candles. Its published
+  graph API currently returns a null status and empty bars even for documented
+  requests. The remaining BtcTurk market checks run without this switch. GitHub
+  exposes the switch as `include_btcturk_history_tests`, disabled by default.
 - Existing provider-specific switches for CoinMarketCap, MOEX dividends, BYDFi,
   GMTrade and Reuters RSS remain in force.
   See `LiveTestAccess` and the corresponding fixture for the switch and reason.

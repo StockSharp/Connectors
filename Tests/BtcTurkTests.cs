@@ -186,7 +186,14 @@ public class BtcTurkTests : LiveMarketDataTestBase
 
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter()
-		=> new BtcTurkMessageAdapter(new IncrementalIdGenerator());
+		=> CreateAdapter(Env("STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS"), TestContext?.TestName == nameof(Candles));
+
+	internal static BtcTurkMessageAdapter CreateAdapter(string historySetting, bool requiresHistory)
+	{
+		if (requiresHistory && !historySetting.EqualsIgnoreCase("1"))
+			Inconclusive("Set STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS=1 when the public graph API supplies candle history; it currently returns a null status and no bars.");
+		return new(new IncrementalIdGenerator());
+	}
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()

@@ -11,6 +11,9 @@ using StockSharp.Messages;
 
 /// <summary>Anonymous market data checks for DxFeed.</summary>
 [TestClass]
+[RegionalLiveTests(nameof(OrderBook))]
+[RegionalLiveTests(nameof(Ticks))]
+[RegionalLiveTests(nameof(Candles))]
 public class DxFeedTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />
@@ -31,12 +34,18 @@ public class DxFeedTests : LiveMarketDataTestBase
 	protected override SecurityLookupMessage SecuritiesLookup => new() { SecurityId = TestSecurityId };
 
 	/// <inheritdoc />
+	protected override TimeSpan CandleTimeFrame => TimeSpan.FromDays(1);
+
+	/// <inheritdoc />
+	protected override int CandlesDepth => 7;
+
+	/// <inheritdoc />
 	protected override void ConfigureSubscription(MarketDataMessage message)
 	{
 		if (message.DataType2 == DataType.Ticks)
 		{
-			// The anonymous demo publishes delayed trades.
-			message.From = DateTime.UtcNow.AddHours(-1);
+			// Include the preceding session when the delayed demo is checked outside trading hours.
+			message.From = DateTime.UtcNow.AddDays(-7);
 			message.To = DateTime.UtcNow;
 			message.Count = 1;
 		}

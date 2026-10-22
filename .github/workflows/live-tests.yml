@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       include_regional_tests:
-        description: 'Include Binance, Bybit, Tokocrypto and CoW Protocol checks requiring permitted venue access'
+        description: 'Include checks for restricted networks and unreliable public demo or registry endpoints'
         type: boolean
         default: false
       include_keyless_cmc_tests:
@@ -32,6 +32,10 @@ on:
         description: 'Include Thomson Reuters RSS (requires programmatic access from this runner)'
         type: boolean
         default: false
+      include_btcturk_history_tests:
+        description: 'Include BtcTurk candles when its public graph API supplies history'
+        type: boolean
+        default: false
 
 jobs:
   live:
@@ -47,6 +51,7 @@ jobs:
       STOCKSHARP_LIVE_BYDFI_TESTS: ${{ inputs.include_bydfi_tests && '1' || '0' }}
       STOCKSHARP_LIVE_GMTRADE_TESTS: ${{ inputs.include_gmtrade_tests && '1' || '0' }}
       STOCKSHARP_LIVE_REUTERS_RSS_TESTS: ${{ inputs.include_reuters_rss_tests && '1' || '0' }}
+      STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS: ${{ inputs.include_btcturk_history_tests && '1' || '0' }}
       ALPHAVANTAGE_TOKEN: ${{ secrets.ALPHAVANTAGE_TOKEN }}
       POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
       ALPACA_KEY: ${{ secrets.ALPACA_KEY }}

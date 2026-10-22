@@ -22,6 +22,8 @@ using StockSharp.Messages;
 /// Tests for the Lfj connector.
 /// </summary>
 [TestClass]
+[RegionalLiveTests(nameof(Ticks))]
+[RegionalLiveTests(nameof(Candles))]
 public class LfjTests : LiveMarketDataTestBase
 {
 	[TestMethod]
@@ -85,11 +87,11 @@ public class LfjTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter()
 	{
-		var adapter = new LfjMessageAdapter(new IncrementalIdGenerator());
-		if (TestContext?.TestName is nameof(Ticks) or nameof(Candles))
-			// These requests read historical swaps over HTTP RPC and do not use the live socket.
-			adapter.WebSocketEndpoint = null;
-		return adapter;
+		// Quotes and historical swaps use HTTP RPC; no check needs a live log subscription.
+		return new LfjMessageAdapter(new IncrementalIdGenerator())
+		{
+			WebSocketEndpoint = null,
+		};
 	}
 
 	// Chain verification, pool loading and token metadata use several sequential public RPC reads.

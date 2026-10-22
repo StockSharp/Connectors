@@ -11,6 +11,7 @@ using StockSharp.Messages;
 
 /// <summary>Anonymous reference data checks for EsmaFirds.</summary>
 [TestClass]
+[RegionalLiveTests]
 public class EsmaFirdsTests : HistoryTestBase
 {
 	[TestMethod]
@@ -18,7 +19,12 @@ public class EsmaFirdsTests : HistoryTestBase
 	[Timeout(120000, CooperativeCancellation = true)]
 	public async Task Securities()
 	{
-		var adapter = CreateAdapter<EsmaFirdsMessageAdapter>();
+		var adapter = CreateAdapter<EsmaFirdsMessageAdapter>(a =>
+		{
+			// Exact reference lookup does not need the registry's expensive active-trading filter.
+			a.ActiveOnly = false;
+			a.CfiCategories = string.Empty;
+		});
 		var lookup = new SecurityLookupMessage
 		{
 			SecurityId = new() { SecurityCode = "DE0005140008" },

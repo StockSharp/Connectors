@@ -18,6 +18,31 @@ using StockSharp.Messages;
 public class LiveMarketDataValidationTests : BaseTestClass
 {
 	[TestMethod]
+	[DataRow("Level1")]
+	[DataRow("OrderBook")]
+	[DataRow("Ticks")]
+	[DataRow("Candles")]
+	public async Task ExplicitlyExcludedDataDoesNotOpenAConnection(string operation)
+	{
+		var fixture = new ExcludedDataFixture();
+		await ThrowsAsync<AssertInconclusiveException>(() => operation switch
+		{
+			"Level1" => fixture.Level1(),
+			"OrderBook" => fixture.OrderBook(),
+			"Ticks" => fixture.Ticks(),
+			"Candles" => fixture.Candles(),
+			_ => throw new ArgumentOutOfRangeException(nameof(operation)),
+		});
+	}
+
+	private sealed class ExcludedDataFixture : LiveMarketDataTestBase
+	{
+		protected override SecurityId TestSecurityId => default;
+		protected override DataType[] SkippedDataTypes => [DataType.Level1, DataType.MarketDepth, DataType.Ticks, DataType.CandleTimeFrame];
+		protected override MessageAdapter CreateAdapter() => throw new InvalidOperationException("An excluded data type must not create an adapter.");
+	}
+
+	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task FilteredLookupPreservesTheRequestAndTheCallerMessage()
 	{

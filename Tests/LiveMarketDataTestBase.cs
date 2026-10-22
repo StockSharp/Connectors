@@ -119,6 +119,14 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 		}
 	}
 
+	private Task RunAsync(DataType dataType, Func<MarketDataTestHarness, Task> body)
+	{
+		if (SkippedDataTypes.Contains(dataType))
+			Inconclusive($"{GetType().Name}: {dataType} is excluded from this feed's checks.");
+
+		return RunAsync(body);
+	}
+
 	private async Task<DataType[]> GetSupportedAsync(MarketDataTestHarness harness)
 	{
 		var supported = new List<DataType>();
@@ -199,7 +207,7 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task Level1() => RunAsync(async harness =>
+	public Task Level1() => RunAsync(DataType.Level1, async harness =>
 	{
 		if (!await IsSupportedAsync(harness, DataType.Level1))
 			Inconclusive("Level1 is not supported by the adapter.");
@@ -215,7 +223,7 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task OrderBook() => RunAsync(async harness =>
+	public Task OrderBook() => RunAsync(DataType.MarketDepth, async harness =>
 	{
 		if (!await IsSupportedAsync(harness, DataType.MarketDepth))
 			Inconclusive("Order book is not supported by the adapter.");
@@ -236,7 +244,7 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task Ticks() => RunAsync(async harness =>
+	public Task Ticks() => RunAsync(DataType.Ticks, async harness =>
 	{
 		if (!await IsSupportedAsync(harness, DataType.Ticks))
 			Inconclusive("Ticks are not supported by the adapter.");
@@ -254,7 +262,7 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task Candles() => RunAsync(async harness =>
+	public Task Candles() => RunAsync(DataType.CandleTimeFrame, async harness =>
 	{
 		var tf = await GetTimeFrameAsync(harness);
 

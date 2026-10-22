@@ -69,7 +69,7 @@ static class LiveTestAccess
 			isRestricted = fixtureType.GetMethod(testName)?.GetCustomAttributes<RegionalLiveTestsAttribute>(true)
 				.Any(restriction => restriction.AppliesTo(testName)) == true;
 		return isRestricted
-			? $"Set {RegionalOptInVariable}=1 to run venue tests restricted by the runner's network or region."
+			? $"Set {RegionalOptInVariable}=1 to run checks requiring suitable network access or public API availability."
 			: null;
 	}
 }

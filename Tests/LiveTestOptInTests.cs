@@ -95,6 +95,12 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(CowProtocolMarketDataTests), nameof(CowProtocolMarketDataTests.Securities))]
 	[DataRow(typeof(CowProtocolMarketDataTests), nameof(CowProtocolMarketDataTests.Level1))]
 	[DataRow(typeof(CowProtocolMarketDataTests), nameof(CowProtocolMarketDataTests.OrderBook))]
+	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.OrderBook))]
+	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.Ticks))]
+	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.Candles))]
+	[DataRow(typeof(EsmaFirdsTests), nameof(EsmaFirdsTests.Securities))]
+	[DataRow(typeof(LfjTests), nameof(LfjTests.Ticks))]
+	[DataRow(typeof(LfjTests), nameof(LfjTests.Candles))]
 	[Timeout(10000)]
 	public void RegionalTestsRequireAdditionalExplicitOptIn(Type fixtureType, string testName)
 	{
@@ -120,6 +126,10 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(BYDFiMarketDataTests), nameof(BYDFiMarketDataTests.Securities))]
 	[DataRow(typeof(MoexISSTests), nameof(MoexISSTests.MoexIssLookupSber))]
 	[DataRow(typeof(AlorHistoryTests), nameof(AlorHistoryTests.Securities))]
+	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.Securities))]
+	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.Level1))]
+	[DataRow(typeof(LfjTests), nameof(LfjTests.Securities))]
+	[DataRow(typeof(LfjTests), nameof(LfjTests.Level1))]
 	[Timeout(10000)]
 	public void RegionalOptInDoesNotExcludeOtherChecks(Type fixtureType, string testName)
 	{
@@ -170,6 +180,27 @@ public class LiveTestOptInTests : BaseTestClass
 			IsTrue(bydfi.Message.Contains("STOCKSHARP_LIVE_BYDFI_TESTS=1"));
 			var gmtrade = Throws<AssertInconclusiveException>(() => GMTradeMarketDataTests.CreateAdapter(setting));
 			IsTrue(gmtrade.Message.Contains("STOCKSHARP_LIVE_GMTRADE_TESTS=1"));
+		}
+	}
+
+	[TestMethod]
+	[DataRow("", false)]
+	[DataRow("0", false)]
+	[DataRow("true", false)]
+	[DataRow("1", true)]
+	public void BtcTurkHistoryOptInDoesNotDisableOtherMarketData(string setting, bool expectedToRun)
+	{
+		using var publicData = BtcTurkTests.CreateAdapter(setting, false);
+		IsNotNull(publicData);
+		if (expectedToRun)
+		{
+			using var history = BtcTurkTests.CreateAdapter(setting, true);
+			IsNotNull(history);
+		}
+		else
+		{
+			var error = Throws<AssertInconclusiveException>(() => BtcTurkTests.CreateAdapter(setting, true));
+			IsTrue(error.Message.Contains("STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS=1"));
 		}
 	}
 

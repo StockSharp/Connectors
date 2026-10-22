@@ -122,11 +122,13 @@ static class XbrlFilingsExtensions
             Source = "filings.xbrl.org",
             Headline = $"{name} — XBRL filing for {period}",
             Story = story,
-            Url = ResolvePublicUrl(
-                publicAddress,
-                attributes.ViewerUrl
-                    .IsEmpty(attributes.ReportUrl))
-                ?.AbsoluteUri,
+            Url = new[]
+                {
+                    attributes.ViewerUrl, attributes.ReportUrl,
+                    attributes.PackageUrl, attributes.JsonUrl, filing.Links?.Self,
+                }
+                .Select(value => ResolvePublicUrl(publicAddress, value))
+                .FirstOrDefault(value => value is not null)?.AbsoluteUri,
             Priority = attributes.ErrorCount > 0
                 ? NewsPriorities.High
                 : NewsPriorities.Regular,
@@ -140,7 +142,8 @@ static class XbrlFilingsExtensions
     {
         if (value.IsEmpty())
             return null;
-        if (Uri.TryCreate(
+        // A leading slash is a website-relative path; Unix also accepts it as an absolute file URI.
+        if (!value.StartsWith('/') && Uri.TryCreate(
             value,
             UriKind.Absolute,
             out var absolute))
