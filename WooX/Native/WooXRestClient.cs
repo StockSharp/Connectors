@@ -1,5 +1,7 @@
 namespace StockSharp.WooX.Native;
 
+using Ecng.Net;
+
 sealed class WooXRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 4;
@@ -27,10 +29,10 @@ sealed class WooXRestClient : BaseLogReceiver
 			.TrimEnd('/') + "/", UriKind.Absolute);
 		_apiKey = key.IsEmpty() ? null : key.UnSecure();
 		_secret = secret.IsEmpty() ? null : secret.UnSecure();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-WooX-Connector/1.0");
 	}

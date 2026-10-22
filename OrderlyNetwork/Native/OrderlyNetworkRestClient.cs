@@ -1,5 +1,7 @@
 namespace StockSharp.OrderlyNetwork.Native;
 
+using Ecng.Net;
+
 sealed class OrderlyNetworkRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
@@ -26,10 +28,10 @@ sealed class OrderlyNetworkRestClient : BaseLogReceiver
 		_endpoint = new Uri(endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/') +
 			"/", UriKind.Absolute);
 		_signer = signer ?? throw new ArgumentNullException(nameof(signer));
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

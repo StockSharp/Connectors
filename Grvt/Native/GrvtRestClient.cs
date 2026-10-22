@@ -1,5 +1,7 @@
 namespace StockSharp.Grvt.Native;
 
+using Ecng.Net;
+
 sealed class GrvtRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -39,10 +41,10 @@ sealed class GrvtRestClient : BaseLogReceiver
 			throw new ArgumentException(
 				"GRVT subaccount ID must be an unsigned 64-bit integer.",
 				nameof(subAccountId));
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"StockSharp-GRVT-Connector/1.0");
 		_http.DefaultRequestHeaders.Accept.Add(

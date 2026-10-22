@@ -1,5 +1,7 @@
 namespace StockSharp.Phemex.Native;
 
+using Ecng.Net;
+
 readonly record struct PhemexParameter(string Name, string Value);
 
 readonly record struct PhemexQuery(string Canonical, string Encoded);
@@ -52,10 +54,10 @@ sealed class PhemexRestClient : BaseLogReceiver
 		_endpoint = new Uri(NormalizeEndpoint(endpoint), UriKind.Absolute);
 		_apiKey = key.IsEmpty() ? null : key.UnSecure();
 		_hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Phemex-Connector/1.0");
 	}
 

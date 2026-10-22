@@ -1,5 +1,7 @@
 namespace StockSharp.NasdaqCloudDataService.Native;
 
+using Ecng.Net;
+
 sealed class NasdaqCloudApiException : InvalidOperationException
 {
 	public NasdaqCloudApiException(HttpStatusCode statusCode, string message)
@@ -22,7 +24,7 @@ sealed class NasdaqCloudDataServiceClient : BaseLogReceiver, IDisposable
 	private readonly Uri _address;
 	private readonly string _clientId;
 	private readonly string _clientSecret;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 	private readonly SemaphoreSlim _authLock = new(1, 1);
 	private string _accessToken;
 	private DateTime _tokenExpires;

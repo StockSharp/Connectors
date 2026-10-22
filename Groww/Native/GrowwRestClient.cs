@@ -1,5 +1,7 @@
 namespace StockSharp.Groww.Native;
 
+using Ecng.Net;
+
 internal sealed class GrowwRestClient : BaseLogReceiver
 {
 	private readonly Uri _apiRoot;
@@ -10,7 +12,7 @@ internal sealed class GrowwRestClient : BaseLogReceiver
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _configuredToken;
 	private readonly string _apiKey;
 	private readonly string _apiSecret;

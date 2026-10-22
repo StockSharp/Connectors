@@ -1,8 +1,10 @@
 namespace StockSharp.Longbridge.Native;
 
+using Ecng.Net;
+
 sealed class LongbridgeRestClient : BaseLogReceiver
 {
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(30) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromSeconds(30) };
 	private readonly SemaphoreSlim _tradeRateGate = new(1, 1);
 	private readonly string _appKey;
 	private readonly string _appSecret;

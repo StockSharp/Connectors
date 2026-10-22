@@ -1,15 +1,17 @@
 namespace StockSharp.Uniswap.Native;
 
+using Ecng.Net;
+
 sealed class UniswapTradingClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
 	private const int _maximumAttempts = 4;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly string _apiKey;
 	private readonly string _routerVersion;
 	private readonly SemaphoreSlim _sendSync = new(1, 1);

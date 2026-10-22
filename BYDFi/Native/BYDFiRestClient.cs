@@ -1,5 +1,7 @@
 namespace StockSharp.BYDFi.Native;
 
+using Ecng.Net;
+
 sealed class BYDFiRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -33,11 +35,11 @@ sealed class BYDFiRestClient : BaseLogReceiver
 	private const int _maximumReadAttempts = 4;
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly string _apiKey;
 	private readonly byte[] _apiSecret;
 	private readonly RateGate _rateGate = new(TimeSpan.FromMilliseconds(60));

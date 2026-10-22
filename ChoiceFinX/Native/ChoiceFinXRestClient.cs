@@ -1,5 +1,7 @@
 namespace StockSharp.ChoiceFinX.Native;
 
+using Ecng.Net;
+
 sealed class ChoiceFinXRestClient : BaseLogReceiver
 {
     private static readonly JsonSerializerSettings _jsonSettings =
@@ -41,7 +43,7 @@ sealed class ChoiceFinXRestClient : BaseLogReceiver
                 : throw new ArgumentOutOfRangeException(
                     nameof(defaultPriceDivisor));
 
-        _client = new()
+        _client = new(new HttpRateLimitHandler(new HttpClientHandler()))
         {
             BaseAddress = EnsureTrailingSlash(
                 address ??

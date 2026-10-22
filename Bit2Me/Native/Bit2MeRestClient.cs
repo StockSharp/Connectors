@@ -1,5 +1,7 @@
 namespace StockSharp.Bit2Me.Native;
 
+using Ecng.Net;
+
 sealed class Bit2MeRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
@@ -32,10 +34,10 @@ sealed class Bit2MeRestClient : BaseLogReceiver
 		_secret = secretValue.IsEmpty()
 			? null
 			: Encoding.UTF8.GetBytes(secretValue);
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.Accept.Add(
 			new MediaTypeWithQualityHeaderValue("application/json"));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(

@@ -1,5 +1,7 @@
 namespace StockSharp.Tokocrypto.Native;
 
+using Ecng.Net;
+
 sealed class TokocryptoRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
@@ -7,7 +9,7 @@ sealed class TokocryptoRestClient : BaseLogReceiver
 
 	private readonly Uri _accountEndpoint;
 	private readonly Uri _marketDataEndpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly TokocryptoAuthenticator _authenticator;
 	private readonly SemaphoreSlim _rateSync = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()

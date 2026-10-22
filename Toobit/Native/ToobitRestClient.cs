@@ -1,5 +1,7 @@
 namespace StockSharp.Toobit.Native;
 
+using Ecng.Net;
+
 sealed class ToobitApiException : InvalidOperationException
 {
 	public ToobitApiException(HttpStatusCode statusCode, int? code, string message)
@@ -18,7 +20,7 @@ sealed class ToobitRestClient : BaseLogReceiver
 	private const int _maxAttempts = 3;
 	private const int _receiveWindow = 5000;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly SecureString _key;
 	private readonly HMACSHA256 _hasher;
 	private readonly Lock _hashSync = new();

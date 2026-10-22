@@ -1,5 +1,7 @@
 namespace StockSharp.Finra.Native;
 
+using Ecng.Net;
+
 sealed class FinraApiException : InvalidOperationException
 {
 	public FinraApiException(HttpStatusCode statusCode, string message)
@@ -53,8 +55,8 @@ sealed class FinraRestClient : BaseLogReceiver, IDisposable
 			? DateTimeOffset.MaxValue
 			: DateTimeOffset.MinValue;
 		_http = handler is null
-			? new HttpClient()
-			: new HttpClient(handler);
+			? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+			: new HttpClient(new HttpRateLimitHandler(handler));
 		_http.Timeout = TimeSpan.FromMinutes(2);
 		_http.DefaultRequestHeaders.Accept.Add(
 			new MediaTypeWithQualityHeaderValue("application/json"));

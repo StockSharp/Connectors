@@ -1,5 +1,7 @@
 namespace StockSharp.GainsNetwork.Native;
 
+using Ecng.Net;
+
 sealed class GainsNetworkRpcClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 8 * 1024 * 1024;
@@ -9,11 +11,11 @@ sealed class GainsNetworkRpcClient : BaseLogReceiver
 		"0x3a60290d7335bce64a807e90f39655517bb5fa702423fa8fac283a5ea16d3a97";
 	private readonly GainsNetworkDeployment _deployment;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly SemaphoreSlim _transactionGate = new(1, 1);
 	private readonly byte[] _privateKey;

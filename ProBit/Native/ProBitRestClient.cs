@@ -1,5 +1,7 @@
 namespace StockSharp.ProBit.Native;
 
+using Ecng.Net;
+
 readonly record struct ProBitParameter(string Name, string Value);
 
 sealed class ProBitRestClient : BaseLogReceiver
@@ -27,10 +29,10 @@ sealed class ProBitRestClient : BaseLogReceiver
 		_authEndpoint = new Uri(NormalizeEndpoint(authEndpoint), UriKind.Absolute);
 		_clientId = key.IsEmpty() ? null : key.UnSecure();
 		_clientSecret = secret.IsEmpty() ? null : secret.UnSecure();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-ProBit-Connector/1.0");
 	}
 

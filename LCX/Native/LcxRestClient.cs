@@ -1,5 +1,7 @@
 namespace StockSharp.LCX.Native;
 
+using Ecng.Net;
+
 sealed class LcxRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
@@ -29,10 +31,10 @@ sealed class LcxRestClient : BaseLogReceiver
 		_secret = secret.IsEmpty()
 			? null
 			: secret.UnSecure().Trim();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

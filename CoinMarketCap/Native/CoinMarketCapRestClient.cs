@@ -1,5 +1,7 @@
 namespace StockSharp.CoinMarketCap.Native;
 
+using Ecng.Net;
+
 sealed class CoinMarketCapApiException : InvalidOperationException
 {
 	public CoinMarketCapApiException(HttpStatusCode statusCode, int? errorCode,
@@ -45,7 +47,7 @@ sealed class CoinMarketCapRestClient : BaseLogReceiver
 			requestInterval > TimeSpan.FromMinutes(1))
 			throw new ArgumentOutOfRangeException(nameof(requestInterval));
 		_requestInterval = requestInterval;
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = root,
 			Timeout = TimeSpan.FromSeconds(60),

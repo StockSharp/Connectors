@@ -1,5 +1,7 @@
 namespace StockSharp.GMTrade.Native;
 
+using Ecng.Net;
+
 sealed class GMTradeRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -136,10 +138,10 @@ sealed class GMTradeRestClient : BaseLogReceiver
 			nameof(candleEndpoint));
 		_indexerEndpoint = CreateEndpoint(indexerEndpoint,
 			nameof(indexerEndpoint));
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

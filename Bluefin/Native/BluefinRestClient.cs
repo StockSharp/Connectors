@@ -1,5 +1,7 @@
 namespace StockSharp.Bluefin.Native;
 
+using Ecng.Net;
+
 sealed class BluefinRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 32 * 1024 * 1024;
@@ -242,7 +244,7 @@ sealed class BluefinRestClient : BaseLogReceiver
 
 	private static HttpClient CreateClient(string endpoint, string name)
 	{
-		var client = new HttpClient
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = endpoint.NormalizeHttpEndpoint(name),
 			Timeout = TimeSpan.FromSeconds(45),

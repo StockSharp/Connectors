@@ -4,6 +4,8 @@ using System.Security.Cryptography;
 
 namespace StockSharp.ApexOmni.Native;
 
+using Ecng.Net;
+
 sealed class ApexOmniRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -37,10 +39,10 @@ sealed class ApexOmniRestClient : BaseLogReceiver
 			!value.IsEmpty()) is not (0 or 3))
 			throw new ArgumentException(
 				"ApeX Omni private access requires key, secret, and passphrase.");
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"StockSharp-ApeX-Omni-Connector/1.0");
 		_http.DefaultRequestHeaders.Accept.Add(

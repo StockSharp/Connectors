@@ -1,5 +1,7 @@
 namespace StockSharp.Kalshi.Native;
 
+using Ecng.Net;
+
 sealed class KalshiApiException : InvalidOperationException
 {
 	public KalshiApiException(HttpStatusCode statusCode, string message)
@@ -36,7 +38,7 @@ sealed class KalshiRestClient : BaseLogReceiver
 		var normalized = endpoint.NormalizeHttpEndpoint(nameof(endpoint));
 		var address = new Uri(normalized, UriKind.Absolute);
 		_apiRootPath = address.AbsolutePath.TrimEnd('/');
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = address,
 			Timeout = TimeSpan.FromSeconds(45),

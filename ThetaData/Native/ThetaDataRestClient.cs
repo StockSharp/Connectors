@@ -1,5 +1,7 @@
 namespace StockSharp.ThetaData.Native;
 
+using Ecng.Net;
+
 sealed class ThetaDataApiException : InvalidOperationException
 {
 	public ThetaDataApiException(HttpStatusCode statusCode, string message)
@@ -23,7 +25,7 @@ sealed class ThetaDataRestClient : BaseLogReceiver
 
 	private readonly Uri _address;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(5) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(5) };
 
 	public ThetaDataRestClient(Uri address, int maxAttempts)
 	{

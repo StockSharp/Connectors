@@ -1,5 +1,7 @@
 namespace StockSharp.NDAX.Native;
 
+using Ecng.Net;
+
 sealed class NDAXRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -30,11 +32,11 @@ sealed class NDAXRestClient : BaseLogReceiver
 	private const int _maximumAttempts = 4;
 	private const int _maximumResponseBytes = 8 * 1024 * 1024;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly RateGate _rateGate = new();
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{

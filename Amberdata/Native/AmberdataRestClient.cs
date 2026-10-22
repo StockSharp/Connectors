@@ -1,5 +1,7 @@
 namespace StockSharp.Amberdata.Native;
 
+using Ecng.Net;
+
 sealed class AmberdataApiException(HttpStatusCode statusCode, string message)
 	: InvalidOperationException(message)
 {
@@ -45,7 +47,7 @@ sealed class AmberdataRestClient : BaseLogReceiver
 			AutomaticDecompression = DecompressionMethods.GZip |
 				DecompressionMethods.Deflate | DecompressionMethods.Brotli,
 		};
-		_client = new(handler, true)
+		_client = new(new HttpRateLimitHandler(handler), true)
 		{
 			BaseAddress = _root,
 			Timeout = TimeSpan.FromSeconds(90),

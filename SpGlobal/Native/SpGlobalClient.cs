@@ -1,5 +1,7 @@
 namespace StockSharp.SpGlobal.Native;
 
+using Ecng.Net;
+
 sealed class SpGlobalClient : BaseLogReceiver, IDisposable
 {
 	private static readonly JsonSerializerSettings _jsonSettings = new()
@@ -11,7 +13,7 @@ sealed class SpGlobalClient : BaseLogReceiver, IDisposable
 	private readonly Uri _address;
 	private readonly string _login;
 	private readonly string _password;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 	private readonly SemaphoreSlim _authLock = new(1, 1);
 	private string _accessToken;
 	private DateTime _tokenExpires;

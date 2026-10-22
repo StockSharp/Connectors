@@ -1,5 +1,7 @@
 namespace StockSharp.JpmDataQuery.Native;
 
+using Ecng.Net;
+
 sealed class JpmDataQueryClient : BaseLogReceiver, IDisposable
 {
 	private const string _audience = "JPMC:URI:RS-06785-DataQueryExternalApi-PROD";
@@ -13,7 +15,7 @@ sealed class JpmDataQueryClient : BaseLogReceiver, IDisposable
 		DateParseHandling = DateParseHandling.None,
 	};
 
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(10) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(10) };
 	private readonly SemaphoreSlim _authLock = new(1, 1);
 	private readonly string _clientId;
 	private readonly string _clientSecret;

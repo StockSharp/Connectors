@@ -1,5 +1,7 @@
 namespace StockSharp.CoinSwitch.Native;
 
+using Ecng.Net;
+
 sealed class CoinSwitchApiException(
 	HttpStatusCode statusCode,
 	string message)
@@ -38,10 +40,10 @@ sealed class CoinSwitchRestClient : BaseLogReceiver
 		_signer = secret.IsEmpty() ? null : new(secret);
 		_spotExchange = spotExchange.ThrowIfEmpty(
 			nameof(spotExchange)).Trim().ToLowerInvariant();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

@@ -1,5 +1,7 @@
 namespace StockSharp.PancakeSwap.Native;
 
+using Ecng.Net;
+
 sealed class PancakeSwapGraphClient : BaseLogReceiver
 {
 	private const string _v3PoolsQuery = """
@@ -42,11 +44,11 @@ sealed class PancakeSwapGraphClient : BaseLogReceiver
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
 	private readonly Uri _endpoint;
 	private readonly PancakeSwapPoolVersions _poolVersion;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly SemaphoreSlim _sendSync = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{

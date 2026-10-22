@@ -1,5 +1,7 @@
 namespace StockSharp.ChainlinkDataStreams.Native;
 
+using Ecng.Net;
+
 sealed class ChainlinkRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 64 * 1024 * 1024;
@@ -36,7 +38,7 @@ sealed class ChainlinkRestClient : BaseLogReceiver
 			requestInterval > TimeSpan.FromMinutes(1))
 			throw new ArgumentOutOfRangeException(nameof(requestInterval));
 		_requestInterval = requestInterval;
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = _endpoint,
 			Timeout = TimeSpan.FromSeconds(90),

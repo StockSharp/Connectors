@@ -1,5 +1,7 @@
 namespace StockSharp.Exante.Native;
 
+using Ecng.Net;
+
 enum ExanteApiGroups
 {
     Symbols,
@@ -503,12 +505,12 @@ sealed class ExanteRestClient : BaseLogReceiver
     private static HttpClient CreateClient(
         Uri address, string authorization)
     {
-        var client = new HttpClient(new HttpClientHandler
+        var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
         {
             AutomaticDecompression =
                 DecompressionMethods.GZip |
                 DecompressionMethods.Deflate,
-        })
+        }))
         {
             BaseAddress = address,
         };

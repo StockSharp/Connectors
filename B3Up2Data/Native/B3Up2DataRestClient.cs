@@ -1,5 +1,7 @@
 namespace StockSharp.B3Up2Data.Native;
 
+using Ecng.Net;
+
 sealed class B3Up2DataRestClient :
     BaseLogReceiver,
     IDisposable
@@ -29,8 +31,8 @@ sealed class B3Up2DataRestClient :
         _address = EnsureApiAddress(
             address ?? throw new ArgumentNullException(nameof(address)));
         _http = handler is null
-            ? new HttpClient()
-            : new HttpClient(handler);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(5);
         _delay = delay ?? Task.Delay;
     }

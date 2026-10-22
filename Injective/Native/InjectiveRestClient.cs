@@ -1,5 +1,7 @@
 namespace StockSharp.Injective.Native;
 
+using Ecng.Net;
+
 sealed class InjectiveRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
@@ -327,7 +329,7 @@ sealed class InjectiveRestClient : BaseLogReceiver
 			address.Scheme is not ("http" or "https"))
 			throw new ArgumentException(
 				$"Injective {name} endpoint is invalid.", nameof(endpoint));
-		return new()
+		return new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = address,
 			Timeout = TimeSpan.FromSeconds(30),

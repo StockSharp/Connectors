@@ -1,5 +1,7 @@
 namespace StockSharp.PaytmMoney.Native;
 
+using Ecng.Net;
+
 sealed class PaytmMoneyRestClient : BaseLogReceiver
 {
     private static readonly JsonSerializerSettings _jsonSettings = new()
@@ -36,10 +38,10 @@ sealed class PaytmMoneyRestClient : BaseLogReceiver
         _accessToken = NormalizeToken(accessToken);
         _readAccessToken = NormalizeToken(readAccessToken);
 
-        _http = new(new HttpClientHandler
+        _http = new(new HttpRateLimitHandler(new HttpClientHandler
         {
             AutomaticDecompression = DecompressionMethods.All,
-        })
+        }))
         {
             BaseAddress = _address,
             Timeout = TimeSpan.FromSeconds(45),

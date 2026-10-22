@@ -1,11 +1,15 @@
 namespace StockSharp.Binance.Native;
 
+using System.Net.Http;
 using System.Security.Cryptography;
+
+using RestSharp.Interceptors;
 
 class HttpClient : BaseLogReceiver
 {
 	private readonly SecureString _key;
 	private readonly HashAlgorithm _hasher;
+	private readonly Lock _signatureSync = new();
 	private readonly bool _isDemo;
 
 	private TimeSpan _serverTimeDiff;
@@ -21,7 +25,8 @@ class HttpClient : BaseLogReceiver
 
 	protected override void DisposeManaged()
 	{
-		_hasher?.Dispose();
+		using (_signatureSync.EnterScope())
+			_hasher?.Dispose();
 		base.DisposeManaged();
 	}
 
@@ -529,7 +534,7 @@ class HttpClient : BaseLogReceiver
 		if (_key.IsEmpty())
 			throw new InvalidOperationException(LocalizedStrings.KeyNotSpecified);
 
-		request.AddHeader("X-MBX-APIKEY", _key.UnSecure());
+		request.AddOrUpdateHeader("X-MBX-APIKEY", _key.UnSecure());
 	}
 
 	private RestRequest ApplySecret(RestRequest request, bool applySignature, bool isQuery = false)
@@ -543,10 +548,14 @@ class HttpClient : BaseLogReceiver
 							  .Where(p => isQuery ? p.Type == ParameterType.QueryString : p.Type == ParameterType.GetOrPost && p.Value != null)
 							  .ToQueryString();
 
-			var signature = _hasher
-							.ComputeHash(encodedArgs.UTF8())
-							.Digest()
-							.ToLowerInvariant();
+			string signature;
+			using (_signatureSync.EnterScope())
+			{
+				signature = _hasher
+					.ComputeHash(encodedArgs.UTF8())
+					.Digest()
+					.ToLowerInvariant();
+			}
 
 			if (isQuery)
 				request.AddQueryParameter("signature", signature);
@@ -557,8 +566,43 @@ class HttpClient : BaseLogReceiver
 		return request;
 	}
 
+	private sealed class SignedRequestInterceptor : Interceptor
+	{
+		public override ValueTask BeforeHttpRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+		{
+			request.Options.Set(RetryDelegatingHandler.IsRetryAllowed, false);
+			return default;
+		}
+	}
+
+	private static readonly SignedRequestInterceptor _signedRequestInterceptor = new();
+
 	private async Task<T> MakeRequest<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
 	{
+		await HttpRateLimitHandler.WaitAsync(url, cancellationToken);
+
+		var timestamp = request.Parameters.FirstOrDefault(p => p.Name == "timestamp");
+		var signature = request.Parameters.FirstOrDefault(p => p.Name == "signature");
+		if (timestamp is not null)
+		{
+			// A request may have been queued during an IP pause; sign it with a fresh timestamp.
+			request.RemoveParameter(timestamp);
+			ApplTimestamp(request, timestamp.Type);
+			if (signature is not null)
+			{
+				request.RemoveParameter(signature);
+				ApplySecret(request, true, signature.Type == ParameterType.QueryString);
+			}
+		}
+
+		if (signature is not null)
+		{
+			// A prepared signature expires while waiting. Let the caller rebuild a failed request.
+			request.Interceptors ??= [];
+			if (!request.Interceptors.Contains(_signedRequestInterceptor))
+				request.Interceptors.Add(_signedRequestInterceptor);
+		}
+
 		dynamic obj;
 
 		try

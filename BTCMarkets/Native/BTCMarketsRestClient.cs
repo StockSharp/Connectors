@@ -1,5 +1,7 @@
 namespace StockSharp.BTCMarkets.Native;
 
+using Ecng.Net;
+
 sealed class BTCMarketsRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -31,11 +33,11 @@ sealed class BTCMarketsRestClient : BaseLogReceiver
 
 	private const int _maximumReadAttempts = 4;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly string _apiKey;
 	private readonly byte[] _apiSecret;
 	private readonly RateGate _readGate = new(TimeSpan.FromMilliseconds(75));

@@ -1,5 +1,7 @@
 namespace StockSharp.MetaApi.Native;
 
+using Ecng.Net;
+
 sealed class MetaApiApiException : InvalidOperationException
 {
 	public MetaApiApiException(HttpStatusCode statusCode, string errorCode,
@@ -18,7 +20,7 @@ sealed class MetaApiApiException : InvalidOperationException
 
 sealed class MetaApiRestClient : BaseLogReceiver
 {
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(45) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromSeconds(45) };
 	private readonly string _token;
 	private readonly string _configuredDomain;
 	private string _region;

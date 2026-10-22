@@ -1,5 +1,7 @@
 namespace StockSharp.Poloniex.Native;
 
+using Ecng.Net;
+
 sealed class PoloniexRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 4;
@@ -24,10 +26,10 @@ sealed class PoloniexRestClient : BaseLogReceiver
 			throw new ArgumentException("Poloniex REST endpoint must be an absolute HTTPS URI.", nameof(endpoint));
 
 		_authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
-		_http = new System.Net.Http.HttpClient(new HttpClientHandler
+		_http = new System.Net.Http.HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

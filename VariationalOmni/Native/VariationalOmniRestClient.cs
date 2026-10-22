@@ -1,5 +1,7 @@
 namespace StockSharp.VariationalOmni.Native;
 
+using Ecng.Net;
+
 sealed class VariationalOmniRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 4 * 1024 * 1024;
@@ -26,10 +28,10 @@ sealed class VariationalOmniRestClient : BaseLogReceiver
 			throw new ArgumentException(
 				"Variational Omni endpoint must be an HTTP or HTTPS URI.",
 				nameof(endpoint));
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"StockSharp-Variational-Omni-Connector/1.0");
 		_http.DefaultRequestHeaders.Accept.Add(

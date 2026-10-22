@@ -1,5 +1,7 @@
 namespace StockSharp.Indodax.Native;
 
+using Ecng.Net;
+
 sealed class IndodaxApiException(HttpStatusCode statusCode, string code,
 	string message)
 	: InvalidOperationException(
@@ -65,10 +67,10 @@ sealed class IndodaxRestClient : BaseLogReceiver
 			? null
 			: Encoding.UTF8.GetBytes(secretValue);
 
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

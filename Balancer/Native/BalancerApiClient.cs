@@ -1,5 +1,7 @@
 namespace StockSharp.Balancer.Native;
 
+using Ecng.Net;
+
 sealed class BalancerApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -76,11 +78,11 @@ sealed class BalancerApiClient : BaseLogReceiver
 		_quoteQueryTemplate.Replace("PROTOCOL_VERSION", "3");
 
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{

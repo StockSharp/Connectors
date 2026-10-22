@@ -1,5 +1,7 @@
 namespace StockSharp.Ostium.Native;
 
+using Ecng.Net;
+
 sealed class OstiumApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -74,11 +76,11 @@ sealed class OstiumApiClient : BaseLogReceiver
 	private readonly Uri _pricesEndpoint;
 	private readonly Uri _ohlcEndpoint;
 	private readonly Uri _subgraphEndpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly JsonSerializerSettings _settings = new()
 	{

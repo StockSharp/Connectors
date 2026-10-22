@@ -1,5 +1,7 @@
 namespace StockSharp.OpenMarkets.Native;
 
+using Ecng.Net;
+
 sealed class OpenMarketsClient : Disposable
 {
 	public const string OmsScope = "oms-api";
@@ -295,7 +297,7 @@ sealed class OpenMarketsClient : Disposable
 
 	private static HttpClient CreateClient(string address)
 	{
-		var client = new HttpClient
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new Uri(address),
 			Timeout = TimeSpan.FromSeconds(60),

@@ -1,5 +1,7 @@
 namespace StockSharp.SnapTrade.Native;
 
+using Ecng.Net;
+
 sealed class SnapTradeClient : BaseLogReceiver
 {
 	private sealed class SortedContractResolver : DefaultContractResolver
@@ -16,7 +18,7 @@ sealed class SnapTradeClient : BaseLogReceiver
 	private readonly string _userId;
 	private readonly string _userSecret;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		ContractResolver = new SortedContractResolver(),

@@ -1,5 +1,7 @@
 namespace StockSharp.OpenDart.Native;
 
+using Ecng.Net;
+
 sealed class OpenDartApiException : InvalidOperationException
 {
     public OpenDartApiException(string status, string message)
@@ -32,8 +34,8 @@ sealed class OpenDartRestClient : BaseLogReceiver, IDisposable
             address ?? throw new ArgumentNullException(nameof(address)));
         _apiKey = apiKey.ThrowIfEmpty(nameof(apiKey));
         _http = handler is null
-            ? new HttpClient()
-            : new HttpClient(handler);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(2);
         _http.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));

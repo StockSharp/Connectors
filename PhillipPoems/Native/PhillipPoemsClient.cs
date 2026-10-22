@@ -1,5 +1,7 @@
 namespace StockSharp.PhillipPoems.Native;
 
+using Ecng.Net;
+
 sealed class PhillipPoemsClient : Disposable
 {
 	private const string _apiPrefix = "mobile2/1.0/";
@@ -30,7 +32,7 @@ sealed class PhillipPoemsClient : Disposable
 		_clientSecret = clientSecret;
 		_accessToken = accessToken;
 		_refreshToken = refreshToken;
-		_http = new()
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new Uri(endpoint.ThrowIfEmpty(nameof(endpoint))),
 			Timeout = TimeSpan.FromSeconds(60),

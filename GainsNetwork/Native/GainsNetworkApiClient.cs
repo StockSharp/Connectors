@@ -1,16 +1,18 @@
 namespace StockSharp.GainsNetwork.Native;
 
+using Ecng.Net;
+
 sealed class GainsNetworkApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
 	private readonly Uri _backendEndpoint;
 	private readonly Uri _globalEndpoint;
 	private readonly Uri _pricingEndpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly JsonSerializerSettings _settings = new()
 	{

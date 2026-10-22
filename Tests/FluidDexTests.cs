@@ -1,8 +1,10 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -23,6 +25,31 @@ using StockSharp.Messages;
 [TestClass]
 public class FluidDexTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task RpcHistoryWaitsForTheServersRetryAfter()
+	{
+		var attempts = 0;
+		await using var server = new HistoryHttpServer(() =>
+		{
+			var response = new HttpResponseMessage(++attempts == 1 ? HttpStatusCode.TooManyRequests : HttpStatusCode.OK)
+			{
+				Content = new StringContent("""{"jsonrpc":"2.0","id":1,"result":[]}"""),
+			};
+			if (attempts == 1)
+				response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(1));
+			return response;
+		}, CancellationToken);
+		using var adapter = new FluidDexMessageAdapter(new IncrementalIdGenerator());
+		using var client = new FluidDexRpcClient(server.Address.AbsoluteUri, FluidDexChains.Ethereum, adapter.FactoryAddress, adapter.ResolverAddress, null, null);
+
+		await client.GetLogsAsync(new FluidDexMarket { PoolId = "0x667701e51b4d1ca244f17c78f7ab8744b4c99f9b" }, 90, 100, CancellationToken);
+
+		var times = server.RequestTimes.ToArray();
+		AreEqual(2, times.Length);
+		IsTrue(times[1] - times[0] >= TimeSpan.FromSeconds(1), "The native retry loop must wait for the full server delay.");
+	}
+
 	[TestMethod]
 	[DataRow(1)]
 	[DataRow(2)]

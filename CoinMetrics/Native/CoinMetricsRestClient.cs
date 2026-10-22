@@ -1,5 +1,7 @@
 namespace StockSharp.CoinMetrics.Native;
 
+using Ecng.Net;
+
 sealed class CoinMetricsApiException(HttpStatusCode statusCode, string message)
 	: InvalidOperationException(message)
 {
@@ -40,7 +42,7 @@ sealed class CoinMetricsRestClient : BaseLogReceiver
 			AutomaticDecompression = DecompressionMethods.GZip |
 				DecompressionMethods.Deflate | DecompressionMethods.Brotli,
 		};
-		_client = new(handler, true)
+		_client = new(new HttpRateLimitHandler(handler), true)
 		{
 			BaseAddress = _root,
 			Timeout = TimeSpan.FromSeconds(90),

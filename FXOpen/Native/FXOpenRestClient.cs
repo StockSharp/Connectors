@@ -1,5 +1,7 @@
 namespace StockSharp.FXOpen.Native;
 
+using Ecng.Net;
+
 readonly record struct FXOpenParameter(string Name, string Value);
 
 sealed class FXOpenRestClient : BaseLogReceiver
@@ -24,10 +26,10 @@ sealed class FXOpenRestClient : BaseLogReceiver
 		_webApiId = webApiId;
 		_key = key.IsEmpty() ? null : key.UnSecure();
 		_secret = secret.IsEmpty() ? null : secret.UnSecure();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-FXOpen-Connector/1.0");
 	}
 

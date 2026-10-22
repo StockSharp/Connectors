@@ -1,5 +1,7 @@
 namespace StockSharp.DowJones.Native;
 
+using Ecng.Net;
+
 sealed class DowJonesApiException : InvalidOperationException
 {
 	public DowJonesApiException(HttpStatusCode statusCode, string message)
@@ -29,7 +31,7 @@ sealed class DowJonesClient : BaseLogReceiver
 	private readonly string _login;
 	private readonly string _password;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 	private readonly SemaphoreSlim _authLock = new(1, 1);
 	private string _accessToken;
 	private string _refreshToken;

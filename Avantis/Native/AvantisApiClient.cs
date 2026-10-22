@@ -1,5 +1,7 @@
 namespace StockSharp.Avantis.Native;
 
+using Ecng.Net;
+
 sealed class AvantisApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -7,11 +9,11 @@ sealed class AvantisApiClient : BaseLogReceiver
 	private readonly Uri _coreApiEndpoint;
 	private readonly Uri _feedEndpoint;
 	private readonly Uri _lazerEndpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		DateParseHandling = DateParseHandling.None,

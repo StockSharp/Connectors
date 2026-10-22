@@ -1,5 +1,7 @@
 namespace StockSharp.QFEX.Native;
 
+using Ecng.Net;
+
 sealed class QFEXRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -30,10 +32,10 @@ sealed class QFEXRestClient : BaseLogReceiver
 			throw new ArgumentException(
 				"QFEX REST endpoint must use HTTP or HTTPS.", nameof(endpoint));
 		_authenticator = new(publicKey, secret, accountId);
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

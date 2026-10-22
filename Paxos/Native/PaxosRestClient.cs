@@ -1,5 +1,7 @@
 namespace StockSharp.Paxos.Native;
 
+using Ecng.Net;
+
 using StockSharp.Paxos.Native.Model;
 
 sealed class PaxosApiException : InvalidOperationException
@@ -54,7 +56,7 @@ sealed class PaxosRestClient : BaseLogReceiver
 		_clientId = hasClientId ? clientId.UnSecure().Trim() : null;
 		_clientSecret = hasClientSecret ? clientSecret.UnSecure().Trim() : null;
 		_scopes = scopes?.Trim();
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = apiUri,
 			Timeout = TimeSpan.FromSeconds(45),

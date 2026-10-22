@@ -19,3 +19,5 @@ The **Binance connector** connects StockSharp to a centralized digital-asset exc
 Use this connector for live strategies, trading terminals, order-management services, and monitoring tools that need direct access to the provider.
 
 Available instruments, data depth, trading permissions, rate limits, and service availability are controlled by Binance and by the connected account or API plan.
+
+HTTP 429 and 418 responses pause requests to the same server for the full `Retry-After` interval. The pause is shared by connector instances in the same process and waiting can be cancelled. Missing or invalid headers use a thirty-second pause. Signed requests are refreshed after waiting and are not automatically replayed.

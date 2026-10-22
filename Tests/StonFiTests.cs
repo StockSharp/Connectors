@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,30 @@ using StockSharp.StonFi.Native.Model;
 [TestClass]
 public class StonFiTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task EventHistoryWaitsForTheServersRetryAfter()
+	{
+		var attempts = 0;
+		await using var server = new HistoryHttpServer(() =>
+		{
+			var response = new HttpResponseMessage(++attempts == 1 ? HttpStatusCode.TooManyRequests : HttpStatusCode.OK)
+			{
+				Content = new StringContent("""{"events":[]}"""),
+			};
+			if (attempts == 1)
+				response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(1));
+			return response;
+		}, CancellationToken);
+		using var client = new StonFiRestClient(server.Address.AbsoluteUri);
+
+		await client.GetEventsAsync(90, 100, CancellationToken);
+
+		var times = server.RequestTimes.ToArray();
+		AreEqual(2, times.Length);
+		IsTrue(times[1] - times[0] >= TimeSpan.FromSeconds(1), "The native retry loop must wait for the full server delay.");
+	}
+
 	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task ARepeatedHistoryConnectionFailureEscapesAfterTheRetryLimit()

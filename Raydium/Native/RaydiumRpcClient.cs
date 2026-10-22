@@ -1,5 +1,7 @@
 namespace StockSharp.Raydium.Native;
 
+using Ecng.Net;
+
 sealed class RaydiumRpcClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 16 * 1024 * 1024;
@@ -21,7 +23,7 @@ sealed class RaydiumRpcClient : BaseLogReceiver
 		endpoint = NormalizeEndpoint(endpoint.IsEmpty()
 			? cluster.GetRpcEndpoint()
 			: endpoint);
-		_httpClient = new()
+		_httpClient = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new Uri(endpoint, UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(30),

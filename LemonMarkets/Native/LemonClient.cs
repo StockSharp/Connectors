@@ -1,5 +1,7 @@
 namespace StockSharp.LemonMarkets.Native;
 
+using Ecng.Net;
+
 sealed class LemonClient : BaseLogReceiver
 {
 	private readonly Uri _origin;
@@ -7,7 +9,7 @@ sealed class LemonClient : BaseLogReceiver
 	private readonly string _privacyPrincipal;
 	private readonly string _privacyJustification;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		DateParseHandling = DateParseHandling.DateTime,

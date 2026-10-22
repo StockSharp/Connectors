@@ -1,5 +1,7 @@
 namespace StockSharp.Dexalot.Native;
 
+using Ecng.Net;
+
 sealed class DexalotEvmClient : BaseLogReceiver
 {
 	private const int _chainId = 432204;
@@ -9,11 +11,11 @@ sealed class DexalotEvmClient : BaseLogReceiver
 		"uint256,uint256,uint256,uint256,uint256,address,uint8,uint8,uint8," +
 		"uint8,uint32,uint32),uint32,bytes32)";
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly SemaphoreSlim _transactionGate = new(1, 1);
 	private readonly byte[] _privateKey;

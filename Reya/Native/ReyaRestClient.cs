@@ -1,5 +1,7 @@
 namespace StockSharp.Reya.Native;
 
+using Ecng.Net;
+
 sealed class ReyaRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
@@ -21,10 +23,10 @@ sealed class ReyaRestClient : BaseLogReceiver
 	{
 		_endpoint = new Uri(endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/') +
 			"/", UriKind.Absolute);
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

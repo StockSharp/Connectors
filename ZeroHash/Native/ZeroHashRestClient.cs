@@ -1,5 +1,7 @@
 namespace StockSharp.ZeroHash.Native;
 
+using Ecng.Net;
+
 sealed class ZeroHashApiException : InvalidOperationException
 {
 	public ZeroHashApiException(HttpStatusCode statusCode, string message)
@@ -38,7 +40,7 @@ sealed class ZeroHashRestClient : BaseLogReceiver
 			nameof(authenticator));
 		var address = NormalizeEndpoint(endpoint);
 		_rootPath = address.AbsolutePath.TrimEnd('/');
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = address,
 			Timeout = Timeout.InfiniteTimeSpan,

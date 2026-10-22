@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 
 using Ecng.IO;
+using Ecng.Net;
 using Ecng.IO.Compression;
 using Ecng.Serialization;
 using Ecng.Logging;
@@ -21,7 +22,7 @@ public partial class BinanceHistoryMessageAdapter
 
 	private readonly SynchronizedDictionary<string, (DateTime till, (DateTime, DateTime)? range)> _rangeCache = new(StringComparer.InvariantCultureIgnoreCase);
 	private readonly SynchronizedDictionary<string, decimal> _contractSizes = new(StringComparer.InvariantCultureIgnoreCase);
-	private readonly HttpClient _client = new();
+	private readonly HttpClient _client = new(new HttpRateLimitHandler(new HttpClientHandler()));
 
 	/// <inheritdoc />
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken token)

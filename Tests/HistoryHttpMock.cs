@@ -1,8 +1,10 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -35,6 +37,14 @@ sealed class HistoryHttpServer : IAsyncDisposable
 	private readonly Task _run;
 
 	public HistoryHttpServer(Func<string> response, CancellationToken cancellationToken)
+		: this(() => new HttpResponseMessage(HttpStatusCode.OK)
+		{
+			Content = new StringContent(response(), Encoding.UTF8, "application/json"),
+		}, cancellationToken)
+	{
+	}
+
+	public HistoryHttpServer(Func<HttpResponseMessage> response, CancellationToken cancellationToken)
 	{
 		_source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		_listener.Start();
@@ -42,11 +52,12 @@ sealed class HistoryHttpServer : IAsyncDisposable
 		_run = RunAsync(response, _source.Token);
 	}
 
+	public ConcurrentQueue<DateTime> RequestTimes { get; } = new();
 	public Uri Address { get; }
 	public string RequestTarget { get; private set; }
 	public IReadOnlyDictionary<string, string> RequestHeaders => _requestHeaders;
 
-	private async Task RunAsync(Func<string> response, CancellationToken cancellationToken)
+	private async Task RunAsync(Func<HttpResponseMessage> response, CancellationToken cancellationToken)
 	{
 		while (true)
 		{
@@ -62,8 +73,14 @@ sealed class HistoryHttpServer : IAsyncDisposable
 					_requestHeaders[line[..separator]] = line[(separator + 1)..].Trim();
 			}
 
-			var body = Encoding.UTF8.GetBytes(response());
-			var header = Encoding.ASCII.GetBytes($"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {body.Length}\r\nConnection: close\r\n\r\n");
+			if (_requestHeaders.TryGetValue("Content-Length", out var contentLength) && int.Parse(contentLength) > 0)
+				await reader.ReadBlockAsync(new char[int.Parse(contentLength)], cancellationToken);
+
+			RequestTimes.Enqueue(DateTime.UtcNow);
+			using var reply = response();
+			var body = reply.Content is null ? [] : await reply.Content.ReadAsByteArrayAsync(cancellationToken);
+			var extraHeaders = string.Concat(reply.Headers.Select(pair => $"{pair.Key}: {string.Join(", ", pair.Value)}\r\n"));
+			var header = Encoding.ASCII.GetBytes($"HTTP/1.1 {(int)reply.StatusCode} {reply.StatusCode}\r\nContent-Type: application/json\r\nContent-Length: {body.Length}\r\n{extraHeaders}Connection: close\r\n\r\n");
 			await stream.WriteAsync(header, cancellationToken);
 			await stream.WriteAsync(body, cancellationToken);
 		}

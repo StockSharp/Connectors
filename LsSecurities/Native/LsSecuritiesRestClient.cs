@@ -1,5 +1,7 @@
 namespace StockSharp.LsSecurities.Native;
 
+using Ecng.Net;
+
 internal sealed class LsPortfolioSnapshot
 {
 	public LsPortfolioSummary Summary { get; init; }
@@ -41,7 +43,7 @@ internal sealed class LsSecuritiesRestClient : BaseLogReceiver
 			AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate |
 				DecompressionMethods.Brotli,
 		};
-		_http = new(handler)
+		_http = new(new HttpRateLimitHandler(handler))
 		{
 			BaseAddress = _root,
 			Timeout = TimeSpan.FromSeconds(30),

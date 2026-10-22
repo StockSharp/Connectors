@@ -1,5 +1,6 @@
 namespace StockSharp.Dnse.Native;
 
+using Ecng.Net;
 sealed class DnseRestClient : BaseLogReceiver
 {
     private static readonly JsonSerializerSettings _jsonSettings = new()
@@ -44,7 +45,7 @@ sealed class DnseRestClient : BaseLogReceiver
         if (!address.EndsWith('/'))
             address += "/";
 
-        _http = handler is null ? new() : new(handler);
+        _http = new(new HttpRateLimitHandler(handler ?? new HttpClientHandler()));
         _http.BaseAddress = new(address);
         _http.Timeout = TimeSpan.FromSeconds(60);
         _http.DefaultRequestHeaders.Accept.Add(

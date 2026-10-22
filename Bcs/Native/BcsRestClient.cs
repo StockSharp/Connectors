@@ -1,5 +1,7 @@
 namespace StockSharp.Bcs.Native;
 
+using Ecng.Net;
+
 sealed class BcsRestClient : BaseLogReceiver
 {
 	private const string _information = "trade-api-information-service/api/v1/";
@@ -10,7 +12,7 @@ sealed class BcsRestClient : BaseLogReceiver
 	private const string _portfolio = "trade-api-bff-portfolio/api/v1/";
 	private const string _limits = "trade-api-bff-limit/api/v1/";
 
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly SemaphoreSlim _authSync = new(1, 1);
 	private readonly SemaphoreSlim _rateSync = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()

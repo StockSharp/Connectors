@@ -1,5 +1,7 @@
 namespace StockSharp.Tradejini.Native;
 
+using Ecng.Net;
+
 sealed class TradejiniRestClient : BaseLogReceiver
 {
     private static readonly string[] _masterGroups =
@@ -40,8 +42,8 @@ sealed class TradejiniRestClient : BaseLogReceiver
         _apiKey = apiKey.ThrowIfEmpty(nameof(apiKey)).UnSecure();
         AccessToken = accessToken?.UnSecure();
         _httpClient = handler == null
-            ? new HttpClient()
-            : new HttpClient(handler, true);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler), true);
         _httpClient.BaseAddress =
             address ?? throw new ArgumentNullException(nameof(address));
         _httpClient.DefaultRequestHeaders.Accept.Add(

@@ -1,5 +1,7 @@
 namespace StockSharp.Coinhako.Native;
 
+using Ecng.Net;
+
 sealed class CoinhakoApiException(HttpStatusCode statusCode, string message)
 	: InvalidOperationException(
 		$"Coinhako API error {(int)statusCode} ({statusCode}): {message}")
@@ -60,10 +62,10 @@ sealed class CoinhakoRestClient : BaseLogReceiver
 			}
 		}
 
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

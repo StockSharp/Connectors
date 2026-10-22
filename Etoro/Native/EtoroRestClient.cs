@@ -1,5 +1,7 @@
 namespace StockSharp.Etoro.Native;
 
+using Ecng.Net;
+
 sealed class EtoroRestClient : BaseLogReceiver
 {
 	private readonly Uri _apiRoot;
@@ -7,7 +9,7 @@ sealed class EtoroRestClient : BaseLogReceiver
 		"isOpen,internalSymbolFull,internalExchangeName,internalAssetClassName,isDelisted,isCurrentlyTradable," +
 		"isExchangeOpen,isBuyEnabled,currentRate";
 
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _apiKey;
 	private readonly string _userKey;
 	private readonly int _maxAttempts;

@@ -1,5 +1,7 @@
 namespace StockSharp.MiraeSharekhan.Native;
 
+using Ecng.Net;
+
 internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 {
 	private readonly HttpClient _http;
@@ -24,7 +26,7 @@ internal sealed class MiraeSharekhanRestClient : BaseLogReceiver
 			AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate |
 				DecompressionMethods.Brotli,
 		};
-		_http = new(handler)
+		_http = new(new HttpRateLimitHandler(handler))
 		{
 			BaseAddress = new(endpoint.ThrowIfEmpty(nameof(endpoint))),
 			Timeout = TimeSpan.FromSeconds(30),

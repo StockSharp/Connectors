@@ -1,5 +1,7 @@
 namespace StockSharp.RavenPack.Native;
 
+using Ecng.Net;
+
 sealed class RavenPackFeedClient : BaseLogReceiver
 {
 	private const int _maxLineLength = 8 * 1024 * 1024;
@@ -13,7 +15,7 @@ sealed class RavenPackFeedClient : BaseLogReceiver
 
 	private readonly Uri _uri;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new() { Timeout = Timeout.InfiniteTimeSpan };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = Timeout.InfiniteTimeSpan };
 	private readonly CancellationTokenSource _cancellation = new();
 	private readonly TaskCompletionSource _initialConnection =
 		new(TaskCreationOptions.RunContinuationsAsynchronously);

@@ -1,5 +1,7 @@
 namespace StockSharp.EodHistoricalData.Native;
 
+using Ecng.Net;
+
 sealed class EodhdApiException : InvalidOperationException
 {
 	public EodhdApiException(HttpStatusCode statusCode, string message)
@@ -23,7 +25,7 @@ sealed class EodhdRestClient : BaseLogReceiver
 	private readonly Uri _address;
 	private readonly string _token;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 
 	public EodhdRestClient(Uri address, string token, int maxAttempts)
 	{

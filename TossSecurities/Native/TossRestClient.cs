@@ -1,5 +1,6 @@
 namespace StockSharp.TossSecurities.Native;
 
+using Ecng.Net;
 sealed class TossRestClient : BaseLogReceiver
 {
     private static readonly JsonSerializerSettings _jsonSettings = new()
@@ -24,7 +25,7 @@ sealed class TossRestClient : BaseLogReceiver
         if (!address.EndsWith('/'))
             address += "/";
 
-        _httpClient = handler is null ? new() : new(handler);
+        _httpClient = new(new HttpRateLimitHandler(handler ?? new HttpClientHandler()));
         _httpClient.BaseAddress = new(address);
         _httpClient.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));

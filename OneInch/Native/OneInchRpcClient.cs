@@ -1,14 +1,16 @@
 namespace StockSharp.OneInch.Native;
 
+using Ecng.Net;
+
 sealed class OneInchRpcClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 8 * 1024 * 1024;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly SemaphoreSlim _transactionGate = new(1, 1);
 	private readonly byte[] _privateKey;

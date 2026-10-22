@@ -1,5 +1,7 @@
 namespace StockSharp.TradeLocker.Native;
 
+using Ecng.Net;
+
 internal sealed class TradeLockerApiException : InvalidOperationException
 {
 	public TradeLockerApiException(HttpStatusCode statusCode, string message)
@@ -35,7 +37,7 @@ internal sealed class TradeLockerClient : BaseLogReceiver, IDisposable
 		_server = server.ThrowIfEmpty(nameof(server));
 		_developerApiKey = developerApiKey;
 		_maxAttempts = Math.Max(1, maxAttempts);
-		_http = new()
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),

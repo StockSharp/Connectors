@@ -1,5 +1,7 @@
 namespace StockSharp.WazirX.Native;
 
+using Ecng.Net;
+
 sealed class WazirXRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
@@ -29,10 +31,10 @@ sealed class WazirXRestClient : BaseLogReceiver
 			throw new ArgumentOutOfRangeException(
 				nameof(receiveWindow));
 		_receiveWindow = receiveWindow;
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

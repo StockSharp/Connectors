@@ -1,5 +1,7 @@
 namespace StockSharp.NasdaqDataLink.Native;
 
+using Ecng.Net;
+
 sealed class NasdaqDataLinkApiException : InvalidOperationException
 {
 	public NasdaqDataLinkApiException(HttpStatusCode statusCode, string message)
@@ -22,7 +24,7 @@ sealed class NasdaqDataLinkClient : BaseLogReceiver, IDisposable
 
 	private readonly Uri _address;
 	private readonly string _apiToken;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 
 	public NasdaqDataLinkClient(Uri address, string apiToken)
 	{

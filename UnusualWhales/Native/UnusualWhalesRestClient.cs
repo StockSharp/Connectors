@@ -1,5 +1,7 @@
 namespace StockSharp.UnusualWhales.Native;
 
+using Ecng.Net;
+
 sealed class UnusualWhalesRestClient :
     BaseLogReceiver,
     IDisposable
@@ -27,8 +29,8 @@ sealed class UnusualWhalesRestClient :
             address ?? throw new ArgumentNullException(nameof(address)));
         _token = NormalizeToken(token);
         _http = handler is null
-            ? new HttpClient()
-            : new HttpClient(handler);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(3);
         _http.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));

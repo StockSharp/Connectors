@@ -1,5 +1,7 @@
 namespace StockSharp.Jupiter.Native;
 
+using Ecng.Net;
+
 sealed class JupiterApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 16 * 1024 * 1024;
@@ -341,7 +343,7 @@ sealed class JupiterApiClient : BaseLogReceiver
 
 	private static HttpClient CreateClient(string endpoint, string apiKey)
 	{
-		var client = new HttpClient
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new Uri(endpoint, UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(45),

@@ -1,9 +1,11 @@
 namespace StockSharp.Questrade.Native;
 
+using Ecng.Net;
+
 sealed class QuestradeRestClient : BaseLogReceiver
 {
 	private readonly Uri _tokenUri;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly SemaphoreSlim _tokenLock = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{

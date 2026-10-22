@@ -1,10 +1,12 @@
 namespace StockSharp.KoreaInvestment.Native;
 
+using Ecng.Net;
+
 sealed class KoreaInvestmentRestClient : BaseLogReceiver
 {
 	private readonly Uri _root;
 
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _appKey;
 	private readonly string _appSecret;
 	private readonly string _accountNumber;

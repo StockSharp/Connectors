@@ -1,5 +1,7 @@
 namespace StockSharp.Bitkub.Native;
 
+using Ecng.Net;
+
 sealed class BitkubRestClient : BaseLogReceiver
 {
 	private enum RateBuckets
@@ -43,10 +45,10 @@ sealed class BitkubRestClient : BaseLogReceiver
 				"Bitkub API key and secret must be configured together.");
 		_secret = secretValue.IsEmpty() ? null : Encoding.UTF8.GetBytes(secretValue);
 
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

@@ -1,5 +1,7 @@
 namespace StockSharp.Extended.Native;
 
+using Ecng.Net;
+
 sealed class ExtendedRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
@@ -29,10 +31,10 @@ sealed class ExtendedRestClient : BaseLogReceiver
 			throw new ArgumentException(
 				"Extended REST endpoint must use HTTP or HTTPS.", nameof(endpoint));
 		_apiKey = apiKey?.Trim();
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

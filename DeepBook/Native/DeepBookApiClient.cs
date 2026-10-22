@@ -1,5 +1,7 @@
 namespace StockSharp.DeepBook.Native;
 
+using Ecng.Net;
+
 sealed class DeepBookApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 8 * 1024 * 1024;
@@ -17,7 +19,7 @@ sealed class DeepBookApiClient : BaseLogReceiver
 	public DeepBookApiClient(string endpoint)
 	{
 		endpoint = NormalizeEndpoint(endpoint);
-		_httpClient = new()
+		_httpClient = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new Uri(endpoint + "/", UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(30),

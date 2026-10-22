@@ -1,5 +1,7 @@
 namespace StockSharp.Coinmetro.Native;
 
+using Ecng.Net;
+
 sealed class CoinmetroRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
@@ -21,10 +23,10 @@ sealed class CoinmetroRestClient : BaseLogReceiver
 			"Bearer ",
 			StringComparison.OrdinalIgnoreCase) == true)
 			_token = _token[7..].Trim();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

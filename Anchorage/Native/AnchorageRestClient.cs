@@ -1,5 +1,7 @@
 namespace StockSharp.Anchorage.Native;
 
+using Ecng.Net;
+
 sealed class AnchorageApiException : InvalidOperationException
 {
 	public AnchorageApiException(HttpStatusCode statusCode,
@@ -44,7 +46,7 @@ sealed class AnchorageRestClient : BaseLogReceiver
 		_apiKey = apiKey.UnSecure().Trim().ThrowIfEmpty(nameof(apiKey));
 		if (!signingKey.IsEmpty())
 			_signer = new(signingKey);
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(endpoint + "/", UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(45),

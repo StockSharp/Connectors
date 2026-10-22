@@ -1,5 +1,7 @@
 namespace StockSharp.BtcTurk.Native;
 
+using Ecng.Net;
+
 sealed class BtcTurkRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
@@ -43,10 +45,10 @@ sealed class BtcTurkRestClient : BaseLogReceiver
 			}
 		}
 
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.Accept.Add(
 			new MediaTypeWithQualityHeaderValue("application/json"));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(

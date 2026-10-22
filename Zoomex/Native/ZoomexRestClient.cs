@@ -1,5 +1,7 @@
 namespace StockSharp.Zoomex.Native;
 
+using Ecng.Net;
+
 sealed class ZoomexRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -35,11 +37,11 @@ sealed class ZoomexRestClient : BaseLogReceiver
 	private const int _receiveWindow = 5000;
 	private const string _apiPrefix = "/cloud/trade/v3";
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly string _apiKey;
 	private readonly byte[] _apiSecret;
 	private readonly RateGate _rateGate = new(TimeSpan.FromMilliseconds(50));

@@ -1,5 +1,7 @@
 namespace StockSharp.Copper.Native;
 
+using Ecng.Net;
+
 sealed class CopperApiException : InvalidOperationException
 {
 	public CopperApiException(HttpStatusCode statusCode, string code,
@@ -43,7 +45,7 @@ sealed class CopperRestClient : BaseLogReceiver
 		if (apiSecret.IsEmpty())
 			throw new ArgumentNullException(nameof(apiSecret));
 		_secret = Encoding.UTF8.GetBytes(apiSecret.UnSecure());
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(endpoint + "/", UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(45),

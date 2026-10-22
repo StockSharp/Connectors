@@ -1,5 +1,7 @@
 namespace StockSharp.Osmosis.Native;
 
+using Ecng.Net;
+
 sealed class OsmosisApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 32 * 1024 * 1024;
@@ -43,7 +45,7 @@ sealed class OsmosisApiClient : BaseLogReceiver
 		_rpcClient = CreateClient(rpcEndpoint, "RPC");
 		_assetListUri = NormalizeAbsoluteEndpoint(assetListEndpoint,
 			"asset-list");
-		_assetClient = new HttpClient
+		_assetClient = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			Timeout = TimeSpan.FromSeconds(45),
 		};
@@ -369,7 +371,7 @@ sealed class OsmosisApiClient : BaseLogReceiver
 
 	private static HttpClient CreateClient(string endpoint, string name)
 	{
-		var client = new HttpClient
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new Uri(NormalizeAbsoluteEndpoint(endpoint, name)
 				.ToString().TrimEnd('/') + "/", UriKind.Absolute),

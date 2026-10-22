@@ -1,10 +1,12 @@
 namespace StockSharp.WhiteBit.Native;
 
+using Ecng.Net;
+
 sealed class WhiteBitRestClient : BaseLogReceiver
 {
 	private const int _maxAttempts = 4;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _apiKey;
 	private readonly HMACSHA512 _hasher;
 	private readonly Lock _signSync = new();

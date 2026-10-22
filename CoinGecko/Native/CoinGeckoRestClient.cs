@@ -1,5 +1,7 @@
 namespace StockSharp.CoinGecko.Native;
 
+using Ecng.Net;
+
 sealed class CoinGeckoApiException : InvalidOperationException
 {
 	public CoinGeckoApiException(HttpStatusCode statusCode, int? errorCode,
@@ -40,7 +42,7 @@ sealed class CoinGeckoRestClient : BaseLogReceiver
 		if (requestInterval < TimeSpan.Zero || requestInterval > TimeSpan.FromMinutes(1))
 			throw new ArgumentOutOfRangeException(nameof(requestInterval));
 		_requestInterval = requestInterval;
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = root,
 			Timeout = TimeSpan.FromSeconds(60),

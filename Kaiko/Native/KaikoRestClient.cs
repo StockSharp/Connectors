@@ -1,5 +1,7 @@
 namespace StockSharp.Kaiko.Native;
 
+using Ecng.Net;
+
 sealed class KaikoApiException(HttpStatusCode statusCode, string message) : InvalidOperationException(message)
 {
 	public HttpStatusCode StatusCode { get; } = statusCode;
@@ -236,10 +238,10 @@ sealed class KaikoRestClient : BaseLogReceiver
 
 	private static HttpClient CreateClient(string endpoint, string component)
 	{
-		var client = new HttpClient(new HttpClientHandler
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			BaseAddress = ValidateEndpoint(endpoint, component),
 			Timeout = TimeSpan.FromSeconds(60),

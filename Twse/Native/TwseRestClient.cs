@@ -1,5 +1,7 @@
 namespace StockSharp.Twse.Native;
 
+using Ecng.Net;
+
 sealed class TwseRestClient : BaseLogReceiver, IDisposable
 {
     private const string _dailyPath =
@@ -35,8 +37,8 @@ sealed class TwseRestClient : BaseLogReceiver, IDisposable
         _address = EnsureTrailingSlash(
             address ?? throw new ArgumentNullException(nameof(address)));
         _http = handler is null
-            ? new HttpClient()
-            : new HttpClient(handler);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(2);
         _http.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));

@@ -1,8 +1,10 @@
 namespace StockSharp.FinamTrade.Native;
 
+using Ecng.Net;
+
 sealed class FinamRestClient : BaseLogReceiver
 {
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly SemaphoreSlim _authSync = new(1, 1);
 	private readonly SemaphoreSlim _rateSync = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = CreateJsonSettings();

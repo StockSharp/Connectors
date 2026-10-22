@@ -1,5 +1,7 @@
 namespace StockSharp.Xt.Native;
 
+using Ecng.Net;
+
 readonly record struct XtParameter(string Name, string Value);
 
 readonly record struct XtQuery(string Canonical, string Encoded);
@@ -34,10 +36,10 @@ sealed class XtRestClient : BaseLogReceiver
 		_futuresEndpoint = new Uri(NormalizeEndpoint(futuresEndpoint), UriKind.Absolute);
 		_apiKey = key.IsEmpty() ? null : key.UnSecure();
 		_hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-XT-Connector/1.0");
 	}
 

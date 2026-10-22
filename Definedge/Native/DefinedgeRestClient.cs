@@ -1,5 +1,7 @@
 namespace StockSharp.Definedge.Native;
 
+using Ecng.Net;
+
 sealed class DefinedgeRestClient : BaseLogReceiver
 {
     private static readonly JsonSerializerSettings _jsonSettings =
@@ -37,7 +39,7 @@ sealed class DefinedgeRestClient : BaseLogReceiver
         _apiSessionKey =
             apiSessionKey.ThrowIfEmpty(nameof(apiSessionKey));
         _attempts = Math.Max(1, attempts);
-        _httpClient = new()
+        _httpClient = new(new HttpRateLimitHandler(new HttpClientHandler()))
         {
             BaseAddress = EnsureTrailingSlash(
                 address ??
@@ -72,7 +74,7 @@ sealed class DefinedgeRestClient : BaseLogReceiver
         apiSecret.ThrowIfEmpty(nameof(apiSecret));
         oneTimePassword.ThrowIfEmpty(nameof(oneTimePassword));
 
-        using var client = new HttpClient
+        using var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
         {
             BaseAddress = EnsureTrailingSlash(
                 loginAddress ??

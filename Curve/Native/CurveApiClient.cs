@@ -1,5 +1,7 @@
 namespace StockSharp.Curve.Native;
 
+using Ecng.Net;
+
 sealed class CurveApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -239,11 +241,11 @@ sealed class CurveApiClient : BaseLogReceiver
 	private static HttpClient CreateClient(string endpoint, string userAgent)
 	{
 		endpoint = NormalizeEndpoint(endpoint);
-		var client = new HttpClient(new HttpClientHandler
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.GZip |
 				DecompressionMethods.Deflate,
-		})
+		}))
 		{
 			BaseAddress = new Uri(endpoint + '/', UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(45),

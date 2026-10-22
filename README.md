@@ -10,6 +10,16 @@ the existing connectors or contribute your own.
 See the [StockSharp documentation](https://doc.stocksharp.com/en/topics/api/connectors/creating_own_connector.html)
 on how to create your own connector.
 
+## HTTP rate limits
+
+REST clients share server-requested pauses between connector instances in the same process.
+HTTP 429 and 418 responses honor the full `Retry-After` value, including HTTP dates;
+missing or invalid values use a thirty-second pause. HTTP 5xx responses carrying
+`Retry-After` also pause requests to that server. Requests already in flight can complete.
+Waiting is cancellable. The pause handler does not replay requests; each client retains
+its existing retry policy. Processes sharing a public IP still need a shared request
+budget outside this library.
+
 ## Live tests
 
 Live tests run manually through the **Live tests** GitHub Actions workflow or locally with

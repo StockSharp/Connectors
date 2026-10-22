@@ -1,5 +1,7 @@
 namespace StockSharp.RavenPack.Native;
 
+using Ecng.Net;
+
 sealed class RavenPackApiException : InvalidOperationException
 {
 	public RavenPackApiException(HttpStatusCode statusCode, string message)
@@ -22,7 +24,7 @@ sealed class RavenPackRestClient : BaseLogReceiver
 	};
 
 	private readonly Uri _address;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 	private readonly int _maxAttempts;
 
 	public RavenPackRestClient(Uri address, string apiKey, int maxAttempts)

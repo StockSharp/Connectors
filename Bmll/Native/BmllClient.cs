@@ -1,5 +1,7 @@
 namespace StockSharp.Bmll.Native;
 
+using Ecng.Net;
+
 sealed class BmllApiException : InvalidOperationException
 {
 	public BmllApiException(HttpStatusCode statusCode, string message)
@@ -55,11 +57,11 @@ sealed class BmllClient : BaseLogReceiver
 		_maxAttempts = Math.Max(1, maxAttempts);
 		_queryPollingInterval = queryPollingInterval;
 		_queryTimeout = queryTimeout;
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.GZip |
 				DecompressionMethods.Deflate,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromMinutes(5),
 		};

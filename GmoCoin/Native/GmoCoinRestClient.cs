@@ -1,5 +1,7 @@
 namespace StockSharp.GmoCoin.Native;
 
+using Ecng.Net;
+
 sealed class GmoCoinRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -34,7 +36,7 @@ sealed class GmoCoinRestClient : BaseLogReceiver
 
 	private const int _maximumReadAttempts = 4;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _apiKey;
 	private readonly byte[] _secret;
 	private static readonly RateGate _publicGate = new(TimeSpan.FromSeconds(1));

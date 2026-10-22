@@ -1,5 +1,7 @@
 namespace StockSharp.Korbit.Native;
 
+using Ecng.Net;
+
 sealed class KorbitApiException(HttpStatusCode statusCode, int code,
 	string errorCode, string details) : InvalidOperationException($"Korbit API error {(int)statusCode} ({statusCode}), " +
 			$"code {code}: {errorCode}{details}")
@@ -58,10 +60,10 @@ sealed class KorbitRestClient : BaseLogReceiver
 			? null
 			: Encoding.UTF8.GetBytes(secretValue);
 
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

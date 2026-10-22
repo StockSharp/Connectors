@@ -1,5 +1,7 @@
 namespace StockSharp.Nado.Native;
 
+using Ecng.Net;
+
 sealed class NadoRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
@@ -26,10 +28,10 @@ sealed class NadoRestClient : BaseLogReceiver
 		_gatewayV2 = CreateEndpoint(gatewayV2, nameof(gatewayV2));
 		_archiveV1 = CreateEndpoint(archiveV1, nameof(archiveV1));
 		_archiveV2 = CreateEndpoint(archiveV2, nameof(archiveV2));
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

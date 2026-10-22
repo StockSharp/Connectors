@@ -1,5 +1,7 @@
 namespace StockSharp.CoinSpot.Native;
 
+using Ecng.Net;
+
 sealed class CoinSpotApiException(
 	HttpStatusCode statusCode,
 	string message)
@@ -37,10 +39,10 @@ sealed class CoinSpotRestClient : BaseLogReceiver
 		_readOnlyEndpoint = ValidateEndpoint(
 			readOnlyEndpoint, nameof(readOnlyEndpoint));
 		_authenticator = new(key, secret);
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

@@ -1,5 +1,7 @@
 namespace StockSharp.Drift.Native;
 
+using Ecng.Net;
+
 sealed class DriftRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 16 * 1024 * 1024;
@@ -243,7 +245,7 @@ sealed class DriftRestClient : BaseLogReceiver
 
 	private static HttpClient CreateClient(string endpoint)
 	{
-		var client = new HttpClient
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new Uri(endpoint, UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(45),

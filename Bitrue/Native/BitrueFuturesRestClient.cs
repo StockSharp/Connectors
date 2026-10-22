@@ -1,5 +1,7 @@
 namespace StockSharp.Bitrue.Native;
 
+using Ecng.Net;
+
 sealed class BitrueFuturesRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 4;
@@ -26,10 +28,10 @@ sealed class BitrueFuturesRestClient : BaseLogReceiver
 		_streamEndpoint = CreateEndpoint(streamEndpoint, nameof(streamEndpoint));
 		_apiKey = key.IsEmpty() ? null : key.UnSecure();
 		_secret = secret.IsEmpty() ? null : secret.UnSecure();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.Accept.Add(
 			new MediaTypeWithQualityHeaderValue("application/json"));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Bitrue-Connector/1.0");

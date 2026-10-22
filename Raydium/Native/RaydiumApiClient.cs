@@ -1,5 +1,7 @@
 namespace StockSharp.Raydium.Native;
 
+using Ecng.Net;
+
 sealed class RaydiumApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 16 * 1024 * 1024;
@@ -336,7 +338,7 @@ sealed class RaydiumApiClient : BaseLogReceiver
 	private static HttpClient CreateClient(string endpoint, string userAgent)
 	{
 		endpoint = NormalizeEndpoint(endpoint);
-		var client = new HttpClient
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new Uri(endpoint + '/', UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(30),

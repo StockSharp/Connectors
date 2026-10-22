@@ -1,5 +1,7 @@
 namespace StockSharp.CapitalCom.Native;
 
+using Ecng.Net;
+
 internal sealed class CapitalComApiException : InvalidOperationException
 {
 	public CapitalComApiException(HttpStatusCode statusCode, string errorCode, string message)
@@ -38,7 +40,7 @@ internal sealed class CapitalComRestClient : BaseLogReceiver, IDisposable
 		_password = password.ThrowIfEmpty(nameof(password));
 		_isPasswordEncryptionEnabled = isPasswordEncryptionEnabled;
 		_maxAttempts = Math.Max(1, maxAttempts);
-		_http = new()
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),

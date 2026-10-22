@@ -1,5 +1,7 @@
 namespace StockSharp.StandX.Native;
 
+using Ecng.Net;
+
 sealed class StandXRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -26,10 +28,10 @@ sealed class StandXRestClient : BaseLogReceiver
 		_authEndpoint = CreateEndpoint(authEndpoint, nameof(authEndpoint));
 		if (!privateKey.IsEmpty())
 			_signer = new(chain, walletAddress, privateKey, signInEndpoint, _jsonSettings);
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"StockSharp-StandX-Connector/1.0");
 		_http.DefaultRequestHeaders.Accept.Add(

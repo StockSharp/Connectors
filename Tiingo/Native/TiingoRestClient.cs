@@ -1,5 +1,7 @@
 namespace StockSharp.Tiingo.Native;
 
+using Ecng.Net;
+
 sealed class TiingoApiException : InvalidOperationException
 {
 	public TiingoApiException(HttpStatusCode statusCode, int? code, string message)
@@ -27,7 +29,7 @@ sealed class TiingoRestClient : BaseLogReceiver
 	private readonly Uri _supportedTickersAddress;
 	private readonly string _token;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 	private readonly SemaphoreSlim _supportedTickersSync = new(1, 1);
 	private TiingoSupportedTicker[] _supportedTickers;
 

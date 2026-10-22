@@ -1,5 +1,7 @@
 namespace StockSharp.Rain.Native;
 
+using Ecng.Net;
+
 sealed class RainRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -32,11 +34,11 @@ sealed class RainRestClient : BaseLogReceiver
 	private const int _maximumReadAttempts = 4;
 	private const int _maximumResponseBytes = 8 * 1024 * 1024;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly string _apiKey;
 	private readonly byte[] _apiSecret;
 	private readonly string _accessToken;

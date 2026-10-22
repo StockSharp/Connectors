@@ -1,5 +1,7 @@
 namespace StockSharp.Intrinio.Native;
 
+using Ecng.Net;
+
 sealed class IntrinioRealtimeConnectionDependencies
 {
 	public HttpMessageHandler HttpHandler { get; init; }
@@ -92,7 +94,7 @@ sealed class IntrinioRealtimeConnection : BaseLogReceiver, IDisposable
 		if (bufferSize <= 0)
 			throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-		_http = new(_dependencies.HttpHandler)
+		_http = new(new HttpRateLimitHandler(_dependencies.HttpHandler))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

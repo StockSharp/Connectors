@@ -1,5 +1,7 @@
 namespace StockSharp.Chainflip.Native;
 
+using Ecng.Net;
+
 sealed class ChainflipStateClient : BaseLogReceiver
 {
 	private sealed class TradeAccumulator
@@ -12,11 +14,11 @@ sealed class ChainflipStateClient : BaseLogReceiver
 
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{

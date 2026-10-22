@@ -1,5 +1,7 @@
 namespace StockSharp.Bullish.Native;
 
+using Ecng.Net;
+
 readonly record struct BullishParameter(string Name, string Value);
 
 sealed class BullishRestClient : BaseLogReceiver
@@ -33,10 +35,10 @@ sealed class BullishRestClient : BaseLogReceiver
 		_publicKey = key.IsEmpty() ? null : key.UnSecure();
 		_hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());
 		_rateLimitToken = rateLimitToken.IsEmpty() ? null : rateLimitToken.UnSecure();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Bullish-Connector/1.0");
 		_http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 	}

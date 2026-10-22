@@ -1,11 +1,13 @@
 namespace StockSharp.Trading212.Native;
 
+using Ecng.Net;
+
 sealed class Trading212Client : BaseLogReceiver
 {
 	private readonly Uri _origin;
 	private readonly AuthenticationHeaderValue _authorization;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		DateParseHandling = DateParseHandling.DateTime,

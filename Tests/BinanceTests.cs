@@ -2,10 +2,18 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Ecng.Common;
 using Ecng.IO;
+
+using RestSharp;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -17,6 +25,8 @@ using StockSharp.Binance.Native.Model;
 using StockSharp.Messages;
 using StockSharp.Algo.Storages;
 
+using BinanceHttpClient = StockSharp.Binance.Native.HttpClient;
+
 /// <summary>
 /// Tests for the Binance connector.
 /// </summary>
@@ -24,6 +34,124 @@ using StockSharp.Algo.Storages;
 [RegionalLiveTests]
 public class BinanceTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[DataRow(429)]
+	[DataRow(418)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ARateLimitPausesOtherBinanceClientsBeforeAnotherSnapshot(int status)
+	{
+		var calls = 0;
+		await using var server = new HistoryHttpServer(() =>
+		{
+			var response = new HttpResponseMessage(++calls == 1 ? (HttpStatusCode)status : HttpStatusCode.OK)
+			{
+				Content = new StringContent("{}"),
+			};
+			if (calls == 1)
+				response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromMinutes(1));
+			return response;
+		}, CancellationToken);
+		using var first = new BinanceHttpClient(null, null, false);
+		using var second = new BinanceHttpClient(null, null, false);
+
+		// Writes are not automatically replayed. Their final error must still pause subsequent reads.
+		await ThrowsAsync<InvalidOperationException>(() => SendBinanceRequest(first, server.Address, Method.Post, CancellationToken));
+		using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken);
+		cancellation.CancelAfter(TimeSpan.FromMilliseconds(100));
+		await ThrowsAsync<OperationCanceledException>(() => SendBinanceRequest(second, server.Address, Method.Get, cancellation.Token));
+		AreEqual(1, server.RequestTimes.Count, "A fresh client must not bypass the IP rate limit.");
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ASignedRequestIsRefreshedAfterAnIpPause()
+	{
+		var attempts = 0;
+		await using var server = new HistoryHttpServer(() =>
+		{
+			var response = new HttpResponseMessage(++attempts == 1 ? HttpStatusCode.TooManyRequests : HttpStatusCode.OK)
+			{
+				Content = new StringContent("{}"),
+			};
+			if (attempts == 1)
+				response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(1));
+			return response;
+		}, CancellationToken);
+		using var client = new BinanceHttpClient("key".Secure(), "secret".Secure(), false);
+		var request = new RestRequest { Method = Method.Get };
+		request.AddParameter("symbol", "BTCUSDT");
+		request.AddHeader("X-MBX-APIKEY", "key");
+		request.AddParameter("timestamp", 1L);
+		request.AddParameter("signature", "expired");
+		await ThrowsAsync<InvalidOperationException>(() => SendBinanceRequest(client, server.Address, Method.Post, CancellationToken));
+
+		await SendBinanceRequest(client, server.Address, request, CancellationToken);
+
+		var query = new Uri(server.Address, server.RequestTarget).Query.TrimStart('?');
+		var timestamp = query.Split('&').Select(p => p.Split('=')).Single(p => p[0] == "timestamp")[1].To<long>();
+		IsTrue(timestamp >= (long)server.RequestTimes.Last().AddSeconds(-1).ToUnix(false));
+		AreEqual("key", server.RequestHeaders["X-MBX-APIKEY"]);
+		using var hasher = new HMACSHA256("secret".UTF8());
+		var encoded = query[..query.LastIndexOf("&signature=", StringComparison.Ordinal)];
+		var signature = query[(encoded.Length + "&signature=".Length)..];
+		AreEqual(hasher.ComputeHash(encoded.UTF8()).Digest().ToLowerInvariant(), signature);
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ASignedReadIsNotAutomaticallyReplayedWithAnExpiringSignature()
+	{
+		await using var server = new HistoryHttpServer(() =>
+		{
+			var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests) { Content = new StringContent("{}") };
+			response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromMinutes(1));
+			return response;
+		}, CancellationToken);
+		using var client = new BinanceHttpClient("key".Secure(), "secret".Secure(), false);
+		var request = new RestRequest { Method = Method.Get };
+		request.AddParameter("timestamp", 1L);
+		request.AddParameter("signature", "expired");
+		using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken);
+		cancellation.CancelAfter(TimeSpan.FromSeconds(1));
+
+		await ThrowsAsync<InvalidOperationException>(() => SendBinanceRequest(client, server.Address, request, cancellation.Token));
+
+		IsFalse(cancellation.IsCancellationRequested, "The first rejection must be returned without waiting to replay an expired signature.");
+		AreEqual(1, server.RequestTimes.Count);
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ConcurrentSignedRequestsKeepTheirOwnSignatures()
+	{
+		using var client = new BinanceHttpClient("key".Secure(), "secret".Secure(), false);
+		var sign = typeof(BinanceHttpClient).GetMethod("ApplySecret", BindingFlags.NonPublic | BindingFlags.Instance);
+		await Task.WhenAll(Enumerable.Range(0, 32).Select(worker => Task.Run(() =>
+		{
+			for (var index = 0; index < 100; index++)
+			{
+				CancellationToken.ThrowIfCancellationRequested();
+				var request = new RestRequest { Method = Method.Post };
+				var query = $"symbol=BTCUSDT&newClientOrderId={worker}-{index}";
+				request.AddParameter("symbol", "BTCUSDT");
+				request.AddParameter("newClientOrderId", $"{worker}-{index}");
+				sign.Invoke(client, [request, true, false]);
+				using var hasher = new HMACSHA256("secret".UTF8());
+				var expected = hasher.ComputeHash(query.UTF8()).Digest().ToLowerInvariant();
+				AreEqual(expected, request.Parameters.Single(p => p.Name == "signature").Value);
+			}
+		}, CancellationToken)));
+	}
+
+	private static Task<object> SendBinanceRequest(BinanceHttpClient client, Uri address, Method method, CancellationToken cancellationToken)
+		=> SendBinanceRequest(client, address, new RestRequest { Method = method }, cancellationToken);
+
+	private static Task<object> SendBinanceRequest(BinanceHttpClient client, Uri address, RestRequest request, CancellationToken cancellationToken)
+		=> (Task<object>)typeof(BinanceHttpClient)
+			.GetMethod("MakeRequest", BindingFlags.NonPublic | BindingFlags.Instance)
+			.MakeGenericMethod(typeof(object))
+			.Invoke(client, [address, request, cancellationToken]);
+
 	[TestMethod]
 	[DataRow(20000, CandleStates.Active)]
 	[DataRow(59999, CandleStates.Active)]

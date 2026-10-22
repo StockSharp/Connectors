@@ -9,6 +9,9 @@
     <SourceRevisionId>v$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+  <ItemGroup Condition="'$(IsWebSocketConnector)' != 'true'">
+    <PackageReference Include="Ecng.Net" Version="$(EcngVer)" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(RepoGitHubPath)Messages\Messages.csproj" />
     <ProjectReference Include="$(RepoGitHubPath)Media.Names\Media.Names.csproj" />

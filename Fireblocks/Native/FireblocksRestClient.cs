@@ -1,5 +1,7 @@
 namespace StockSharp.Fireblocks.Native;
 
+using Ecng.Net;
+
 sealed class FireblocksApiException : InvalidOperationException
 {
 	public FireblocksApiException(HttpStatusCode statusCode, int? code,
@@ -49,7 +51,7 @@ sealed class FireblocksRestClient : BaseLogReceiver
 			_signer.Dispose();
 			throw;
 		}
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(endpoint + "/", UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(45),

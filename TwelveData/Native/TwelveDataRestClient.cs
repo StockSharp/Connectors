@@ -1,5 +1,7 @@
 namespace StockSharp.TwelveData.Native;
 
+using Ecng.Net;
+
 sealed class TwelveDataApiException : InvalidOperationException
 {
 	public TwelveDataApiException(HttpStatusCode statusCode, int? code, string message)
@@ -22,7 +24,7 @@ sealed class TwelveDataRestClient : BaseLogReceiver
 	};
 
 	private readonly Uri _address;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 	private readonly int _maxAttempts;
 
 	public TwelveDataRestClient(Uri address, string token, int maxAttempts)

@@ -1,5 +1,7 @@
 namespace StockSharp.KabuStation.Native;
 
+using Ecng.Net;
+
 internal sealed class KabuStationRestClient : BaseLogReceiver
 {
 	private sealed class RequestPacer : IDisposable
@@ -41,7 +43,7 @@ internal sealed class KabuStationRestClient : BaseLogReceiver
 		NullValueHandling = NullValueHandling.Ignore,
 	};
 
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _password;
 	private readonly Uri _root;
 	private readonly int _maxAttempts;

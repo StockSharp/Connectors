@@ -1,5 +1,7 @@
 namespace StockSharp.CoinDCX.Native;
 
+using Ecng.Net;
+
 sealed class CoinDCXRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 4;
@@ -33,10 +35,10 @@ sealed class CoinDCXRestClient : BaseLogReceiver
 				"CoinDCX API key and secret must be configured together.");
 		_secret = secretValue.IsEmpty() ? null : Encoding.UTF8.GetBytes(secretValue);
 
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

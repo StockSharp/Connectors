@@ -1,5 +1,7 @@
 namespace StockSharp.Zerodha.Native;
 
+using Ecng.Net;
+
 internal sealed class ZerodhaRestClient : BaseLogReceiver, IDisposable
 {
 	private static readonly TimeSpan _minimumRequestInterval = TimeSpan.FromMilliseconds(105);
@@ -28,7 +30,7 @@ internal sealed class ZerodhaRestClient : BaseLogReceiver, IDisposable
 		{
 			AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
 		};
-		_http = new(handler)
+		_http = new(new HttpRateLimitHandler(handler))
 		{
 			BaseAddress = new(restEndpoint.ThrowIfEmpty(nameof(restEndpoint))),
 			Timeout = TimeSpan.FromSeconds(30),

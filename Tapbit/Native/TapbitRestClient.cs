@@ -1,5 +1,7 @@
 namespace StockSharp.Tapbit.Native;
 
+using Ecng.Net;
+
 sealed class TapbitRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -34,11 +36,11 @@ sealed class TapbitRestClient : BaseLogReceiver
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
 	private readonly Uri _spotEndpoint;
 	private readonly Uri _futuresEndpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly string _apiKey;
 	private readonly byte[] _apiSecret;
 	private readonly RateGate _spotPublicGate = new(

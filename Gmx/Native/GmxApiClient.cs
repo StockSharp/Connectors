@@ -1,5 +1,7 @@
 namespace StockSharp.Gmx.Native;
 
+using Ecng.Net;
+
 sealed class GmxApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 32 * 1024 * 1024;
@@ -24,10 +26,10 @@ sealed class GmxApiClient : BaseLogReceiver
 		var secondary = CreateEndpoint(secondaryEndpoint,
 			nameof(secondaryEndpoint));
 		_endpoints = primary == secondary ? [primary] : [primary, secondary];
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

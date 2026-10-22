@@ -1,5 +1,7 @@
 namespace StockSharp.BitGo.Native;
 
+using Ecng.Net;
+
 sealed class BitGoApiException : InvalidOperationException
 {
 	public BitGoApiException(HttpStatusCode statusCode, string message)
@@ -39,7 +41,7 @@ sealed class BitGoRestClient : BaseLogReceiver
 		if (token.IsEmpty())
 			throw new ArgumentException("BitGo access token is empty.",
 				nameof(accessToken));
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = NormalizeEndpoint(endpoint),
 			Timeout = Timeout.InfiniteTimeSpan,

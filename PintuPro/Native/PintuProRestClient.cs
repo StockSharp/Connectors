@@ -1,5 +1,7 @@
 namespace StockSharp.PintuPro.Native;
 
+using Ecng.Net;
+
 sealed class PintuProApiException(HttpStatusCode statusCode, string code,
 	string message, string reason)
 	: InvalidOperationException(
@@ -46,10 +48,10 @@ sealed class PintuProRestClient : BaseLogReceiver
 			? null
 			: Encoding.UTF8.GetBytes(secretValue);
 
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

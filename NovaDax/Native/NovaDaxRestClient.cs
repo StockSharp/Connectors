@@ -1,11 +1,13 @@
 namespace StockSharp.NovaDax.Native;
 
+using Ecng.Net;
+
 sealed class NovaDaxRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
 
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly NovaDaxAuthenticator _authenticator;
 	private readonly string _accountId;
 	private readonly SemaphoreSlim _rateSync = new(1, 1);

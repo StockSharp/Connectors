@@ -1,5 +1,7 @@
 namespace StockSharp.CryptoCom.Native;
 
+using Ecng.Net;
+
 sealed class CryptoComApiException : InvalidOperationException
 {
 	public CryptoComApiException(HttpStatusCode statusCode, int? code, string message)
@@ -17,7 +19,7 @@ sealed class CryptoComRestClient : BaseLogReceiver
 {
 	private const int _maxAttempts = 3;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _apiKey;
 	private readonly CryptoComSigner _signer;
 	private readonly JsonSerializerSettings _jsonSettings = new()

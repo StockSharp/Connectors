@@ -1,11 +1,13 @@
 namespace StockSharp.CoinTR.Native;
 
+using Ecng.Net;
+
 sealed class CoinTRRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
 
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly CoinTRAuthenticator _authenticator;
 	private readonly SemaphoreSlim _rateSync = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()

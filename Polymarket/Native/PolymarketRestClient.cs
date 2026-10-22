@@ -1,5 +1,7 @@
 namespace StockSharp.Polymarket.Native;
 
+using Ecng.Net;
+
 sealed class PolymarketApiException : InvalidOperationException
 {
 	public PolymarketApiException(HttpStatusCode statusCode, string message)
@@ -316,7 +318,7 @@ sealed class PolymarketRestClient : BaseLogReceiver
 
 	private static HttpClient CreateClient(string endpoint, string name)
 	{
-		var client = new HttpClient
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(endpoint.NormalizeHttpEndpoint(name),
 				UriKind.Absolute),

@@ -1,5 +1,7 @@
 namespace StockSharp.TaseDataHub.Native;
 
+using Ecng.Net;
+
 sealed class TaseDataHubRestClient :
     BaseLogReceiver,
     IDisposable
@@ -41,8 +43,8 @@ sealed class TaseDataHubRestClient :
         _clientSecret = clientSecret.ThrowIfEmpty(nameof(clientSecret));
         _scope = scope.ThrowIfEmpty(nameof(scope));
         _http = handler is null
-            ? new HttpClient()
-            : new HttpClient(handler);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(2);
         _http.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));

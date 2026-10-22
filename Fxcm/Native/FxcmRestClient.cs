@@ -1,5 +1,7 @@
 namespace StockSharp.Fxcm.Native;
 
+using Ecng.Net;
+
 internal sealed class FxcmRestClient : BaseLogReceiver, IDisposable
 {
 	private readonly HttpClient _http;
@@ -16,7 +18,7 @@ internal sealed class FxcmRestClient : BaseLogReceiver, IDisposable
 	{
 		bearer.ThrowIfEmpty(nameof(bearer));
 		_maxAttempts = Math.Max(1, maxAttempts);
-		_http = new()
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(endpoint.ThrowIfEmpty(nameof(endpoint))),
 			Timeout = TimeSpan.FromSeconds(30),

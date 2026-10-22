@@ -1,5 +1,7 @@
 namespace StockSharp.VeloData.Native;
 
+using Ecng.Net;
+
 sealed class VeloDataRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 64 * 1024 * 1024;
@@ -39,7 +41,7 @@ sealed class VeloDataRestClient : BaseLogReceiver
 				"Velo Data API key is empty or invalid.", nameof(apiKey));
 
 		_requestInterval = requestInterval;
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = apiRoot,
 			Timeout = TimeSpan.FromSeconds(90),

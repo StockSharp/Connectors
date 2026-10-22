@@ -1,5 +1,7 @@
 namespace StockSharp.Buda.Native;
 
+using Ecng.Net;
+
 sealed class BudaRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
@@ -19,10 +21,10 @@ sealed class BudaRestClient : BaseLogReceiver
 	{
 		_endpoint = ValidateEndpoint(endpoint);
 		_authenticator = new(key, secret);
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

@@ -1,5 +1,7 @@
 namespace StockSharp.MtNewswires.Native;
 
+using Ecng.Net;
+
 sealed class MtNewswiresApiException : InvalidOperationException
 {
 	public MtNewswiresApiException(HttpStatusCode statusCode, string message)
@@ -22,7 +24,7 @@ sealed class MtNewswiresClient : BaseLogReceiver
 	private readonly Uri _address;
 	private readonly string _token;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 
 	public MtNewswiresClient(Uri address, string token, int maxAttempts)
 	{

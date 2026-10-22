@@ -1,5 +1,7 @@
 namespace StockSharp.SynFutures.Native;
 
+using Ecng.Net;
+
 sealed class SynFuturesApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -25,11 +27,11 @@ sealed class SynFuturesApiClient : BaseLogReceiver
 			throw new ArgumentException(
 				"SynFutures API endpoint must use HTTP or HTTPS.",
 				nameof(endpoint));
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.GZip |
 				DecompressionMethods.Deflate,
-		})
+		}))
 		{
 			BaseAddress = uri,
 			Timeout = TimeSpan.FromSeconds(30),

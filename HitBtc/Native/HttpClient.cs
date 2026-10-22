@@ -1,5 +1,7 @@
 namespace StockSharp.HitBtc.Native;
 
+using Ecng.Net;
+
 using Newtonsoft.Json.Linq;
 
 sealed class HitBtcRestClient : BaseLogReceiver
@@ -28,10 +30,10 @@ sealed class HitBtcRestClient : BaseLogReceiver
 
 		_key = key;
 		_secret = secret;
-		_http = new System.Net.Http.HttpClient(new HttpClientHandler
+		_http = new System.Net.Http.HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

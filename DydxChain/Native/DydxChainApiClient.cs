@@ -1,5 +1,7 @@
 namespace StockSharp.DydxChain.Native;
 
+using Ecng.Net;
+
 sealed class DydxChainApiClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -338,10 +340,10 @@ sealed class DydxChainApiClient : BaseLogReceiver
 			throw new ArgumentException(
 				$"dYdX {name} endpoint must use HTTPS, except for a local node.",
 				name);
-		var client = new HttpClient(new HttpClientHandler
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			BaseAddress = new Uri(uri.ToString().TrimEnd('/') + "/"),
 			Timeout = TimeSpan.FromSeconds(30),

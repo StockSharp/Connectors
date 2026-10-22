@@ -1,5 +1,7 @@
 namespace StockSharp.Pacifica.Native;
 
+using Ecng.Net;
+
 sealed class PacificaRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseBytes = 16 * 1024 * 1024;
@@ -27,10 +29,10 @@ sealed class PacificaRestClient : BaseLogReceiver
 			_endpoint.Scheme is not ("http" or "https"))
 			throw new ArgumentException(
 				"Pacifica REST endpoint must use HTTP or HTTPS.", nameof(endpoint));
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

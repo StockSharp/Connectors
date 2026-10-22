@@ -1,11 +1,13 @@
 namespace StockSharp.AscendEx.Native;
 
+using Ecng.Net;
+
 sealed class AscendExRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 3;
 
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly AscendExAuthenticator _authenticator;
 	private readonly int _accountGroup;
 	private readonly AscendExSpotAccountTypes _spotAccountType;

@@ -1,11 +1,13 @@
 namespace StockSharp.StocksTrader.Native;
 
+using Ecng.Net;
+
 sealed class StocksTraderClient : BaseLogReceiver
 {
 	private readonly Uri _address;
 	private readonly AuthenticationHeaderValue _authorization;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly StocksTraderRateGate _rateGate = new();
 
 	public StocksTraderClient(Uri address, SecureString token, int maxAttempts)

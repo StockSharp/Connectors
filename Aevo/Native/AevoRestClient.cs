@@ -1,5 +1,7 @@
 namespace StockSharp.Aevo.Native;
 
+using Ecng.Net;
+
 sealed class AevoRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 32 * 1024 * 1024;
@@ -20,7 +22,7 @@ sealed class AevoRestClient : BaseLogReceiver
 	{
 		_authenticator = authenticator ?? throw new ArgumentNullException(
 			nameof(authenticator));
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(endpoint.NormalizeHttpEndpoint(nameof(endpoint)),
 				UriKind.Absolute),

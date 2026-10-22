@@ -1,5 +1,7 @@
 namespace StockSharp.CoinJar.Native;
 
+using Ecng.Net;
+
 sealed class CoinJarRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -32,11 +34,11 @@ sealed class CoinJarRestClient : BaseLogReceiver
 	private const int _maximumReadAttempts = 4;
 	private readonly Uri _tradingEndpoint;
 	private readonly Uri _dataEndpoint;
-	private readonly HttpClient _http = new(new HttpClientHandler
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler
 	{
 		AutomaticDecompression = DecompressionMethods.GZip |
 			DecompressionMethods.Deflate,
-	});
+	}));
 	private readonly string _token;
 	private readonly RateGate _publicGate = new(TimeSpan.FromMilliseconds(125));
 	private readonly RateGate _privateGate = new(TimeSpan.FromSeconds(1));

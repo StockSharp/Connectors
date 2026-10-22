@@ -1,5 +1,7 @@
 namespace StockSharp.IG.Native;
 
+using Ecng.Net;
+
 internal sealed class IgRestClient : BaseLogReceiver, IDisposable
 {
 	private readonly HttpClient _http;
@@ -20,7 +22,7 @@ internal sealed class IgRestClient : BaseLogReceiver, IDisposable
 		_password = password.ThrowIfEmpty(nameof(password));
 		_encryptPassword = encryptPassword;
 		_maxAttempts = Math.Max(1, maxAttempts);
-		_http = new()
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = new(endpoint.ThrowIfEmpty(nameof(endpoint))),
 			Timeout = TimeSpan.FromSeconds(30),

@@ -1,5 +1,7 @@
 namespace StockSharp.Pyth.Native;
 
+using Ecng.Net;
+
 sealed class PythRestClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 64 * 1024 * 1024;
@@ -239,7 +241,7 @@ sealed class PythRestClient : BaseLogReceiver
 
 	private HttpClient CreateClient(Uri endpoint)
 	{
-		var client = new HttpClient
+		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = endpoint,
 			Timeout = TimeSpan.FromSeconds(90),

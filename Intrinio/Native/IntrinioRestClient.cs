@@ -1,5 +1,7 @@
 namespace StockSharp.Intrinio.Native;
 
+using Ecng.Net;
+
 sealed class IntrinioApiException : InvalidOperationException
 {
 	public IntrinioApiException(HttpStatusCode statusCode, string message)
@@ -22,7 +24,7 @@ sealed class IntrinioRestClient : BaseLogReceiver, IDisposable
 
 	private readonly Uri _address;
 	private readonly string _apiKey;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 
 	public IntrinioRestClient(Uri address, string apiKey)
 	{

@@ -1,5 +1,7 @@
 namespace StockSharp.BitpandaFusion.Native;
 
+using Ecng.Net;
+
 sealed class BitpandaFusionRestClient : BaseLogReceiver
 {
 	private enum RateLimits
@@ -42,10 +44,10 @@ sealed class BitpandaFusionRestClient : BaseLogReceiver
 		if (apiKey.IsEmpty())
 			throw new ArgumentException("Bitpanda Fusion API key is required.", nameof(key));
 
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

@@ -1,5 +1,7 @@
 namespace StockSharp.Marketstack.Native;
 
+using Ecng.Net;
+
 sealed class MarketstackApiException : InvalidOperationException
 {
 	public MarketstackApiException(HttpStatusCode statusCode, string message)
@@ -22,7 +24,7 @@ sealed class MarketstackRestClient : BaseLogReceiver
 	private readonly Uri _address;
 	private readonly string _token;
 	private readonly int _maxAttempts;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 
 	public MarketstackRestClient(Uri address, string token, int maxAttempts)
 	{

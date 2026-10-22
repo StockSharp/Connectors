@@ -1,5 +1,7 @@
 namespace StockSharp.Ourbit.Native;
 
+using Ecng.Net;
+
 sealed class OurbitSpotRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 4;
@@ -25,10 +27,10 @@ sealed class OurbitSpotRestClient : BaseLogReceiver
 		_apiKey = key.IsEmpty() ? null : key.UnSecure();
 		_hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());
 		_receiveWindow = receiveWindow;
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Ourbit-Connector/1.0");
 	}

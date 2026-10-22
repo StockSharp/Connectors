@@ -1,11 +1,13 @@
 namespace StockSharp.Weex.Native;
 
+using Ecng.Net;
+
 sealed class WeexRestClient : BaseLogReceiver
 {
 	private const int _maxAttempts = 4;
 	private readonly Uri _spotEndpoint;
 	private readonly Uri _futuresEndpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _apiKey;
 	private readonly string _passphrase;
 	private readonly HMACSHA256 _hasher;

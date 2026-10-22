@@ -1,5 +1,7 @@
 namespace StockSharp.CboeDataShop.Native;
 
+using Ecng.Net;
+
 sealed class CboeDataShopClient : BaseLogReceiver, IDisposable
 {
 	private static readonly JsonSerializerSettings _jsonSettings = new()
@@ -13,7 +15,7 @@ sealed class CboeDataShopClient : BaseLogReceiver, IDisposable
 	private readonly string _clientId;
 	private readonly string _clientSecret;
 	private readonly string _mode;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 	private readonly SemaphoreSlim _authLock = new(1, 1);
 	private string _accessToken;
 	private DateTime _tokenExpires;

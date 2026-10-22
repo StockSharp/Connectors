@@ -1,5 +1,7 @@
 namespace StockSharp.Luno.Native;
 
+using Ecng.Net;
+
 sealed class LunoRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -34,7 +36,7 @@ sealed class LunoRestClient : BaseLogReceiver
 
 	private const int _maximumReadAttempts = 4;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _authorization;
 	private readonly RateGate _publicGate = new(TimeSpan.FromMilliseconds(1050));
 	private readonly RateGate _privateGate = new(TimeSpan.FromMilliseconds(205));

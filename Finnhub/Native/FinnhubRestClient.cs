@@ -1,5 +1,7 @@
 namespace StockSharp.Finnhub.Native;
 
+using Ecng.Net;
+
 sealed class FinnhubApiException : InvalidOperationException
 {
 	public FinnhubApiException(HttpStatusCode statusCode, string message)
@@ -20,7 +22,7 @@ sealed class FinnhubRestClient : BaseLogReceiver
 	};
 
 	private readonly Uri _address;
-	private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(2) };
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler())) { Timeout = TimeSpan.FromMinutes(2) };
 	private readonly int _maxAttempts;
 
 	public FinnhubRestClient(Uri address, string token, int maxAttempts)

@@ -1,5 +1,7 @@
 namespace StockSharp.Glassnode.Native;
 
+using Ecng.Net;
+
 sealed class GlassnodeApiException : InvalidOperationException
 {
 	public GlassnodeApiException(HttpStatusCode statusCode, int? errorCode,
@@ -49,7 +51,7 @@ sealed class GlassnodeRestClient : BaseLogReceiver
 				"Glassnode API key is empty or invalid.", nameof(apiKey));
 
 		_requestInterval = requestInterval;
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = root,
 			Timeout = TimeSpan.FromSeconds(60),

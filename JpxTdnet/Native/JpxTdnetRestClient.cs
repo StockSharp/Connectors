@@ -1,5 +1,7 @@
 namespace StockSharp.JpxTdnet.Native;
 
+using Ecng.Net;
+
 sealed class JpxTdnetApiException : InvalidOperationException
 {
     public JpxTdnetApiException(string status, string message)
@@ -65,8 +67,8 @@ sealed class JpxTdnetRestClient : BaseLogReceiver, IDisposable
                 1024 * 1024));
         _requestInterval = requestInterval;
         _http = handler is null
-            ? new HttpClient()
-            : new HttpClient(handler);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(5);
         _http.DefaultRequestHeaders.TryAddWithoutValidation(
             "User-Agent", "StockSharp-JpxTdnet/1.0");

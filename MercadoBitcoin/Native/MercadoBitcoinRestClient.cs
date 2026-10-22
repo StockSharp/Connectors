@@ -1,5 +1,7 @@
 namespace StockSharp.MercadoBitcoin.Native;
 
+using Ecng.Net;
+
 sealed class MercadoBitcoinRestClient : BaseLogReceiver
 {
 	private sealed class RateGate : IDisposable
@@ -34,7 +36,7 @@ sealed class MercadoBitcoinRestClient : BaseLogReceiver
 
 	private const int _maximumReadAttempts = 4;
 	private readonly Uri _endpoint;
-	private readonly HttpClient _http = new();
+	private readonly HttpClient _http = new(new HttpRateLimitHandler(new HttpClientHandler()));
 	private readonly string _clientId;
 	private readonly string _clientSecret;
 	private readonly SemaphoreSlim _tokenSync = new(1, 1);

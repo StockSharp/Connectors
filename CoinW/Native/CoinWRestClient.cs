@@ -1,5 +1,7 @@
 namespace StockSharp.CoinW.Native;
 
+using Ecng.Net;
+
 sealed class CoinWRestClient : BaseLogReceiver
 {
 	private const int _maxAttempts = 4;
@@ -23,10 +25,10 @@ sealed class CoinWRestClient : BaseLogReceiver
 		_apiKey = key.IsEmpty() ? null : key.UnSecure();
 		_secret = secret.IsEmpty() ? null : secret.UnSecure();
 		_futuresHasher = _secret.IsEmpty() ? null : new HMACSHA256(_secret.UTF8());
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-CoinW-Connector/1.0");
 	}
 

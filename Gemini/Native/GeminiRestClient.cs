@@ -1,5 +1,7 @@
 namespace StockSharp.Gemini.Native;
 
+using Ecng.Net;
+
 sealed class GeminiRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 4;
@@ -33,10 +35,10 @@ sealed class GeminiRestClient : BaseLogReceiver
 				"Gemini API key and secret must be configured together.");
 		_secret = secretValue.IsEmpty() ? null : Encoding.UTF8.GetBytes(secretValue);
 		_account = account?.Trim();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.Accept.Add(
 			new MediaTypeWithQualityHeaderValue("application/json"));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Gemini-Connector/1.0");

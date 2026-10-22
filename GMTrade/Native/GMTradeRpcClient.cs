@@ -1,5 +1,7 @@
 namespace StockSharp.GMTrade.Native;
 
+using Ecng.Net;
+
 sealed class GMTradeRpcClient : BaseLogReceiver
 {
 	public const string SolMint = "11111111111111111111111111111111";
@@ -34,10 +36,10 @@ sealed class GMTradeRpcClient : BaseLogReceiver
 		WalletAddress = walletAddress.IsEmpty()
 			? null
 			: walletAddress.NormalizePublicKey(nameof(walletAddress));
-		_http = new(new HttpClientHandler
+		_http = new(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			BaseAddress = uri,
 			Timeout = TimeSpan.FromSeconds(30),

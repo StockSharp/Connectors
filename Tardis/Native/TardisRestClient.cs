@@ -1,5 +1,7 @@
 namespace StockSharp.Tardis.Native;
 
+using Ecng.Net;
+
 sealed class TardisApiException : InvalidOperationException
 {
 	public TardisApiException(HttpStatusCode statusCode, string code,
@@ -50,7 +52,7 @@ sealed class TardisRestClient : BaseLogReceiver
 				"Tardis API key is empty or invalid.", nameof(apiKey));
 
 		_requestInterval = requestInterval;
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = root,
 			Timeout = TimeSpan.FromSeconds(60),

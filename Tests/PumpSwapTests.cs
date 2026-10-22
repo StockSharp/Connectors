@@ -1,9 +1,11 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -23,6 +25,30 @@ using StockSharp.PumpSwap.Native.Model;
 [TestClass]
 public class PumpSwapTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task RpcHistoryWaitsForTheServersRetryAfter()
+	{
+		var attempts = 0;
+		await using var server = new HistoryHttpServer(() =>
+		{
+			var response = new HttpResponseMessage(++attempts == 1 ? HttpStatusCode.TooManyRequests : HttpStatusCode.OK)
+			{
+				Content = new StringContent("""{"jsonrpc":"2.0","id":1,"result":{"slot":123}}"""),
+			};
+			if (attempts == 1)
+				response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(1));
+			return response;
+		}, CancellationToken);
+		using var client = new PumpSwapRpcClient(server.Address.AbsoluteUri, PumpSwapClusters.Mainnet, null, null);
+
+		await client.GetTransactionAsync(new string('1', 64), CancellationToken);
+
+		var times = server.RequestTimes.ToArray();
+		AreEqual(2, times.Length);
+		IsTrue(times[1] - times[0] >= TimeSpan.FromSeconds(1), "The native retry loop must wait for the full server delay.");
+	}
+
 	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task ARepeatedHistoryConnectionFailureEscapesAfterTheRetryLimit()

@@ -1,5 +1,7 @@
 namespace StockSharp.Backpack.Native;
 
+using Ecng.Net;
+
 sealed class BackpackRestClient : BaseLogReceiver
 {
 	private const int _maximumReadAttempts = 4;
@@ -28,10 +30,10 @@ sealed class BackpackRestClient : BaseLogReceiver
 			throw new ArgumentException(
 				"Backpack Exchange public and private API keys must be configured together.");
 		_signer = privateKey.IsEmpty() ? null : new(privateKey);
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.Accept.Add(
 			new MediaTypeWithQualityHeaderValue("application/json"));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd(

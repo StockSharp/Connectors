@@ -1,5 +1,7 @@
 namespace StockSharp.Tradernet.Native;
 
+using Ecng.Net;
+
 enum TradernetApiGroup
 {
     Default,
@@ -70,12 +72,12 @@ sealed class TradernetRestClient : BaseLogReceiver
         _privateKey = privateKey?.UnSecure()
             .ThrowIfEmpty(nameof(privateKey));
         _maxAttempts = Math.Max(1, maxAttempts);
-        _http = new(new HttpClientHandler
+        _http = new(new HttpRateLimitHandler(new HttpClientHandler
         {
             AutomaticDecompression =
                 DecompressionMethods.GZip |
                 DecompressionMethods.Deflate,
-        })
+        }))
         {
             BaseAddress = new(
                 address.AbsoluteUri.TrimEnd('/') + "/"),

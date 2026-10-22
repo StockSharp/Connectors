@@ -1,5 +1,7 @@
 namespace StockSharp.Pionex.Native;
 
+using Ecng.Net;
+
 readonly record struct PionexParameter(string Name, string Value);
 
 readonly record struct PionexQuery(string Canonical, string Encoded);
@@ -27,10 +29,10 @@ sealed class PionexRestClient : BaseLogReceiver
 		_endpoint = new Uri(NormalizeEndpoint(endpoint), UriKind.Absolute);
 		_apiKey = key.IsEmpty() ? null : key.UnSecure();
 		_hasher = secret.IsEmpty() ? null : new HMACSHA256(secret.UnSecure().UTF8());
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		});
+		}));
 		_http.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Pionex-Connector/1.0");
 	}
 

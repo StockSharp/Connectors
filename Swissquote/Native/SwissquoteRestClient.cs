@@ -1,5 +1,7 @@
 namespace StockSharp.Swissquote.Native;
 
+using Ecng.Net;
+
 internal sealed class SwissquoteRestClient : BaseLogReceiver
 {
 	private sealed class ApiResponse<T>
@@ -30,7 +32,7 @@ internal sealed class SwissquoteRestClient : BaseLogReceiver
 			AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate |
 				DecompressionMethods.Brotli,
 		};
-		_http = new(handler) { Timeout = TimeSpan.FromSeconds(30) };
+		_http = new(new HttpRateLimitHandler(handler)) { Timeout = TimeSpan.FromSeconds(30) };
 		_http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 		_http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 	}

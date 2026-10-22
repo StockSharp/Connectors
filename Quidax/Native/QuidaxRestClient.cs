@@ -1,5 +1,7 @@
 namespace StockSharp.Quidax.Native;
 
+using Ecng.Net;
+
 sealed class QuidaxApiException(
 	HttpStatusCode statusCode,
 	string message)
@@ -31,10 +33,10 @@ sealed class QuidaxRestClient : BaseLogReceiver
 		_endpoint = ValidateEndpoint(endpoint);
 		_token = token.IsEmpty() ? null : token.UnSecure().Trim();
 		_userId = userId.ThrowIfEmpty(nameof(userId)).Trim();
-		_http = new HttpClient(new HttpClientHandler
+		_http = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
 		{
 			AutomaticDecompression = DecompressionMethods.All,
-		})
+		}))
 		{
 			Timeout = TimeSpan.FromSeconds(30),
 		};

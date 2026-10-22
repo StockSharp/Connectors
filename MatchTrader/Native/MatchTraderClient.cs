@@ -1,5 +1,6 @@
 namespace StockSharp.MatchTrader.Native;
 
+using Ecng.Net;
 internal sealed class MatchTraderApiException : InvalidOperationException
 {
 	public MatchTraderApiException(HttpStatusCode statusCode, string message)
@@ -238,7 +239,7 @@ internal sealed class MatchTraderClient : BaseLogReceiver, IDisposable
 		=> $"mtr-api/{Uri.EscapeDataString(_systemUuid)}/{suffix}";
 
 	private HttpClient CreateClient(Uri address)
-		=> new(new HttpClientHandler { CookieContainer = _cookies, UseCookies = true })
+		=> new(new HttpRateLimitHandler(new HttpClientHandler { CookieContainer = _cookies, UseCookies = true }))
 		{
 			BaseAddress = address,
 			Timeout = TimeSpan.FromSeconds(30),

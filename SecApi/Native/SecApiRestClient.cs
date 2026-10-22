@@ -1,5 +1,7 @@
 namespace StockSharp.SecApi.Native;
 
+using Ecng.Net;
+
 sealed class SecApiRestClient :
     BaseLogReceiver,
     IDisposable
@@ -27,8 +29,8 @@ sealed class SecApiRestClient :
             address ?? throw new ArgumentNullException(nameof(address)));
         _token = token.ThrowIfEmpty(nameof(token));
         _http = handler is null
-            ? new HttpClient()
-            : new HttpClient(handler);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(3);
         _http.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));

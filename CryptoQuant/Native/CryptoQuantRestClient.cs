@@ -1,5 +1,7 @@
 namespace StockSharp.CryptoQuant.Native;
 
+using Ecng.Net;
+
 sealed class CryptoQuantApiException : InvalidOperationException
 {
 	public CryptoQuantApiException(HttpStatusCode statusCode,
@@ -51,7 +53,7 @@ sealed class CryptoQuantRestClient : BaseLogReceiver
 				nameof(accessToken));
 
 		_requestInterval = requestInterval;
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = root,
 			Timeout = TimeSpan.FromSeconds(60),

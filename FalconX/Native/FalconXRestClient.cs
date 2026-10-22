@@ -1,5 +1,7 @@
 namespace StockSharp.FalconX.Native;
 
+using Ecng.Net;
+
 sealed class FalconXApiException : InvalidOperationException
 {
 	public FalconXApiException(HttpStatusCode statusCode, string message)
@@ -37,7 +39,7 @@ sealed class FalconXRestClient : BaseLogReceiver
 			nameof(authenticator));
 		var address = NormalizeEndpoint(endpoint);
 		_rootPath = address.AbsolutePath.TrimEnd('/');
-		_client = new()
+		_client = new(new HttpRateLimitHandler(new HttpClientHandler()))
 		{
 			BaseAddress = address,
 			Timeout = TimeSpan.FromSeconds(45),

@@ -1,5 +1,7 @@
 namespace StockSharp.EuronextWebServices.Native;
 
+using Ecng.Net;
+
 sealed class EuronextRestClient :
     BaseLogReceiver,
     IDisposable
@@ -27,8 +29,8 @@ sealed class EuronextRestClient :
             address ?? throw new ArgumentNullException(nameof(address)));
         _authKey = authKey.ThrowIfEmpty(nameof(authKey));
         _http = handler is null
-            ? new HttpClient()
-            : new HttpClient(handler);
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(2);
         _http.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));

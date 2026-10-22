@@ -1,5 +1,7 @@
 namespace StockSharp.Comdirect.Native;
 
+using Ecng.Net;
+
 sealed class ComdirectRestClient : BaseLogReceiver
 {
     private sealed class ApiResponse<T>
@@ -53,12 +55,12 @@ sealed class ComdirectRestClient : BaseLogReceiver
         _tanProvider = tanProvider;
         _maxAttempts = Math.Max(1, maxAttempts);
 
-        _http = new(new HttpClientHandler
+        _http = new(new HttpRateLimitHandler(new HttpClientHandler
         {
             UseCookies = true,
             AutomaticDecompression =
                 DecompressionMethods.GZip | DecompressionMethods.Deflate,
-        })
+        }))
         {
             BaseAddress = new Uri(
                 address.AbsoluteUri.TrimEnd('/') + "/", UriKind.Absolute),
