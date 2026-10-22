@@ -37,6 +37,10 @@ Some public services need additional access:
   LFJ securities and quotes remain enabled without this additional switch.
   LATOKEN also requires this switch while its public WebSocket returns HTTP 522
   during connection setup, preventing all five market data checks from starting.
+  AltCoinTrader Level 1, depth and trades require it because anonymous snapshot
+  requests can return HTTP 429 without Retry-After; its security lookup remains
+  enabled. Coincheck requires it while its public API returns HTTP 503 maintenance
+  responses and the public stream does not deliver market data.
 - `STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS=1` enables BtcTurk candles. Its published
   graph API currently returns a null status and empty bars even for documented
   requests. The remaining BtcTurk market checks run without this switch. GitHub

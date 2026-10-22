@@ -55,6 +55,7 @@ sealed class HistoryHttpServer : IAsyncDisposable
 	public ConcurrentQueue<DateTime> RequestTimes { get; } = new();
 	public Uri Address { get; }
 	public string RequestTarget { get; private set; }
+	public string RequestBody { get; private set; }
 	public IReadOnlyDictionary<string, string> RequestHeaders => _requestHeaders;
 
 	private async Task RunAsync(Func<HttpResponseMessage> response, CancellationToken cancellationToken)
@@ -73,8 +74,13 @@ sealed class HistoryHttpServer : IAsyncDisposable
 					_requestHeaders[line[..separator]] = line[(separator + 1)..].Trim();
 			}
 
+			RequestBody = string.Empty;
 			if (_requestHeaders.TryGetValue("Content-Length", out var contentLength) && int.Parse(contentLength) > 0)
-				await reader.ReadBlockAsync(new char[int.Parse(contentLength)], cancellationToken);
+			{
+				var requestBody = new char[int.Parse(contentLength)];
+				await reader.ReadBlockAsync(requestBody, cancellationToken);
+				RequestBody = new string(requestBody);
+			}
 
 			RequestTimes.Enqueue(DateTime.UtcNow);
 			using var reply = response();

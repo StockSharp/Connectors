@@ -14,8 +14,14 @@ using StockSharp.AltCoinTrader.Native.Model;
 using StockSharp.Messages;
 
 [TestClass]
+[RegionalLiveTests(nameof(Level1))]
+[RegionalLiveTests(nameof(OrderBook))]
+[RegionalLiveTests(nameof(Ticks))]
 public class AltCoinTraderTests : LiveMarketDataTestBase
 {
+	/// <inheritdoc />
+	protected override DataType[] SkippedDataTypes => [DataType.CandleTimeFrame];
+
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new AltCoinTraderMessageAdapter(new IncrementalIdGenerator());
 

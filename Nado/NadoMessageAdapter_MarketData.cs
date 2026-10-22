@@ -634,11 +634,19 @@ public partial class NadoMessageAdapter
 		}, cancellationToken);
 	}
 
-	private ValueTask SendLevel1SnapshotAsync(NadoMarket market,
+	private async ValueTask SendLevel1SnapshotAsync(NadoMarket market,
 		long transactionId, CancellationToken cancellationToken)
 	{
+		var response = await RestClient.GetMarketPricesAsync([market.ProductId], cancellationToken);
+		var quote = response?.Prices?.SingleOrDefault(price => price?.ProductId == market.ProductId)
+			?? throw new InvalidDataException($"Nado returned no market price for product {market.ProductId}.");
 		var price = GetPriceState(market.ProductId);
-		return SendOutMessageAsync(new Level1ChangeMessage
+		using (_sync.EnterScope())
+		{
+			price.Bid = quote.BidPrice.TryParseX18();
+			price.Ask = quote.AskPrice.TryParseX18();
+		}
+		await SendOutMessageAsync(new Level1ChangeMessage
 		{
 			SecurityId = market.Symbol.ToStockSharp(),
 			ServerTime = ServerTime,

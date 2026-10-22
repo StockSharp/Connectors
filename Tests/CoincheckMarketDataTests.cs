@@ -13,6 +13,7 @@ using StockSharp.Messages;
 /// Coincheck publishes market data without credentials.
 /// </summary>
 [TestClass]
+[RegionalLiveTests]
 public class CoincheckMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />
@@ -26,9 +27,5 @@ public class CoincheckMarketDataTests : LiveMarketDataTestBase
 	};
 
 	/// <inheritdoc />
-	/// <remarks>
-	/// The venue is thin: BTC/JPY, its busiest pair, leaves gaps of a minute and a half
-	/// between trades.
-	/// </remarks>
 	protected override TimeSpan DataTimeout => TimeSpan.FromSeconds(90);
 }

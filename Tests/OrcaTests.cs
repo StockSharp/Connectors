@@ -95,6 +95,9 @@ public class OrcaTests : LiveMarketDataTestBase
 	protected override TimeSpan ConnectTimeout => TimeSpan.FromSeconds(45);
 
 	/// <inheritdoc />
+	protected override TimeSpan DataTimeout => TimeSpan.FromSeconds(60);
+
+	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new OrcaMessageAdapter(new IncrementalIdGenerator())
 	{
 		// api.mainnet-beta.solana.com throttles getTransaction after about a dozen

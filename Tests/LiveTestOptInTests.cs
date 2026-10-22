@@ -106,6 +106,12 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(LatokenMarketDataTests), nameof(LatokenMarketDataTests.OrderBook))]
 	[DataRow(typeof(LatokenMarketDataTests), nameof(LatokenMarketDataTests.Ticks))]
 	[DataRow(typeof(LatokenMarketDataTests), nameof(LatokenMarketDataTests.Candles))]
+	[DataRow(typeof(AltCoinTraderTests), nameof(AltCoinTraderTests.Level1))]
+	[DataRow(typeof(AltCoinTraderTests), nameof(AltCoinTraderTests.OrderBook))]
+	[DataRow(typeof(AltCoinTraderTests), nameof(AltCoinTraderTests.Ticks))]
+	[DataRow(typeof(CoincheckMarketDataTests), nameof(CoincheckMarketDataTests.Securities))]
+	[DataRow(typeof(CoincheckMarketDataTests), nameof(CoincheckMarketDataTests.OrderBook))]
+	[DataRow(typeof(CoincheckMarketDataTests), nameof(CoincheckMarketDataTests.Ticks))]
 	[Timeout(10000)]
 	public void RegionalTestsRequireAdditionalExplicitOptIn(Type fixtureType, string testName)
 	{
@@ -135,6 +141,10 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.Level1))]
 	[DataRow(typeof(LfjTests), nameof(LfjTests.Securities))]
 	[DataRow(typeof(LfjTests), nameof(LfjTests.Level1))]
+	[DataRow(typeof(AltCoinTraderTests), nameof(AltCoinTraderTests.Securities))]
+	[DataRow(typeof(NadoMarketDataTests), nameof(NadoMarketDataTests.Candles))]
+	[DataRow(typeof(StandXMarketDataTests), nameof(StandXMarketDataTests.Candles))]
+	[DataRow(typeof(OrcaTests), nameof(OrcaTests.Candles))]
 	[Timeout(10000)]
 	public void RegionalOptInDoesNotExcludeOtherChecks(Type fixtureType, string testName)
 	{

@@ -195,10 +195,6 @@ public partial class NadoMessageAdapter
 			throw new InvalidDataException(
 				"Nado returned no usable spot or perpetual markets.");
 
-		var pricesById = new Dictionary<int, NadoMarketPrice>();
-		await LoadMarketPricesAsync(
-			[.. markets.Select(static market => market.ProductId)], pricesById,
-			cancellationToken);
 		using (_sync.EnterScope())
 		{
 			_markets.Clear();
@@ -210,64 +206,13 @@ public partial class NadoMessageAdapter
 			{
 				_markets.Add(market.Symbol, market);
 				_marketsByProduct.Add(market.ProductId, market);
-				pricesById.TryGetValue(market.ProductId, out var price);
 				_prices[market.ProductId] = new()
 				{
-					Bid = price?.BidPrice.TryParseX18(),
-					Ask = price?.AskPrice.TryParseX18(),
 					Oracle = market.OraclePrice.TryParseX18(),
 					Index = market.IndexPrice.TryParseX18(),
 				};
 			}
 		}
-	}
-
-	/// <summary>
-	/// Read the best bid and offer of the products and store them into <paramref name="target"/>.
-	/// </summary>
-	/// <remarks>
-	/// The gateway answers the whole query with a single failure when at least one of the
-	/// requested products has no market on the matching engine - the liquidity pool token is
-	/// such a product - so a rejected query is narrowed down by halves until the products the
-	/// venue does know are separated from the ones it does not.
-	/// </remarks>
-	private async ValueTask LoadMarketPricesAsync(int[] productIds,
-		Dictionary<int, NadoMarketPrice> target, CancellationToken cancellationToken)
-	{
-		if (productIds.Length == 0)
-			return;
-
-		try
-		{
-			var prices = await RestClient.GetMarketPricesAsync(productIds,
-				cancellationToken);
-
-			foreach (var price in prices?.Prices ?? [])
-			{
-				if (price is not null)
-					target[price.ProductId] = price;
-			}
-
-			return;
-		}
-		catch (Exception error) when (!cancellationToken.IsCancellationRequested)
-		{
-			if (productIds.Length == 1)
-			{
-				this.AddWarningLog(
-					"Nado has no market price for product {0}: {1}",
-					productIds[0], error.Message);
-				return;
-			}
-
-			this.AddDebugLog(
-				"Nado rejected the market price query for {0} products, splitting it: {1}",
-				productIds.Length, error.Message);
-		}
-
-		var half = productIds.Length / 2;
-		await LoadMarketPricesAsync(productIds[..half], target, cancellationToken);
-		await LoadMarketPricesAsync(productIds[half..], target, cancellationToken);
 	}
 
 	private static bool IsValidBook(NadoBookInfo book)
