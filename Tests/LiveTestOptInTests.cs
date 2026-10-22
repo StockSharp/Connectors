@@ -101,6 +101,11 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(EsmaFirdsTests), nameof(EsmaFirdsTests.Securities))]
 	[DataRow(typeof(LfjTests), nameof(LfjTests.Ticks))]
 	[DataRow(typeof(LfjTests), nameof(LfjTests.Candles))]
+	[DataRow(typeof(LatokenMarketDataTests), nameof(LatokenMarketDataTests.Securities))]
+	[DataRow(typeof(LatokenMarketDataTests), nameof(LatokenMarketDataTests.Level1))]
+	[DataRow(typeof(LatokenMarketDataTests), nameof(LatokenMarketDataTests.OrderBook))]
+	[DataRow(typeof(LatokenMarketDataTests), nameof(LatokenMarketDataTests.Ticks))]
+	[DataRow(typeof(LatokenMarketDataTests), nameof(LatokenMarketDataTests.Candles))]
 	[Timeout(10000)]
 	public void RegionalTestsRequireAdditionalExplicitOptIn(Type fixtureType, string testName)
 	{

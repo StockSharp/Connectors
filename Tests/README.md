@@ -35,6 +35,8 @@ Some public services need additional access:
   arrive on hosted runners, ESMA FIRDS, whose public gateway can time out, and
   LFJ swap and candle history, which requires many sequential public RPC reads.
   LFJ securities and quotes remain enabled without this additional switch.
+  LATOKEN also requires this switch while its public WebSocket returns HTTP 522
+  during connection setup, preventing all five market data checks from starting.
 - `STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS=1` enables BtcTurk candles. Its published
   graph API currently returns a null status and empty bars even for documented
   requests. The remaining BtcTurk market checks run without this switch. GitHub

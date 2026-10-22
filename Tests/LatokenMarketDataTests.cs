@@ -10,7 +10,9 @@ using StockSharp.Messages;
 /// <summary>
 /// Latoken publishes market data without credentials.
 /// </summary>
+/// <remarks>The public WebSocket endpoint can return HTTP 522 before any subscription starts.</remarks>
 [TestClass]
+[RegionalLiveTests]
 public class LatokenMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />
