@@ -16,8 +16,8 @@
 [OrderCondition(typeof(LBankOrderCondition))]
 public partial class LBankMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
-	private const string _defaultRestEndpoint = "https://api.lbkex.com/v2";
-	private const string _defaultWebSocketEndpoint = "wss://www.lbkex.net/ws/V2/";
+	private const string _defaultRestEndpoint = "https://api.lbank.info/v2";
+	private const string _defaultWebSocketEndpoint = "wss://api.lbank.info/ws/V2/";
 
 	/// <summary>
 	/// Possible time-frames.
