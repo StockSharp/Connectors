@@ -22,7 +22,19 @@ public partial class CSVMessageAdapter : MessageAdapter
 
 	/// <inheritdoc />
 	public override bool IsAllDownloadingSupported(DataType dataType)
-		=> dataType == DataType.Securities ? SecurityImportSettings != null : base.IsAllDownloadingSupported(dataType);
+	{
+		// A file holds every instrument, position or transaction there is.
+		if (dataType == DataType.Securities)
+			return SecurityImportSettings != null;
+
+		if (dataType == DataType.PositionChanges)
+			return PortfolioImportSettings != null;
+
+		if (dataType == DataType.Transactions)
+			return TransactionImportSettings != null;
+
+		return base.IsAllDownloadingSupported(dataType);
+	}
 
 	/// <inheritdoc />
 	public override IAsyncEnumerable<DataType> GetSupportedMarketDataTypesAsync(SecurityId securityId, DateTime? from, DateTime? to)

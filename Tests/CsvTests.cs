@@ -395,6 +395,25 @@ public class CsvTests : HistoryTestBase
 		IsFalse(adapter.IsAllDownloadingSupported(DataType.Securities));
 	}
 
+	/// <summary>
+	/// A file of positions or of transactions holds every one there is. A connection asks for them on connect without
+	/// naming a portfolio or an order, and a basket hands such a request only to an adapter that downloads them all.
+	/// </summary>
+	[TestMethod]
+	public void EveryPositionAndTransactionIsDownloadedWhileThereIsAFileOfThem()
+	{
+		var adapter = new CSVMessageAdapter(new IncrementalIdGenerator());
+
+		IsFalse(adapter.IsAllDownloadingSupported(DataType.PositionChanges));
+		IsFalse(adapter.IsAllDownloadingSupported(DataType.Transactions));
+
+		adapter.Settings = [new ImportSettings { DataType = DataType.PositionChanges }, new ImportSettings { DataType = DataType.Transactions }];
+
+		IsTrue(adapter.IsAllDownloadingSupported(DataType.PositionChanges));
+		IsTrue(adapter.IsAllDownloadingSupported(DataType.Transactions));
+		IsFalse(adapter.IsAllDownloadingSupported(DataType.Securities));
+	}
+
 	[TestMethod]
 	public async Task CsvSettingsSaveLoad()
 	{
