@@ -27,7 +27,8 @@ The MOEX contest connector checks its historical order-log archive.
 
 Some public services need additional access:
 
-- `STOCKSHARP_LIVE_REGIONAL_TESTS=1` enables fixtures marked `RegionalLiveTests`.
+- `STOCKSHARP_LIVE_REGIONAL_TESTS=1` enables fixtures marked `RegionalLiveTests`
+  and the Smart-Lab RSS case.
   This includes endpoints blocked by the runner's region, WAF, DNS or shared-IP
   quota. Newly covered services in this group are Bithumb, BloFin, Bullish,
   Coinhako, NovaDAX, Paradex, Pintu Pro, ProBit, Tapbit and the MOEX FTP archive.
@@ -41,6 +42,8 @@ Some public services need additional access:
   requests can return HTTP 429 without Retry-After; its security lookup remains
   enabled. Coincheck requires it while its public API returns HTTP 503 maintenance
   responses and the public stream does not deliver market data.
+  Smart-Lab RSS requires it because requests from hosted runners can time out
+  before a response arrives. MOEX and MarketWatch RSS run without this switch.
 - `STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS=1` enables BtcTurk candles. Its published
   graph API currently returns a null status and empty bars even for documented
   requests. The remaining BtcTurk market checks run without this switch. GitHub

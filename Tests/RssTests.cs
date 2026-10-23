@@ -19,20 +19,32 @@ using StockSharp.Rss;
 public class RssTests : HistoryTestBase
 {
 	[TestMethod]
-	[DataRow(RssAddresses.Reuters, "", false)]
-	[DataRow(RssAddresses.Reuters, "0", false)]
-	[DataRow(RssAddresses.Reuters, "true", false)]
-	[DataRow(RssAddresses.Reuters, "1", true)]
-	[DataRow(RssAddresses.Moex, "0", true)]
-	[DataRow(RssAddresses.MarketWatch, "0", true)]
-	[DataRow(RssAddresses.SmartLab, "0", true)]
-	public void ReutersRequiresExplicitAccessWithoutExcludingOtherFeeds(string address, string setting, bool expectedToRun)
+	[DataRow(RssAddresses.Reuters, "", "", false)]
+	[DataRow(RssAddresses.Reuters, "0", "1", false)]
+	[DataRow(RssAddresses.Reuters, "true", "1", false)]
+	[DataRow(RssAddresses.Reuters, "1", "", true)]
+	[DataRow(RssAddresses.Reuters, "1", "0", true)]
+	[DataRow(RssAddresses.Moex, "", "", true)]
+	[DataRow(RssAddresses.Moex, "1", "0", true)]
+	[DataRow(RssAddresses.MarketWatch, "", "", true)]
+	[DataRow(RssAddresses.MarketWatch, "0", "0", true)]
+	[DataRow(RssAddresses.SmartLab, "", "", false)]
+	[DataRow(RssAddresses.SmartLab, "1", "0", false)]
+	[DataRow(RssAddresses.SmartLab, "1", "true", false)]
+	[DataRow(RssAddresses.SmartLab, "", "1", true)]
+	[Timeout(10000)]
+	public void RestrictedFeedsRequireTheirOwnOptIn(string address, string reutersSetting, string regionalSetting, bool expectedToRun)
 	{
-		var reason = RssTests.GetFeedSkipReason(address, setting);
+		var reason = GetFeedSkipReason(address, reutersSetting, regionalSetting);
 
 		AreEqual(expectedToRun, reason is null);
 		if (reason is not null)
-			IsTrue(reason.Contains("STOCKSHARP_LIVE_REUTERS_RSS_TESTS=1"), reason);
+		{
+			var variable = address == RssAddresses.Reuters
+				? "STOCKSHARP_LIVE_REUTERS_RSS_TESTS"
+				: LiveTestAccess.RegionalOptInVariable;
+			IsTrue(reason.Contains($"{variable}=1"), reason);
+		}
 	}
 
 	[TestMethod]
@@ -70,7 +82,8 @@ public class RssTests : HistoryTestBase
 	public async Task Rss(string address)
 	{
 		SkipUnlessLive();
-		if (GetFeedSkipReason(address, Env("STOCKSHARP_LIVE_REUTERS_RSS_TESTS")) is string reason)
+		if (GetFeedSkipReason(address, Env("STOCKSHARP_LIVE_REUTERS_RSS_TESTS"),
+			Env(LiveTestAccess.RegionalOptInVariable)) is string reason)
 			Inconclusive(reason);
 
 		var adapter = CreateAdapter<RssMessageAdapter>();
@@ -95,8 +108,13 @@ public class RssTests : HistoryTestBase
 	public static IEnumerable<object[]> RssFeeds
 		=> RssAddresses.All.Select(address => new object[] { address });
 
-	internal static string GetFeedSkipReason(string address, string setting)
-		=> address == RssAddresses.Reuters && !setting.EqualsIgnoreCase("1")
-			? "Set STOCKSHARP_LIVE_REUTERS_RSS_TESTS=1 when this runner has programmatic access to the Thomson Reuters RSS feed."
-			: null;
+	internal static string GetFeedSkipReason(string address, string reutersSetting, string regionalSetting)
+		=> address switch
+		{
+			RssAddresses.Reuters when !reutersSetting.EqualsIgnoreCase("1")
+				=> "Set STOCKSHARP_LIVE_REUTERS_RSS_TESTS=1 when this runner has programmatic access to the Thomson Reuters RSS feed.",
+			RssAddresses.SmartLab when !regionalSetting.EqualsIgnoreCase("1")
+				=> $"Set {LiveTestAccess.RegionalOptInVariable}=1 when this runner can reach the Smart-Lab RSS feed.",
+			_ => null,
+		};
 }
