@@ -1,0 +1,31 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    Package versions of this repository. The versions of the packages the core uses as well (Ecng, StockSharp,
+    Microsoft.Extensions and the rest) are set in the core's props/common_versions.props.
+  -->
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('netstandard')) OR $(TargetFramework.StartsWith('$(NetOldTfm)'))">
+    <GrpcVer>2.71.0</GrpcVer>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('$(NetTfm)'))">
+    <GrpcVer>2.*</GrpcVer>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <JwtVer>11.*</JwtVer>
+    <FluentFtpVer>55.*</FluentFtpVer>
+    <SignalRVer>2.4.3</SignalRVer>
+    <AWSSDKVer>4.*</AWSSDKVer>
+    <GoogleProtobufVer>3.*</GoogleProtobufVer>
+    <NatsVer>3.*</NatsVer>
+    <LightstreamerVer>6.*</LightstreamerVer>
+    <MoomooApiVer>10.*</MoomooApiVer>
+    <BouncyCastleVer>2.*</BouncyCastleVer>
+    <TigerBrokersOpenApiVer>1.*</TigerBrokersOpenApiVer>
+    <NethereumSignerVer>7.*</NethereumSignerVer>
+    <TonSdkCoreVer>0.3.*</TonSdkCoreVer>
+    <TonSdkContractsVer>0.4.*</TonSdkContractsVer>
+    <XrplVer>11.*</XrplVer>
+    <SolanaVer>10.*</SolanaVer>
+  </PropertyGroup>
+</Project>

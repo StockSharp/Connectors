@@ -227,7 +227,4 @@
   <ItemGroup>
     <Compile Include="..\Common\S3BucketHelper.cs" Link="S3BucketHelper.cs" />
   </ItemGroup>
-  <ItemGroup>
-	<PackageReference Include="TonSdk.Core" Version="$(TonSdkCoreVer)" />
-  </ItemGroup>
 </Project>
