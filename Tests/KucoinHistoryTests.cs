@@ -1,6 +1,10 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -13,6 +17,34 @@ using StockSharp.Messages;
 [TestClass]
 public class KucoinHistoryTests : HistoryTestBase
 {
+	[TestMethod]
+	[DataRow(false)]
+	[DataRow(true)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ArchiveBodyReadHonorsTheHttpTimeout(bool isDepth)
+	{
+		using var body = new AsyncArchiveStream(null);
+		using var http = new HttpClient(new HistoryHttpHandler(_ => new(HttpStatusCode.OK)
+		{
+			Content = new StreamContent(body),
+		})) { Timeout = TimeSpan.FromMilliseconds(250) };
+		var adapter = CreateKucoinHistory();
+		HistoryHttpHandler.ReplaceClient(adapter.FindAdapter<KucoinHistoryMessageAdapter>(), http);
+		var from = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		var security = new SecurityId { SecurityCode = "BTC-USDT", BoardCode = BoardCodes.Kucoin };
+		IAsyncEnumerable<Message> messages = isDepth
+			? DownloadOrderBook(adapter, security, from, from.EndOfDay(), 1)
+			: DownloadTicks(adapter, security, from, from.EndOfDay(), 1);
+
+		await ThrowsAsync<OperationCanceledException>(async () =>
+			await messages.ToArrayAsync(CancellationToken).AsTask().WaitAsync(CancellationToken));
+
+		IsFalse(CancellationToken.IsCancellationRequested);
+		IsTrue(body.IsReadStarted);
+		IsTrue(body.IsReadCanceled);
+		IsTrue(body.IsDisposed);
+	}
+
 	private static IMessageAdapter CreateKucoinHistory()
 		=> CreateAdapter<KucoinHistoryMessageAdapter>(a => a.CheckDates = false);
 

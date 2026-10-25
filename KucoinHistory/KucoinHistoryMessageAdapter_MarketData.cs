@@ -110,11 +110,12 @@ partial class KucoinHistoryMessageAdapter
 
 	private async Task<bool> Process(string urlPart, Func<FastCsvReader, ValueTask<bool>> converter, CancellationToken cancellationToken)
 	{
+		using var timeout = cancellationToken.CreateChildToken(_client.Timeout).cts;
 		Stream zipStream;
 
 		try
 		{
-			zipStream = await _client.GetStreamAsync($"{_baseUrl}{urlPart}", cancellationToken);
+			zipStream = await _client.GetStreamAsync($"{_baseUrl}{urlPart}", timeout.Token);
 		}
 		catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
 		{
@@ -123,7 +124,7 @@ partial class KucoinHistoryMessageAdapter
 
 		return await Do.InvariantAsync(async () =>
 		{
-			foreach (var (name, item) in zipStream.Unzip())
+			await foreach (var (name, item) in zipStream.UnzipAsync(cancellationToken: timeout.Token))
 			{
 				var reader = new FastCsvReader(item, Encoding.UTF8, StringHelper.N)
 				{
@@ -289,11 +290,12 @@ partial class KucoinHistoryMessageAdapter
 
 		foreach (var date in from2.Date.Range(to2.Date, TimeSpan.FromDays(1)))
 		{
+			using var timeout = cancellationToken.CreateChildToken(_client.Timeout).cts;
 			Stream zipStream;
 
 			try
 			{
-				zipStream = await _client.GetStreamAsync($"{_baseUrl}data/{market}/daily/depth/orderbooklv50/{depthSymbol}/{depthSymbol}-orderbooklv50-{date:yyyy-MM-dd}.zip", cancellationToken);
+				zipStream = await _client.GetStreamAsync($"{_baseUrl}data/{market}/daily/depth/orderbooklv50/{depthSymbol}/{depthSymbol}-orderbooklv50-{date:yyyy-MM-dd}.zip", timeout.Token);
 			}
 			catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
 			{
@@ -303,7 +305,7 @@ partial class KucoinHistoryMessageAdapter
 			// Collect all order books for this day then sort
 			var dayOrderBooks = new List<QuoteChangeMessage>();
 
-			foreach (var (name, item) in zipStream.Unzip())
+			await foreach (var (name, item) in zipStream.UnzipAsync(cancellationToken: timeout.Token))
 			{
 				using var streamReader = new StreamReader(item, Encoding.UTF8);
 

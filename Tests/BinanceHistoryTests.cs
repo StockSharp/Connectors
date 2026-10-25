@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,6 +24,73 @@ using StockSharp.Messages;
 [CLSCompliant(false)]
 public class BinanceHistoryTests : HistoryTestBase
 {
+	[TestMethod]
+	[DataRow(nameof(BinHistCandlesFut))]
+	[DataRow(nameof(BinHistCandlesFutCoin))]
+	[DataRow(nameof(BinHistCandlesSpot))]
+	[Timeout(10000)]
+	public void CandleIntervalsHaveSeparateCasesBelowTheHangCollectorLimit(string testName)
+	{
+		var method = typeof(BinanceHistoryTests).GetMethod(testName);
+		var timeout = method.GetCustomAttribute<TimeoutAttribute>();
+		IsTrue(timeout.CooperativeCancellation);
+		IsLess(timeout.Timeout, 180000, "Each case must time out before the three-minute hang collector.");
+		AreEqual(12, method.GetCustomAttributes<DataRowAttribute>().Count());
+	}
+
+	[TestMethod]
+	[DataRow(BoardCodes.Binance, "spot")]
+	[DataRow(BoardCodes.BinanceFut, "futures/um")]
+	[DataRow(BoardCodes.BinanceCoin, "futures/cm")]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ArchiveBodiesAreDownloadedAsynchronouslyBeforeUnzipping(string board, string section)
+	{
+		using var body = new AsyncArchiveStream(CreateArchive("1704067200000,100,102,99,101,10,1704067259999,0,12,4,0,0\n"));
+		Uri requested = null;
+		using var http = new HttpClient(new HistoryHttpHandler(request =>
+		{
+			requested = request.RequestUri;
+			return new(HttpStatusCode.OK) { Content = new StreamContent(body) };
+		})) { MaxResponseContentBufferSize = 16 };
+		var adapter = CreateAdapter<BinanceHistoryMessageAdapter>(a => a.CheckDates = false);
+		HistoryHttpHandler.ReplaceClient(adapter.FindAdapter<BinanceHistoryMessageAdapter>(), http);
+		var symbol = board == BoardCodes.BinanceCoin ? "BTCUSD_PERP" : "BTCUSDT";
+		var from = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		var candles = await DownloadCandles(adapter, new() { SecurityCode = symbol, BoardCode = board },
+			TimeSpan.FromMinutes(1), from, from.EndOfDay(), count: 1).ToArrayAsync(CancellationToken);
+
+		AreEqual($"/data/{section}/daily/klines/{symbol}/1m/{symbol}-1m-2024-01-01.zip", requested.AbsolutePath);
+		AreEqual(1, candles.Length);
+		AreEqual(from, candles[0].OpenTime);
+		AreEqual(101m, candles[0].ClosePrice);
+		AreEqual(12, candles[0].TotalTicks);
+		IsTrue(body.IsDisposed);
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ArchiveBodyReadHonorsTheHttpTimeout()
+	{
+		using var body = new AsyncArchiveStream(null);
+		using var http = new HttpClient(new HistoryHttpHandler(_ => new(HttpStatusCode.OK)
+		{
+			Content = new StreamContent(body),
+		})) { Timeout = TimeSpan.FromMilliseconds(250) };
+		var adapter = CreateAdapter<BinanceHistoryMessageAdapter>(a => a.CheckDates = false);
+		HistoryHttpHandler.ReplaceClient(adapter.FindAdapter<BinanceHistoryMessageAdapter>(), http);
+		var from = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+		await ThrowsAsync<OperationCanceledException>(async () =>
+			await DownloadCandles(adapter, new() { SecurityCode = "BTCUSD_PERP", BoardCode = BoardCodes.BinanceCoin },
+				TimeSpan.FromMinutes(1), from, from.EndOfDay(), count: 1)
+				.ToArrayAsync(CancellationToken).AsTask().WaitAsync(CancellationToken));
+
+		IsFalse(CancellationToken.IsCancellationRequested);
+		IsTrue(body.IsReadStarted);
+		IsTrue(body.IsReadCanceled);
+		IsTrue(body.IsDisposed);
+	}
+
 	[TestMethod]
 	[TestCategory("Integration")]
 	[RegionalLiveTests]
@@ -54,74 +122,76 @@ public class BinanceHistoryTests : HistoryTestBase
 
 	[TestMethod]
 	[TestCategory("Integration")]
-	[Timeout(360000, CooperativeCancellation = true)]
-	public Task BinHistCandlesFut()
+	[DataRow(1, 0)]
+	[DataRow(60, 1440)]
+	[DataRow(180, 1440)]
+	[DataRow(300, 864)]
+	[DataRow(900, 288)]
+	[DataRow(1800, 144)]
+	[DataRow(3600, 72)]
+	[DataRow(7200, 84)]
+	[DataRow(14400, 42)]
+	[DataRow(21600, 28)]
+	[DataRow(43200, 14)]
+	[DataRow(86400, 7)]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public Task BinHistCandlesFut(int intervalSeconds, int expectedCount)
 	{
 		SkipUnlessLive();
 
-		return DownloadCandlesMultiTf<BinanceHistoryMessageAdapter>($"BTCUSDT@{BoardCodes.Binance}".ToSecurityId(), SecurityTypes.Future, new DateTime(2022, 11, 21).UtcKind(), new()
+		return DownloadCandlesMultiTf<BinanceHistoryMessageAdapter>($"BTCUSDT@{BoardCodes.BinanceFut}".ToSecurityId(), SecurityTypes.Future, new DateTime(2022, 11, 21).UtcKind(), new()
 		{
-			{ TimeSpan.FromSeconds(1), 86400 },
-			{ TimeSpan.FromMinutes(1), 1440 },
-			{ TimeSpan.FromMinutes(3), 1440 },
-			{ TimeSpan.FromMinutes(5), 864 },
-			{ TimeSpan.FromMinutes(15), 288 },
-			{ TimeSpan.FromMinutes(30), 144 },
-			{ TimeSpan.FromHours(1), 72 },
-			{ TimeSpan.FromHours(2), 84 },
-			{ TimeSpan.FromHours(4), 42 },
-			{ TimeSpan.FromHours(6), 28 },
-			{ TimeSpan.FromHours(12), 14 },
-			{ TimeSpan.FromDays(1), 7 },
+			{ TimeSpan.FromSeconds(intervalSeconds), expectedCount },
 		}, CancellationToken);
 	}
 
 	[TestMethod]
 	[TestCategory("Integration")]
-	[Timeout(360000, CooperativeCancellation = true)]
-	public Task BinHistCandlesFutCoin()
+	[DataRow(1, 0)]
+	[DataRow(60, 1440)]
+	[DataRow(180, 1440)]
+	[DataRow(300, 864)]
+	[DataRow(900, 288)]
+	[DataRow(1800, 144)]
+	[DataRow(3600, 72)]
+	[DataRow(7200, 84)]
+	[DataRow(14400, 42)]
+	[DataRow(21600, 28)]
+	[DataRow(43200, 14)]
+	[DataRow(86400, 7)]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public Task BinHistCandlesFutCoin(int intervalSeconds, int expectedCount)
 	{
 		SkipUnlessLive();
 
 		return DownloadCandlesMultiTf<BinanceHistoryMessageAdapter>($"BTCUSD_PERP@{BoardCodes.BinanceCoin}".ToSecurityId(), SecurityTypes.Future, new DateTime(2022, 11, 21).UtcKind(), new()
 		{
-			{ TimeSpan.FromSeconds(1), 0 },
-			{ TimeSpan.FromMinutes(1), 1440 },
-			{ TimeSpan.FromMinutes(3), 1440 },
-			{ TimeSpan.FromMinutes(5), 864 },
-			{ TimeSpan.FromMinutes(15), 288 },
-			{ TimeSpan.FromMinutes(30), 144 },
-			{ TimeSpan.FromHours(1), 72 },
-			{ TimeSpan.FromHours(2), 84 },
-			{ TimeSpan.FromHours(4), 42 },
-			{ TimeSpan.FromHours(6), 28 },
-			{ TimeSpan.FromHours(12), 14 },
-			{ TimeSpan.FromDays(1), 7 },
+			{ TimeSpan.FromSeconds(intervalSeconds), expectedCount },
 		}, CancellationToken);
 	}
 
 	[TestMethod]
 	[TestCategory("Integration")]
-	[Timeout(360000, CooperativeCancellation = true)]
-	public Task BinHistCandlesSpot()
+	[DataRow(1, 86400)]
+	[DataRow(60, 1440)]
+	[DataRow(180, 1440)]
+	[DataRow(300, 864)]
+	[DataRow(900, 288)]
+	[DataRow(1800, 144)]
+	[DataRow(3600, 72)]
+	[DataRow(7200, 84)]
+	[DataRow(14400, 42)]
+	[DataRow(21600, 28)]
+	[DataRow(43200, 14)]
+	[DataRow(86400, 7)]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public Task BinHistCandlesSpot(int intervalSeconds, int expectedCount)
 	{
 		SkipUnlessLive();
 
-		// Spot API has stricter rate limits than Futures, reduce 1s candles count
 		return DownloadCandlesMultiTf<BinanceHistoryMessageAdapter>($"BTCUSDT@{BoardCodes.Binance}".ToSecurityId(), default, new DateTime(2022, 11, 21).UtcKind(), new()
 		{
-			{ TimeSpan.FromSeconds(1), 86400 },
-			{ TimeSpan.FromMinutes(1), 1440 },
-			{ TimeSpan.FromMinutes(3), 1440 },
-			{ TimeSpan.FromMinutes(5), 864 },
-			{ TimeSpan.FromMinutes(15), 288 },
-			{ TimeSpan.FromMinutes(30), 144 },
-			{ TimeSpan.FromHours(1), 72 },
-			{ TimeSpan.FromHours(2), 84 },
-			{ TimeSpan.FromHours(4), 42 },
-			{ TimeSpan.FromHours(6), 28 },
-			{ TimeSpan.FromHours(12), 14 },
-			{ TimeSpan.FromDays(1), 7 },
+			{ TimeSpan.FromSeconds(intervalSeconds), expectedCount },
 		}, CancellationToken);
 	}
 
@@ -362,17 +432,12 @@ public class BinanceHistoryTests : HistoryTestBase
 
 	private async Task<QuoteChangeMessage[]> ReadDepth(bool inverse, string csv)
 	{
-		using var zip = new MemoryStream();
-		using (var archive = new ZipArchive(zip, ZipArchiveMode.Create, true))
-		{
-			using var writer = new StreamWriter(archive.CreateEntry("depth.csv").Open(), new UTF8Encoding(false));
-			await writer.WriteAsync(csv);
-		}
+		var zip = CreateArchive(csv);
 
 		using var http = new HttpClient(new HistoryHttpHandler(request => new(HttpStatusCode.OK)
 		{
 			Content = request.RequestUri.Host == "data.binance.vision"
-				? new ByteArrayContent(zip.ToArray())
+				? new ByteArrayContent(zip)
 				: new StringContent("{\"symbols\":[{\"symbol\":\"BTCUSD_PERP\",\"contractSize\":37}]}"),
 		}));
 		var adapter = CreateAdapter<BinanceHistoryMessageAdapter>(a => a.CheckDates = false);
@@ -385,5 +450,16 @@ public class BinanceHistoryTests : HistoryTestBase
 		var from = new DateTime(2024, 1, 1).UtcKind();
 		return await DownloadOrderBook(adapter, secId, from, from.AddHours(1), 1, SecurityTypes.Future)
 			.ToArrayAsync(CancellationToken);
+	}
+
+	private static byte[] CreateArchive(string csv)
+	{
+		using var zip = new MemoryStream();
+		using (var archive = new ZipArchive(zip, ZipArchiveMode.Create, true))
+		{
+			using var writer = new StreamWriter(archive.CreateEntry("data.csv").Open(), new UTF8Encoding(false));
+			writer.Write(csv);
+		}
+		return zip.ToArray();
 	}
 }

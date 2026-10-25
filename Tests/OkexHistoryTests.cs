@@ -28,6 +28,33 @@ using StockSharp.OkexHistory;
 public class OkexHistoryTests : LiveMarketDataTestBase
 {
 	[TestMethod]
+	[DataRow(false)]
+	[DataRow(true)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task ArchiveBodyReadHonorsTheHttpTimeout(bool isCandles)
+	{
+		using var body = new AsyncArchiveStream(null);
+		using var http = new HttpClient(new HistoryHttpHandler(_ => new(HttpStatusCode.OK)
+		{
+			Content = new StreamContent(body),
+		})) { Timeout = TimeSpan.FromMilliseconds(250) };
+		var adapter = CreateAdapter<OkexHistoryMessageAdapter>(a => a.CheckDates = false);
+		HistoryHttpHandler.ReplaceClient(adapter.FindAdapter<OkexHistoryMessageAdapter>(), http);
+		var from = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		IAsyncEnumerable<Message> messages = isCandles
+			? DownloadCandles(adapter, SecurityId, TimeSpan.FromMinutes(1), from, from.EndOfDay(), count: 1)
+			: DownloadTicks(adapter, SecurityId, from, from.EndOfDay(), 1);
+
+		await ThrowsAsync<OperationCanceledException>(async () =>
+			await messages.ToArrayAsync(CancellationToken).AsTask().WaitAsync(CancellationToken));
+
+		IsFalse(CancellationToken.IsCancellationRequested);
+		IsTrue(body.IsReadStarted);
+		IsTrue(body.IsReadCanceled);
+		IsTrue(body.IsDisposed);
+	}
+
+	[TestMethod]
 	[DataRow(null)]
 	[DataRow("")]
 	[DataRow(" ")]

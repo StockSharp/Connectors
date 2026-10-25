@@ -396,10 +396,11 @@ partial class OkexHistoryMessageAdapter
 			// Candles use different URL: static.okx.com with "candlesticks" path
 			var url = $"https://{ArchiveAddress}/cdn/okex/traderecords/candlesticks/daily/{date:yyyyMMdd}/{secId}-candlesticks-{date:yyyy-MM-dd}.zip";
 
+			using var timeout = cancellationToken.CreateChildToken(_client.Timeout).cts;
 			Stream zipStream;
 			try
 			{
-				zipStream = await _client.GetStreamAsync(url, cancellationToken);
+				zipStream = await _client.GetStreamAsync(url, timeout.Token);
 			}
 			catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
 			{
@@ -410,7 +411,7 @@ partial class OkexHistoryMessageAdapter
 
 			await Do.InvariantAsync(async () =>
 			{
-				foreach (var (name, item) in zipStream.Unzip())
+				await foreach (var (name, item) in zipStream.UnzipAsync(cancellationToken: timeout.Token))
 				{
 					var reader = new FastCsvReader(item, Encoding.UTF8, StringHelper.N)
 					{
@@ -487,13 +488,14 @@ partial class OkexHistoryMessageAdapter
 
 	private async Task<bool> ProcessOkxZip(string secId, string dataType, DateTime date, Func<FastCsvReader, ValueTask<bool>> converter, CancellationToken cancellationToken)
 	{
+		using var timeout = cancellationToken.CreateChildToken(_client.Timeout).cts;
 		Stream zipStream;
 
 		var url = $"https://{ArchiveAddress}/cdn/okex/traderecords/{dataType}/daily/{date:yyyyMMdd}/{secId}-{dataType}-{date:yyyy-MM-dd}.zip";
 
 		try
 		{
-			zipStream = await _client.GetStreamAsync(url, cancellationToken);
+			zipStream = await _client.GetStreamAsync(url, timeout.Token);
 		}
 		catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
 		{
@@ -502,7 +504,7 @@ partial class OkexHistoryMessageAdapter
 
 		return await Do.InvariantAsync(async () =>
 		{
-			foreach (var (name, item) in zipStream.Unzip())
+			await foreach (var (name, item) in zipStream.UnzipAsync(cancellationToken: timeout.Token))
 			{
 				var reader = new FastCsvReader(item, Encoding.UTF8, StringHelper.N)
 				{

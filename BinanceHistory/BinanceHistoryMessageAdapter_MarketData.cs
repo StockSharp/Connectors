@@ -506,11 +506,12 @@ public partial class BinanceHistoryMessageAdapter
 	{
 		const string baseUrl = "https://data.binance.vision/";
 
+		using var timeout = cancellationToken.CreateChildToken(_client.Timeout).cts;
 		Stream zipStream;
 
 		try
 		{
-			zipStream = await _client.GetStreamAsync($"{baseUrl}{urlPart}", cancellationToken);
+			zipStream = await _client.GetStreamAsync($"{baseUrl}{urlPart}", timeout.Token);
 		}
 		catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
 		{
@@ -519,7 +520,7 @@ public partial class BinanceHistoryMessageAdapter
 
 		return await Do.InvariantAsync(async () =>
 		{
-			foreach (var (name, item) in zipStream.Unzip())
+			await foreach (var (name, item) in zipStream.UnzipAsync(cancellationToken: timeout.Token))
 			{
 				var reader = new FastCsvReader(item, Encoding.UTF8, StringHelper.N)
 				{

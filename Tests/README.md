@@ -25,6 +25,12 @@ weekends and exchange holidays do not leave the requested history empty. Gemini
 looks up BTCUSD, the same instrument used by its subscriptions, because loading the
 entire catalog requires a separate details request for each pair.
 
+Binance archive candles run as separate interval cases with two-minute timeouts,
+below the workflow's three-minute hang collector. ZIP downloads in BinanceHistory,
+KucoinHistory and OkexHistory use Ecng's `UnzipAsync` on the response stream. A linked
+request timeout remains active while the archive body is read, alongside caller
+cancellation.
+
 Reference-only services have explicit lookup or filing tests instead of inheriting
 unsupported quote checks. These include Coin Metrics Community, OpenFIGI, GLEIF,
 ESMA FIRDS, SEC EDGAR and filings.xbrl.org. SEC EDGAR also checks company facts.
