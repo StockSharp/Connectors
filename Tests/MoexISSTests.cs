@@ -9,6 +9,9 @@ using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Moq;
+using Moq.Protected;
+
 using Newtonsoft.Json;
 
 using StockSharp.BusinessEntities;
@@ -22,6 +25,19 @@ using StockSharp.MoexISS.Native.Requests;
 [TestClass]
 public class MoexISSTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task CandleCheckIncludesSessionsBeforeNonTradingDays()
+	{
+		var fixture = new Mock<MoexISSTests> { CallBase = true };
+		fixture.Protected().Setup<MessageAdapter>("CreateAdapter")
+			.Returns(new PastSessionCandleAdapter(DateTime.UtcNow.Date.AddDays(-5)));
+		fixture.Protected().SetupGet<TimeSpan>("DataTimeout").Returns(TimeSpan.FromSeconds(1));
+		fixture.Object.TestContext = TestContext;
+
+		await fixture.Object.Candles();
+	}
+
 	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task EmptyDividendTableIsAValidResponse()
@@ -163,6 +179,13 @@ public class MoexISSTests : LiveMarketDataTestBase
 		SecurityCode = "SBER",
 		BoardCode = "TQBR",
 	};
+
+	/// <inheritdoc />
+	protected override TimeSpan CandleTimeFrame => TimeSpan.FromHours(1);
+
+	/// <inheritdoc />
+	/// <remarks>Include earlier sessions during weekends and exchange holidays.</remarks>
+	protected override int CandlesDepth => 14 * 24;
 
 	// ISS has no level1 stream: the adapter maps that data type to the dividend history
 	// (/iss/securities/<code>/dividends.json), which holds a handful of records per year and

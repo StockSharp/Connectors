@@ -20,6 +20,11 @@ where the adapter and the anonymous feed support them. Fixtures supply a public
 instrument, a supported candle interval and any required lookup criteria. An empty
 response, parsing error or unexpected HTTP failure fails the check.
 
+AlorHistory and MOEX ISS check hourly candles over the preceding two weeks so
+weekends and exchange holidays do not leave the requested history empty. Gemini
+looks up BTCUSD, the same instrument used by its subscriptions, because loading the
+entire catalog requires a separate details request for each pair.
+
 Reference-only services have explicit lookup or filing tests instead of inheriting
 unsupported quote checks. These include Coin Metrics Community, OpenFIGI, GLEIF,
 ESMA FIRDS, SEC EDGAR and filings.xbrl.org. SEC EDGAR also checks company facts.

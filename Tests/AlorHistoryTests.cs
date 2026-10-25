@@ -9,6 +9,9 @@ using Ecng.Serialization;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Moq;
+using Moq.Protected;
+
 using StockSharp.AlorHistory;
 using StockSharp.Messages;
 
@@ -18,6 +21,19 @@ using StockSharp.Messages;
 [TestClass]
 public class AlorHistoryTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task CandleCheckIncludesSessionsBeforeNonTradingDays()
+	{
+		var fixture = new Mock<AlorHistoryTests> { CallBase = true };
+		fixture.Protected().Setup<MessageAdapter>("CreateAdapter")
+			.Returns(new PastSessionCandleAdapter(DateTime.UtcNow.Date.AddDays(-5)));
+		fixture.Protected().SetupGet<TimeSpan>("DataTimeout").Returns(TimeSpan.FromSeconds(1));
+		fixture.Object.TestContext = TestContext;
+
+		await fixture.Object.Candles();
+	}
+
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
@@ -170,4 +186,11 @@ public class AlorHistoryTests : LiveMarketDataTestBase
 		SecurityCode = "SBER",
 		BoardCode = BoardCodes.Moex,
 	};
+
+	/// <inheritdoc />
+	protected override TimeSpan CandleTimeFrame => TimeSpan.FromHours(1);
+
+	/// <inheritdoc />
+	/// <remarks>Include earlier sessions during weekends and exchange holidays.</remarks>
+	protected override int CandlesDepth => 14 * 24;
 }
