@@ -1,11 +1,11 @@
 name: Tests
 
-# Runs on every push to the default branch, and gates a release: when one is published,
-# when a version tag is pushed, and on demand.
+# Runs ordinary checks on pushes, pull requests, releases and manual dispatches.
+# Successful pushes then run the live venue checks through the reusable workflow.
 on:
   push:
     branches:
-      - main
+      - '**'
     tags:
       - 'v*'
   pull_request:
@@ -73,3 +73,9 @@ jobs:
           name: test-results
           path: Connectors/TestResults/*.trx
           if-no-files-found: warn
+
+  live:
+    needs: test
+    if: github.event_name == 'push' && needs.test.result == 'success'
+    uses: ./.github/workflows/live-tests.yml
+    secrets: inherit

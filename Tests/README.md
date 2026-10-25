@@ -4,6 +4,10 @@ Each connector has one fixture. A fixture can contain both offline regression te
 live checks. Live methods carry the `Integration` category and read their switches
 through `BaseTestClass.Env(...)`.
 
+Every branch push runs the ordinary tests first. When they succeed, the `Tests`
+workflow calls `Live tests` with the default access switches. `Live tests` can
+also be started independently from GitHub Actions with its optional inputs.
+
 Run the offline suite with `--filter "TestCategory!=Integration"`. To run anonymous
 live checks after building Release:
 
