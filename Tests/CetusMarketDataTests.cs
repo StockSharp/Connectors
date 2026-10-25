@@ -13,6 +13,7 @@ using StockSharp.Messages;
 /// Cetus publishes market data without credentials.
 /// </summary>
 [TestClass]
+[RegionalLiveTests(nameof(Ticks))]
 public class CetusMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />

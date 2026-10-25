@@ -112,6 +112,12 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(CoincheckMarketDataTests), nameof(CoincheckMarketDataTests.Securities))]
 	[DataRow(typeof(CoincheckMarketDataTests), nameof(CoincheckMarketDataTests.OrderBook))]
 	[DataRow(typeof(CoincheckMarketDataTests), nameof(CoincheckMarketDataTests.Ticks))]
+	[DataRow(typeof(CetusMarketDataTests), nameof(CetusMarketDataTests.Ticks))]
+	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.Securities))]
+	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.Level1))]
+	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.OrderBook))]
+	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.Ticks))]
+	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.Candles))]
 	[Timeout(10000)]
 	public void RegionalTestsRequireAdditionalExplicitOptIn(Type fixtureType, string testName)
 	{
@@ -145,6 +151,8 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(NadoMarketDataTests), nameof(NadoMarketDataTests.Candles))]
 	[DataRow(typeof(StandXMarketDataTests), nameof(StandXMarketDataTests.Candles))]
 	[DataRow(typeof(OrcaTests), nameof(OrcaTests.Candles))]
+	[DataRow(typeof(CetusMarketDataTests), nameof(CetusMarketDataTests.Securities))]
+	[DataRow(typeof(CetusMarketDataTests), nameof(CetusMarketDataTests.Level1))]
 	[Timeout(10000)]
 	public void RegionalOptInDoesNotExcludeOtherChecks(Type fixtureType, string testName)
 	{
@@ -155,6 +163,8 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(BinanceTests), nameof(BinanceTests.Securities))]
 	[DataRow(typeof(ByBitMarketDataTests), nameof(ByBitMarketDataTests.Securities))]
 	[DataRow(typeof(TokocryptoTests), nameof(TokocryptoTests.PublicWebSocketStreams))]
+	[DataRow(typeof(CetusMarketDataTests), nameof(CetusMarketDataTests.Ticks))]
+	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.Securities))]
 	[Timeout(10000)]
 	public void RegionalOptInStillRequiresGeneralLiveAccess(Type fixtureType, string testName)
 	{
@@ -168,6 +178,7 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(BinanceTests), nameof(BinanceTests.Spot_AnUpdateThatStartsWhereTheBookEnds_IsApplied))]
 	[DataRow(typeof(BackpackTests), nameof(BackpackTests.MarketListAcceptsIndexAlongsideCryptoAndStocks))]
 	[DataRow(typeof(BinanceHistoryTests), nameof(BinanceHistoryTests.SpotLookupUsesPublicMarketDataEndpoint))]
+	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.AnUnavailableIndexerRetainsTheHttpStatusAfterBoundedRetries))]
 	public void OrdinaryTestsIgnoreLiveAccessSettings(Type fixtureType, string testName)
 	{
 		foreach (var live in new[] { "", "0", "1" })

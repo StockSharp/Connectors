@@ -1,5 +1,10 @@
 namespace StockSharp.Connectors.Tests;
 
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+
 using Ecng.Common;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,8 +16,32 @@ using StockSharp.Messages;
 /// Injective publishes market data without credentials.
 /// </summary>
 [TestClass]
+[RegionalLiveTests]
 public class InjectiveMarketDataTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task AnUnavailableIndexerRetainsTheHttpStatusAfterBoundedRetries()
+	{
+		await using var server = new HistoryHttpServer(() => new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+		{
+			Content = new StringContent("no healthy upstream"),
+		}, CancellationToken);
+		await using var harness = new MarketDataTestHarness(new InjectiveMessageAdapter(new IncrementalIdGenerator())
+		{
+			IndexerEndpoint = server.Address.ToString(),
+			ChainEndpoint = server.Address.ToString(),
+			HeartbeatInterval = TimeSpan.Zero,
+		});
+
+		var error = await ThrowsAsync<HttpRequestException>(() =>
+			harness.ConnectAsync(TimeSpan.FromSeconds(3), CancellationToken));
+
+		AreEqual(HttpStatusCode.ServiceUnavailable, error.StatusCode);
+		IsTrue(error.Message.Contains("no healthy upstream"), error.Message);
+		AreEqual(6, server.RequestTimes.Count);
+	}
+
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new InjectiveMessageAdapter(new IncrementalIdGenerator())
 	{

@@ -49,6 +49,10 @@ Some public services need additional access:
   responses and the public stream does not deliver market data.
   Smart-Lab RSS requires it because requests from hosted runners can time out
   before a response arrives. MOEX and MarketWatch RSS run without this switch.
+  Cetus ticks require it while the public Sui checkpoint stream can be reset by
+  the HTTP/2 server. Cetus securities and quote checks remain enabled by default.
+  All five Injective market data checks require it while the mainnet Indexer
+  returns HTTP 503 `no healthy upstream`, preventing connection setup.
 - `STOCKSHARP_LIVE_BTCTURK_HISTORY_TESTS=1` enables BtcTurk candles. Its published
   graph API currently returns a null status and empty bars even for documented
   requests. The remaining BtcTurk market checks run without this switch. GitHub
