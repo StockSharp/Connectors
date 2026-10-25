@@ -5,9 +5,6 @@
     <!-- Everything in this repository is open source and ships to nuget.org. A connector kept
          off the public feed does not belong here: it belongs in the apps repository. -->
     <IsPrivatePackable>false</IsPrivatePackable>
-    <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
-    <InformationalVersion>S#.$(MSBuildProjectName)</InformationalVersion>
-    <SourceRevisionId>v$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup Condition="'$(IsWebSocketConnector)' != 'true'">
