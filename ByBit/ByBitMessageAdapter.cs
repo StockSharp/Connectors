@@ -20,8 +20,6 @@ public partial class ByBitMessageAdapter
 	public ByBitMessageAdapter(IdGenerator transactionIdGenerator)
 		: base(transactionIdGenerator)
 	{
-		HeartbeatInterval = TimeSpan.FromSeconds(10);
-
 		this.AddMarketDataSupport();
 		this.AddTransactionalSupport();
 		this.RemoveSupportedMessage(MessageTypes.OrderGroupCancel);
@@ -240,6 +238,7 @@ public partial class ByBitMessageAdapter
 	}
 
 	/// <inheritdoc />
+	/// <remarks>The sockets ping on their own schedule, so a time message asks nothing of them.</remarks>
 	protected override ValueTask TimeAsync(TimeMessage timeMsg, CancellationToken cancellationToken)
-		=> _socketClients.Cache.Select(c => c.SendPing(timeMsg.TransactionId, cancellationToken)).WhenAll();
+		=> default;
 }

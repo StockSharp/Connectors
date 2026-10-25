@@ -74,7 +74,8 @@ public partial class ByBitMessageAdapter
 				var wallets = _httpClient.GetWallets(accType, default, default, cancellationToken);
 				await ProcessWalletsAsync(lookupMsg.TransactionId, await wallets.ToArrayAsync(cancellationToken), cancellationToken);
 			}
-			catch (Exception ex)
+			// A lookup its caller gave up on - a disconnect - stops here instead of failing every account type in turn.
+			catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
 			{
 				this.AddErrorLog(ex);
 			}
@@ -87,7 +88,7 @@ public partial class ByBitMessageAdapter
 				var positions = _httpClient.GetPositions(section.ToNative(), lookupMsg.SecurityId?.ToNative(), default, section == ByBitSections.Linear ? "USDT" : default, lookupMsg.Count, cancellationToken);
 				await ProcessPositionsAsync(lookupMsg.TransactionId, await positions.ToArrayAsync(cancellationToken), cancellationToken);
 			}
-			catch (Exception ex)
+			catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
 			{
 				this.AddErrorLog(ex);
 			}
@@ -121,7 +122,8 @@ public partial class ByBitMessageAdapter
 				var orders = _httpClient.GetOrders(section.ToNative(), default, default, section == ByBitSections.Linear ? "USDT" : default, default, default, statusMsg.Count, cancellationToken);
 				await ProcessOrdersAsync(statusMsg.TransactionId, await orders.ToArrayAsync(cancellationToken), cancellationToken);
 			}
-			catch (Exception ex)
+			// A lookup its caller gave up on - a disconnect - stops here instead of failing every section in turn.
+			catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
 			{
 				this.AddErrorLog(ex);
 			}

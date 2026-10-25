@@ -113,6 +113,39 @@ public class ByBitMarketDataTests : LiveMarketDataTestBase
 	});
 
 	/// <summary>
+	/// An options socket stays open while the host sends no time messages.
+	/// </summary>
+	/// <remarks>
+	/// The venue closes an options connection that has heard nothing from the client for about half a minute - the pong
+	/// frames a client sends to keep a connection alive do not count there - and a host sends no time message for as
+	/// long as it keeps sending requests of its own: the socket has to keep itself alive.
+	/// </remarks>
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000)]
+	public async Task AnOptionsSocketStaysOpenWithoutTimeMessages()
+	{
+		var adapter = new ByBitMessageAdapter(new IncrementalIdGenerator())
+		{
+			Sections = [ByBitSections.Options],
+			HeartbeatInterval = TimeSpan.Zero,
+		};
+
+		adapter.RemoveTransactionalSupport();
+
+		await using var harness = new MarketDataTestHarness(adapter);
+
+		await harness.ConnectAsync(ConnectTimeout, CancellationToken);
+
+		var lost = await harness.CreateReader().TryWaitAsync<ConnectionLostMessage>(null, TimeSpan.FromSeconds(50), CancellationToken);
+
+		await harness.DisconnectAsync(ConnectTimeout, CancellationToken);
+
+		IsNull(lost, "The venue closed the options socket.");
+		AreEqual(0, harness.Errors.Length, string.Join(Environment.NewLine, harness.Errors.Select(error => error.Message)));
+	}
+
+	/// <summary>
 	/// A day of minute candles from before the latest thousand of them.
 	/// </summary>
 	/// <remarks>

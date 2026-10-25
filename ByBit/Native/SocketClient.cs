@@ -5,7 +5,14 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 	public event Func<Exception, CancellationToken, ValueTask> Error;
 	public event Func<ConnectionStates, CancellationToken, ValueTask> StateChanged;
 
+	// The venue closes a connection that has heard nothing from the client for half a minute (options) or a minute (the
+	// rest). Each socket pings on its own: what a session sends goes down one connection, or down none.
+	private static readonly TimeSpan _pingInterval = TimeSpan.FromSeconds(10);
+
 	private readonly WebSocketClient _client;
+	private readonly Lock _pingSync = new();
+	private ControllablePeriodicTimer _pingTimer;
+	private long _pingId;
 
 	protected static class Ops
 	{
@@ -51,6 +58,8 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 
 	protected override void DisposeManaged()
 	{
+		StopPinging();
+
 		_client.PostConnect -= OnPostConnect;
 		_client.Dispose();
 
@@ -76,16 +85,51 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 
 	protected abstract ValueTask OnProcess(string topic, WebSocketResponse response, CancellationToken cancellationToken);
 
-	public ValueTask ConnectAsync(CancellationToken cancellationToken)
+	public async ValueTask ConnectAsync(CancellationToken cancellationToken)
 	{
 		this.AddInfoLog(LocalizedStrings.Connecting);
-		return _client.ConnectAsync(cancellationToken);
+		await _client.ConnectAsync(cancellationToken);
+
+		StartPinging();
 	}
 
 	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 	{
+		StopPinging();
+
 		this.AddInfoLog(LocalizedStrings.Disconnecting);
 		return _client.DisconnectAsync(cancellationToken);
+	}
+
+	private void StartPinging()
+	{
+		using (_pingSync.EnterScope())
+			_pingTimer ??= AsyncHelper.CreatePeriodicTimer(PingAsync).Start(_pingInterval);
+	}
+
+	private void StopPinging()
+	{
+		using (_pingSync.EnterScope())
+		{
+			_pingTimer?.Dispose();
+			_pingTimer = null;
+		}
+	}
+
+	// A ping that meets the connection going down fails along with it; the client reports the drop and reconnects.
+	private async Task PingAsync()
+	{
+		if (!IsConnected)
+			return;
+
+		try
+		{
+			await Send(new { req_id = Interlocked.Increment(ref _pingId), op = Ops.Ping }, 0, CancellationToken.None);
+		}
+		catch (Exception ex)
+		{
+			this.AddWarningLog("ping: {0}", ex.Message);
+		}
 	}
 
 	protected ValueTask Subscribe(long transId, string channel, CancellationToken cancellationToken)
@@ -118,9 +162,6 @@ abstract class BaseSocketClient : BaseLogReceiver, IConnection
 
 	protected ValueTask Send(object request, long subId, CancellationToken cancellationToken)
 		=> _client.SendAsync(request, cancellationToken, subId);
-
-	public ValueTask SendPing(long transactionId, CancellationToken cancellationToken)
-		=> Send(new { req_id = transactionId, op = Ops.Ping }, 0, cancellationToken);
 }
 
 class PublicSocketClient(string url, int reconnectAttempts, WorkingTime workingTime, ByBitSections section) : BaseSocketClient(url, reconnectAttempts, workingTime)
