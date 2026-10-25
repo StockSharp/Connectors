@@ -16,6 +16,10 @@ public partial class FixMessageAdapter : MessageAdapter
 	private readonly SubscriptionReplayTracker _subscriptionTracker = new();
 	private TcpClient _client;
 	private bool _isDisconnecting;
+
+	// A disconnect the caller asked for is reported by that request once the reader ends, never by the reader.
+	private bool _isDisconnectRequested;
+
 	private bool _isReconnecting;
 	private bool _connectedOnce;
 	private Task _readerTask;
@@ -52,6 +56,21 @@ public partial class FixMessageAdapter : MessageAdapter
 		}
 
 		_readerTask = null;
+	}
+
+	// Whether the reader ended on its own within the time given.
+	private async Task<bool> WaitReaderTaskAsync(TimeSpan timeout, CancellationToken cancellationToken)
+	{
+		var readerTask = _readerTask;
+
+		if (readerTask is null)
+			return true;
+
+		if (await Task.WhenAny(readerTask, Task.Delay(timeout, cancellationToken)) != readerTask)
+			return false;
+
+		await WaitReaderTaskAsync();
+		return true;
 	}
 
 	/// <summary>
@@ -237,6 +256,7 @@ public partial class FixMessageAdapter : MessageAdapter
 					throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 				_isDisconnecting = false;
+				_isDisconnectRequested = false;
 				_connectedOnce = false;
 
 				var logonMessage = (ConnectMessage)message;
@@ -250,21 +270,30 @@ public partial class FixMessageAdapter : MessageAdapter
 			case MessageTypes.Disconnect:
 			{
 				_isDisconnecting = true;
-				EndWaitingForTheVenue();
+				_isDisconnectRequested = true;
 
 				// Logout is a courtesy to a live connection. When the peer hung up first - or our own
 				// reader gave up on the socket and closed it - the write lands on a disposed stream,
 				// and that exception must not reach the caller: it asked for the connection to end,
 				// and it already has. Reported out, as the reset path above does, so it stays visible
 				// without failing the disconnect, and the local teardown below always runs.
+				var isLogoutSent = false;
+
 				try
 				{
 					await FixDialect.SendInMessageAsync(message, cancellationToken).NoWait();
+					isLogoutSent = true;
 				}
 				catch (Exception ex)
 				{
 					await SendOutErrorAsync(ex, cancellationToken);
 				}
+
+				// The venue lets the session go before it confirms the logout or hangs up, and a logon sent
+				// sooner can be refused as a second session. A venue that does neither is not waited for longer
+				// than a graceful disconnect is given.
+				if (!isLogoutSent || !await WaitReaderTaskAsync(DisconnectTimeout, cancellationToken))
+					EndWaitingForTheVenue();
 
 				await WaitReaderTaskAsync();
 
@@ -278,6 +307,7 @@ public partial class FixMessageAdapter : MessageAdapter
 					throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
 				_isDisconnecting = false;
+				_isDisconnectRequested = false;
 
 				await SendLogonAsync(message, 0, IsResetCounter ? 1 : 2, cancellationToken);
 				break;
@@ -439,7 +469,8 @@ public partial class FixMessageAdapter : MessageAdapter
 
 			var messages = new AllocationArray<Message>();
 
-			while (!_isDisconnecting)
+			// A logout this side sent is over when the venue confirms it or hangs up, not when it is sent.
+			while (!hasDisconnected)
 			{
 				reader.ClearState();
 				messages.Reset();
@@ -472,7 +503,12 @@ public partial class FixMessageAdapter : MessageAdapter
 					}
 
 					if (expectingLogonCount > 0)
+					{
+						if (_isDisconnectRequested && ex is (SocketException or IOException))
+							break;
+
 						throw;
+					}
 
 					if (ex is SocketException || ex is IOException)
 					{
@@ -501,6 +537,15 @@ public partial class FixMessageAdapter : MessageAdapter
 
 					//if (message.IsBack)
 					//	message.Adapter = this;
+
+					if (_isDisconnecting && message.Type == MessageTypes.Disconnect)
+					{
+						hasDisconnected = true;
+
+						// The venue's answer to the logout the caller asked for, which that request reports itself.
+						if (_isDisconnectRequested)
+							break;
+					}
 
 					if (expectingLogonCount > 0)
 					{
@@ -570,9 +615,6 @@ public partial class FixMessageAdapter : MessageAdapter
 					{
 						this.AddErrorLog(ex);
 					}
-
-					if (_isDisconnecting && message.Type == MessageTypes.Disconnect)
-						hasDisconnected = true;
 				}
 			}
 
@@ -584,7 +626,7 @@ public partial class FixMessageAdapter : MessageAdapter
 					this.AddDebugLog(LocalizedStrings.SessionReceivedDetails, this, dump);
 			}
 
-			if (!hasDisconnected && !cancellationToken.IsCancellationRequested)
+			if (!hasDisconnected && !cancellationToken.IsCancellationRequested && !_isDisconnectRequested)
 			{
 				await SendOutDisconnectMessageAsync(_isDisconnecting, cancellationToken);
 			}
