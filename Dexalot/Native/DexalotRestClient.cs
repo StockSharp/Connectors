@@ -112,6 +112,22 @@ sealed class DexalotRestClient : BaseLogReceiver
 		=> GetAsync<DexalotBalance[]>("signed/portfoliobalance", true,
 			cancellationToken);
 
+	public ValueTask<JArray> GetCandlesAsync(string pair, TimeSpan timeFrame,
+		CancellationToken cancellationToken)
+	{
+		_ = timeFrame.ToChartCode();
+		var (interval, unit) = timeFrame >= TimeSpan.FromDays(1)
+			? ((int)timeFrame.TotalDays, "day")
+			: timeFrame >= TimeSpan.FromHours(1)
+				? ((int)timeFrame.TotalHours, "hours")
+				: ((int)timeFrame.TotalMinutes, "minutes");
+		return GetAsync<JArray>("/api/trading/candle-chunk?pair=" +
+			Uri.EscapeDataString(pair) + "&intervalnum=" +
+			interval.ToString(CultureInfo.InvariantCulture) +
+			"&intervalstr=" + unit + "&count=500", false,
+			cancellationToken);
+	}
+
 	public ValueTask<DexalotOrder[]> GetOrdersAsync(string pair,
 		DateTime? from, DateTime? to, int maximum,
 		CancellationToken cancellationToken)
@@ -186,6 +202,10 @@ sealed class DexalotRestClient : BaseLogReceiver
 			await WaitForRequestAsync(cancellationToken);
 			using var request = new HttpRequestMessage(HttpMethod.Get,
 				new Uri(_endpoint, path));
+			if (path.StartsWith("/api/", StringComparison.Ordinal))
+				request.Headers.TryAddWithoutValidation("Origin",
+					_endpoint.GetLeftPart(UriPartial.Authority).Replace(
+						"://api.", "://app.", StringComparison.OrdinalIgnoreCase));
 			if (isSigned)
 				request.Headers.TryAddWithoutValidation("x-signature",
 					_signedHeader);

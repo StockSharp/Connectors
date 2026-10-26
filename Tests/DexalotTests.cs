@@ -1,7 +1,13 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,6 +29,141 @@ using StockSharp.Messages;
 [TestClass]
 public class DexalotTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[DataRow(1, false)]
+	[DataRow(2, false)]
+	[DataRow(10, false)]
+	[DataRow(1, true)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task CandleHistoryReadsPublicCandlesBeforeFinishing(int maximum, bool closesDuringDownload)
+	{
+		var from = new DateTime(2024, 1, 2, 10, 5, 0, DateTimeKind.Utc);
+		using var adapter = new ClockedAdapter
+		{
+			Time = from.AddMinutes(closesDuringDownload ? 4 : 30).AddSeconds(59),
+		};
+		using var rest = new DexalotRestClient("https://api.example.test/privapi", null, null);
+		using var socket = new DexalotSocketClient("wss://ws.example.test/");
+		using var rpc = new DexalotEvmClient("https://rpc.example.test/", null, null);
+		var requests = 0;
+		using var http = new HttpClient(new HistoryHttpHandler(request =>
+		{
+			AreEqual("/api/trading/candle-chunk", request.RequestUri.AbsolutePath);
+			IsTrue(request.RequestUri.Query.Contains("pair=ALOT%2FUSDC"));
+			IsTrue(request.RequestUri.Query.Contains("intervalnum=5"));
+			IsTrue(request.RequestUri.Query.Contains("intervalstr=minutes"));
+			AreEqual("https://app.example.test", request.Headers.GetValues("Origin").Single());
+			IsFalse(request.Headers.Contains("x-signature"));
+			requests++;
+			if (closesDuringDownload)
+				adapter.Time = from.AddMinutes(5).AddSeconds(1);
+			return new HttpResponseMessage(HttpStatusCode.OK)
+			{
+				Content = new StringContent("""
+				[
+				 {"date":"2024-01-02T10:15:00Z","open":"40","high":"42","low":"39","close":"41","volume":"4"},
+				 {"date":"2024-01-02T10:10:00Z","open":"30","high":"32","low":"29","close":"31","volume":"3"},
+				 {"date":"2024-01-02T10:07:00Z","open":null,"high":null,"low":null,"close":null,"volume":null},
+				 {"date":"2024-01-02T10:05:00Z","open":"20","high":"22","low":"19","close":"21","volume":"2"},
+				 {"date":"2024-01-02T10:00:00Z","open":"10","high":"12","low":"9","close":"11","volume":"1"}
+				]
+				"""),
+			};
+		}));
+		HistoryHttpHandler.ReplaceClient(rest, http, "_http");
+		const BindingFlags fields = BindingFlags.Instance | BindingFlags.NonPublic;
+		typeof(DexalotMessageAdapter).GetField("_restClient", fields).SetValue(adapter, rest);
+		typeof(DexalotMessageAdapter).GetField("_socketClient", fields).SetValue(adapter, socket);
+		typeof(DexalotMessageAdapter).GetField("_evmClient", fields).SetValue(adapter, rpc);
+		var pairs = (Dictionary<string, DexalotPair>)typeof(DexalotMessageAdapter)
+			.GetField("_pairs", fields).GetValue(adapter);
+		pairs.Add("ALOT/USDC", Pair());
+		var messages = new List<Message>();
+		adapter.NewOutMessageAsync += (message, _) =>
+		{
+			messages.Add(message);
+			return default;
+		};
+		await adapter.SendInMessageAsync(new MarketDataMessage
+		{
+			TransactionId = 42,
+			IsSubscribe = true,
+			SecurityId = Pair().ToStockSharp(),
+			DataType2 = TimeSpan.FromMinutes(5).TimeFrame(),
+			From = from,
+			To = from.AddMinutes(5),
+			Count = maximum,
+		}, CancellationToken);
+
+		AreEqual(1, requests, "Historical candles must not depend on the next WebSocket trade.");
+		IsFalse(messages.OfType<SubscriptionResponseMessage>().Any(message => message.Error is not null));
+		var candles = messages.OfType<TimeFrameCandleMessage>().ToArray();
+		AreEqual(Math.Min(maximum, 2), candles.Length);
+		AreEqual(from, candles[0].OpenTime);
+		AreEqual(20m, candles[0].OpenPrice);
+		AreEqual(2m, candles[0].TotalVolume);
+		var expectedState = closesDuringDownload ? CandleStates.Active : CandleStates.Finished;
+		IsTrue(candles.All(candle => candle.OriginalTransactionId == 42 && candle.State == expectedState),
+			"A candle that was forming when the download started must remain active.");
+		var finished = messages.OfType<SubscriptionFinishedMessage>().Single();
+		AreEqual(42L, finished.OriginalTransactionId);
+		IsTrue(messages.IndexOf(finished) > messages.IndexOf(candles[^1]));
+	}
+
+	[TestMethod]
+	public void EmptyCandleBucketsDoNotBecomeFabricatedCandles()
+	{
+		var candles = DexalotMessageAdapter.ParseCandles(JArray.Parse("""
+			[{"date":"2024-01-02T10:00:00Z","open":null,"high":null,"low":null,"close":null,"volume":null}]
+			"""));
+
+		AreEqual(0, candles.Length);
+	}
+
+	[TestMethod]
+	public void IncompleteNonemptyCandlesAreRejected()
+		=> ThrowsExactly<InvalidDataException>(() => DexalotMessageAdapter.ParseCandles(JArray.Parse("""
+			[{"date":"2024-01-02T10:00:00Z","open":"10","high":null,"low":"9","close":"11","volume":"1"}]
+			""")));
+
+	[TestMethod]
+	[DataRow(5, 5, "minutes")]
+	[DataRow(15, 15, "minutes")]
+	[DataRow(30, 30, "minutes")]
+	[DataRow(60, 1, "hours")]
+	[DataRow(240, 4, "hours")]
+	[DataRow(1440, 1, "day")]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task PublicCandleRequestsUseTheDocumentedInterval(int minutes, int interval, string unit)
+	{
+		using var rest = new DexalotRestClient("https://api.example.test/privapi", null, null);
+		using var http = new HttpClient(new HistoryHttpHandler(request =>
+		{
+			AreEqual("/api/trading/candle-chunk", request.RequestUri.AbsolutePath);
+			var query = request.RequestUri.Query.TrimStart('?').Split('&')
+				.Select(part => part.Split('=', 2))
+				.ToDictionary(part => part[0], part => Uri.UnescapeDataString(part[1]));
+			AreEqual("ALOT/USDC", query["pair"]);
+			AreEqual(interval.ToString(CultureInfo.InvariantCulture), query["intervalnum"]);
+			AreEqual(unit, query["intervalstr"]);
+			AreEqual("500", query["count"]);
+			AreEqual("https://app.example.test", request.Headers.GetValues("Origin").Single());
+			IsFalse(request.Headers.Contains("x-signature"));
+			return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("[]") };
+		}));
+		HistoryHttpHandler.ReplaceClient(rest, http, "_http");
+
+		var candles = await rest.GetCandlesAsync("ALOT/USDC", TimeSpan.FromMinutes(minutes), CancellationToken);
+
+		AreEqual(0, candles.Count);
+	}
+
+	private sealed class ClockedAdapter() : DexalotMessageAdapter(new IncrementalIdGenerator())
+	{
+		public DateTime Time { get; set; }
+		public override DateTime CurrentTime => Time;
+	}
+
 	[TestMethod]
 	public void DefaultsUsePublishedProductionEndpoints()
 	{
@@ -257,17 +398,16 @@ public class DexalotTests : LiveMarketDataTestBase
 	protected override MessageAdapter CreateAdapter()
 		=> new DexalotMessageAdapter(new IncrementalIdGenerator())
 		{
-			Pairs = "ALOT/USDC",
+			Pairs = "AVAX/USDC",
 		};
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "ALOT/USDC",
+		SecurityCode = "AVAX/USDC",
 		BoardCode = BoardCodes.Dexalot,
 	};
 
 	/// <inheritdoc />
-	// ALOT/USDC trades sparsely; cover a day of five-minute candles.
 	protected override int CandlesDepth => 24 * 12;
 }

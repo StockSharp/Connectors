@@ -32,7 +32,6 @@ public partial class DexalotMessageAdapter
 		public DateTime? To { get; init; }
 		public int Maximum { get; init; }
 		public int Delivered { get; set; }
-		public bool HistoryOnly { get; init; }
 	}
 
 	private sealed class TrackedOrder

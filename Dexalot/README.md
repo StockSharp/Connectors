@@ -7,7 +7,7 @@ The **Dexalot connector** connects StockSharp to Dexalot's on-chain central limi
 
 - Discovery and reference data for Dexalot spot token pairs.
 - Level 1 and order-book snapshots from contract reads, followed by live WebSocket updates; historical Level 1 and book events are not available.
-- WebSocket trade and candle feeds, with date and count filtering over the history supplied by the provider and continued live delivery.
+- Public REST candle history from the latest 500 intervals, filtered by date and count; live trades and candles through WebSocket.
 - Time-frame candles for 5, 15, and 30 minutes; 1 and 4 hours; and 1 day.
 - On-chain limit and market orders, including post-only behavior and configurable self-trade prevention.
 - Order replacement, individual cancellation, and bulk cancellation; iceberg orders, absolute expiry, and bulk position closing are not supported.

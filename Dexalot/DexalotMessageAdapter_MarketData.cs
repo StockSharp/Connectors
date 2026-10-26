@@ -266,9 +266,26 @@ public partial class DexalotMessageAdapter
 		var pair = GetPair(mdMsg.SecurityId);
 		var timeFrame = mdMsg.GetTimeFrame();
 		_ = timeFrame.ToChartCode();
-		var historyOnly = mdMsg.IsHistoryOnly() ||
-			mdMsg.To is DateTime requestedTo &&
-			requestedTo.ToUniversalTime() <= DateTime.UtcNow;
+		if (mdMsg.IsHistoryOnly())
+		{
+			var snapshotTime = CurrentTime;
+			var from = mdMsg.From?.ToUniversalTime();
+			var to = mdMsg.To?.ToUniversalTime();
+			var candles = ParseCandles(await RestClient.GetCandlesAsync(
+				pair.Pair, timeFrame, cancellationToken))
+				.Where(candle => (from is null || candle.OpenTime >= from.Value) &&
+					(to is null || candle.OpenTime <= to.Value))
+				.OrderBy(static candle => candle.OpenTime)
+				.Take(GetSubscriptionMaximum(mdMsg.Count));
+
+			foreach (var candle in candles)
+				await SendCandleAsync(pair, candle, timeFrame,
+					mdMsg.TransactionId, snapshotTime, cancellationToken);
+
+			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
+				cancellationToken);
+			return;
+		}
 		using (_sync.EnterScope())
 			_candleSubscriptions.Add(mdMsg.TransactionId, new()
 			{
@@ -277,7 +294,6 @@ public partial class DexalotMessageAdapter
 				From = mdMsg.From?.ToUniversalTime(),
 				To = mdMsg.To?.ToUniversalTime(),
 				Maximum = GetSubscriptionMaximum(mdMsg.Count),
-				HistoryOnly = historyOnly,
 			});
 		try
 		{
@@ -483,14 +499,13 @@ public partial class DexalotMessageAdapter
 						target.Value.TimeFrame)))
 					continue;
 				await SendCandleAsync(pair, candle,
-					target.Value.TimeFrame, target.Key, cancellationToken);
+					target.Value.TimeFrame, target.Key, CurrentTime, cancellationToken);
 				target.Value.Delivered++;
 				if (target.Value.Delivered >= target.Value.Maximum)
 					break;
 			}
 
-			if (target.Value.HistoryOnly ||
-				target.Value.Delivered >= target.Value.Maximum ||
+			if (target.Value.Delivered >= target.Value.Maximum ||
 				target.Value.To is DateTime end &&
 				DateTime.UtcNow >= end)
 				finished.Add((target.Key, target.Value));
@@ -644,6 +659,13 @@ public partial class DexalotMessageAdapter
 
 		foreach (var item in items.OfType<JObject>())
 		{
+			if (item["open"]?.Type == JTokenType.Null &&
+				item["high"]?.Type == JTokenType.Null &&
+				item["low"]?.Type == JTokenType.Null &&
+				item["close"]?.Type == JTokenType.Null &&
+				item["volume"]?.Type == JTokenType.Null)
+				continue;
+
 			if (!DateTime.TryParse(item.Value<string>("date"),
 				CultureInfo.InvariantCulture,
 				DateTimeStyles.AssumeUniversal |
@@ -736,7 +758,7 @@ public partial class DexalotMessageAdapter
 
 	private ValueTask SendCandleAsync(DexalotPair pair,
 		DexalotCandle candle, TimeSpan timeFrame, long target,
-		CancellationToken cancellationToken)
+		DateTime snapshotTime, CancellationToken cancellationToken)
 		=> SendOutMessageAsync(new TimeFrameCandleMessage
 		{
 			SecurityId = pair.ToStockSharp(),
@@ -749,7 +771,7 @@ public partial class DexalotMessageAdapter
 			TotalVolume = candle.Volume,
 			TypedArg = timeFrame,
 			OriginalTransactionId = target,
-			State = candle.OpenTime + timeFrame <= CurrentTime
+			State = candle.OpenTime + timeFrame <= snapshotTime
 				? CandleStates.Finished
 				: CandleStates.Active,
 		}, cancellationToken);

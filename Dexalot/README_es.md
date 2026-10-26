@@ -7,7 +7,7 @@ El **conector de Dexalot** conecta StockSharp con el libro central de órdenes l
 
 - Descubrimiento y datos de referencia de los pares de tokens al contado de Dexalot.
 - Instantáneas de nivel 1 y del libro mediante lecturas de contratos, seguidas de actualizaciones en vivo por WebSocket; no hay eventos históricos de nivel 1 ni del libro.
-- Flujos de operaciones y velas por WebSocket, con filtros de fecha y cantidad sobre el historial entregado por el proveedor y recepción continua en vivo.
+- Historial público de velas por REST para los últimos 500 intervalos, filtrado por fecha y cantidad; operaciones y velas en vivo por WebSocket.
 - Velas de 5, 15 y 30 minutos; 1 y 4 horas; y 1 día.
 - Órdenes limitadas y de mercado en cadena, con comportamiento post-only y prevención de autonegociación configurable.
 - Modificación, cancelación individual y cancelación masiva de órdenes; no se admiten órdenes iceberg, vencimiento absoluto ni cierre masivo de posiciones.

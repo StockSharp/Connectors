@@ -7,7 +7,7 @@ Der **Dexalot-Konnektor** verbindet StockSharp mit dem zentralen On-Chain-Limit-
 
 - Instrumentensuche und Referenzdaten für Dexalot-Spot-Tokenpaare.
 - Level-1- und Orderbuch-Snapshots aus Vertragsabfragen mit anschließenden Live-Aktualisierungen über WebSocket; historische Level-1- und Orderbuchereignisse sind nicht verfügbar.
-- WebSocket-Streams für Trades und Kerzen mit Datums- und Mengenfilterung innerhalb der vom Anbieter gelieferten Historie und anschließender Live-Auslieferung.
+- Öffentliche REST-Kerzenhistorie der letzten 500 Intervalle mit Datums- und Mengenfilterung; Live-Trades und Kerzen über WebSocket.
 - Kerzenintervalle von 5, 15 und 30 Minuten, 1 und 4 Stunden sowie 1 Tag.
 - Limit- und Marktaufträge auf der Blockchain einschließlich Post-only-Verhalten und konfigurierbarer Vermeidung von Eigengeschäften.
 - Ändern, einzelnes Stornieren und Sammelstornierung von Aufträgen; Iceberg-Aufträge, absolute Ablauffristen und gruppenweises Schließen von Positionen werden nicht unterstützt.
