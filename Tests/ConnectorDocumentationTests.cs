@@ -56,6 +56,41 @@ public class ConnectorDocumentationTests : BaseTestClass
 	}
 
 	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public void ProjectDiscoverySkipsScratchBeforeReadingProjectFiles()
+	{
+		var scratch = Path.GetFullPath(Path.Combine(_repositoryRoot.Value, ".claude", "scratch"));
+		var root = Path.Combine(scratch, $"documentation-discovery-{Guid.NewGuid():N}");
+		try
+		{
+			WriteProject("Real/Real.csproj", "<Project />");
+			WriteProject("Group/Nested/Nested.csproj", "<Project />");
+			WriteProject("Reference/Reference.csproj", "<Project><PropertyGroup><IsConnectorProject>false</IsConnectorProject></PropertyGroup></Project>");
+			foreach (var excluded in new[] { ".claude", ".vs", "Tests", "bin", "obj", "TestResults" })
+				WriteProject($"{excluded}/nested/broken.csproj", "not project XML");
+
+			var projects = GetConnectorProjectPaths(root);
+
+			AreEqual(2, projects.Length);
+			AreEqual("Group/Nested/Nested.csproj", projects[0]);
+			AreEqual("Real/Real.csproj", projects[1]);
+		}
+		finally
+		{
+			IsTrue(root.StartsWith(scratch + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase));
+			if (Directory.Exists(root))
+				Directory.Delete(root, true);
+		}
+
+		void WriteProject(string relativePath, string content)
+		{
+			var path = Path.Combine(root, relativePath);
+			Directory.CreateDirectory(Path.GetDirectoryName(path));
+			File.WriteAllText(path, content);
+		}
+	}
+
+	[TestMethod]
 	public void EveryAdapterHasDocumentation()
 	{
 		var adapters = _adapters.Value;
@@ -288,12 +323,8 @@ public class ConnectorDocumentationTests : BaseTestClass
 			var projectDirectory = Path.GetDirectoryName(Path.Combine(root, projectPath));
 			var declarations = new Dictionary<string, List<(string Attributes, string Bases)>>(StringComparer.Ordinal);
 
-			foreach (var file in Directory.EnumerateFiles(projectDirectory, "*MessageAdapter*.cs", SearchOption.AllDirectories))
+			foreach (var file in EnumerateRepositoryFiles(projectDirectory, "*MessageAdapter*.cs"))
 			{
-				if (file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) ||
-					file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
-					continue;
-
 				foreach (Match match in _classRegex.Matches(File.ReadAllText(file)))
 				{
 					var type = match.Groups["name"].Value;
@@ -334,8 +365,7 @@ public class ConnectorDocumentationTests : BaseTestClass
 	private static string[] GetConnectorProjectPaths(string root)
 		=>
 		[
-			.. Directory
-				.EnumerateFiles(root, "*.csproj", SearchOption.AllDirectories)
+			.. EnumerateRepositoryFiles(root, "*.csproj")
 				.Select(path => Path.GetRelativePath(root, path))
 				.Select(NormalizeProjectPath)
 				.Where(path => IsConnectorProjectPath(root, path))
@@ -343,19 +373,36 @@ public class ConnectorDocumentationTests : BaseTestClass
 				.Order(StringComparer.Ordinal),
 		];
 
+	private static IEnumerable<string> EnumerateRepositoryFiles(string directory, string pattern)
+	{
+		foreach (var file in Directory.EnumerateFiles(directory, pattern, SearchOption.TopDirectoryOnly))
+			yield return file;
+
+		foreach (var child in Directory.EnumerateDirectories(directory))
+		{
+			if (IsExcludedDirectory(Path.GetFileName(child)) ||
+				(File.GetAttributes(child) & FileAttributes.ReparsePoint) != 0)
+				continue;
+
+			foreach (var file in EnumerateRepositoryFiles(child, pattern))
+				yield return file;
+		}
+	}
+
+	private static bool IsExcludedDirectory(string name)
+		=> name.StartsWith('.') ||
+			name.Equals("Tests", StringComparison.OrdinalIgnoreCase) ||
+			name.Equals("bin", StringComparison.OrdinalIgnoreCase) ||
+			name.Equals("obj", StringComparison.OrdinalIgnoreCase) ||
+			name.Equals("TestResults", StringComparison.OrdinalIgnoreCase);
+
 	private static bool IsConnectorProjectPath(string root, string path)
 	{
 		var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
 		if (segments.Length <= 1 ||
 			!path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase) ||
-			segments.Any(segment =>
-				segment.Equals(".git", StringComparison.OrdinalIgnoreCase) ||
-				segment.Equals(".vs", StringComparison.OrdinalIgnoreCase) ||
-				segment.Equals("Tests", StringComparison.OrdinalIgnoreCase) ||
-				segment.Equals("bin", StringComparison.OrdinalIgnoreCase) ||
-				segment.Equals("obj", StringComparison.OrdinalIgnoreCase) ||
-				segment.Equals("TestResults", StringComparison.OrdinalIgnoreCase)))
+			segments.Any(IsExcludedDirectory))
 			return false;
 
 		var project = XDocument.Load(Path.Combine(root, path));
