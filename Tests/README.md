@@ -29,6 +29,9 @@ weekends and exchange holidays do not leave the requested history empty. Gemini
 looks up BTCUSD, the same instrument used by its subscriptions, because loading the
 entire catalog requires a separate details request for each pair.
 
+Poloniex checks ticks through recent public trade history with a bounded period,
+so a quiet interval without a new WebSocket trade does not fail the data check.
+
 Binance archive candles run as separate interval cases with two-minute timeouts,
 below the workflow's three-minute hang collector. ZIP downloads in BinanceHistory,
 KucoinHistory and OkexHistory use Ecng's `UnzipAsync` on the response stream. A linked
