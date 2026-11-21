@@ -1,21 +1,23 @@
 namespace StockSharp.Binance.Native;
 
-class PusherClient : BaseLogReceiver
+partial class PusherClient : BaseLogReceiver
 {
 	private abstract class BasePusherClient : BaseLogReceiver
 	{
-		private readonly WebSocketClient _client;
+		protected WebSocketClient Socket { get; }
 
 		protected BinanceSections Section { get; }
 		protected PusherClient Client { get; }
 
-		protected BasePusherClient(PusherClient client, WorkingTime workingTime, BinanceSections section, string path)
+		protected BasePusherClient(PusherClient client, WorkingTime workingTime, BinanceSections section, string path, string baseUrl = null)
 		{
 			Section = section;
 			Parent = Client = client ?? throw new ArgumentNullException(nameof(client));
 
-			_client = new(
-				GetUrl() + "/" + path.ThrowIfEmpty(nameof(path)),
+			var adapter = (BinanceMessageAdapter)Client.Parent;
+			var endpoint = adapter.ResolveEndpoint(new((baseUrl ?? GetUrl()) + "/" + path.ThrowIfEmpty(nameof(path))));
+			Socket = new(
+				endpoint.AbsoluteUri,
 				(state, token) =>
 				{
 					// this states controlled by BinanceMessageAdapter
@@ -41,7 +43,7 @@ class PusherClient : BaseLogReceiver
 				(s, a) => this.AddErrorLog(s, a),
 				(s, a) => this.AddVerboseLog(s, a))
 			{
-				ReconnectAttempts = ((BinanceMessageAdapter)Client.Parent).ReConnectionSettings.ReAttemptCount,
+				ReconnectAttempts = adapter.ReConnectionSettings.ReAttemptCount,
 				WorkingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime)),
 			};
 		}
@@ -96,18 +98,18 @@ class PusherClient : BaseLogReceiver
 		public ValueTask Connect(CancellationToken cancellationToken)
 		{
 			this.AddInfoLog(LocalizedStrings.Connecting);
-			return _client.ConnectAsync(cancellationToken);
+			return Socket.ConnectAsync(cancellationToken);
 		}
 
 		public ValueTask DisconnectAsync(CancellationToken cancellationToken)
 		{
 			this.AddInfoLog(LocalizedStrings.Disconnecting);
-			return _client.DisconnectAsync(cancellationToken);
+			return Socket.DisconnectAsync(cancellationToken);
 		}
 
 		protected override void DisposeManaged()
 		{
-			_client.Dispose();
+			Socket.Dispose();
 			base.DisposeManaged();
 		}
 
@@ -494,8 +496,8 @@ class PusherClient : BaseLogReceiver
 	{
 		private readonly string _isolatedSymbol;
 
-		public AuthPusherClient(PusherClient parent, BinanceSections section, string isolatedSymbol, string path)
-			: base(parent, parent._workingTime, section, path)
+		public AuthPusherClient(PusherClient parent, BinanceSections section, string isolatedSymbol, string path, string baseUrl = null)
+			: base(parent, parent._workingTime, section, path, baseUrl)
 		{
 			BinanceMessageAdapter.CheckSectionSymbol(section, isolatedSymbol);
 			_isolatedSymbol = isolatedSymbol;
@@ -504,25 +506,26 @@ class PusherClient : BaseLogReceiver
 		// to get readable name after obfuscation
 		public override string Name => base.Name + "_Auth";
 
-		protected override async ValueTask OnParse(WebSocketMessage msg, CancellationToken cancellationToken)
+		protected override ValueTask OnParse(WebSocketMessage msg, CancellationToken cancellationToken)
+			=> ProcessAccountEventAsync(msg.AsObject<JObject>(), cancellationToken);
+
+		protected async ValueTask ProcessAccountEventAsync(JObject obj, CancellationToken cancellationToken)
 		{
-			var obj = msg.AsObject();
+			var stream = obj.Value<string>("e");
 
-			var stream = (string)obj.e;
-
-			switch (stream.ToLowerInvariant())
+			switch (stream?.ToLowerInvariant())
 			{
 				case "executionreport":
 				{
 					if (Client.NewExecutionReport is { } handler)
-						await handler.InvokeAsync(Section, _isolatedSymbol, ((JToken)obj).DeserializeObject<ExecutionReport>(), cancellationToken);
+						await handler.InvokeAsync(Section, _isolatedSymbol, obj.DeserializeObject<ExecutionReport>(), cancellationToken);
 					break;
 				}
 
 				case "order_trade_update":
 				{
 					if (Client.NewExecutionReport is { } handler)
-						await handler.InvokeAsync(Section, _isolatedSymbol, ((JToken)obj.o).DeserializeObject<ExecutionReport>(), cancellationToken);
+						await handler.InvokeAsync(Section, _isolatedSymbol, obj["o"].DeserializeObject<ExecutionReport>(), cancellationToken);
 					break;
 				}
 
@@ -530,7 +533,7 @@ class PusherClient : BaseLogReceiver
 				case "account_update":
 				{
 					if (Client.AccountUpdated is { } handler)
-						await handler.InvokeAsync(Section, _isolatedSymbol, ((JToken)obj).DeserializeObject<AccountUpdate>(), cancellationToken);
+						await handler.InvokeAsync(Section, _isolatedSymbol, obj.DeserializeObject<AccountUpdate>(), cancellationToken);
 					break;
 				}
 
@@ -708,16 +711,23 @@ class PusherClient : BaseLogReceiver
 	private async ValueTask DisconnectAuthAsync(BinanceSections section, string isolatedSymbol, CancellationToken cancellationToken)
 	{
 		if (_authClients.TryGetAndRemove((section, isolatedSymbol), out var client))
-			await client.DisconnectAsync(cancellationToken);
+		{
+			using (client)
+				await client.DisconnectAsync(cancellationToken);
+		}
 	}
 
 	public async ValueTask DisconnectAllAsync(CancellationToken cancellationToken)
 	{
-		await DisconnectMarketDataAsync(cancellationToken);
-
-		foreach (var section in _authClients.CachedKeys)
+		try
 		{
-			await DisconnectAuthAsync(section.section, section.symbol, cancellationToken);
+			await DisconnectMarketDataAsync(cancellationToken);
+		}
+		finally
+		{
+			await _authClients.CachedKeys
+				.Select(section => DisconnectAuthAsync(section.section, section.symbol, cancellationToken))
+				.WhenAll();
 		}
 	}
 

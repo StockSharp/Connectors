@@ -4,6 +4,7 @@ using System.Threading.Channels;
 
 public partial class BinanceMessageAdapter
 {
+	private readonly Func<Uri, Uri> _resolveEndpoint;
 	private HttpClient _httpClient;
 	private readonly PusherClient _pusherClient;
 	private readonly SynchronizedDictionary<(BinanceSections section, string symbol), (string key, DateTime keyTime)> _listenKeys = [];
@@ -17,8 +18,14 @@ public partial class BinanceMessageAdapter
 	/// </summary>
 	/// <param name="transactionIdGenerator">Transaction id generator.</param>
 	public BinanceMessageAdapter(IdGenerator transactionIdGenerator)
+		: this(transactionIdGenerator, null)
+	{
+	}
+
+	internal BinanceMessageAdapter(IdGenerator transactionIdGenerator, Func<Uri, Uri> resolveEndpoint)
 		: base(transactionIdGenerator)
 	{
+		_resolveEndpoint = resolveEndpoint;
 		HeartbeatInterval = TimeSpan.FromSeconds(2);
 
 		this.AddMarketDataSupport();
@@ -34,6 +41,8 @@ public partial class BinanceMessageAdapter
 
 		_pusherClient = new(ReConnectionSettings.WorkingTime) { Parent = this };
 	}
+
+	internal Uri ResolveEndpoint(Uri endpoint) => _resolveEndpoint?.Invoke(endpoint) ?? endpoint;
 
 	/// <inheritdoc />
 	public override bool IsAllDownloadingSupported(DataType dataType)
@@ -148,7 +157,8 @@ public partial class BinanceMessageAdapter
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg, CancellationToken cancellationToken)
 	{
-		if (this.IsTransactional())
+		var isTransactional = this.IsTransactional();
+		if (isTransactional)
 		{
 			if (Key.IsEmpty())
 				throw new InvalidOperationException(LocalizedStrings.KeyNotSpecified);
@@ -160,11 +170,28 @@ public partial class BinanceMessageAdapter
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new(Key, Secret, IsDemo) { Parent = this };
+		var httpClient = new HttpClient(Key, Secret, IsDemo) { Parent = this };
+		_httpClient = httpClient;
 
 		SubscribePusherClient();
 
-		await _httpClient.RefreshTimeDiff(cancellationToken);
+		try
+		{
+			await httpClient.RefreshTimeDiff(cancellationToken);
+			if (isTransactional && Sections.Contains(BinanceSections.Spot))
+				await _pusherClient.SubscribeSpotAccountAsync(httpClient, cancellationToken);
+		}
+		catch
+		{
+			httpClient.Dispose();
+			if (ReferenceEquals(_httpClient, httpClient))
+			{
+				UnsubscribePusherClient();
+				_httpClient = null;
+			}
+			throw;
+		}
+
 		_lastSubscriptionSync = _lastTimeSync = DateTime.UtcNow;
 
 		_snapshotRequests = Channel.CreateUnbounded<DepthInfo>(new UnboundedChannelOptions
@@ -175,9 +202,9 @@ public partial class BinanceMessageAdapter
 
 		_ = StartSnapshotsThread(cancellationToken);
 
-		if (this.IsTransactional())
+		if (isTransactional)
 		{
-			foreach (var section in NonMarginSections)
+			foreach (var section in NonMarginSections.Where(s => s != BinanceSections.Spot))
 			{
 				try
 				{
@@ -197,8 +224,7 @@ public partial class BinanceMessageAdapter
 	/// <inheritdoc />
 	protected override async ValueTask DisconnectAsync(DisconnectMessage disconnectMsg, CancellationToken cancellationToken)
 	{
-		if (_httpClient == null)
-			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
+		var httpClient = _httpClient ?? throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 
 		try
 		{
@@ -220,7 +246,7 @@ public partial class BinanceMessageAdapter
 				{
 					try
 					{
-						await _httpClient.DeleteListenKey(pair.Key.section, pair.Value.key, pair.Key.symbol, cancellationToken);
+						await httpClient.DeleteListenKey(pair.Key.section, pair.Value.key, pair.Key.symbol, cancellationToken);
 					}
 					catch (Exception ex)
 					{
@@ -233,10 +259,12 @@ public partial class BinanceMessageAdapter
 
 		_snapshotRequests?.Writer.TryComplete();
 
-		_httpClient.Dispose();
-		_httpClient = null;
-
-		UnsubscribePusherClient();
+		httpClient.Dispose();
+		if (ReferenceEquals(_httpClient, httpClient))
+		{
+			UnsubscribePusherClient();
+			_httpClient = null;
+		}
 
 		await SendOutMessageAsync(new DisconnectMessage(), cancellationToken);
 	}
@@ -244,20 +272,7 @@ public partial class BinanceMessageAdapter
 	/// <inheritdoc />
 	protected override async ValueTask ResetAsync(ResetMessage resetMsg, CancellationToken cancellationToken)
 	{
-		if (_httpClient != null)
-		{
-			try
-			{
-				_httpClient.Dispose();
-			}
-			catch (Exception ex)
-			{
-				await SendOutErrorAsync(ex, cancellationToken);
-			}
-
-			_httpClient = null;
-		}
-
+		var httpClient = _httpClient;
 		try
 		{
 			UnsubscribePusherClient();
@@ -266,6 +281,21 @@ public partial class BinanceMessageAdapter
 		catch (Exception ex)
 		{
 			await SendOutErrorAsync(ex, cancellationToken);
+		}
+
+		if (httpClient is not null)
+		{
+			try
+			{
+				httpClient.Dispose();
+			}
+			catch (Exception ex)
+			{
+				await SendOutErrorAsync(ex, cancellationToken);
+			}
+
+			if (ReferenceEquals(_httpClient, httpClient))
+				_httpClient = null;
 		}
 
 		_listenKeys.Clear();
@@ -279,6 +309,16 @@ public partial class BinanceMessageAdapter
 		_lastSubscriptionSync = _lastTimeSync = null;
 
 		await SendOutMessageAsync(new ResetMessage(), cancellationToken);
+	}
+
+	/// <inheritdoc />
+	protected override void DisposeManaged()
+	{
+		UnsubscribePusherClient();
+		_snapshotRequests?.Writer.TryComplete();
+		_pusherClient.Dispose();
+		_httpClient?.Dispose();
+		base.DisposeManaged();
 	}
 
 	/// <inheritdoc />

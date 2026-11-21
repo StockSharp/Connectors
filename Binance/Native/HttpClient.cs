@@ -62,7 +62,10 @@ class HttpClient : BaseLogReceiver
 
 	public async Task<DateTime> GetServerTime(CancellationToken cancellationToken)
 	{
-		dynamic res = await MakeRequest<object>(CreateUrl(BinanceSections.Futures, "time"), CreateRequest(Method.Get), cancellationToken);
+		var section = ((BinanceMessageAdapter)Parent).Sections.Contains(BinanceSections.Spot)
+			? BinanceSections.Spot
+			: BinanceSections.Futures;
+		dynamic res = await MakeRequest<object>(CreateUrl(section, "time"), CreateRequest(Method.Get), cancellationToken);
 
 		return ((long)res.serverTime).FromUnix(false);
 	}
@@ -513,7 +516,7 @@ class HttpClient : BaseLogReceiver
 				throw new ArgumentOutOfRangeException(nameof(section), section, null);
 		}
 
-		return $"{baseUrl}/{methodName}".To<Uri>();
+		return adapter.ResolveEndpoint($"{baseUrl}/{methodName}".To<Uri>());
 	}
 
 	private static RestRequest CreateRequest(Method method) => new() { Method = method };
@@ -537,6 +540,24 @@ class HttpClient : BaseLogReceiver
 		request.AddOrUpdateHeader("X-MBX-APIKEY", _key.UnSecure());
 	}
 
+	public JObject CreateSpotSubscriptionParameters()
+	{
+		var key = _key.UnSecure();
+		var timestamp = (long)ServerTime.ToUnix(false);
+		return new()
+		{
+			["apiKey"] = key,
+			["timestamp"] = timestamp,
+			["signature"] = Sign(FormattableString.Invariant($"apiKey={key}&timestamp={timestamp}")),
+		};
+	}
+
+	private string Sign(string payload)
+	{
+		using (_signatureSync.EnterScope())
+			return _hasher.ComputeHash(payload.UTF8()).Digest().ToLowerInvariant();
+	}
+
 	private RestRequest ApplySecret(RestRequest request, bool applySignature, bool isQuery = false)
 	{
 		ApplyKey(request);
@@ -548,14 +569,7 @@ class HttpClient : BaseLogReceiver
 							  .Where(p => isQuery ? p.Type == ParameterType.QueryString : p.Type == ParameterType.GetOrPost && p.Value != null)
 							  .ToQueryString();
 
-			string signature;
-			using (_signatureSync.EnterScope())
-			{
-				signature = _hasher
-					.ComputeHash(encodedArgs.UTF8())
-					.Digest()
-					.ToLowerInvariant();
-			}
+			var signature = Sign(encodedArgs);
 
 			if (isQuery)
 				request.AddQueryParameter("signature", signature);
