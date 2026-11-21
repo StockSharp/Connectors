@@ -245,7 +245,11 @@ sealed class DriftRestClient : BaseLogReceiver
 
 	private static HttpClient CreateClient(string endpoint)
 	{
-		var client = new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+		var handler = new HttpClientHandler
+		{
+			AutomaticDecompression = DecompressionMethods.All,
+		};
+		var client = new HttpClient(new HttpRateLimitHandler(handler))
 		{
 			BaseAddress = new Uri(endpoint, UriKind.Absolute),
 			Timeout = TimeSpan.FromSeconds(45),

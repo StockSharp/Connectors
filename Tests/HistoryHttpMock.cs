@@ -86,6 +86,8 @@ sealed class HistoryHttpServer : IAsyncDisposable
 			using var reply = response();
 			var body = reply.Content is null ? [] : await reply.Content.ReadAsByteArrayAsync(cancellationToken);
 			var extraHeaders = string.Concat(reply.Headers.Select(pair => $"{pair.Key}: {string.Join(", ", pair.Value)}\r\n"));
+			if (reply.Content?.Headers.ContentEncoding is { Count: > 0 } encoding)
+				extraHeaders += $"Content-Encoding: {string.Join(", ", encoding)}\r\n";
 			var header = Encoding.ASCII.GetBytes($"HTTP/1.1 {(int)reply.StatusCode} {reply.StatusCode}\r\nContent-Type: application/json\r\nContent-Length: {body.Length}\r\n{extraHeaders}Connection: close\r\n\r\n");
 			await stream.WriteAsync(header, cancellationToken);
 			await stream.WriteAsync(body, cancellationToken);
