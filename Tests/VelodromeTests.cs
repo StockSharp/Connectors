@@ -20,6 +20,8 @@ using StockSharp.Velodrome.Native.Model;
 [TestClass]
 public class VelodromeTests : LiveMarketDataTestBase
 {
+	private const decimal _quoteProbeVolume = 0.01m;
+
 	[TestMethod]
 	public void DefaultsUseOptimismAndPublishedPools()
 	{
@@ -143,7 +145,7 @@ public class VelodromeTests : LiveMarketDataTestBase
 			QuoteToken = usdc,
 			SecurityCode = "WETH-USDC-VOLATILE",
 		};
-		var amount = 1m.ToBaseUnits(weth.Decimals);
+		var amount = _quoteProbeVolume.ToBaseUnits(weth.Decimals);
 		var bid = await client.GetQuoteAsync(market,
 			VelodromeTradeTypes.ExactInput, amount, CancellationToken);
 		var ask = await client.GetQuoteAsync(market,
@@ -165,6 +167,7 @@ public class VelodromeTests : LiveMarketDataTestBase
 		{
 			RpcEndpoint = "https://optimism-rpc.publicnode.com",
 			WebSocketEndpoint = null,
+			ProbeVolume = _quoteProbeVolume,
 		};
 		await using var harness = new MarketDataTestHarness(adapter);
 		await harness.ConnectAsync(TimeSpan.FromSeconds(30),
@@ -196,6 +199,7 @@ public class VelodromeTests : LiveMarketDataTestBase
 		{
 			RpcEndpoint = "https://optimism-rpc.publicnode.com",
 			WebSocketEndpoint = "wss://optimism-rpc.publicnode.com",
+			ProbeVolume = _quoteProbeVolume,
 		};
 
 	/// <inheritdoc />
