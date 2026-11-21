@@ -278,6 +278,8 @@ static class ChainflipExtensions
 			"0xdAC17F958D2ee523a2206206994597C13D831ec7");
 		yield return Asset("Ethereum", "WBTC", 8,
 			"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599");
+		yield return Asset("Ethereum", "CBBTC", 8,
+			"0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf");
 		yield return Asset("Polkadot", "DOT", 10);
 		yield return Asset("Bitcoin", "BTC", 8);
 		yield return Asset("Arbitrum", "ETH", 18);
@@ -293,6 +295,9 @@ static class ChainflipExtensions
 		yield return Asset("Assethub", "USDC", 6);
 		yield return Asset("Tron", "TRX", 6);
 		yield return Asset("Tron", "USDT", 6);
+		yield return Asset("Bsc", "BNB", 18);
+		yield return Asset("Bsc", "USDT", 18,
+			"0x55d398326f99059fF775485246999027B3197955");
 	}
 
 	private static ChainflipAsset Asset(string chain, string symbol,

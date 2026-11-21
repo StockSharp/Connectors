@@ -110,6 +110,18 @@ public class ChainflipTests : LiveMarketDataTestBase
 	}
 
 	[TestMethod]
+	[CLSCompliant(false)]
+	[DataRow("Ethereum", "CBBTC", 8)]
+	[DataRow("Bsc", "BNB", 18)]
+	[DataRow("Bsc", "USDT", 18)]
+	public void CurrentStateChainAssetsUseTheirOwnDecimals(string chain, string symbol, int decimals)
+	{
+		var asset = new ChainflipRpcAsset { Chain = chain, Symbol = symbol }.ResolveAsset();
+
+		AreEqual(decimals, asset.Decimals);
+	}
+
+	[TestMethod]
 	public void Q96AndX128PricesPreserveAssetUnits()
 	{
 		var oneQ96 = BigInteger.Pow(2, 96).ToRpcHex();
