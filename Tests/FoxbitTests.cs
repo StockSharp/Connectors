@@ -22,6 +22,7 @@ public class FoxbitTests : LiveMarketDataTestBase
 	[DataRow("STOP_LIMIT")]
 	[DataRow("TRAILING_STOP_MARKET")]
 	[DataRow("TRAILING_STOP_LIMIT")]
+	[DataRow("OCO")]
 	public void ConditionalOrderTypesInMarketMetadataAreRecognized(string wireType)
 	{
 		var response = $$"""

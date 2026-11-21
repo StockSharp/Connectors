@@ -126,7 +126,7 @@ static class FoxbitExtensions
 			FoxbitOrderTypes.Market or FoxbitOrderTypes.Instant =>
 				OrderTypes.Market,
 			FoxbitOrderTypes.StopLimit or FoxbitOrderTypes.StopMarket or
-				FoxbitOrderTypes.TrailingStopLimit or FoxbitOrderTypes.TrailingStopMarket =>
+				FoxbitOrderTypes.TrailingStopLimit or FoxbitOrderTypes.TrailingStopMarket or FoxbitOrderTypes.Oco =>
 				OrderTypes.Conditional,
 			_ => OrderTypes.Limit,
 		};
