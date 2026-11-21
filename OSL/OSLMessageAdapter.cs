@@ -1,5 +1,7 @@
 namespace StockSharp.OSL;
 
+using Nito.AsyncEx;
+
 public partial class OSLMessageAdapter
 {
 	private class MarketSubscription
@@ -70,6 +72,7 @@ public partial class OSLMessageAdapter
 		_privateStreamReferences = [];
 	private readonly Dictionary<CandleStreamKey, int>
 		_candleStreamReferences = [];
+	private readonly AsyncLock _candleStreamSync = new();
 	private readonly HashSet<long> _portfolioSubscriptions = [];
 	private readonly Dictionary<long, OrderSubscription>
 		_orderSubscriptions = [];
@@ -316,12 +319,19 @@ public partial class OSLMessageAdapter
 				cancellationToken);
 	}
 
-	private async ValueTask AcquireCandleStreamAsync(string symbol,
-		TimeSpan timeFrame, CancellationToken cancellationToken)
+	private async ValueTask AcquireCandleStreamAsync(long transactionId,
+		string symbol, TimeSpan timeFrame, CancellationToken cancellationToken)
 	{
+		using var _ = await _candleStreamSync.LockAsync(cancellationToken);
+		var socket = CandleSocket;
 		var key = new CandleStreamKey(symbol.NormalizeSymbol(), timeFrame);
 		using (_sync.EnterScope())
 		{
+			_candleSubscriptions.Add(transactionId, new()
+			{
+				Symbol = symbol,
+				TimeFrame = timeFrame,
+			});
 			if (_candleStreamReferences.TryGetValue(key, out var count))
 			{
 				_candleStreamReferences[key] = count + 1;
@@ -331,13 +341,16 @@ public partial class OSLMessageAdapter
 		}
 		try
 		{
-			await CandleSocket.SubscribeCandleAsync(key.Symbol,
+			await socket.SubscribeCandleAsync(key.Symbol,
 				key.TimeFrame, cancellationToken);
 		}
 		catch
 		{
 			using (_sync.EnterScope())
+			{
+				_candleSubscriptions.Remove(transactionId);
 				_candleStreamReferences.Remove(key);
+			}
 			throw;
 		}
 	}

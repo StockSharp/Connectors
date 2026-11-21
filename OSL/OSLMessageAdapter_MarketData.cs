@@ -261,22 +261,16 @@ public partial class OSLMessageAdapter
 			return;
 		}
 
-		using (_sync.EnterScope())
-			_candleSubscriptions.Add(mdMsg.TransactionId, new()
-			{
-				Symbol = product.Symbol,
-				TimeFrame = timeFrame,
-			});
+		await AcquireCandleStreamAsync(mdMsg.TransactionId, product.Symbol,
+			timeFrame, cancellationToken);
 		try
 		{
-			await AcquireCandleStreamAsync(product.Symbol, timeFrame,
-				cancellationToken);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		catch
 		{
 			await UnsubscribeCandlesAsync(mdMsg.TransactionId,
-				cancellationToken);
+				CancellationToken.None);
 			throw;
 		}
 	}
@@ -334,6 +328,7 @@ public partial class OSLMessageAdapter
 	private async ValueTask UnsubscribeCandlesAsync(long transactionId,
 		CancellationToken cancellationToken)
 	{
+		using var _ = await _candleStreamSync.LockAsync(cancellationToken);
 		CandleSubscription subscription = null;
 		using (_sync.EnterScope())
 			_candleSubscriptions.Remove(transactionId, out subscription);

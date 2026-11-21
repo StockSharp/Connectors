@@ -38,7 +38,6 @@ public partial class OSLMessageAdapter
 			_candleSocket.CandleReceived += OnSocketCandleAsync;
 
 			await PublicSocket.ConnectAsync(cancellationToken);
-			await CandleSocket.ConnectAsync(cancellationToken);
 
 			if (RestClient.IsPrivateAvailable)
 			{
@@ -149,10 +148,14 @@ public partial class OSLMessageAdapter
 	private async ValueTask DisposeClientsAsync(
 		CancellationToken cancellationToken)
 	{
-		var clients = new[] { _privateSocket, _candleSocket, _publicSocket };
-		_privateSocket = null;
-		_candleSocket = null;
-		_publicSocket = null;
+		OSLSocketClient[] clients;
+		using (await _candleStreamSync.LockAsync())
+		{
+			clients = [_privateSocket, _candleSocket, _publicSocket];
+			_privateSocket = null;
+			_candleSocket = null;
+			_publicSocket = null;
+		}
 
 		foreach (var client in clients.Where(static value => value is not null))
 		{

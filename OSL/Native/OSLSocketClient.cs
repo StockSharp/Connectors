@@ -93,6 +93,7 @@ sealed class OSLSocketClient : BaseLogReceiver
 		var client = _client = CreateClient();
 		try
 		{
+			ObjectDisposedException.ThrowIf(IsDisposeStarted, this);
 			await client.ConnectAsync(cancellationToken);
 			if (_kind == OSLSocketKinds.Private)
 				await _loginCompletion.Task.WaitAsync(
@@ -282,14 +283,27 @@ sealed class OSLSocketClient : BaseLogReceiver
 		if (_kind != OSLSocketKinds.Candles)
 			throw new InvalidOperationException(
 				"OSL candle subscriptions require the legacy public stream.");
+		if (isSubscribe && _client is null)
+			await ConnectAsync(cancellationToken);
+
 		bool shouldSend;
 		using (_sync.EnterScope())
 			shouldSend = isSubscribe
 				? _candleSubscriptions.Add(selector)
 				: _candleSubscriptions.Remove(selector);
-		if (shouldSend && _client?.IsConnected == true)
-			await SendLegacySubscriptionAsync(_client, selector, isSubscribe,
+		if (!shouldSend || _client is not { IsConnected: true } client)
+			return;
+		try
+		{
+			await SendLegacySubscriptionAsync(client, selector, isSubscribe,
 				cancellationToken);
+		}
+		catch when (isSubscribe)
+		{
+			using (_sync.EnterScope())
+				_candleSubscriptions.Remove(selector);
+			throw;
+		}
 	}
 
 	private ValueTask SendSubscriptionAsync(WebSocketClient client,
