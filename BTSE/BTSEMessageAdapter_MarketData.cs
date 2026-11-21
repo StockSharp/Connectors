@@ -294,6 +294,7 @@ public partial class BTSEMessageAdapter
 		string symbol, DateTime? from, DateTime to, int maximum,
 		CancellationToken cancellationToken)
 	{
+		const int pageSize = 500;
 		var result = new List<BTSEPublicTrade>();
 		if (from is null)
 		{
@@ -301,7 +302,7 @@ public partial class BTSEMessageAdapter
 			{
 				Symbol = symbol,
 				EndTime = to.ToMilliseconds(),
-				Count = maximum.Min(1000),
+				Count = maximum.Min(pageSize),
 				IsIncludeOld = section == BTSESections.Futures ? false : null,
 			}, cancellationToken);
 			result.AddRange(recent ?? []);
@@ -318,7 +319,7 @@ public partial class BTSEMessageAdapter
 					Symbol = symbol,
 					StartTime = cursor.ToMilliseconds(),
 					EndTime = end.ToMilliseconds(),
-					Count = (maximum - result.Count).Min(1000),
+					Count = (maximum - result.Count).Min(pageSize),
 					IsIncludeOld = section == BTSESections.Futures
 						? cursor < DateTime.UtcNow.AddDays(-7)
 						: null,
