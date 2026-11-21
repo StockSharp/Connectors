@@ -1,5 +1,6 @@
 namespace StockSharp.Connectors.Tests;
 
+using System;
 using System.Linq;
 
 using Ecng.Common;
@@ -24,6 +25,18 @@ public class LunoMarketDataTests : LiveMarketDataTestBase
 		SecurityCode = "XBTZAR",
 		BoardCode = BoardCodes.Luno,
 	};
+
+	/// <inheritdoc />
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		if (message.DataType2 != DataType.Ticks)
+			return;
+
+		// Public trade history has a 24-hour lookback and the live stream requires credentials.
+		var to = DateTime.UtcNow;
+		message.From = to.AddHours(-22);
+		message.To = to;
+	}
 
 	/// <inheritdoc />
 	/// <remarks>
