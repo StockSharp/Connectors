@@ -253,6 +253,9 @@ enum QFEXSymbolStatuses
 
 	[EnumMember(Value = "DELISTED")]
 	Delisted,
+
+	[EnumMember(Value = "RISK_REDUCE_ONLY")]
+	RiskReduceOnly,
 }
 
 [JsonConverter(typeof(StringEnumConverter))]
