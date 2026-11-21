@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -49,6 +50,31 @@ public class DigifinexTests : LiveMarketDataTestBase
 		AreEqual(1, result.Length);
 		AreEqual("BTC_USDT", result[0].Code);
 		AreEqual(2, result[0].PricePrecision);
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task SecurityLookupReturnsSpotSymbolsWhenMarginEndpointIsUnavailable()
+	{
+		var requests = 0;
+		await using var server = new HistoryHttpServer(() => ++requests == 1
+			? """{"code":0,"symbol_list":[{"symbol":"BTC_USDT","base_asset":"BTC","quote_asset":"USDT","price_precision":2}]}"""
+			: """{"code":10009}""", CancellationToken);
+		using var adapter = (DigifinexMessageAdapter)CreateAdapter();
+		using var client = CreateClient(server.Address);
+		typeof(DigifinexMessageAdapter).GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(adapter, client);
+		var securities = new List<SecurityMessage>();
+		adapter.NewOutMessageAsync += (message, _) =>
+		{
+			if (message is SecurityMessage security)
+				securities.Add(security);
+			return default;
+		};
+
+		await adapter.SendInMessageAsync(new SecurityLookupMessage { TransactionId = 42 }, CancellationToken);
+
+		AreEqual(2, requests);
+		AreEqual(TestSecurityId, securities.Single().SecurityId);
 	}
 
 	[TestMethod]

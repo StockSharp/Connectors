@@ -4,6 +4,8 @@ using System.Security.Cryptography;
 
 class HttpClient : BaseLogReceiver
 {
+	private sealed class UnsupportedEndpointException(string message) : InvalidOperationException(message);
+
 	private readonly SecureString _key;
 
 	private readonly HashAlgorithm _hasher;
@@ -30,8 +32,17 @@ class HttpClient : BaseLogReceiver
 	public Task<IEnumerable<Symbol>> GetSpotSymbols(CancellationToken cancellationToken)
 		=> GetSymbols("spot", cancellationToken);
 
-	public Task<IEnumerable<Symbol>> GetMarginSymbols(CancellationToken cancellationToken)
-		=> GetSymbols("margin", cancellationToken);
+	public async Task<IEnumerable<Symbol>> GetMarginSymbols(CancellationToken cancellationToken)
+	{
+		try
+		{
+			return await GetSymbols("margin", cancellationToken);
+		}
+		catch (UnsupportedEndpointException)
+		{
+			return [];
+		}
+	}
 
 	private async Task<IEnumerable<Symbol>> GetSymbols(string market, CancellationToken cancellationToken)
 	{
@@ -210,7 +221,13 @@ class HttpClient : BaseLogReceiver
 		if (obj is JObject)
 		{
 			if (obj.code != null && obj.code != 0)
-				throw new InvalidOperationException(((int)obj.code).GetErrorText());
+			{
+				var code = (int)obj.code;
+				var message = code.GetErrorText();
+				if (code == 10009)
+					throw new UnsupportedEndpointException(message);
+				throw new InvalidOperationException(message);
+			}
 
 			if (obj.data != null)
 				obj = obj.data;
