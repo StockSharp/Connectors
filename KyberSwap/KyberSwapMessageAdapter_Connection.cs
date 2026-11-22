@@ -169,10 +169,13 @@ public partial class KyberSwapMessageAdapter
 		if (probe <= 0)
 			throw new InvalidOperationException(
 				"The configured KyberSwap quote probe volume rounds to zero.");
-		var bid = await GetQuoteAsync(baseToken, quoteToken, probe,
-			cancellationToken);
-		_ = await GetQuoteAsync(quoteToken, baseToken, bid.OutputAmount,
-			cancellationToken);
+		if (RpcClient.IsWalletConfigured)
+		{
+			var bid = await GetQuoteAsync(baseToken, quoteToken, probe,
+				cancellationToken);
+			_ = await GetQuoteAsync(quoteToken, baseToken, bid.OutputAmount,
+				cancellationToken);
+		}
 		RegisterMarket(market);
 	}
 

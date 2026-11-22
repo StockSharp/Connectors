@@ -1,6 +1,8 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -36,6 +38,54 @@ public class KyberSwapTests : LiveMarketDataTestBase
 		"0x2222222222222222222222222222222222222222";
 	private const string _router =
 		"0x3333333333333333333333333333333333333333";
+
+	[TestMethod]
+	[Timeout(15000, CooperativeCancellation = true)]
+	public async Task PublicMarketDiscoveryDoesNotRequireQuotes()
+	{
+		HistoryHttpServer rpc = null;
+		await using var chain = rpc = new HistoryHttpServer(() =>
+		{
+			var request = JObject.Parse(rpc.RequestBody);
+			var result = (string)request["method"] switch
+			{
+				"eth_chainId" => "0x1",
+				"eth_getCode" => "0x6000",
+				"eth_call" => (string)request["params"][0]["data"] == "0x313ce567"
+					? "0x6"
+					: "0x" + "544f4b454e".PadRight(64, '0'),
+				var method => throw new InvalidOperationException($"Unexpected KyberSwap RPC method '{method}'."),
+			};
+			return new JObject
+			{
+				["jsonrpc"] = "2.0",
+				["id"] = request["id"],
+				["result"] = result,
+			}.ToString(Formatting.None);
+		}, CancellationToken);
+		await using var quotes = new HistoryHttpServer(
+			() => new HttpResponseMessage(HttpStatusCode.ServiceUnavailable), CancellationToken);
+		var adapter = new KyberSwapMessageAdapter(new IncrementalIdGenerator())
+		{
+			RpcEndpoint = chain.Address.AbsoluteUri,
+			ApiEndpoint = quotes.Address.AbsoluteUri,
+			Markets = $"{_tokenIn}|{_tokenOut}|AAA-BBB",
+			HeartbeatInterval = TimeSpan.Zero,
+		};
+		await using var harness = new MarketDataTestHarness(adapter);
+		var timeout = TimeSpan.FromSeconds(8);
+		var securityId = new SecurityId { SecurityCode = "AAA-BBB", BoardCode = BoardCodes.KyberSwap };
+		await harness.ConnectAsync(timeout, CancellationToken);
+		var result = await harness.LookupSecuritiesAsync(new() { SecurityId = securityId }, 1, timeout, CancellationToken);
+		AreEqual(1, result.Securities.Length);
+		AreEqual(securityId, result.Securities[0].SecurityId);
+		AreEqual(0, quotes.RequestTimes.Count);
+
+		var level1 = await harness.SubscribeAsync<Level1ChangeMessage>(DataType.Level1,
+			securityId, null, null, timeout, CancellationToken);
+		IsNotNull(level1.Error);
+		IsTrue(quotes.RequestTimes.Count > 0);
+	}
 
 	[TestMethod]
 	public void DefaultsUsePublishedAggregatorEndpoint()
