@@ -1,7 +1,11 @@
 namespace StockSharp.Zoomex;
 
+using Nito.AsyncEx;
+
 public partial class ZoomexMessageAdapter
 {
+	private readonly AsyncLock _publicSocketSync = new();
+
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg,
 		CancellationToken cancellationToken)
@@ -28,17 +32,12 @@ public partial class ZoomexMessageAdapter
 					throw new InvalidDataException(
 						"Zoomex returned no active instruments.");
 
-			foreach (var category in Sections.Select(
-				static section => section.ToNative()))
-			{
-				var socket = CreatePublicSocket(category);
-				using (_sync.EnterScope())
-					_publicSockets.Add(category, socket);
-				await socket.ConnectAsync(cancellationToken);
-			}
-
 			if (RestClient.IsPrivateAvailable)
 			{
+				foreach (var category in Sections.Select(
+					static section => section.ToNative()))
+					await GetOrConnectPublicSocketAsync(category, cancellationToken);
+
 				_privateSocket = CreatePrivateSocket();
 				await _privateSocket.ConnectAsync(cancellationToken);
 
@@ -52,6 +51,7 @@ public partial class ZoomexMessageAdapter
 			connectMsg.SessionId = RestClient.IsPrivateAvailable
 				? $"Zoomex {Key.ToId()}"
 				: "Zoomex public";
+			_isConnected = true;
 			await SendOutConnectionStateAsync(ConnectionStates.Connected,
 				cancellationToken);
 		}
@@ -60,6 +60,35 @@ public partial class ZoomexMessageAdapter
 			await DisposeClientsAsync(cancellationToken);
 			await SendOutConnectionStateAsync(ConnectionStates.Disconnected,
 				cancellationToken);
+			throw;
+		}
+	}
+
+	private async ValueTask<ZoomexSocketClient> GetOrConnectPublicSocketAsync(
+		ZoomexCategories category, CancellationToken cancellationToken)
+	{
+		using var scope = await _publicSocketSync.LockAsync(cancellationToken);
+		var rest = RestClient;
+		if (FindPublicSocket(category) is { } existing)
+			return existing;
+
+		var socket = CreatePublicSocket(category);
+		try
+		{
+			await socket.ConnectAsync(cancellationToken);
+			using (_sync.EnterScope())
+			{
+				if (_restClient != rest)
+					throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
+				socket.Error += OnSocketErrorAsync;
+				socket.StateChanged += OnSocketStateAsync;
+				_publicSockets.Add(category, socket);
+			}
+			return socket;
+		}
+		catch
+		{
+			socket.Dispose();
 			throw;
 		}
 	}
@@ -149,8 +178,6 @@ public partial class ZoomexMessageAdapter
 		socket.BookReceived += OnSocketBookAsync;
 		socket.PublicTradesReceived += OnSocketTradesAsync;
 		socket.CandlesReceived += OnSocketCandlesAsync;
-		socket.Error += OnSocketErrorAsync;
-		socket.StateChanged += OnSocketStateAsync;
 		return socket;
 	}
 
@@ -200,47 +227,52 @@ public partial class ZoomexMessageAdapter
 	private async ValueTask DisposeClientsAsync(
 		CancellationToken cancellationToken)
 	{
-		ZoomexSocketClient[] sockets;
-		using (_sync.EnterScope())
+		var (rest, sockets) = DetachClients();
+		try
 		{
-			sockets = [.. _publicSockets.Values];
-			_publicSockets.Clear();
-		}
-		if (_privateSocket is { } privateSocket)
-		{
-			_privateSocket = null;
-			sockets = [.. sockets, privateSocket];
-		}
-
-		foreach (var socket in sockets)
-		{
-			try
+			foreach (var socket in sockets)
 			{
-				await socket.DisconnectAsync(cancellationToken);
+				try
+				{
+					await socket.DisconnectAsync(cancellationToken);
+				}
+				catch (Exception error) when (!cancellationToken.IsCancellationRequested)
+				{
+					await SendOutErrorAsync(error, cancellationToken);
+				}
 			}
-			catch (Exception error) when (!cancellationToken.IsCancellationRequested)
-			{
-				await SendOutErrorAsync(error, cancellationToken);
-			}
-			socket.Dispose();
 		}
-
-		_restClient?.Dispose();
-		_restClient = null;
-		ClearState();
+		finally
+		{
+			foreach (var socket in sockets)
+				socket.Dispose();
+			rest?.Dispose();
+		}
 	}
 
 	private void DisposeClients()
 	{
-		foreach (var socket in _publicSockets.Values)
+		var (rest, sockets) = DetachClients();
+		foreach (var socket in sockets)
 			socket.Dispose();
+		rest?.Dispose();
+	}
 
-		_publicSockets.Clear();
-		_privateSocket?.Dispose();
-		_privateSocket = null;
-		_restClient?.Dispose();
-		_restClient = null;
-		ClearState();
+	private (ZoomexRestClient RestClient, ZoomexSocketClient[] Sockets) DetachClients()
+	{
+		using (_sync.EnterScope())
+		{
+			_isConnected = false;
+			var rest = _restClient;
+			_restClient = null;
+			ZoomexSocketClient[] sockets = _privateSocket is { } privateSocket
+				? [.. _publicSockets.Values, privateSocket]
+				: [.. _publicSockets.Values];
+			_publicSockets.Clear();
+			_privateSocket = null;
+			ClearState();
+			return (rest, sockets);
+		}
 	}
 
 	private void ClearState()

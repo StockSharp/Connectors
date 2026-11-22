@@ -77,12 +77,14 @@ public partial class ZoomexMessageAdapter
 				"Zoomex does not expose historical Level1 events.");
 
 		var product = GetProduct(mdMsg.SecurityId);
+		var socket = mdMsg.IsHistoryOnly() ? null
+			: await GetOrConnectPublicSocketAsync(product.Category, cancellationToken);
 		var ticker = (await RestClient.GetTickersAsync(product.Category,
 			product.Symbol, cancellationToken))?.Items?.FirstOrDefault();
 		if (ticker is not null)
 			await SendTickerAsync(product.Category, ticker,
 				mdMsg.TransactionId, CurrentTime, cancellationToken);
-		if (mdMsg.IsHistoryOnly())
+		if (socket is null)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
@@ -96,7 +98,7 @@ public partial class ZoomexMessageAdapter
 			});
 		try
 		{
-			await GetSocket(product.Category).SubscribeAsync(
+			await socket.SubscribeAsync(
 				$"tickers.{product.Symbol}", cancellationToken);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
@@ -134,6 +136,8 @@ public partial class ZoomexMessageAdapter
 		var product = GetProduct(mdMsg.SecurityId);
 		var depth = NormalizeDepth(mdMsg.MaxDepth);
 		var topic = $"orderbook.{depth}.{product.Symbol}";
+		var socket = mdMsg.IsHistoryOnly() ? null
+			: await GetOrConnectPublicSocketAsync(product.Category, cancellationToken);
 		var snapshot = await RestClient.GetOrderBookAsync(product.Category,
 			product.Symbol, depth, cancellationToken);
 		if (snapshot is not null)
@@ -142,7 +146,7 @@ public partial class ZoomexMessageAdapter
 			await SendBookStateAsync(product.Category, topic, depth,
 				mdMsg.TransactionId, snapshot.Timestamp, cancellationToken);
 		}
-		if (mdMsg.IsHistoryOnly())
+		if (socket is null)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
@@ -158,8 +162,7 @@ public partial class ZoomexMessageAdapter
 			});
 		try
 		{
-			await GetSocket(product.Category).SubscribeAsync(topic,
-				cancellationToken);
+			await socket.SubscribeAsync(topic, cancellationToken);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		catch
@@ -192,6 +195,8 @@ public partial class ZoomexMessageAdapter
 
 		var product = GetProduct(mdMsg.SecurityId);
 		var maximum = (mdMsg.Count ?? 100).Min(1000).Max(1).To<int>();
+		var socket = mdMsg.IsHistoryOnly() ? null
+			: await GetOrConnectPublicSocketAsync(product.Category, cancellationToken);
 		var result = await RestClient.GetPublicTradesAsync(product.Category,
 			product.Symbol, maximum, cancellationToken);
 
@@ -201,7 +206,7 @@ public partial class ZoomexMessageAdapter
 			await SendPublicTradeAsync(product.Category, trade,
 				mdMsg.TransactionId, cancellationToken);
 
-		if (mdMsg.IsHistoryOnly())
+		if (socket is null)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
@@ -215,7 +220,7 @@ public partial class ZoomexMessageAdapter
 			});
 		try
 		{
-			await GetSocket(product.Category).SubscribeAsync(
+			await socket.SubscribeAsync(
 				$"publicTrade.{product.Symbol}", cancellationToken);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
@@ -255,6 +260,8 @@ public partial class ZoomexMessageAdapter
 		var maximum = GetCandleCount(mdMsg, timeFrame, to);
 		var from = mdMsg.From?.ToUniversalTime() ??
 			to - TimeSpan.FromTicks(timeFrame.Ticks * maximum);
+		var socket = mdMsg.IsHistoryOnly() ? null
+			: await GetOrConnectPublicSocketAsync(product.Category, cancellationToken);
 		var candles = await LoadCandlesAsync(product.Category,
 			product.Symbol, timeFrame, from, to, maximum,
 			cancellationToken);
@@ -263,7 +270,7 @@ public partial class ZoomexMessageAdapter
 			await SendCandleAsync(product.Category, product.Symbol, candle,
 				timeFrame, mdMsg.TransactionId, cancellationToken);
 
-		if (mdMsg.IsHistoryOnly())
+		if (socket is null)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
@@ -278,7 +285,7 @@ public partial class ZoomexMessageAdapter
 			});
 		try
 		{
-			await GetSocket(product.Category).SubscribeAsync(
+			await socket.SubscribeAsync(
 				$"kline.{timeFrame.ToInterval()}.{product.Symbol}",
 				cancellationToken);
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
@@ -326,8 +333,8 @@ public partial class ZoomexMessageAdapter
 				out subscription);
 			_level1Subscriptions.Remove(transactionId);
 		}
-		if (subscription is not null)
-			await GetSocket(subscription.Category).UnsubscribeAsync(
+		if (subscription is not null && FindPublicSocket(subscription.Category) is { } socket)
+			await socket.UnsubscribeAsync(
 				$"tickers.{subscription.Symbol}", cancellationToken);
 	}
 
@@ -348,8 +355,8 @@ public partial class ZoomexMessageAdapter
 					subscription.Topic));
 			}
 		}
-		if (subscription is not null)
-			await GetSocket(subscription.Category).UnsubscribeAsync(
+		if (subscription is not null && FindPublicSocket(subscription.Category) is { } socket)
+			await socket.UnsubscribeAsync(
 				subscription.Topic, cancellationToken);
 	}
 
@@ -365,8 +372,8 @@ public partial class ZoomexMessageAdapter
 			_seenPublicTrades.RemoveWhere(key =>
 				key.SubscriptionId == transactionId);
 		}
-		if (subscription is not null)
-			await GetSocket(subscription.Category).UnsubscribeAsync(
+		if (subscription is not null && FindPublicSocket(subscription.Category) is { } socket)
+			await socket.UnsubscribeAsync(
 				$"publicTrade.{subscription.Symbol}", cancellationToken);
 	}
 
@@ -380,8 +387,8 @@ public partial class ZoomexMessageAdapter
 				out subscription);
 			_candleSubscriptions.Remove(transactionId);
 		}
-		if (subscription is not null)
-			await GetSocket(subscription.Category).UnsubscribeAsync(
+		if (subscription is not null && FindPublicSocket(subscription.Category) is { } socket)
+			await socket.UnsubscribeAsync(
 				$"kline.{subscription.TimeFrame.ToInterval()}." +
 				subscription.Symbol, cancellationToken);
 	}

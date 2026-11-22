@@ -102,6 +102,7 @@ public partial class ZoomexMessageAdapter
 		_publicSockets = [];
 	private ZoomexRestClient _restClient;
 	private ZoomexSocketClient _privateSocket;
+	private volatile bool _isConnected;
 	private DateTime _nextPing;
 
 	/// <summary>
@@ -157,7 +158,7 @@ public partial class ZoomexMessageAdapter
 
 	private void EnsureConnected()
 	{
-		if (_restClient is null || _publicSockets.Count == 0)
+		if (!_isConnected)
 			throw new InvalidOperationException(
 				LocalizedStrings.ConnectionNotOk);
 	}
@@ -170,13 +171,10 @@ public partial class ZoomexMessageAdapter
 				"Zoomex API key and secret are required for private operations.");
 	}
 
-	private ZoomexSocketClient GetSocket(ZoomexCategories category)
+	private ZoomexSocketClient FindPublicSocket(ZoomexCategories category)
 	{
 		using (_sync.EnterScope())
-			return _publicSockets.TryGetValue(category, out var socket)
-				? socket
-				: throw new InvalidOperationException(
-					$"Zoomex section '{category}' is disabled.");
+			return _publicSockets.GetValueOrDefault(category);
 	}
 
 	private ZoomexProduct GetProduct(SecurityId securityId)
