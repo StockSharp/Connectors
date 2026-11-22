@@ -89,15 +89,29 @@ jobs:
       # and rate limits instead of data.
       - name: Run live tests
         working-directory: Connectors
-        run: >
-          dotnet test Tests/Tests.csproj
-          --no-build
-          --configuration Release
-          --filter "TestCategory=Integration"
-          --logger "trx;LogFileName=live-tests.trx"
-          --results-directory TestResults
-          --blame-hang-timeout 3m
-          -- MSTest.Parallelize.Workers=1
+        run: |
+          live_test_filter='TestCategory=Integration'
+          if [ "$STOCKSHARP_LIVE_REGIONAL_TESTS" != '1' ]; then
+            # BitoPro public REST returns HTTP 403 from the hosted runner.
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.BitoProTests.Securities'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.BitoProTests.Candles'
+
+            # Mercado Bitcoin public API returns HTTP 403 from the hosted runner.
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.MercadoBitcoinMarketDataTests.Securities'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.MercadoBitcoinMarketDataTests.Level1'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.MercadoBitcoinMarketDataTests.OrderBook'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.MercadoBitcoinMarketDataTests.Ticks'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.MercadoBitcoinMarketDataTests.Candles'
+          fi
+
+          dotnet test Tests/Tests.csproj \
+            --no-build \
+            --configuration Release \
+            --filter "$live_test_filter" \
+            --logger "trx;LogFileName=live-tests.trx" \
+            --results-directory TestResults \
+            --blame-hang-timeout 3m \
+            -- MSTest.Parallelize.Workers=1
 
       - name: Upload test results
         if: always()
