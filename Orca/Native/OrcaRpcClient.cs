@@ -1,10 +1,13 @@
 namespace StockSharp.Orca.Native;
 
+using System.Runtime.CompilerServices;
+
 using Ecng.Net;
 
 sealed class OrcaRpcClient : BaseLogReceiver
 {
 	private const int _maximumResponseLength = 16 * 1024 * 1024;
+	private const int _maximumConcurrentTransactionReads = 4;
 	private readonly HttpClient _httpClient;
 	private readonly SemaphoreSlim _requestGate = new(1, 1);
 	private readonly JsonSerializerSettings _serializerSettings = new()
@@ -158,6 +161,20 @@ sealed class OrcaRpcClient : BaseLogReceiver
 				Signature = NormalizeSignature(signature),
 				Config = new(),
 			}, cancellationToken);
+
+	public async IAsyncEnumerable<(OrcaRpcSignatureInfo Signature, OrcaRpcTransaction Transaction)>
+		GetTransactionsAsync(IEnumerable<OrcaRpcSignatureInfo> signatures,
+			[EnumeratorCancellation] CancellationToken cancellationToken)
+	{
+		foreach (var batch in signatures.Chunk(_maximumConcurrentTransactionReads))
+		{
+			var transactions = await Task.WhenAll(batch.Select(async signature =>
+				await GetTransactionAsync(signature.Signature, cancellationToken)));
+
+			for (var i = 0; i < batch.Length; i++)
+				yield return (batch[i], transactions[i]);
+		}
+	}
 
 	public async ValueTask<ulong> GetPriorityFeeAsync(
 		IEnumerable<string> writableAccounts,

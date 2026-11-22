@@ -1,8 +1,10 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -50,6 +52,56 @@ public class OrcaTests : LiveMarketDataTestBase
 		AreEqual("getTransaction", request["method"].Value<string>());
 		AreEqual(1, request["params"][1]["maxSupportedTransactionVersion"].Value<int>());
 		AreEqual(123L, transaction.Slot);
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task HistoryReadsTransactionsConcurrentlyInSignatureOrder()
+	{
+		var firstSignature = new string('1', 64);
+		var secondSignature = new string('1', 63) + "2";
+		using var http = new HttpClient(new ConcurrentTransactionHandler(firstSignature))
+		{
+			BaseAddress = new("https://rpc.example.test"),
+		};
+		using var client = new OrcaRpcClient(http.BaseAddress.ToString(),
+			OrcaClusters.Mainnet, null, null);
+		HistoryHttpHandler.ReplaceClient(client, http, "_httpClient");
+		OrcaRpcSignatureInfo[] signatures =
+		[
+			new() { Signature = firstSignature },
+			new() { Signature = secondSignature },
+		];
+		var received = new List<(string Signature, long Slot)>();
+
+		await foreach (var (signature, transaction) in client.GetTransactionsAsync(signatures, CancellationToken))
+			received.Add((signature.Signature, transaction.Slot));
+
+		AreEqual(2, received.Count);
+		AreEqual((firstSignature, 123L), received[0]);
+		AreEqual((secondSignature, 124L), received[1]);
+	}
+
+	private sealed class ConcurrentTransactionHandler(string firstSignature) : HttpMessageHandler
+	{
+		private readonly TaskCompletionSource _secondRequest = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+		protected override async Task<HttpResponseMessage> SendAsync(
+			HttpRequestMessage request, CancellationToken cancellationToken)
+		{
+			var body = JObject.Parse(await request.Content.ReadAsStringAsync(cancellationToken));
+			var isFirst = body["params"][0].Value<string>() == firstSignature;
+			if (isFirst)
+				await _secondRequest.Task.WaitAsync(TimeSpan.FromSeconds(2), cancellationToken);
+			else
+				_secondRequest.TrySetResult();
+
+			var slot = isFirst ? 123 : 124;
+			return new(HttpStatusCode.OK)
+			{
+				Content = new StringContent($$"""{"jsonrpc":"2.0","id":{{body.Value<long>("id")}},"result":{"slot":{{slot}}} }"""),
+			};
+		}
 	}
 
 	private const string _pool = "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE";

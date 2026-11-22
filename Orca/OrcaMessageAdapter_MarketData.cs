@@ -268,6 +268,7 @@ public partial class OrcaMessageAdapter
 			if (signatures.Length == 0)
 				break;
 
+			var candidates = new List<OrcaRpcSignatureInfo>(signatures.Length);
 			foreach (var signature in signatures)
 			{
 				inspected++;
@@ -282,10 +283,13 @@ public partial class OrcaMessageAdapter
 					if (signatureTime > to)
 						continue;
 				}
-				if (signature.Error is not null)
-					continue;
-				var transaction = await RpcClient.GetTransactionAsync(
-					signature.Signature, cancellationToken);
+				if (signature.Error is null)
+					candidates.Add(signature);
+			}
+
+			await foreach (var (signature, transaction) in
+				RpcClient.GetTransactionsAsync(candidates, cancellationToken))
+			{
 				if (transaction?.Meta?.Error is not null)
 					continue;
 				var time = (transaction?.BlockTime ?? signature.BlockTime)?.FromUnix()
