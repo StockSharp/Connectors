@@ -26,19 +26,18 @@ public partial class ChainflipMessageAdapter
 			var markets = FilterMarkets(
 				await StateClient.VerifyAndGetMarketsAsync(
 					cancellationToken));
-			var probe = markets.FirstOrDefault(static market =>
-				market.BaseAsset.Chain.EqualsIgnoreCase("Ethereum") &&
-				market.BaseAsset.Symbol.EqualsIgnoreCase("ETH")) ??
-				markets[0];
-			var probeAmount = BigInteger.Max(
-				ProbeVolume.ToBaseUnits(probe.BaseAsset.Decimals),
-				await StateClient.GetMinimumDepositAmountAsync(
-					probe.BaseAsset, cancellationToken));
-			await HttpClient.GetQuoteAsync(probe.BaseAsset,
-				probe.QuoteAsset, probeAmount, false, cancellationToken);
-
 			if (HasWalletConfiguration)
 			{
+				var probe = markets.FirstOrDefault(static market =>
+					market.BaseAsset.Chain.EqualsIgnoreCase("Ethereum") &&
+					market.BaseAsset.Symbol.EqualsIgnoreCase("ETH")) ?? markets[0];
+				var probeAmount = BigInteger.Max(
+					ProbeVolume.ToBaseUnits(probe.BaseAsset.Decimals),
+					await StateClient.GetMinimumDepositAmountAsync(
+						probe.BaseAsset, cancellationToken));
+				await HttpClient.GetQuoteAsync(probe.BaseAsset,
+					probe.QuoteAsset, probeAmount, false, cancellationToken);
+
 				_ethereumClient = new(EthereumRpcEndpoint, "Ethereum",
 					WalletAddress, PrivateKey)
 				{

@@ -85,6 +85,8 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	{
 	}
 
+	private protected virtual ValueTask<string> GetVenueUnavailableReasonAsync(Exception failure) => default;
+
 	private MarketDataTestHarness CreateHarness()
 	{
 		var adapter = CreateAdapter();
@@ -102,10 +104,9 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	/// <returns>A task that completes when the check is done.</returns>
 	private protected async Task RunAsync(Func<MarketDataTestHarness, Task> body)
 	{
-		var harness = CreateHarness();
-
-		await using (harness)
+		try
 		{
+			await using var harness = CreateHarness();
 			await harness.ConnectAsync(ConnectTimeout, CancellationToken);
 
 			try
@@ -116,6 +117,12 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 			{
 				await harness.DisconnectAsync(ConnectTimeout, CancellationToken);
 			}
+		}
+		catch (Exception failure) when (failure is not (OperationCanceledException or AssertInconclusiveException))
+		{
+			if (await GetVenueUnavailableReasonAsync(failure) is { } reason)
+				Inconclusive(reason);
+			throw;
 		}
 	}
 

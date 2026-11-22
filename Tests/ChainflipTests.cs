@@ -183,16 +183,51 @@ public class ChainflipTests : LiveMarketDataTestBase
 	}
 
 	[TestMethod]
+	[Timeout(15000, CooperativeCancellation = true)]
+	public async Task MarketDiscoveryWorksDuringQuoteMaintenance()
+	{
+		HistoryHttpServer rpc = null;
+		await using var state = rpc = new HistoryHttpServer(() =>
+		{
+			var call = JObject.Parse(rpc.RequestBody);
+			var reply = call.Value<string>("method") switch
+			{
+				"system_chain" => "\"Chainflip\"",
+				"cf_supported_assets" => """[{"chain":"Ethereum","asset":"ETH"},{"chain":"Ethereum","asset":"USDC"}]""",
+				"cf_available_pools" => """[{"base":{"chain":"Ethereum","asset":"ETH"},"quote":{"chain":"Ethereum","asset":"USDC"}}]""",
+				"cf_environment" => """{"ingress_egress":{"minimum_deposit_amounts":{"Ethereum":{"ETH":"0x1"}}}}""",
+				"chain_getHeader" => """{"number":"0x1"}""",
+				var method => throw new InvalidOperationException($"Unexpected RPC method {method}.")
+			};
+			return $$"""{"jsonrpc":"2.0","id":{{call.Value<long>("id")}},"result":{{reply}}}""";
+		}, CancellationToken);
+		await using var quotes = new HistoryHttpServer(() => new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+		{
+			Content = new StringContent("""{"message":"Quoting is currently unavailable due to maintenance"}"""),
+		}, CancellationToken);
+		var adapter = new ChainflipMessageAdapter(new IncrementalIdGenerator())
+		{
+			StateRpcEndpoint = state.Address.AbsoluteUri,
+			BackendEndpoint = quotes.Address.AbsoluteUri,
+		};
+		await using var harness = new MarketDataTestHarness(adapter);
+		var timeout = TimeSpan.FromSeconds(8);
+		await harness.ConnectAsync(timeout, CancellationToken);
+		var result = await harness.LookupSecuritiesAsync(new(), 10, timeout, CancellationToken);
+		AreEqual("ETH@ETHEREUM-USDC@ETHEREUM", result.Securities.Single().SecurityId.SecurityCode);
+		AreEqual(0, quotes.RequestTimes.Count);
+		await harness.DisconnectAsync(timeout, CancellationToken);
+	}
+
+	[TestMethod]
 	[TestCategory("Integration")]
-	public async Task LiveReadOnlyApisReturnPoolsBookFillsQuoteAndVaultData()
+	public async Task LiveStateChainReturnsPoolsBookAndFills()
 	{
 		if (!Env("STOCKSHARP_LIVE_TESTS")
 			.EqualsIgnoreCase("1"))
 			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");
 		using var state = new ChainflipStateClient(
 			"https://rpc.mainnet.chainflip.io");
-		using var api = new ChainflipHttpClient(
-			"https://chainflip-swap.chainflip.io");
 
 		var markets = await state.VerifyAndGetMarketsAsync(
 			CancellationToken);
@@ -208,26 +243,38 @@ public class ChainflipTests : LiveMarketDataTestBase
 			StringComparer.OrdinalIgnoreCase);
 		var fills = await state.GetBlockTradesAsync(best, byKey,
 			CancellationToken);
-		var source = Asset("Ethereum", "ETH");
-		var destination = Asset("Bitcoin", "BTC");
-		var amount = BigInteger.Pow(10, 17);
-		var quote = await api.GetQuoteAsync(source, destination, amount,
-			true, CancellationToken);
-		var vault = await api.BuildVaultSwapAsync(quote, source,
-			destination, ChainflipExtensions.ProbeAddress,
-			"bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq",
-			1.25m, 300, CancellationToken);
-
 		IsGreater(markets.Length, 10);
 		IsGreater(prices.Bid, 0m);
 		IsGreater(prices.Ask, prices.Bid);
 		IsGreater(book.Bids.Length, 0);
 		IsGreater(book.Asks.Length, 0);
 		AreEqual(best, fills.BlockNumber);
-		IsGreater(quote.EgressAmount.ParseInteger(), BigInteger.Zero);
-		AreEqual("Ethereum", vault.Chain);
-		IsTrue(vault.Calldata.StartsWith("0x",
-			StringComparison.OrdinalIgnoreCase));
+	}
+
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(30000, CooperativeCancellation = true)]
+	public async Task LiveSwapApiReturnsQuoteAndVaultData()
+	{
+		using var api = new ChainflipHttpClient("https://chainflip-swap.chainflip.io");
+		var source = Asset("Ethereum", "ETH");
+		var destination = Asset("Bitcoin", "BTC");
+		var amount = BigInteger.Pow(10, 17);
+		try
+		{
+			var quote = await api.GetQuoteAsync(source, destination, amount, true, CancellationToken);
+			var vault = await api.BuildVaultSwapAsync(quote, source, destination, ChainflipExtensions.ProbeAddress,
+				"bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", 1.25m, 300, CancellationToken);
+
+			IsGreater(quote.EgressAmount.ParseInteger(), BigInteger.Zero);
+			AreEqual("Ethereum", vault.Chain);
+			IsTrue(vault.Calldata.StartsWith("0x", StringComparison.OrdinalIgnoreCase));
+		}
+		catch (ChainflipApiException error) when (error.StatusCode == HttpStatusCode.ServiceUnavailable &&
+			error.Message.Contains("Quoting is currently unavailable due to maintenance", StringComparison.OrdinalIgnoreCase))
+		{
+			Inconclusive("Chainflip reports that its quote service is undergoing maintenance.");
+		}
 	}
 
 	private static ChainflipAsset Asset(string chain, string symbol)
@@ -309,6 +356,25 @@ public class ChainflipTests : LiveMarketDataTestBase
 	protected override TimeSpan DataTimeout => TestContext?.TestName == nameof(Ticks)
 		? TimeSpan.FromSeconds(90)
 		: base.DataTimeout;
+
+	private protected override async ValueTask<string> GetVenueUnavailableReasonAsync(Exception failure)
+	{
+		if (failure is not AssertFailedException || !failure.Message.Contains("No ticks received", StringComparison.Ordinal))
+			return null;
+
+		using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
+		client.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Chainflip-LiveTests/1.0");
+		using var request = new StringContent("""{"jsonrpc":"2.0","id":1,"method":"cf_safe_mode_statuses","params":[]}""",
+			System.Text.Encoding.UTF8, "application/json");
+		using var response = await client.PostAsync("https://rpc.mainnet.chainflip.io", request, CancellationToken);
+		if (!response.IsSuccessStatusCode)
+			return null;
+
+		var json = JObject.Parse(await response.Content.ReadAsStringAsync(CancellationToken));
+		return json.SelectToken("result.swapping.swaps_enabled") is JValue { Value: false }
+			? "Chainflip State Chain has disabled swaps in safe mode."
+			: null;
+	}
 
 	/// <inheritdoc />
 	protected override DataType[] SkippedDataTypes =>
