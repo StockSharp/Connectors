@@ -49,9 +49,30 @@ sealed class BitoProRestClient : BaseLogReceiver
 
 	public async ValueTask<BitoProTicker> GetTickerAsync(string symbol,
 		CancellationToken cancellationToken)
-		=> (await SendGetAsync<BitoProDataResponse<BitoProTicker>>(
-			$"/tickers/{NormalizeSymbol(symbol)}", [], false,
-			cancellationToken)).Data;
+	{
+		var pair = NormalizeSymbol(symbol);
+		var response = await SendGetAsync<BitoProDataResponse<JToken>>(
+			$"/tickers/{pair}", [], false, cancellationToken);
+		var serializer = JsonSerializer.Create(_jsonSettings);
+
+		try
+		{
+			return response.Data switch
+			{
+				JObject ticker => ticker.ToObject<BitoProTicker>(serializer),
+				JArray tickers => tickers.ToObject<BitoProTicker[]>(serializer)
+					.FirstOrDefault(ticker => ticker?.Pair.EqualsIgnoreCase(pair) == true),
+				null => null,
+				_ => throw new InvalidDataException(
+					"BitoPro returned an unexpected response shape."),
+			};
+		}
+		catch (JsonException error)
+		{
+			throw new InvalidDataException(
+				"BitoPro returned an unexpected response shape.", error);
+		}
+	}
 
 	public ValueTask<BitoProOrderBook> GetOrderBookAsync(string symbol,
 		int depth, CancellationToken cancellationToken)

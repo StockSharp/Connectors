@@ -141,6 +141,25 @@ public class BitoProTests : LiveMarketDataTestBase
 	}
 
 	[TestMethod]
+	[DataRow(false)]
+	[DataRow(true)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task PublicTickerReadsTheRequestedPair(bool isArray)
+	{
+		const string ticker = """{"pair":"BTC_TWD","lastPrice":"2066168"}""";
+		const string otherTicker = """{"pair":"eth_twd","lastPrice":"65346.1"}""";
+		var data = isArray ? $"[{otherTicker},{ticker}]" : ticker;
+		await using var rest = new HistoryHttpServer(() => $"{{\"data\":{data}}}", CancellationToken);
+		using var client = new BitoProRestClient(new Uri(rest.Address, "v3").AbsoluteUri, null, null, null);
+
+		var result = await client.GetTickerAsync("BTC/TWD", CancellationToken);
+
+		AreEqual("/v3/tickers/btc_twd", rest.RequestTarget);
+		AreEqual("BTC_TWD", result.Pair);
+		AreEqual(2066168m, result.LastPrice);
+	}
+
+	[TestMethod]
 	public void WebSocketModelsUseEventEnvelope()
 	{
 		const string bookJson =
