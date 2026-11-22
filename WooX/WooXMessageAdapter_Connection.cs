@@ -15,23 +15,16 @@ public partial class WooXMessageAdapter
 		await SendOutConnectionStateAsync(ConnectionStates.Connecting, cancellationToken);
 		try
 		{
-			if (RestClient.IsCredentialsAvailable && ApplicationId.IsEmpty())
-				throw new InvalidOperationException(
-					"WOO X application ID is required when API credentials are configured.");
-
 			var symbols = await RestClient.GetSymbolsAsync(cancellationToken);
 			RegisterSymbols(symbols.Rows);
 			_symbolsLoaded = true;
 
-			_publicApplicationId = ApplicationId.IsEmpty()
-				? Guid.NewGuid().ToString("D")
-				: ApplicationId.Trim();
-			_publicWsClient = CreatePublicClient(_publicApplicationId);
+			_publicWsClient = CreatePublicClient();
 			await _publicWsClient.ConnectAsync(cancellationToken);
 
 			if (RestClient.IsCredentialsAvailable)
 			{
-				_privateWsClient = CreatePrivateClient(ApplicationId.Trim());
+				_privateWsClient = CreatePrivateClient();
 				await _privateWsClient.ConnectAsync(cancellationToken);
 			}
 
@@ -75,9 +68,9 @@ public partial class WooXMessageAdapter
 			await _privateWsClient.PingAsync(cancellationToken);
 	}
 
-	private WooXPublicWsClient CreatePublicClient(string applicationId)
+	private WooXPublicWsClient CreatePublicClient()
 	{
-		var client = new WooXPublicWsClient(PublicWsEndpoint, applicationId,
+		var client = new WooXPublicWsClient(NormalizePublicWsEndpoint(PublicWsEndpoint), RestClient,
 			ReConnectionSettings.WorkingTime, ReConnectionSettings.ReAttemptCount)
 		{
 			Parent = this,
@@ -93,9 +86,9 @@ public partial class WooXMessageAdapter
 		return client;
 	}
 
-	private WooXPrivateWsClient CreatePrivateClient(string applicationId)
+	private WooXPrivateWsClient CreatePrivateClient()
 	{
-		var client = new WooXPrivateWsClient(PrivateWsEndpoint, applicationId, RestClient,
+		var client = new WooXPrivateWsClient(NormalizePrivateWsEndpoint(PrivateWsEndpoint), RestClient,
 			ReConnectionSettings.WorkingTime, ReConnectionSettings.ReAttemptCount)
 		{
 			Parent = this,
@@ -142,7 +135,6 @@ public partial class WooXMessageAdapter
 
 		_restClient?.Dispose();
 		_restClient = null;
-		_publicApplicationId = null;
 		_portfolioSubscriptionId = 0;
 		_orderStatusSubscriptionId = 0;
 		ClearState();

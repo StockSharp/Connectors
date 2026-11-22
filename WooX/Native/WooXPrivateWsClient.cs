@@ -1,5 +1,7 @@
 namespace StockSharp.WooX.Native;
 
+using Nito.AsyncEx;
+
 sealed class WooXPrivateWsClient : BaseLogReceiver
 {
 	private readonly string _endpoint;
@@ -9,6 +11,7 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 	private readonly Lock _sync = new();
 	private readonly HashSet<WooXWsTopics> _subscriptions = [];
 	private readonly SemaphoreSlim _sendSync = new(1, 1);
+	private readonly AsyncLock _connectionSync = new();
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{
 		DateParseHandling = DateParseHandling.None,
@@ -17,15 +20,14 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 		Culture = CultureInfo.InvariantCulture,
 	};
 	private WebSocketClient _client;
-	private TaskCompletionSource<bool> _authentication;
 	private long _localId;
-	private bool _isAuthenticated;
+	private long _refreshAt;
+	private bool _isRunning;
 
-	public WooXPrivateWsClient(string endpoint, string applicationId,
+	public WooXPrivateWsClient(string endpoint,
 		WooXRestClient restClient, WorkingTime workingTime, int reconnectAttempts)
 	{
-		_endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/') + "/" +
-			Uri.EscapeDataString(applicationId.ThrowIfEmpty(nameof(applicationId)));
+		_endpoint = endpoint.ThrowIfEmpty(nameof(endpoint));
 		_restClient = restClient ?? throw new ArgumentNullException(nameof(restClient));
 		_workingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime));
 		_reconnectAttempts = reconnectAttempts;
@@ -48,25 +50,19 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 
 	public async ValueTask ConnectAsync(CancellationToken cancellationToken)
 	{
-		if (_client is not null)
+		using var connection = await _connectionSync.LockAsync(cancellationToken);
+		if (_isRunning)
 			throw new InvalidOperationException("WOO X private WebSocket is already initialized.");
-		_authentication = new(TaskCreationOptions.RunContinuationsAsynchronously);
-		var client = _client = CreateClient();
-		try
-		{
-			await client.ConnectAsync(cancellationToken);
-			await AuthenticateAsync(client, cancellationToken);
-			await _authentication.Task.WaitAsync(TimeSpan.FromSeconds(15), cancellationToken);
-		}
-		catch
-		{
-			await DisposeClientAsync(cancellationToken);
-			throw;
-		}
+		await OpenClientAsync(cancellationToken);
+		_isRunning = true;
 	}
 
-	public ValueTask DisconnectAsync(CancellationToken cancellationToken)
-		=> DisposeClientAsync(cancellationToken);
+	public async ValueTask DisconnectAsync(CancellationToken cancellationToken)
+	{
+		using var connection = await _connectionSync.LockAsync(cancellationToken);
+		_isRunning = false;
+		await DisposeClientAsync(cancellationToken);
+	}
 
 	public ValueTask SubscribeBalancesAsync(CancellationToken cancellationToken)
 		=> ChangeSubscriptionAsync(WooXWsTopics.Balance, true, cancellationToken);
@@ -86,22 +82,61 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 	public ValueTask UnsubscribePositionsAsync(CancellationToken cancellationToken)
 		=> ChangeSubscriptionAsync(WooXWsTopics.Position, false, cancellationToken);
 
-	public ValueTask PingAsync(CancellationToken cancellationToken)
-		=> _client is { IsConnected: true } client
-			? SendAsync(client, new WooXWsHeartbeat { Event = "ping" }, cancellationToken)
-			: default;
-
-	private WebSocketClient CreateClient()
+	public async ValueTask PingAsync(CancellationToken cancellationToken)
 	{
+		using var connection = await _connectionSync.LockAsync(cancellationToken);
+		if (!_isRunning)
+			return;
+		var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+		if (now >= _refreshAt)
+		{
+			await OpenClientAsync(cancellationToken);
+			await OnStateChangedAsync(_client, ConnectionStates.Restored, cancellationToken);
+		}
+		if (_client is { IsConnected: true } client)
+			await SendAsync(client, new WooXWsHeartbeat { Command = "PING", Timestamp = now }, cancellationToken);
+	}
+
+	private async ValueTask OpenClientAsync(CancellationToken cancellationToken)
+	{
+		var listenKey = (await _restClient.GetListenKeyAsync(cancellationToken)).Data;
+		var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+		if (listenKey is null || listenKey.Key.IsEmpty() || listenKey.ExpiresAt <= now)
+			throw new InvalidDataException("WOO X did not return a valid WebSocket listen key.");
+
+		// Generating a listen key invalidates the previous one.
+		await DisposeClientAsync(cancellationToken);
+		var client = _client = CreateClient(listenKey.Key);
+		try
+		{
+			await client.ConnectAsync(cancellationToken);
+			_refreshAt = Math.Max(now + 10_000, listenKey.ExpiresAt - 60_000);
+		}
+		catch (Exception error)
+		{
+			await DisposeClientAsync(cancellationToken);
+			var safeError = SanitizeError(error, listenKey.Key);
+			if (safeError != error)
+				throw safeError;
+			throw;
+		}
+	}
+
+	private WebSocketClient CreateClient(string listenKey)
+	{
+		var address = new UriBuilder(_endpoint);
+		var parameter = "key=" + Uri.EscapeDataString(listenKey);
+		address.Query = address.Query.IsEmpty() ? parameter : address.Query[1..] + "&" + parameter;
 		WebSocketClient client = null;
 		client = new WebSocketClient(
-			_endpoint,
+			address.Uri.AbsoluteUri,
 			(state, token) => OnStateChangedAsync(client, state, token),
-			(error, token) => RaiseErrorAsync(error, token),
+			(error, token) => RaiseErrorAsync(SanitizeError(error, listenKey), token),
 			(socket, message, token) => OnProcessAsync(socket, message, token),
-			(s, a) => this.AddInfoLog(s, a),
-			(s, a) => this.AddErrorLog(s, a),
-			(s, a) => this.AddVerboseLog(s, a))
+			// WebSocketClient logs the full URI, which contains the listen key.
+			static (_, _) => { },
+			static (_, _) => { },
+			static (_, _) => { })
 		{
 			ReconnectAttempts = _reconnectAttempts,
 			WorkingTime = _workingTime,
@@ -118,11 +153,18 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 		return client;
 	}
 
+	private static Exception SanitizeError(Exception error, string listenKey)
+	{
+		var details = error.ToString();
+		return details.Contains(listenKey, StringComparison.Ordinal) || details.Contains(Uri.EscapeDataString(listenKey), StringComparison.OrdinalIgnoreCase)
+			? new InvalidOperationException("WOO X private WebSocket connection failed.")
+			: error;
+	}
+
 	private async ValueTask DisposeClientAsync(CancellationToken cancellationToken)
 	{
 		var client = _client;
 		_client = null;
-		_isAuthenticated = false;
 		if (client is null)
 			return;
 		try
@@ -139,32 +181,18 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 	private async ValueTask OnStateChangedAsync(WebSocketClient client, ConnectionStates state,
 		CancellationToken cancellationToken)
 	{
+		if (client != _client)
+			return;
 		if (state == ConnectionStates.Restored)
 		{
-			_isAuthenticated = false;
-			_authentication = new(TaskCreationOptions.RunContinuationsAsynchronously);
-			await AuthenticateAsync(client, cancellationToken);
+			WooXWsTopics[] subscriptions;
+			using (_sync.EnterScope())
+				subscriptions = [.. _subscriptions];
+			foreach (var topic in subscriptions)
+				await SendSubscriptionAsync(client, topic, true, cancellationToken);
 		}
 		if (StateChanged is { } handler)
 			await handler.InvokeAsync(state, cancellationToken);
-	}
-
-	private ValueTask AuthenticateAsync(WebSocketClient client,
-		CancellationToken cancellationToken)
-	{
-		var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-			.ToString(CultureInfo.InvariantCulture);
-		return SendAsync(client, new WooXWsAuth
-		{
-			Id = "auth-" + Interlocked.Increment(ref _localId)
-				.ToString(CultureInfo.InvariantCulture),
-			Parameters = new()
-			{
-				ApiKey = _restClient.ApiKey,
-				Signature = _restClient.CreateWebSocketSignature(timestamp),
-				Timestamp = timestamp,
-			},
-		}, cancellationToken);
 	}
 
 	private async ValueTask ChangeSubscriptionAsync(WooXWsTopics topic, bool isSubscribe,
@@ -175,8 +203,8 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 			if (isSubscribe ? !_subscriptions.Add(topic) : !_subscriptions.Remove(topic))
 				return;
 		}
-		if (_client?.IsConnected == true && _isAuthenticated)
-			await SendSubscriptionAsync(_client, topic, isSubscribe, cancellationToken);
+		if (_client is { IsConnected: true } client)
+			await SendSubscriptionAsync(client, topic, isSubscribe, cancellationToken);
 	}
 
 	private ValueTask SendSubscriptionAsync(WebSocketClient client, WooXWsTopics topic,
@@ -184,8 +212,8 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 		=> SendAsync(client, new WooXWsCommand
 		{
 			Id = Interlocked.Increment(ref _localId).ToString(CultureInfo.InvariantCulture),
-			Topic = GetTopic(topic),
-			Event = isSubscribe ? "subscribe" : "unsubscribe",
+			Parameters = [GetTopic(topic)],
+			Command = isSubscribe ? "SUBSCRIBE" : "UN_SUBSCRIBE",
 		}, cancellationToken);
 
 	private static string GetTopic(WooXWsTopics topic)
@@ -220,30 +248,12 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 		try
 		{
 			var header = Deserialize<WooXWsHeader>(payload);
-			if (header.Event.EqualsIgnoreCase("ping"))
+			if (header.Command.EqualsIgnoreCase("PING"))
 			{
-				await SendAsync(client, new WooXWsHeartbeat { Event = "pong" }, cancellationToken);
+				await SendAsync(client, new WooXWsHeartbeat { Command = "PONG", Timestamp = header.Timestamp }, cancellationToken);
 				return;
 			}
-			if (header.Event.EqualsIgnoreCase("auth"))
-			{
-				if (header.IsSuccess != true)
-				{
-					var error = new InvalidOperationException(
-						$"WOO X WebSocket authentication failed: {header.Message}".Trim());
-					_authentication?.TrySetException(error);
-					throw error;
-				}
-				_isAuthenticated = true;
-				_authentication?.TrySetResult(true);
-				WooXWsTopics[] subscriptions;
-				using (_sync.EnterScope())
-					subscriptions = [.. _subscriptions];
-				foreach (var topic in subscriptions)
-					await SendSubscriptionAsync(client, topic, true, cancellationToken);
-				return;
-			}
-			if (!header.Event.IsEmpty())
+			if (!header.Command.IsEmpty())
 			{
 				if (header.IsSuccess == false)
 					throw new InvalidOperationException(
@@ -256,8 +266,15 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 				{
 					var envelope = Deserialize<WooXWsEnvelope<WooXWsBalanceData>>(payload);
 					if (BalanceReceived is { } balanceHandler)
-						foreach (var balance in envelope.Data?.Balances?.Entries ?? [])
-							await balanceHandler.InvokeAsync(balance, envelope.Timestamp, cancellationToken);
+						foreach (var balance in envelope.Data?.Balances ?? [])
+							await balanceHandler.InvokeAsync(new WooXBalance
+							{
+								Token = balance.Token,
+								Holding = balance.Holding,
+								Frozen = balance.Frozen,
+								PnL24Hours = balance.PnL24Hours,
+								Timestamp = balance.Timestamp,
+							}, envelope.Timestamp, cancellationToken);
 					break;
 				}
 				case "executionreport":
@@ -271,8 +288,19 @@ sealed class WooXPrivateWsClient : BaseLogReceiver
 				{
 					var envelope = Deserialize<WooXWsEnvelope<WooXWsPositionData>>(payload);
 					if (PositionReceived is { } positionHandler)
-						foreach (var position in envelope.Data?.Positions?.Entries ?? [])
-							await positionHandler.InvokeAsync(position, envelope.Timestamp, cancellationToken);
+						foreach (var position in envelope.Data?.Positions ?? [])
+							await positionHandler.InvokeAsync(new WooXPosition
+							{
+								Symbol = position.Symbol,
+								Holding = position.Holding,
+								AverageOpenPrice = position.AverageOpenPrice,
+								PnL24Hours = position.PnL24Hours,
+								MarkPrice = position.MarkPrice,
+								Leverage = position.Leverage,
+								MarginMode = position.MarginMode,
+								PositionSide = position.PositionSide,
+								Timestamp = position.Timestamp / 1000m,
+							}, envelope.Timestamp, cancellationToken);
 					break;
 				}
 				default:

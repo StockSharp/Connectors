@@ -41,11 +41,6 @@ sealed class WooXRestClient : BaseLogReceiver
 
 	public bool IsCredentialsAvailable => !_apiKey.IsEmpty() && !_secret.IsEmpty();
 
-	public string ApiKey => _apiKey;
-
-	public string CreateWebSocketSignature(string timestamp)
-		=> Sign("|" + timestamp);
-
 	protected override void DisposeManaged()
 	{
 		_rateSync.Dispose();
@@ -76,6 +71,16 @@ sealed class WooXRestClient : BaseLogReceiver
 			$"v1/public/orderbook/{Uri.EscapeDataString(symbol)}",
 			new WooXOrderBookQuery { MaximumLevel = maximumLevel }, WooXApiVersions.V1,
 			false, cancellationToken);
+
+	public ValueTask<WooXDataResponse<WooXOrderBookData>> GetOrderBookSnapshotAsync(
+		string symbol, int maximumLevel, CancellationToken cancellationToken)
+		=> SendGetAsync<WooXDataResponse<WooXOrderBookData>>(_endpoint, "v3/public/orderbook",
+			new WooXOrderBookSnapshotQuery { Symbol = symbol, MaximumLevel = maximumLevel },
+			WooXApiVersions.V3, false, cancellationToken);
+
+	public ValueTask<WooXDataResponse<WooXListenKey>> GetListenKeyAsync(CancellationToken cancellationToken)
+		=> SendJsonAsync<WooXDataResponse<WooXListenKey>, WooXListenKeyRequest>(
+			HttpMethod.Post, "v3/account/listenKey", new(), cancellationToken);
 
 	public ValueTask<WooXKlinesResponse> GetKlinesAsync(WooXKlinesQuery query,
 		CancellationToken cancellationToken)

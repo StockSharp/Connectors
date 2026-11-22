@@ -28,9 +28,10 @@ sealed class WebSocketTestServer : IDisposable
 
 	public string Endpoint { get; }
 
-	public async Task<WebSocket> AcceptAsync(CancellationToken cancellationToken)
+	public async Task<WebSocket> AcceptAsync(CancellationToken cancellationToken, Action<HttpListenerRequest> inspect = null)
 	{
 		var context = await _listener.GetContextAsync().WaitAsync(cancellationToken);
+		inspect?.Invoke(context.Request);
 		return (await context.AcceptWebSocketAsync(null)).WebSocket;
 	}
 

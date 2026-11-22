@@ -19,8 +19,8 @@ public partial class WooXMessageAdapter : MessageAdapter, IKeySecretAdapter
 {
 	private const string _defaultRestEndpoint = "https://api.woox.io";
 	private const string _defaultHistoricalRestEndpoint = "https://api-pub.woox.io";
-	private const string _defaultPublicWsEndpoint = "wss://wss.woox.io/ws/stream";
-	private const string _defaultPrivateWsEndpoint = "wss://wss.woox.io/v2/ws/private/stream";
+	private const string _defaultPublicWsEndpoint = "wss://wss.woox.io/v3/public";
+	private const string _defaultPrivateWsEndpoint = "wss://wss.woox.io/v3/private";
 
 	/// <summary>
 	/// Supported candle time-frames.
@@ -48,7 +48,7 @@ public partial class WooXMessageAdapter : MessageAdapter, IKeySecretAdapter
 	public SecureString Secret { get; set; }
 
 	/// <summary>
-	/// WOO X application identifier used by WebSocket endpoints.
+	/// Legacy WOO X application identifier stored in existing connection settings.
 	/// </summary>
 	[Display(
 		ResourceType = typeof(LocalizedStrings),
@@ -56,7 +56,6 @@ public partial class WooXMessageAdapter : MessageAdapter, IKeySecretAdapter
 		Description = LocalizedStrings.AppIdKey,
 		GroupName = LocalizedStrings.ConnectionKey,
 		Order = 2)]
-	[BasicSetting]
 	public string ApplicationId { get; set; }
 
 	/// <summary>
@@ -133,13 +132,25 @@ public partial class WooXMessageAdapter : MessageAdapter, IKeySecretAdapter
 		HistoricalRestEndpoint = NormalizeEndpoint(
 			storage.GetValue(nameof(HistoricalRestEndpoint), HistoricalRestEndpoint),
 			_defaultHistoricalRestEndpoint, "https");
-		PublicWsEndpoint = NormalizeEndpoint(
-			storage.GetValue(nameof(PublicWsEndpoint), PublicWsEndpoint),
-			_defaultPublicWsEndpoint, "wss");
-		PrivateWsEndpoint = NormalizeEndpoint(
-			storage.GetValue(nameof(PrivateWsEndpoint), PrivateWsEndpoint),
-			_defaultPrivateWsEndpoint, "wss");
+		PublicWsEndpoint = NormalizePublicWsEndpoint(storage.GetValue(nameof(PublicWsEndpoint), PublicWsEndpoint));
+		PrivateWsEndpoint = NormalizePrivateWsEndpoint(storage.GetValue(nameof(PrivateWsEndpoint), PrivateWsEndpoint));
 	}
+
+	private static string NormalizePublicWsEndpoint(string endpoint)
+		=> NormalizeEndpoint(endpoint, _defaultPublicWsEndpoint, "wss") switch
+		{
+			"wss://wss.woox.io/ws/stream" or "wss://wss.woox.io/v2/ws/public/stream" => _defaultPublicWsEndpoint,
+			"wss://wss.staging.woox.io/ws/stream" or "wss://wss.staging.woox.io/v2/ws/public/stream" => "wss://wss.staging.woox.io/v3/public",
+			var normalized => normalized,
+		};
+
+	private static string NormalizePrivateWsEndpoint(string endpoint)
+		=> NormalizeEndpoint(endpoint, _defaultPrivateWsEndpoint, "wss") switch
+		{
+			"wss://wss.woox.io/v2/ws/private/stream" => _defaultPrivateWsEndpoint,
+			"wss://wss.staging.woox.io/v2/ws/private/stream" => "wss://wss.staging.woox.io/v3/private",
+			var normalized => normalized,
+		};
 
 	private static string NormalizeEndpoint(string endpoint, string fallback, string scheme)
 	{
@@ -151,5 +162,5 @@ public partial class WooXMessageAdapter : MessageAdapter, IKeySecretAdapter
 
 	/// <inheritdoc />
 	public override string ToString()
-		=> base.ToString() + $": Key={Key.ToId()}, App={ApplicationId}";
+		=> base.ToString() + $": Key={Key.ToId()}";
 }

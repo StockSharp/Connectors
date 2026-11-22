@@ -13,7 +13,6 @@ public partial class WooXMessageAdapter
 	private WooXRestClient _restClient;
 	private WooXPublicWsClient _publicWsClient;
 	private WooXPrivateWsClient _privateWsClient;
-	private string _publicApplicationId;
 	private long _portfolioSubscriptionId;
 	private long _orderStatusSubscriptionId;
 	private long _publicTradeId;
@@ -104,7 +103,7 @@ public partial class WooXMessageAdapter
 		EnsureConnected();
 		if (!RestClient.IsCredentialsAvailable || _privateWsClient is null)
 			throw new InvalidOperationException(
-				"WOO X API key, secret, and application ID are required for private operations.");
+				"WOO X requires an API key and secret for private operations.");
 	}
 
 	private string GetSymbol(SecurityId securityId)

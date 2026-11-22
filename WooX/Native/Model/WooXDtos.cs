@@ -285,6 +285,24 @@ sealed class WooXOrderBookResponse : WooXResponse
 	public WooXNamedPriceLevel[] Bids { get; set; }
 }
 
+sealed class WooXOrderBookData
+{
+	[JsonProperty("asks")]
+	public WooXNamedPriceLevel[] Asks { get; set; }
+
+	[JsonProperty("bids")]
+	public WooXNamedPriceLevel[] Bids { get; set; }
+}
+
+sealed class WooXOrderBookSnapshotQuery : IWooXParameters
+{
+	public string Symbol { get; init; }
+	public int MaximumLevel { get; init; }
+
+	public WooXParameter[] GetParameters()
+		=> [new("symbol", Symbol), new("maxLevel", MaximumLevel.ToString(CultureInfo.InvariantCulture))];
+}
+
 sealed class WooXOrderBookQuery : IWooXParameters
 {
 	public int MaximumLevel { get; init; }
@@ -880,8 +898,8 @@ sealed class WooXWsHeader
 	[JsonProperty("id")]
 	public string Id { get; set; }
 
-	[JsonProperty("event")]
-	public string Event { get; set; }
+	[JsonProperty("cmd")]
+	public string Command { get; set; }
 
 	[JsonProperty("topic")]
 	public string Topic { get; set; }
@@ -913,46 +931,40 @@ sealed class WooXWsCommand
 	[JsonProperty("id")]
 	public string Id { get; init; }
 
-	[JsonProperty("topic")]
-	public string Topic { get; init; }
+	[JsonProperty("params")]
+	public string[] Parameters { get; init; }
 
-	[JsonProperty("event")]
-	public string Event { get; init; }
+	[JsonProperty("cmd")]
+	public string Command { get; init; }
 }
 
 sealed class WooXWsHeartbeat
 {
-	[JsonProperty("event")]
-	public string Event { get; init; }
+	[JsonProperty("cmd")]
+	public string Command { get; init; }
+
+	[JsonProperty("ts")]
+	public long Timestamp { get; init; }
 }
 
-sealed class WooXWsAuth
+sealed class WooXListenKeyRequest
 {
-	[JsonProperty("id")]
-	public string Id { get; init; }
-
-	[JsonProperty("event")]
-	public string Event { get; init; } = "auth";
-
-	[JsonProperty("params")]
-	public WooXWsAuthParameters Parameters { get; init; }
+	[JsonProperty("type")]
+	public string Type => "WEBSOCKET";
 }
 
-sealed class WooXWsAuthParameters
+sealed class WooXListenKey
 {
-	[JsonProperty("apikey")]
-	public string ApiKey { get; init; }
+	[JsonProperty("authKey")]
+	public string Key { get; set; }
 
-	[JsonProperty("sign")]
-	public string Signature { get; init; }
-
-	[JsonProperty("timestamp")]
-	public string Timestamp { get; init; }
+	[JsonProperty("expiredTime")]
+	public long ExpiresAt { get; set; }
 }
 
 sealed class WooXWsBook
 {
-	[JsonProperty("symbol")]
+	[JsonProperty("s")]
 	public string Symbol { get; set; }
 
 	[JsonProperty("asks")]
@@ -960,23 +972,29 @@ sealed class WooXWsBook
 
 	[JsonProperty("bids")]
 	public WooXPriceLevel[] Bids { get; set; }
+
+	[JsonProperty("ts")]
+	public long Timestamp { get; set; }
+
+	[JsonProperty("prevTs")]
+	public long PreviousTimestamp { get; set; }
 }
 
 sealed class WooXWsTrade
 {
-	[JsonProperty("symbol")]
+	[JsonProperty("s")]
 	public string Symbol { get; set; }
 
-	[JsonProperty("price")]
+	[JsonProperty("px")]
 	public decimal Price { get; set; }
 
-	[JsonProperty("size")]
+	[JsonProperty("sx")]
 	public decimal Size { get; set; }
 
-	[JsonProperty("side")]
+	[JsonProperty("sd")]
 	public WooXSides Side { get; set; }
 
-	[JsonProperty("source")]
+	[JsonProperty("src")]
 	public int Source { get; set; }
 
 	[JsonProperty("rpi")]
@@ -985,184 +1003,196 @@ sealed class WooXWsTrade
 
 sealed class WooXWsTicker
 {
-	[JsonProperty("symbol")]
+	[JsonProperty("s")]
 	public string Symbol { get; set; }
 
-	[JsonProperty("open")]
+	[JsonProperty("o")]
 	public decimal Open { get; set; }
 
-	[JsonProperty("close")]
+	[JsonProperty("c")]
 	public decimal Close { get; set; }
 
-	[JsonProperty("high")]
+	[JsonProperty("h")]
 	public decimal High { get; set; }
 
-	[JsonProperty("low")]
+	[JsonProperty("l")]
 	public decimal Low { get; set; }
 
-	[JsonProperty("volume")]
+	[JsonProperty("v")]
 	public decimal Volume { get; set; }
 
-	[JsonProperty("amount")]
+	[JsonProperty("a")]
 	public decimal Amount { get; set; }
 
-	[JsonProperty("count")]
+	[JsonProperty("cnt")]
 	public long Count { get; set; }
 
-	[JsonProperty("lastTs")]
+	[JsonProperty("tts")]
 	public long LastTimestamp { get; set; }
 }
 
 sealed class WooXWsBestBidOffer
 {
-	[JsonProperty("symbol")]
+	[JsonProperty("s")]
 	public string Symbol { get; set; }
 
-	[JsonProperty("ask")]
+	[JsonProperty("ap")]
 	public decimal AskPrice { get; set; }
 
-	[JsonProperty("askSize")]
+	[JsonProperty("aq")]
 	public decimal AskSize { get; set; }
 
-	[JsonProperty("bid")]
+	[JsonProperty("bp")]
 	public decimal BidPrice { get; set; }
 
-	[JsonProperty("bidSize")]
+	[JsonProperty("bq")]
 	public decimal BidSize { get; set; }
 }
 
 sealed class WooXWsReferencePrice
 {
-	[JsonProperty("symbol")]
+	[JsonProperty("s")]
 	public string Symbol { get; set; }
 
-	[JsonProperty("price")]
+	[JsonProperty("px")]
 	public decimal Price { get; set; }
 }
 
 sealed class WooXWsCandle
 {
-	[JsonProperty("symbol")]
+	[JsonProperty("s")]
 	public string Symbol { get; set; }
 
-	[JsonProperty("type")]
+	[JsonProperty("t")]
 	public string Interval { get; set; }
 
-	[JsonProperty("open")]
+	[JsonProperty("o")]
 	public decimal Open { get; set; }
 
-	[JsonProperty("close")]
+	[JsonProperty("c")]
 	public decimal Close { get; set; }
 
-	[JsonProperty("high")]
+	[JsonProperty("h")]
 	public decimal High { get; set; }
 
-	[JsonProperty("low")]
+	[JsonProperty("l")]
 	public decimal Low { get; set; }
 
-	[JsonProperty("volume")]
+	[JsonProperty("v")]
 	public decimal Volume { get; set; }
 
-	[JsonProperty("amount")]
+	[JsonProperty("a")]
 	public decimal Amount { get; set; }
 
-	[JsonProperty("startTime")]
+	[JsonProperty("st")]
 	public long StartTime { get; set; }
 
-	[JsonProperty("endTime")]
+	[JsonProperty("et")]
 	public long EndTime { get; set; }
 }
 
 sealed class WooXWsBalanceData
 {
 	[JsonProperty("balances")]
-	public WooXWsBalances Balances { get; set; }
+	public WooXWsBalance[] Balances { get; set; }
 }
 
-[JsonConverter(typeof(WooXWsBalancesConverter))]
-sealed class WooXWsBalances
+sealed class WooXWsBalance
 {
-	public WooXBalance[] Entries { get; set; }
+	[JsonProperty("t")]
+	public string Token { get; set; }
+
+	[JsonProperty("h")]
+	public decimal Holding { get; set; }
+
+	[JsonProperty("f")]
+	public decimal Frozen { get; set; }
+
+	[JsonProperty("pnl")]
+	public decimal PnL24Hours { get; set; }
+
+	[JsonProperty("ts")]
+	public long Timestamp { get; set; }
 }
 
 sealed class WooXWsExecutionReport
 {
-	[JsonProperty("msgType")]
+	[JsonProperty("mt")]
 	public int MessageType { get; set; }
 
-	[JsonProperty("symbol")]
+	[JsonProperty("s")]
 	public string Symbol { get; set; }
 
-	[JsonProperty("clientOrderId")]
+	[JsonProperty("cid")]
 	public long ClientOrderId { get; set; }
 
-	[JsonProperty("orderId")]
+	[JsonProperty("oid")]
 	public long OrderId { get; set; }
 
-	[JsonProperty("type")]
+	[JsonProperty("t")]
 	public WooXOrderTypes Type { get; set; }
 
-	[JsonProperty("side")]
+	[JsonProperty("sd")]
 	public WooXSides Side { get; set; }
 
-	[JsonProperty("quantity")]
+	[JsonProperty("sx")]
 	public decimal Quantity { get; set; }
 
-	[JsonProperty("price")]
+	[JsonProperty("px")]
 	public decimal Price { get; set; }
 
-	[JsonProperty("tradeId")]
+	[JsonProperty("tid")]
 	public long TradeId { get; set; }
 
-	[JsonProperty("executedPrice")]
+	[JsonProperty("epx")]
 	public decimal ExecutedPrice { get; set; }
 
-	[JsonProperty("executedQuantity")]
+	[JsonProperty("esx")]
 	public decimal ExecutedQuantity { get; set; }
 
-	[JsonProperty("fee")]
+	[JsonProperty("f")]
 	public decimal Fee { get; set; }
 
-	[JsonProperty("feeAsset")]
+	[JsonProperty("fa")]
 	public string FeeAsset { get; set; }
 
-	[JsonProperty("totalExecutedQuantity")]
+	[JsonProperty("tesx")]
 	public decimal TotalExecutedQuantity { get; set; }
 
-	[JsonProperty("avgPrice")]
+	[JsonProperty("aepx")]
 	public decimal AveragePrice { get; set; }
 
-	[JsonProperty("status")]
+	[JsonProperty("ss")]
 	public WooXOrderStatuses Status { get; set; }
 
-	[JsonProperty("reason")]
+	[JsonProperty("rs")]
 	public string Reason { get; set; }
 
-	[JsonProperty("totalFee")]
+	[JsonProperty("tf")]
 	public decimal TotalFee { get; set; }
 
-	[JsonProperty("feeCurrency")]
+	[JsonProperty("tfc")]
 	public string FeeCurrency { get; set; }
 
-	[JsonProperty("visible")]
+	[JsonProperty("vsx")]
 	public decimal Visible { get; set; }
 
-	[JsonProperty("timestamp")]
+	[JsonProperty("ts")]
 	public long Timestamp { get; set; }
 
-	[JsonProperty("reduceOnly")]
+	[JsonProperty("ro")]
 	public bool IsReduceOnly { get; set; }
 
-	[JsonProperty("maker")]
+	[JsonProperty("mk")]
 	public bool IsMaker { get; set; }
 
-	[JsonProperty("leverage")]
+	[JsonProperty("lv")]
 	public int? Leverage { get; set; }
 
-	[JsonProperty("marginMode")]
+	[JsonProperty("m")]
 	public WooXMarginModes? MarginMode { get; set; }
 
-	[JsonProperty("positionSide")]
+	[JsonProperty("ps")]
 	public WooXPositionSides? PositionSide { get; set; }
 
 	[JsonProperty("rpi")]
@@ -1172,13 +1202,37 @@ sealed class WooXWsExecutionReport
 sealed class WooXWsPositionData
 {
 	[JsonProperty("positions")]
-	public WooXWsPositions Positions { get; set; }
+	public WooXWsPosition[] Positions { get; set; }
 }
 
-[JsonConverter(typeof(WooXWsPositionsConverter))]
-sealed class WooXWsPositions
+sealed class WooXWsPosition
 {
-	public WooXPosition[] Entries { get; set; }
+	[JsonProperty("s")]
+	public string Symbol { get; set; }
+
+	[JsonProperty("h")]
+	public decimal Holding { get; set; }
+
+	[JsonProperty("aop")]
+	public decimal AverageOpenPrice { get; set; }
+
+	[JsonProperty("pnl")]
+	public decimal PnL24Hours { get; set; }
+
+	[JsonProperty("mp")]
+	public decimal MarkPrice { get; set; }
+
+	[JsonProperty("lv")]
+	public int Leverage { get; set; }
+
+	[JsonProperty("m")]
+	public WooXMarginModes MarginMode { get; set; }
+
+	[JsonProperty("ps")]
+	public WooXPositionSides PositionSide { get; set; }
+
+	[JsonProperty("ts")]
+	public long Timestamp { get; set; }
 }
 
 sealed class WooXPriceLevelConverter : JsonConverter<WooXPriceLevel>
@@ -1211,83 +1265,5 @@ sealed class WooXPriceLevelConverter : JsonConverter<WooXPriceLevel>
 		writer.WriteValue(value.Price);
 		writer.WriteValue(value.Quantity);
 		writer.WriteEndArray();
-	}
-}
-
-sealed class WooXWsBalancesConverter : JsonConverter<WooXWsBalances>
-{
-	public override WooXWsBalances ReadJson(JsonReader reader, Type objectType,
-		WooXWsBalances existingValue, bool hasExistingValue, JsonSerializer serializer)
-	{
-		_ = objectType;
-		_ = existingValue;
-		_ = hasExistingValue;
-		if (reader.TokenType != JsonToken.StartObject)
-			throw new JsonSerializationException("WOO X balances must be an object.");
-		var entries = new List<WooXBalance>();
-		while (reader.Read() && reader.TokenType != JsonToken.EndObject)
-		{
-			if (reader.TokenType != JsonToken.PropertyName)
-				throw new JsonSerializationException("WOO X balance token name is missing.");
-			var token = (string)reader.Value;
-			if (!reader.Read())
-				throw new JsonSerializationException("WOO X balance value is missing.");
-			var balance = serializer.Deserialize<WooXBalance>(reader)
-				?? throw new JsonSerializationException("WOO X balance value is empty.");
-			balance.Token = token;
-			entries.Add(balance);
-		}
-		return new() { Entries = [.. entries] };
-	}
-
-	public override void WriteJson(JsonWriter writer, WooXWsBalances value,
-		JsonSerializer serializer)
-	{
-		writer.WriteStartObject();
-		foreach (var balance in value?.Entries ?? [])
-		{
-			writer.WritePropertyName(balance.Token);
-			serializer.Serialize(writer, balance);
-		}
-		writer.WriteEndObject();
-	}
-}
-
-sealed class WooXWsPositionsConverter : JsonConverter<WooXWsPositions>
-{
-	public override WooXWsPositions ReadJson(JsonReader reader, Type objectType,
-		WooXWsPositions existingValue, bool hasExistingValue, JsonSerializer serializer)
-	{
-		_ = objectType;
-		_ = existingValue;
-		_ = hasExistingValue;
-		if (reader.TokenType != JsonToken.StartObject)
-			throw new JsonSerializationException("WOO X positions must be an object.");
-		var entries = new List<WooXPosition>();
-		while (reader.Read() && reader.TokenType != JsonToken.EndObject)
-		{
-			if (reader.TokenType != JsonToken.PropertyName)
-				throw new JsonSerializationException("WOO X position symbol is missing.");
-			var symbol = (string)reader.Value;
-			if (!reader.Read())
-				throw new JsonSerializationException("WOO X position value is missing.");
-			var position = serializer.Deserialize<WooXPosition>(reader)
-				?? throw new JsonSerializationException("WOO X position value is empty.");
-			position.Symbol = symbol;
-			entries.Add(position);
-		}
-		return new() { Entries = [.. entries] };
-	}
-
-	public override void WriteJson(JsonWriter writer, WooXWsPositions value,
-		JsonSerializer serializer)
-	{
-		writer.WriteStartObject();
-		foreach (var position in value?.Entries ?? [])
-		{
-			writer.WritePropertyName(position.Symbol);
-			serializer.Serialize(writer, position);
-		}
-		writer.WriteEndObject();
 	}
 }

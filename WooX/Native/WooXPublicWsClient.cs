@@ -5,11 +5,14 @@ readonly record struct WooXWsSubscriptionKey(WooXWsTopics Topic, string Symbol,
 
 sealed class WooXPublicWsClient : BaseLogReceiver
 {
+	private const int _orderBookDepth = 200;
 	private readonly string _endpoint;
+	private readonly WooXRestClient _restClient;
 	private readonly WorkingTime _workingTime;
 	private readonly int _reconnectAttempts;
 	private readonly Lock _sync = new();
 	private readonly Dictionary<WooXWsSubscriptionKey, string> _subscriptions = [];
+	private readonly Dictionary<string, OrderBook> _books = new(StringComparer.OrdinalIgnoreCase);
 	private readonly SemaphoreSlim _sendSync = new(1, 1);
 	private readonly JsonSerializerSettings _jsonSettings = new()
 	{
@@ -21,11 +24,11 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 	private WebSocketClient _client;
 	private long _localId;
 
-	public WooXPublicWsClient(string endpoint, string applicationId, WorkingTime workingTime,
+	public WooXPublicWsClient(string endpoint, WooXRestClient restClient, WorkingTime workingTime,
 		int reconnectAttempts)
 	{
-		_endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).TrimEnd('/') + "/" +
-			Uri.EscapeDataString(applicationId.ThrowIfEmpty(nameof(applicationId)));
+		_endpoint = endpoint.ThrowIfEmpty(nameof(endpoint));
+		_restClient = restClient ?? throw new ArgumentNullException(nameof(restClient));
 		_workingTime = workingTime ?? throw new ArgumentNullException(nameof(workingTime));
 		_reconnectAttempts = reconnectAttempts;
 	}
@@ -133,7 +136,7 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 
 	public ValueTask PingAsync(CancellationToken cancellationToken)
 		=> _client is { IsConnected: true } client
-			? SendAsync(client, new WooXWsHeartbeat { Event = "ping" }, cancellationToken)
+			? SendAsync(client, new WooXWsHeartbeat { Command = "PING", Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, cancellationToken)
 			: default;
 
 	private WebSocketClient CreateClient()
@@ -208,9 +211,13 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 					return;
 				id = Interlocked.Increment(ref _localId).ToString(CultureInfo.InvariantCulture);
 				_subscriptions.Add(subscription, id);
+				if (subscription.Topic == WooXWsTopics.OrderBook)
+					_books[subscription.Symbol] = new();
 			}
 			else if (!_subscriptions.Remove(subscription, out id))
 				return;
+			else if (subscription.Topic == WooXWsTopics.OrderBook)
+				_books.Remove(subscription.Symbol);
 		}
 		if (_client?.IsConnected == true)
 			await SendSubscriptionAsync(_client, subscription, id, isSubscribe,
@@ -223,21 +230,21 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 		=> SendAsync(client, new WooXWsCommand
 		{
 			Id = id,
-			Topic = GetTopic(subscription),
-			Event = isSubscribe ? "subscribe" : "unsubscribe",
+			Parameters = [GetTopic(subscription)],
+			Command = isSubscribe ? "SUBSCRIBE" : "UN_SUBSCRIBE",
 		}, cancellationToken);
 
 	private static string GetTopic(WooXWsSubscriptionKey subscription)
 		=> subscription.Topic switch
 		{
-			WooXWsTopics.Ticker => subscription.Symbol + "@ticker",
-			WooXWsTopics.BestBidOffer => subscription.Symbol + "@bbo",
-			WooXWsTopics.OrderBook => subscription.Symbol + "@orderbook",
-			WooXWsTopics.Trade => subscription.Symbol + "@trade",
-			WooXWsTopics.Candle => subscription.Symbol + "@kline_" +
+			WooXWsTopics.Ticker => "ticker@" + subscription.Symbol,
+			WooXWsTopics.BestBidOffer => "bbo@" + subscription.Symbol,
+			WooXWsTopics.OrderBook => $"orderbookupdate@{subscription.Symbol}@{_orderBookDepth}",
+			WooXWsTopics.Trade => "trade@" + subscription.Symbol,
+			WooXWsTopics.Candle => $"kline@{subscription.Symbol}@" +
 				subscription.TimeFrame.ToWooXWsInterval(),
-			WooXWsTopics.IndexPrice => subscription.Symbol + "@indexprice",
-			WooXWsTopics.MarkPrice => subscription.Symbol + "@markprice",
+			WooXWsTopics.IndexPrice => "indexprice@" + subscription.Symbol,
+			WooXWsTopics.MarkPrice => "markprice@" + subscription.Symbol,
 			_ => throw new ArgumentOutOfRangeException(nameof(subscription), subscription, null),
 		};
 
@@ -264,56 +271,54 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 		try
 		{
 			var header = Deserialize<WooXWsHeader>(payload);
-			if (header.Event.EqualsIgnoreCase("ping"))
+			if (header.Command.EqualsIgnoreCase("PING"))
 			{
-				await SendAsync(client, new WooXWsHeartbeat { Event = "pong" }, cancellationToken);
+				await SendAsync(client, new WooXWsHeartbeat { Command = "PONG", Timestamp = header.Timestamp }, cancellationToken);
 				return;
 			}
-			if (!header.Event.IsEmpty())
+			if (!header.Command.IsEmpty())
 			{
 				if (header.IsSuccess == false)
 					throw new InvalidOperationException(
 						$"WOO X WebSocket request failed: {header.Message}".Trim());
 				return;
 			}
-			if (header.Topic.EndsWith("@ticker", StringComparison.OrdinalIgnoreCase))
+			var topic = header.Topic?.Split('@', 2)[0]?.ToLowerInvariant();
+			if (topic == "ticker")
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsTicker>>(payload);
 				if (envelope.Data is not null && TickerReceived is { } tickerHandler)
 					await tickerHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
-			else if (header.Topic.EndsWith("@bbo", StringComparison.OrdinalIgnoreCase))
+			else if (topic == "bbo")
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsBestBidOffer>>(payload);
 				if (envelope.Data is not null && BestBidOfferReceived is { } bboHandler)
 					await bboHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
-			else if (header.Topic.EndsWith("@orderbook", StringComparison.OrdinalIgnoreCase) ||
-				header.Topic.EndsWith("@orderbook100", StringComparison.OrdinalIgnoreCase))
+			else if (topic == "orderbookupdate")
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsBook>>(payload);
-				if (envelope.Data is not null && BookReceived is { } bookHandler)
-					await bookHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
+				if (envelope.Data is not null)
+					await ApplyOrderBookUpdateAsync(envelope.Data, cancellationToken);
 			}
-			else if (header.Topic.EndsWith("@trade", StringComparison.OrdinalIgnoreCase))
+			else if (topic == "trade")
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsTrade>>(payload);
 				if (envelope.Data is not null && TradeReceived is { } tradeHandler)
 					await tradeHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
-			else if (header.Topic.Contains("@kline_", StringComparison.OrdinalIgnoreCase))
+			else if (topic == "kline")
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsCandle>>(payload);
 				if (envelope.Data is not null && CandleReceived is { } candleHandler)
 					await candleHandler.InvokeAsync(envelope.Data, envelope.Timestamp, cancellationToken);
 			}
-			else if (header.Topic.EndsWith("@indexprice", StringComparison.OrdinalIgnoreCase) ||
-				header.Topic.EndsWith("@markprice", StringComparison.OrdinalIgnoreCase))
+			else if (topic is "indexprice" or "markprice")
 			{
 				var envelope = Deserialize<WooXWsEnvelope<WooXWsReferencePrice>>(payload);
 				if (envelope.Data is not null && ReferencePriceReceived is { } priceHandler)
-					await priceHandler.InvokeAsync(header.Topic.EndsWith("@indexprice",
-						StringComparison.OrdinalIgnoreCase)
+					await priceHandler.InvokeAsync(topic == "indexprice"
 						? WooXWsTopics.IndexPrice
 						: WooXWsTopics.MarkPrice,
 						envelope.Data, envelope.Timestamp, cancellationToken);
@@ -321,10 +326,87 @@ sealed class WooXPublicWsClient : BaseLogReceiver
 			else
 				throw new InvalidDataException($"Unknown WOO X WebSocket topic '{header.Topic}'.");
 		}
-		catch (Exception error) when (error is JsonException or InvalidDataException or
+		catch (Exception error) when (error is JsonException or InvalidDataException or HttpRequestException or
 			InvalidOperationException)
 		{
 			await RaiseErrorAsync(error, cancellationToken);
+		}
+	}
+
+	private async ValueTask ApplyOrderBookUpdateAsync(WooXWsBook update, CancellationToken cancellationToken)
+	{
+		if (update.Symbol.IsEmpty() || update.Timestamp <= 0 || update.PreviousTimestamp <= 0)
+			throw new InvalidDataException("WOO X order book update is missing its symbol or sequence timestamps.");
+
+		OrderBook book;
+		using (_sync.EnterScope())
+			book = _books.GetValueOrDefault(update.Symbol);
+		if (book is null || update.Timestamp <= book.Timestamp)
+			return;
+
+		if (book.Timestamp != update.PreviousTimestamp)
+		{
+			var snapshot = await _restClient.GetOrderBookSnapshotAsync(update.Symbol, _orderBookDepth, cancellationToken);
+			if (snapshot.Data is null || snapshot.Timestamp <= 0)
+				throw new InvalidDataException("WOO X order book snapshot is missing its levels or timestamp.");
+			if (snapshot.Timestamp < update.PreviousTimestamp)
+				return;
+			book.Reset(snapshot.Data, (long)snapshot.Timestamp);
+		}
+
+		if (book.Timestamp == update.PreviousTimestamp)
+			book.Apply(update);
+
+		using (_sync.EnterScope())
+			if (book != _books.GetValueOrDefault(update.Symbol))
+				return;
+
+		if (BookReceived is { } handler)
+			await handler.InvokeAsync(book.ToSnapshot(update.Symbol), book.Timestamp, cancellationToken);
+	}
+
+	private sealed class OrderBook
+	{
+		private readonly SortedDictionary<decimal, WooXPriceLevel> _bids = new(Comparer<decimal>.Create((left, right) => right.CompareTo(left)));
+		private readonly SortedDictionary<decimal, WooXPriceLevel> _asks = new();
+
+		public long Timestamp { get; private set; }
+
+		public void Reset(WooXOrderBookData snapshot, long timestamp)
+		{
+			_bids.Clear();
+			_asks.Clear();
+			ApplySide(_bids, (snapshot.Bids ?? []).Select(static level => new WooXPriceLevel { Price = level.Price, Quantity = level.Quantity }));
+			ApplySide(_asks, (snapshot.Asks ?? []).Select(static level => new WooXPriceLevel { Price = level.Price, Quantity = level.Quantity }));
+			Timestamp = timestamp;
+		}
+
+		public void Apply(WooXWsBook update)
+		{
+			ApplySide(_bids, update.Bids);
+			ApplySide(_asks, update.Asks);
+			Timestamp = update.Timestamp;
+		}
+
+		public WooXWsBook ToSnapshot(string symbol) => new()
+		{
+			Symbol = symbol,
+			Bids = [.. _bids.Values],
+			Asks = [.. _asks.Values],
+		};
+
+		private static void ApplySide(SortedDictionary<decimal, WooXPriceLevel> side, IEnumerable<WooXPriceLevel> update)
+		{
+			foreach (var level in update ?? [])
+			{
+				if (level.Quantity == 0)
+					side.Remove(level.Price);
+				else
+					side[level.Price] = level;
+			}
+
+			foreach (var price in side.Keys.Skip(_orderBookDepth).ToArray())
+				side.Remove(price);
 		}
 	}
 
