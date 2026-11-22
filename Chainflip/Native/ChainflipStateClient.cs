@@ -313,13 +313,13 @@ sealed class ChainflipStateClient : BaseLogReceiver
 				var baseUnits = amounts.Value<string>("base").ParseInteger();
 				var quoteUnits = amounts.Value<string>("quote").ParseInteger();
 				if (baseUnits < 0 || quoteUnits < 0 ||
-					(baseUnits == 0) == (quoteUnits == 0))
+					(baseUnits == 0 && quoteUnits == 0))
 					throw new InvalidDataException(
 						"Chainflip range fill has invalid bought amounts.");
 				if (baseUnits > 0)
 					GetAccumulator(result, market, Sides.Sell).BaseUnits +=
 						baseUnits;
-				else
+				if (quoteUnits > 0)
 					GetAccumulator(result, market, Sides.Buy).QuoteOnlyUnits +=
 						quoteUnits;
 			}

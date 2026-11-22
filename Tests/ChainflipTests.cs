@@ -1,6 +1,7 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -290,6 +291,48 @@ public class ChainflipTests : LiveMarketDataTestBase
 		AreEqual("cf_pool_orderbook", request["method"].Value<string>());
 		AreEqual(blockHash, request["params"]["at"].Value<string>());
 		AreEqual(1, request["params"]["orders"].Value<int>());
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task BlockTradesIncludeBothDirectionsOfRangeOrderFill()
+	{
+		const string blockHash = "0x1111111111111111111111111111111111111111111111111111111111111111";
+		const long blockNumber = 67;
+		var market = Market();
+		var markets = new Dictionary<string, ChainflipMarket> { [market.Key] = market };
+		var fills = $$$"""
+			{"block_hash":"{{{blockHash}}}","block_number":{{{blockNumber}}},"timestamp":1710000000000,"fills":[
+				{"range_order":{
+					"base_asset":{"chain":"Ethereum","asset":"USDT"},
+					"quote_asset":{"chain":"Ethereum","asset":"USDC"},
+					"bought_amounts":{"base":"0x1e8480","quote":"0x2dc6c0"}
+				}}
+			]}
+			""";
+
+		HistoryHttpServer rpc = null;
+		await using var server = rpc = new HistoryHttpServer(() =>
+		{
+			var call = JObject.Parse(rpc.RequestBody);
+			var reply = call.Value<string>("method") switch
+			{
+				"chain_getBlockHash" => $"\"{blockHash}\"",
+				"cf_lp_get_order_fills" => fills,
+				"cf_pool_orderbook" => _executableBook,
+				var method => throw new InvalidOperationException($"Unexpected RPC method {method}.")
+			};
+			return $$"""{"jsonrpc":"2.0","id":{{call.Value<long>("id")}},"result":{{reply}}}""";
+		}, CancellationToken);
+		using var client = new ChainflipStateClient(server.Address.AbsoluteUri);
+
+		var block = await client.GetBlockTradesAsync(blockNumber, markets, CancellationToken);
+
+		AreEqual(2, block.Trades.Length);
+		AreEqual(2m, block.Trades.Single(trade => trade.Side == Sides.Sell).Volume);
+		var buy = block.Trades.Single(trade => trade.Side == Sides.Buy);
+		AreEqual(ChainflipExtensions.DecodeSqrtPrice("0x100319d4a7fad6ea3dbd4fc96", 6, 6), buy.Price);
+		AreEqual(3m / buy.Price, buy.Volume);
 	}
 
 	[TestMethod]
