@@ -21,7 +21,7 @@ public class THORChainMarketDataTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "RUNE-BTC",
+		SecurityCode = "RUNE-ETH",
 		BoardCode = BoardCodes.THORChain,
 	};
 
@@ -29,10 +29,8 @@ public class THORChainMarketDataTests : LiveMarketDataTestBase
 	/// <remarks>
 	/// Both are rebuilt from Midgard swap actions that carry RUNE on one leg, and
 	/// nowadays traffic is almost entirely asset to asset - RUNE shows up only as the
-	/// internal or affiliate leg, which the adapter rightly ignores. Over 1000 BTC.BTC
-	/// actions (77 hours) only eight swaps were RUNE against BTC, so the window these
-	/// checks look at is empty far more often than not. Level1 stays covered, it comes
-	/// from executable quotes rather than from history.
+	/// internal or affiliate leg, which the adapter ignores. The history window often
+	/// has no direct RUNE swaps. Level1 exercises executable quotes for the ETH pool.
 	/// </remarks>
 	protected override DataType[] SkippedDataTypes =>
 	[
