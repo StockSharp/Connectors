@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -18,6 +19,28 @@ using StockSharp.Messages;
 [TestClass]
 public class LcxTests : LiveMarketDataTestBase
 {
+	private protected override async ValueTask<string> GetVenueUnavailableReasonAsync(Exception failure)
+	{
+		if (failure is not AssertFailedException || !failure.Message.Contains("No candles received", StringComparison.Ordinal))
+			return null;
+
+		var to = DateTimeOffset.UtcNow;
+		var from = to - CandleTimeFrame.Multiply(CandlesDepth);
+		var pair = Uri.EscapeDataString(TestSecurityId.SecurityCode);
+		var resolution = LcxRestClient.ToResolution(CandleTimeFrame);
+		using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
+		using var response = await client.GetAsync(
+			$"https://api-kline.lcx.com/v1/market/kline?pair={pair}&resolution={resolution}&from={from.ToUnixTimeSeconds()}&to={to.ToUnixTimeSeconds()}",
+			CancellationToken);
+		if (!response.IsSuccessStatusCode)
+			return null;
+
+		var json = JObject.Parse(await response.Content.ReadAsStringAsync(CancellationToken));
+		return (string)json["status"] == "success" && json["data"] is JArray { Count: 0 }
+			? "LCX's candle API reports no data for the requested market and period."
+			: null;
+	}
+
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new LcxMessageAdapter(new IncrementalIdGenerator());
 
