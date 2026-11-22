@@ -166,16 +166,17 @@ public class FluidDexTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new FluidDexMessageAdapter(new IncrementalIdGenerator())
 	{
-		Pools = "0x667701e51b4d1ca244f17c78f7ab8744b4c99f9b",
+		Pools = "0x836951eb21f3df98273517b7249dceff270d34bf",
+		ProbeVolume = 0.01m,
 
 		// The default public RPC serves recent logs without an archive subscription.
-		HistoryBlockCount = 50,
+		HistoryBlockCount = 150,
 	};
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "USDT-USDC-F7",
+		SecurityCode = "ETH-USDC-F1000",
 		BoardCode = BoardCodes.FluidDex,
 	};
 
@@ -187,8 +188,8 @@ public class FluidDexTests : LiveMarketDataTestBase
 	protected override TimeSpan DataTimeout => TimeSpan.FromSeconds(60);
 
 	/// <inheritdoc />
-	// Allow a wider window when this pool has no swap in the latest two minutes.
-	protected override int CandlesDepth => 10;
+	// Cover a half hour of swaps, including intervals between trades.
+	protected override int CandlesDepth => 30;
 
 	/// <inheritdoc />
 	protected override void ConfigureSubscription(MarketDataMessage message)
