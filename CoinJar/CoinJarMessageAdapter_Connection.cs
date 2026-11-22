@@ -1,7 +1,15 @@
 namespace StockSharp.CoinJar;
 
+using System.Net.WebSockets;
+
+using Nito.AsyncEx;
+
 public partial class CoinJarMessageAdapter
 {
+	private readonly AsyncLock _socketSync = new();
+	private volatile bool _pollPublicMarketData;
+	private int _publicPollInProgress;
+
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg,
 		CancellationToken cancellationToken)
@@ -18,8 +26,8 @@ public partial class CoinJarMessageAdapter
 		try
 		{
 			RegisterProducts(await RestClient.GetProductsAsync(cancellationToken));
-			_socketClient = CreateSocketClient();
-			await SocketClient.ConnectAsync(cancellationToken);
+			if (RestClient.IsCredentialsAvailable)
+				await EnsureSocketAsync(cancellationToken);
 			await SendOutConnectionStateAsync(ConnectionStates.Connected,
 				cancellationToken);
 		}
@@ -28,6 +36,41 @@ public partial class CoinJarMessageAdapter
 			await DisposeClientsAsync(cancellationToken);
 			await SendOutConnectionStateAsync(ConnectionStates.Disconnected,
 				cancellationToken);
+			throw;
+		}
+	}
+
+	private async ValueTask EnsureSocketAsync(CancellationToken cancellationToken)
+	{
+		using var scope = await _socketSync.LockAsync(cancellationToken);
+		EnsureConnected();
+		if (_socketClient is not null || _pollPublicMarketData)
+			return;
+
+		var isPublic = !RestClient.IsCredentialsAvailable;
+		using var timeout = isPublic
+			? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
+			: null;
+		timeout?.CancelAfter(TimeSpan.FromSeconds(8));
+		var socket = CreateSocketClient();
+		try
+		{
+			await socket.ConnectAsync(timeout?.Token ?? cancellationToken);
+			EnsureConnected();
+			socket.Error += OnSocketErrorAsync;
+			socket.StateChanged += OnSocketStateAsync;
+			_socketClient = socket;
+		}
+		catch (Exception error) when (isPublic && !cancellationToken.IsCancellationRequested &&
+			(error is WebSocketException || error is OperationCanceledException && timeout.IsCancellationRequested))
+		{
+			socket.Dispose();
+			_pollPublicMarketData = true;
+			this.AddWarningLog("CoinJar WebSocket connection failed. Polling public market data via REST. {0}", error.Message);
+		}
+		catch
+		{
+			socket.Dispose();
 			throw;
 		}
 	}
@@ -54,12 +97,20 @@ public partial class CoinJarMessageAdapter
 	}
 
 	/// <inheritdoc />
-	protected override ValueTask TimeAsync(TimeMessage timeMsg,
+	protected override async ValueTask TimeAsync(TimeMessage timeMsg,
 		CancellationToken cancellationToken)
 	{
 		_ = timeMsg;
-		_ = cancellationToken;
-		return default;
+		if (!_pollPublicMarketData || Interlocked.Exchange(ref _publicPollInProgress, 1) != 0)
+			return;
+		try
+		{
+			await PollPublicMarketDataAsync(cancellationToken);
+		}
+		finally
+		{
+			Volatile.Write(ref _publicPollInProgress, 0);
+		}
 	}
 
 	private CoinJarSocketClient CreateSocketClient()
@@ -75,8 +126,6 @@ public partial class CoinJarMessageAdapter
 		client.OrderReceived += OnSocketOrderAsync;
 		client.FillReceived += OnSocketFillAsync;
 		client.AccountReceived += OnSocketAccountAsync;
-		client.Error += OnSocketErrorAsync;
-		client.StateChanged += OnSocketStateAsync;
 		return client;
 	}
 
@@ -139,6 +188,7 @@ public partial class CoinJarMessageAdapter
 	private async ValueTask DisposeClientsAsync(
 		CancellationToken cancellationToken)
 	{
+		using var scope = await _socketSync.LockAsync();
 		var socketClient = _socketClient;
 		_socketClient = null;
 		if (socketClient is not null)

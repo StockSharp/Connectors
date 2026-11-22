@@ -73,11 +73,14 @@ public partial class CoinJarMessageAdapter
 				"CoinJar does not expose historical Level1 events.");
 
 		var product = GetProduct(mdMsg.SecurityId);
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (!isHistoryOnly)
+			await EnsureSocketAsync(cancellationToken);
 		var ticker = await RestClient.GetTickerAsync(product.Id,
 			cancellationToken);
 		await SendTickerAsync(product.Id, ticker, mdMsg.TransactionId,
 			cancellationToken);
-		if (mdMsg.IsHistoryOnly())
+		if (isHistoryOnly)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
@@ -136,7 +139,15 @@ public partial class CoinJarMessageAdapter
 			return;
 		}
 
+		await EnsureSocketAsync(cancellationToken);
 		var depth = requestedDepth.Min(40);
+		if (_pollPublicMarketData)
+		{
+			var snapshot = await RestClient.GetOrderBookAsync(product.Id,
+				depth == 1 ? 1 : 2, cancellationToken);
+			await SendRestBookAsync(product.Id, snapshot, depth,
+				mdMsg.TransactionId, cancellationToken);
+		}
 		using (_sync.EnterScope())
 		{
 			_depthSubscriptions.Add(mdMsg.TransactionId, new()
@@ -186,6 +197,9 @@ public partial class CoinJarMessageAdapter
 		if (from > to)
 			throw new ArgumentOutOfRangeException(nameof(mdMsg.From),
 				"CoinJar trade history start must not exceed its end.");
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (!isHistoryOnly)
+			await EnsureSocketAsync(cancellationToken);
 		var trades = await LoadPublicTradesAsync(product.Id, from, to, maximum,
 			cancellationToken);
 
@@ -193,7 +207,7 @@ public partial class CoinJarMessageAdapter
 			await SendPublicTradeAsync(product.Id, trade, mdMsg.TransactionId,
 				cancellationToken);
 
-		if (mdMsg.IsHistoryOnly())
+		if (isHistoryOnly)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
@@ -247,6 +261,9 @@ public partial class CoinJarMessageAdapter
 		if (from > to)
 			throw new ArgumentOutOfRangeException(nameof(mdMsg.From),
 				"CoinJar candle history start must not exceed its end.");
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (!isHistoryOnly)
+			await EnsureSocketAsync(cancellationToken);
 		var candles = await LoadCandlesAsync(product.Id, timeFrame, from, to,
 			maximum, cancellationToken);
 
@@ -254,7 +271,7 @@ public partial class CoinJarMessageAdapter
 			await SendCandleAsync(product.Id, candle, timeFrame,
 				mdMsg.TransactionId, null, cancellationToken);
 
-		if (mdMsg.IsHistoryOnly())
+		if (isHistoryOnly)
 		{
 			await CompleteMarketSubscriptionAsync(mdMsg, cancellationToken);
 			return;
@@ -268,6 +285,9 @@ public partial class CoinJarMessageAdapter
 				ProductId = product.Id,
 				TimeFrame = timeFrame,
 				Current = current,
+				LastFinished = _pollPublicMarketData
+					? candles.LastOrDefault(candle => candle.OpenTime.GetCloseTime(timeFrame) <= now)?.OpenTime
+					: null,
 			});
 		try
 		{
@@ -280,6 +300,64 @@ public partial class CoinJarMessageAdapter
 			await UnsubscribeCandlesAsync(mdMsg.TransactionId,
 				cancellationToken);
 			throw;
+		}
+	}
+
+	private async ValueTask PollPublicMarketDataAsync(CancellationToken cancellationToken)
+	{
+		StreamKey[] streams;
+		HashSet<string> tickProducts;
+		(long Id, CandleSubscription Subscription)[] candles;
+		using (_sync.EnterScope())
+		{
+			streams = [.. _streamReferences.Keys];
+			tickProducts = _tickSubscriptions.Values.Select(static subscription => subscription.ProductId)
+				.ToHashSet(StringComparer.OrdinalIgnoreCase);
+			candles = [.. _candleSubscriptions.Select(static pair => (pair.Key, pair.Value))];
+		}
+
+		foreach (var stream in streams)
+		{
+			switch (stream.Topic)
+			{
+				case CoinJarSocketTopics.Ticker:
+					var ticker = await RestClient.GetTickerAsync(stream.ProductId, cancellationToken);
+					await OnSocketTickerAsync(stream.ProductId, ticker, CoinJarSocketEvents.Snapshot, cancellationToken);
+					break;
+				case CoinJarSocketTopics.Book:
+					var book = await RestClient.GetOrderBookAsync(stream.ProductId, 2, cancellationToken);
+					if (book is null)
+						throw new InvalidDataException("CoinJar returned an empty order book.");
+					await OnSocketBookAsync(stream.ProductId, book, CoinJarSocketEvents.Snapshot, cancellationToken);
+					break;
+				case CoinJarSocketTopics.Trades when tickProducts.Contains(stream.ProductId):
+					var trades = await RestClient.GetTradesAsync(stream.ProductId, new() { Limit = 200 }, cancellationToken);
+					await OnSocketTradesAsync(stream.ProductId, trades, CoinJarSocketEvents.Init, cancellationToken);
+					break;
+			}
+		}
+
+		var now = DateTime.UtcNow;
+		foreach (var group in candles.GroupBy(static item => (item.Subscription.ProductId, item.Subscription.TimeFrame)))
+		{
+			var (productId, timeFrame) = group.Key;
+			var updates = await LoadCandlesAsync(productId, timeFrame, now.SubtractPeriods(timeFrame, 2), now,
+				2, cancellationToken);
+			foreach (var candle in updates)
+			{
+				var state = candle.OpenTime.GetCloseTime(timeFrame) <= now ? CandleStates.Finished : CandleStates.Active;
+				foreach (var (id, subscription) in group)
+				{
+					using (_sync.EnterScope())
+					{
+						if (!_candleSubscriptions.ContainsKey(id) || candle.OpenTime <= subscription.LastFinished)
+							continue;
+						if (state == CandleStates.Finished)
+							subscription.LastFinished = candle.OpenTime;
+					}
+					await SendCandleAsync(productId, candle, timeFrame, id, state, cancellationToken);
+				}
+			}
 		}
 	}
 

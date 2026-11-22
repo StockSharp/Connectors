@@ -19,6 +19,7 @@ public partial class CoinJarMessageAdapter
 	{
 		public TimeSpan TimeFrame { get; init; }
 		public CoinJarCandle Current { get; set; }
+		public DateTime? LastFinished { get; set; }
 	}
 
 	private sealed class OrderSubscription
@@ -138,7 +139,7 @@ public partial class CoinJarMessageAdapter
 
 	private void EnsureConnected()
 	{
-		if (_restClient is null || _socketClient is null)
+		if (_restClient is null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 	}
 
@@ -209,8 +210,9 @@ public partial class CoinJarMessageAdapter
 		}
 		try
 		{
-			await SocketClient.SubscribeAsync(topic, key.ProductId,
-				cancellationToken);
+			if (!_pollPublicMarketData)
+				await SocketClient.SubscribeAsync(topic, key.ProductId,
+					cancellationToken);
 		}
 		catch
 		{
@@ -326,6 +328,7 @@ public partial class CoinJarMessageAdapter
 
 	private void ClearState()
 	{
+		_pollPublicMarketData = false;
 		using (_sync.EnterScope())
 		{
 			_products.Clear();
