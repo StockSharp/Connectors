@@ -97,7 +97,6 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(CowProtocolMarketDataTests), nameof(CowProtocolMarketDataTests.OrderBook))]
 	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.OrderBook))]
 	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.Ticks))]
-	[DataRow(typeof(DydxChainMarketDataTests), nameof(DydxChainMarketDataTests.Level1))]
 	[DataRow(typeof(DxFeedTests), nameof(DxFeedTests.Candles))]
 	[DataRow(typeof(EsmaFirdsTests), nameof(EsmaFirdsTests.Securities))]
 	[DataRow(typeof(LfjTests), nameof(LfjTests.Ticks))]

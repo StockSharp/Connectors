@@ -2,8 +2,6 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -19,11 +17,6 @@ using StockSharp.Messages;
 [TestClass]
 public class CoinmetroTests : LiveMarketDataTestBase
 {
-	private protected override ValueTask<string> GetVenueUnavailableReasonAsync(Exception failure)
-		=> ValueTask.FromResult(failure is HttpRequestException { StatusCode: (HttpStatusCode)525 }
-			? "Coinmetro's Cloudflare gateway cannot complete the TLS handshake with its API origin (HTTP 525)."
-			: null);
-
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new CoinmetroMessageAdapter(new IncrementalIdGenerator());
 

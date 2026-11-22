@@ -11,7 +11,6 @@ using StockSharp.Messages;
 /// DydxChain publishes market data without credentials.
 /// </summary>
 [TestClass]
-[RegionalLiveTests] // The public indexer accepts the same handshake locally and replies with HTTP 426 on the hosted runner.
 public class DydxChainMarketDataTests : LiveMarketDataTestBase
 {
 	/// <inheritdoc />

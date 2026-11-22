@@ -1,8 +1,6 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -24,12 +22,6 @@ using StockSharp.Messages;
 [TestClass]
 public class BitoProTests : LiveMarketDataTestBase
 {
-	private protected override ValueTask<string> GetVenueUnavailableReasonAsync(Exception failure)
-		=> ValueTask.FromResult(failure is HttpRequestException { StatusCode: HttpStatusCode.Forbidden } &&
-			failure.Message.Contains("<html>", StringComparison.OrdinalIgnoreCase)
-			? "BitoPro's public API refused this network (HTTP 403 with an HTML response)."
-			: null);
-
 	[TestMethod]
 	public void DefaultsUseOfficialServiceAddresses()
 	{

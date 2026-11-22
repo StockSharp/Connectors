@@ -223,9 +223,6 @@ public class ChainflipTests : LiveMarketDataTestBase
 	[TestCategory("Integration")]
 	public async Task LiveStateChainReturnsPoolsBookAndFills()
 	{
-		if (!Env("STOCKSHARP_LIVE_TESTS")
-			.EqualsIgnoreCase("1"))
-			Inconclusive("Set STOCKSHARP_LIVE_TESTS=1 for live API tests.");
 		using var state = new ChainflipStateClient(
 			"https://rpc.mainnet.chainflip.io");
 
@@ -260,21 +257,13 @@ public class ChainflipTests : LiveMarketDataTestBase
 		var source = Asset("Ethereum", "ETH");
 		var destination = Asset("Bitcoin", "BTC");
 		var amount = BigInteger.Pow(10, 17);
-		try
-		{
-			var quote = await api.GetQuoteAsync(source, destination, amount, true, CancellationToken);
-			var vault = await api.BuildVaultSwapAsync(quote, source, destination, ChainflipExtensions.ProbeAddress,
-				"bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", 1.25m, 300, CancellationToken);
+		var quote = await api.GetQuoteAsync(source, destination, amount, true, CancellationToken);
+		var vault = await api.BuildVaultSwapAsync(quote, source, destination, ChainflipExtensions.ProbeAddress,
+			"bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", 1.25m, 300, CancellationToken);
 
-			IsGreater(quote.EgressAmount.ParseInteger(), BigInteger.Zero);
-			AreEqual("Ethereum", vault.Chain);
-			IsTrue(vault.Calldata.StartsWith("0x", StringComparison.OrdinalIgnoreCase));
-		}
-		catch (ChainflipApiException error) when (error.StatusCode == HttpStatusCode.ServiceUnavailable &&
-			error.Message.Contains("Quoting is currently unavailable due to maintenance", StringComparison.OrdinalIgnoreCase))
-		{
-			Inconclusive("Chainflip reports that its quote service is undergoing maintenance.");
-		}
+		IsGreater(quote.EgressAmount.ParseInteger(), BigInteger.Zero);
+		AreEqual("Ethereum", vault.Chain);
+		IsTrue(vault.Calldata.StartsWith("0x", StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static ChainflipAsset Asset(string chain, string symbol)
@@ -356,25 +345,6 @@ public class ChainflipTests : LiveMarketDataTestBase
 	protected override TimeSpan DataTimeout => TestContext?.TestName == nameof(Ticks)
 		? TimeSpan.FromSeconds(90)
 		: base.DataTimeout;
-
-	private protected override async ValueTask<string> GetVenueUnavailableReasonAsync(Exception failure)
-	{
-		if (failure is not AssertFailedException || !failure.Message.Contains("No ticks received", StringComparison.Ordinal))
-			return null;
-
-		using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
-		client.DefaultRequestHeaders.UserAgent.ParseAdd("StockSharp-Chainflip-LiveTests/1.0");
-		using var request = new StringContent("""{"jsonrpc":"2.0","id":1,"method":"cf_safe_mode_statuses","params":[]}""",
-			System.Text.Encoding.UTF8, "application/json");
-		using var response = await client.PostAsync("https://rpc.mainnet.chainflip.io", request, CancellationToken);
-		if (!response.IsSuccessStatusCode)
-			return null;
-
-		var json = JObject.Parse(await response.Content.ReadAsStringAsync(CancellationToken));
-		return json.SelectToken("result.swapping.swaps_enabled") is JValue { Value: false }
-			? "Chainflip State Chain has disabled swaps in safe mode."
-			: null;
-	}
 
 	/// <inheritdoc />
 	protected override DataType[] SkippedDataTypes =>
