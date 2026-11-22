@@ -1,6 +1,8 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -210,6 +212,60 @@ public class BitoProTests : LiveMarketDataTestBase
 		SecurityCode = "BTC/TWD",
 		BoardCode = BoardCodes.BitoPro,
 	};
+
+	[TestMethod]
+	[Timeout(15000, CooperativeCancellation = true)]
+	public async Task PublicStreamsWorkWhenRestIsForbidden()
+	{
+		await using var rest = new HistoryHttpServer(
+			() => new HttpResponseMessage(HttpStatusCode.Forbidden), CancellationToken);
+		using var streams = new WebSocketTestServer();
+		var adapter = new BitoProMessageAdapter(new IncrementalIdGenerator())
+		{
+			RestEndpoint = rest.Address.AbsoluteUri,
+			WebSocketEndpoint = streams.Endpoint,
+			HeartbeatInterval = TimeSpan.Zero,
+		};
+		await using var harness = new MarketDataTestHarness(adapter);
+		var timeout = TimeSpan.FromSeconds(5);
+		await harness.ConnectAsync(timeout, CancellationToken);
+
+		var ticker = harness.SubscribeAsync<Level1ChangeMessage>(DataType.Level1,
+			TestSecurityId, null, null, timeout, CancellationToken);
+		using var tickerSocket = await streams.AcceptAsync(CancellationToken,
+			request => AreEqual("/v1/pub/tickers/btc_twd", request.Url.AbsolutePath.ToLowerInvariant()));
+		await WebSocketTestServer.SendTextAsync(tickerSocket,
+			"""{"event":"TICKER","pair":"BTC_TWD","lastPrice":"65346.1","timestamp":1716288547800}""",
+			CancellationToken);
+		var level1 = await ticker;
+		CheckData(level1, "ticker");
+		AreEqual(65346.1m, level1.Data.Changes[Level1Fields.LastTradePrice]);
+		IsFalse(level1.Data.Changes.ContainsKey(Level1Fields.State));
+
+		var orderBook = harness.SubscribeAsync<QuoteChangeMessage>(DataType.MarketDepth,
+			TestSecurityId, message => message.MaxDepth = 5, null, timeout, CancellationToken);
+		using var bookSocket = await streams.AcceptAsync(CancellationToken);
+		await WebSocketTestServer.SendTextAsync(bookSocket,
+			"""{"event":"ORDER_BOOK","pair":"BTC_TWD","limit":5,"bids":[{"price":"65345.9","amount":"0.3"}],"asks":[{"price":"65346.2","amount":"0.4"}]}""",
+			CancellationToken);
+		var book = await orderBook;
+		CheckData(book, "order book");
+		AreEqual(65345.9m, book.Data.Bids[0].Price);
+
+		var ticks = harness.SubscribeAsync<ExecutionMessage>(DataType.Ticks,
+			TestSecurityId, null, null, timeout, CancellationToken);
+		using var tradeSocket = await streams.AcceptAsync(CancellationToken);
+		await WebSocketTestServer.SendTextAsync(tradeSocket,
+			"""{"event":"TRADE","eventID":"trade-1","pair":"BTC_TWD","data":[{"timestamp":1716288547,"price":"65346.1","amount":"0.01","isBuyer":true}]}""",
+			CancellationToken);
+		var trade = await ticks;
+		CheckData(trade, "tick");
+		AreEqual(65346.1m, trade.Data.TradePrice);
+		AreEqual(1, rest.RequestTimes.Count);
+
+		await ThrowsAsync<HttpRequestException>(() => harness.LookupSecuritiesAsync(new(),
+			1, timeout, CancellationToken));
+	}
 
 	[TestMethod]
 	[TestCategory("Integration")]

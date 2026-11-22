@@ -11,6 +11,8 @@ public partial class BitoProMessageAdapter
 			lookupMsg.TransactionId, cancellationToken);
 
 		EnsureConnected();
+		if (_marketCatalogUnavailable)
+			await RefreshMarketsAsync(cancellationToken);
 		var securityTypes = lookupMsg.GetSecurityTypes();
 		var requestedSymbol = lookupMsg.SecurityId.SecurityCode.IsEmpty()
 			? null
@@ -81,10 +83,12 @@ public partial class BitoProMessageAdapter
 			throw new NotSupportedException(
 				"BitoPro does not expose historical Level1 events.");
 
-		var market = GetMarket(mdMsg.SecurityId);
-		await SendLevel1SnapshotAsync(
-			market, mdMsg.TransactionId, cancellationToken);
-		if (mdMsg.IsHistoryOnly())
+		var market = ResolveMarketDataSymbol(mdMsg.SecurityId);
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (market.Metadata is not null || isHistoryOnly)
+			await SendLevel1SnapshotAsync(market.Pair, market.SecurityCode,
+				market.Metadata?.IsMaintenance, mdMsg.TransactionId, cancellationToken);
+		if (isHistoryOnly)
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
@@ -141,14 +145,18 @@ public partial class BitoProMessageAdapter
 			throw new NotSupportedException(
 				"BitoPro does not expose historical order-book events.");
 
-		var market = GetMarket(mdMsg.SecurityId);
+		var market = ResolveMarketDataSymbol(mdMsg.SecurityId);
 		var depth = (mdMsg.MaxDepth ?? 50).Min(50).Max(1);
 		var streamDepth = BitoProRestClient.NormalizeDepth(depth);
-		var snapshot = await RestClient.GetOrderBookAsync(
-			market.Pair, streamDepth, cancellationToken);
-		await SendDepthAsync(market.SecurityCode, snapshot,
-			mdMsg.TransactionId, depth, cancellationToken);
-		if (mdMsg.IsHistoryOnly())
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (market.Metadata is not null || isHistoryOnly)
+		{
+			var snapshot = await RestClient.GetOrderBookAsync(
+				market.Pair, streamDepth, cancellationToken);
+			await SendDepthAsync(market.SecurityCode, snapshot,
+				mdMsg.TransactionId, depth, cancellationToken);
+		}
+		if (isHistoryOnly)
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
@@ -205,12 +213,14 @@ public partial class BitoProMessageAdapter
 			return;
 		}
 
-		var market = GetMarket(mdMsg.SecurityId);
+		var market = ResolveMarketDataSymbol(mdMsg.SecurityId);
 		var count = (mdMsg.Count ?? 100).Min(1000).Max(1).To<int>();
 		var from = mdMsg.From?.ToUtc();
 		var to = (mdMsg.To ?? DateTime.UtcNow).ToUtc();
-		var trades = await RestClient.GetPublicTradesAsync(
-			market.Pair, cancellationToken);
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		var trades = market.Metadata is not null || isHistoryOnly || from is not null
+			? await RestClient.GetPublicTradesAsync(market.Pair, cancellationToken)
+			: null;
 
 		foreach (var trade in (trades ?? [])
 			.Where(trade =>
@@ -232,7 +242,7 @@ public partial class BitoProMessageAdapter
 				tradeId, mdMsg.TransactionId, cancellationToken);
 		}
 
-		if (mdMsg.IsHistoryOnly())
+		if (isHistoryOnly)
 		{
 			await CompleteMarketSubscriptionAsync(
 				mdMsg, cancellationToken);
@@ -282,7 +292,7 @@ public partial class BitoProMessageAdapter
 			return;
 		}
 
-		var market = GetMarket(mdMsg.SecurityId);
+		var market = ResolveMarketDataSymbol(mdMsg.SecurityId);
 		var timeFrame = mdMsg.GetTimeFrame();
 		if (!BitoProExtensions.TimeFrames.Contains(timeFrame))
 			throw new NotSupportedException(
@@ -343,24 +353,24 @@ public partial class BitoProMessageAdapter
 		};
 
 	private async ValueTask SendLevel1SnapshotAsync(
-		BitoProSymbol market, long transactionId,
+		string nativeSymbol, string securityCode, bool? isMaintenance, long transactionId,
 		CancellationToken cancellationToken)
 	{
 		var ticker = await RestClient.GetTickerAsync(
-			market.Pair, cancellationToken);
+			nativeSymbol, cancellationToken);
 		if (ticker is null)
 			throw new InvalidDataException(
-				$"BitoPro returned no ticker for '{market.Pair}'.");
+				$"BitoPro returned no ticker for '{nativeSymbol}'.");
 		await SendOutMessageAsync(
-			CreateLevel1Message(market, ticker, transactionId),
+			CreateLevel1Message(securityCode, isMaintenance, ticker, transactionId),
 			cancellationToken);
 	}
 
 	private Level1ChangeMessage CreateLevel1Message(
-		BitoProSymbol market, BitoProTicker ticker, long transactionId)
+		string securityCode, bool? isMaintenance, BitoProTicker ticker, long transactionId)
 		=> new Level1ChangeMessage
 		{
-			SecurityId = market.ToStockSharp(),
+			SecurityId = new() { SecurityCode = securityCode, BoardCode = BoardCodes.BitoPro },
 			ServerTime = ticker.Timestamp > 0
 				? ticker.Timestamp.FromBitoProMilliseconds()
 				: CurrentTime,
@@ -375,10 +385,12 @@ public partial class BitoProMessageAdapter
 			ticker.IsBuyer is bool isBuyer
 				? isBuyer ? Sides.Buy : Sides.Sell
 				: null)
-		.TryAdd(Level1Fields.State,
-			market.IsMaintenance
-				? SecurityStates.Stoped
-				: SecurityStates.Trading);
+		.TryAdd(Level1Fields.State, isMaintenance switch
+		{
+			true => SecurityStates.Stoped,
+			false => SecurityStates.Trading,
+			_ => (SecurityStates?)null,
+		});
 
 	private async ValueTask UnsubscribeLevel1Async(long transactionId,
 		CancellationToken cancellationToken)
@@ -434,8 +446,6 @@ public partial class BitoProMessageAdapter
 		if (ticker?.Pair.IsEmpty() != false)
 			return;
 		var market = GetMarket(ticker.Pair);
-		if (market is null)
-			return;
 		KeyValuePair<long, MarketSubscription>[] subscriptions;
 		using (_sync.EnterScope())
 			subscriptions = [.. _level1Subscriptions.Where(pair =>
@@ -443,7 +453,7 @@ public partial class BitoProMessageAdapter
 
 		foreach (var pair in subscriptions)
 			await SendOutMessageAsync(
-				CreateLevel1Message(market, ticker, pair.Key),
+				CreateLevel1Message(pair.Value.SecurityCode, market?.IsMaintenance, ticker, pair.Key),
 				cancellationToken);
 	}
 

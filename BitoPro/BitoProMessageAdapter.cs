@@ -33,6 +33,7 @@ public partial class BitoProMessageAdapter
 		int Depth);
 
 	private readonly Lock _sync = new();
+	private volatile bool _marketCatalogUnavailable;
 	private readonly Dictionary<string, BitoProSymbol> _marketsBySecurity =
 		new(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, BitoProSymbol> _marketsByNative =
@@ -164,6 +165,21 @@ public partial class BitoProMessageAdapter
 				: null;
 	}
 
+	private (string Pair, string SecurityCode, BitoProSymbol Metadata) ResolveMarketDataSymbol(SecurityId securityId)
+	{
+		if (!_marketCatalogUnavailable)
+		{
+			var market = GetMarket(securityId);
+			return (market.Pair, market.SecurityCode, market);
+		}
+
+		if (!ValidateSecurityId(securityId))
+			throw new InvalidOperationException(
+				$"Security board '{securityId.BoardCode}' is not BitoPro.");
+		return (securityId.SecurityCode.ToBitoProSymbol().ToLowerInvariant(),
+			securityId.SecurityCode.ToBitoProSecurityCode(), null);
+	}
+
 	private void RegisterMarkets(IEnumerable<BitoProSymbol> markets)
 	{
 		using (_sync.EnterScope())
@@ -267,6 +283,7 @@ public partial class BitoProMessageAdapter
 
 	private void ClearState()
 	{
+		_marketCatalogUnavailable = false;
 		using (_sync.EnterScope())
 		{
 			_marketsBySecurity.Clear();

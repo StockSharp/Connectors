@@ -32,12 +32,16 @@ public partial class BitoProMessageAdapter
 			{
 				Parent = this,
 			};
-			var markets = await RestClient.GetSymbolsAsync(
-				cancellationToken);
-			if (markets is not { Length: > 0 })
-				throw new InvalidDataException(
-					"BitoPro returned no spot markets.");
-			RegisterMarkets(markets);
+			try
+			{
+				await RefreshMarketsAsync(cancellationToken);
+			}
+			catch (HttpRequestException error) when (!RestClient.IsCredentialsAvailable &&
+				error.StatusCode == HttpStatusCode.Forbidden && !cancellationToken.IsCancellationRequested)
+			{
+				_marketCatalogUnavailable = true;
+				this.AddWarningLog("BitoPro REST market catalog is forbidden. Public WebSocket subscriptions can use known symbols.");
+			}
 
 			_wsClient = new(
 				WebSocketEndpoint,
@@ -63,6 +67,15 @@ public partial class BitoProMessageAdapter
 				ConnectionStates.Disconnected, cancellationToken);
 			throw;
 		}
+	}
+
+	private async ValueTask RefreshMarketsAsync(CancellationToken cancellationToken)
+	{
+		var markets = await RestClient.GetSymbolsAsync(cancellationToken);
+		if (markets is not { Length: > 0 })
+			throw new InvalidDataException("BitoPro returned no spot markets.");
+		RegisterMarkets(markets);
+		_marketCatalogUnavailable = false;
 	}
 
 	/// <inheritdoc />
