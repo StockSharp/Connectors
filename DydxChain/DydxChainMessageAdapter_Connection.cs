@@ -1,9 +1,16 @@
 namespace StockSharp.DydxChain;
 
+using System.Net.WebSockets;
+
+using Nito.AsyncEx;
+
 public partial class DydxChainMessageAdapter
 {
 	private static readonly DydxChainSocketSubscriptionKey _marketsStream =
 		new(DydxChainSocketChannels.Markets, null);
+	private readonly AsyncLock _socketSync = new();
+	private volatile bool _pollPublicMarketData;
+	private int _publicPollInProgress;
 
 	/// <inheritdoc />
 	protected override async ValueTask ConnectAsync(ConnectMessage connectMsg,
@@ -33,15 +40,9 @@ public partial class DydxChainMessageAdapter
 				WalletAddress = Signer.WalletAddress;
 				_portfolioName = CreatePortfolioName(Signer.WalletAddress,
 					SubaccountNumber);
+				await EnsureSocketAsync(cancellationToken);
 			}
 
-			_socketClient = CreateSocket();
-			await SocketClient.ConnectAsync(cancellationToken);
-			await SocketClient.SubscribeAsync(_marketsStream,
-				cancellationToken);
-			if (Signer.IsWalletAvailable)
-				await SocketClient.SubscribeAsync(CreateSubaccountStream(),
-					cancellationToken);
 			await SendOutConnectionStateAsync(ConnectionStates.Connected,
 				cancellationToken);
 		}
@@ -81,8 +82,57 @@ public partial class DydxChainMessageAdapter
 	{
 		_ = timeMsg;
 		EnsureConnected();
-		await SocketClient.PingAsync(cancellationToken);
+		if (_socketClient is { } socket)
+			await socket.PingAsync(cancellationToken);
 		await RefreshChainTipAsync(cancellationToken);
+		if (!_pollPublicMarketData || Interlocked.Exchange(ref _publicPollInProgress, 1) != 0)
+			return;
+		try
+		{
+			await PollPublicMarketDataAsync(cancellationToken);
+		}
+		finally
+		{
+			Volatile.Write(ref _publicPollInProgress, 0);
+		}
+	}
+
+	private async ValueTask EnsureSocketAsync(CancellationToken cancellationToken)
+	{
+		using var scope = await _socketSync.LockAsync(cancellationToken);
+		EnsureConnected();
+		if (_socketClient is not null || _pollPublicMarketData)
+			return;
+
+		var isPublic = !Signer.IsWalletAvailable;
+		using var timeout = isPublic
+			? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
+			: null;
+		timeout?.CancelAfter(TimeSpan.FromSeconds(8));
+		var connectToken = timeout?.Token ?? cancellationToken;
+		var socket = CreateSocket();
+		try
+		{
+			await socket.ConnectAsync(connectToken);
+			await socket.SubscribeAsync(_marketsStream, connectToken);
+			if (!isPublic)
+				await socket.SubscribeAsync(CreateSubaccountStream(), cancellationToken);
+			socket.Error += OnSocketErrorAsync;
+			socket.StateChanged += OnSocketStateAsync;
+			_socketClient = socket;
+		}
+		catch (Exception error) when (isPublic && !cancellationToken.IsCancellationRequested &&
+			(error is WebSocketException || error is OperationCanceledException && timeout.IsCancellationRequested))
+		{
+			socket.Dispose();
+			_pollPublicMarketData = true;
+			this.AddWarningLog("dYdX WebSocket connection failed. Polling public market data via REST. {0}", error.Message);
+		}
+		catch
+		{
+			socket.Dispose();
+			throw;
+		}
 	}
 
 	private DydxChainSocketClient CreateSocket()
@@ -101,8 +151,6 @@ public partial class DydxChainMessageAdapter
 		socket.CandlesReceived += OnCandlesAsync;
 		socket.SubaccountSnapshotReceived += OnSubaccountSnapshotAsync;
 		socket.SubaccountUpdateReceived += OnSubaccountUpdateAsync;
-		socket.Error += OnSocketErrorAsync;
-		socket.StateChanged += OnSocketStateAsync;
 		return socket;
 	}
 
@@ -222,10 +270,12 @@ public partial class DydxChainMessageAdapter
 	private async ValueTask DisposeClientsAsync(
 		CancellationToken cancellationToken)
 	{
+		using var scope = await _socketSync.LockAsync();
 		var socket = _socketClient;
 		var api = _apiClient;
 		var signer = _signer;
 		_socketClient = null;
+		_pollPublicMarketData = false;
 		_apiClient = null;
 		_signer = null;
 		if (socket is not null)

@@ -26,6 +26,33 @@ public partial class DydxChainMessageAdapter : MessageAdapter
 	{
 		public string Ticker { get; init; }
 		public DydxChainCandleResolutions Resolution { get; init; }
+		public DateTime? LastFinished { get; set; }
+	}
+
+	private sealed class TickSubscription
+	{
+		private readonly HashSet<string> _tradeIds = new(StringComparer.Ordinal);
+		private DateTime _lastTime;
+
+		public TickSubscription(string ticker, DateTime? from)
+		{
+			Ticker = ticker;
+			_lastTime = from ?? DateTime.MinValue;
+		}
+
+		public string Ticker { get; }
+
+		public bool TryAdd(DydxChainTrade trade, DateTime time)
+		{
+			if (time < _lastTime)
+				return false;
+			if (time > _lastTime)
+			{
+				_lastTime = time;
+				_tradeIds.Clear();
+			}
+			return _tradeIds.Add(trade.Id);
+		}
 	}
 
 	private sealed class OrderStatusSubscription
@@ -99,7 +126,7 @@ public partial class DydxChainMessageAdapter : MessageAdapter
 		new(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<long, string> _level1Subscriptions = [];
 	private readonly Dictionary<long, DepthSubscription> _depthSubscriptions = [];
-	private readonly Dictionary<long, string> _tickSubscriptions = [];
+	private readonly Dictionary<long, TickSubscription> _tickSubscriptions = [];
 	private readonly Dictionary<long, CandleSubscription> _candleSubscriptions = [];
 	private readonly Dictionary<DydxChainSocketSubscriptionKey, int>
 		_streamReferences = [];
@@ -243,7 +270,7 @@ public partial class DydxChainMessageAdapter : MessageAdapter
 
 	private void EnsureConnected()
 	{
-		if (_apiClient is null || _socketClient is null || _signer is null)
+		if (_apiClient is null || _signer is null)
 			throw new InvalidOperationException(LocalizedStrings.ConnectionNotOk);
 	}
 

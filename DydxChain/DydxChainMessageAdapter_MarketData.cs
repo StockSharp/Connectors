@@ -71,6 +71,9 @@ public partial class DydxChainMessageAdapter
 				"dYdX does not publish historical Level1 changes.");
 
 		var market = GetMarket(mdMsg.SecurityId);
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (!isHistoryOnly)
+			await EnsureSocketAsync(cancellationToken);
 		var book = await ApiClient.GetOrderbookAsync(market.Ticker,
 			cancellationToken);
 		ApplyBookSnapshot(market.Ticker, book);
@@ -80,7 +83,7 @@ public partial class DydxChainMessageAdapter
 			trades.FirstOrDefault(), mdMsg.TransactionId, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 
-		if (mdMsg.IsHistoryOnly())
+		if (isHistoryOnly)
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
 				cancellationToken);
@@ -140,6 +143,9 @@ public partial class DydxChainMessageAdapter
 				"dYdX does not publish historical order books.");
 
 		var market = GetMarket(mdMsg.SecurityId);
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (!isHistoryOnly)
+			await EnsureSocketAsync(cancellationToken);
 		var depth = (mdMsg.MaxDepth ?? 1000).Min(1000).Max(1).To<int>();
 		var snapshot = await ApiClient.GetOrderbookAsync(market.Ticker,
 			cancellationToken);
@@ -148,7 +154,7 @@ public partial class DydxChainMessageAdapter
 			mdMsg.TransactionId, depth, cancellationToken);
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 
-		if (mdMsg.IsHistoryOnly())
+		if (isHistoryOnly)
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
 				cancellationToken);
@@ -204,6 +210,9 @@ public partial class DydxChainMessageAdapter
 		}
 
 		var market = GetMarket(mdMsg.SecurityId);
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (!isHistoryOnly)
+			await EnsureSocketAsync(cancellationToken);
 		var from = mdMsg.From?.EnsureUtc();
 		var to = (mdMsg.To ?? ServerTime).EnsureUtc();
 		var limit = (mdMsg.Count ?? HistoryLimit).Min(HistoryLimit).Max(1)
@@ -216,17 +225,22 @@ public partial class DydxChainMessageAdapter
 				var time = trade.CreatedAt.ParseUtcTime("trade time");
 				return time <= to && (from is null || time >= from.Value);
 			})
-			.OrderBy(static trade => trade.CreatedAt,
-				StringComparer.Ordinal)
+			.OrderBy(static trade => trade.CreatedAt.ParseUtcTime("trade time"))
 			.ToArray();
 
+		var subscription = isHistoryOnly ? null : new TickSubscription(market.Ticker, from);
 		foreach (var trade in trades)
+		{
+			if (_pollPublicMarketData && subscription is not null &&
+				!subscription.TryAdd(trade, trade.CreatedAt.ParseUtcTime("trade time")))
+				continue;
 			await SendPublicTradeAsync(market.Ticker, trade,
 				mdMsg.TransactionId, cancellationToken);
+		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 
-		if (mdMsg.IsHistoryOnly())
+		if (isHistoryOnly)
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
 				cancellationToken);
@@ -238,7 +252,7 @@ public partial class DydxChainMessageAdapter
 		DydxChainSocketSubscriptionKey[] added;
 		using (_sync.EnterScope())
 		{
-			_tickSubscriptions.Add(mdMsg.TransactionId, market.Ticker);
+			_tickSubscriptions.Add(mdMsg.TransactionId, subscription);
 			added = AddStreamReferences([key]);
 		}
 		try
@@ -280,21 +294,33 @@ public partial class DydxChainMessageAdapter
 		var market = GetMarket(mdMsg.SecurityId);
 		var timeFrame = mdMsg.GetTimeFrame();
 		var resolution = timeFrame.ToDydxChain();
+		var isHistoryOnly = mdMsg.IsHistoryOnly();
+		if (!isHistoryOnly)
+			await EnsureSocketAsync(cancellationToken);
 		var from = mdMsg.From?.EnsureUtc();
 		var to = (mdMsg.To ?? ServerTime).EnsureUtc();
 		var limit = GetCandleCount(mdMsg, timeFrame, to);
 		var candles = await ApiClient.GetCandlesAsync(market.Ticker,
 			resolution, from, to, limit, cancellationToken);
 
+		DateTime? lastFinished = null;
 		foreach (var candle in candles.Where(static candle => candle is not null)
 			.OrderBy(static candle => candle.StartedAt,
 				StringComparer.Ordinal))
+		{
 			await SendCandleAsync(candle, mdMsg.TransactionId,
 				cancellationToken);
+			if (_pollPublicMarketData && !isHistoryOnly)
+			{
+				var openTime = candle.StartedAt.ParseUtcTime("candle start time");
+				if (openTime + timeFrame <= ServerTime)
+					lastFinished = openTime;
+			}
+		}
 
 		await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 
-		if (mdMsg.IsHistoryOnly())
+		if (isHistoryOnly)
 		{
 			await SendSubscriptionFinishedAsync(mdMsg.TransactionId,
 				cancellationToken);
@@ -311,6 +337,7 @@ public partial class DydxChainMessageAdapter
 			{
 				Ticker = market.Ticker,
 				Resolution = resolution,
+				LastFinished = lastFinished,
 			});
 			added = AddStreamReferences([key]);
 		}
@@ -326,6 +353,49 @@ public partial class DydxChainMessageAdapter
 				ReleaseStreamReferences([key]);
 			}
 			throw;
+		}
+	}
+
+	private async ValueTask PollPublicMarketDataAsync(CancellationToken cancellationToken)
+	{
+		DydxChainSocketSubscriptionKey[] streams;
+		(string Ticker, DydxChainCandleResolutions Resolution)[] candles;
+		bool hasLevel1;
+		using (_sync.EnterScope())
+		{
+			streams = [.. _streamReferences.Keys];
+			candles = [.. _candleSubscriptions.Values
+				.Select(static subscription => (subscription.Ticker, subscription.Resolution))
+				.Distinct()];
+			hasLevel1 = _level1Subscriptions.Count > 0;
+		}
+
+		if (hasLevel1)
+			await OnMarketsSnapshotAsync(new() { Markets = await ApiClient.GetMarketsAsync(cancellationToken) },
+				cancellationToken);
+
+		foreach (var stream in streams)
+		{
+			switch (stream.Channel)
+			{
+				case DydxChainSocketChannels.Orderbook:
+					var book = await ApiClient.GetOrderbookAsync(stream.Id, cancellationToken);
+					await OnOrderbookSnapshotAsync(stream.Id, book, cancellationToken);
+					break;
+				case DydxChainSocketChannels.Trades:
+					var trades = await ApiClient.GetTradesAsync(stream.Id, HistoryLimit, cancellationToken);
+					await OnTradesAsync(stream.Id, [.. trades.Where(static trade => trade is not null)
+						.OrderBy(static trade => trade.CreatedAt.ParseUtcTime("trade time"))], cancellationToken);
+					break;
+			}
+		}
+
+		foreach (var (ticker, resolution) in candles)
+		{
+			var updates = await ApiClient.GetCandlesAsync(ticker, resolution, null, null, 2, cancellationToken);
+			await OnCandlesAsync(ticker + "/" + resolution.ToWire(), [.. updates
+				.Where(static candle => candle is not null)
+				.OrderBy(static candle => candle.StartedAt, StringComparer.Ordinal)], cancellationToken);
 		}
 	}
 
@@ -467,9 +537,13 @@ public partial class DydxChainMessageAdapter
 			long[] level1Ids;
 			using (_sync.EnterScope())
 			{
+				var time = _pollPublicMarketData
+					? trade.CreatedAt.ParseUtcTime("trade time")
+					: default;
 				tickIds = [.. _tickSubscriptions
-					.Where(pair => pair.Value.Equals(ticker,
-						StringComparison.OrdinalIgnoreCase))
+					.Where(pair => pair.Value.Ticker.Equals(ticker,
+						StringComparison.OrdinalIgnoreCase) &&
+						(!_pollPublicMarketData || pair.Value.TryAdd(trade, time)))
 					.Select(static pair => pair.Key)];
 				level1Ids = GetLevel1IdsUnsafe(ticker);
 			}
@@ -478,9 +552,12 @@ public partial class DydxChainMessageAdapter
 				await SendPublicTradeAsync(ticker, trade, id,
 					cancellationToken);
 
-			foreach (var id in level1Ids)
-				await SendLastTradeAsync(ticker, trade, id,
-					cancellationToken);
+			if (!_pollPublicMarketData || trade == trades[^1])
+			{
+				foreach (var id in level1Ids)
+					await SendLastTradeAsync(ticker, trade, id,
+						cancellationToken);
+			}
 		}
 	}
 
@@ -496,13 +573,25 @@ public partial class DydxChainMessageAdapter
 		{
 			if (candle is null)
 				continue;
-			long[] ids;
+			var ids = new List<long>();
 			using (_sync.EnterScope())
-				ids = [.. _candleSubscriptions
-					.Where(pair => pair.Value.Ticker.Equals(ticker,
-						StringComparison.OrdinalIgnoreCase) &&
-						pair.Value.Resolution == candle.Resolution)
-					.Select(static pair => pair.Key)];
+			{
+				foreach (var (id, subscription) in _candleSubscriptions)
+				{
+					if (!subscription.Ticker.EqualsIgnoreCase(ticker) ||
+						subscription.Resolution != candle.Resolution)
+						continue;
+					if (_pollPublicMarketData)
+					{
+						var openTime = candle.StartedAt.ParseUtcTime("candle start time");
+						if (openTime <= subscription.LastFinished)
+							continue;
+						if (openTime + candle.Resolution.ToStockSharp() <= ServerTime)
+							subscription.LastFinished = openTime;
+					}
+					ids.Add(id);
+				}
+			}
 
 			foreach (var id in ids)
 				await SendCandleAsync(candle, id, cancellationToken);
@@ -731,6 +820,8 @@ public partial class DydxChainMessageAdapter
 		IEnumerable<DydxChainSocketSubscriptionKey> keys,
 		CancellationToken cancellationToken)
 	{
+		if (_pollPublicMarketData)
+			return;
 		foreach (var key in keys)
 			await SocketClient.SubscribeAsync(key, cancellationToken);
 	}
@@ -739,6 +830,8 @@ public partial class DydxChainMessageAdapter
 		IEnumerable<DydxChainSocketSubscriptionKey> keys,
 		CancellationToken cancellationToken)
 	{
+		if (_pollPublicMarketData)
+			return;
 		foreach (var key in keys)
 			await SocketClient.UnsubscribeAsync(key, cancellationToken);
 	}
@@ -782,11 +875,11 @@ public partial class DydxChainMessageAdapter
 		DydxChainSocketSubscriptionKey[] removed;
 		using (_sync.EnterScope())
 		{
-			if (!_tickSubscriptions.Remove(transactionId, out var ticker))
+			if (!_tickSubscriptions.Remove(transactionId, out var subscription))
 				return;
 			removed = ReleaseStreamReferences(
 			[
-				new(DydxChainSocketChannels.Trades, ticker),
+				new(DydxChainSocketChannels.Trades, subscription.Ticker),
 			]);
 		}
 		await UnsubscribeStreamsAsync(removed, cancellationToken);
