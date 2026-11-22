@@ -69,7 +69,7 @@ public partial class GopaxMessageAdapter : MessageAdapter, IKeySecretAdapter, IA
 		}
 	}
 
-	private string _address = "gopax.com";
+	private string _address = "gopax.co.kr";
 
 	/// <inheritdoc />
 	[Display(

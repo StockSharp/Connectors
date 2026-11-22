@@ -8,14 +8,14 @@ class HttpClient : BaseLogReceiver
 	private readonly SecureString _key;
 	private readonly HashAlgorithm _hasher;
 
-	private readonly string _baseUrl = "https://api.{0}";
+	private readonly string _baseUrl;
 
 	private readonly UTCMlsIncrementalIdGenerator _nonceGen;
 
-	public HttpClient(SecureString key, SecureString secret, string domain)
+	public HttpClient(SecureString key, SecureString secret, Uri endpoint)
 	{
 		_key = key;
-		_baseUrl = _baseUrl.Put(domain);
+		_baseUrl = endpoint.AbsoluteUri.TrimEnd('/');
 
 		_hasher = secret.IsEmpty() ? null : new HMACSHA512(secret.UnSecure().Base64());
 
@@ -51,9 +51,10 @@ class HttpClient : BaseLogReceiver
 		return MakeRequestAsync<OrderBook>(CreateUrl($"trading-pairs/{symbol}/book"), CreateRequest(Method.Get), cancellationToken);
 	}
 
-	public Task<IEnumerable<Trade>> GetTradesAsync(string symbol, int limit, long after, CancellationToken cancellationToken)
+	public Task<IEnumerable<Trade>> GetTradesAsync(string symbol, int limit, DateTime? after, CancellationToken cancellationToken)
 	{
-		return MakeRequestAsync<IEnumerable<Trade>>(CreateUrl($"trading-pairs/{symbol}/trades?limit={limit}&after={after}"), CreateRequest(Method.Get), cancellationToken);
+		var afterSeconds = (long)(after?.ToUnix() ?? 0);
+		return MakeRequestAsync<IEnumerable<Trade>>(CreateUrl($"trading-pairs/{symbol}/trades?limit={limit}&after={afterSeconds}"), CreateRequest(Method.Get), cancellationToken);
 	}
 
 	public Task<IEnumerable<Ohlc>> GetCandlesAsync(string symbol, int interval, long from, long to, CancellationToken cancellationToken)

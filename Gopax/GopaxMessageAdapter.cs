@@ -2,6 +2,7 @@ namespace StockSharp.Gopax;
 
 partial class GopaxMessageAdapter
 {
+	private readonly Uri _restEndpoint;
 	private HttpClient _httpClient;
 	private DateTime? _lastTimeBalanceCheck;
 
@@ -26,6 +27,12 @@ partial class GopaxMessageAdapter
 		this.AddSupportedCandleTimeFrames(AllTimeFrames);
 	}
 
+	internal GopaxMessageAdapter(IdGenerator transactionIdGenerator, Uri restEndpoint)
+		: this(transactionIdGenerator)
+	{
+		_restEndpoint = restEndpoint ?? throw new ArgumentNullException(nameof(restEndpoint));
+	}
+
 	/// <inheritdoc />
 	public override bool IsAllDownloadingSupported(DataType dataType)
 		=> dataType == DataType.Securities || dataType == DataType.Transactions || dataType == DataType.PositionChanges || base.IsAllDownloadingSupported(dataType);
@@ -48,7 +55,8 @@ partial class GopaxMessageAdapter
 		if (_httpClient != null)
 			throw new InvalidOperationException(LocalizedStrings.NotDisconnectPrevTime);
 
-		_httpClient = new HttpClient(Key, Secret, Address) { Parent = this };
+		var endpoint = _restEndpoint ?? new Uri($"https://api.{Address}");
+		_httpClient = new HttpClient(Key, Secret, endpoint) { Parent = this };
 
 		await SendOutMessageAsync(new ConnectMessage(), cancellationToken);
 	}

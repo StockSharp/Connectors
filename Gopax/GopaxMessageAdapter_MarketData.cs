@@ -3,7 +3,7 @@ namespace StockSharp.Gopax;
 partial class GopaxMessageAdapter
 {
 	private readonly HashSet<SecurityId> _orderBookSubscriptions = [];
-	private readonly Dictionary<SecurityId, long?> _tradesSubscriptions = [];
+	private readonly Dictionary<SecurityId, DateTime?> _tradesSubscriptions = [];
 	private readonly HashSet<SecurityId> _level1Subscriptions = [];
 	private readonly Dictionary<long, RefTriple<SecurityId, int, long>> _candlesSubscriptions = [];
 
@@ -99,11 +99,11 @@ partial class GopaxMessageAdapter
 			{
 				var from = mdMsg.From ?? mdMsg.To.Value.AddHours(-1);
 
-				var trades = await _httpClient.GetTradesAsync(symbol, 100, (long)from.ToUnix(), cancellationToken);
+				var trades = await _httpClient.GetTradesAsync(symbol, 100, from, cancellationToken);
 
 				foreach (var trade in trades.OrderBy(t => t.Time))
 				{
-					var time = (long)trade.Time.ToUnix(false);
+					var time = trade.Time.ToUniversalTime();
 
 					if (lastTime != null && time < lastTime)
 						continue;
@@ -112,12 +112,9 @@ partial class GopaxMessageAdapter
 
 					await ProcessTickAsync(mdMsg.SecurityId, trade, cancellationToken);
 				}
-
-				_tradesSubscriptions[secId] = lastTime ?? 0;
 			}
-			else
-				_tradesSubscriptions[secId] = lastTime;
 
+			_tradesSubscriptions[secId] = lastTime;
 			await SendSubscriptionResultAsync(mdMsg, cancellationToken);
 		}
 		else
@@ -182,14 +179,14 @@ partial class GopaxMessageAdapter
 			foreach (var pair in _tradesSubscriptions.ToArray())
 			{
 				var secId = pair.Key;
-				var lastTime = pair.Value ?? 0;
-				var trades = await _httpClient.GetTradesAsync(pair.Key.ToSymbol(), 100, lastTime, cancellationToken);
+				var lastTime = pair.Value;
+				var trades = await _httpClient.GetTradesAsync(secId.ToSymbol(), 100, lastTime, cancellationToken);
 
 				foreach (var trade in trades.OrderBy(t => t.Time))
 				{
-					var time = (long)trade.Time.ToUnix();
+					var time = trade.Time.ToUniversalTime();
 
-					if (time < lastTime)
+					if (lastTime != null && time < lastTime)
 						continue;
 
 					lastTime = time;
