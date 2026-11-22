@@ -735,13 +735,24 @@ public partial class BitunixMessageAdapter
 		TimeSpan timeFrame, long originalTransactionId, CancellationToken cancellationToken)
 	{
 		var openTime = candle.Time.FromMilliseconds();
+		var high = candle.High;
+		var low = candle.Low;
+
+		// Bitunix can carry the previous close into the new candle's open,
+		// while the reported range only includes prices traded in the new interval.
+		if (candle.Open > 0m && low <= candle.Close && candle.Close <= high)
+		{
+			high = Math.Max(high, candle.Open);
+			low = Math.Min(low, candle.Open);
+		}
+
 		return SendOutMessageAsync(new TimeFrameCandleMessage
 		{
 			SecurityId = symbol.ToStockSharp(BitunixSections.Futures),
 			OpenTime = openTime,
 			OpenPrice = candle.Open,
-			HighPrice = candle.High,
-			LowPrice = candle.Low,
+			HighPrice = high,
+			LowPrice = low,
 			ClosePrice = candle.Close,
 			TotalVolume = candle.BaseVolume,
 			State = DateTime.UtcNow >= openTime + timeFrame
