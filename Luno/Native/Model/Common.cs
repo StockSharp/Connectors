@@ -1,22 +1,6 @@
 namespace StockSharp.Luno.Native.Model;
 
 [JsonConverter(typeof(StringEnumConverter))]
-enum LunoTradingStatuses
-{
-	[EnumMember(Value = "POST_ONLY")]
-	PostOnly,
-
-	[EnumMember(Value = "ACTIVE")]
-	Active,
-
-	[EnumMember(Value = "SUSPENDED")]
-	Suspended,
-
-	[EnumMember(Value = "UNKNOWN")]
-	Unknown,
-}
-
-[JsonConverter(typeof(StringEnumConverter))]
 enum LunoTickerStatuses
 {
 	[EnumMember(Value = "ACTIVE")]

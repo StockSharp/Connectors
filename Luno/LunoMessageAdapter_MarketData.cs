@@ -41,7 +41,7 @@ public partial class LunoMessageAdapter
 				SecurityId = security.SecurityId,
 				ServerTime = CurrentTime,
 				OriginalTransactionId = lookupMsg.TransactionId,
-			}.TryAdd(Level1Fields.State, market.Status.ToStockSharp()),
+			}.TryAdd(Level1Fields.State, market.State),
 				cancellationToken);
 			if (--left <= 0)
 				break;

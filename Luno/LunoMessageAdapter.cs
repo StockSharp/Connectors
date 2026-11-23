@@ -21,7 +21,7 @@ public partial class LunoMessageAdapter
 		public decimal MaximumPrice { get; init; }
 		public decimal VolumeStep { get; init; }
 		public decimal PriceStep { get; init; }
-		public LunoTradingStatuses Status { get; init; }
+		public SecurityStates State { get; init; }
 	}
 
 	private class MarketSubscription
@@ -194,7 +194,7 @@ public partial class LunoMessageAdapter
 					MaximumPrice = market.MaximumPrice,
 					VolumeStep = Pow10Step(market.VolumeScale),
 					PriceStep = Pow10Step(market.PriceScale),
-					Status = market.TradingStatus,
+					State = market.TradingStatus.EqualsIgnoreCase("ACTIVE") ? SecurityStates.Trading : SecurityStates.Stoped,
 				};
 				_markets[definition.Symbol] = definition;
 			}

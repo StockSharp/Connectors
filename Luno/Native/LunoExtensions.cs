@@ -101,11 +101,6 @@ static class LunoExtensions
 			_ => OrderStates.Done,
 		};
 
-	public static SecurityStates ToStockSharp(this LunoTradingStatuses status)
-		=> status == LunoTradingStatuses.Active
-			? SecurityStates.Trading
-			: SecurityStates.Stoped;
-
 	public static SecurityStates ToStockSharp(this LunoTickerStatuses status)
 		=> status == LunoTickerStatuses.Active
 			? SecurityStates.Trading

@@ -12,7 +12,7 @@ sealed class LunoMarketInfo
 	public string MarketId { get; init; }
 
 	[JsonProperty("trading_status")]
-	public LunoTradingStatuses TradingStatus { get; init; }
+	public string TradingStatus { get; init; }
 
 	[JsonProperty("base_currency")]
 	public string BaseCurrency { get; init; }
