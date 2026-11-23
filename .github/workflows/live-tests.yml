@@ -12,6 +12,10 @@ on:
         description: 'Include checks for restricted networks and unreliable public demo or registry endpoints'
         type: boolean
         default: false
+      include_coinmetro_tests:
+        description: 'Include Coinmetro market-data checks when its public API is available'
+        type: boolean
+        default: false
       include_keyless_cmc_tests:
         description: 'Use CoinMarketCap anonymous quota when COINMARKETCAP_TOKEN is unavailable'
         type: boolean
@@ -45,6 +49,7 @@ jobs:
     env:
       STOCKSHARP_LIVE_TESTS: '1'
       STOCKSHARP_LIVE_REGIONAL_TESTS: ${{ inputs.include_regional_tests && '1' || '0' }}
+      STOCKSHARP_LIVE_COINMETRO_TESTS: ${{ inputs.include_coinmetro_tests && '1' || '0' }}
       COINMARKETCAP_TOKEN: ${{ secrets.COINMARKETCAP_TOKEN }}
       COINMARKETCAP_KEYLESS_TESTS: ${{ inputs.include_keyless_cmc_tests && '1' || '0' }}
       STOCKSHARP_LIVE_MOEX_DIVIDENDS_TESTS: ${{ inputs.include_moex_dividends_tests && '1' || '0' }}
@@ -102,6 +107,15 @@ jobs:
             live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.MercadoBitcoinMarketDataTests.OrderBook'
             live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.MercadoBitcoinMarketDataTests.Ticks'
             live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.MercadoBitcoinMarketDataTests.Candles'
+          fi
+
+          if [ "$STOCKSHARP_LIVE_COINMETRO_TESTS" != '1' ]; then
+            # Coinmetro public API returns HTTP 525 during the exchange outage.
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.CoinmetroTests.Securities'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.CoinmetroTests.Level1'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.CoinmetroTests.OrderBook'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.CoinmetroTests.Ticks'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.CoinmetroTests.Candles'
           fi
 
           dotnet test Tests/Tests.csproj \
