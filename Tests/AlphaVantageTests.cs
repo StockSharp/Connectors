@@ -2,9 +2,12 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Ecng.Common;
+using Ecng.Net;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -63,11 +66,31 @@ public class AlphaVantageTests : HistoryTestBase
 	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task LookupReportsApiErrors(string field)
 	{
-		await using var server = new HistoryHttpServer(() => $"{{\"{field}\":\"Request limit reached.\"}}", CancellationToken);
+		const string token = "test-api-key";
+		await using var server = new HistoryHttpServer(() => $"{{\"{field}\":\"Request limit reached. API key {token}.\"}}", CancellationToken);
 		using var client = new AlphaClient(server.Address.ToString(), TimeSpan.FromSeconds(1));
 		var error = await ThrowsAsync<InvalidOperationException>(async () =>
-			await client.Lookup("AAPL", "test-key".Secure(), CancellationToken));
+			await client.Lookup("AAPL", token.Secure(), CancellationToken));
 		IsTrue(error.Message.Contains("Request limit reached."));
+		IsFalse(error.Message.Contains(token, StringComparison.Ordinal));
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task HttpErrorDoesNotExposeApiKey()
+	{
+		const string token = "test-api-key";
+		await using var server = new HistoryHttpServer(() => new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+		{
+			Content = new StringContent($"Request limit reached. API key {token}."),
+		}, CancellationToken);
+		using var client = new AlphaClient(server.Address.ToString(), TimeSpan.Zero);
+		var error = await ThrowsAsync<RestSharpException>(async () =>
+			await client.Lookup("AAPL", token.Secure(), CancellationToken));
+		AreEqual(HttpStatusCode.TooManyRequests, error.Response.StatusCode);
+		IsTrue(error.Message.Contains("Request limit reached."));
+		IsFalse(error.Message.Contains(token, StringComparison.Ordinal));
+		IsFalse(error.Response.Content.Contains(token, StringComparison.Ordinal));
 	}
 
 	[TestMethod]

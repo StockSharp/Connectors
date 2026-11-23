@@ -129,7 +129,7 @@ class AlphaClient : BaseLogReceiver
 			.AddQueryParameter("function", "SYMBOL_SEARCH")
 			.AddQueryParameter("keywords", symbolLike);
 
-		dynamic response = await MakeRequest<object>(_baseUrl, ApplySecret(request, token), cancellationToken);
+		dynamic response = await MakeRequest<object>(_baseUrl, request, token, cancellationToken);
 
 		var matches = response.bestMatches;
 
@@ -230,7 +230,7 @@ class AlphaClient : BaseLogReceiver
 
 		var candles = new Dictionary<DateTime, Ohlc>();
 
-		var response = await MakeRequest<JObject>(_baseUrl, ApplySecret(request, token), cancellationToken);
+		var response = await MakeRequest<JObject>(_baseUrl, request, token, cancellationToken);
 
 		var property = response.Properties().Last();
 
@@ -259,20 +259,15 @@ class AlphaClient : BaseLogReceiver
 		return new RestRequest((string)null, method);
 	}
 
-	private static RestRequest ApplySecret(RestRequest request, SecureString token)
-	{
-		if (request is null)
-			throw new ArgumentNullException(nameof(request));
+	private static string MaskToken(string value, string apiKey)
+		=> value?.Replace(apiKey, "***", StringComparison.Ordinal);
 
+	private async ValueTask<T> MakeRequest<T>(Uri url, RestRequest request, SecureString token, CancellationToken cancellationToken)
+	{
 		if (token.IsEmpty())
 			throw new ArgumentNullException(nameof(token));
-
-		return request.AddQueryParameter("apikey", token.UnSecure());
-	}
-
-	private async ValueTask<T> MakeRequest<T>(Uri url, RestRequest request, CancellationToken cancellationToken)
-	{
-		var content = await InvokeAsync(request, url, cancellationToken);
+		var apiKey = token.UnSecure();
+		var content = await InvokeAsync(request, url, apiKey, cancellationToken);
 
 		dynamic obj = content.DeserializeObject<object>();
 
@@ -282,19 +277,21 @@ class AlphaClient : BaseLogReceiver
 			var error = (string)body["Error Message"] ?? (string)body["Information"] ?? (string)body["Note"];
 
 			if (!error.IsEmpty())
-				throw new InvalidOperationException(error);
+				throw new InvalidOperationException(MaskToken(error, apiKey));
 
 			if ((obj.success != null && obj.success == false) || (obj.code != null && (int)obj.code != 0))
-				throw new InvalidOperationException((string)obj.msg);
+				throw new InvalidOperationException(MaskToken((string)obj.msg, apiKey));
 		}
 
 		return ((JToken)obj).DeserializeObject<T>();
 	}
 
-	private async Task<string> InvokeAsync(RestRequest request, Uri url, CancellationToken token)
+	private async Task<string> InvokeAsync(RestRequest request, Uri url, string apiKey, CancellationToken token)
 	{
 		request.Resource = url.IsAbsoluteUri ? url.AbsoluteUri : url.OriginalString;
-		this.AddVerboseLog("Request {0}, '{1}' Args '{2}'.", request.Method, url, request.Parameters.ToQueryString(false));
+		this.AddVerboseLog("Request {0}, '{1}' Args '{2}'.", request.Method,
+			MaskToken(request.Resource, apiKey), request.Parameters.ToQueryString(false));
+		request.AddQueryParameter("apikey", apiKey);
 
 		await _requestGate.WaitAsync(token);
 		try
@@ -311,7 +308,17 @@ class AlphaClient : BaseLogReceiver
 			this.AddVerboseLog("Response code {0}.", response.StatusCode);
 
 			if (response.StatusCode != HttpStatusCode.OK || response.Content.IsEmpty())
-				throw response.ToError();
+			{
+				var errorResponse = new RestResponse(new RestRequest())
+				{
+					StatusCode = response.StatusCode,
+					StatusDescription = MaskToken(response.StatusDescription, apiKey),
+					ResponseStatus = response.ResponseStatus,
+					ErrorMessage = MaskToken(response.ErrorMessage, apiKey),
+					Content = MaskToken(response.Content, apiKey),
+				};
+				throw errorResponse.ToError();
+			}
 
 			return response.Content;
 		}
