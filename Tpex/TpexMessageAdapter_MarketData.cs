@@ -20,7 +20,8 @@ public partial class TpexMessageAdapter
 
         if (left > 0)
         {
-            var snapshot = await LoadSnapshot(cancellationToken);
+            var snapshot = await SafeClient().GetSecurityCatalog(
+                Market, IncludeListedDerivatives, CacheTimeout, cancellationToken);
             var securities = snapshot
                 .GetAllProfiles(IncludeListedDerivatives)
                 .Where(profile => profile.Matches(value, name))

@@ -6,6 +6,8 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
 {
     private const string _mainboardPricesPath =
         "openapi/v1/tpex_mainboard_daily_close_quotes";
+    private const string _mainboardStockPricesPath =
+        "openapi/v1/tpex_mainboard_quotes";
     private const string _emergingPricesPath =
         "openapi/v1/tpex_esb_latest_statistics";
     private const string _valuationPath =
@@ -35,6 +37,7 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
     private DateTimeOffset _snapshotTime;
     private TpexMarkets _snapshotMarket;
     private bool _snapshotHasValuations;
+    private bool _snapshotHasFullMainboardPrices;
 
     public TpexRestClient(
         Uri address,
@@ -55,9 +58,27 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
             "User-Agent", "StockSharp-Tpex/1.0");
     }
 
-    public async Task<TpexSnapshot> GetSnapshot(
+    public Task<TpexSnapshot> GetSecurityCatalog(
+        TpexMarkets market,
+        bool includeListedDerivatives,
+        TimeSpan cacheTimeout,
+        CancellationToken cancellationToken)
+        => GetSnapshot(market, includeValuations: false,
+            includeFullMainboardPrices: includeListedDerivatives,
+            cacheTimeout, cancellationToken);
+
+    public Task<TpexSnapshot> GetSnapshot(
         TpexMarkets market,
         bool includeValuations,
+        TimeSpan cacheTimeout,
+        CancellationToken cancellationToken)
+        => GetSnapshot(market, includeValuations,
+            includeFullMainboardPrices: true, cacheTimeout, cancellationToken);
+
+    private async Task<TpexSnapshot> GetSnapshot(
+        TpexMarkets market,
+        bool includeValuations,
+        bool includeFullMainboardPrices,
         TimeSpan cacheTimeout,
         CancellationToken cancellationToken)
     {
@@ -68,17 +89,11 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
                 nameof(cacheTimeout), cacheTimeout, null);
         }
 
-        if (CanUseCache(
-            market, includeValuations, cacheTimeout))
-        {
-            return _snapshot;
-        }
-
         await _cacheSync.WaitAsync(cancellationToken);
         try
         {
-            if (CanUseCache(
-                market, includeValuations, cacheTimeout))
+            if (CanUseCache(market, includeValuations,
+                includeFullMainboardPrices, cacheTimeout))
             {
                 return _snapshot;
             }
@@ -87,10 +102,12 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
                 TpexMarkets.Mainboard or TpexMarkets.All;
             var includeEmerging = market is
                 TpexMarkets.Emerging or TpexMarkets.All;
+            var mainboardPricesPath = includeFullMainboardPrices
+                ? _mainboardPricesPath : _mainboardStockPricesPath;
 
             var mainboardPricesTask = includeMainboard
                 ? GetArray<TpexMainboardRow>(
-                    _mainboardPricesPath, cancellationToken)
+                    mainboardPricesPath, cancellationToken)
                 : Task.FromResult<TpexMainboardRow[]>([]);
             var mainboardProfilesTask = includeMainboard
                 ? GetArray<TpexSecurityProfile>(
@@ -131,7 +148,8 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
             };
             _snapshotTime = DateTimeOffset.UtcNow;
             _snapshotMarket = market;
-            _snapshotHasValuations = includeValuations;
+            _snapshotHasValuations = !includeMainboard || includeValuations;
+            _snapshotHasFullMainboardPrices = !includeMainboard || includeFullMainboardPrices;
             return _snapshot;
         }
         finally
@@ -175,10 +193,12 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
     private bool CanUseCache(
         TpexMarkets market,
         bool includeValuations,
+        bool includeFullMainboardPrices,
         TimeSpan cacheTimeout)
         => _snapshot is not null &&
             _snapshotMarket == market &&
             (!includeValuations || _snapshotHasValuations) &&
+            (!includeFullMainboardPrices || _snapshotHasFullMainboardPrices) &&
             cacheTimeout > TimeSpan.Zero &&
             DateTimeOffset.UtcNow - _snapshotTime < cacheTimeout;
 
