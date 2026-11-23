@@ -4,6 +4,7 @@ sealed class VelodromeSocketClient : BaseLogReceiver
 {
 	private const int _maximumMessageBytes = 1024 * 1024;
 	private readonly Uri _endpoint;
+	private readonly TimeSpan _startupTimeout;
 	private readonly Lock _sync = new();
 	private readonly SemaphoreSlim _sendGate = new(1, 1);
 	private readonly Dictionary<long, TaskCompletionSource<string>> _pending =
@@ -21,8 +22,11 @@ sealed class VelodromeSocketClient : BaseLogReceiver
 	private Task _receiveTask;
 	private long _requestId;
 
-	public VelodromeSocketClient(string endpoint)
+	public VelodromeSocketClient(string endpoint, TimeSpan? startupTimeout = null)
 	{
+		_startupTimeout = startupTimeout ?? TimeSpan.FromSeconds(10);
+		if (_startupTimeout <= TimeSpan.Zero)
+			throw new ArgumentOutOfRangeException(nameof(startupTimeout));
 		endpoint = endpoint.ThrowIfEmpty(nameof(endpoint)).Trim();
 		if (!Uri.TryCreate(endpoint, UriKind.Absolute, out _endpoint) ||
 			!(_endpoint.Scheme.EqualsIgnoreCase("ws") ||
@@ -48,9 +52,11 @@ sealed class VelodromeSocketClient : BaseLogReceiver
 		socket.Options.SetRequestHeader("User-Agent",
 			"StockSharp-Velodrome-Connector/1.0");
 		var lifetime = new CancellationTokenSource();
+		using var startup = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		try
 		{
-			await socket.ConnectAsync(_endpoint, cancellationToken);
+			startup.CancelAfter(_startupTimeout);
+			await socket.ConnectAsync(_endpoint, startup.Token);
 			_socket = socket;
 			_lifetime = lifetime;
 			_receiveTask = ReceiveLoopAsync(lifetime.Token);
@@ -58,16 +64,22 @@ sealed class VelodromeSocketClient : BaseLogReceiver
 				.GroupBy(static market => market.PoolId,
 					StringComparer.OrdinalIgnoreCase)
 				.Select(static group => group.First()))
-				await SubscribeAsync(market, cancellationToken);
+				await SubscribeAsync(market, startup.Token);
 		}
-		catch
+		catch (Exception error)
 		{
 			lifetime.Cancel();
-			lifetime.Dispose();
 			socket.Abort();
+			if (_receiveTask is not null)
+				await _receiveTask;
+			lifetime.Dispose();
 			socket.Dispose();
 			_socket = null;
 			_lifetime = null;
+			_receiveTask = null;
+			if (error is OperationCanceledException && startup.IsCancellationRequested &&
+				!cancellationToken.IsCancellationRequested)
+				throw new TimeoutException($"Velodrome WebSocket startup exceeded {_startupTimeout}.", error);
 			throw;
 		}
 	}

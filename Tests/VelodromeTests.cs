@@ -2,6 +2,7 @@ namespace StockSharp.Connectors.Tests;
 
 using System;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -21,6 +22,33 @@ using StockSharp.Velodrome.Native.Model;
 public class VelodromeTests : LiveMarketDataTestBase
 {
 	private const decimal _quoteProbeVolume = 0.01m;
+
+	[TestMethod]
+	[DataRow(false)]
+	[DataRow(true)]
+	[Timeout(8000, CooperativeCancellation = true)]
+	public async Task SocketStartupIsBoundedWhenThePeerDoesNotRespond(bool acceptUpgrade)
+	{
+		using var server = new WebSocketTestServer();
+		using var client = new VelodromeSocketClient(server.Endpoint, TimeSpan.FromSeconds(1));
+		using var deadline = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken);
+		deadline.CancelAfter(TimeSpan.FromSeconds(4));
+		var starting = client.ConnectAsync([new VelodromeMarket
+		{
+			PoolId = "0x1111111111111111111111111111111111111111",
+			PoolType = VelodromePoolTypes.Volatile,
+		}], deadline.Token).AsTask();
+		using var socket = acceptUpgrade ? await server.AcceptAsync(deadline.Token) : null;
+		if (socket is not null)
+		{
+			var request = await WebSocketTestServer.ReadRequestAsync(socket, deadline.Token);
+			AreEqual("eth_subscribe", request.Value<string>("method"));
+		}
+
+		var error = await ThrowsAsync<TimeoutException>(() => starting);
+		IsTrue(error.Message.Contains("Velodrome WebSocket", StringComparison.Ordinal));
+		IsFalse(deadline.IsCancellationRequested);
+	}
 
 	[TestMethod]
 	public void DefaultsUseOptimismAndPublishedPools()
