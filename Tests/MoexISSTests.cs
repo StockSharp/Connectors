@@ -40,6 +40,19 @@ public class MoexISSTests : LiveMarketDataTestBase
 
 	[TestMethod]
 	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task SecurityDirectoryRequestDownloadsOnlyTheSecuritiesTable()
+	{
+		await using var server = new HistoryHttpServer(() => """
+			{"securities":{"metadata":{},"columns":["SECID","BOARDID"],"data":[["SBER","TQBR"]]}}
+			""", CancellationToken);
+		using var http = new HttpClient { BaseAddress = server.Address };
+		var response = await new MarketSecuritiesListRequest(http, "stock", "shares", null, null).Get(CancellationToken);
+		AreEqual("SBER", response.Securities.Data[0]["SECID"]);
+		AreEqual("/engines/stock/markets/shares/securities.json?iss.only=securities", server.RequestTarget);
+	}
+
+	[TestMethod]
+	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task EmptyDividendTableIsAValidResponse()
 	{
 		using var http = new HttpClient(new HistoryHttpHandler(_ => new(HttpStatusCode.OK)

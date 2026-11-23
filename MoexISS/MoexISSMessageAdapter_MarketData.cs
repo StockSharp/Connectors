@@ -1,12 +1,16 @@
 namespace StockSharp.MoexISS;
 
 using System.Globalization;
+using System.Net;
 
 using StockSharp.MoexISS.Native.Requests;
 
 public partial class MoexISSMessageAdapter
 {
-	private readonly HttpClient _client = new();
+	private readonly HttpClient _client = new(new HttpClientHandler
+	{
+		AutomaticDecompression = DecompressionMethods.All,
+	});
 
 	/// <inheritdoc />
 	protected override async ValueTask SecurityLookupAsync(SecurityLookupMessage lookupMsg, CancellationToken token)
