@@ -179,7 +179,7 @@ public class MeteoraTests : LiveMarketDataTestBase
 	protected override MessageAdapter CreateAdapter() => new MeteoraMessageAdapter(new IncrementalIdGenerator())
 	{
 		// pin the pool instead of taking whatever tops the volume ranking today
-		Pools = "5rCf1DM8LjKTw4YqhnoLcngyZYeNnQqztScTogYHAS6|SOL|USDC",
+		Pools = "BGm1tav58oGcsQJehL9WXBFXF7D27vZsKefj4xJKD5Y|SOL|USDC",
 		MaximumDiscoveredPools = 0,
 	};
 
