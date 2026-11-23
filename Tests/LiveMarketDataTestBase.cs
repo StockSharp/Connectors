@@ -244,7 +244,7 @@ public abstract class LiveMarketDataTestBase : HistoryTestBase
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(120000, CooperativeCancellation = true)]
-	public Task Ticks() => RunAsync(DataType.Ticks, async harness =>
+	public virtual Task Ticks() => RunAsync(DataType.Ticks, async harness =>
 	{
 		if (!await IsSupportedAsync(harness, DataType.Ticks))
 			Inconclusive("Ticks are not supported by the adapter.");

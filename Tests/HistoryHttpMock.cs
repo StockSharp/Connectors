@@ -45,6 +45,11 @@ sealed class HistoryHttpServer : IAsyncDisposable
 	}
 
 	public HistoryHttpServer(Func<HttpResponseMessage> response, CancellationToken cancellationToken)
+		: this(_ => Task.FromResult(response()), cancellationToken)
+	{
+	}
+
+	public HistoryHttpServer(Func<CancellationToken, Task<HttpResponseMessage>> response, CancellationToken cancellationToken)
 	{
 		_source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		_listener.Start();
@@ -58,7 +63,7 @@ sealed class HistoryHttpServer : IAsyncDisposable
 	public string RequestBody { get; private set; }
 	public IReadOnlyDictionary<string, string> RequestHeaders => _requestHeaders;
 
-	private async Task RunAsync(Func<HttpResponseMessage> response, CancellationToken cancellationToken)
+	private async Task RunAsync(Func<CancellationToken, Task<HttpResponseMessage>> response, CancellationToken cancellationToken)
 	{
 		while (true)
 		{
@@ -83,7 +88,7 @@ sealed class HistoryHttpServer : IAsyncDisposable
 			}
 
 			RequestTimes.Enqueue(DateTime.UtcNow);
-			using var reply = response();
+			using var reply = await response(cancellationToken);
 			var body = reply.Content is null ? [] : await reply.Content.ReadAsByteArrayAsync(cancellationToken);
 			var extraHeaders = string.Concat(reply.Headers.Select(pair => $"{pair.Key}: {string.Join(", ", pair.Value)}\r\n"));
 			if (reply.Content?.Headers.ContentEncoding is { Count: > 0 } encoding)

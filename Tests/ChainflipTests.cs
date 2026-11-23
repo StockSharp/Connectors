@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Numerics;
+using System.Text;
 using System.Threading.Tasks;
 
 using Ecng.Common;
@@ -14,6 +15,7 @@ using Ecng.Serialization;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using StockSharp.Chainflip;
@@ -27,6 +29,9 @@ using StockSharp.Messages;
 [TestClass]
 public class ChainflipTests : LiveMarketDataTestBase
 {
+	private const string _mainnetStateRpc = "https://rpc.mainnet.chainflip.io";
+	private string _tickReplayEndpoint;
+
 	[TestMethod]
 	public void DefaultsUsePublishedEndpoints()
 	{
@@ -224,8 +229,7 @@ public class ChainflipTests : LiveMarketDataTestBase
 	[TestCategory("Integration")]
 	public async Task LiveStateChainReturnsPoolsBookAndFills()
 	{
-		using var state = new ChainflipStateClient(
-			"https://rpc.mainnet.chainflip.io");
+		using var state = new ChainflipStateClient(_mainnetStateRpc);
 
 		var markets = await state.VerifyAndGetMarketsAsync(
 			CancellationToken);
@@ -369,25 +373,50 @@ public class ChainflipTests : LiveMarketDataTestBase
 	}
 
 	/// <inheritdoc />
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public override async Task Ticks()
+	{
+		// Mainnet block 15785003 contains USDT/USDC fills from 2026-11-21 01:43:24 UTC.
+		const string blockHash = "0xf14d63a8ef35f286776c17cfdfc00d91818c84251277fea6c7237476e3b6b382";
+		using var upstream = new HttpClient();
+		HistoryHttpServer rpc = null;
+		await using var replay = rpc = new HistoryHttpServer(async cancellationToken =>
+		{
+			var request = JObject.Parse(rpc.RequestBody);
+			if (request.Value<string>("method") == "chain_getHeader")
+				request["params"] = new JArray(blockHash);
+
+			using var content = new StringContent(request.ToString(Formatting.None), Encoding.UTF8, "application/json");
+			using var response = await upstream.PostAsync(_mainnetStateRpc, content, cancellationToken);
+			return new HttpResponseMessage(response.StatusCode)
+			{
+				Content = new ByteArrayContent(await response.Content.ReadAsByteArrayAsync(cancellationToken)),
+			};
+		}, CancellationToken);
+
+		_tickReplayEndpoint = replay.Address.AbsoluteUri;
+		await base.Ticks();
+	}
+
+	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter()
 		=> new ChainflipMessageAdapter(new IncrementalIdGenerator())
 		{
-			Pools = "BTC@BITCOIN-USDC@ETHEREUM",
-			// Recent fills keep this check independent of the next swap in a quiet market.
-			InitialTickBlocks = 250,
+			StateRpcEndpoint = _tickReplayEndpoint ?? _mainnetStateRpc,
+			Pools = TestSecurityId.SecurityCode,
+			InitialTickBlocks = 1,
 		};
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
-		SecurityCode = "BTC@BITCOIN-USDC@ETHEREUM",
+		SecurityCode = _tickReplayEndpoint is null
+			? "BTC@BITCOIN-USDC@ETHEREUM"
+			: "USDT@ETHEREUM-USDC@ETHEREUM",
 		BoardCode = BoardCodes.Chainflip,
 	};
-
-	// The initial tick replay reads recent blocks through multiple RPC calls per block.
-	protected override TimeSpan DataTimeout => TestContext?.TestName == nameof(Ticks)
-		? TimeSpan.FromSeconds(90)
-		: base.DataTimeout;
 
 	/// <inheritdoc />
 	protected override DataType[] SkippedDataTypes =>
