@@ -256,15 +256,15 @@ public class ChainflipTests : LiveMarketDataTestBase
 	[TestMethod]
 	[TestCategory("Integration")]
 	[Timeout(30000, CooperativeCancellation = true)]
-	public async Task LiveSwapApiReturnsQuoteAndVaultData()
+	public async Task LiveTestnetSwapApiReturnsQuoteAndVaultData()
 	{
-		using var api = new ChainflipHttpClient("https://chainflip-swap.chainflip.io");
+		using var api = new ChainflipHttpClient("https://chainflip-swap-perseverance.chainflip.io");
 		var source = Asset("Ethereum", "ETH");
 		var destination = Asset("Bitcoin", "BTC");
 		var amount = BigInteger.Pow(10, 17);
 		var quote = await api.GetQuoteAsync(source, destination, amount, true, CancellationToken);
 		var vault = await api.BuildVaultSwapAsync(quote, source, destination, ChainflipExtensions.ProbeAddress,
-			"bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", 1.25m, 300, CancellationToken);
+			"tb1p8p3xsgaeltylmvyrskt3mup5x7lznyrh7vu2jvvk7mn8mhm6clksl5k0sm", 1.25m, 300, CancellationToken);
 
 		IsGreater(quote.EgressAmount.ParseInteger(), BigInteger.Zero);
 		AreEqual("Ethereum", vault.Chain);
