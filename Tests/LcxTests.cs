@@ -25,14 +25,22 @@ public class LcxTests : LiveMarketDataTestBase
 	protected override TimeSpan CandleTimeFrame => TimeSpan.FromDays(1);
 
 	/// <inheritdoc />
-	protected override int CandlesDepth => 30;
-
-	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
 	{
 		SecurityCode = "LCX/EUR",
 		BoardCode = BoardCodes.Lcx,
 	};
+
+	/// <inheritdoc />
+	protected override void ConfigureSubscription(MarketDataMessage message)
+	{
+		if (!message.DataType2.IsCandles)
+			return;
+
+		// The public archive contains LCX/EUR trades in this window.
+		message.From = new DateTime(2026, 6, 25, 0, 0, 0, DateTimeKind.Utc);
+		message.To = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
+	}
 
 	[TestMethod]
 	public void DefaultsUsePublishedServiceAddresses()
