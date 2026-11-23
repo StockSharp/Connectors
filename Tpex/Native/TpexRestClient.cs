@@ -43,7 +43,10 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
         _address = EnsureTrailingSlash(
             address ?? throw new ArgumentNullException(nameof(address)));
         _http = handler is null
-            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler()))
+            ? new HttpClient(new HttpRateLimitHandler(new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.All,
+            }))
             : new HttpClient(new HttpRateLimitHandler(handler));
         _http.Timeout = TimeSpan.FromMinutes(3);
         _http.DefaultRequestHeaders.Accept.Add(
@@ -417,7 +420,7 @@ sealed class TpexRestClient : BaseLogReceiver, IDisposable
 
     private static bool IsTransient(HttpStatusCode statusCode)
         => statusCode == HttpStatusCode.TooManyRequests ||
-            (int)statusCode is >= 500 and <= 511;
+            (int)statusCode is >= 500 and <= 511 or 525;
 
     private static TimeSpan GetRetryDelay(
         HttpResponseMessage response,
