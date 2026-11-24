@@ -105,8 +105,14 @@ public class RssTests : HistoryTestBase
 		IsGreater(counter, 0, $"No news from {address}.");
 	}
 
+	[TestMethod]
+	[TestCategory("Integration")]
+	[Timeout(120000, CooperativeCancellation = true)]
+	public Task MoexRss() => Rss(RssAddresses.Moex);
+
 	public static IEnumerable<object[]> RssFeeds
-		=> RssAddresses.All.Select(address => new object[] { address });
+		=> RssAddresses.All.Where(address => address != RssAddresses.Moex)
+			.Select(address => new object[] { address });
 
 	internal static string GetFeedSkipReason(string address, string reutersSetting, string regionalSetting)
 		=> address switch

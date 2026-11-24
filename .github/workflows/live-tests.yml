@@ -139,6 +139,7 @@ jobs:
           if [ "$STOCKSHARP_LIVE_MOEX_TESTS" != '1' ]; then
             # MOEX switched to a CA that the hosted runner does not trust.
             live_test_filter+='&FullyQualifiedName!~StockSharp.Connectors.Tests.MoexISSTests.'
+            live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.RssTests.MoexRss'
           fi
 
           dotnet test Tests/Tests.csproj \
