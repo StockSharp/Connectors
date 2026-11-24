@@ -24,6 +24,10 @@ on:
         description: 'Use CoinMarketCap anonymous quota when COINMARKETCAP_TOKEN is unavailable'
         type: boolean
         default: false
+      include_moex_tests:
+        description: 'Include MOEX checks on a runner that trusts the Russian Trusted Root CA'
+        type: boolean
+        default: false
       include_moex_dividends_tests:
         description: 'Include MOEX dividend-history checks (requires an ISS dividend data service)'
         type: boolean
@@ -57,6 +61,7 @@ jobs:
       STOCKSHARP_LIVE_GOPAX_TESTS: ${{ inputs.include_gopax_tests && '1' || '0' }}
       COINMARKETCAP_TOKEN: ${{ secrets.COINMARKETCAP_TOKEN }}
       COINMARKETCAP_KEYLESS_TESTS: ${{ inputs.include_keyless_cmc_tests && '1' || '0' }}
+      STOCKSHARP_LIVE_MOEX_TESTS: ${{ (inputs.include_moex_tests || inputs.include_moex_dividends_tests) && '1' || '0' }}
       STOCKSHARP_LIVE_MOEX_DIVIDENDS_TESTS: ${{ inputs.include_moex_dividends_tests && '1' || '0' }}
       STOCKSHARP_LIVE_BYDFI_TESTS: ${{ inputs.include_bydfi_tests && '1' || '0' }}
       STOCKSHARP_LIVE_GMTRADE_TESTS: ${{ inputs.include_gmtrade_tests && '1' || '0' }}
@@ -129,6 +134,11 @@ jobs:
             live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.GopaxMarketDataTests.Level1'
             live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.GopaxMarketDataTests.OrderBook'
             live_test_filter+='&FullyQualifiedName!=StockSharp.Connectors.Tests.GopaxMarketDataTests.Candles'
+          fi
+
+          if [ "$STOCKSHARP_LIVE_MOEX_TESTS" != '1' ]; then
+            # MOEX switched to a CA that the hosted runner does not trust.
+            live_test_filter+='&FullyQualifiedName!~StockSharp.Connectors.Tests.MoexISSTests.'
           fi
 
           dotnet test Tests/Tests.csproj \
