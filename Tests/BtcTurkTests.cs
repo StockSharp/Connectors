@@ -1,9 +1,13 @@
 namespace StockSharp.Connectors.Tests;
 
 using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 using Ecng.Common;
+using Ecng.ComponentModel;
 using Ecng.Serialization;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +25,22 @@ using StockSharp.Messages;
 [TestClass]
 public class BtcTurkTests : LiveMarketDataTestBase
 {
+	[TestMethod]
+	[DataRow(522, 2)]
+	[DataRow(403, 1)]
+	[Timeout(10000, CooperativeCancellation = true)]
+	public async Task WebSocketStartupRetriesOnlyServerErrors(int statusCode, int expectedAttempts)
+	{
+		await using var server = new HistoryHttpServer(
+			() => new HttpResponseMessage((HttpStatusCode)statusCode), CancellationToken);
+		var endpoint = new UriBuilder(server.Address) { Scheme = "ws" }.Uri.AbsoluteUri;
+		using var client = new BtcTurkWsClient(endpoint, new WorkingTime(), 0);
+
+		await ThrowsAsync<WebSocketException>(() => client.ConnectAsync(CancellationToken).AsTask());
+
+		AreEqual(expectedAttempts, server.RequestTimes.Count);
+	}
+
 	[TestMethod]
 	public void DefaultsUseOfficialServiceAddresses()
 	{

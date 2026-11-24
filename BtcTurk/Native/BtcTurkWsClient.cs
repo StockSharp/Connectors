@@ -1,5 +1,7 @@
 namespace StockSharp.BtcTurk.Native;
 
+using System.Net.WebSockets;
+
 sealed class BtcTurkWsClient : BaseLogReceiver
 {
 	private readonly record struct Subscription(string Channel, string Event);
@@ -54,14 +56,38 @@ sealed class BtcTurkWsClient : BaseLogReceiver
 			throw new InvalidOperationException(
 				"BtcTurk WebSocket is already initialized.");
 		var client = _client = CreateClient();
+		ClientWebSocket openingSocket = null;
+		client.InitAsync += CaptureUpgradeResponse;
 		try
 		{
-			await client.ConnectAsync(cancellationToken);
+			try
+			{
+				await client.ConnectAsync(cancellationToken);
+			}
+			catch (WebSocketException) when (!cancellationToken.IsCancellationRequested &&
+				(int?)openingSocket?.HttpStatusCode is >= 500 and < 600)
+			{
+				this.AddWarningLog("BtcTurk WebSocket upgrade returned HTTP {0}. Retrying.",
+					(int)openingSocket.HttpStatusCode);
+				await Task.Delay(client.ReconnectInterval, cancellationToken);
+				await client.ConnectAsync(cancellationToken);
+			}
 		}
 		catch
 		{
 			await DisposeClientAsync(cancellationToken);
 			throw;
+		}
+		finally
+		{
+			client.InitAsync -= CaptureUpgradeResponse;
+		}
+
+		ValueTask CaptureUpgradeResponse(ClientWebSocket socket, CancellationToken _)
+		{
+			socket.Options.CollectHttpResponseDetails = true;
+			openingSocket = socket;
+			return default;
 		}
 	}
 
