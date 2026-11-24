@@ -178,13 +178,15 @@ public class MeteoraTests : LiveMarketDataTestBase
 	/// <inheritdoc />
 	protected override MessageAdapter CreateAdapter() => new MeteoraMessageAdapter(new IncrementalIdGenerator())
 	{
+		RpcEndpoint = "https://api.mainnet.solana.com",
 		// pin the pool instead of taking whatever tops the volume ranking today
 		Pools = "BGm1tav58oGcsQJehL9WXBFXF7D27vZsKefj4xJKD5Y|SOL|USDC",
 		MaximumDiscoveredPools = 0,
 	};
 
-	// Allow connection setup to honor the public Solana RPC Retry-After response.
+	// Allow connection and history reads to honor the public Solana RPC Retry-After response.
 	protected override TimeSpan ConnectTimeout => TimeSpan.FromSeconds(60);
+	protected override TimeSpan DataTimeout => TimeSpan.FromSeconds(50);
 
 	/// <inheritdoc />
 	protected override SecurityId TestSecurityId => new()
