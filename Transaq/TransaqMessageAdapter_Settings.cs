@@ -19,7 +19,7 @@ using System.Reflection;
 	MessageAdapterCategories.Futures | MessageAdapterCategories.Options |
 	MessageAdapterCategories.Stock | MessageAdapterCategories.Free | MessageAdapterCategories.Ticks | MessageAdapterCategories.News)]
 [OrderCondition(typeof(TransaqOrderCondition))]
-partial class TransaqMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAddressAdapter<EndPoint>, IDemoAdapter
+public partial class TransaqMessageAdapter : MessageAdapter, ILoginPasswordAdapter, IAddressAdapter<EndPoint>, IDemoAdapter
 {
 	private class TransaqAddressSource : ItemsSourceBase<EndPoint>
 	{
