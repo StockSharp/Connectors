@@ -25,6 +25,7 @@ using StockSharp.Reya.Native.Model;
 /// </summary>
 [TestClass]
 [CLSCompliant(false)]
+[RegionalLiveTests]
 public class ReyaTests : LiveMarketDataTestBase
 {
 	[TestMethod]

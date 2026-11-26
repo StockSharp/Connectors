@@ -118,6 +118,11 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.OrderBook))]
 	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.Ticks))]
 	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.Candles))]
+	[DataRow(typeof(ReyaTests), nameof(ReyaTests.Securities))]
+	[DataRow(typeof(ReyaTests), nameof(ReyaTests.Level1))]
+	[DataRow(typeof(ReyaTests), nameof(ReyaTests.OrderBook))]
+	[DataRow(typeof(ReyaTests), nameof(ReyaTests.Ticks))]
+	[DataRow(typeof(ReyaTests), nameof(ReyaTests.Candles))]
 	[Timeout(10000)]
 	public void RegionalTestsRequireAdditionalExplicitOptIn(Type fixtureType, string testName)
 	{
@@ -179,6 +184,7 @@ public class LiveTestOptInTests : BaseTestClass
 	[DataRow(typeof(BackpackTests), nameof(BackpackTests.MarketListAcceptsIndexAlongsideCryptoAndStocks))]
 	[DataRow(typeof(BinanceHistoryTests), nameof(BinanceHistoryTests.SpotLookupUsesPublicMarketDataEndpoint))]
 	[DataRow(typeof(InjectiveMarketDataTests), nameof(InjectiveMarketDataTests.AnUnavailableIndexerRetainsTheHttpStatusAfterBoundedRetries))]
+	[DataRow(typeof(ReyaTests), nameof(ReyaTests.PublicRequestsUseCurrentRoutes))]
 	public void OrdinaryTestsIgnoreLiveAccessSettings(Type fixtureType, string testName)
 	{
 		foreach (var live in new[] { "", "0", "1" })
